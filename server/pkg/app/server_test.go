@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -154,54 +153,6 @@ upstream_services:
 		// we can infer it or check logs. But in this unit test context,
 		// successful return without panic/error is the main check for "don't crash".
 		// We can also verify that no services are registered if we started with empty.
-	})
-}
-
-func TestUploadFile(t *testing.T) {
-	app := NewApplication()
-
-	// Test case 1: Successful file upload
-	t.Run("successful upload", func(t *testing.T) {
-		var buf bytes.Buffer
-		writer := multipart.NewWriter(&buf)
-		fileWriter, err := writer.CreateFormFile("file", "test.txt")
-		require.NoError(t, err)
-
-		fileContent := "this is a test file"
-		_, err = io.WriteString(fileWriter, fileContent)
-		require.NoError(t, err)
-		_ = writer.Close()
-
-		req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
-		req.Header.Set("Content-Type", writer.FormDataContentType())
-		rr := httptest.NewRecorder()
-
-		app.uploadFile(rr, req)
-
-		assert.Equal(t, http.StatusOK, rr.Code)
-		assert.Contains(t, rr.Body.String(), "File 'test.txt' uploaded successfully")
-	})
-
-	// Test case 2: Incorrect HTTP method
-	t.Run("incorrect http method", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/upload", nil)
-		rr := httptest.NewRecorder()
-
-		app.uploadFile(rr, req)
-
-		assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
-		assert.Equal(t, "method not allowed\n", rr.Body.String())
-	})
-
-	// Test case 3: No file provided
-	t.Run("no file provided", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/upload", nil)
-		rr := httptest.NewRecorder()
-
-		app.uploadFile(rr, req)
-
-		assert.Equal(t, http.StatusBadRequest, rr.Code)
-		assert.Equal(t, "failed to get file from form\n", rr.Body.String())
 	})
 }
 
@@ -2654,28 +2605,6 @@ func TestRun_WithListenAddress(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestUploadFile_TempDirFail(t *testing.T) {
-	orig := os.Getenv("TMPDIR")
-	_ = os.Setenv("TMPDIR", "/non-existent")
-	defer os.Setenv("TMPDIR", orig)
-
-	app := NewApplication()
-	var buf bytes.Buffer
-	writer := multipart.NewWriter(&buf)
-	part, _ := writer.CreateFormFile("file", "test.txt")
-	part.Write([]byte("test content"))
-	writer.Close()
-
-	req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	rr := httptest.NewRecorder()
-	app.uploadFile(rr, req)
-
-	if rr.Code == http.StatusInternalServerError {
-		assert.Contains(t, rr.Body.String(), "failed to create temporary file")
-	}
-}
-
 func TestMultiUserHandler_EdgeCases(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	afero.WriteFile(fs, "/config.yaml", []byte("users:\n  - id: \"user1\"\n    profile_ids: [\"profile1\"]"), 0644)
@@ -2960,60 +2889,6 @@ func TestConfigureUIHandler(t *testing.T) {
 		logging.Init(slog.LevelInfo, &buf)
 		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
 		assert.Contains(t, buf.String(), "No UI directory found")
-	})
-}
-
-func TestUploadFile_Coverage(t *testing.T) {
-	app := NewApplication()
-
-	t.Run("Invalid Method", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/upload", nil)
-		w := httptest.NewRecorder()
-
-		app.uploadFile(w, req)
-
-		resp := w.Result()
-		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
-	})
-
-	t.Run("Missing File", func(t *testing.T) {
-		body := &bytes.Buffer{}
-		writer := multipart.NewWriter(body)
-		writer.Close() // Empty form
-
-		req := httptest.NewRequest("POST", "/upload", body)
-		req.Header.Set("Content-Type", writer.FormDataContentType())
-		w := httptest.NewRecorder()
-
-		app.uploadFile(w, req)
-
-		resp := w.Result()
-		// If file is missing, FormFile returns error
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	})
-
-	t.Run("Unicode Filename", func(t *testing.T) {
-		body := &bytes.Buffer{}
-		writer := multipart.NewWriter(body)
-		part, err := writer.CreateFormFile("file", "测试.txt")
-		assert.NoError(t, err)
-		_, err = part.Write([]byte("content"))
-		assert.NoError(t, err)
-		writer.Close()
-
-		req := httptest.NewRequest("POST", "/upload", body)
-		req.Header.Set("Content-Type", writer.FormDataContentType())
-		w := httptest.NewRecorder()
-
-		app.uploadFile(w, req)
-
-		resp := w.Result()
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-
-		// Read response body
-		respBody := w.Body.String()
-		// Expect: File '测试.txt' uploaded successfully
-		assert.Contains(t, respBody, "测试.txt")
 	})
 }
 

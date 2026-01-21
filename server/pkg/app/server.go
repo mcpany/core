@@ -10,7 +10,6 @@ import (
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
-	"html"
 	"io"
 	"net"
 	"net/http"
@@ -79,46 +78,6 @@ var healthCheckClient = &http.Client{
 	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 		return http.ErrUseLastResponse
 	},
-}
-
-func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Limit the request body size to 10MB to prevent DoS attacks
-	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
-
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, "failed to get file from form", http.StatusBadRequest)
-		return
-	}
-	defer func() { _ = file.Close() }()
-
-	// Clean up any temporary files created by ParseMultipartForm
-	if r.MultipartForm != nil {
-		defer func() {
-			if err := r.MultipartForm.RemoveAll(); err != nil {
-				logging.GetLogger().Error("Failed to remove multipart form files", "error", err)
-			}
-		}()
-	}
-
-	// Consume the file content without writing to disk.
-	// We discard the content to avoid disk usage and potential residue.
-	written, err := io.Copy(io.Discard, file)
-	if err != nil {
-		http.Error(w, "failed to read file", http.StatusInternalServerError)
-		return
-	}
-
-	// Respond with the file name and size
-	// Sanitize the filename to prevent reflected XSS and ensure safe filesystem usage
-	safeFilename := util.SanitizeFilename(header.Filename)
-	w.Header().Set("Content-Type", "text/plain")
-	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
 // Runner defines the interface for running the MCP Any application. It abstracts
@@ -1395,7 +1354,13 @@ func (a *Application) runServerMode(
 		if _, err := a.fs.Stat("./ui/package.json"); err == nil {
 			logging.GetLogger().Warn("UI directory ./ui contains package.json. Refusing to serve source code for security.", "path", "./ui")
 		} else {
-			uiPath = "./ui"
+			// Sentinel Security: Ensure the directory looks like a build artifact (has index.html)
+			// This prevents serving a bare directory listing or unrelated files.
+			if _, err := a.fs.Stat("./ui/index.html"); err == nil {
+				uiPath = "./ui"
+			} else {
+				logging.GetLogger().Info("UI directory ./ui does not contain index.html. Skipping to avoid serving incomplete assets.", "path", "./ui")
+			}
 		}
 	} else {
 		logging.GetLogger().Info("No UI directory found (./ui/out, ./ui/dist, ./ui). UI will not be served.")
@@ -1653,7 +1618,7 @@ func (a *Application) runServerMode(
 		_, _ = fmt.Fprintln(w, "OK")
 	}))
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
-	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
+	// mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile))) // Removed: Unused and risky
 
 	// OIDC Routes
 	var oidcConfig *config_v1.OIDCConfig

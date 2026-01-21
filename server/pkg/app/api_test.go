@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -1467,23 +1466,6 @@ func TestHandleValidate(t *testing.T) {
 	rr := httptest.NewRecorder()
 	app.handleValidate().ServeHTTP(rr, req)
 	assert.Equal(t, http.StatusOK, rr.Code)
-}
-
-func TestUploadFile_Security(t *testing.T) {
-	app := NewApplication()
-	t.Run("Reflected XSS", func(t *testing.T) {
-		body := &bytes.Buffer{}
-		writer := multipart.NewWriter(body)
-		part, _ := writer.CreateFormFile("file", "test&file\"name.txt")
-		part.Write([]byte("content"))
-		writer.Close()
-		req := httptest.NewRequest("POST", "/upload", body)
-		req.Header.Set("Content-Type", writer.FormDataContentType())
-		w := httptest.NewRecorder()
-		app.uploadFile(w, req)
-		assert.NotContains(t, w.Body.String(), "test&file\"name.txt")
-		assert.Contains(t, w.Body.String(), "test_file_name.txt")
-	})
 }
 
 type TestMockTool struct {
