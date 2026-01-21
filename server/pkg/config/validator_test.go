@@ -27,7 +27,7 @@ func TestValidateSecretValue(t *testing.T) {
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
 	validation.FileExists = func(path string) error {
-		if path == "secrets.txt" {
+		if path == "secrets.txt" || path == "read_error.txt" {
 			return nil
 		}
 		if path == "/etc/passwd" {
@@ -42,6 +42,9 @@ func TestValidateSecretValue(t *testing.T) {
 	osReadFile = func(name string) ([]byte, error) {
 		if name == "secrets.txt" {
 			return []byte("secret-content"), nil
+		}
+		if name == "read_error.txt" {
+			return nil, os.ErrPermission
 		}
 		return nil, os.ErrNotExist
 	}
@@ -240,6 +243,17 @@ func TestValidateSecretValue(t *testing.T) {
 			},
 			expectErr: true,
 			errMsg:    "secret value does not match validation regex",
+		},
+		{
+			name: "File read error (file_path)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "read_error.txt",
+				},
+				ValidationRegex: proto.String(`^.+$`),
+			},
+			expectErr: true,
+			errMsg:    "failed to read secret file",
 		},
 	}
 
