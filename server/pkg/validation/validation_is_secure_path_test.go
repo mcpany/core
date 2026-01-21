@@ -22,7 +22,12 @@ func TestIsSecurePath(t *testing.T) {
 		{"traversal up double", "../../test.txt", true},
 		// Absolute paths are allowed, as long as they don't result in relative traversal up
 		{"absolute path", "/etc/passwd", false},
-		{"absolute path with resolved traversal", "/var/../etc/passwd", false},
+		{"absolute path with resolved traversal", "/var/../etc/passwd", true},
+		{"traversal resolved within path", "safe/../safe/file.txt", true},
+		{"absolute traversal out", "/var/www/../../etc/passwd", true},
+		{"current dir prefix", "./file.txt", false},
+		{"multiple slashes", "safe//file.txt", false},
+		{"just dot dot", "..", true},
 	}
 
 	for _, tt := range tests {
