@@ -225,6 +225,59 @@ func TestValidateSecretValue(t *testing.T) {
 	}
 }
 
+func TestValidateSecretValue_WithRealFiles(t *testing.T) {
+	// We don't mock FileExists here so it uses real OS calls.
+	// Ensure we are in a safe allowed path.
+	tempDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tempDir})
+	defer validation.SetAllowedPaths(nil)
+
+	validFile := filepath.Join(tempDir, "valid_secret.txt")
+	err := os.WriteFile(validFile, []byte("sk-12345"), 0600)
+	require.NoError(t, err)
+
+	invalidFile := filepath.Join(tempDir, "invalid_secret.txt")
+	err = os.WriteFile(invalidFile, []byte("invalid-key"), 0600)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name      string
+		secret    *configv1.SecretValue
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			name: "Valid file content match",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{FilePath: validFile},
+				ValidationRegex: proto.String(`^sk-\d+$`),
+			},
+			expectErr: false,
+		},
+		{
+			name: "Invalid file content match",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{FilePath: invalidFile},
+				ValidationRegex: proto.String(`^sk-\d+$`),
+			},
+			expectErr: true,
+			errMsg:    "secret value does not match validation regex",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateSecretValue(tt.secret)
+			if tt.expectErr {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.errMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) {
 	// Create a temporary directory for the "working directory" in the current directory
 	// so that IsAllowedPath passes.

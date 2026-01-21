@@ -322,6 +322,14 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		case configv1.SecretValue_EnvironmentVariable_case:
 			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
 			shouldValidate = true
+		case configv1.SecretValue_FilePath_case:
+			// Read the file content for validation
+			// Note: We already validated FileExists above, so this should generally succeed.
+			content, err := os.ReadFile(secret.GetFilePath())
+			if err == nil {
+				valueToValidate = strings.TrimSpace(string(content))
+				shouldValidate = true
+			}
 		}
 
 		if shouldValidate && !re.MatchString(valueToValidate) {

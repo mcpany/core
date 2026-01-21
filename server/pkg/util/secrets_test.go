@@ -556,3 +556,47 @@ func TestResolveSecretMap(t *testing.T) {
 		assert.Contains(t, err.Error(), "environment variable \"NON_EXISTENT_VAR\" is not set")
 	})
 }
+
+func TestResolveSecret_ValidationRegex(t *testing.T) {
+	validation.SetAllowedPaths([]string{os.TempDir()})
+	t.Cleanup(func() { validation.SetAllowedPaths(nil) })
+
+	t.Run("FilePath enforces validation regex", func(t *testing.T) {
+		tmpfile, err := os.CreateTemp("", "secret_bad")
+		assert.NoError(t, err)
+		defer func() { _ = os.Remove(tmpfile.Name()) }()
+
+		_, err = tmpfile.WriteString("12345") // Numbers, not letters
+		assert.NoError(t, err)
+		_ = tmpfile.Close()
+
+		secret := &configv1.SecretValue{}
+		secret.SetFilePath(tmpfile.Name())
+		secret.SetValidationRegex("^[a-z]+$") // Expect only letters
+
+		_, err = util.ResolveSecret(context.Background(), secret)
+
+		assert.Error(t, err, "Expected validation error")
+		assert.Contains(t, err.Error(), "does not match validation regex")
+	})
+
+	t.Run("PlainText enforces validation regex", func(t *testing.T) {
+		secret := &configv1.SecretValue{}
+		secret.SetPlainText("12345")
+		secret.SetValidationRegex("^[a-z]+$")
+
+		_, err := util.ResolveSecret(context.Background(), secret)
+		assert.Error(t, err, "Expected validation error")
+		assert.Contains(t, err.Error(), "does not match validation regex")
+	})
+
+	t.Run("Valid Secret passes validation", func(t *testing.T) {
+		secret := &configv1.SecretValue{}
+		secret.SetPlainText("abcde")
+		secret.SetValidationRegex("^[a-z]+$")
+
+		resolved, err := util.ResolveSecret(context.Background(), secret)
+		assert.NoError(t, err)
+		assert.Equal(t, "abcde", resolved)
+	})
+}
