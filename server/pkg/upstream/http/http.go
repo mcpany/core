@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -173,7 +174,7 @@ func (u *Upstream) Register(
 	// Verify that the upstream is reachable.
 	// This is a startup check to warn the user if the service configuration is incorrect or the service is down.
 	start := time.Now()
-	err := util.CheckConnection(ctx, address)
+	err = util.CheckConnection(ctx, address)
 	latency := time.Since(start)
 	// Measure latency in milliseconds
 	metrics.AddSampleWithLabels([]string{"upstream", "latency", "startup"}, float32(latency.Milliseconds()), []metrics.Label{
