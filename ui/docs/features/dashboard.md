@@ -21,6 +21,3 @@ The dashboard updates in real-time.
 - **Total Requests**: Aggregate count of all operations processed.
 - **Active Services**: Number of services currently in "Healthy" state.
 - **Error Rate**: Percentage of requests resulting in failures.
-
-### 3. Drill Down
-Clicking on any KPI card or Chart point will navigate to the **Live Logs** or **Traces** view, filtered to the relevant context (e.g., clicking on a spike in errors takes you to logs showing those errors).

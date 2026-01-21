@@ -28,7 +28,8 @@ import (
 )
 
 const (
-	healthStatusGauge = "mcp_any_health_check_status"
+	healthStatusGauge        = "mcp_any_health_check_status"
+	healthCheckLatencyMetric = "mcp_any_health_check_latency_seconds"
 )
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
@@ -85,6 +86,19 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		check = filesystemCheck(serviceName, uc.GetFilesystemService())
 	default:
 		return nil
+	}
+
+	// Wrap check to measure latency
+	originalCheck := check.Check
+	check.Check = func(ctx context.Context) error {
+		start := time.Now()
+		err := originalCheck(ctx)
+		duration := time.Since(start).Seconds()
+		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration), []metrics.Label{
+			{Name: "service", Value: serviceName},
+			{Name: "status", Value: lo.Ternary(err == nil, "success", "failure")},
+		})
+		return err
 	}
 
 	opts := []health.CheckerOption{
