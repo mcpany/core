@@ -42,6 +42,63 @@ func TestShellInjection_Regression(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "python3.10 should be protected")
 	})
+
+	// Case 3: Brace Expansion (Should be blocked)
+	t.Run("brace_expansion_should_be_blocked", func(t *testing.T) {
+		cmd := "sh"
+		toolDef := &v1.Tool{Name: proto.String("test-tool")}
+		service := &configv1.CommandLineUpstreamService{
+			Command: &cmd,
+		}
+		callDef := &configv1.CommandLineCallDefinition{
+			Args: []string{"-c", "echo {{input}}"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{Name: proto.String("input")},
+				},
+			},
+		}
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "{a,b}"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected")
+	})
+
+	// Case 4: Comma (Should be allowed)
+	t.Run("comma_should_be_allowed", func(t *testing.T) {
+		cmd := "sh"
+		toolDef := &v1.Tool{Name: proto.String("test-tool")}
+		service := &configv1.CommandLineUpstreamService{
+			Command: &cmd,
+		}
+		callDef := &configv1.CommandLineCallDefinition{
+			Args: []string{"-c", "echo {{input}}"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{Name: proto.String("input")},
+				},
+			},
+		}
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "a,b"}`),
+		}
+
+		result, err := tool.Execute(context.Background(), req)
+		assert.NoError(t, err)
+
+		resMap, ok := result.(map[string]interface{})
+		assert.True(t, ok)
+		assert.Contains(t, resMap["stdout"], "a,b")
+	})
 }
 
 func createTestCommandTool(command string) Tool {
