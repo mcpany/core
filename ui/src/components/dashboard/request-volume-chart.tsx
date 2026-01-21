@@ -5,7 +5,6 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -27,13 +26,8 @@ const data = generateData();
  * @returns The rendered component.
  */
 export function RequestVolumeChart() {
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    if (!isMounted) return null;
+  // ⚡ Bolt Optimization: Removed client-side mounting check as this component is now
+  // dynamically imported with ssr: false, guaranteeing it only runs on the client.
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
