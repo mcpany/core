@@ -626,7 +626,7 @@ func TestPool_ConcurrentGetAndClose(t *testing.T) {
 	assert.Equal(t, ErrPoolClosed, err, "Getting from a closed pool should return ErrPoolClosed")
 }
 
-func TestPool_PutNilClientDoesNotReleaseSemaphore(t *testing.T) {
+func TestPool_PutNilClientReleasesSemaphore(t *testing.T) {
 	const maxSize = 1
 	p, err := New(newMockClientFactory(true), 0, maxSize, 100, false)
 	require.NoError(t, err)
@@ -640,16 +640,16 @@ func TestPool_PutNilClientDoesNotReleaseSemaphore(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
-	// Put a nil client back. This should do nothing to avoid double release if Get failed.
+	// Put a nil client back. The bug is that this does not release the permit.
 	p.Put(nil)
 
-	// Try to get a client again. Since we acquired one and didn't return it (Put(nil) ignored),
-	// this should timeout.
+	// Try to get a client again. With the bug, this will hang until timeout
+	// because the permit was never released. With the fix, it should succeed.
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	_, err = p.Get(ctx)
-	assert.ErrorIs(t, err, context.DeadlineExceeded, "Put(nil) should not release permit when a client is held")
+	assert.NoError(t, err, "Should be able to get a client after putting nil, but it timed out, indicating a semaphore leak.")
 }
 
 func TestPool_ConcurrentClose(_ *testing.T) {

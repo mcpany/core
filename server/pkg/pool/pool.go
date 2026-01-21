@@ -379,8 +379,7 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
-		// Do nothing. Client is nil, meaning either Get failed (and released permit)
-		// or user is misusing Put. We assume the former (defer pattern).
+		p.release(1)
 		return
 	}
 

@@ -126,8 +126,6 @@ export interface GlobalSettings {
   readOnly: boolean;
   /** Whether to auto-discover local services (e.g. Ollama). */
   autoDiscoverLocal: boolean;
-  /** Map of environment variable name to validation regex. */
-  requiredEnvVars: { [key: string]: string };
 }
 
 export enum GlobalSettings_LogLevel {
@@ -218,11 +216,6 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
-}
-
-export interface GlobalSettings_RequiredEnvVarsEntry {
-  key: string;
-  value: string;
 }
 
 export interface ContextOptimizerConfig {
@@ -787,7 +780,6 @@ function createBaseGlobalSettings(): GlobalSettings {
     debugger: undefined,
     readOnly: false,
     autoDiscoverLocal: false,
-    requiredEnvVars: {},
   };
 }
 
@@ -871,9 +863,6 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.autoDiscoverLocal !== false) {
       writer.uint32(208).bool(message.autoDiscoverLocal);
     }
-    globalThis.Object.entries(message.requiredEnvVars).forEach(([key, value]: [string, string]) => {
-      GlobalSettings_RequiredEnvVarsEntry.encode({ key: key as any, value }, writer.uint32(218).fork()).join();
-    });
     return writer;
   },
 
@@ -1092,17 +1081,6 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.autoDiscoverLocal = reader.bool();
           continue;
         }
-        case 27: {
-          if (tag !== 218) {
-            break;
-          }
-
-          const entry27 = GlobalSettings_RequiredEnvVarsEntry.decode(reader, reader.uint32());
-          if (entry27.value !== undefined) {
-            message.requiredEnvVars[entry27.key] = entry27.value;
-          }
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1152,15 +1130,6 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       debugger: isSet(object.debugger) ? DebuggerConfig.fromJSON(object.debugger) : undefined,
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
       autoDiscoverLocal: isSet(object.auto_discover_local) ? globalThis.Boolean(object.auto_discover_local) : false,
-      requiredEnvVars: isObject(object.required_env_vars)
-        ? (globalThis.Object.entries(object.required_env_vars) as [string, any][]).reduce(
-          (acc: { [key: string]: string }, [key, value]: [string, any]) => {
-            acc[key] = globalThis.String(value);
-            return acc;
-          },
-          {},
-        )
-        : {},
     };
   },
 
@@ -1244,15 +1213,6 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.autoDiscoverLocal !== false) {
       obj.auto_discover_local = message.autoDiscoverLocal;
     }
-    if (message.requiredEnvVars) {
-      const entries = globalThis.Object.entries(message.requiredEnvVars) as [string, string][];
-      if (entries.length > 0) {
-        obj.required_env_vars = {};
-        entries.forEach(([k, v]) => {
-          obj.required_env_vars[k] = v;
-        });
-      }
-    }
     return obj;
   },
 
@@ -1303,95 +1263,6 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       : undefined;
     message.readOnly = object.readOnly ?? false;
     message.autoDiscoverLocal = object.autoDiscoverLocal ?? false;
-    message.requiredEnvVars = (globalThis.Object.entries(object.requiredEnvVars ?? {}) as [string, string][]).reduce(
-      (acc: { [key: string]: string }, [key, value]: [string, string]) => {
-        if (value !== undefined) {
-          acc[key] = globalThis.String(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    return message;
-  },
-};
-
-function createBaseGlobalSettings_RequiredEnvVarsEntry(): GlobalSettings_RequiredEnvVarsEntry {
-  return { key: "", value: "" };
-}
-
-export const GlobalSettings_RequiredEnvVarsEntry: MessageFns<GlobalSettings_RequiredEnvVarsEntry> = {
-  encode(message: GlobalSettings_RequiredEnvVarsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== "") {
-      writer.uint32(18).string(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GlobalSettings_RequiredEnvVarsEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGlobalSettings_RequiredEnvVarsEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GlobalSettings_RequiredEnvVarsEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? globalThis.String(object.value) : "",
-    };
-  },
-
-  toJSON(message: GlobalSettings_RequiredEnvVarsEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== "") {
-      obj.value = message.value;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<GlobalSettings_RequiredEnvVarsEntry>, I>>(
-    base?: I,
-  ): GlobalSettings_RequiredEnvVarsEntry {
-    return GlobalSettings_RequiredEnvVarsEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<GlobalSettings_RequiredEnvVarsEntry>, I>>(
-    object: I,
-  ): GlobalSettings_RequiredEnvVarsEntry {
-    const message = createBaseGlobalSettings_RequiredEnvVarsEntry();
-    message.key = object.key ?? "";
-    message.value = object.value ?? "";
     return message;
   },
 };

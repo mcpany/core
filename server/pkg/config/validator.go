@@ -366,10 +366,6 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 		return fmt.Errorf("dlp config error: %w", err)
 	}
 
-	if err := validateRequiredEnvVars(gs.GetRequiredEnvVars()); err != nil {
-		return fmt.Errorf("required env vars error: %w", err)
-	}
-
 	if err := validateGCSettings(gs.GetGcSettings()); err != nil {
 		return fmt.Errorf("gc settings error: %w", err)
 	}
@@ -1083,32 +1079,6 @@ func validateGCSettings(gc *configv1.GCSettings) error {
 
 func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 	// Add specific profile validation if needed.
-	return nil
-}
-
-func validateRequiredEnvVars(requiredEnvVars map[string]string) error {
-	for envVar, pattern := range requiredEnvVars {
-		val, exists := os.LookupEnv(envVar)
-		if !exists {
-			return &ActionableError{
-				Err:        fmt.Errorf("missing required environment variable: %s", envVar),
-				Suggestion: fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar),
-			}
-		}
-
-		if pattern != "" {
-			matched, err := regexp.MatchString(pattern, val)
-			if err != nil {
-				return fmt.Errorf("invalid regex pattern for environment variable %q: %w", envVar, err)
-			}
-			if !matched {
-				return &ActionableError{
-					Err:        fmt.Errorf("environment variable %q does not match required pattern %q", envVar, pattern),
-					Suggestion: fmt.Sprintf("Update the environment variable %q to match the pattern: %s", envVar, pattern),
-				}
-			}
-		}
-	}
 	return nil
 }
 
