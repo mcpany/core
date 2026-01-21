@@ -79,7 +79,7 @@ export function DashboardGrid() {
                         className="space-y-4"
                     >
                         {/* Metrics is always on top for now as it's full width and special */}
-                        {widgets.filter(w => w.id === "metrics").map((widget, index) => (
+                        {widgets.filter(w => w.id === "metrics").map((widget) => (
                              <div key={widget.id} className="w-full">
                                 {renderWidget(widget.id)}
                              </div>
