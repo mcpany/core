@@ -6,10 +6,12 @@ package resilience
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
@@ -156,4 +158,88 @@ func TestCircuitBreaker(t *testing.T) {
 		// The circuit should now be open.
 		require.Equal(t, StateOpen, cb.state)
 	})
+}
+
+// TestCircuitBreaker_ZombieSuccess_ClosesBreaker checks if a success from a stale request
+// (started when Closed) incorrectly closes the breaker when it is HalfOpen.
+func TestCircuitBreaker_ZombieSuccess_ClosesBreaker(t *testing.T) {
+	consecutiveFailures := int32(2)
+	halfOpenRequests := int32(1)
+	openDuration := 50 * time.Millisecond
+
+	config := &configv1.CircuitBreakerConfig{}
+	config.SetConsecutiveFailures(consecutiveFailures)
+	config.SetOpenDuration(durationpb.New(openDuration))
+	config.SetHalfOpenRequests(halfOpenRequests)
+	cb := NewCircuitBreaker(config)
+
+	var wg sync.WaitGroup
+	ctx := context.Background()
+
+	// 1. Start a slow request (A) while Closed.
+	// It will sleep long enough to span across Open and HalfOpen states.
+	zombieStarted := make(chan struct{})
+	zombieSuccess := make(chan struct{})
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_ = cb.Execute(ctx, func(_ context.Context) error {
+			close(zombieStarted)
+			<-zombieSuccess // Wait until we signal it to finish
+			return nil      // Success!
+		})
+	}()
+
+	// Wait for A to start and register "Closed" as origin state.
+	<-zombieStarted
+
+	// 2. Fail requests to trip the breaker.
+	for i := 0; i < int(consecutiveFailures); i++ {
+		_ = cb.Execute(ctx, func(_ context.Context) error { return errors.New("fail") })
+	}
+	require.Equal(t, StateOpen, cb.getState(), "Breaker should be Open")
+
+	// 3. Wait for Open duration to expire.
+	time.Sleep(openDuration + 10*time.Millisecond)
+
+	// 4. Trigger HalfOpen state with a new request (Probe).
+	// We trigger transition to HalfOpen using a probe that we block.
+	probeStarted := make(chan struct{})
+	probeProceed := make(chan struct{})
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		_ = cb.Execute(ctx, func(_ context.Context) error {
+			// We are now in HalfOpen state inside the lock (partially) or just executed logic.
+			// The state transition happens BEFORE work is called.
+			close(probeStarted)
+			<-probeProceed
+			return nil
+		})
+	}()
+
+	// Wait for Probe to start and ensure transition state to HalfOpen.
+	<-probeStarted
+	require.Equal(t, StateHalfOpen, cb.getState(), "Breaker should be HalfOpen")
+
+	// 5. Now let the Zombie request (A) succeed.
+	close(zombieSuccess)
+
+	// We need to wait for A to finish processing onSuccess.
+	// Since onSuccess happens after work returns, and we just unblocked work,
+	// we need a small sleep or another synchronization mechanism.
+	time.Sleep(10 * time.Millisecond)
+
+	// 6. Check state.
+	// If the bug exists, the Zombie success will Close the breaker.
+	// BUT we still have the Probe running!
+	// We want the breaker to remain HalfOpen until the *Probe* succeeds.
+	state := cb.getState()
+
+	// Clean up
+	close(probeProceed)
+	wg.Wait()
+
+	assert.Equal(t, StateHalfOpen, state, "Breaker should remain HalfOpen after zombie success")
 }
