@@ -644,6 +644,16 @@ export const apiClient = {
         if (!res.ok) throw new Error('Failed to save global settings');
     },
 
+    /**
+     * Gets the dashboard traffic history.
+     * @returns A promise that resolves to the traffic history points.
+     */
+    getDashboardTraffic: async () => {
+        const res = await fetchWithAuth('/api/v1/dashboard/traffic');
+        if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
+        return res.json();
+    },
+
     // Stack Management
 
     /**
