@@ -109,7 +109,8 @@ var NewHTTPPool = func(
 			checker,
 		), nil
 	}
-	basePool, err := pool.New(factory, minSize, maxSize, idleTimeout, false)
+	// Use minSize as both initialSize and maxIdleSize to preserve existing behavior where minSize was pre-filled.
+	basePool, err := pool.New(factory, minSize, minSize, maxSize, idleTimeout, false)
 	if err != nil {
 		return nil, err
 	}
