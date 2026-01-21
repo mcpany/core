@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/url"
-	"regexp"
 	"sort"
 	"strings"
 	"unsafe"
@@ -374,19 +373,19 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
 					// If input[matchStart] is uppercase, assume the whole key match was uppercase (or case-insensitive matching logic holds).
 					firstChar := input[matchStart]
 					if firstChar >= 'A' && firstChar <= 'Z' {
-					// Verify if the REST of the key is also uppercase.
-					// If not (e.g. "Auth"), then it is PascalCase and SHOULD be redacted.
-					isAllUpper := true
-					for k := 1; k < len(key); k++ {
-						c := input[matchStart+k]
-						if c >= 'a' && c <= 'z' {
-							isAllUpper = false
-							break
+						// Verify if the REST of the key is also uppercase.
+						// If not (e.g. "Auth"), then it is PascalCase and SHOULD be redacted.
+						isAllUpper := true
+						for k := 1; k < len(key); k++ {
+							c := input[matchStart+k]
+							if c >= 'a' && c <= 'z' {
+								isAllUpper = false
+								break
+							}
 						}
-					}
-					if isAllUpper {
-						continue
-					}
+						if isAllUpper {
+							continue
+						}
 					}
 				}
 			}
@@ -473,9 +472,6 @@ func isKeyColon(input []byte, endOffset int) bool {
 	}
 	return false
 }
-
-// dsnPasswordRegex handles fallback cases but we prefer net/url
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
