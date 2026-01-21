@@ -92,6 +92,7 @@ describe('ToolsPage', () => {
             expect(screen.getByText('tool1')).toBeInTheDocument();
             expect(screen.getByText('tool2')).toBeInTheDocument();
             expect(screen.getByText('tool3')).toBeInTheDocument();
+            expect(screen.getByText('Est. Context')).toBeInTheDocument();
         });
     });
 
