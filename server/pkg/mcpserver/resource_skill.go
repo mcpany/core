@@ -114,7 +114,8 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 	} else {
 		// Read asset
 		// Resolve the skill path to its canonical absolute path to prevent traversal via symlinks in the base path.
-		skillPath, err := filepath.Abs(r.skill.Path)
+		var skillPath string
+		skillPath, err = filepath.Abs(r.skill.Path)
 		if err != nil {
 			return nil, fmt.Errorf("failed to resolve absolute skill path: %w", err)
 		}
@@ -129,13 +130,14 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		// However, validation.IsAllowedPath checks against CWD or AllowedPaths.
 		// Here we specifically want to check if it is inside skillPath.
 		// We can reuse validation.IsSecurePath to check for '..' traversal in the path string itself first.
-		if err := validation.IsSecurePath(r.assetPath); err != nil {
+		if err = validation.IsSecurePath(r.assetPath); err != nil {
 			return nil, fmt.Errorf("invalid asset path: %w", err)
 		}
 
 		// Now verify it resolves to inside skillPath.
 		// We must resolve symlinks in the final path to ensure we don't traverse out via a symlink in the asset path.
-		realPath, err := filepath.EvalSymlinks(path)
+		var realPath string
+		realPath, err = filepath.EvalSymlinks(path)
 		if err != nil {
 			if os.IsNotExist(err) {
 				return nil, fmt.Errorf("asset does not exist: %w", err)
@@ -153,7 +155,7 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 			return nil, fmt.Errorf("invalid path: points outside skill directory")
 		}
 
-		content, err = os.ReadFile(realPath)
+		content, err = os.ReadFile(realPath) //nolint:gosec // Path is sanitized and verified to be within skill directory
 	}
 
 	if err != nil {
