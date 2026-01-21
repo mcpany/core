@@ -314,14 +314,11 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		}
 
 		var valueToValidate string
-		shouldValidate := false
 		switch secret.WhichValue() {
 		case configv1.SecretValue_PlainText_case:
 			valueToValidate = secret.GetPlainText()
-			shouldValidate = true
 		case configv1.SecretValue_EnvironmentVariable_case:
 			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
-      			shouldValidate = true
 		case configv1.SecretValue_FilePath_case:
 			// We already validated file existence above, so we can try to read it.
 			content, err := os.ReadFile(secret.GetFilePath())
@@ -329,10 +326,9 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 				return fmt.Errorf("failed to read secret file %q for validation: %w", secret.GetFilePath(), err)
 			}
 			valueToValidate = strings.TrimSpace(string(content))
-
 		}
 
-		if shouldValidate && !re.MatchString(valueToValidate) {
+		if valueToValidate != "" && !re.MatchString(valueToValidate) {
 			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
 		}
 	}

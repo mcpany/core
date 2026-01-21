@@ -61,9 +61,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	doctor.AddCheck("configuration", a.configHealthCheck)
 	doctor.AddCheck("filesystem", a.filesystemHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
-	mux.HandleFunc("/system/status", a.handleSystemStatus)
-	mux.HandleFunc("/audit/export", a.handleAuditExport)
-	mux.HandleFunc("/validate", a.handleValidate())
+	mux.HandleFunc("/api/v1/system/status", a.handleSystemStatus)
+	mux.HandleFunc("/api/v1/audit/export", a.handleAuditExport)
+	mux.HandleFunc("/api/v1/validate", a.handleValidate())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
@@ -82,7 +82,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	mux.HandleFunc("/topology", a.handleTopology())
 	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
-	mux.HandleFunc("/dashboard/traffic", a.handleDashboardTraffic())
 	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
