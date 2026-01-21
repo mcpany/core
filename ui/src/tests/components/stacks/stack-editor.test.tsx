@@ -23,6 +23,33 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
+// Mock Monaco Editor
+vi.mock('@monaco-editor/react', () => {
+  const Editor = ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (
+    <textarea
+      data-testid="monaco-editor"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+  return {
+    __esModule: true,
+    default: Editor,
+    Editor,
+    useMonaco: () => ({
+      languages: {
+        register: () => {},
+        setMonarchTokensProvider: () => {},
+        registerCompletionItemProvider: () => ({ dispose: () => {} }),
+        CompletionItemKind: { Keyword: 0, Property: 1 },
+      },
+    }),
+    loader: {
+      config: () => {},
+    },
+  };
+});
+
 describe('StackEditor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -45,7 +72,13 @@ describe('StackEditor', () => {
 
     const { container } = render(<StackEditor stackId="test-stack" />);
 
-    // Find textarea by selector if role is elusive
+    // Wait for the textarea to be rendered, as it might be async/lazy loaded
+    // Monaco editor often hides the real textarea, but here we seem to be testing a standard textarea fallback or similar.
+    // If we assume a standard textarea exists:
+    await waitFor(() => {
+        expect(container.querySelector('textarea')).toBeInTheDocument();
+    });
+
     const textarea = container.querySelector('textarea');
     if (!textarea) throw new Error('Textarea not found');
 
