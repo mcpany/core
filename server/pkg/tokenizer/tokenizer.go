@@ -362,6 +362,18 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 		return c, err
 	}
 
+	// Optimization: Handle map[string]interface{} explicitly to avoid reflection.
+	// This is very common for JSON data.
+	if m, ok := v.(map[string]interface{}); ok {
+		return countMapStringInterface(t, m, visited)
+	}
+
+	// Optimization: Handle []interface{} explicitly to avoid reflection.
+	// This is very common for JSON lists.
+	if s, ok := v.([]interface{}); ok {
+		return countSliceInterface(t, s, visited)
+	}
+
 	return countTokensReflectGeneric(t, v, visited)
 }
 
@@ -379,6 +391,16 @@ func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr
 	// Try the fast path first
 	if c, handled, err := countTokensInValueWordFast(t, v); handled {
 		return c, err
+	}
+
+	// Optimization: Handle map[string]interface{} explicitly to avoid reflection.
+	if m, ok := v.(map[string]interface{}); ok {
+		return countMapStringInterface(t, m, visited)
+	}
+
+	// Optimization: Handle []interface{} explicitly to avoid reflection.
+	if s, ok := v.([]interface{}); ok {
+		return countSliceInterface(t, s, visited)
 	}
 
 	return countTokensReflectGeneric(t, v, visited)
@@ -630,6 +652,57 @@ func simpleTokenizeInt(n int) int {
 		return 1
 	}
 	return count
+}
+
+func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}, visited map[uintptr]bool) (int, error) {
+	// Cycle detection
+	val := reflect.ValueOf(m)
+	if !val.IsNil() {
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+	}
+
+	count := 0
+	for key, item := range m {
+		kc, err := t.CountTokens(key)
+		if err != nil {
+			return 0, err
+		}
+		count += kc
+		vc, err := t.countRecursive(item, visited)
+		if err != nil {
+			return 0, err
+		}
+		count += vc
+	}
+	return count, nil
+}
+
+func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map[uintptr]bool) (int, error) {
+	// Cycle detection
+	val := reflect.ValueOf(s)
+	if !val.IsNil() {
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+	}
+
+	count := 0
+	for _, item := range s {
+		c, err := t.countRecursive(item, visited)
+		if err != nil {
+			return 0, err
+		}
+		count += c
+	}
+	return count, nil
 }
 
 func calculateWordTokens(n int, factor float64) int {
