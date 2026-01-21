@@ -111,7 +111,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: password with colon and at sign",
 			input:    "user:pass:word@part@host",
-			expected: "user:[REDACTED]@part@host", // Non-greedy: stops at first @
+			expected: "user:[REDACTED]@host", // Greedy: stops at last @
 		},
 		{
 			name:     "fallback: empty user with password",
