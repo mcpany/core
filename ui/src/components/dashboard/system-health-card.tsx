@@ -5,10 +5,10 @@
 
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertCircle, Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react"
+import { Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react"
 
 interface SystemStatus {
   uptime_seconds: number
@@ -19,11 +19,18 @@ interface SystemStatus {
   security_warnings: string[]
 }
 
+const formatUptime = (seconds: number) => {
+  const hrs = Math.floor(seconds / 3600)
+  const mins = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  return `${hrs}h ${mins}m ${secs}s`
+}
+
 /**
  * SystemHealthCard component.
  * @returns The rendered component.
  */
-export function SystemHealthCard() {
+export const SystemHealthCard = memo(function SystemHealthCard() {
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -43,16 +50,26 @@ export function SystemHealthCard() {
 
   useEffect(() => {
     fetchStatus()
-    const interval = setInterval(fetchStatus, 5000)
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(() => {
+        // ⚡ Bolt Optimization: Pause polling when tab is not visible
+        if (!document.hidden) {
+            fetchStatus()
+        }
+    }, 5000)
 
-  const formatUptime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600)
-    const mins = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hrs}h ${mins}m ${secs}s`
-  }
+    // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
+    const onVisibilityChange = () => {
+        if (!document.hidden) {
+            fetchStatus()
+        }
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange)
+
+    return () => {
+        clearInterval(interval)
+        document.removeEventListener("visibilitychange", onVisibilityChange)
+    }
+  }, [])
 
   if (loading && !status) {
     return (
@@ -121,4 +138,4 @@ export function SystemHealthCard() {
       </CardContent>
     </Card>
   )
-}
+})

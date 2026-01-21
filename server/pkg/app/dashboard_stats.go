@@ -84,27 +84,3 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 		_ = json.NewEncoder(w).Encode(stats)
 	}
 }
-
-// handleDashboardTraffic returns the traffic history for the dashboard chart.
-func (a *Application) handleDashboardTraffic() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-
-		if a.TopologyManager == nil {
-			http.Error(w, "Topology manager not initialized", http.StatusServiceUnavailable)
-			return
-		}
-
-		points := a.TopologyManager.GetTrafficHistory()
-
-		// Transform to simple JSON if needed, or just return as is.
-		// UI expects [{time: "00:00", total: 123}, ...]
-		// TrafficPoint struct matches this.
-
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(points)
-	}
-}

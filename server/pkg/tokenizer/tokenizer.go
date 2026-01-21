@@ -198,6 +198,10 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 	case nil:
 		return 1, true, nil
 	case float64:
+		// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
+		if i := int64(val); float64(i) == val {
+			return simpleTokenizeInt64(i), true, nil
+		}
 		// OPTIMIZATION: Use stack buffer to avoid string allocation.
 		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
 		var buf [64]byte
@@ -234,6 +238,11 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
 		var buf [64]byte
 		for _, item := range val {
+			// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
+			if i := int64(item); float64(i) == item {
+				count += simpleTokenizeInt64(i)
+				continue
+			}
 			b := strconv.AppendFloat(buf[:0], item, 'g', -1, 64)
 			c := len(b) / 4
 			if c < 1 {

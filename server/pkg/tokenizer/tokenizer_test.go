@@ -401,3 +401,28 @@ func TestErrorPropagation(t *testing.T) {
 		}
 	})
 }
+
+func TestFloatConsistency(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
+
+	// These numbers are integers but represented as floats
+	tests := []struct {
+		val float64
+		want int // Expected tokens assuming we optimize to use integer path (decimal representation)
+	}{
+		{1234567.0, 1}, // 7 digits -> 1 token. (Prev: 3 tokens from 1.234567e+06)
+		{9999999.0, 1}, // 7 digits -> 1 token. (Prev: 3 tokens)
+		{10000000.0, 2}, // 8 digits -> 2 tokens. (Prev: 1 token from 1e+07)
+		{123456789.0, 2}, // 9 digits -> 2 tokens. (Prev: 3 tokens from 1.234568e+08)
+	}
+
+	for _, tt := range tests {
+		got, err := CountTokensInValue(tokenizer, tt.val)
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+		if got != tt.want {
+			t.Errorf("CountTokensInValue(%f) = %d, want %d", tt.val, got, tt.want)
+		}
+	}
+}

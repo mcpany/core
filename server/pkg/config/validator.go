@@ -291,7 +291,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		}
 		// Validate that the file actually exists to fail fast
 		if err := validation.FileExists(secret.GetFilePath()); err != nil {
-			return fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err)
+			return &ActionableError{
+				Err:        fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err),
+				Suggestion: fmt.Sprintf("Ensure the file exists at %q and the server process has read permissions.", secret.GetFilePath()),
+			}
 		}
 	case configv1.SecretValue_RemoteContent_case:
 		remote := secret.GetRemoteContent()
@@ -314,17 +317,21 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		}
 
 		var valueToValidate string
-		shouldValidate := false
 		switch secret.WhichValue() {
 		case configv1.SecretValue_PlainText_case:
 			valueToValidate = secret.GetPlainText()
-			shouldValidate = true
 		case configv1.SecretValue_EnvironmentVariable_case:
 			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
-			shouldValidate = true
+		case configv1.SecretValue_FilePath_case:
+			// We already validated file existence above, so we can try to read it.
+			content, err := os.ReadFile(secret.GetFilePath())
+			if err != nil {
+				return fmt.Errorf("failed to read secret file %q for validation: %w", secret.GetFilePath(), err)
+			}
+			valueToValidate = strings.TrimSpace(string(content))
 		}
 
-		if shouldValidate && !re.MatchString(valueToValidate) {
+		if valueToValidate != "" && !re.MatchString(valueToValidate) {
 			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
 		}
 	}
@@ -813,6 +820,9 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 	}
 
 	if apiKey.GetValue() != nil {
+		if err := validateSecretValue(apiKey.GetValue()); err != nil {
+			return WrapActionableError("api key secret validation failed", err)
+		}
 		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
 		if err != nil {
 			return fmt.Errorf("failed to resolve api key secret: %w", err)
@@ -828,6 +838,9 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 }
 
 func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTokenAuth) error {
+	if err := validateSecretValue(bearerToken.GetToken()); err != nil {
+		return WrapActionableError("bearer token validation failed", err)
+	}
 	tokenValue, err := util.ResolveSecret(ctx, bearerToken.GetToken())
 	if err != nil {
 		return fmt.Errorf("failed to resolve bearer token secret: %w", err)
@@ -847,6 +860,9 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error
 			Err:        fmt.Errorf("basic auth 'username' is empty"),
 			Suggestion: "Set the 'username' field.",
 		}
+	}
+	if err := validateSecretValue(basicAuth.GetPassword()); err != nil {
+		return WrapActionableError("basic auth password validation failed", err)
 	}
 	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
 	if err != nil {
@@ -878,6 +894,9 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
 	}
 
+	if err := validateSecretValue(oauth.GetClientId()); err != nil {
+		return WrapActionableError("oauth2 client_id validation failed", err)
+	}
 	clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
 	if err != nil {
 		return fmt.Errorf("failed to resolve oauth2 client_id: %w", err)
@@ -886,6 +905,9 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return fmt.Errorf("oauth2 client_id is missing or empty")
 	}
 
+	if err := validateSecretValue(oauth.GetClientSecret()); err != nil {
+		return WrapActionableError("oauth2 client_secret validation failed", err)
+	}
 	clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())
 	if err != nil {
 		return fmt.Errorf("failed to resolve oauth2 client_secret: %w", err)
@@ -939,7 +961,10 @@ func validateMtlsAuth(mtls *configv1.MTLSAuth) error {
 	check := func(path, fieldName string) error {
 		if _, err := osStat(path); err != nil {
 			if os.IsNotExist(err) {
-				return fmt.Errorf("mtls '%s' not found: %w", fieldName, err)
+				return &ActionableError{
+					Err:        fmt.Errorf("mtls '%s' not found at %q: %w", fieldName, path, err),
+					Suggestion: fmt.Sprintf("Ensure the %s file exists and is accessible.", fieldName),
+				}
 			}
 			return fmt.Errorf("mtls '%s' error: %w", fieldName, err)
 		}
@@ -1084,7 +1109,10 @@ func validateCommandExists(command string, workingDir string) error {
 		info, err := osStat(command)
 		if err != nil {
 			if os.IsNotExist(err) {
-				return fmt.Errorf("executable not found at %q", command)
+				return &ActionableError{
+					Err:        fmt.Errorf("executable not found at %q", command),
+					Suggestion: fmt.Sprintf("Check if the file exists at %q.", command),
+				}
 			}
 			return fmt.Errorf("failed to check executable %q: %w", command, err)
 		}
