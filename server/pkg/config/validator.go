@@ -314,17 +314,14 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		}
 
 		var valueToValidate string
-		shouldValidate := false
 		switch secret.WhichValue() {
 		case configv1.SecretValue_PlainText_case:
 			valueToValidate = secret.GetPlainText()
-			shouldValidate = true
 		case configv1.SecretValue_EnvironmentVariable_case:
 			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
-			shouldValidate = true
 		}
 
-		if shouldValidate && !re.MatchString(valueToValidate) {
+		if valueToValidate != "" && !re.MatchString(valueToValidate) {
 			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
 		}
 	}

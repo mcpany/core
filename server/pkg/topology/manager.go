@@ -9,16 +9,15 @@ import (
 	"sync"
 	"time"
 
-	topologyv1 "github.com/mcpany/core/proto/topology/v1"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
+	topologyv1 "github.com/mcpany/core/proto/topology/v1"
 )
 
 // Manager handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
-	trafficHistory  map[int64]int64 // Unix timestamp (minute) -> request count
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	toolManager     tool.ManagerInterface
 }
@@ -40,12 +39,6 @@ type Stats struct {
 	ErrorRate     float64
 }
 
-// TrafficPoint represents a data point for the traffic chart.
-type TrafficPoint struct {
-	Time  string `json:"time"`
-	Total int64  `json:"total"`
-}
-
 // NewManager creates a new Topology Manager.
 //
 // registry is the registry.
@@ -55,7 +48,6 @@ type TrafficPoint struct {
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	return &Manager{
 		sessions:        make(map[string]*SessionStats),
-		trafficHistory:  make(map[int64]int64),
 		serviceRegistry: registry,
 		toolManager:     tm,
 	}
@@ -89,20 +81,6 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 	if isError {
 		m.sessions[sessionID].ErrorCount++
 	}
-
-	// Record traffic history
-	now := time.Now().Truncate(time.Minute).Unix()
-	m.trafficHistory[now]++
-
-	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
-	if m.sessions[sessionID].RequestCount%100 == 0 {
-		cutoff := time.Now().Add(-24 * time.Hour).Unix()
-		for t := range m.trafficHistory {
-			if t < cutoff {
-				delete(m.trafficHistory, t)
-			}
-		}
-	}
 }
 
 // GetStats returns the aggregated stats.
@@ -133,35 +111,6 @@ func (m *Manager) GetStats() Stats {
 		AvgLatency:    avgLatency,
 		ErrorRate:     errorRate,
 	}
-}
-
-// GetTrafficHistory returns the traffic history for the last 24 hours.
-func (m *Manager) GetTrafficHistory() []TrafficPoint {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-
-	points := make([]TrafficPoint, 0, 24)
-	now := time.Now()
-
-	// Generate points for the last 24 hours (hourly info for now to match UI chart expectation which seemed to be hourly?)
-	// The mock data was 24 points (00:00 to 23:00).
-	// Let's generate 24 points for the last 24 hours.
-	for i := 23; i >= 0; i-- {
-		t := now.Add(time.Duration(-i) * time.Hour).Truncate(time.Hour)
-
-		// Sum up minutes within this hour
-		var total int64
-		for minIdx := 0; minIdx < 60; minIdx++ {
-			minuteKey := t.Add(time.Duration(minIdx) * time.Minute).Unix()
-			total += m.trafficHistory[minuteKey]
-		}
-
-		points = append(points, TrafficPoint{
-			Time:  t.Format("15:04"), // HH:MM
-			Total: total,
-		})
-	}
-	return points
 }
 
 // GetGraph generates the current topology graph.

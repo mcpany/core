@@ -1249,7 +1249,7 @@ func TestHandleAuditExport(t *testing.T) {
 	app.standardMiddlewares.Audit = audit
 	defer audit.Close()
 
-	req, _ := http.NewRequest("GET", "/audit/export?tool_name=tool-1", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/audit/export?tool_name=tool-1", nil)
 	rr := httptest.NewRecorder()
 	mux := app.createAPIHandler(app.Storage)
 	mux.ServeHTTP(rr, req)
@@ -1327,11 +1327,87 @@ func TestHandleUploadSkillAsset(t *testing.T) {
 	}
 	sm.CreateSkill(testSkill)
 
-	t.Run("Valid Upload", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/api/v1/skills/test-skill/assets?path=scripts/test.py", bytes.NewReader([]byte("print('hello')")))
+	tests := []struct {
+		name           string
+		method         string
+		url            string
+		body           string
+		expectedStatus int
+	}{
+		{
+			name:           "Valid upload via /v1/ prefix",
+			method:         http.MethodPost,
+			url:            "/v1/skills/test-skill/assets?path=script.py",
+			body:           "print('hello')",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Valid upload via /api/v1/ prefix",
+			method:         http.MethodPost,
+			url:            "/api/v1/skills/test-skill/assets?path=data.json",
+			body:           "{}",
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Invalid Method",
+			method:         http.MethodGet,
+			url:            "/v1/skills/test-skill/assets?path=script.py",
+			expectedStatus: http.StatusMethodNotAllowed,
+		},
+		{
+			name:           "Missing Path Param",
+			method:         http.MethodPost,
+			url:            "/v1/skills/test-skill/assets",
+			body:           "data",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid URL Format (Short)",
+			method:         http.MethodPost,
+			url:            "/v1/skills/assets",
+			body:           "data",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Invalid URL Format (Wrong Segment)",
+			method:         http.MethodPost,
+			url:            "/v1/other/test-skill/assets?path=foo",
+			body:           "data",
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name:           "Unknown Skill",
+			method:         http.MethodPost,
+			url:            "/v1/skills/unknown-skill/assets?path=foo",
+			body:           "data",
+			expectedStatus: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.url, strings.NewReader(tc.body))
+			w := httptest.NewRecorder()
+			app.handleUploadSkillAsset().ServeHTTP(w, req)
+			assert.Equal(t, tc.expectedStatus, w.Code)
+		})
+	}
+
+	t.Run("Large Body Limit", func(t *testing.T) {
+		// 25MB + 1 byte
+		size := 25*1024*1024 + 1
+		// Use a fixed byte slice to avoid allocating 25MB string
+		// However, bytes.NewReader still needs the slice.
+		// For test speed/memory, we might want to mock the reader?
+		// But MaxBytesReader wraps the request Body.
+		// We can use a custom reader that returns 'a' indefinitely up to size.
+		// But generating 25MB is fast enough in Go.
+		largeBody := bytes.NewReader(make([]byte, size))
+
+		req := httptest.NewRequest(http.MethodPost, "/v1/skills/test-skill/assets?path=large.txt", largeBody)
 		w := httptest.NewRecorder()
 		app.handleUploadSkillAsset().ServeHTTP(w, req)
-		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, http.StatusRequestEntityTooLarge, w.Code)
 	})
 }
 
@@ -1762,15 +1838,7 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-	errChan <- app.Run(RunOptions{
-			Ctx:             ctx,
-			Fs:              fs,
-			Stdio:           false,
-			JSONRPCPort:     fmt.Sprintf("127.0.0.1:%d", httpPort),
-			GRPCPort:        "127.0.0.1:0",
-			ConfigPaths:     []string{"/config.yaml"},
-			ShutdownTimeout: 5 * time.Second,
-		})
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))

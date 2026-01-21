@@ -95,15 +95,7 @@ global_settings:
 		// Mock filesystem with our config
 		fs := afero.NewOsFs()
 		// Use 127.0.0.1:0 to let OS choose free ports and avoid dual-stack flakes
-		err := appRunner.Run(app.RunOptions{
-			Ctx:             ctx,
-			Fs:              fs,
-			Stdio:           false,
-			JSONRPCPort:     "127.0.0.1:0",
-			GRPCPort:        "127.0.0.1:0",
-			ConfigPaths:     []string{tmpFile.Name()},
-			ShutdownTimeout: 5 * time.Second,
-		})
+		err := appRunner.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{tmpFile.Name()}, "", 5*time.Second)
 		if err != nil && err != context.Canceled {
 			t.Logf("Application run error: %v", err)
 		}
