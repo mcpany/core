@@ -111,7 +111,7 @@ func NewGrpcPool(
 		return client.NewGrpcClientWrapper(conn, config, checker), nil
 	}
 
-	p, err := pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
+	p, err := pool.New(factory, minSize, maxSize, maxSize, idleTimeout, disableHealthCheck)
 	if err != nil {
 		// Ensure checker is stopped if pool creation fails
 		checker.Stop()

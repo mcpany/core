@@ -544,27 +544,24 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
+	// ⚡ Bolt Optimization: Pre-allocate labels to avoid repeated allocations in metrics calls
+	metricLabels := []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
-	})
+	}
+
+	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, metricLabels)
 	startTime := time.Now()
 	defer func() {
 		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
 		// MeasureSince emits in milliseconds.
 		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
+		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, metricLabels)
 	}()
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
+		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, metricLabels)
 	}
 	if logger.Enabled(ctx, slog.LevelInfo) {
 		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
@@ -586,17 +583,18 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	if resultMap, ok := result.(map[string]any); ok {
+		// ⚡ Bolt Optimization: Try fast path conversion first to avoid double map lookups.
+		// If successful, we skip the heuristic checks.
+		if res, err := convertMapToCallToolResult(resultMap); err == nil {
+			return res, nil
+		}
+
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
-		// try to parse it as such.
+		// try to parse it as such using JSON fallback.
 		_, hasContent := resultMap["content"]
 		_, hasIsError := resultMap["isError"]
 
 		if hasContent || hasIsError {
-			// ⚡ Bolt Optimization: Try fast path conversion first to avoid JSON roundtrip
-			if res, err := convertMapToCallToolResult(resultMap); err == nil {
-				return res, nil
-			}
-
 			// Convert map to CallToolResult via JSON
 			jsonBytes, marshalErr = json.Marshal(resultMap)
 			if marshalErr != nil {
