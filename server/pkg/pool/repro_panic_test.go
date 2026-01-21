@@ -18,8 +18,8 @@ func TestPool_PanicInFactory(t *testing.T) {
 		panic("factory panic")
 	}
 
-	// We use minSize=0 to start empty.
-	p, err := New(factory, 0, 1, 0, false)
+	// We use initial=0. Unbuffered.
+	p, err := New(factory, 0, 0, 1, 0, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
 
@@ -27,18 +27,6 @@ func TestPool_PanicInFactory(t *testing.T) {
 	assert.Panics(t, func() {
 		_, _ = p.Get(context.Background())
 	})
-
-	// The permit acquired before factory call should be released.
-	// If not released, subsequent Get calls (with a non-panicking factory if we could switch it,
-	// or simply checking if we can acquire permit) will fail/block if maxSize=1.
-
-	// Since we can't change the factory of the existing pool instance easily to verify
-	// if permit is available, we can try to access the semaphore directly via reflection or unsafe,
-	// OR we can check if the pool is "stuck" by making a new request that should work if permit is available.
-	// But the factory is baked in and panics.
-
-	// So this test setup is tricky.
-	// We need a factory that panics ONCE, then works.
 }
 
 func TestPool_PanicInFactory_Recover(t *testing.T) {
@@ -51,7 +39,8 @@ func TestPool_PanicInFactory_Recover(t *testing.T) {
 		return &mockClient{isHealthy: true}, nil
 	}
 
-	p, err := New(factory, 0, 1, 0, false)
+	// initial=0. Unbuffered.
+	p, err := New(factory, 0, 0, 1, 0, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
 
@@ -59,12 +48,6 @@ func TestPool_PanicInFactory_Recover(t *testing.T) {
 	assert.Panics(t, func() {
 		_, _ = p.Get(context.Background())
 	})
-
-	// Second Get should succeed if permit was released.
-	// If permit was leaked, the pool (maxSize=1) thinks it's full.
-	// Since channel is empty, it will try to create new, but TryAcquire(1) will fail.
-	// Then it waits on channel (which is empty).
-	// So it blocks forever.
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
@@ -87,7 +70,7 @@ func TestPool_PanicInIsHealthy(t *testing.T) {
 		return &mockClient{isHealthy: true}, nil // Initially healthy-ish
 	}
 
-	p, err := New(factory, 0, 1, 0, false)
+	p, err := New(factory, 0, 0, 1, 0, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
 
@@ -97,11 +80,6 @@ func TestPool_PanicInIsHealthy(t *testing.T) {
 
 	// Put it back.
 	p.Put(c)
-
-	// Now we hack the client to panic on IsHealthy (which is called by Get when retrieving from pool)
-	// We can't easily change the behavior of existing struct instance if it's not designed for it.
-	// But our mockClient has `isHealthy` bool. It doesn't have a hook.
-	// We need a new mock client that panics.
 }
 
 type panicMockClient struct {
@@ -121,8 +99,9 @@ func TestPool_PanicInIsHealthy_Recover(t *testing.T) {
 		return &panicMockClient{mockClient: mockClient{isHealthy: true}}, nil
 	}
 
-	// maxSize=1
-	p, err := New(factory, 0, 1, 0, false)
+	// maxSize=1. Use maxIdleSize=1 to allow buffering.
+	// Initial=1.
+	p, err := New(factory, 1, 1, 1, 0, false)
 	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
 
@@ -139,11 +118,6 @@ func TestPool_PanicInIsHealthy_Recover(t *testing.T) {
 	assert.Panics(t, func() {
 		_, _ = p.Get(context.Background())
 	})
-
-	// If permit leaked, pool thinks it's full (permit held for the client that caused panic).
-	// Channel is empty (client was taken out).
-	// TryAcquire fails.
-	// Waits on channel forever.
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
