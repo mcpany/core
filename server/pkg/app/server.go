@@ -123,8 +123,6 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-
-
 // RunOptions defines the options for running the application.
 type RunOptions struct {
 	Ctx             context.Context
@@ -1323,8 +1321,6 @@ func (a *Application) runServerMode(
 	localCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-
-
 	errChan := make(chan error, 2)
 	readyChan := make(chan struct{}, 2)
 	expectedReady := 0
@@ -1907,7 +1903,6 @@ func (a *Application) runServerMode(
 	})))
 
 	var httpLis net.Listener
-
 
 	if tlsCert != "" && tlsKey != "" {
 		cert, err := tls.LoadX509KeyPair(tlsCert, tlsKey)
