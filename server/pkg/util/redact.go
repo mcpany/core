@@ -275,6 +275,36 @@ func IsSensitiveKey(key string) bool {
 	return scanForSensitiveKeys(unsafe.Slice(unsafe.StringData(key), len(key)), false)
 }
 
+// scanForSensitiveKeysWithEscapeCheck checks if input contains any sensitive key.
+// It also returns whether a backslash was found, to trigger unescaping if needed.
+// This allows avoiding a separate bytes.Contains pass.
+func scanForSensitiveKeysWithEscapeCheck(input []byte) (sensitive bool, hasEscape bool) {
+	// Optimization: For short strings, iterate manually to check both sensitive start chars and backslashes.
+	if len(input) < 128 {
+		hasEscape = false
+		for i := 0; i < len(input); i++ {
+			c := input[i]
+			if c == '\\' {
+				hasEscape = true
+			}
+			if sensitiveStartCharBitmap[c] {
+				startChar := c | 0x20 // Normalize to lowercase
+				if checkPotentialMatch(input, i, startChar) {
+					return true, hasEscape
+				}
+			}
+		}
+		return false, hasEscape
+	}
+
+	// For long strings, fallback to separate checks as IndexAny is much faster
+	// and we can't easily combine checks without losing SIMD benefits.
+	// Use bytes.IndexByte for backslash is fast.
+	hasEscape = bytes.IndexByte(input, '\\') != -1
+	sensitive = scanForSensitiveKeys(input, false)
+	return sensitive, hasEscape
+}
+
 // scanForSensitiveKeys checks if input contains any sensitive key.
 // If validateKeyContext is true, it checks if the match is followed by a closing quote and a colon.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan

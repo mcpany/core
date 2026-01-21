@@ -378,61 +378,65 @@ func skipLiteral(input []byte, start int) int {
 
 func isKeySensitive(keyContent []byte) bool {
 	var keyToCheck []byte
-	var sensitive bool
+
+	// ⚡ Bolt Optimization: Combine sensitive key check and escape sequence check.
+	// This avoids a separate pass (bytes.Contains) to check for backslashes in the common case (clean keys).
+	sensitive, hasEscape := scanForSensitiveKeysWithEscapeCheck(keyContent)
+	if sensitive {
+		return true
+	}
+
+	if !hasEscape {
+		// Clean key, and not sensitive. Done.
+		return false
+	}
+
+	// Key contains escape sequences, unescape it to check for sensitivity.
+	// This is slower but safer.
 
 	// Stack buffer for unescaping small keys
 	var stackBuf [unescapeStackLimit]byte
 
-	if bytes.Contains(keyContent, []byte{'\\'}) {
-		// Key contains escape sequences, unescape it to check for sensitivity.
-		// This is slower but safer.
+	switch {
+	case len(keyContent) > maxUnescapeLimit:
+		// Use streaming/chunked scan for huge keys to avoid allocation
+		if scanEscapedKeyForSensitive(keyContent) {
+			sensitive = true
+		} else {
+			keyToCheck = keyContent
+		}
+	case len(keyContent) < unescapeStackLimit:
+		// Optimization: use stack buffer for small keys
+		if unescaped, ok := unescapeKeySmall(keyContent, stackBuf[:]); ok {
+			keyToCheck = unescaped
+		} else {
+			// Fallback if unescape failed (e.g. malformed or weird escape)
+			keyToCheck = keyContent
+		}
+	default:
+		// Allocation path for medium keys
+		quoted := make([]byte, len(keyContent)+2)
+		quoted[0] = '"'
+		copy(quoted[1:], keyContent)
+		quoted[len(quoted)-1] = '"'
 
-		switch {
-		case len(keyContent) > maxUnescapeLimit:
-			// Use streaming/chunked scan for huge keys to avoid allocation
+		var unescaped string
+		if err := json.Unmarshal(quoted, &unescaped); err == nil {
+			keyToCheck = []byte(unescaped)
+		} else {
+			// Fallback to loose scanning if unmarshal fails (e.g. due to invalid escapes)
+			// We use scanEscapedKeyForSensitive which handles invalid escapes gracefully
+			// by treating them as literals, which is safer than raw content comparison
+			// because scanForSensitiveKeys does not handle escapes.
 			if scanEscapedKeyForSensitive(keyContent) {
 				sensitive = true
 			} else {
+				// Still set keyToCheck for the final raw scan, just in case
 				keyToCheck = keyContent
-			}
-		case len(keyContent) < unescapeStackLimit:
-			// Optimization: use stack buffer for small keys
-			if unescaped, ok := unescapeKeySmall(keyContent, stackBuf[:]); ok {
-				keyToCheck = unescaped
-			} else {
-				// Fallback if unescape failed (e.g. malformed or weird escape)
-				keyToCheck = keyContent
-			}
-		default:
-			// Allocation path for medium keys
-			quoted := make([]byte, len(keyContent)+2)
-			quoted[0] = '"'
-			copy(quoted[1:], keyContent)
-			quoted[len(quoted)-1] = '"'
-
-			var unescaped string
-			if err := json.Unmarshal(quoted, &unescaped); err == nil {
-				keyToCheck = []byte(unescaped)
-			} else {
-				// Fallback to loose scanning if unmarshal fails (e.g. due to invalid escapes)
-				// We use scanEscapedKeyForSensitive which handles invalid escapes gracefully
-				// by treating them as literals, which is safer than raw content comparison
-				// because scanForSensitiveKeys does not handle escapes.
-				if scanEscapedKeyForSensitive(keyContent) {
-					sensitive = true
-				} else {
-					// Still set keyToCheck for the final raw scan, just in case
-					keyToCheck = keyContent
-				}
 			}
 		}
-	} else {
-		keyToCheck = keyContent
 	}
 
-	// Optimization: We check the raw key content against sensitive keys.
-	// We only unescape if backslashes are detected, avoiding expensive json.Unmarshal calls for the common case.
-	// Note: scanForSensitiveKeys (used in the pre-check) also does not handle escapes.
 	if !sensitive {
 		sensitive = scanForSensitiveKeys(keyToCheck, false)
 	}
