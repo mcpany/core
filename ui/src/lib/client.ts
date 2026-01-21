@@ -454,7 +454,16 @@ export const apiClient = {
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
-        return res.json();
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.tools || []);
+        return {
+            tools: list.map((t: any) => ({
+                ...t,
+                serviceId: t.serviceId || t.service_id,
+                inputSchema: t.inputSchema || t.input_schema,
+                outputSchema: t.outputSchema || t.output_schema,
+            }))
+        };
     },
 
     /**

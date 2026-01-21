@@ -26,6 +26,15 @@ import { UpstreamServiceConfig } from "@/lib/client";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { useServiceHealth } from "@/contexts/service-health-context";
 import { Sparkline } from "@/components/charts/sparkline";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 
 interface ServiceListProps {
@@ -40,6 +49,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
+  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
 }
 
 /**
@@ -47,9 +57,11 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
+  const [bulkTags, setBulkTags] = useState("");
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -110,35 +122,38 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
             />
           </div>
 
-          {selected.size > 0 && (
-              <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
-                  {onBulkToggle && (
-                      <>
-                        <Button size="sm" variant="outline" onClick={() => {
-                            onBulkToggle(Array.from(selected), true);
-                            setSelected(new Set());
-                        }}>
-                            <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => {
-                            onBulkToggle(Array.from(selected), false);
-                            setSelected(new Set());
-                        }}>
-                            <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
-                        </Button>
-                      </>
-                  )}
-                  {onBulkDelete && (
-                      <Button size="sm" variant="destructive" onClick={() => {
-                          onBulkDelete(Array.from(selected));
-                          setSelected(new Set());
-                      }}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </Button>
-                  )}
-              </div>
-          )}
+                   {selected.size > 0 && (
+                       <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                           <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
+                           {onBulkToggle && (
+                               <>
+                                 <Button size="sm" variant="outline" onClick={() => {
+                                     onBulkToggle(Array.from(selected), true);
+                                     setSelected(new Set());
+                                 }}>
+                                     <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
+                                 </Button>
+                                 <Button size="sm" variant="outline" onClick={() => {
+                                     onBulkToggle(Array.from(selected), false);
+                                     setSelected(new Set());
+                                 }}>
+                                     <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
+                                 </Button>
+                               </>
+                           )}
+                           <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
+                               <Settings className="mr-2 h-4 w-4" /> Bulk Edit
+                           </Button>
+                           {onBulkDelete && (
+                               <Button size="sm" variant="destructive" onClick={() => {
+                                   onBulkDelete(Array.from(selected));
+                                   setSelected(new Set());
+                               }}>
+                                   <Trash2 className="mr-2 h-4 w-4" /> Delete
+                               </Button>
+                           )}
+                       </div>
+                   )}
       </div>
 
       <div className="rounded-md border">
@@ -189,6 +204,38 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
           </TableBody>
         </Table>
       </div>
+      <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Bulk Edit Services</DialogTitle>
+                <DialogDescription>
+                    Update {selected.size} selected services. Currently only supports updating tags.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
+                    <Input
+                        id="bulk-tags"
+                        placeholder="production, web, internal"
+                        value={bulkTags}
+                        onChange={(e) => setBulkTags(e.target.value)}
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
+                <Button onClick={() => {
+                    if (onBulkEdit) {
+                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
+                    }
+                    setIsBulkEditDialogOpen(false);
+                    setSelected(new Set());
+                    setBulkTags("");
+                }}>Apply Changes</Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
