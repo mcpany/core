@@ -95,7 +95,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 
 	resultMap, ok := result.(map[string]interface{})
 	assert.True(t, ok)
-	assert.Equal(t, "secret_value", resultMap["stdout"])
+	assert.Equal(t, "[REDACTED]", resultMap["stdout"])
 }
 
 func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {

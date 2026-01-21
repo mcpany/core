@@ -256,7 +256,7 @@ func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpC
 	poolManager := pool.NewManager()
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: http.DefaultClient}, nil
-	}, 1, 1, 0, true)
+	}, 1, 1, 1, 0, true)
 	require.NoError(t, err)
 	poolManager.Register("svc", p)
 

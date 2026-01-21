@@ -31,7 +31,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 0, true)
+		}, 1, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		methodAndURL := "GET " + server.URL + "/{{path}}"
@@ -66,7 +66,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 0, true)
+		}, 1, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		methodAndURL := "GET " + server.URL + "/{{path}}"
@@ -106,7 +106,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{}, nil
-		}, 1, 1, 0, true)
+		}, 1, 1, 1, 0, true)
 		require.NoError(t, err)
 		poolManager.Register("test-service", p)
 
@@ -125,7 +125,7 @@ func TestHTTPTool_ExtraCoverage(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 0, true)
+		}, 1, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		methodAndURL := "GET " + server.URL

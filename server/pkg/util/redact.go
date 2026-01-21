@@ -498,3 +498,32 @@ func RedactDSN(dsn string) string {
 
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
+
+// RedactSecrets replaces occurrences of secrets in text with [REDACTED].
+//
+// text is the input text.
+// secrets is a list of secret values to redact.
+//
+// Returns the redacted text.
+func RedactSecrets(text string, secrets []string) string {
+	if len(secrets) == 0 {
+		return text
+	}
+
+	// Sort secrets by length descending to avoid partial replacements (e.g. replacing "token" in "access_token")
+	// Create a copy to sort
+	sortedSecrets := make([]string, len(secrets))
+	copy(sortedSecrets, secrets)
+	sort.Slice(sortedSecrets, func(i, j int) bool {
+		return len(sortedSecrets[i]) > len(sortedSecrets[j])
+	})
+
+	for _, secret := range sortedSecrets {
+		if secret == "" || len(secret) < 3 {
+			// Avoid redacting very short strings which might be common words (unless we are extremely paranoid).
+			continue
+		}
+		text = strings.ReplaceAll(text, secret, redactedPlaceholder)
+	}
+	return text
+}

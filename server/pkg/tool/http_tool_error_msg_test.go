@@ -15,10 +15,10 @@ import (
 )
 
 func TestHTTPTool_Execute_ErrorMessagesWithBody(t *testing.T) {
-	t.Parallel()
+	// t.Parallel() // Cannot run parallel with t.Setenv
 
 	t.Run("400_bad_request_with_json_body", func(t *testing.T) {
-		t.Parallel()
+		// t.Parallel()
 		errorBody := `{"error": "Missing parameter 'q'"}`
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
@@ -35,7 +35,17 @@ func TestHTTPTool_Execute_ErrorMessagesWithBody(t *testing.T) {
 	})
 
 	t.Run("500_internal_error_with_text_body", func(t *testing.T) {
-		t.Parallel()
+		// Enable debug mode to allow seeing non-JSON error bodies
+		t.Setenv("MCPANY_DEBUG", "true")
+		// Cannot run parallel if we modify env (Wait, t.Setenv is safe for parallel tests? No, it affects process env)
+		// But t.Setenv documentation says "The environment variable is restored when the test and all its subtests complete."
+		// If t.Parallel() is called, it might run concurrently with other tests.
+		// However, I removed t.Parallel() for this subtest if I use t.Setenv?
+		// Actually, I should remove t.Parallel() if I use t.Setenv.
+		// But the parent test uses t.Parallel().
+		// If I use t.Setenv, it panics if Parallel is called.
+		// So I must remove t.Parallel() from this subtest.
+
 		errorBody := "Database connection failed"
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)

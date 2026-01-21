@@ -1785,12 +1785,15 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}
 	}
 
+	var secretsToRedact []string
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
 	for k, v := range resolvedServiceEnv {
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		secretsToRedact = append(secretsToRedact, v)
 	}
 
 	for _, param := range t.callDefinition.GetParameters() {
@@ -1801,6 +1804,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+			secretsToRedact = append(secretsToRedact, secretValue)
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
@@ -1906,9 +1910,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          stdoutBuf.String(),
-		"stderr":          stderrBuf.String(),
-		"combined_output": combinedBuf.String(),
+		"stdout":          util.RedactSecrets(stdoutBuf.String(), secretsToRedact),
+		"stderr":          util.RedactSecrets(stderrBuf.String(), secretsToRedact),
+		"combined_output": util.RedactSecrets(combinedBuf.String(), secretsToRedact),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
@@ -2086,12 +2090,15 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
+	var secretsToRedact []string
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
 	for k, v := range resolvedServiceEnv {
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
+		secretsToRedact = append(secretsToRedact, v)
 	}
 
 	if ce := t.service.GetContainerEnvironment(); ce != nil {
@@ -2101,6 +2108,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 		for k, v := range resolvedContainerEnv {
 			env = append(env, fmt.Sprintf("%s=%s", k, v))
+			secretsToRedact = append(secretsToRedact, v)
 		}
 	}
 
@@ -2112,6 +2120,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
+			secretsToRedact = append(secretsToRedact, secretValue)
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
 			if err := checkForPathTraversal(valStr); err != nil {
@@ -2217,9 +2226,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          stdoutBuf.String(),
-		"stderr":          stderrBuf.String(),
-		"combined_output": combinedBuf.String(),
+		"stdout":          util.RedactSecrets(stdoutBuf.String(), secretsToRedact),
+		"stderr":          util.RedactSecrets(stderrBuf.String(), secretsToRedact),
+		"combined_output": util.RedactSecrets(combinedBuf.String(), secretsToRedact),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
