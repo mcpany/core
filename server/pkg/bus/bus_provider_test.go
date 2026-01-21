@@ -32,7 +32,7 @@ func TestBusProvider_GetBus_InMemory(t *testing.T) {
 
 func TestBusProvider_GetBus_Redis(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "127.0.0.1:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		// t.Skip("Redis is not available")
@@ -40,7 +40,7 @@ func TestBusProvider_GetBus_Redis(t *testing.T) {
 
 	messageBus := &bus.MessageBus{}
 	redisBus := &bus.RedisBus{}
-	redisBus.SetAddress("localhost:6379")
+	redisBus.SetAddress("127.0.0.1:6379")
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)

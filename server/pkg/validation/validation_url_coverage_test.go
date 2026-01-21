@@ -7,8 +7,8 @@ import (
 	"net"
 	"testing"
 
-    configv1 "github.com/mcpany/core/proto/config/v1"
-    "github.com/samber/lo"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/samber/lo"
 )
 
 func TestIsPrivateIP_Coverage(t *testing.T) {
@@ -95,7 +95,7 @@ func TestIsPrivateIP_Coverage(t *testing.T) {
 			if ip == nil {
 				t.Fatalf("Invalid IP in test case: %s", tt.ipStr)
 			}
-			got := isPrivateIP(ip)
+			got := IsPrivateIP(ip)
 			if got != tt.isPrivate {
 				t.Errorf("isPrivateIP(%s) = %v, want %v", tt.ipStr, got, tt.isPrivate)
 			}
@@ -111,12 +111,12 @@ func TestIsNAT64_Coverage(t *testing.T) {
 	// 0064:ff9b:0000:0000:0000:0000 ...
 
 	ip := net.ParseIP("64:ff9b::1.2.3.4")
-	if !isNAT64(ip) {
+	if !IsNAT64(ip) {
 		t.Errorf("Expected 64:ff9b::1.2.3.4 to be NAT64")
 	}
 
 	ip = net.ParseIP("2001::1")
-	if isNAT64(ip) {
+	if IsNAT64(ip) {
 		t.Errorf("Expected 2001::1 NOT to be NAT64")
 	}
 }
@@ -124,12 +124,12 @@ func TestIsNAT64_Coverage(t *testing.T) {
 func TestIsIPv4Compatible_Coverage(t *testing.T) {
 	ip := net.ParseIP("::1.2.3.4") // IPv4 compatible
 	// net.ParseIP for "::1.2.3.4" returns 16 bytes.
-	if !isIPv4Compatible(ip) {
+	if !IsIPv4Compatible(ip) {
 		t.Errorf("Expected ::1.2.3.4 to be IPv4 compatible")
 	}
 
 	ip = net.ParseIP("::1") // Loopback
-	if !isIPv4Compatible(ip) {
+	if !IsIPv4Compatible(ip) {
 		// loopback ::1 is 0...01, which technically matches the prefix of 96 zero bits
 		t.Errorf("Expected ::1 to be detected as IPv4 compatible form (96 zero bits)")
 	}

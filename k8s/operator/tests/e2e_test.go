@@ -160,7 +160,11 @@ nodes:
 	// Run Playwright tests
 	// We assume 'npx' is available and we are in the root or can find ui dir
 	uiDir := filepath.Join(rootDir, "ui")
-	playwrightArgs := []string{"test", "--workers=1"}
+	workers := "4"
+	if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
+		workers = w
+	}
+	playwrightArgs := []string{"test", "--workers=" + workers}
 	if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
 		playwrightArgs = append(playwrightArgs, "--grep", grep)
 	}

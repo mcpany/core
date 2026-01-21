@@ -22,7 +22,6 @@ func TestUpstreamService_Stripe(t *testing.T) {
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Stripe Server...")
-	t.Parallel()
 
 	// --- Mock Stripe API Server ---
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +36,8 @@ func TestUpstreamService_Stripe(t *testing.T) {
 	defer mockServer.Close()
 
 	// --- 1. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EStripeServerTest", "--config-path", "../../../../examples/popular_services/stripe", "--set", "upstream[0].http.address="+mockServer.URL)
+	t.Setenv("STRIPE_API_KEY", "test_key")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EStripeServerTest", "--config-path", "../../../../examples/popular_services/stripe", "--set", "upstream_services[0].openapi_service.address="+mockServer.URL)
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 2. Call Tool via MCPANY ---

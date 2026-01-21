@@ -690,15 +690,6 @@ func (tm *Manager) AddTool(tool Tool) error {
 			}
 		}
 
-		if tool.Tool().GetOutputSchema() != nil {
-			b, err := tool.Tool().GetOutputSchema().MarshalJSON()
-			if err != nil {
-				return fmt.Errorf("failed to marshal output schema: %w", err)
-			}
-			if err := json.Unmarshal(b, &mcpTool.OutputSchema); err != nil {
-				return fmt.Errorf("failed to unmarshal output schema: %w", err)
-			}
-		}
 
 		log.Info(
 			"Registering tool with MCP server",

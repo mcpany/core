@@ -57,4 +57,11 @@ message ToolDefinition {
   }
   MergeStrategy merge_strategy = 15 [json_name = "merge_strategy"];
   repeated string tags = 16;
+  // Integrity check for the tool definition.
+  Integrity integrity = 17;
+}
+
+message Integrity {
+  string hash = 1;
+  string algorithm = 2; // e.g. "sha256"
 }

@@ -81,7 +81,7 @@ func TestOAuthFlow_Complete(t *testing.T) {
 	// 4. Initiate OAuth Flow via RegistrationServer
 	initReq := &v1.InitiateOAuth2FlowRequest{
 		CredentialId: credID,
-		RedirectUrl:  "http://localhost:3000/callback",
+		RedirectUrl:  "http://127.0.0.1:3000/callback",
 	}
 
 	initResp, err := regServer.InitiateOAuth2Flow(ctx, initReq)
@@ -98,7 +98,7 @@ func TestOAuthFlow_Complete(t *testing.T) {
 	// 5. Simulate Callback (skip actual HTTP redirection)
 	// We manually call AuthManager.HandleOAuthCallback with a mock code
 	mockCode := "mock_auth_code"
-	err = authManager.HandleOAuthCallback(ctx, userID, "", credID, mockCode, "http://localhost:3000/callback")
+	err = authManager.HandleOAuthCallback(ctx, userID, "", credID, mockCode, "http://127.0.0.1:3000/callback")
 	require.NoError(t, err)
 
 	// 6. Verify Token was saved to Credential

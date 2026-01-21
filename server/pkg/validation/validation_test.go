@@ -25,7 +25,7 @@ func TestIsValidURL(t *testing.T) {
 		{"valid http", "http://example.com", true},
 		{"valid https", "https://example.com/path?query=value#fragment", true},
 		{"valid ftp", "ftp://user:pass@example.com/resource", true},
-		{"valid localhost http", "http://localhost:8080", true},
+		{"valid 127.0.0.1 http", "http://127.0.0.1:8080", true},
 		{"valid ip address http", "http://127.0.0.1/test", true},
 		{"valid dns scheme simple", "dns:example.com", true},
 		{"valid dns scheme full", "dns:///resolver.example.com/example.com", true},   // Host is "resolver.example.com"
@@ -59,8 +59,8 @@ func TestIsValidURL(t *testing.T) {
 		{"dns scheme malformed (empty opaque/path)", "dns:", false},
 
 		// Specific gRPC target cases
-		{"grpc target no scheme", "localhost:50051", false},                       // Invalid: No scheme
-		{"grpc target with scheme", "grpc://localhost:50051", true},               // Valid: Has scheme and host
+		{"grpc target no scheme", "127.0.0.1:50051", false},                       // Invalid: No scheme
+		{"grpc target with scheme", "grpc://127.0.0.1:50051", true},               // Valid: Has scheme and host
 		{"dns target for grpc", "dns:resolver.example.com/service", true},         // Valid: dns scheme with opaque part
 		{"dns target for grpc full", "dns:///resolver.example.com/service", true}, // Valid: dns scheme with host and path
 		{"unix target for grpc", "unix:/var/run/service.sock", true},              // Valid: unix scheme with path
@@ -85,17 +85,17 @@ func TestIsValidBindAddress(t *testing.T) {
 		address string
 		wantErr bool
 	}{
-		{"valid", "localhost:8080", false},
-		{"no port", "localhost", true},
+		{"valid", "127.0.0.1:8080", false},
+		{"no port", "127.0.0.1", true},
 		{"no host", ":8080", false},
 		{"empty", "", true},
 		{"just colon", ":", true},
-		{"multiple colons", "localhost:8080:8080", true},
+		{"multiple colons", "127.0.0.1:8080:8080", true},
 		{"ipv6", "[::1]:8080", false},
 		{"port only", "50050", false},
-		{"invalid port negative", "localhost:-1", true},
+		{"invalid port negative", "127.0.0.1:-1", true},
 		{"invalid port negative only", "-1", true},
-		{"invalid port too large", "localhost:65536", true},
+		{"invalid port too large", "127.0.0.1:65536", true},
 		{"invalid port too large only", "65536", true},
 	}
 

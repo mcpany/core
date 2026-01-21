@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -24,15 +25,19 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -40,6 +45,7 @@ import (
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestReloadConfig(t *testing.T) {
@@ -62,7 +68,7 @@ func TestReloadConfig(t *testing.T) {
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -108,7 +114,7 @@ upstream_services:
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -234,12 +240,12 @@ func (b *ThreadSafeBuffer) String() string {
 
 func TestHealthCheck(t *testing.T) {
 	t.Run("health check against specific IP address", func(t *testing.T) {
-		// This test is designed to fail if 'localhost' resolves to an IP
+		// This test is designed to fail if '127.0.0.1' resolves to an IP
 		// address that the server is not listening on. For example, on an
-		// IPv6-enabled system, 'localhost' might resolve to '::1', but our
+		// IPv6-enabled system, '127.0.0.1' might resolve to '::1', but our
 		// test server below is explicitly listening on the IPv4 loopback
 		// '127.0.0.1'. The HealthCheck function, as written, assumes
-		// 'localhost', which makes it fragile.
+		// '127.0.0.1', which makes it fragile.
 
 		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -306,7 +312,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("failed health check with connection error", func(t *testing.T) {
 		// Find a free port, then close it, to ensure it's not listening
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
 		_ = l.Close()
@@ -365,7 +371,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("connection is reused", func(t *testing.T) {
 		// Set up a listener that can count the number of connections.
-		rawLis, err := net.Listen("tcp", "localhost:0")
+		rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		countingLis := &connCountingListener{Listener: rawLis}
 
@@ -397,7 +403,7 @@ func TestHealthCheck(t *testing.T) {
 
 	t.Run("connection is reused across multiple health checks", func(t *testing.T) {
 		// Set up a listener that can count the number of connections.
-		rawLis, err := net.Listen("tcp", "localhost:0")
+		rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		countingLis := &connCountingListener{Listener: rawLis}
 
@@ -445,7 +451,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("failed health check does not write to writer", func(t *testing.T) {
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
 		_ = l.Close()
@@ -558,7 +564,7 @@ func TestRun_ServerMode(t *testing.T) {
 upstream_services:
   - name: "test-http-service"
     http_service:
-      address: "http://localhost:8080"
+      address: "http://127.0.0.1:8080"
       tools:
         - name: "echo"
           call_id: "echo_call"
@@ -577,7 +583,7 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -604,7 +610,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	app.Storage = mockStore
 
 	// Should return error, as we are now strict about config errors during startup
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "malformed yaml")
 }
@@ -623,7 +629,7 @@ func TestRun_BusProviderError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
@@ -640,7 +646,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.NoError(t, err)
 }
 
@@ -659,7 +665,7 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, "", 5*time.Second)
+	err := app.Run(ctx, fs, true, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 	assert.EqualError(t, err, "stdio mode error")
@@ -673,7 +679,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
 	}()
 
 	err := <-errChan
@@ -700,7 +706,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 
 	t.Run("http_server_fail", func(t *testing.T) {
 		// Find a free port and occupy it
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		defer func() { _ = l.Close() }()
 		port := l.Addr().(*net.TCPAddr).Port
@@ -717,7 +723,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 
 	t.Run("grpc_server_fail", func(t *testing.T) {
 		// Find a free port and occupy it
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		defer func() { _ = l.Close() }()
 		port := l.Addr().(*net.TCPAddr).Port
@@ -739,7 +745,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	logging.Init(slog.LevelInfo, &buf)
 
 	// Occupy a port to ensure the HTTP server fails to start.
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = l.Close() }()
 	httpPort := l.Addr().(*net.TCPAddr).Port
@@ -749,7 +755,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	runErr := app.Run(ctx, fs, false, fmt.Sprintf("localhost:%d", httpPort), "localhost:0", nil, "", 1*time.Second)
+	runErr := app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", nil, "", 1*time.Second)
 
 	require.Error(t, runErr, "app.Run should return an error")
 	assert.Contains(t, runErr.Error(), "failed to start a server", "The error should indicate a server startup failure.")
@@ -766,9 +772,9 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 }
 
 func TestRun_DefaultBindAddress(t *testing.T) {
-	// Set the environment variable to use a dynamic port (localhost:0) as default
+	// Set the environment variable to use a dynamic port (127.0.0.1:0) as default
 	// This avoids "address already in use" errors when 8070 is occupied.
-	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "localhost:0")
+	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "127.0.0.1:0")
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -779,19 +785,19 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 
 	go func() {
 		// Run with empty jsonrpcPort. gRPC is on an ephemeral port.
-		// Because we set MCPANY_DEFAULT_HTTP_ADDR="localhost:0", empty string means localhost:0
-		errChan <- app.Run(ctx, fs, false, "", "localhost:0", nil, "", 5*time.Second)
+		// Because we set MCPANY_DEFAULT_HTTP_ADDR="127.0.0.1:0", empty string means 127.0.0.1:0
+		errChan <- app.Run(ctx, fs, false, "", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
 	// Wait for the server to start up and bind
 	err := app.WaitForStartup(ctx)
 	require.NoError(t, err, "failed to wait for startup")
 
-	port := app.BoundHTTPPort
+	port := int(app.BoundHTTPPort.Load())
 	require.NotZero(t, port, "BoundHTTPPort should be set after startup")
 
 	// Verify we can dial the assigned port
-	defaultAddr := fmt.Sprintf("localhost:%d", port)
+	defaultAddr := fmt.Sprintf("127.0.0.1:%d", port)
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", defaultAddr, 100*time.Millisecond)
 		if err == nil {
@@ -799,7 +805,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "server should be dialable on port %d", port)
+	}, 2*time.Second, 100*time.Millisecond, "server should be dialable on port %d", int(app.BoundHTTPPort.Load()))
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
@@ -829,18 +835,18 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 
 	go func() {
 		// Run with "127.0.0.1:0" to use loopback ephemeral port
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "127.0.0.1:0", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
 	// Wait for the server to start up and bind
 	err := app.WaitForStartup(ctx)
 	require.NoError(t, err, "failed to wait for startup")
 
-	port := app.BoundGRPCPort
+	port := int(app.BoundGRPCPort.Load())
 	require.NotZero(t, port, "BoundGRPCPort should be set after startup")
 
 	// Verify we can connect
-	grpcAddr := fmt.Sprintf("localhost:%d", port)
+	grpcAddr := fmt.Sprintf("127.0.0.1:%d", port)
 	require.Eventually(t, func() bool {
 		conn, err := net.DialTimeout("tcp", grpcAddr, 100*time.Millisecond)
 		if err == nil {
@@ -848,7 +854,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "gRPC server should be dialable on port %d", port)
+	}, 2*time.Second, 100*time.Millisecond, "gRPC server should be dialable on port %d", int(app.BoundGRPCPort.Load()))
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
@@ -903,7 +909,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 1*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
 	}()
 
 	// Give the servers a moment to start up.
@@ -927,7 +933,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 
 func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
@@ -939,7 +945,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC", lis, 5*time.Second, srv)
@@ -962,7 +968,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 
 	// After shutdown, attempt to listen on the same port again.
 	// If the original listener was properly closed, this should succeed.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down.")
 	if lis != nil {
 		_ = lis.Close()
@@ -982,7 +988,7 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, "", 1*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 1*time.Second)
 	}()
 
 	err := <-errChan
@@ -992,7 +998,7 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	t.Log(logs)
 	assert.Contains(t, logs, "HTTP server listening", "Should log HTTP server startup.")
 	assert.Contains(t, logs, "gRPC server listening", "Should log gRPC server startup.")
-	assert.NotContains(t, logs, "port:localhost:0", "Should not log the configured port '0'.")
+	assert.NotContains(t, logs, "port:127.0.0.1:0", "Should not log the configured port '0'.")
 }
 
 func TestGRPCServer_FastShutdownRace(t *testing.T) {
@@ -1000,7 +1006,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 	// We run it multiple times to increase the chance of catching it.
 	for i := 0; i < 20; i++ {
 		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
-			lis, err := net.Listen("tcp", "localhost:0")
+			lis, err := net.Listen("tcp", "127.0.0.1:0")
 			require.NoError(t, err)
 			port := lis.Addr().(*net.TCPAddr).Port
 			_ = lis.Close() // Close immediately, we just needed a free port.
@@ -1009,7 +1015,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 			errChan := make(chan error, 2)
 			var wg sync.WaitGroup
 
-			raceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			raceLis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 			require.NoError(t, err)
 			srv := gogrpc.NewServer()
 			startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_Race", raceLis, 5*time.Second, srv)
@@ -1032,7 +1038,7 @@ func TestGRPCServer_FastShutdownRace(t *testing.T) {
 
 func TestHTTPServer_GoroutineTerminatesOnError(t *testing.T) {
 	// Create a listener and close it immediately to force a Serve error
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	_ = l.Close()
 
@@ -1061,7 +1067,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	// This test verifies that the HTTP server's graceful shutdown waits for
 	// the timeout duration when a request hangs.
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 
@@ -1082,7 +1088,7 @@ func TestHTTPServer_ShutdownTimesOut(t *testing.T) {
 	time.Sleep(50 * time.Millisecond) // give server time to start
 
 	go func() {
-		resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
+		resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d", port))
 		if err == nil {
 			_ = resp.Body.Close()
 		}
@@ -1123,7 +1129,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	// and this test will PASS.
 
 	// Find a free port.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	_ = lis.Close()
@@ -1133,7 +1139,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a service that will hang.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	hangService := &mockHangService{hangTime: 5 * time.Second}
@@ -1159,7 +1165,7 @@ func TestGRPCServer_GracefulShutdownHangs(t *testing.T) {
 
 	// Make a call to the hanging RPC in a separate goroutine.
 	go func() {
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
@@ -1202,7 +1208,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	// indefinitely.
 
 	// Find a free port to run the test server on.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	_ = lis.Close()
@@ -1212,7 +1218,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server with a mock service that hangs.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -1238,7 +1244,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			// If we can't connect, there's no point in continuing the test.
 			t.Logf("Failed to dial gRPC server: %v", err)
@@ -1274,7 +1280,7 @@ func TestGRPCServer_GracefulShutdownWithTimeout(t *testing.T) {
 func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
-	rawlis, err := net.Listen("tcp", "localhost:0")
+	rawlis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	countinglis := &mockCloseCountingListener{Listener: rawlis}
 
@@ -1309,7 +1315,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
 		port := countinglis.Addr().(*net.TCPAddr).Port
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
@@ -1330,7 +1336,7 @@ func TestGRPCServer_NoDoubleClickOnForceShutdown(t *testing.T) {
 
 func TestHTTPServer_HangOnListenError(t *testing.T) {
 	// Create a listener and close it to simulate error during Serve (since we passed Listen phase)
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	_ = l.Close()
 
@@ -1384,7 +1390,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "localhost:0", "localhost:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
 	}()
 
 	// Allow some time for the servers to start up
@@ -1416,7 +1422,7 @@ func TestRunStdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "localhost:0", "localhost:0", nil, "", 5*time.Second)
+	err := app.Run(ctx, fs, true, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 
 	assert.True(t, called, "runStdioMode should have been called")
 	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
@@ -1498,7 +1504,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic and should exit gracefully.
-	err = app.Run(ctx, fs, false, "localhost:0", "localhost:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	require.NoError(t, err)
 }
 
@@ -1514,12 +1520,15 @@ func TestRun_CachingMiddleware(t *testing.T) {
 
 	// We need a way to inspect the middleware chain. We can use a test hook for this.
 	var middlewareNames []string
+	var mu sync.Mutex
 	mcpserver.AddReceivingMiddlewareHook = func(name string) {
+		mu.Lock()
+		defer mu.Unlock()
 		middlewareNames = append(middlewareNames, name)
 	}
 	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
 
-	err = app.Run(ctx, fs, false, "localhost:0", "", nil, "", 5*time.Second)
+	err = app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
 	require.NoError(t, err)
 
 	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
@@ -1537,7 +1546,7 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	// We want to simulate a NewRegistrationServer error.
 	// Since we are now creating the server outside, we can just fail the test if we can't simulate it easily via startGrpcServer options
@@ -1589,7 +1598,7 @@ func TestHTTPServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
 	startHTTPServer(ctx, &wg, errChan, nil, "TestHTTP", lis, nil, 5*time.Second, nil)
@@ -1611,7 +1620,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC", lis, 5*time.Second, gogrpc.NewServer())
 
@@ -1629,7 +1638,7 @@ func TestGRPCServer_GracefulShutdown(t *testing.T) {
 
 func TestGRPCServer_GoroutineTerminatesOnError(t *testing.T) {
 	// Find a free port and create a listener that is already closed to force an error.
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
 	_ = l.Close()
@@ -1664,7 +1673,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 	// It runs the shutdown sequence multiple times to ensure stability.
 	for i := 0; i < 10; i++ {
 		t.Run(fmt.Sprintf("iteration_%d", i), func(t *testing.T) {
-			lis, err := net.Listen("tcp", "localhost:0")
+			lis, err := net.Listen("tcp", "127.0.0.1:0")
 			require.NoError(t, err)
 			port := lis.Addr().(*net.TCPAddr).Port
 			_ = lis.Close()
@@ -1674,7 +1683,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 			var wg sync.WaitGroup
 
 			// Start the gRPC server.
-			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+			noRaceLis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 			require.NoError(t, err)
 			startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_NoRace", noRaceLis, 5*time.Second, gogrpc.NewServer())
 
@@ -1705,7 +1714,7 @@ func TestRun_ServiceRegistrationPublication(t *testing.T) {
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1717,7 +1726,7 @@ upstream_services:
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://localhost:8081"
+     address: "http://127.0.0.1:8081"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1750,7 +1759,7 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	// Allow some time for the services to be published.
@@ -1780,14 +1789,14 @@ upstream_services:
  - name: "enabled-service"
    disable: false
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
      tools:
        - name: "test-call"
          call_id: "test-call"
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://localhost:8081"
+     address: "http://127.0.0.1:8081"
      tools:
        - name: "test-call"
          call_id: "test-call"
@@ -1814,7 +1823,7 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	time.Sleep(100 * time.Millisecond) // Allow time for publication.
@@ -1840,7 +1849,7 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "localhost:0", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
 	}()
 
 	err := <-errChan
@@ -1855,7 +1864,7 @@ func TestRun_NoConfig(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "localhost:0", "", nil, "", 5*time.Second)
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
 	}()
 
 	runErr := <-errChan
@@ -1887,7 +1896,7 @@ func (l *closableListener) isClosed() bool {
 func TestGRPCServer_ListenerClosedOnForcedShutdown(t *testing.T) {
 	// This test verifies that the network listener is closed even when a
 	// graceful shutdown of the gRPC server times out and is forced to stop.
-	rawLis, err := net.Listen("tcp", "localhost:0")
+	rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	mockLis := &closableListener{Listener: rawLis}
 
@@ -1947,7 +1956,7 @@ func (l *mockCloseCountingListener) Close() error {
 func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	// This test ensures that the listener is not closed more than once, even
 	// when a graceful shutdown times out and the server is forcefully stopped.
-	rawLis, err := net.Listen("tcp", "localhost:0")
+	rawLis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	countingLis := &mockCloseCountingListener{Listener: rawLis}
 
@@ -1982,7 +1991,7 @@ func TestGRPCServer_NoListenerDoubleClickOnForceShutdown(t *testing.T) {
 	// In a separate goroutine, make a call to the hanging RPC.
 	go func() {
 		port := countingLis.Addr().(*net.TCPAddr).Port
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return // Don't fail the test if the connection fails, as the server might be shutting down.
 		}
@@ -2041,7 +2050,7 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	// This test is designed to fail by timing out if the bug is present.
 	// Occupy a port to force a listen error.
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	defer func() { _ = l.Close() }()
 	port := l.Addr().(*net.TCPAddr).Port
@@ -2061,7 +2070,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Pass required args
-		errChan <- app.runServerMode(ctx, nil, busProvider, "localhost:0", fmt.Sprintf("localhost:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, nil, busProvider, "127.0.0.1:0", fmt.Sprintf("127.0.0.1:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil)
 	}()
 
 	select {
@@ -2082,7 +2091,7 @@ func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
 }
 
 func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	_ = lis.Close()
@@ -2091,7 +2100,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	errChan := make(chan error, 1)
 	var wg sync.WaitGroup
 
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	srv := gogrpc.NewServer()
 	hangService := &mockHangService{hangTime: 10 * time.Second}
@@ -2115,7 +2124,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	go func() {
-		conn, err := gogrpc.NewClient(fmt.Sprintf("localhost:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := gogrpc.NewClient(fmt.Sprintf("127.0.0.1:%d", port), gogrpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Logf("Failed to dial gRPC server: %v", err)
 			return
@@ -2129,7 +2138,7 @@ func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {
 	cancel()
 	wg.Wait()
 
-	l, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err, "Port should be released and available for reuse after forced shutdown.")
 	if l != nil {
 		_ = l.Close()
@@ -2161,7 +2170,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	defer viper.Set("api-key", "")
 
 	// Get the address from the listener
-	l, err := net.Listen("tcp", "localhost:0")
+	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	addr := l.Addr().String()
 	_ = l.Close()
@@ -2206,7 +2215,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 
 func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	// Find an available port for the gRPC server to listen on.
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err, "Failed to find a free port.")
 	port := lis.Addr().(*net.TCPAddr).Port
 	// We close the listener immediately and just use the port number.
@@ -2218,7 +2227,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the gRPC server in a goroutine.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err)
 	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_PortRelease", lis, 5*time.Second, gogrpc.NewServer())
 
@@ -2240,7 +2249,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 
 	// After shutdown, attempt to listen on the same port again.
 	// If the original listener was properly closed, this should succeed.
-	lis, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	lis, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	require.NoError(t, err, "The port should be available for reuse after the server has shut down gracefully.")
 	if lis != nil {
 		_ = lis.Close()
@@ -2258,7 +2267,7 @@ func TestRun_IPAllowlist(t *testing.T) {
 		addr := l.Addr().String()
 		_ = l.Close()
 
-		// Allow localhost (IPv4 and IPv6 just in case)
+		// Allow 127.0.0.1 (IPv4 and IPv6 just in case)
 		configContent := `
 global_settings:
   allowed_ips:
@@ -2267,7 +2276,7 @@ global_settings:
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://localhost:8080"
+     address: "http://127.0.0.1:8080"
 `
 		err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 		require.NoError(t, err)
@@ -2301,7 +2310,7 @@ upstream_services:
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
-		l, err := net.Listen("tcp", "localhost:0")
+		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		addr := l.Addr().String()
 		_ = l.Close()
@@ -2375,4 +2384,764 @@ func TestConfigHealthCheck(t *testing.T) {
 	assert.Equal(t, "degraded", check.Status)
 	assert.NotEmpty(t, check.Message)
 	assert.Contains(t, check.Message, "yaml")
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}
+
+func TestRunServerMode_Auth(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	bindAddress := l.Addr().String()
+	_ = l.Close()
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
+	config.GlobalSettings().SetAPIKey("global-secret")
+	defer config.GlobalSettings().SetAPIKey("")
+
+	authManager := auth.NewManager()
+	authManager.SetAPIKey("global-secret")
+	app.AuthManager = authManager
+	app.ProfileManager = profile.NewManager(nil)
+
+	serviceRegistry := serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
+	require.NoError(t, err)
+
+	users := []*configv1.User{
+		{
+			Id: proto.String("user_with_auth"),
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: &configv1.APIKeyAuth{
+						VerificationValue: ptr("user-secret"),
+						In:                ptr(configv1.APIKeyAuth_HEADER),
+						ParamName:         ptr("X-API-Key"),
+					},
+				},
+			},
+			ProfileIds: []string{"profileA"},
+		},
+		{
+			Id: proto.String("user_no_auth"),
+			ProfileIds: []string{"profileB"},
+		},
+		{
+			Id:         proto.String("user_blocked"),
+			ProfileIds: []string{},
+		},
+	}
+	authManager.SetUsers(users)
+
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil)
+	}()
+
+	waitForServerReady(t, bindAddress)
+	baseURL := fmt.Sprintf("http://%s", bindAddress)
+
+	t.Run("Invalid Path", func(t *testing.T) {
+		resp, err := http.Get(baseURL + "/mcp/u/foo")
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("User Not Found", func(t *testing.T) {
+		resp, err := http.Get(baseURL + "/mcp/u/unknown_user/profile/any")
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("User Auth - Correct Key", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_with_auth/profile/profileA", nil)
+		req.Header.Set("X-API-Key", "user-secret")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
+		assert.NotEqual(t, http.StatusForbidden, resp.StatusCode)
+	})
+
+	t.Run("User No Auth - Global Correct", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
+		req.Header.Set("X-API-Key", "global-secret")
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		assert.NotEqual(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	cancel()
+	<-errChan
+}
+
+func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
+	app := NewApplication()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
+	t.Run("No Key - Localhost Allowed", func(t *testing.T) {
+		middleware := app.createAuthMiddleware(false, false)
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		req := httptest.NewRequest("GET", "/", nil)
+		req.RemoteAddr = "127.0.0.1:12345"
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+}
+
+func TestAuthMiddleware_AuthDisabled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	bindAddress := l.Addr().String()
+	_ = l.Close()
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	authManager := auth.NewManager()
+	app.AuthManager = authManager
+
+	serviceRegistry := serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
+	require.NoError(t, err)
+
+	origMiddlewares := config.GlobalSettings().Middlewares()
+	defer config.GlobalSettings().SetMiddlewares(origMiddlewares)
+	config.GlobalSettings().SetMiddlewares([]*configv1.Middleware{
+		{Name: proto.String("auth"), Priority: proto.Int32(1), Disabled: proto.Bool(true)},
+	})
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, middleware.NewCachingMiddleware(app.ToolManager), nil, nil, serviceRegistry, nil)
+	}()
+
+	waitForServerReady(t, bindAddress)
+	resp, err := http.Get("http://" + bindAddress + "/healthz")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	cancel()
+	<-errChan
+}
+
+func TestReloadConfig_Directory(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	app := NewApplication()
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	app.ServiceRegistry = serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, auth.NewManager())
+
+	fs.MkdirAll("/config", 0755)
+	afero.WriteFile(fs, "/config/service1.yaml", []byte("upstream_services:\n - name: \"service1\"\n   http_service:\n     address: \"http://localhost:8081\""), 0644)
+	afero.WriteFile(fs, "/config/service2.json", []byte("{\"upstream_services\": [{\"name\": \"service2\", \"http_service\": {\"address\": \"http://localhost:8082\"}}]}"), 0644)
+
+	err := app.ReloadConfig(context.Background(), fs, []string{"/config"})
+	require.NoError(t, err)
+}
+
+func TestServer_CORS(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: DEBUG\nupstream_services: []"), 0644)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+
+	origin := "http://example.com"
+	req, _ := http.NewRequest("OPTIONS", "http://"+addr+"/upload", nil)
+	req.Header.Set("Origin", origin)
+	req.Header.Set("Access-Control-Request-Method", "POST")
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	resp.Body.Close()
+	assert.Equal(t, "*", resp.Header.Get("Access-Control-Allow-Origin"))
+
+	cancel()
+	<-errChan
+}
+
+func TestServer_CORS_Strict(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: INFO\nupstream_services: []"), 0644)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+
+	req, _ := http.NewRequest("OPTIONS", "http://"+addr+"/upload", nil)
+	req.Header.Set("Origin", "http://example.com")
+	req.Header.Set("Access-Control-Request-Method", "POST")
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	resp.Body.Close()
+	assert.Empty(t, resp.Header.Get("Access-Control-Allow-Origin"))
+
+	cancel()
+	<-errChan
+}
+
+func TestHealthCheckWithContext_InvalidAddr(t *testing.T) {
+	err := HealthCheckWithContext(context.Background(), io.Discard, "invalid\naddr")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create request")
+}
+
+func TestRun_WithListenAddress(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\nupstream_services: []"), 0644)
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "", "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+	cancel()
+	err := <-errChan
+	assert.NoError(t, err)
+}
+
+func TestUploadFile_TempDirFail(t *testing.T) {
+	orig := os.Getenv("TMPDIR")
+	_ = os.Setenv("TMPDIR", "/non-existent")
+	defer os.Setenv("TMPDIR", orig)
+
+	app := NewApplication()
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+	part, _ := writer.CreateFormFile("file", "test.txt")
+	part.Write([]byte("test content"))
+	writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, "/upload", &buf)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	rr := httptest.NewRecorder()
+	app.uploadFile(rr, req)
+
+	if rr.Code == http.StatusInternalServerError {
+		assert.Contains(t, rr.Body.String(), "failed to create temporary file")
+	}
+}
+
+func TestMultiUserHandler_EdgeCases(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	afero.WriteFile(fs, "/config.yaml", []byte("users:\n  - id: \"user1\"\n    profile_ids: [\"profile1\"]"), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+	baseURL := "http://" + addr
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	t.Run("Invalid Path Format", func(t *testing.T) {
+		resp, _ := client.Get(baseURL + "/mcp/u/user1/invalid")
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("User Not Found", func(t *testing.T) {
+		resp, _ := client.Get(baseURL + "/mcp/u/unknown/profile/p1")
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("Stateless JSON-RPC Invalid JSON", func(t *testing.T) {
+		resp, _ := client.Post(baseURL+"/mcp/u/user1/profile/profile1", "application/json", strings.NewReader("invalid"))
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	cancel()
+	<-errChan
+}
+
+func TestMultiUserHandler_UserAuth(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	configContent := "users:\n  - id: \"user_auth\"\n    profile_ids: [\"p1\"]\n    authentication:\n      api_key:\n        param_name: \"X-Key\"\n        verification_value: \"secret\"\n        in: \"HEADER\""
+	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+	baseURL := "http://" + addr
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	t.Run("Missing Auth", func(t *testing.T) {
+		resp, _ := client.Get(baseURL + "/mcp/u/user_auth/profile/p1")
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	t.Run("Correct Auth", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_auth/profile/p1", strings.NewReader("{}"))
+		req.Header.Set("X-Key", "secret")
+		resp, _ := client.Do(req)
+		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+	})
+
+	cancel()
+}
+
+func TestReloadConfig_DynamicUpdates(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\"]"), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	require.NoError(t, app.WaitForStartup(ctx))
+	assert.True(t, app.ipMiddleware.Allow("127.0.0.1"))
+	assert.False(t, app.ipMiddleware.Allow("10.0.0.1"))
+
+	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\", \"10.0.0.1\"]"), 0644)
+	err = app.ReloadConfig(ctx, fs, []string{"/config.yaml"})
+	require.NoError(t, err)
+	assert.True(t, app.ipMiddleware.Allow("10.0.0.1"))
+}
+
+func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	configContent := "global_settings:\n  profile_definitions:\n    - name: \"admin_profile\"\n      required_roles: [\"admin\"]\nusers:\n  - id: \"user_regular\"\n    profile_ids: [\"admin_profile\"]\n    roles: [\"user\"]"
+	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	go func() {
+		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	waitForServerReady(t, addr)
+	resp, _ := http.Get("http://" + addr + "/mcp/u/user_regular/profile/admin_profile")
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+}
+
+type MockUpstreamFactory struct {
+	NewUpstreamFunc func(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
+}
+
+func (m *MockUpstreamFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+	if m.NewUpstreamFunc != nil {
+		return m.NewUpstreamFunc(config)
+	}
+	return nil, fmt.Errorf("mock factory: NewUpstreamFunc not set")
+}
+
+func TestReloadConfig_FactoryError(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	app := NewApplication()
+	app.UpstreamFactory = &MockUpstreamFactory{
+		NewUpstreamFunc: func(_ *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+			return nil, fmt.Errorf("factory error")
+		},
+	}
+
+	afero.WriteFile(fs, "/config.yaml", []byte("upstream_services:\n - name: \"test-service\"\n   http_service:\n     address: \"http://example.com\""), 0644)
+	err := app.ReloadConfig(context.Background(), fs, []string{"/config.yaml"})
+	require.NoError(t, err)
+}
+
+func TestHealthCheckWithContextConcurrent(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
+			err := HealthCheckWithContext(ctx, io.Discard, server.Listener.Addr().String())
+			assert.NoError(t, err)
+		}()
+	}
+	wg.Wait()
+}
+
+func TestAuthMiddleware_IPBypass(t *testing.T) {
+	app := NewApplication()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	middleware := app.createAuthMiddleware(false, false)
+	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	tests := []struct {
+		name       string
+		remoteAddr string
+		wantStatus int
+	}{
+		{"IPv4 Loopback", "127.0.0.1:12345", http.StatusOK},
+		{"IPv4 Private", "192.168.1.1:12345", http.StatusOK},
+		{"IPv6 Loopback", "[::1]:12345", http.StatusOK},
+		{"IPv4 Public", "8.8.8.8:12345", http.StatusForbidden},
+		{"IPv4-Compatible Loopback", "[::127.0.0.1]:12345", http.StatusOK},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/", nil)
+			req.RemoteAddr = tt.remoteAddr
+			rr := httptest.NewRecorder()
+			handler.ServeHTTP(rr, req)
+			assert.Equal(t, tt.wantStatus, rr.Code)
+		})
+	}
+}
+
+type MockMiddlewareFactory struct {
+	mock.Mock
+}
+
+func (m *MockMiddlewareFactory) Create(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+	args := m.Called(cfg)
+	return args.Get(0).(func(mcp.MethodHandler) mcp.MethodHandler)
+}
+
+func TestMiddlewareRegistry(t *testing.T) {
+	middleware.RegisterMCP("test_middleware", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				return next(ctx, method, req)
+			}
+		}
+	})
+
+	t.Run("GetMCPMiddlewares sorts by priority", func(t *testing.T) {
+		configs := []*configv1.Middleware{
+			{Name: proto.String("test_middleware"), Priority: proto.Int32(100)},
+			{Name: proto.String("logging"), Priority: proto.Int32(10)},
+		}
+		middleware.RegisterMCP("logging", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+			return func(next mcp.MethodHandler) mcp.MethodHandler { return next }
+		})
+		chain := middleware.GetMCPMiddlewares(configs)
+		assert.Equal(t, 2, len(chain))
+	})
+}
+
+func TestConfigureUIHandler(t *testing.T) {
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	toolManager := tool.NewManager(busProvider)
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, prompt.NewManager(), resource.NewManager(), authManager)
+	mcpSrv, _ := mcpserver.NewServer(context.Background(), toolManager, prompt.NewManager(), resource.NewManager(), authManager, serviceRegistry, busProvider, false)
+
+	t.Run("No UI directory", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		app := NewApplication()
+		app.fs = fs
+		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() { time.Sleep(50 * time.Millisecond); cancel() }()
+		logging.ForTestsOnlyResetLogger()
+		var buf ThreadSafeBuffer
+		logging.Init(slog.LevelInfo, &buf)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
+		assert.Contains(t, buf.String(), "No UI directory found")
+	})
+}
+
+func TestUploadFile_Coverage(t *testing.T) {
+	app := NewApplication()
+
+	t.Run("Invalid Method", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/upload", nil)
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+	})
+
+	t.Run("Missing File", func(t *testing.T) {
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+		writer.Close() // Empty form
+
+		req := httptest.NewRequest("POST", "/upload", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		// If file is missing, FormFile returns error
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("Unicode Filename", func(t *testing.T) {
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+		part, err := writer.CreateFormFile("file", "测试.txt")
+		assert.NoError(t, err)
+		_, err = part.Write([]byte("content"))
+		assert.NoError(t, err)
+		writer.Close()
+
+		req := httptest.NewRequest("POST", "/upload", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		// Read response body
+		respBody := w.Body.String()
+		// Expect: File '测试.txt' uploaded successfully
+		assert.Contains(t, respBody, "测试.txt")
+	})
+}
+
+func TestFilesystemHealthCheck(t *testing.T) {
+	tempDir := t.TempDir()
+	existingDir := filepath.Join(tempDir, "existing")
+	os.Mkdir(existingDir, 0755)
+
+	app := NewApplication()
+	services := []*configv1.UpstreamServiceConfig{
+		{
+			Name: proto.String("svc-1"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					RootPaths: map[string]string{"/data": existingDir},
+				},
+			},
+		},
+	}
+
+	app.ServiceRegistry = &TestMockServiceRegistry{services: services}
+	res := app.filesystemHealthCheck(context.Background())
+	assert.Equal(t, "ok", res.Status)
+}
+
+func TestMultiUserToolFiltering(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	configContent := `
+global_settings:
+  profile_definitions:
+    - name: "dev-profile"
+      service_config: {dev-service: {enabled: true}}
+upstream_services:
+  - name: "dev-service"
+    id: "dev-service"
+    http_service:
+      address: "http://127.0.0.1:8081"
+      tools: [{name: "dev-tool", call_id: "dev-call"}]
+      calls: {dev-call: {id: "dev-call", endpoint_path: "/dev", method: "HTTP_METHOD_POST"}}
+`
+	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	require.Eventually(t, func() bool { return app.BoundHTTPPort.Load() != 0 }, 5*time.Second, 100*time.Millisecond)
+	cancel()
+	<-errChan
+}
+
+func TestFix_ReloadReliability(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"openapi": "3.0.0", "info": {"title": "T", "version": "1"}, "paths": {"/t": {"get": {"operationId": "op"}}}}`))
+	}))
+	defer ts.Close()
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	configPath := "/config.yaml"
+	config := fmt.Sprintf("upstream_services: [{name: 's', openapi_service: {address: '%s', spec_url: '%s'}}]", ts.URL, ts.URL)
+	afero.WriteFile(fs, configPath, []byte(config), 0o644)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{configPath}, "", 5*time.Second)
+	}()
+
+	require.NoError(t, app.WaitForStartup(ctx))
+	cancel()
+	<-errChan
+}
+
+func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	config := "upstream_services: [{name: 'f', openapi_service: {address: 'http://192.0.2.1', spec_url: 'http://192.0.2.1'}}]"
+	afero.WriteFile(fs, "/config.yaml", []byte(config), 0o644)
+
+	app := NewApplication()
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
+
+	startupCtx, scancel := context.WithTimeout(ctx, 5*time.Second)
+	defer scancel()
+	err := app.WaitForStartup(startupCtx)
+	require.NoError(t, err)
+
+	cancel()
+	<-errChan
+}
+
+func TestTemplateManager_Persistence(t *testing.T) {
+	tmpDir := t.TempDir()
+	tm := NewTemplateManager(tmpDir)
+
+	tpl1 := &configv1.UpstreamServiceConfig{
+		Name: proto.String("svc1"),
+		Id:   proto.String("id1"),
+	}
+	tm.SaveTemplate(tpl1)
+
+	tm2 := NewTemplateManager(tmpDir)
+	list2 := tm2.ListTemplates()
+	require.Len(t, list2, 1)
+	assert.Equal(t, "svc1", list2[0].GetName())
+
+	tm.DeleteTemplate("id1")
+	assert.Empty(t, tm.ListTemplates())
+}
+
+func TestTemplateManager_LoadCorrupt(t *testing.T) {
+	tmpDir := t.TempDir()
+	path := filepath.Join(tmpDir, "templates.json")
+	os.WriteFile(path, []byte("{invalid json"), 0600)
+
+	tm := NewTemplateManager(tmpDir)
+	assert.Empty(t, tm.ListTemplates())
 }

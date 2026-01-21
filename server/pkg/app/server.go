@@ -229,9 +229,9 @@ type Application struct {
 	configDiff string
 
 	// BoundHTTPPort stores the actual port the HTTP server is listening on.
-	BoundHTTPPort int
+	BoundHTTPPort atomic.Int32
 	// BoundGRPCPort stores the actual port the gRPC server is listening on.
-	BoundGRPCPort int
+	BoundGRPCPort atomic.Int32
 
 	// startTime is the time the application started.
 	startTime time.Time
@@ -1170,6 +1170,51 @@ func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
 	}
 }
 
+func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResult {
+	if a.ServiceRegistry == nil {
+		return health.CheckResult{Status: "ok"}
+	}
+
+	services, err := a.ServiceRegistry.GetAllServices()
+	if err != nil {
+		return health.CheckResult{
+			Status:  "degraded",
+			Message: fmt.Sprintf("failed to list services: %v", err),
+		}
+	}
+
+	var issues []string
+	start := time.Now()
+
+	for _, svc := range services {
+		fsSvc := svc.GetFilesystemService()
+		if fsSvc == nil {
+			continue
+		}
+
+		for virtualPath, localPath := range fsSvc.GetRootPaths() {
+			if info, err := os.Stat(localPath); err != nil {
+				issues = append(issues, fmt.Sprintf("service %q: root path %q (%s) is inaccessible: %v", svc.GetName(), virtualPath, localPath, err))
+			} else if !info.IsDir() {
+				issues = append(issues, fmt.Sprintf("service %q: root path %q (%s) is not a directory", svc.GetName(), virtualPath, localPath))
+			}
+		}
+	}
+
+	status := "ok"
+	var message string
+	if len(issues) > 0 {
+		status = "degraded"
+		message = strings.Join(issues, "; ")
+	}
+
+	return health.CheckResult{
+		Status:  status,
+		Message: message,
+		Latency: time.Since(start).String(),
+	}
+}
+
 // HealthCheck performs a health check against a running server by sending an
 // HTTP GET request to its /healthz endpoint. This is useful for monitoring and
 // ensuring the server is operational.
@@ -1806,17 +1851,17 @@ func (a *Application) runServerMode(
 		if !strings.Contains(grpcBindAddress, ":") {
 			grpcBindAddress = ":" + grpcBindAddress
 		}
-		lis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", grpcBindAddress)
+		lis, err := util.ListenWithRetry(ctx, "tcp", grpcBindAddress)
 		if err != nil {
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
 			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
-				a.BoundGRPCPort = addr.Port
+				a.BoundGRPCPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
 
 				// Register gRPC Gateway with the bound port
 				gwmux := runtime.NewServeMux()
 				opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
-				endpoint := fmt.Sprintf("localhost:%d", a.BoundGRPCPort)
+				endpoint := fmt.Sprintf("127.0.0.1:%d", a.BoundGRPCPort.Load())
 
 				if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
@@ -1857,12 +1902,12 @@ func (a *Application) runServerMode(
 		httpHandler.ServeHTTP(w, r)
 	})))
 
-	httpLis, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", httpBindAddress)
+	httpLis, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
 	if err != nil {
 		errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
 	} else {
 		if addr, ok := httpLis.Addr().(*net.TCPAddr); ok {
-			a.BoundHTTPPort = addr.Port
+			a.BoundHTTPPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
 		}
 		expectedReady++
 		// Handle active connection tracking

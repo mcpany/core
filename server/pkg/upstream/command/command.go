@@ -12,6 +12,8 @@ import (
 	"sync"
 
 	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -20,8 +22,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/schemaconv"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -30,8 +30,8 @@ import (
 // are exposed as command-line tools. It discovers and registers tools based on
 // a list of commands defined in the service configuration.
 type Upstream struct {
-	checker health.Checker
 	mu      sync.Mutex
+	checker health.Checker
 }
 
 // Shutdown implements the upstream.Upstream interface.
@@ -42,6 +42,7 @@ type Upstream struct {
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
+
 	if u.checker != nil {
 		u.checker.Stop()
 	}

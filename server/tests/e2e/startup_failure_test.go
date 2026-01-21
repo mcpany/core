@@ -38,20 +38,20 @@ func TestStartup_FailsOnMalformedConfig(t *testing.T) {
 	// Expect failure
 	assert.Error(t, err, "Server should have failed to start with malformed config")
 
-    // Check if it's an exit error
-    if exitErr, ok := err.(*exec.ExitError); ok {
-        assert.NotEqual(t, 0, exitErr.ExitCode(), "Exit code should be non-zero")
-    } else {
+	// Check if it's an exit error
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		assert.NotEqual(t, 0, exitErr.ExitCode(), "Exit code should be non-zero")
+	} else {
 		// If it's not an ExitError but an error occurred, that's also fine (e.g. executable not found),
 		// but we want to ensure it failed because of the config.
 	}
 
 	// Verify error output contains relevant message
-    outputStr := string(output)
-    // The error message from yaml unmarshal often contains "yaml: " or "cannot unmarshal"
-    // Our logger logs: "Failed to parse config file, skipping ... error=..." (OLD)
-    // NEW: it should return the error up the stack.
-    // "Application failed" ... "error" ...
+	outputStr := string(output)
+	// The error message from yaml unmarshal often contains "yaml: " or "cannot unmarshal"
+	// Our logger logs: "Failed to parse config file, skipping ... error=..." (OLD)
+	// NEW: it should return the error up the stack.
+	// "Application failed" ... "error" ...
 	// The underlying yaml error usually says something like "mapping values are not allowed in this context"
 
 	// Also check for our specific log message if possible, or just the error propagation

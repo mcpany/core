@@ -42,7 +42,7 @@ func TestSuggestFix_Recursion_Excluded(t *testing.T) {
 upstream_services:
   - name: "test"
     http_servic:
-      address: "http://localhost"
+      address: "http://127.0.0.1"
 `
 	_ = afero.WriteFile(fs, "typo_http.yaml", []byte(badConfig), 0644)
 
@@ -61,7 +61,7 @@ func TestSuggestFix_DeeplyNested_Included(t *testing.T) {
 upstream_services:
   - name: "test"
     http_service:
-      addres: "http://localhost"
+      addres: "http://127.0.0.1"
 `
 	// "addres" -> "address"
 	_ = afero.WriteFile(fs, "typo_address.yaml", []byte(badConfig), 0644)

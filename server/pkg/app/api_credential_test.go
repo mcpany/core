@@ -7,8 +7,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -123,7 +125,7 @@ func TestCredentialCRUD(t *testing.T) {
 }
 
 func TestAuthTestEndpoint(t *testing.T) {
-	// Allow loopback for this test since httptest.NewServer uses localhost
+	// Allow loopback for this test since httptest.NewServer uses 127.0.0.1
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	app := setupTestApp()
@@ -218,5 +220,257 @@ func TestAuthTestEndpoint(t *testing.T) {
 		err := json.Unmarshal(rr.Body.Bytes(), &resp)
 		require.NoError(t, err)
 		assert.Equal(t, 401, resp.Status)
+	})
+}
+
+// Mock response writer that fails on Write
+type failWriter struct {
+	http.ResponseWriter
+}
+
+func (fw *failWriter) Write([]byte) (int, error) {
+	return 0, errors.New("write failed")
+}
+
+func TestWriteError(t *testing.T) {
+	t.Run("StatusNotFound", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		writeError(w, errors.New("resource not found"))
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Contains(t, w.Body.String(), "resource not found")
+	})
+
+	t.Run("StatusBadRequest", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		writeError(w, errors.New("id is required"))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "id is required")
+
+		w = httptest.NewRecorder()
+		writeError(w, errors.New("input invalid"))
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "input invalid")
+	})
+
+	t.Run("StatusInternalServerError", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		writeError(w, errors.New("something went wrong"))
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Contains(t, w.Body.String(), "Internal Server Error")
+	})
+}
+
+func TestWriteJSON(t *testing.T) {
+	t.Run("ProtoMessage", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		msg := &configv1.Credential{Id: proto.String("test-id")}
+		writeJSON(w, http.StatusOK, msg)
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Contains(t, w.Body.String(), `"id":"test-id"`)
+	})
+
+	t.Run("RegularJSON", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		msg := map[string]string{"key": "value"}
+		writeJSON(w, http.StatusOK, msg)
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Contains(t, w.Body.String(), `"key":"value"`)
+	})
+
+	t.Run("WriteError", func(t *testing.T) {
+		w := &failWriter{httptest.NewRecorder()}
+		msg := map[string]string{"key": "value"}
+		// Should log error but not panic
+		writeJSON(w, http.StatusOK, msg)
+	})
+}
+
+func TestCredentialHandlers(t *testing.T) {
+	store := memory.NewStore()
+	app := &Application{Storage: store}
+
+	// Create a credential to test with
+	cred := &configv1.Credential{
+		Id:   proto.String("test-cred"),
+		Name: proto.String("Test Credential"),
+	}
+	require.NoError(t, store.SaveCredential(context.Background(), cred))
+
+	t.Run("ListCredentials", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/credentials", nil)
+		w := httptest.NewRecorder()
+		app.listCredentialsHandler(w, req)
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var creds []*configv1.Credential
+		err := json.Unmarshal(w.Body.Bytes(), &creds)
+		require.NoError(t, err)
+		assert.Len(t, creds, 1)
+		assert.Equal(t, "test-cred", creds[0].GetId())
+	})
+
+	t.Run("ListCredentials_MethodNotAllowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/credentials", nil)
+		w := httptest.NewRecorder()
+		app.listCredentialsHandler(w, req)
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+	})
+
+	t.Run("GetCredential", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/credentials/test-cred", nil)
+		w := httptest.NewRecorder()
+		app.getCredentialHandler(w, req)
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var c configv1.Credential
+		err := json.Unmarshal(w.Body.Bytes(), &c)
+		require.NoError(t, err)
+		assert.Equal(t, "test-cred", c.GetId())
+	})
+
+	t.Run("GetCredential_NotFound", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/credentials/missing", nil)
+		w := httptest.NewRecorder()
+		app.getCredentialHandler(w, req)
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+
+	t.Run("GetCredential_NoID", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/credentials/", nil)
+		w := httptest.NewRecorder()
+		app.getCredentialHandler(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("UpdateCredential", func(t *testing.T) {
+		updatedCred := &configv1.Credential{
+			Id:   proto.String("test-cred"),
+			Name: proto.String("Updated Name"),
+		}
+		body, _ := json.Marshal(updatedCred)
+		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+		app.updateCredentialHandler(w, req)
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		stored, _ := store.GetCredential(context.Background(), "test-cred")
+		assert.Equal(t, "Updated Name", stored.GetName())
+	})
+
+	t.Run("UpdateCredential_MismatchID", func(t *testing.T) {
+		updatedCred := &configv1.Credential{
+			Id:   proto.String("other-id"),
+			Name: proto.String("Updated Name"),
+		}
+		body, _ := json.Marshal(updatedCred)
+		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+		app.updateCredentialHandler(w, req)
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+	})
+
+	t.Run("UpdateCredential_BadBody", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader([]byte("bad json")))
+		w := httptest.NewRecorder()
+		app.updateCredentialHandler(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("DeleteCredential", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodDelete, "/credentials/test-cred", nil)
+		w := httptest.NewRecorder()
+		app.deleteCredentialHandler(w, req)
+		assert.Equal(t, http.StatusNoContent, w.Code)
+
+		stored, _ := store.GetCredential(context.Background(), "test-cred")
+		assert.Nil(t, stored)
+	})
+
+	t.Run("DeleteCredential_NoID", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodDelete, "/credentials/", nil)
+		w := httptest.NewRecorder()
+		app.deleteCredentialHandler(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+}
+
+func TestHandleCredentials_Security_Redaction(t *testing.T) {
+	app := NewApplication()
+	store := memory.NewStore()
+	app.Storage = store
+
+	// Create credential with sensitive data
+	cred := &configv1.Credential{
+		Id:   proto.String("cred1"),
+		Name: proto.String("Test Cred"),
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BearerToken{
+				BearerToken: &configv1.BearerTokenAuth{
+					Token: &configv1.SecretValue{
+						Value: &configv1.SecretValue_PlainText{
+							PlainText: "my-secret-token",
+						},
+					},
+				},
+			},
+		},
+		Token: &configv1.UserToken{
+			AccessToken:  proto.String("access-token-123"),
+			RefreshToken: proto.String("refresh-token-456"),
+		},
+	}
+	require.NoError(t, store.SaveCredential(context.Background(), cred))
+
+	t.Run("ListCredentials_ShouldNotLeakSecrets", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/credentials", nil)
+		w := httptest.NewRecorder()
+		app.listCredentialsHandler(w, req)
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		body := w.Body.String()
+
+		assert.NotContains(t, body, "my-secret-token", "Bearer token should be redacted")
+		assert.NotContains(t, body, "access-token-123", "Access token should be redacted")
+		assert.NotContains(t, body, "refresh-token-456", "Refresh token should be redacted")
+	})
+}
+
+func TestAuthTestEndpoint_SSRF(t *testing.T) {
+	// Ensure env vars are unset for this test to enforce strict SSRF protection
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
+
+	app := setupTestApp()
+
+	// Create a mock upstream server (on 127.0.0.1)
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("success"))
+	}))
+	defer upstream.Close()
+
+	t.Run("should block 127.0.0.1 access by default", func(t *testing.T) {
+		reqData := TestAuthRequest{
+			TargetURL: upstream.URL, // This is 127.0.0.1
+		}
+		body, _ := json.Marshal(reqData)
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
+		rr := httptest.NewRecorder()
+
+		app.testAuthHandler(rr, req)
+
+		assert.Equal(t, http.StatusOK, rr.Code)
+		var resp TestAuthResponse
+		err := json.Unmarshal(rr.Body.Bytes(), &resp)
+		require.NoError(t, err)
+
+		// We expect the request to have failed due to SSRF protection.
+		if resp.Status == 200 && resp.Body == "success" {
+			t.Logf("VULNERABILITY CONFIRMED: Successfully accessed 127.0.0.1: %s", upstream.URL)
+			t.Fail()
+		} else {
+			assert.NotEmpty(t, resp.Error, "Expected an error message due to blocked connection")
+			assert.Contains(t, strings.ToLower(resp.Error), "blocked", "Error message should mention 'blocked'")
+		}
 	})
 }

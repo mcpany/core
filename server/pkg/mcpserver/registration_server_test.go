@@ -87,7 +87,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 		config := &configv1.UpstreamServiceConfig{}
 		config.SetName(serviceName)
 		httpService := &configv1.HttpUpstreamService{}
-		httpService.SetAddress("http://localhost:8080")
+		httpService.SetAddress("http://127.0.0.1:8080")
 		config.SetHttpService(httpService)
 
 		req := &v1.RegisterServiceRequest{}
@@ -252,7 +252,7 @@ paths:
 		calls := make(map[string]*configv1.WebsocketCallDefinition)
 		calls["test-call"] = callDef
 		websocketService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://localhost:8080/test"),
+			Address: proto.String("ws://127.0.0.1:8080/test"),
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
 					Name:   proto.String("test-tool"),
@@ -343,7 +343,7 @@ func TestListServices(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	config.SetName(serviceName)
 	httpService := &configv1.HttpUpstreamService{}
-	httpService.SetAddress("http://localhost:8080")
+	httpService.SetAddress("http://127.0.0.1:8080")
 	config.SetHttpService(httpService)
 	req := &v1.RegisterServiceRequest{}
 	req.SetConfig(config)
@@ -447,7 +447,7 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 
 	t.Run("RegisterService timeout", func(t *testing.T) {
 		httpSvc := &configv1.HttpUpstreamService{}
-		httpSvc.SetAddress("http://localhost:8080")
+		httpSvc.SetAddress("http://127.0.0.1:8080")
 		cfg := &configv1.UpstreamServiceConfig{}
 		cfg.SetName("timeout-test")
 		cfg.SetHttpService(httpSvc)
@@ -500,7 +500,7 @@ func TestGetService(t *testing.T) {
 	config := &configv1.UpstreamServiceConfig{}
 	config.SetName(serviceName)
 	httpService := &configv1.HttpUpstreamService{}
-	httpService.SetAddress("http://localhost:8080")
+	httpService.SetAddress("http://127.0.0.1:8080")
 	config.SetHttpService(httpService)
 	req := &v1.RegisterServiceRequest{}
 	req.SetConfig(config)

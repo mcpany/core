@@ -162,7 +162,7 @@ upstream_services: {
 upstream_services: {
 	name: "grpc-svc-1"
 	grpc_service: {
-		address: "grpc://localhost:50051"
+		address: "grpc://127.0.0.1:50051"
 		use_reflection: true
 	}
 }
@@ -173,7 +173,7 @@ upstream_services: {
 				assert.Equal(t, "grpc-svc-1", s.GetName())
 				grpcService := s.GetGrpcService()
 				require.NotNil(t, grpcService)
-				assert.Equal(t, "grpc://localhost:50051", grpcService.GetAddress())
+				assert.Equal(t, "grpc://127.0.0.1:50051", grpcService.GetAddress())
 				assert.True(t, grpcService.GetUseReflection())
 			},
 		},

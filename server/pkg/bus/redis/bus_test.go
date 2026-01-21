@@ -28,7 +28,7 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {
-		redisAddr = "localhost:6379"
+		redisAddr = "127.0.0.1:6379"
 	}
 	client := redis.NewClient(&redis.Options{
 		Addr: redisAddr,
@@ -372,7 +372,7 @@ func TestBus_Unsubscribe(t *testing.T) {
 
 func TestBus_New(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
-		Address:  proto.String("localhost:6379"),
+		Address:  proto.String("127.0.0.1:6379"),
 		Password: proto.String("password"),
 		Db:       proto.Int32(1),
 	}.Build()
@@ -381,14 +381,14 @@ func TestBus_New(t *testing.T) {
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
-	assert.Equal(t, "localhost:6379", options.Addr)
+	assert.Equal(t, "127.0.0.1:6379", options.Addr)
 	assert.Equal(t, "password", options.Password)
 	assert.Equal(t, 1, options.DB)
 }
 
 func TestBus_New_WithValidConfig(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
-		Address:  proto.String("localhost:6380"),
+		Address:  proto.String("127.0.0.1:6380"),
 		Password: proto.String("testpassword"),
 		Db:       proto.Int32(2),
 	}.Build()
@@ -397,7 +397,7 @@ func TestBus_New_WithValidConfig(t *testing.T) {
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
-	assert.Equal(t, "localhost:6380", options.Addr)
+	assert.Equal(t, "127.0.0.1:6380", options.Addr)
 	assert.Equal(t, "testpassword", options.Password)
 	assert.Equal(t, 2, options.DB)
 }
@@ -410,21 +410,21 @@ func TestBus_New_NilConfig(t *testing.T) {
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
-	assert.Equal(t, "localhost:6379", options.Addr)
+	assert.Equal(t, "127.0.0.1:6379", options.Addr)
 	assert.Equal(t, "", options.Password)
 	assert.Equal(t, 0, options.DB)
 }
 
 func TestBus_New_PartialConfig(t *testing.T) {
 	redisBus := bus_pb.RedisBus_builder{
-		Address: proto.String("localhost:6381"),
+		Address: proto.String("127.0.0.1:6381"),
 	}.Build()
 
 	bus, _ := New[string](redisBus)
 	assert.NotNil(t, bus)
 	assert.NotNil(t, bus.client)
 	options := bus.client.Options()
-	assert.Equal(t, "localhost:6381", options.Addr)
+	assert.Equal(t, "127.0.0.1:6381", options.Addr)
 	assert.Equal(t, "", options.Password)
 	assert.Equal(t, 0, options.DB)
 }

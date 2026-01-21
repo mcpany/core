@@ -41,9 +41,9 @@ func TestSettings_Load(t *testing.T) {
 	viper.Set("logfile", tmpLog.Name())
 	viper.Set("shutdown-timeout", 5*time.Second)
 	viper.Set("profiles", []string{"profile1", "profile2"})
-	viper.Set("mcp-listen-address", "localhost:8080")
+	viper.Set("mcp-listen-address", "127.0.0.1:8080")
 	viper.Set("api-key", "global-key")
-	viper.Set("metrics-listen-address", "localhost:9090")
+	viper.Set("metrics-listen-address", "127.0.0.1:9090")
 
 	// Create a dummy config file
 	err = afero.WriteFile(fs, "/config.yaml", []byte(`
@@ -65,9 +65,9 @@ upstream_services: []
 	assert.Equal(t, tmpLog.Name(), settings.LogFile())
 	assert.Equal(t, 5*time.Second, settings.ShutdownTimeout())
 	assert.Equal(t, []string{"profile1", "profile2"}, settings.Profiles())
-	assert.Equal(t, "localhost:8080", settings.MCPListenAddress())
+	assert.Equal(t, "127.0.0.1:8080", settings.MCPListenAddress())
 	assert.Equal(t, "global-key", settings.APIKey())
-	assert.Equal(t, "localhost:9090", settings.MetricsListenAddress())
+	assert.Equal(t, "127.0.0.1:9090", settings.MetricsListenAddress())
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, settings.LogLevel())
 }
 
@@ -135,7 +135,7 @@ func TestSettings_MCPListenAddress_Precedence(t *testing.T) {
 	// Write config with mcp address
 	configContent := `
 global_settings:
-  mcp_listen_address: "localhost:9091"
+  mcp_listen_address: "127.0.0.1:9091"
 `
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
@@ -146,7 +146,7 @@ global_settings:
 	err = settings.Load(cmd, fs)
 	require.NoError(t, err)
 
-	assert.Equal(t, "localhost:9091", settings.MCPListenAddress())
+	assert.Equal(t, "127.0.0.1:9091", settings.MCPListenAddress())
 }
 
 func TestSettings_MCPListenAddress_EnvPrecedence(t *testing.T) {
@@ -158,14 +158,14 @@ func TestSettings_MCPListenAddress_EnvPrecedence(t *testing.T) {
 
 	// 1. Set Environment Variable
 	envKey := "MCPANY_MCP_LISTEN_ADDRESS"
-	expectedVal := "localhost:1111"
+	expectedVal := "127.0.0.1:1111"
 	t.Setenv(envKey, expectedVal)
 
 	// 2. Set Config File
 	viper.Set("config-path", []string{"/config.yaml"})
 	configContent := `
 global_settings:
-  mcp_listen_address: "localhost:9999"
+  mcp_listen_address: "127.0.0.1:9999"
 `
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
@@ -196,7 +196,7 @@ func TestSettings_GetDbDsn(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	cmd := &cobra.Command{}
 
-	viper.Set("db-dsn", "postgres://user:pass@localhost:5432/db")
+	viper.Set("db-dsn", "postgres://user:pass@127.0.0.1:5432/db")
 
 	settings := &Settings{
 		proto: &configv1.GlobalSettings{},
@@ -204,7 +204,7 @@ func TestSettings_GetDbDsn(t *testing.T) {
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
 
-	assert.Equal(t, "postgres://user:pass@localhost:5432/db", settings.GetDbDsn())
+	assert.Equal(t, "postgres://user:pass@127.0.0.1:5432/db", settings.GetDbDsn())
 }
 
 func TestSettings_GetDbDriver(t *testing.T) {

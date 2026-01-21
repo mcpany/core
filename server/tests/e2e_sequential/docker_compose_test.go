@@ -31,8 +31,6 @@ func TestDockerComposeE2E(t *testing.T) {
 	}
 
 	rootDir, err := os.Getwd()
-	// ... (rest of the body) ...
-
 	require.NoError(t, err)
 
 	// Navigate up to repo root (core)
@@ -78,8 +76,8 @@ func TestDockerComposeE2E(t *testing.T) {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
-                t.Logf("Failed to dump logs: %v", err)
-            }
+				t.Logf("Failed to dump logs: %v", err)
+			}
 		}
 
 		// Dump logs from manually run weather container
@@ -144,7 +142,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
 
 		t.Logf("Root mcpany-server running on port %s", serverPort)
-		verifyEndpoint(t, fmt.Sprintf("http://localhost:%s/healthz", serverPort), 200, 30*time.Second)
+		verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
 
 		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
 	} else {
@@ -164,17 +162,17 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, exampleDir, "mcpany-server", "50050")
 	t.Logf("Example mcpany-server running on port %s", serverPort)
-	verifyEndpoint(t, fmt.Sprintf("http://localhost:%s/healthz", serverPort), 200, 30*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
 
 	// 7. Functional Test: Simulate Gemini CLI & Verify Metrics
 	t.Log("Simulating Gemini CLI interaction with echo tool...")
-	simulateGeminiCLI(t, fmt.Sprintf("http://localhost:%s", serverPort))
+	simulateGeminiCLI(t, fmt.Sprintf("http://127.0.0.1:%s", serverPort))
 
 	t.Log("Verifying tool execution metrics...")
 	// Note: Metrics are on the same port 50050 for standard serve (or 50051? checks config).
 	// Original test checked 51234/metrics.
 	// If we use dynamic port, it maps to 50050 (internal).
-	verifyToolMetricDirect(t, fmt.Sprintf("http://localhost:%s/metrics", serverPort), "docker-http-echo.echo")
+	verifyToolMetricDirect(t, fmt.Sprintf("http://127.0.0.1:%s/metrics", serverPort), "docker-http-echo.echo")
 
 	// 8. Functional Test: Weather Service (Real external call)
 	t.Log("Starting Weather Service functional test...")
@@ -239,7 +237,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	_, portStr, err := net.SplitHostPort(portBinding)
 	require.NoError(t, err, "Failed to parse port from %s", portBinding)
 
-	baseURL := fmt.Sprintf("http://localhost:%s", portStr)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%s", portStr)
 
 	// 2. Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)

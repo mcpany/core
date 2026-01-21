@@ -242,13 +242,13 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 
 	case *configv1.FilesystemUpstreamService_Os:
 		u.validateLocalPaths(config.RootPaths)
-		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths)
+		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths, config.GetSymlinkMode())
 
 	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
 		u.validateLocalPaths(config.RootPaths)
-		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths)
+		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths, config.GetSymlinkMode())
 	}
 
 	// Wrap with ReadOnly if requested.

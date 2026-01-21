@@ -92,8 +92,10 @@ func (u *OpenAPIUpstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
+	u.mu.Lock()
 	u.serviceID = sanitizedName
-	serviceID := u.serviceID
+	u.mu.Unlock()
+	serviceID := sanitizedName
 
 	openapiService := serviceConfig.GetOpenapiService()
 	if openapiService == nil {

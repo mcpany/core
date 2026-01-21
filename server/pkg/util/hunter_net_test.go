@@ -192,7 +192,7 @@ func TestSafeDialer_NetworkMapping(t *testing.T) {
 			sd.Dialer = dialer
 			sd.AllowLoopback = true // Allow loopback so we don't block
 
-			_, _ = sd.DialContext(context.Background(), tt.network, "localhost:80")
+			_, _ = sd.DialContext(context.Background(), tt.network, "127.0.0.1:80")
 
 			if resolver.lastNetwork != tt.expectedLookup {
 				t.Errorf("For network '%s', expected lookup '%s', got '%s'", tt.network, tt.expectedLookup, resolver.lastNetwork)

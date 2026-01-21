@@ -81,7 +81,7 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 			Name: proto.String("mtls-test"),
 			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("localhost:50051"),
+					Address: proto.String("127.0.0.1:50051"),
 				},
 			},
 			UpstreamAuth: &configv1.Authentication{
@@ -115,7 +115,7 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 			Name: proto.String("mtls-test-success"),
 			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("localhost:50051"),
+					Address: proto.String("127.0.0.1:50051"),
 				},
 			},
 			UpstreamAuth: &configv1.Authentication{
@@ -153,7 +153,7 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 		config := &configv1.UpstreamServiceConfig{
 			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("localhost:50051"),
+					Address: proto.String("127.0.0.1:50051"),
 				},
 			},
 		}

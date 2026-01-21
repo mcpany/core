@@ -108,7 +108,7 @@ func TestStartServer_Real(t *testing.T) {
 	// We use a random port
 	done := make(chan error)
 	go func() {
-		done <- StartServer("localhost:0")
+		done <- StartServer("127.0.0.1:0")
 	}()
 
 	select {

@@ -66,7 +66,7 @@ services:
 	defer ts.Close()
 
 	m := NewUpstreamServiceManager(nil)
-	// Override httpClient to allow localhost requests (bypass SSRF protection)
+	// Override httpClient to allow 127.0.0.1 requests (bypass SSRF protection)
 	m.httpClient = ts.Client()
 
 	// Override newGitHub

@@ -67,7 +67,7 @@ func TestNewPool(t *testing.T) {
 
 	t.Run("connection failure", func(t *testing.T) {
 		// Use a port that is not listening
-		wsURL := "ws://localhost:9999"
+		wsURL := "ws://127.0.0.1:9999"
 		pool, err := NewPool(5, 10*time.Second, wsURL)
 		require.NoError(t, err)
 		assert.NotNil(t, pool)

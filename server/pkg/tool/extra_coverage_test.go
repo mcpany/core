@@ -277,7 +277,7 @@ func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
 	defer os.Unsetenv("MCPANY_WEBRTC_DISABLE_STUN")
 
 	wt, err := NewWebrtcTool(
-		&pb.Tool{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://localhost")},
+		&pb.Tool{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")},
 		nil, // No pool -> triggers executeWithoutPool
 		"s",
 		nil,

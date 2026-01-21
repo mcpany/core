@@ -68,7 +68,7 @@ global_settings:
         issuer: "%s"
         client_id: "test-client"
         client_secret: "test-secret"
-        redirect_url: "http://localhost:8080/callback"
+        redirect_url: "http://127.0.0.1:8080/callback"
 `, dbPath, mockOIDC.URL)
 
 	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
@@ -94,8 +94,8 @@ global_settings:
 	go func() {
 		// Mock filesystem with our config
 		fs := afero.NewOsFs()
-		// Use :0 to let OS choose free ports
-		err := appRunner.Run(ctx, fs, false, ":0", ":0", []string{tmpFile.Name()}, "", 5*time.Second)
+		// Use 127.0.0.1:0 to let OS choose free ports and avoid dual-stack flakes
+		err := appRunner.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{tmpFile.Name()}, "", 5*time.Second)
 		if err != nil && err != context.Canceled {
 			t.Logf("Application run error: %v", err)
 		}
@@ -105,8 +105,8 @@ global_settings:
 	err = appRunner.WaitForStartup(ctx)
 	require.NoError(t, err, "Failed to wait for startup")
 
-	jsonrpcPort := appRunner.BoundHTTPPort
-	grpcRegPort := appRunner.BoundGRPCPort
+	jsonrpcPort := int(appRunner.BoundHTTPPort.Load())
+	grpcRegPort := int(appRunner.BoundGRPCPort.Load())
 
 	require.NotZero(t, jsonrpcPort, "JSON RPC Port should be bound")
 	require.NotZero(t, grpcRegPort, "gRPC Port should be bound")

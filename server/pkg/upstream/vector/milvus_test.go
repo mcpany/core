@@ -25,7 +25,7 @@ func TestNewMilvusClient(t *testing.T) {
 		{
 			name: "Valid Config",
 			config: &configv1.MilvusVectorDB{
-				Address:        proto.String("localhost:19530"),
+				Address:        proto.String("127.0.0.1:19530"),
 				CollectionName: proto.String("test_collection"),
 			},
 			expectError: true, // Will fail connection in NewMilvusClient
@@ -40,7 +40,7 @@ func TestNewMilvusClient(t *testing.T) {
 		{
 			name: "Missing Collection",
 			config: &configv1.MilvusVectorDB{
-				Address: proto.String("localhost:19530"),
+				Address: proto.String("127.0.0.1:19530"),
 			},
 			expectError: true,
 		},

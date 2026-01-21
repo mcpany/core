@@ -356,7 +356,7 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 func TestParseProtoByReflection_Extended(t *testing.T) {
 	// Setup a mock server
 	server := &mockReflectionServer{streamReady: make(chan struct{})}
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	s := grpc.NewServer()
 	reflectpb.RegisterServerReflectionServer(s, server)

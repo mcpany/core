@@ -30,7 +30,7 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 						ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
 							SqlService: &configv1.SqlUpstreamService{
 								Driver: proto.String("postgres"),
-								Dsn:    proto.String("postgres://user:pass@localhost:5432/db"),
+								Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
 								Calls: map[string]*configv1.SqlCallDefinition{
 									"my-query": {
 										Query: proto.String(""), // Empty query should be invalid
@@ -55,7 +55,7 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 						ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
 							SqlService: &configv1.SqlUpstreamService{
 								Driver: proto.String("postgres"),
-								Dsn:    proto.String("postgres://user:pass@localhost:5432/db"),
+								Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
 								Calls: map[string]*configv1.SqlCallDefinition{
 									"my-query": {
 										Query: proto.String("SELECT * FROM users"),

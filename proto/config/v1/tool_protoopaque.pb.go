@@ -88,6 +88,7 @@ type ToolDefinition struct {
 	xxx_hidden_Profiles        *[]*Profile                  `protobuf:"bytes,14,rep,name=profiles"`
 	xxx_hidden_MergeStrategy   ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy"`
 	xxx_hidden_Tags            []string                     `protobuf:"bytes,16,rep,name=tags"`
+	xxx_hidden_Integrity       *Integrity                   `protobuf:"bytes,17,opt,name=integrity"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -243,9 +244,16 @@ func (x *ToolDefinition) GetTags() []string {
 	return nil
 }
 
+func (x *ToolDefinition) GetIntegrity() *Integrity {
+	if x != nil {
+		return x.xxx_hidden_Integrity
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 16)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
@@ -254,52 +262,52 @@ func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
 
 func (x *ToolDefinition) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 16)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 16)
 }
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 16)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 16)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 16)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 16)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 16)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 16)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 16)
 }
 
 func (x *ToolDefinition) SetDisable(v bool) {
 	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 16)
 }
 
 func (x *ToolDefinition) SetProfiles(v []*Profile) {
@@ -308,11 +316,15 @@ func (x *ToolDefinition) SetProfiles(v []*Profile) {
 
 func (x *ToolDefinition) SetMergeStrategy(v ToolDefinition_MergeStrategy) {
 	x.xxx_hidden_MergeStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 15)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 16)
 }
 
 func (x *ToolDefinition) SetTags(v []string) {
 	x.xxx_hidden_Tags = v
+}
+
+func (x *ToolDefinition) SetIntegrity(v *Integrity) {
+	x.xxx_hidden_Integrity = v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -406,6 +418,13 @@ func (x *ToolDefinition) HasMergeStrategy() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
 }
 
+func (x *ToolDefinition) HasIntegrity() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Integrity != nil
+}
+
 func (x *ToolDefinition) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -470,6 +489,10 @@ func (x *ToolDefinition) ClearMergeStrategy() {
 	x.xxx_hidden_MergeStrategy = ToolDefinition_MERGE_STRATEGY_UNSPECIFIED
 }
 
+func (x *ToolDefinition) ClearIntegrity() {
+	x.xxx_hidden_Integrity = nil
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -511,6 +534,8 @@ type ToolDefinition_builder struct {
 	Profiles      []*Profile
 	MergeStrategy *ToolDefinition_MergeStrategy
 	Tags          []string
+	// Integrity check for the tool definition.
+	Integrity *Integrity
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -518,56 +543,168 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 16)
 		x.xxx_hidden_Name = b.Name
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 16)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 16)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 16)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 16)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 16)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 16)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 16)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 16)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
 	}
 	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 16)
 		x.xxx_hidden_CallId = b.CallId
 	}
 	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 16)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	x.xxx_hidden_Profiles = &b.Profiles
 	if b.MergeStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 15)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 16)
 		x.xxx_hidden_MergeStrategy = *b.MergeStrategy
 	}
 	x.xxx_hidden_Tags = b.Tags
+	x.xxx_hidden_Integrity = b.Integrity
+	return m0
+}
+
+type Integrity struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Hash        *string                `protobuf:"bytes,1,opt,name=hash"`
+	xxx_hidden_Algorithm   *string                `protobuf:"bytes,2,opt,name=algorithm"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *Integrity) Reset() {
+	*x = Integrity{}
+	mi := &file_proto_config_v1_tool_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Integrity) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Integrity) ProtoMessage() {}
+
+func (x *Integrity) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_tool_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Integrity) GetHash() string {
+	if x != nil {
+		if x.xxx_hidden_Hash != nil {
+			return *x.xxx_hidden_Hash
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Integrity) GetAlgorithm() string {
+	if x != nil {
+		if x.xxx_hidden_Algorithm != nil {
+			return *x.xxx_hidden_Algorithm
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Integrity) SetHash(v string) {
+	x.xxx_hidden_Hash = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *Integrity) SetAlgorithm(v string) {
+	x.xxx_hidden_Algorithm = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *Integrity) HasHash() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Integrity) HasAlgorithm() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *Integrity) ClearHash() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Hash = nil
+}
+
+func (x *Integrity) ClearAlgorithm() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Algorithm = nil
+}
+
+type Integrity_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Hash      *string
+	Algorithm *string
+}
+
+func (b0 Integrity_builder) Build() *Integrity {
+	m0 := &Integrity{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Hash != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Hash = b.Hash
+	}
+	if b.Algorithm != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Algorithm = b.Algorithm
+	}
 	return m0
 }
 
@@ -575,7 +712,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xbe\x05\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xf9\x05\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -594,29 +731,35 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\adisable\x18\f \x01(\bR\adisable\x125\n" +
 	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12V\n" +
 	"\x0emerge_strategy\x18\x0f \x01(\x0e2..mcpany.config.v1.ToolDefinition.MergeStrategyR\x0emerge_strategy\x12\x12\n" +
-	"\x04tags\x18\x10 \x03(\tR\x04tags\"f\n" +
+	"\x04tags\x18\x10 \x03(\tR\x04tags\x129\n" +
+	"\tintegrity\x18\x11 \x01(\v2\x1b.mcpany.config.v1.IntegrityR\tintegrity\"f\n" +
 	"\rMergeStrategy\x12\x1e\n" +
 	"\x1aMERGE_STRATEGY_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14MERGE_STRATEGY_MERGE\x10\x01\x12\x1b\n" +
-	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02B3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02\"=\n" +
+	"\tIntegrity\x12\x12\n" +
+	"\x04hash\x18\x01 \x01(\tR\x04hash\x12\x1c\n" +
+	"\talgorithm\x18\x02 \x01(\tR\talgorithmB3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_config_v1_tool_proto_goTypes = []any{
 	(ToolDefinition_MergeStrategy)(0), // 0: mcpany.config.v1.ToolDefinition.MergeStrategy
 	(*ToolDefinition)(nil),            // 1: mcpany.config.v1.ToolDefinition
-	(*structpb.Struct)(nil),           // 2: google.protobuf.Struct
-	(*Profile)(nil),                   // 3: mcpany.config.v1.Profile
+	(*Integrity)(nil),                 // 2: mcpany.config.v1.Integrity
+	(*structpb.Struct)(nil),           // 3: google.protobuf.Struct
+	(*Profile)(nil),                   // 4: mcpany.config.v1.Profile
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
-	2, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
-	3, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
+	3, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
+	4, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
 	0, // 2: mcpany.config.v1.ToolDefinition.merge_strategy:type_name -> mcpany.config.v1.ToolDefinition.MergeStrategy
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 3: mcpany.config.v1.ToolDefinition.integrity:type_name -> mcpany.config.v1.Integrity
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }
@@ -631,7 +774,7 @@ func file_proto_config_v1_tool_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_tool_proto_rawDesc), len(file_proto_config_v1_tool_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

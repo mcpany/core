@@ -82,9 +82,11 @@ type SecretValue struct {
 	//	*SecretValue_RemoteContent
 	//	*SecretValue_Vault
 	//	*SecretValue_AwsSecretManager
-	Value         isSecretValue_Value `protobuf_oneof:"value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Value isSecretValue_Value `protobuf_oneof:"value"`
+	// Optional: A regex to validate the resolved secret value.
+	ValidationRegex *string `protobuf:"bytes,7,opt,name=validation_regex" json:"validation_regex,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *SecretValue) Reset() {
@@ -173,6 +175,13 @@ func (x *SecretValue) GetAwsSecretManager() *AwsSecretManagerSecret {
 	return nil
 }
 
+func (x *SecretValue) GetValidationRegex() string {
+	if x != nil && x.ValidationRegex != nil {
+		return *x.ValidationRegex
+	}
+	return ""
+}
+
 func (x *SecretValue) SetPlainText(v string) {
 	x.Value = &SecretValue_PlainText{v}
 }
@@ -207,6 +216,10 @@ func (x *SecretValue) SetAwsSecretManager(v *AwsSecretManagerSecret) {
 		return
 	}
 	x.Value = &SecretValue_AwsSecretManager{v}
+}
+
+func (x *SecretValue) SetValidationRegex(v string) {
+	x.ValidationRegex = &v
 }
 
 func (x *SecretValue) HasValue() bool {
@@ -264,6 +277,13 @@ func (x *SecretValue) HasAwsSecretManager() bool {
 	return ok
 }
 
+func (x *SecretValue) HasValidationRegex() bool {
+	if x == nil {
+		return false
+	}
+	return x.ValidationRegex != nil
+}
+
 func (x *SecretValue) ClearValue() {
 	x.Value = nil
 }
@@ -302,6 +322,10 @@ func (x *SecretValue) ClearAwsSecretManager() {
 	if _, ok := x.Value.(*SecretValue_AwsSecretManager); ok {
 		x.Value = nil
 	}
+}
+
+func (x *SecretValue) ClearValidationRegex() {
+	x.ValidationRegex = nil
 }
 
 const SecretValue_Value_not_set_case case_SecretValue_Value = 0
@@ -345,6 +369,8 @@ type SecretValue_builder struct {
 	Vault               *VaultSecret
 	AwsSecretManager    *AwsSecretManagerSecret
 	// -- end of Value
+	// Optional: A regex to validate the resolved secret value.
+	ValidationRegex *string
 }
 
 func (b0 SecretValue_builder) Build() *SecretValue {
@@ -369,6 +395,7 @@ func (b0 SecretValue_builder) Build() *SecretValue {
 	if b.AwsSecretManager != nil {
 		x.Value = &SecretValue_AwsSecretManager{b.AwsSecretManager}
 	}
+	x.ValidationRegex = b.ValidationRegex
 	return m0
 }
 
@@ -2661,7 +2688,7 @@ var File_proto_config_v1_auth_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\xe6\x02\n" +
+	"\x1aproto/config/v1/auth.proto\x12\x10mcpany.config.v1\"\x92\x03\n" +
 	"\vSecretValue\x12\x1f\n" +
 	"\n" +
 	"plain_text\x18\x01 \x01(\tH\x00R\tplainText\x123\n" +
@@ -2669,7 +2696,8 @@ const file_proto_config_v1_auth_proto_rawDesc = "" +
 	"\tfile_path\x18\x03 \x01(\tH\x00R\bfilePath\x12H\n" +
 	"\x0eremote_content\x18\x04 \x01(\v2\x1f.mcpany.config.v1.RemoteContentH\x00R\rremoteContent\x125\n" +
 	"\x05vault\x18\x05 \x01(\v2\x1d.mcpany.config.v1.VaultSecretH\x00R\x05vault\x12X\n" +
-	"\x12aws_secret_manager\x18\x06 \x01(\v2(.mcpany.config.v1.AwsSecretManagerSecretH\x00R\x10awsSecretManagerB\a\n" +
+	"\x12aws_secret_manager\x18\x06 \x01(\v2(.mcpany.config.v1.AwsSecretManagerSecretH\x00R\x10awsSecretManager\x12*\n" +
+	"\x10validation_regex\x18\a \x01(\tR\x10validation_regexB\a\n" +
 	"\x05value\"\xca\x01\n" +
 	"\x16AwsSecretManagerSecret\x12\x1c\n" +
 	"\tsecret_id\x18\x01 \x01(\tR\tsecret_id\x12\x1a\n" +

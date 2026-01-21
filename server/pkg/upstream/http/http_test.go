@@ -135,7 +135,7 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 	configJSON := `{
 		"name": "disabled-tool-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "op1", "call_id": "op1-call", "disable": true},
 				{"name": "op2", "call_id": "op2-call", "disable": false}
@@ -223,7 +223,7 @@ func TestDeterminismInToolNaming(t *testing.T) {
 	configJSON := `{
 		"name": "test-determinism",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"call_id": "call2"},
 				{"call_id": "call1"}
@@ -260,7 +260,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	configJSON := `{
 		"name": "test-service-missing-tool-name",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{
 				"call_id": "test-op-call"
 			}],
@@ -292,7 +292,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		configJSON := `{
 			"name": "test-service",
 			"http_service": {
-				"address": "http://localhost",
+				"address": "http://127.0.0.1",
 				"tools": [{
 					"name": "test-op",
 					"call_id": "test-op-call"
@@ -386,7 +386,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		configJSON := `{
 			"name": "test-service-fallback",
 			"http_service": {
-				"address": "http://localhost",
+				"address": "http://127.0.0.1",
 				"tools": [
 					{
 						"description": "A test operation",
@@ -443,7 +443,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		configJSON := `{
 			"name": "auth-fail-service",
 			"http_service": {
-				"address": "http://localhost",
+				"address": "http://127.0.0.1",
 				"tools": [{
 					"name": "test-op",
 					"call_id": "test-op-call"
@@ -477,7 +477,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		configJSON := `{
 			"name": "test-service-with-pool",
 			"http_service": {
-				"address": "http://localhost",
+				"address": "http://127.0.0.1",
 				"tools": [{
 					"name": "test-op",
 					"call_id": "test-op-call"
@@ -527,7 +527,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		configJSON := `{
 			"name": "test-service-with-default-pool",
 			"http_service": {
-				"address": "http://localhost",
+				"address": "http://127.0.0.1",
 				"tools": [{
 					"name": "test-op",
 					"call_id": "test-op-call"
@@ -582,7 +582,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	configJSON := `{
 		"name": "add-tool-fail-service",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{
 				"name": "test-op",
 				"call_id": "test-op-call"
@@ -617,7 +617,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	configJSON1 := `{
 		"name": "reload-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op1", "call_id": "op1-call"}],
 			"calls": {
 				"op1-call": {
@@ -638,7 +638,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	configJSON2 := `{
 		"name": "reload-test",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "op2", "call_id": "op2-call"}],
 			"calls": {
 				"op2-call": {
@@ -676,7 +676,7 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	configJSON := `{
 		"name": "test-service-invalid-method",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
 			"calls": {
 				"test-op-call": {
@@ -769,27 +769,27 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 	}{
 		{
 			name:         "trailing slash in address",
-			address:      "http://localhost:8080/",
+			address:      "http://127.0.0.1:8080/",
 			endpointPath: "api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test",
 		},
 		{
 			name:         "leading slash in endpoint",
-			address:      "http://localhost:8080",
+			address:      "http://127.0.0.1:8080",
 			endpointPath: "/api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test",
 		},
 		{
 			name:         "both slashes present",
-			address:      "http://localhost:8080/",
+			address:      "http://127.0.0.1:8080/",
 			endpointPath: "/api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test",
 		},
 		{
 			name:         "no slashes",
-			address:      "http://localhost:8080",
+			address:      "http://127.0.0.1:8080",
 			endpointPath: "api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test",
 		},
 		{
 			name:         "address with scheme",
@@ -799,27 +799,27 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 		},
 		{
 			name:         "double slash bug",
-			address:      "http://localhost:8080/",
+			address:      "http://127.0.0.1:8080/",
 			endpointPath: "/api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test",
 		},
 		{
 			name:         "address with path and trailing slash",
-			address:      "http://localhost:8080/base/",
+			address:      "http://127.0.0.1:8080/base/",
 			endpointPath: "api/v1/test",
-			expectedFqn:  "GET http://localhost:8080/base/api/v1/test",
+			expectedFqn:  "GET http://127.0.0.1:8080/base/api/v1/test",
 		},
 		{
 			name:         "trailing slash in endpoint is preserved",
-			address:      "http://localhost:8080",
+			address:      "http://127.0.0.1:8080",
 			endpointPath: "api/v1/test/",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test/",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test/",
 		},
 		{
 			name:         "endpoint with query params",
-			address:      "http://localhost:8080",
+			address:      "http://127.0.0.1:8080",
 			endpointPath: "api/v1/test?query=param",
-			expectedFqn:  "GET http://localhost:8080/api/v1/test?query=param",
+			expectedFqn:  "GET http://127.0.0.1:8080/api/v1/test?query=param",
 		},
 	}
 
@@ -867,7 +867,7 @@ func TestHTTPUpstream_Register_Blocked(t *testing.T) {
 	configJSON := `{
 		"name": "test-blocked",
 		"http_service": {
-			"address": "http://localhost",
+			"address": "http://127.0.0.1",
 			"tools": [
 				{"name": "allowed", "call_id": "c1"},
 				{"name": "blocked", "call_id": "c2"}

@@ -116,7 +116,7 @@ func TestValidateLocalPath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewLocalProvider(nil, tt.rootPaths, nil, nil)
+			p := NewLocalProvider(nil, tt.rootPaths, nil, nil, 0)
 			got, err := p.ResolvePath(tt.virtualPath)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -221,7 +221,7 @@ func TestLocalProviderAccessControl(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewLocalProvider(nil, rootPaths, tt.allowedPaths, tt.deniedPaths)
+			p := NewLocalProvider(nil, rootPaths, tt.allowedPaths, tt.deniedPaths, 0)
 			_, err := p.ResolvePath(tt.virtualPath)
 			if tt.wantErr {
 				assert.Error(t, err)

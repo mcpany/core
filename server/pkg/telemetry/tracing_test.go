@@ -78,7 +78,7 @@ func TestInitTelemetry_AutoDetectOTLP(t *testing.T) {
 	// Set endpoint but no exporter type, should default to OTLP
 	cfg := &config_v1.TelemetryConfig{
 		TracesExporter: strPtr(""),
-		OtlpEndpoint:   strPtr("localhost:4318"),
+		OtlpEndpoint:   strPtr("127.0.0.1:4318"),
 	}
 
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
@@ -118,7 +118,7 @@ func TestInitTelemetry_MetricsStdout(t *testing.T) {
 func TestInitTelemetry_MetricsOTLP(t *testing.T) {
 	cfg := &config_v1.TelemetryConfig{
 		MetricsExporter: strPtr("otlp"),
-		OtlpEndpoint:    strPtr("localhost:4318"),
+		OtlpEndpoint:    strPtr("127.0.0.1:4318"),
 	}
 
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)

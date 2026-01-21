@@ -21,17 +21,17 @@ func TestGlobalSettings_InvalidBindAddress(t *testing.T) {
 	}{
 		{
 			name:          "Invalid Port -1",
-			bindAddress:   "localhost:-1",
+			bindAddress:   "127.0.0.1:-1",
 			expectedError: "invalid mcp_listen_address: port must be between 0 and 65535",
 		},
 		{
 			name:          "Invalid Port 70000",
-			bindAddress:   "localhost:70000",
+			bindAddress:   "127.0.0.1:70000",
 			expectedError: "invalid mcp_listen_address: port must be between 0 and 65535",
 		},
 		{
 			name:          "Valid Address",
-			bindAddress:   "localhost:8080",
+			bindAddress:   "127.0.0.1:8080",
 			expectedError: "",
 		},
 	}

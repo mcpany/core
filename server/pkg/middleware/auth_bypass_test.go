@@ -38,7 +38,7 @@ func TestAuthMiddleware_Bypass_WithGlobalKey(t *testing.T) {
 	// 5. Create a request for a service that DOES NOT have a specific authenticator
 	// "unknown-service" has no authenticator registered in 'am'.
 	ctx := context.Background()
-	req, _ := http.NewRequest("POST", "http://localhost", nil)
+	req, _ := http.NewRequest("POST", "http://127.0.0.1", nil)
 	// Important: We DO NOT send the API Key header to simulate an unauthorized request
 	// req.Header.Set("X-API-Key", "secret-global-key")
 

@@ -19,7 +19,7 @@ func TestNewS3Provider(t *testing.T) {
 			Region:          proto.String("us-east-1"),
 			AccessKeyId:     proto.String("test"),
 			SecretAccessKey: proto.String("test"),
-			Endpoint:        proto.String("http://localhost:9000"),
+			Endpoint:        proto.String("http://127.0.0.1:9000"),
 		}
 		p, err := NewS3Provider(config)
 		require.NoError(t, err)

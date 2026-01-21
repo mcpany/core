@@ -385,7 +385,7 @@ func TestOAuth2Auth_Authenticate_Errors(t *testing.T) {
 		auth := &OAuth2Auth{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
-			TokenURL:     "http://localhost:12345/token",
+			TokenURL:     "http://127.0.0.1:12345/token",
 		}
 		req, _ := http.NewRequest("GET", "/", nil)
 		err := auth.Authenticate(req)
@@ -396,7 +396,7 @@ func TestOAuth2Auth_Authenticate_Errors(t *testing.T) {
 		auth := &OAuth2Auth{
 			ClientID:     nil,
 			ClientSecret: clientSecret,
-			TokenURL:     "http://localhost",
+			TokenURL:     "http://127.0.0.1",
 		}
 		req, _ := http.NewRequest("GET", "/", nil)
 		err := auth.Authenticate(req)
@@ -405,7 +405,7 @@ func TestOAuth2Auth_Authenticate_Errors(t *testing.T) {
 		auth = &OAuth2Auth{
 			ClientID:     clientID,
 			ClientSecret: nil,
-			TokenURL:     "http://localhost",
+			TokenURL:     "http://127.0.0.1",
 		}
 		req, _ = http.NewRequest("GET", "/", nil)
 		err = auth.Authenticate(req)

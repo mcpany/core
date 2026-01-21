@@ -7,6 +7,8 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"context"
 	"fmt"
+	"math"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -214,4 +216,50 @@ func CheckConnection(ctx context.Context, address string) error {
 	}
 	defer func() { _ = conn.Close() }()
 	return nil
+}
+
+// ListenWithRetry attempts to listen on the given address with retries.
+// This is specifically useful for mitigating "Port 0 collision risks" in high-churn environments
+// where the OS might report a port as busy even if it was just allocated for dynamic binding.
+func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
+	var lis net.Listener
+	var err error
+
+	// We try 10 times for port 0 to mitigate OS-level races.
+	maxRetries := 1
+	if strings.HasSuffix(address, ":0") {
+		maxRetries = 10
+	}
+
+	for i := 0; i < maxRetries; i++ {
+		lis, err = (&net.ListenConfig{}).Listen(ctx, network, address)
+		if err == nil {
+			return lis, nil
+		}
+
+		// Check if the error is "address already in use" or similar EADDRINUSE indicator.
+		errStr := strings.ToLower(err.Error())
+		isBindErr := strings.Contains(errStr, "address already in use") ||
+			strings.Contains(errStr, "eaddrinuse")
+
+		// If it's not a bind error, or we're at the last attempt, return.
+		if !isBindErr || i == maxRetries-1 {
+			return nil, err
+		}
+
+		// Exponential backoff with jitter: 100ms, 200ms, 400ms, 800ms, 1.6s...
+		// We start slightly higher than before (100ms) to give more room.
+		backoff := time.Duration(100*math.Pow(2, float64(i))) * time.Millisecond
+		// Add jitter (up to 50ms)
+		// #nosec G404 - weak random is fine for backoff jitter
+		backoff += time.Duration(rand.Intn(50)) * time.Millisecond
+
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(backoff):
+			// retry
+		}
+	}
+	return nil, err
 }

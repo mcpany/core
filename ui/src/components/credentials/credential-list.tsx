@@ -26,7 +26,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { CredentialForm } from "./credential-form"
-import { Plus, Trash, Key, Lock, Globe } from "lucide-react"
+import { Plus, Trash, Key, Lock, Globe, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 /**
@@ -58,6 +58,27 @@ export function CredentialList() {
     } finally {
       setLoading(false)
     }
+  }
+
+  async function handleConnect(cred: Credential) {
+      try {
+          const redirectUrl = `${window.location.origin}/oauth/callback`
+          const res = await apiClient.initiateOAuth("", redirectUrl, cred.id)
+          if (res.authorization_url) {
+              // Store context for callback using unified JSON pattern
+              sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({
+                  serviceId: '',
+                  credentialId: cred.id,
+                  state: res.state,
+                  redirectUrl: redirectUrl,
+                  returnPath: window.location.pathname + window.location.search
+              }))
+
+              window.location.href = res.authorization_url
+          }
+      } catch (e: any) {
+          toast({ variant: "destructive", description: "Failed to initiate connection: " + e.message })
+      }
   }
 
   async function handleDelete(id: string) {
@@ -141,7 +162,13 @@ export function CredentialList() {
                             {cred.authentication?.bearerToken && <span>Bearer</span>}
                             {cred.authentication?.basicAuth && <span>{cred.authentication.basicAuth.username}</span>}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right flex items-center justify-end gap-1">
+                             {cred.authentication?.oauth2 && (
+                                 <Button variant="outline" size="sm" onClick={() => handleConnect(cred)}>
+                                     <ExternalLink className="mr-2 h-3.5 w-3.5" />
+                                     {cred.token?.accessToken ? "Reconnect" : "Authorize"}
+                                 </Button>
+                             )}
                              <Button variant="ghost" size="sm" onClick={() => handleEdit(cred)}>Edit</Button>
                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDelete(cred.id)} aria-label="Delete"><Trash className="h-4 w-4" /></Button>
                         </TableCell>

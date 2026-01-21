@@ -20,7 +20,7 @@ func TestHTTPUpstream_Register_Unreachable(t *testing.T) {
 	// when the service is unreachable, but does NOT return an error.
 
 	// We use a port that is unlikely to be open.
-	unreachableAddr := "http://localhost:59999"
+	unreachableAddr := "http://127.0.0.1:59999"
 
 	pm := pool.NewManager()
 	// Use a nil tool manager to minimize dependencies, or a mock if needed.

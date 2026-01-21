@@ -37,6 +37,7 @@ func BindRootFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String("log-level", "info", "Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL")
 	cmd.PersistentFlags().String("log-format", "text", "Set the log format (text, json). Env: MCPANY_LOG_FORMAT")
 	cmd.PersistentFlags().String("logfile", "", "Path to a file to write logs to. If not set, logs are written to stdout.")
+	cmd.PersistentFlags().StringSlice("set", []string{}, "Set configuration values (key=value). Supports nested keys with dots (e.g., upstream_services[0].http_service.address=http://localhost:8080)")
 
 	if err := viper.BindPFlag("mcp-listen-address", cmd.PersistentFlags().Lookup("mcp-listen-address")); err != nil {
 		fmt.Fprintf(os.Stderr, "Error binding mcp-listen-address flag: %v\n", err)
@@ -64,6 +65,10 @@ func BindRootFlags(cmd *cobra.Command) {
 	}
 	if err := viper.BindPFlag("logfile", cmd.PersistentFlags().Lookup("logfile")); err != nil {
 		fmt.Fprintf(os.Stderr, "Error binding logfile flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("set", cmd.PersistentFlags().Lookup("set")); err != nil {
+		fmt.Fprintf(os.Stderr, "Error binding set flag: %v\n", err)
 		os.Exit(1)
 	}
 }

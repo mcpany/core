@@ -33,7 +33,7 @@ info:
   title: Dummy Service
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: http://127.0.0.1:8080
 paths:
   /status:
     get:

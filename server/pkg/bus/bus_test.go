@@ -82,7 +82,7 @@ func TestBusProvider(t *testing.T) {
 		// so it does not require an external Kafka server.
 		messageBus := bus.MessageBus_builder{}.Build()
 		kafkaBus := bus.KafkaBus_builder{}.Build()
-		kafkaBus.SetBrokers([]string{"localhost:9092"})
+		kafkaBus.SetBrokers([]string{"127.0.0.1:9092"})
 		messageBus.SetKafka(kafkaBus)
 
 		provider, err := NewProvider(messageBus)
@@ -243,7 +243,7 @@ func TestBusProvider_Concurrent(t *testing.T) {
 
 func TestRedisBus_SubscribeOnce(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "127.0.0.1:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		t.Skip("Redis is not available")
@@ -251,7 +251,7 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("localhost:6379")
+	redisBus.SetAddress("127.0.0.1:6379")
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
@@ -282,7 +282,7 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 
 func TestRedisBus_Unsubscribe(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "127.0.0.1:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		t.Skip("Redis is not available")
@@ -290,7 +290,7 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("localhost:6379")
+	redisBus.SetAddress("127.0.0.1:6379")
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
@@ -333,7 +333,7 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 
 func TestRedisBus_Concurrent(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "127.0.0.1:6379",
 	})
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 		t.Skip("Redis is not available")
@@ -341,7 +341,7 @@ func TestRedisBus_Concurrent(t *testing.T) {
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("localhost:6379")
+	redisBus.SetAddress("127.0.0.1:6379")
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)

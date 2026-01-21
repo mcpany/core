@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -43,7 +43,7 @@ func TestWebhooksE2E(t *testing.T) {
 	serverCmd := exec.Command(webhookBin) //nolint:gosec
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
-	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr)
+	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr, "MCPANY_ALLOW_LOOPBACK_RESOURCES=true")
 	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
 	defer func() {
 		_ = serverCmd.Process.Kill()
@@ -51,7 +51,7 @@ func TestWebhooksE2E(t *testing.T) {
 
 	// Wait for server to start
 	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("http://127.0.0.2:%d/markdown", port)) // Endpoint exists (POST only but connectable)
+		resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/markdown", port)) // Endpoint exists (POST only but connectable)
 		if resp != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -59,7 +59,7 @@ func TestWebhooksE2E(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond, "Webhook server failed to start")
 
 	t.Run("MarkdownConversion", func(t *testing.T) {
-		url := fmt.Sprintf("http://127.0.0.2:%d/markdown", port)
+		url := fmt.Sprintf("http://127.0.0.1:%d/markdown", port)
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
@@ -100,7 +100,7 @@ func TestWebhooksE2E(t *testing.T) {
 	})
 
 	t.Run("TextTruncation", func(t *testing.T) {
-		url := fmt.Sprintf("http://127.0.0.2:%d/truncate?max_chars=5", port)
+		url := fmt.Sprintf("http://127.0.0.1:%d/truncate?max_chars=5", port)
 		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
@@ -152,13 +152,13 @@ func TestFullSystemWebhooks(t *testing.T) {
 	serverCmd := exec.Command(webhookBin) //nolint:gosec
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
-	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr)
+	serverCmd.Env = append(os.Environ(), "WEBHOOK_SECRET="+secret, "PORT="+portStr, "MCPANY_ALLOW_LOOPBACK_RESOURCES=true")
 	require.NoError(t, serverCmd.Start(), "Failed to start webhook server")
 	defer func() { _ = serverCmd.Process.Kill() }()
 
 	// Wait for webhook server
 	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("http://127.0.0.2:%d/markdown", port))
+		resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/markdown", port))
 		if resp != nil && resp.Body != nil {
 			defer func() { _ = resp.Body.Close() }()
 		}
@@ -166,7 +166,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond)
 
 	// 4. Configure Upstream Service (Mcpany Core Logic)
-	webhookURL := fmt.Sprintf("http://127.0.0.2:%d/markdown", port)
+	webhookURL := fmt.Sprintf("http://127.0.0.1:%d/markdown", port)
 
 	upsConfig := configv1.UpstreamServiceConfig_builder{
 		Name:             proto.String("mock-service"),
@@ -252,7 +252,7 @@ func TestFullSystemWebhooks(t *testing.T) {
 }
 
 func getFreePort(t *testing.T) int {
-	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.2:0")
+	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	l, err := net.ListenTCP("tcp", addr)
 	require.NoError(t, err)

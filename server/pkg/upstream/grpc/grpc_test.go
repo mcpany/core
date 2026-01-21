@@ -173,7 +173,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		serviceConfig.SetName("") // empty name is invalid
 		grpcService := &configv1.GrpcUpstreamService{}
-		grpcService.SetAddress("localhost:50051")
+		grpcService.SetAddress("127.0.0.1:50051")
 		serviceConfig.SetGrpcService(grpcService)
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, NewMockToolManager(), promptManager, resourceManager, false)
 		require.Error(t, err)
@@ -197,7 +197,7 @@ func TestGRPCUpstream_Register(t *testing.T) {
 			Name: proto.String("test"),
 			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
 				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("localhost:50051"),
+					Address: proto.String("127.0.0.1:50051"),
 				},
 			},
 			UpstreamAuth: &configv1.Authentication{

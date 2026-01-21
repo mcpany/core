@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"al.essio.dev/pkg/shellescape"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -119,18 +120,24 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // effectively acting as a proxy or aggregator.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
-	serviceID       string
 	// BundleBaseDir is the directory where bundles are extracted.
 	BundleBaseDir string
 	globalSettings *configv1.GlobalSettings
+
+	mu        sync.RWMutex
+	serviceID string
 }
 
 // Shutdown cleans up any temporary resources associated with the upstream, such
 // as extracted bundle directories.
 func (u *Upstream) Shutdown(_ context.Context) error {
-	if u.serviceID != "" {
-		untrackBundle(u.serviceID)
-		tempDir := filepath.Join(u.BundleBaseDir, u.serviceID)
+	u.mu.RLock()
+	serviceID := u.serviceID
+	u.mu.RUnlock()
+
+	if serviceID != "" {
+		untrackBundle(serviceID)
+		tempDir := filepath.Join(u.BundleBaseDir, serviceID)
 		if _, err := os.Stat(tempDir); err == nil {
 			logging.GetLogger().Info("Cleaning up bundle temp directory", "dir", tempDir)
 			if err := os.RemoveAll(tempDir); err != nil {
@@ -267,7 +274,9 @@ func (u *Upstream) Register(
 	if err != nil {
 		return "", nil, nil, err
 	}
+	u.mu.Lock()
 	u.serviceID = serviceID
+	u.mu.Unlock()
 
 	// Track bundle potential usage early to prevent GC race during setup
 	trackBundle(serviceID)

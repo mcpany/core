@@ -5,6 +5,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -237,18 +238,12 @@ func (m *MockStore) HasConfigSources() bool {
 	return true
 }
 
-// Added missing methods from Storage interface (if any)
-// Assuming Storage interface is fully covered by Store + List/Get/Save/Delete Service + Globals
-
 func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	// Expect check checks
 	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
-
-	// Expect saves
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
 
@@ -262,26 +257,23 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	// Expect check checks - return existing service
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{Id: nil}}, nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
 
-	// Should NOT call Save
 	mockStore.AssertNotCalled(t, "SaveGlobalSettings")
 	mockStore.AssertNotCalled(t, "SaveService")
 }
 
 func TestInitializeDatabase_NotStorage(t *testing.T) {
-	// Simple config.Store mock (not storage.Storage)
 	simpleMock := new(MockSimpleStore)
 	app := &Application{}
 
 	simpleMock.On("Load", mock.Anything).Return(&configv1.McpAnyServerConfig{}, nil)
 
 	err := app.initializeDatabase(context.Background(), simpleMock)
-	assert.NoError(t, err) // Should just warn and return nil
+	assert.NoError(t, err)
 }
 
 type MockSimpleStore struct {
@@ -302,4 +294,55 @@ func (m *MockSimpleStore) Watch(ctx context.Context) (<-chan *configv1.McpAnySer
 
 func (m *MockSimpleStore) HasConfigSources() bool {
 	return true
+}
+
+func TestInitializeDatabase_Errors(t *testing.T) {
+	t.Run("Store Load Error", func(t *testing.T) {
+		mockSimpleStore := new(MockSimpleStore)
+		app := &Application{}
+
+		mockSimpleStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), errors.New("load error"))
+
+		err := app.initializeDatabase(context.Background(), mockSimpleStore)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "load error")
+	})
+
+	t.Run("Storage ListServices Error", func(t *testing.T) {
+		mockStore := new(MockStore)
+		app := &Application{}
+
+		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
+
+		err := app.initializeDatabase(context.Background(), mockStore)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "list services error")
+	})
+
+	t.Run("Storage SaveGlobalSettings Error", func(t *testing.T) {
+		mockStore := new(MockStore)
+		app := &Application{}
+
+		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
+
+		err := app.initializeDatabase(context.Background(), mockStore)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to save default global settings")
+	})
+
+	t.Run("Storage SaveService Error", func(t *testing.T) {
+		mockStore := new(MockStore)
+		app := &Application{}
+
+		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
+		mockStore.On("SaveService", mock.Anything, mock.Anything).Return(errors.New("save service error"))
+
+		err := app.initializeDatabase(context.Background(), mockStore)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to save default weather service")
+	})
 }

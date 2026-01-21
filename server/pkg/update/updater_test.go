@@ -69,8 +69,8 @@ func TestNewUpdater(t *testing.T) {
 	})
 
 	t.Run("with custom github api url", func(t *testing.T) {
-		updater := NewUpdater(nil, "http://localhost:8080/api/")
-		assert.Equal(t, "http://localhost:8080/api/", updater.client.BaseURL.String())
+		updater := NewUpdater(nil, "http://127.0.0.1:8080/api/")
+		assert.Equal(t, "http://127.0.0.1:8080/api/", updater.client.BaseURL.String())
 	})
 
 	t.Run("with malformed custom github api url", func(t *testing.T) {
@@ -366,7 +366,7 @@ func TestUpdateTo_MoreFailureScenarios(t *testing.T) {
 		release := &github.RepositoryRelease{
 			TagName: github.String("v1.0.1"),
 			Assets: []*github.ReleaseAsset{
-				{Name: github.String(assetName), BrowserDownloadURL: github.String("http://localhost/asset")},
+				{Name: github.String(assetName), BrowserDownloadURL: github.String("http://127.0.0.1/asset")},
 				{Name: github.String("checksums.txt"), BrowserDownloadURL: github.String(checksumsServer.URL)},
 			},
 		}

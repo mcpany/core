@@ -66,7 +66,7 @@ func TestHTTPClientWrapper(t *testing.T) {
 
 	t.Run("IsHealthy_Failure", func(t *testing.T) {
 		// Create a config with a health check that fails (unreachable URL)
-		badConfigJSON := `{"http_service": {"address": "` + server.URL[7:] + `", "health_check": {"url": "http://localhost:12345/health"}}, "name": "bar"}`
+		badConfigJSON := `{"http_service": {"address": "` + server.URL[7:] + `", "health_check": {"url": "http://127.0.0.1:12345/health"}}, "name": "bar"}`
 		badConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(badConfigJSON), badConfig))
 
@@ -86,7 +86,7 @@ func TestHTTPClientWrapper(t *testing.T) {
 
 func TestGrpcClientWrapper(t *testing.T) {
 	// Set up a dummy gRPC server to connect to
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
 	server := grpc.NewServer()
@@ -148,7 +148,7 @@ func TestGrpcClientWrapper(t *testing.T) {
 
 	t.Run("IsHealthy_Bufnet", func(t *testing.T) {
 		// Set up a new dummy gRPC server to avoid using the closed connection from the previous test
-		lis, err := net.Listen("tcp", "localhost:0")
+		lis, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		server := grpc.NewServer()
 		go func() {
@@ -214,7 +214,7 @@ func TestWebsocketClientWrapper(t *testing.T) {
 }
 
 func TestGrpcClientWrapper_WithHealthCheck(t *testing.T) {
-	lis, err := net.Listen("tcp", "localhost:0")
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 
 	healthServer := health.NewServer()

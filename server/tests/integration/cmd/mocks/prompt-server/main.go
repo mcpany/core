@@ -46,7 +46,7 @@ func main() {
 	}, nil)
 
 	// 4. Serve the handler over HTTP
-	addr := fmt.Sprintf(":%d", *port)
+	addr := fmt.Sprintf("127.0.0.1:%d", *port)
 	log.Printf("server listening at %s", addr)
 	srv := &http.Server{
 		Addr:              addr,
