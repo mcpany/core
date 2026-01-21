@@ -332,7 +332,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		}
 
 		if valueToValidate != "" && !re.MatchString(valueToValidate) {
-			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
+			return &ActionableError{
+				Err:        fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex()),
+				Suggestion: fmt.Sprintf("Ensure the secret value matches the regex pattern %q.", secret.GetValidationRegex()),
+			}
 		}
 	}
 

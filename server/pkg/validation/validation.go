@@ -183,7 +183,7 @@ var IsAllowedPath = func(path string) error {
 		}
 	}
 
-	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)", path)
+	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)\n\t-> Fix: Add %q to 'allowed_file_paths' in 'global_settings' or move the file to the current working directory.", path, path)
 }
 
 // allowedOpaqueSchemes are schemes that are allowed to not have a host component.
