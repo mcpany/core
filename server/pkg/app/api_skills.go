@@ -26,13 +26,13 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 		parts := strings.Split(r.URL.Path, "/")
 		var skillName string
 
-		// Handle /api/v1 prefix
-		if len(parts) >= 6 && parts[5] == "assets" && parts[3] == "skills" {
+		// Handle /api/v1 prefix or /v1 prefix
+		switch {
+		case len(parts) >= 6 && parts[5] == "assets" && parts[3] == "skills":
 			skillName = parts[4]
-		} else if len(parts) >= 5 && parts[4] == "assets" && parts[2] == "skills" {
-			// Handle /v1 prefix
+		case len(parts) >= 5 && parts[4] == "assets" && parts[2] == "skills":
 			skillName = parts[3]
-		} else {
+		default:
 			http.Error(w, "Invalid URL format", http.StatusBadRequest)
 			return
 		}
