@@ -104,10 +104,10 @@ upstream_services:
 	err = appRunner.WaitForStartup(ctx)
 	require.NoError(t, err, "failed to wait for startup")
 
-	require.NotZero(t, appRunner.BoundHTTPPort, "BoundHTTPPort should be set")
-	// require.NotZero(t, appRunner.BoundGRPCPort, "BoundGRPCPort should be set") // Start with just HTTP if that's what we use
+	require.NotZero(t, appRunner.BoundHTTPPort.Load(), "BoundHTTPPort should be set")
+	// require.NotZero(t, appRunner.BoundGRPCPort.Load(), "BoundGRPCPort should be set") // Start with just HTTP if that's what we use
 
-	jsonrpcPort = appRunner.BoundHTTPPort
+	jsonrpcPort = int(appRunner.BoundHTTPPort.Load())
 	// grpcRegPort := appRunner.BoundGRPCPort
 
 	defer cancel()

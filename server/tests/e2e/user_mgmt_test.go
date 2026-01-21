@@ -105,8 +105,8 @@ global_settings:
 	err = appRunner.WaitForStartup(ctx)
 	require.NoError(t, err, "Failed to wait for startup")
 
-	jsonrpcPort := appRunner.BoundHTTPPort
-	grpcRegPort := appRunner.BoundGRPCPort
+	jsonrpcPort := int(appRunner.BoundHTTPPort.Load())
+	grpcRegPort := int(appRunner.BoundGRPCPort.Load())
 
 	require.NotZero(t, jsonrpcPort, "JSON RPC Port should be bound")
 	require.NotZero(t, grpcRegPort, "gRPC Port should be bound")

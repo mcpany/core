@@ -793,7 +793,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	err := app.WaitForStartup(ctx)
 	require.NoError(t, err, "failed to wait for startup")
 
-	port := app.BoundHTTPPort
+	port := int(app.BoundHTTPPort.Load())
 	require.NotZero(t, port, "BoundHTTPPort should be set after startup")
 
 	// Verify we can dial the assigned port
@@ -805,7 +805,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "server should be dialable on port %d", port)
+	}, 2*time.Second, 100*time.Millisecond, "server should be dialable on port %d", int(app.BoundHTTPPort.Load()))
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
@@ -842,7 +842,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	err := app.WaitForStartup(ctx)
 	require.NoError(t, err, "failed to wait for startup")
 
-	port := app.BoundGRPCPort
+	port := int(app.BoundGRPCPort.Load())
 	require.NotZero(t, port, "BoundGRPCPort should be set after startup")
 
 	// Verify we can connect
@@ -854,7 +854,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 			return true
 		}
 		return false
-	}, 2*time.Second, 100*time.Millisecond, "gRPC server should be dialable on port %d", port)
+	}, 2*time.Second, 100*time.Millisecond, "gRPC server should be dialable on port %d", int(app.BoundGRPCPort.Load()))
 
 	// Server is up, now cancel and wait for shutdown.
 	cancel()
@@ -3059,9 +3059,14 @@ upstream_services:
 	defer cancel()
 
 	app := NewApplication()
-	go app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
 
-	require.Eventually(t, func() bool { return app.BoundHTTPPort != 0 }, 5*time.Second, 100*time.Millisecond)
+	require.Eventually(t, func() bool { return app.BoundHTTPPort.Load() != 0 }, 5*time.Second, 100*time.Millisecond)
+	cancel()
+	<-errChan
 }
 
 func TestFix_ReloadReliability(t *testing.T) {
@@ -3080,9 +3085,14 @@ func TestFix_ReloadReliability(t *testing.T) {
 	afero.WriteFile(fs, configPath, []byte(config), 0o644)
 
 	app := NewApplication()
-	go app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{configPath}, "", 5*time.Second)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{configPath}, "", 5*time.Second)
+	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))
+	cancel()
+	<-errChan
 }
 
 func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
@@ -3094,12 +3104,18 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 	afero.WriteFile(fs, "/config.yaml", []byte(config), 0o644)
 
 	app := NewApplication()
-	go app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	}()
 
 	startupCtx, scancel := context.WithTimeout(ctx, 5*time.Second)
 	defer scancel()
 	err := app.WaitForStartup(startupCtx)
 	require.NoError(t, err)
+
+	cancel()
+	<-errChan
 }
 
 func TestTemplateManager_Persistence(t *testing.T) {

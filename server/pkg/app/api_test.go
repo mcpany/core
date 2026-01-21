@@ -1773,6 +1773,9 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
 	assert.NotNil(t, result["error"])
+
+	cancel()
+	<-errChan
 }
 
 func TestHandleAuthTest(t *testing.T) {

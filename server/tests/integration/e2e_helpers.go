@@ -812,8 +812,8 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	require.NoError(t, err, "Failed to wait for application startup")
 
 	// Retrieve dynamically allocated ports
-	jsonrpcPort := appRunner.BoundHTTPPort
-	grpcRegPort := appRunner.BoundGRPCPort
+	jsonrpcPort := int(appRunner.BoundHTTPPort.Load())
+	grpcRegPort := int(appRunner.BoundGRPCPort.Load())
 
 	// Fallback/Safety check
 	if jsonrpcPort == 0 || grpcRegPort == 0 {

@@ -229,9 +229,9 @@ type Application struct {
 	configDiff string
 
 	// BoundHTTPPort stores the actual port the HTTP server is listening on.
-	BoundHTTPPort int
+	BoundHTTPPort atomic.Int32
 	// BoundGRPCPort stores the actual port the gRPC server is listening on.
-	BoundGRPCPort int
+	BoundGRPCPort atomic.Int32
 
 	// startTime is the time the application started.
 	startTime time.Time
@@ -1856,12 +1856,12 @@ func (a *Application) runServerMode(
 			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
 		} else {
 			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
-				a.BoundGRPCPort = addr.Port
+				a.BoundGRPCPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
 
 				// Register gRPC Gateway with the bound port
 				gwmux := runtime.NewServeMux()
 				opts := []gogrpc.DialOption{gogrpc.WithTransportCredentials(insecure.NewCredentials())}
-				endpoint := fmt.Sprintf("127.0.0.1:%d", a.BoundGRPCPort)
+				endpoint := fmt.Sprintf("127.0.0.1:%d", a.BoundGRPCPort.Load())
 
 				if err := v1.RegisterRegistrationServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
@@ -1907,7 +1907,7 @@ func (a *Application) runServerMode(
 		errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
 	} else {
 		if addr, ok := httpLis.Addr().(*net.TCPAddr); ok {
-			a.BoundHTTPPort = addr.Port
+			a.BoundHTTPPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
 		}
 		expectedReady++
 		// Handle active connection tracking
