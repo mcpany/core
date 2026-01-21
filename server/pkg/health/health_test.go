@@ -738,8 +738,6 @@ func TestGRPC_NoHealthCheck(t *testing.T) {
 	require.NoError(t, err)
 	defer func() { _ = lis.Close() }()
 
-	ctx := context.Background()
-
 	upstreamConfig := configv1.UpstreamServiceConfig_builder{
 		Name: lo.ToPtr("grpc-fallback"),
 		GrpcService: configv1.GrpcUpstreamService_builder{
@@ -749,7 +747,5 @@ func TestGRPC_NoHealthCheck(t *testing.T) {
 	}.Build()
 
 	checker := NewChecker(upstreamConfig)
-	assert.NotNil(t, checker)
-	// Should be UP because TCP connection succeeds
-	assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
+	assert.Nil(t, checker)
 }

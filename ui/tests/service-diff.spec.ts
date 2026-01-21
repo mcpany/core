@@ -45,8 +45,9 @@ test.describe('Service Config Diff', () => {
              }
 
              // Match by ID OR Name (since update uses Name in URL)
-             // Encode spaces for Name check
-             if (url.includes(serviceId) || url.includes(encodeURIComponent(serviceName)) || url.includes(encodeURIComponent(newServiceName))) {
+             // Decode URL to ensure we match "Test Service Updated" regardless of encoding (e.g. %20 vs +)
+             const decodedUrl = decodeURIComponent(url);
+             if (decodedUrl.includes(serviceId) || decodedUrl.includes(serviceName) || decodedUrl.includes(newServiceName)) {
                  if (method === 'GET') {
                     // Get Service
                     // Must return snake_case properties as the client expects REST response to be snake_case

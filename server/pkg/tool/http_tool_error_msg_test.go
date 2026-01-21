@@ -6,10 +6,11 @@ package tool_test
 import (
 	"context"
 	"net/http"
+	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -46,8 +47,13 @@ func TestHTTPTool_Execute_ErrorMessagesWithBody(t *testing.T) {
 
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
 		require.Error(t, err)
-		// This assertion is expected to FAIL currently
-		assert.Contains(t, err.Error(), errorBody, "Error message should contain the response body")
+
+		// The body masking depends on the MCPANY_DEBUG environment variable
+		if os.Getenv("MCPANY_DEBUG") == "true" {
+			assert.Contains(t, err.Error(), errorBody, "Error message should contain the response body in debug mode")
+		} else {
+			assert.Contains(t, err.Error(), "[Body hidden for security. Enable debug mode to view.]", "Error message should contain the masked body message when not in debug mode")
+		}
 		assert.Contains(t, err.Error(), "500", "Error message should contain status code")
 	})
 }

@@ -24,6 +24,7 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 			return &client.HTTPClientWrapper{Client: &http.Client{Timeout: 5 * time.Second}}, nil
 		},
 		1,
+		1,
 		10,
 		1*time.Minute,
 		false,

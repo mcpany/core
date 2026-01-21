@@ -39,8 +39,6 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [isDryRun, setIsDryRun] = useState(false);
   const [execHistory, setExecHistory] = useState<{ time: string; latency: number; status: string }[]>([]);
 
-  if (!tool) return null;
-
   const stats = useMemo(() => {
     const total = execHistory.length;
     const successes = execHistory.filter(h => h.status === "success").length;
@@ -50,6 +48,10 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
 
     return { total, successes, failures, avgLatency, successRate };
   }, [execHistory]);
+
+  if (!tool) return null;
+
+
 
   const handleExecute = async () => {
     setLoading(true);
@@ -85,11 +87,11 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-              {tool.name}
-              <Badge variant="outline">{tool.serviceId}</Badge>
+              {String(tool.name)}
+              <Badge variant="outline">{String(tool.serviceId)}</Badge>
           </DialogTitle>
           <DialogDescription>
-            {tool.description}
+            {String(tool.description)}
           </DialogDescription>
         </DialogHeader>
 

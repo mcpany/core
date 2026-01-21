@@ -39,7 +39,7 @@ func TestHTTPTool_PathTraversal_Vulnerability(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 0, true)
+	}, 1, 1, 1, 0, true)
 	require.NoError(t, err)
 	poolManager.Register("test-service", p)
 
