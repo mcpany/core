@@ -3,7 +3,7 @@
 
 global_settings:
   profile_definitions:
-    - name: "Default Dev"
+    - name: "default"
       selector:
         tags: ["dev"]
   db_path: "/tmp/mcpany.db"
