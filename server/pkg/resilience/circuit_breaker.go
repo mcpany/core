@@ -103,7 +103,7 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 	}
 
 	cb.mutex.Lock()
-	cb.onSuccess(originState)
+	cb.onSuccess()
 	cb.mutex.Unlock()
 	return nil
 }
@@ -118,11 +118,8 @@ func (cb *CircuitBreaker) setState(newState State) {
 	atomic.StoreInt32((*int32)(&cb.state), int32(newState))
 }
 
-func (cb *CircuitBreaker) onSuccess(originState State) {
+func (cb *CircuitBreaker) onSuccess() {
 	if cb.getState() == StateHalfOpen {
-		if originState != StateHalfOpen {
-			return
-		}
 		cb.setState(StateClosed)
 		cb.halfOpenHits = 0
 	}

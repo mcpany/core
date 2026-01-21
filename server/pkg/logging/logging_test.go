@@ -170,7 +170,7 @@ func TestBroadcaster(t *testing.T) {
 
 func TestBroadcastHandler(t *testing.T) {
 	b := NewBroadcaster()
-	h := NewBroadcastHandler(b, slog.LevelInfo)
+	h := NewBroadcastHandler(b)
 
 	ch := b.Subscribe()
 	defer b.Unsubscribe(ch)
@@ -207,29 +207,6 @@ func TestBroadcastHandler(t *testing.T) {
 	h3 := h.WithGroup("mygroup")
 	assert.NotEqual(t, h, h3)
 	assert.NotNil(t, h3)
-}
-
-func TestBroadcastHandler_Enabled(t *testing.T) {
-	b := NewBroadcaster()
-	h := NewBroadcastHandler(b, slog.LevelWarn)
-
-	// Should be enabled for Warn and above
-	assert.True(t, h.Enabled(context.Background(), slog.LevelWarn))
-	assert.True(t, h.Enabled(context.Background(), slog.LevelError))
-
-	// Should be disabled for Info and below
-	assert.False(t, h.Enabled(context.Background(), slog.LevelInfo))
-	assert.False(t, h.Enabled(context.Background(), slog.LevelDebug))
-
-	// Verify level propagation in WithAttrs
-	hAttrs := h.WithAttrs(nil)
-	assert.True(t, hAttrs.Enabled(context.Background(), slog.LevelWarn))
-	assert.False(t, hAttrs.Enabled(context.Background(), slog.LevelInfo))
-
-	// Verify level propagation in WithGroup
-	hGroup := h.WithGroup("group")
-	assert.True(t, hGroup.Enabled(context.Background(), slog.LevelWarn))
-	assert.False(t, hGroup.Enabled(context.Background(), slog.LevelInfo))
 }
 
 func TestTeeHandler(t *testing.T) {

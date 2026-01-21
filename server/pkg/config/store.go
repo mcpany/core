@@ -141,14 +141,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
-		// Attempt to find the line number in the original YAML
-		if matches := unknownFieldRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
-			unknownField := matches[1]
-			if line := findKeyLine(b, unknownField); line > 0 {
-				err = fmt.Errorf("line %d: %w", line, err)
-			}
-		}
-
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
@@ -482,7 +474,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 
 		b, err = expand(b)
 		if err != nil {
-			return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
+			return nil, fmt.Errorf("failed to expand environment variables in %s: %w", path, err)
 		}
 
 		engine, err := NewEngine(path)
@@ -1116,43 +1108,4 @@ func (ms *MultiStore) HasConfigSources() bool {
 		}
 	}
 	return false
-}
-
-func findKeyLine(b []byte, key string) int {
-	var node yaml.Node
-	if err := yaml.Unmarshal(b, &node); err != nil {
-		return 0
-	}
-	return findKeyInNode(&node, key)
-}
-
-func findKeyInNode(node *yaml.Node, key string) int {
-	switch node.Kind {
-	case yaml.DocumentNode:
-		for _, child := range node.Content {
-			if line := findKeyInNode(child, key); line > 0 {
-				return line
-			}
-		}
-	case yaml.MappingNode:
-		for i := 0; i < len(node.Content); i += 2 {
-			keyNode := node.Content[i]
-			valNode := node.Content[i+1]
-
-			if keyNode.Value == key {
-				return keyNode.Line
-			}
-
-			if line := findKeyInNode(valNode, key); line > 0 {
-				return line
-			}
-		}
-	case yaml.SequenceNode:
-		for _, child := range node.Content {
-			if line := findKeyInNode(child, key); line > 0 {
-				return line
-			}
-		}
-	}
-	return 0
 }

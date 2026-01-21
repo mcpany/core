@@ -152,7 +152,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "basic auth password validation failed",
+			expectedErrorString: "failed to resolve basic auth password secret",
 		},
 		{
 			name: "Bearer Token Unset Env",
@@ -180,7 +180,7 @@ func TestValidate_MoreServices(t *testing.T) {
 				},
 			},
 			expectedErrorCount:  1,
-			expectedErrorString: "bearer token validation failed",
+			expectedErrorString: "failed to resolve bearer token secret",
 		},
 		{
 			name: "invalid command line service - missing command",

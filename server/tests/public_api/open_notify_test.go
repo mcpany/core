@@ -22,8 +22,7 @@ import (
 )
 
 func TestUpstreamService_OpenNotify(t *testing.T) {
-	// Increased timeout to handle flaky public API connection
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeMedium)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Open Notify Server...")
@@ -94,13 +93,7 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 			break // Success
 		}
 
-		errMsg := err.Error()
-		if strings.Contains(errMsg, "503 Service Temporarily Unavailable") ||
-			strings.Contains(errMsg, "context deadline exceeded") ||
-			strings.Contains(errMsg, "connection reset by peer") ||
-			strings.Contains(errMsg, "i/o timeout") ||
-			strings.Contains(errMsg, "connection timed out") ||
-			strings.Contains(errMsg, "Client.Timeout exceeded") {
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "i/o timeout") || strings.Contains(err.Error(), "connection timed out") {
 			t.Logf("Attempt %d/%d: Call to api.open-notify.org failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
 			time.Sleep(2 * time.Second) // Wait before retrying
 			continue

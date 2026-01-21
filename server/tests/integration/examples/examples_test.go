@@ -6,9 +6,7 @@ package examples_test
 import (
 	"context"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/config"
@@ -33,19 +31,6 @@ func TestExampleConfigs(t *testing.T) {
 	err = os.Chdir(projectRoot)
 	require.NoError(t, err)
 
-	// Ensure stdio example binary is built, as Config validation checks for its existence
-	// This makes the test robust against sharding/environment where build-examples might not have run.
-	stdioBinPath := filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool-bin")
-	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
-		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
-		}
-	}
-
 	examplesDir := filepath.Join(projectRoot, "examples")
 
 	// Walk through examples directory
@@ -56,12 +41,7 @@ func TestExampleConfigs(t *testing.T) {
 
 		// Check for config.yaml
 		if !info.IsDir() && filepath.Base(path) == "config.yaml" {
-			// Trim project root from path for cleaner test name
-			testName := path
-			if strings.HasPrefix(path, projectRoot) {
-				testName = strings.TrimPrefix(path, projectRoot)
-			}
-			t.Run(testName, func(t *testing.T) {
+			t.Run(path, func(t *testing.T) {
 				validateConfig(t, path)
 			})
 		}
