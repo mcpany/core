@@ -221,32 +221,6 @@ func redactSliceMaybe(s []interface{}) ([]interface{}, bool) {
 	return nil, false
 }
 
-// redactSlice is preserved for potential future use or external tests that might rely on it,
-// although it's currently unused in this package.
-//
-//nolint:unused
-func redactSlice(s []interface{}) []interface{} {
-	// Legacy wrapper if needed, but we updated usage.
-	// RedactMap uses redactSliceMaybe now.
-	res, changed := redactSliceMaybe(s)
-	if changed {
-		return res
-	}
-
-	// For legacy support (if used internally elsewhere), return a deep copy to be safe.
-	// Although currently it seems unused, we keep it consistent.
-	newSlice := make([]interface{}, len(s))
-	for i, v := range s {
-		if nestedMap, ok := v.(map[string]interface{}); ok {
-			newSlice[i] = RedactMap(nestedMap)
-		} else if nestedSlice, ok := v.([]interface{}); ok {
-			newSlice[i] = redactSlice(nestedSlice)
-		} else {
-			newSlice[i] = v
-		}
-	}
-	return newSlice
-}
 
 // bytesContainsFold2 is a proposed optimization that we might use in the future.
 // Ideally, we want a function that can search for multiple keys at once (Aho-Corasick),
@@ -477,7 +451,9 @@ func isKeyColon(input []byte, endOffset int) bool {
 // dsnPasswordRegex handles fallback cases but we prefer net/url.
 // Matches colon, followed by password (which may start with / if followed by non-/, or be empty), followed by @.
 // We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@][^@]*|/[^/@][^@]*|)(@)`)
+// We use [^\s] instead of [^@] to allow @ in passwords while stopping at the last @ before a non-password part (heuristic).
+// This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
