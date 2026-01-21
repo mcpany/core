@@ -474,8 +474,10 @@ func isKeyColon(input []byte, endOffset int) bool {
 	return false
 }
 
-// dsnPasswordRegex handles fallback cases but we prefer net/url
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
+// dsnPasswordRegex handles fallback cases but we prefer net/url.
+// Matches colon, followed by password (which may start with / if followed by non-/, or be empty), followed by @.
+// We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@][^@]*|/[^/@][^@]*|)(@)`)
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
