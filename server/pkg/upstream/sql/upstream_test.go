@@ -189,7 +189,7 @@ func TestTool_Execute_Errors(t *testing.T) {
 	toolProto := &v1.Tool{
 		Name: ptrString("test_tool"),
 	}
-	toolInstance := NewTool(toolProto, db, callDef)
+	toolInstance := NewTool(toolProto, db, callDef, nil, "test_tool_call")
 
 	ctx := context.Background()
 
@@ -231,7 +231,7 @@ func TestTool_Execute_EdgeCases(t *testing.T) {
 	toolProto := &v1.Tool{
 		Name: ptrString("test_tool"),
 	}
-	toolInstance := NewTool(toolProto, db, callDef)
+	toolInstance := NewTool(toolProto, db, callDef, nil, "test_tool_call")
 
 	ctx := context.Background()
 
@@ -281,12 +281,12 @@ func TestTool_GetCacheConfig(t *testing.T) {
 			Ttl:       &durationpb.Duration{Seconds: 60},
 		},
 	}
-	tl := NewTool(nil, nil, callDef)
+	tl := NewTool(nil, nil, callDef, nil, "")
 	cc := tl.GetCacheConfig()
 	assert.NotNil(t, cc)
 	assert.True(t, cc.GetIsEnabled())
 
-	tl2 := NewTool(nil, nil, nil)
+	tl2 := NewTool(nil, nil, nil, nil, "")
 	assert.Nil(t, tl2.GetCacheConfig())
 }
 
@@ -296,7 +296,7 @@ func TestTool_MCPTool(t *testing.T) {
 		Description: ptrString("desc"),
 		ServiceId:   ptrString("myservice"),
 	}
-	tl := NewTool(toolProto, nil, nil)
+	tl := NewTool(toolProto, nil, nil, nil, "")
 
 	mcpTool := tl.MCPTool()
 	assert.NotNil(t, mcpTool)
