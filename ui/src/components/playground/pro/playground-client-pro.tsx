@@ -12,6 +12,9 @@ import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Download, Share2, Copy, Check, Info } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { estimateTokens, estimateMessageTokens } from "@/lib/tokens";
 import {
     Dialog,
     DialogContent,
@@ -102,6 +105,11 @@ export function PlaygroundClientPro() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
   const [isDryRun, setIsDryRun] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+
+  const currentTokens = useMemo(() => estimateTokens(input), [input]);
+  const historyTokens = useMemo(() => estimateMessageTokens(displayMessages), [displayMessages]);
 
   // Autocomplete state
   const [filteredSuggestions, setFilteredSuggestions] = useState<ToolDefinition[]>([]);
@@ -232,6 +240,45 @@ export function PlaygroundClientPro() {
       }
   };
 
+  const handleExportHistory = () => {
+    const data = JSON.stringify(messages, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `playground-history-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+        title: "History Exported",
+        description: "Your playground session has been saved to a JSON file."
+    });
+  };
+
+  const handleShareUrl = () => {
+      const url = new URL(window.location.href);
+      // If the input starts with a tool name, we can try to parse it
+      const parts = input.trim().split(/\s+(.*)/);
+      if (parts[0] && availableTools.some(t => t.name === parts[0])) {
+          url.searchParams.set("tool", parts[0]);
+          if (parts[1]) {
+              url.searchParams.set("args", parts[1]);
+          }
+      }
+
+      navigator.clipboard.writeText(url.toString());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+
+      toast({
+          title: "URL Copied",
+          description: "A sharable link with your current tool configuration has been copied to clipboard."
+      });
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       <ResizablePanelGroup direction="horizontal" className="h-full items-stretch">
@@ -274,6 +321,25 @@ export function PlaygroundClientPro() {
                         </h2>
                      </div>
                      <div className="flex items-center gap-2">
+                          <Button
+                               variant="outline"
+                               size="sm"
+                               className="h-7 text-xs flex items-center gap-1"
+                               onClick={handleShareUrl}
+                          >
+                              {copied ? <Check className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
+                              Share
+                          </Button>
+                          <Button
+                               variant="outline"
+                               size="sm"
+                               className="h-7 text-xs flex items-center gap-1"
+                               onClick={handleExportHistory}
+                               disabled={displayMessages.length === 0}
+                          >
+                              <Download className="h-3 w-3" />
+                              Export
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
@@ -350,9 +416,18 @@ export function PlaygroundClientPro() {
                      <div className="max-w-4xl mx-auto mt-2 flex justify-between items-center text-[10px] text-muted-foreground px-1">
                         <div className="flex items-center gap-4">
                             <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 border-l pl-4">
                                 <Switch id="console-dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} className="scale-75 origin-left" />
-                                <Label htmlFor="console-dry-run" className="cursor-pointer">Dry Run</Label>
+                                <Label htmlFor="console-dry-run" className="cursor-pointer text-[10px]">Dry Run</Label>
+                            </div>
+                            <div className="flex items-center gap-1.5 border-l pl-4">
+                                <Info className="h-3 w-3 text-muted-foreground" />
+                                <span title="Approximate tokens based on character count and words">
+                                    ~{currentTokens} tokens
+                                </span>
+                                <span className="text-[9px] opacity-60 ml-1">
+                                   (Session: ~{historyTokens})
+                                </span>
                             </div>
                         </div>
                         <span className="hidden sm:inline">Press Enter to execute</span>

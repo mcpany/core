@@ -20,7 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
-import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,16 @@ interface RegisterServiceDialogProps {
   serviceToEdit?: UpstreamServiceConfig;
 }
 
+const detectSensitiveData = (text: string) => {
+    if (!text) return false;
+    const patterns = [
+        /(key|secret|token|password|auth|credential|api[_-]?key)[=:]\s*[\w.-]+/i,
+        /(sk-[a-zA-Z0-9]{48})/, // OpenAI
+        /(xox[bp]-[0-9]+-[0-9]+-[a-zA-Z0-9]+)/, // Slack
+    ];
+    return patterns.some(p => p.test(text));
+};
+
 /**
  * RegisterServiceDialog.
  *
@@ -55,6 +66,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   const [validationResult, setValidationResult] = useState<{valid: boolean, message: string} | null>(null);
   const [showDiff, setShowDiff] = useState(false);
   const [pendingConfig, setPendingConfig] = useState<UpstreamServiceConfig | null>(null);
+  const [hasPotentialSecrets, setHasPotentialSecrets] = useState(false);
 
   const { toast } = useToast();
   const isEditing = !!serviceToEdit;
@@ -124,6 +136,18 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
     }
   }, [open]);
 
+  // Watch for sensitive data
+  const watchedAddress = form.watch("address");
+  const watchedCommand = form.watch("command");
+  const watchedConfigJson = form.watch("configJson");
+
+  useEffect(() => {
+    const hasSecrets = detectSensitiveData(watchedAddress || "") ||
+                       detectSensitiveData(watchedCommand || "") ||
+                       detectSensitiveData(watchedConfigJson || "");
+    setHasPotentialSecrets(hasSecrets);
+  }, [watchedAddress, watchedCommand, watchedConfigJson]);
+
   const handleTemplateSelect = (template: ServiceTemplate) => {
       setSelectedTemplate(template);
 
@@ -163,6 +187,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           priority: 0,
           loadBalancingStrategy: 0,
           sanitizedName: "",
+          readOnly: false,
           callPolicies: [],
           preCallHooks: [],
           postCallHooks: [],
@@ -350,6 +375,16 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
 
                 <TabsContent value="basic" className="space-y-4">
+                    {hasPotentialSecrets && (
+                        <Alert variant="destructive" className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-900 text-yellow-800 dark:text-yellow-200">
+                            <AlertTriangle className="h-4 w-4" />
+                            <AlertTitle>Potential Sensitive Data Detected</AlertTitle>
+                            <AlertDescription>
+                                Your configuration appears to contain secrets (keys, tokens, or passwords) in non-secret fields.
+                                Consider using the <strong>Authentication</strong> tab or environment variables for sensitive information.
+                            </AlertDescription>
+                        </Alert>
+                    )}
                     <FormField
                     control={form.control}
                     name="name"

@@ -1414,8 +1414,15 @@ func TestRunStdioMode(t *testing.T) {
 		return nil
 	}
 
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+
 	app := &Application{
 		runStdioModeFunc: mockStdioFunc,
+		Storage:          mockStore,
 	}
 
 	fs := afero.NewMemMapFs()
