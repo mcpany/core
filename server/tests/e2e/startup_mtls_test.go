@@ -112,8 +112,15 @@ func TestStartup_mTLS(t *testing.T) {
 	_, _, err = net.SplitHostPort(addr)
 	require.NoError(t, err)
 
+	// Build server binary
+	binPath := filepath.Join(tmpDir, "server")
+	buildCmd := exec.Command("go", "build", "-o", binPath, "../../cmd/server/main.go")
+	buildCmd.Stdout = os.Stdout
+	buildCmd.Stderr = os.Stderr
+	require.NoError(t, buildCmd.Run(), "Failed to build server binary")
+
 	// Run server
-	cmd := exec.Command("go", "run", "../../cmd/server/main.go", "run",
+	cmd := exec.Command(binPath, "run",
 		"--config-path", configPath,
 		"--mcp-listen-address", addr,
 		"--grpc-port", "127.0.0.1:0", // using random port for grpc to avoid collision

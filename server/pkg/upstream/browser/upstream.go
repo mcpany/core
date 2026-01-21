@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package browser provides browser automation tools.
 package browser
 
 import (
@@ -36,28 +37,28 @@ func NewUpstream() *Upstream {
 }
 
 // Shutdown stops the playwright instance and closes the browser.
-func (u *Upstream) Shutdown(ctx context.Context) error {
+func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
 	if u.page != nil {
-		u.page.Close()
+		_ = u.page.Close()
 	}
 	if u.context != nil {
-		u.context.Close()
+		_ = u.context.Close()
 	}
 	if u.browser != nil {
-		u.browser.Close()
+		_ = u.browser.Close()
 	}
 	if u.pw != nil {
-		u.pw.Stop()
+		_ = u.pw.Stop()
 	}
 	u.initialized = false
 	return nil
 }
 
 // CheckHealth checks if the browser is responsive.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
+func (u *Upstream) CheckHealth(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
@@ -80,12 +81,12 @@ type browserToolDef struct {
 
 // Register initializes the browser and registers automation tools.
 func (u *Upstream) Register(
-	ctx context.Context,
+	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
-	promptManager prompt.ManagerInterface,
-	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ prompt.ManagerInterface,
+	_ resource.ManagerInterface,
+	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -211,24 +212,24 @@ func (u *Upstream) initializeBrowser() error {
 		Headless: playwright.Bool(true),
 	})
 	if err != nil {
-		pw.Stop()
+		_ = pw.Stop()
 		return fmt.Errorf("could not launch chromium: %w", err)
 	}
 	u.browser = browser
 
 	bgCtx, err := browser.NewContext()
 	if err != nil {
-		browser.Close()
-		pw.Stop()
+		_ = browser.Close()
+		_ = pw.Stop()
 		return fmt.Errorf("could not create browser context: %w", err)
 	}
 	u.context = bgCtx
 
 	page, err := bgCtx.NewPage()
 	if err != nil {
-		bgCtx.Close()
-		browser.Close()
-		pw.Stop()
+		_ = bgCtx.Close()
+		_ = browser.Close()
+		_ = pw.Stop()
 		return fmt.Errorf("could not create page: %w", err)
 	}
 	u.page = page
@@ -236,7 +237,7 @@ func (u *Upstream) initializeBrowser() error {
 	return nil
 }
 
-func (u *Upstream) handleToolExecution(ctx context.Context, name string, args map[string]interface{}) (map[string]interface{}, error) {
+func (u *Upstream) handleToolExecution(_ context.Context, name string, args map[string]interface{}) (map[string]interface{}, error) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
@@ -264,7 +265,7 @@ func (u *Upstream) handleToolExecution(ctx context.Context, name string, args ma
 		if !ok {
 			return nil, fmt.Errorf("selector argument required")
 		}
-		err := u.page.Click(selector)
+		err := u.page.Locator(selector).Click()
 		if err != nil {
 			return nil, err
 		}
@@ -279,7 +280,7 @@ func (u *Upstream) handleToolExecution(ctx context.Context, name string, args ma
 		if !ok {
 			return nil, fmt.Errorf("value argument required")
 		}
-		err := u.page.Fill(selector, value)
+		err := u.page.Locator(selector).Fill(value)
 		if err != nil {
 			return nil, err
 		}

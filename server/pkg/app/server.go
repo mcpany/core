@@ -1892,9 +1892,9 @@ func (a *Application) runServerMode(
 
 	// Register Root Handler with gRPC-Web support
 	// Register Health Check
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	})
 
 	// Register Root Handler with gRPC-Web support
@@ -1917,9 +1917,11 @@ func (a *Application) runServerMode(
 
 		tlsConfig := &tls.Config{
 			Certificates: []tls.Certificate{cert},
+			MinVersion:   tls.VersionTLS12,
 		}
 
 		if tlsClientCA != "" {
+			//nolint:gosec // File path comes from trusted configuration
 			caCert, err := os.ReadFile(tlsClientCA)
 			if err != nil {
 				return fmt.Errorf("failed to read TLS client CA: %w", err)

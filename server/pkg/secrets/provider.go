@@ -36,7 +36,7 @@ func NewMockProvider() *MockProvider {
 }
 
 // GetSecret retrieves a secret from the mock store.
-func (m *MockProvider) GetSecret(ctx context.Context, id string) (string, error) {
+func (m *MockProvider) GetSecret(_ context.Context, id string) (string, error) {
 	if val, ok := m.Secrets[id]; ok {
 		return val, nil
 	}
@@ -44,7 +44,7 @@ func (m *MockProvider) GetSecret(ctx context.Context, id string) (string, error)
 }
 
 // RotateSecret updates a secret in the mock store with a new value (simulated rotation).
-func (m *MockProvider) RotateSecret(ctx context.Context, id string) (string, error) {
+func (m *MockProvider) RotateSecret(_ context.Context, id string) (string, error) {
 	if _, ok := m.Secrets[id]; !ok {
 		return "", ErrSecretNotFound
 	}

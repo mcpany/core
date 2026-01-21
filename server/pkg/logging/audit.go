@@ -59,7 +59,7 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 }
 
 // Export sends the log record to the configued sinks.
-func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
+func (h *AuditHandler) Export(_ context.Context, _ slog.Record) error {
 	if h.config == nil {
 		return nil
 	}
