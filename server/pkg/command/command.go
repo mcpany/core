@@ -71,6 +71,7 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Returns the result.
 func NewLocalExecutor() Executor {
+	logging.GetLogger().Warn("Initializing LocalExecutor. This executor runs commands directly on the host machine without sandboxing. Ensure strict input validation and access controls are in place.")
 	return &localExecutor{}
 }
 

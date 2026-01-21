@@ -2891,10 +2891,10 @@ func TestAuthMiddleware_IPBypass(t *testing.T) {
 		wantStatus int
 	}{
 		{"IPv4 Loopback", "127.0.0.1:12345", http.StatusOK},
-		{"IPv4 Private", "192.168.1.1:12345", http.StatusOK},
+		{"IPv4 Private", "192.168.1.1:12345", http.StatusForbidden}, // Blocked by strict Loopback check
 		{"IPv6 Loopback", "[::1]:12345", http.StatusOK},
 		{"IPv4 Public", "8.8.8.8:12345", http.StatusForbidden},
-		{"IPv4-Compatible Loopback", "[::127.0.0.1]:12345", http.StatusOK},
+		{"IPv4-Compatible Loopback", "[::127.0.0.1]:12345", http.StatusForbidden}, // IPv4-compatible (deprecated) are not loopback in stdlib
 	}
 
 	for _, tt := range tests {

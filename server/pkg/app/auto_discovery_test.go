@@ -39,15 +39,16 @@ upstream_services: []
 	errChan := make(chan error, 1)
 	go func() {
 		// Run with ephemeral ports
-		errChan <- app.Run(RunOptions{
-			Ctx:             ctx,
-			Fs:              fs,
-			Stdio:           false,
-			JSONRPCPort:     "127.0.0.1:0",
-			GRPCPort:        "127.0.0.1:0",
-			ConfigPaths:     []string{"/config.yaml"},
-			ShutdownTimeout: 100 * time.Millisecond,
-		})
+		errChan <- app.Run(
+			ctx,
+			fs,
+			false,
+			"127.0.0.1:0",
+			"127.0.0.1:0",
+			[]string{"/config.yaml"},
+			"",
+			100*time.Millisecond,
+		)
 	}()
 
 	// Wait for startup to complete (which includes discovery phase)

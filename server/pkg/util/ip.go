@@ -91,10 +91,12 @@ func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }
 
-func isNAT64Loopback(ip net.IP) bool {
+// IsNAT64Loopback checks if the IP address is a NAT64 loopback address.
+func IsNAT64Loopback(ip net.IP) bool {
 	return validation.IsNAT64Loopback(ip)
 }
 
-func isNAT64LinkLocal(ip net.IP) bool {
+// IsNAT64LinkLocal checks if the IP address is a NAT64 link-local address.
+func IsNAT64LinkLocal(ip net.IP) bool {
 	return validation.IsNAT64LinkLocal(ip)
 }
