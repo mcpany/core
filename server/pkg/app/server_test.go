@@ -3285,7 +3285,7 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
 	}()
 
 	waitForServerReady(t, bindAddress)

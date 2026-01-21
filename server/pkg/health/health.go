@@ -68,6 +68,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		}
 		check = httpCheck(serviceName, uc.GetHttpService())
 	case configv1.UpstreamServiceConfig_GrpcService_case:
+		if uc.GetGrpcService().GetHealthCheck() == nil {
+			return nil
+		}
 		check = grpcCheck(serviceName, uc.GetGrpcService())
 	case configv1.UpstreamServiceConfig_OpenapiService_case:
 		if uc.GetOpenapiService().GetHealthCheck() == nil {
