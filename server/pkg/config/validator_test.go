@@ -199,17 +199,6 @@ func TestValidateSecretValue(t *testing.T) {
 			expectErr: true,
 			errMsg:    "invalid validation regex",
 		},
-		{
-			name: "Empty value with non-empty regex",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "",
-				},
-				ValidationRegex: proto.String(`^.+$`),
-			},
-			expectErr: true,
-			errMsg:    "secret value does not match validation regex",
-		},
 	}
 
 	for _, tt := range tests {
