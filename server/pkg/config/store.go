@@ -431,7 +431,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 
 		b, err = expand(b)
 		if err != nil {
-			return nil, fmt.Errorf("failed to expand environment variables in %s: %w", path, err)
+			return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
 		}
 
 		engine, err := NewEngine(path)
