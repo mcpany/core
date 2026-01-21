@@ -373,7 +373,6 @@ func (a *Application) Run(opts RunOptions) error {
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
-	a.lastReloadTime = time.Now()
 
 	// Populate initial good config for diffing
 	if len(opts.ConfigPaths) > 0 {
