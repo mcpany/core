@@ -23,6 +23,13 @@ EXPOSE 3001
 
 COPY docker/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Ensure /app is owned by the non-root user
+RUN chown node:node /app
+
+# Use non-root user 'node' provided by the base image
+USER node
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Run the server by default
