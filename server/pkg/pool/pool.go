@@ -15,7 +15,6 @@ import (
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/samber/lo"
-	"golang.org/x/sync/semaphore"
 )
 
 var (
@@ -76,7 +75,8 @@ type poolItem[T any] struct {
 type poolImpl[T ClosableClient] struct {
 	clients            chan poolItem[T]
 	factory            func(context.Context) (T, error)
-	sem                *semaphore.Weighted
+	maxSize            int64
+	activeCount        atomic.Int64
 	mu                 sync.RWMutex
 	closed             atomic.Bool
 	disableHealthCheck bool
@@ -113,7 +113,7 @@ func New[T ClosableClient](
 	p := &poolImpl[T]{
 		clients:            make(chan poolItem[T], maxSize),
 		factory:            factory,
-		sem:                semaphore.NewWeighted(int64(maxSize)),
+		maxSize:            int64(maxSize),
 		disableHealthCheck: disableHealthCheck,
 	}
 
@@ -134,7 +134,7 @@ func New[T ClosableClient](
 			}
 			p.clients <- poolItem[T]{client: client}
 		}
-		if !p.sem.TryAcquire(int64(minSize)) {
+		if !p.tryAcquire(int64(minSize)) {
 			return nil, fmt.Errorf("failed to acquire permits for initial clients")
 		}
 		return p, nil
@@ -157,12 +157,33 @@ func New[T ClosableClient](
 		p.clients <- poolItem[T]{client: client}
 	}
 	// Take permits for the initial clients
-	if !p.sem.TryAcquire(int64(minSize)) {
+	if !p.tryAcquire(int64(minSize)) {
 		// This should not happen given the checks above
 		return nil, fmt.Errorf("failed to acquire permits for initial clients")
 	}
 
 	return p, nil
+}
+
+// tryAcquire attempts to acquire n permits.
+// It returns true if successful, false if the pool would exceed maxSize.
+// This uses atomic operations to avoid locking.
+func (p *poolImpl[T]) tryAcquire(n int64) bool {
+	for {
+		cur := p.activeCount.Load()
+		if cur+n > p.maxSize {
+			return false
+		}
+		if p.activeCount.CompareAndSwap(cur, cur+n) {
+			return true
+		}
+	}
+}
+
+// release releases n permits.
+// This uses atomic operations to avoid locking.
+func (p *poolImpl[T]) release(n int64) {
+	p.activeCount.Add(-n)
 }
 
 // Get retrieves a client from the pool. It first attempts to fetch an idle
@@ -215,13 +236,13 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 		}
 
 		// If no idle client, try to create a new one without blocking.
-		if p.sem.TryAcquire(1) {
+		if p.tryAcquire(1) {
 			// Acquired a permit, but double-check for a race condition where
 			// a client was returned just before we acquired the permit.
 			select {
 			case item, ok := <-p.clients:
 				// A client was available, so we use it and release the permit.
-				p.sem.Release(1)
+				p.release(1)
 				if !ok {
 					return zero, ErrPoolClosed
 				}
@@ -236,7 +257,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				// No client, so create a new one.
 				// We must check if the pool was closed *after* we acquired the permit.
 				if p.closed.Load() {
-					p.sem.Release(1) // Don't leak the permit
+					p.release(1) // Don't leak the permit
 					return zero, ErrPoolClosed
 				}
 
@@ -250,7 +271,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 					_ = lo.Try(func() error {
 						return client.Close()
 					})
-					p.sem.Release(1)
+					p.release(1)
 					return zero, ErrPoolClosed
 				}
 
@@ -297,7 +318,7 @@ func (p *poolImpl[T]) factorySafe(ctx context.Context) (T, error) {
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
-				p.sem.Release(1)
+				p.release(1)
 				panic(r)
 			}
 		}()
@@ -307,7 +328,7 @@ func (p *poolImpl[T]) factorySafe(ctx context.Context) (T, error) {
 
 	// If not panicked, but error
 	if !panicked && err != nil {
-		p.sem.Release(1)
+		p.release(1)
 		return client, err // client is zero
 	}
 
@@ -326,7 +347,7 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 				_ = lo.Try(func() error {
 					return client.Close()
 				})
-				p.sem.Release(1)
+				p.release(1)
 				panic(r)
 			}
 		}()
@@ -341,7 +362,7 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 		_ = lo.Try(func() error {
 			return client.Close()
 		})
-		p.sem.Release(1)
+		p.release(1)
 	}
 
 	return healthy
@@ -358,7 +379,7 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
-		p.sem.Release(1)
+		p.release(1)
 		return
 	}
 
@@ -366,7 +387,7 @@ func (p *poolImpl[T]) Put(client T) {
 		_ = lo.Try(func() error {
 			return client.Close()
 		})
-		p.sem.Release(1) // Release permit as the client is discarded
+		p.release(1) // Release permit as the client is discarded
 		return
 	}
 
@@ -381,7 +402,7 @@ func (p *poolImpl[T]) Put(client T) {
 	if p.closed.Load() {
 		p.mu.RUnlock()
 		_ = lo.Try(client.Close)
-		p.sem.Release(1)
+		p.release(1)
 		return
 	}
 
@@ -426,7 +447,7 @@ func (p *poolImpl[T]) Close() error {
 		_ = lo.Try(func() error {
 			return client.Close()
 		})
-		p.sem.Release(1)
+		p.release(1)
 	}
 	return nil
 }
