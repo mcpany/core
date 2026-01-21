@@ -17,6 +17,39 @@ vi.mock('../src/lib/client', () => ({
   },
 }));
 
+// Mock Monaco Editor
+vi.mock('@monaco-editor/react', () => {
+  const Editor = ({ value, onChange }: { value: string; onChange: (val: string) => void }) => (
+    <textarea
+      data-testid="monaco-editor"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+  return {
+    __esModule: true,
+    default: Editor,
+    Editor,
+    useMonaco: () => ({
+      languages: {
+        register: () => {},
+        setMonarchTokensProvider: () => {},
+        registerCompletionItemProvider: () => {},
+      },
+    }),
+    loader: {
+      config: () => {},
+    },
+  };
+});
+
+// Mock ResizeObserver for scroll area
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 describe('StackEditor', () => {
   const mockStackId = 'test-stack';
   const mockConfig = 'version: "1.0"\nservices:\n  test:\n    image: test/image';
