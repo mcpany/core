@@ -183,6 +183,8 @@ var IsAllowedPath = func(path string) error {
 		}
 	}
 
+	// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
+	//nolint:staticcheck // This error message is user facing and needs to be descriptive
 	return fmt.Errorf("path %q is not allowed (must be in CWD or in allowed paths)\n\t-> Fix: Add %q to 'allowed_file_paths' in 'global_settings' or move the file to the current working directory.", path, path)
 }
 
