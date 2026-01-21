@@ -8,11 +8,19 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
 import { Graph, NodeType, NodeStatus } from '@/types/topology';
 
+/**
+ * MetricPoint represents a single data point for service health metrics at a specific time.
+ */
 export interface MetricPoint {
+    /** The timestamp of the metric point in milliseconds. */
     timestamp: number;
+    /** The latency in milliseconds. */
     latencyMs: number;
+    /** The error rate (0-1). */
     errorRate: number;
+    /** Queries per second. */
     qps: number;
+    /** The status of the node. */
     status: NodeStatus;
 }
 
@@ -23,19 +31,7 @@ interface ServiceHealthContextType {
 
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
 
-/**
- * MAX_HISTORY_POINTS component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
- */
 const MAX_HISTORY_POINTS = 30; // 30 points * 5s = 2.5 minutes history
-/**
- * POLLING_INTERVAL component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
- */
 const POLLING_INTERVAL = 5000;
 
 /**
@@ -139,6 +135,11 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * useServiceHealth is a hook to access service health history and current status.
+ * @returns The service health context.
+ * @throws Error if used outside of a ServiceHealthProvider.
+ */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
     if (!context) {
