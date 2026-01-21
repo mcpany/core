@@ -699,14 +699,15 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 				var list []interface{}
 				for _, part := range parts {
 					part = strings.TrimSpace(part)
-					if kind == protoreflect.BoolKind {
+					switch kind {
+					case protoreflect.BoolKind:
 						b, err := strconv.ParseBool(part)
 						if err == nil {
 							list = append(list, b)
 						} else {
 							list = append(list, part)
 						}
-					} else if kind == protoreflect.MessageKind {
+					case protoreflect.MessageKind:
 						// For repeated messages, try to unmarshal each part as JSON
 						var msgMap map[string]interface{}
 						if json.Unmarshal([]byte(part), &msgMap) == nil {
@@ -714,7 +715,7 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 						} else {
 							list = append(list, part)
 						}
-					} else {
+					default:
 						list = append(list, part)
 					}
 				}
