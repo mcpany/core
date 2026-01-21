@@ -42,7 +42,7 @@
 - [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
-- [ ] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
+- [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
 - [ ] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
@@ -55,6 +55,8 @@
 - [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
 - [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
+- [ ] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
+- [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 
 ### Completed Features
 

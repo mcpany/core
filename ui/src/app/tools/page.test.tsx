@@ -8,7 +8,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import ToolsPage from './page';
 import { apiClient } from '@/lib/client';
-import { vi } from 'vitest';
+import { vi, Mock } from 'vitest';
 
 // Mock apiClient
 vi.mock('@/lib/client', () => ({
@@ -31,7 +31,7 @@ vi.mock('@/hooks/use-pinned-tools', () => ({
 // Mock Select component to avoid Radix UI interaction issues in JSDOM
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 vi.mock('@/components/ui/select', () => ({
-    Select: ({ value, onValueChange, _children }: any) => (
+    Select: ({ value, onValueChange }: { value: string; onValueChange: (val: string) => void; _children: React.ReactNode }) => (
         <div data-testid="select-mock">
             <select
                 value={value}
@@ -48,9 +48,9 @@ vi.mock('@/components/ui/select', () => ({
             </select>
         </div>
     ),
-    SelectContent: ({ children }: any) => <>{children}</>,
-    SelectItem: ({ value, children }: any) => <option value={value}>{children}</option>,
-    SelectTrigger: ({ children }: any) => <div>{children}</div>,
+    SelectContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    SelectItem: ({ value, children }: { value: string; children: React.ReactNode }) => <option value={value}>{children}</option>,
+    SelectTrigger: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     SelectValue: () => null,
 }));
 
@@ -71,6 +71,7 @@ describe('ToolsPage', () => {
         { name: 'tool1', description: 'Tool 1', serviceId: 'service1-id', disable: false },
         { name: 'tool2', description: 'Tool 2', serviceId: 'service2-id', disable: false },
         { name: 'tool3', description: 'Tool 3', serviceId: 'service1-id', disable: true },
+        { name: 'special-tool', description: 'A very special tool', serviceId: 'service1-id', disable: false },
     ];
 
     const mockServices = [
@@ -80,8 +81,8 @@ describe('ToolsPage', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        (apiClient.listTools as any).mockResolvedValue({ tools: mockTools });
-        (apiClient.listServices as any).mockResolvedValue(mockServices);
+        (apiClient.listTools as Mock).mockResolvedValue({ tools: mockTools });
+        (apiClient.listServices as Mock).mockResolvedValue(mockServices);
     });
 
     it('renders tools and services', async () => {
@@ -113,6 +114,40 @@ describe('ToolsPage', () => {
             expect(screen.getByText('tool3')).toBeInTheDocument();
             // tool2 should not be visible (Service Two)
             expect(screen.queryByText('tool2')).not.toBeInTheDocument();
+        });
+    });
+
+    it('filters tools by search query', async () => {
+        render(<ToolsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('tool1')).toBeInTheDocument();
+            expect(screen.getByText('special-tool')).toBeInTheDocument();
+        });
+
+        const searchInput = screen.getByPlaceholderText('Search tools...');
+        fireEvent.change(searchInput, { target: { value: 'special' } });
+
+        await waitFor(() => {
+            expect(screen.getByText('special-tool')).toBeInTheDocument();
+            expect(screen.queryByText('tool1')).not.toBeInTheDocument();
+            expect(screen.queryByText('tool2')).not.toBeInTheDocument();
+        });
+    });
+
+    it('filters tools by description search', async () => {
+        render(<ToolsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('tool1')).toBeInTheDocument();
+        });
+
+        const searchInput = screen.getByPlaceholderText('Search tools...');
+        fireEvent.change(searchInput, { target: { value: 'very special' } });
+
+        await waitFor(() => {
+            expect(screen.getByText('special-tool')).toBeInTheDocument();
+            expect(screen.queryByText('tool1')).not.toBeInTheDocument();
         });
     });
 });
