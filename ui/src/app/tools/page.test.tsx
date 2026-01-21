@@ -66,6 +66,7 @@ describe('ToolsPage', () => {
         { name: 'tool1', description: 'Tool 1', serviceId: 'service1-id', disable: false },
         { name: 'tool2', description: 'Tool 2', serviceId: 'service2-id', disable: false },
         { name: 'tool3', description: 'Tool 3', serviceId: 'service1-id', disable: true },
+        { name: 'special-tool', description: 'A very special tool', serviceId: 'service1-id', disable: false },
     ];
 
     const mockServices = [
@@ -108,6 +109,40 @@ describe('ToolsPage', () => {
             expect(screen.getByText('tool3')).toBeInTheDocument();
             // tool2 should not be visible (Service Two)
             expect(screen.queryByText('tool2')).not.toBeInTheDocument();
+        });
+    });
+
+    it('filters tools by search query', async () => {
+        render(<ToolsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('tool1')).toBeInTheDocument();
+            expect(screen.getByText('special-tool')).toBeInTheDocument();
+        });
+
+        const searchInput = screen.getByPlaceholderText('Search tools...');
+        fireEvent.change(searchInput, { target: { value: 'special' } });
+
+        await waitFor(() => {
+            expect(screen.getByText('special-tool')).toBeInTheDocument();
+            expect(screen.queryByText('tool1')).not.toBeInTheDocument();
+            expect(screen.queryByText('tool2')).not.toBeInTheDocument();
+        });
+    });
+
+    it('filters tools by description search', async () => {
+        render(<ToolsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('tool1')).toBeInTheDocument();
+        });
+
+        const searchInput = screen.getByPlaceholderText('Search tools...');
+        fireEvent.change(searchInput, { target: { value: 'very special' } });
+
+        await waitFor(() => {
+            expect(screen.getByText('special-tool')).toBeInTheDocument();
+            expect(screen.queryByText('tool1')).not.toBeInTheDocument();
         });
     });
 });
