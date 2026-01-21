@@ -1360,3 +1360,89 @@ func TestValidateGlobalSettings_Extended(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateGlobalSettings_RequiredEnvVars(t *testing.T) {
+	ctx := context.Background()
+
+	// Mock env vars
+	os.Setenv("MOCK_KEY_VALID", "sk-123")
+	os.Setenv("MOCK_KEY_INVALID", "invalid")
+	os.Setenv("MOCK_VAR_PRESENT", "exists")
+	defer func() {
+		os.Unsetenv("MOCK_KEY_VALID")
+		os.Unsetenv("MOCK_KEY_INVALID")
+		os.Unsetenv("MOCK_VAR_PRESENT")
+	}()
+
+	tests := []struct {
+		name         string
+		gs           *configv1.GlobalSettings
+		expectErr    bool
+		errSubstring string
+	}{
+		{
+			name: "Valid Env Vars",
+			gs: &configv1.GlobalSettings{
+				RequiredEnvVars: map[string]string{
+					"MOCK_KEY_VALID": "^sk-[0-9]+$",
+					"MOCK_VAR_PRESENT": "", // Just existence check
+				},
+			},
+			expectErr: false,
+		},
+		{
+			name: "Missing Env Var",
+			gs: &configv1.GlobalSettings{
+				RequiredEnvVars: map[string]string{
+					"MISSING_VAR": "",
+				},
+			},
+			expectErr:    true,
+			errSubstring: "missing required environment variable",
+		},
+		{
+			name: "Invalid Format",
+			gs: &configv1.GlobalSettings{
+				RequiredEnvVars: map[string]string{
+					"MOCK_KEY_INVALID": "^sk-[0-9]+$",
+				},
+			},
+			expectErr:    true,
+			errSubstring: "does not match required pattern",
+		},
+		{
+			name: "Invalid Regex Definition",
+			gs: &configv1.GlobalSettings{
+				RequiredEnvVars: map[string]string{
+					"MOCK_VAR_PRESENT": "[", // Invalid regex
+				},
+			},
+			expectErr:    true,
+			errSubstring: "invalid regex pattern",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			config := &configv1.McpAnyServerConfig{
+				GlobalSettings: tt.gs,
+			}
+			errs := Validate(ctx, config, Server)
+			if tt.expectErr {
+				assert.NotEmpty(t, errs)
+				found := false
+				for _, e := range errs {
+					if assert.Contains(t, e.Err.Error(), tt.errSubstring) {
+						found = true
+						break
+					}
+				}
+				if !found && len(errs) > 0 {
+					assert.Fail(t, "expected error substring not found", "substring: %s, errors: %v", tt.errSubstring, errs)
+				}
+			} else {
+				assert.Empty(t, errs)
+			}
+		})
+	}
+}

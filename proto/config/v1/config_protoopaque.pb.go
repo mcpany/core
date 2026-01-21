@@ -668,6 +668,7 @@ type GlobalSettings struct {
 	xxx_hidden_Debugger           *DebuggerConfig          `protobuf:"bytes,24,opt,name=debugger"`
 	xxx_hidden_ReadOnly           bool                     `protobuf:"varint,25,opt,name=read_only"`
 	xxx_hidden_AutoDiscoverLocal  bool                     `protobuf:"varint,26,opt,name=auto_discover_local"`
+	xxx_hidden_RequiredEnvVars    map[string]string        `protobuf:"bytes,27,rep,name=required_env_vars" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
 	XXX_presence                  [1]uint32
 	unknownFields                 protoimpl.UnknownFields
@@ -907,49 +908,56 @@ func (x *GlobalSettings) GetAutoDiscoverLocal() bool {
 	return false
 }
 
+func (x *GlobalSettings) GetRequiredEnvVars() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_RequiredEnvVars
+	}
+	return nil
+}
+
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
 	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 27)
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
 	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 27)
 }
 
 func (x *GlobalSettings) SetApiKey(v string) {
 	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 27)
 }
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
 	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 27)
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
 	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 27)
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
 	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 27)
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
 	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 27)
 }
 
 func (x *GlobalSettings) SetGithubApiUrl(v string) {
 	x.xxx_hidden_GithubApiUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 27)
 }
 
 func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
 	x.xxx_hidden_UseSudoForDocker = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 27)
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
@@ -1014,12 +1022,16 @@ func (x *GlobalSettings) SetDebugger(v *DebuggerConfig) {
 
 func (x *GlobalSettings) SetReadOnly(v bool) {
 	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 24, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 24, 27)
 }
 
 func (x *GlobalSettings) SetAutoDiscoverLocal(v bool) {
 	x.xxx_hidden_AutoDiscoverLocal = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 25, 26)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 25, 27)
+}
+
+func (x *GlobalSettings) SetRequiredEnvVars(v map[string]string) {
+	x.xxx_hidden_RequiredEnvVars = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
@@ -1309,6 +1321,8 @@ type GlobalSettings_builder struct {
 	ReadOnly *bool
 	// Whether to auto-discover local services (e.g. Ollama).
 	AutoDiscoverLocal *bool
+	// Map of environment variable name to validation regex.
+	RequiredEnvVars map[string]string
 }
 
 func (b0 GlobalSettings_builder) Build() *GlobalSettings {
@@ -1316,39 +1330,39 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 27)
 		x.xxx_hidden_McpListenAddress = b.McpListenAddress
 	}
 	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 27)
 		x.xxx_hidden_LogLevel = *b.LogLevel
 	}
 	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 27)
 		x.xxx_hidden_ApiKey = b.ApiKey
 	}
 	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 27)
 		x.xxx_hidden_LogFormat = *b.LogFormat
 	}
 	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 27)
 		x.xxx_hidden_DbPath = b.DbPath
 	}
 	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 27)
 		x.xxx_hidden_DbDsn = b.DbDsn
 	}
 	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 27)
 		x.xxx_hidden_DbDriver = b.DbDriver
 	}
 	if b.GithubApiUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 27)
 		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
 	}
 	if b.UseSudoForDocker != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 27)
 		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
 	}
 	x.xxx_hidden_MessageBus = b.MessageBus
@@ -1367,13 +1381,14 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	x.xxx_hidden_ContextOptimizer = b.ContextOptimizer
 	x.xxx_hidden_Debugger = b.Debugger
 	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 24, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 24, 27)
 		x.xxx_hidden_ReadOnly = *b.ReadOnly
 	}
 	if b.AutoDiscoverLocal != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 25, 26)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 25, 27)
 		x.xxx_hidden_AutoDiscoverLocal = *b.AutoDiscoverLocal
 	}
+	x.xxx_hidden_RequiredEnvVars = b.RequiredEnvVars
 	return m0
 }
 
@@ -3257,7 +3272,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\"@\n" +
 	"\n" +
 	"SecretList\x122\n" +
-	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\x87\f\n" +
+	"\asecrets\x18\x01 \x03(\v2\x18.mcpany.config.v1.SecretR\asecrets\"\xb0\r\n" +
 	"\x0eGlobalSettings\x12.\n" +
 	"\x12mcp_listen_address\x18\x01 \x01(\tR\x12mcp_listen_address\x12G\n" +
 	"\tlog_level\x18\x02 \x01(\x0e2).mcpany.config.v1.GlobalSettings.LogLevelR\tlog_level\x12\x18\n" +
@@ -3289,7 +3304,11 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\x11context_optimizer\x18\x17 \x01(\v2(.mcpany.config.v1.ContextOptimizerConfigR\x11context_optimizer\x12<\n" +
 	"\bdebugger\x18\x18 \x01(\v2 .mcpany.config.v1.DebuggerConfigR\bdebugger\x12\x1c\n" +
 	"\tread_only\x18\x19 \x01(\bR\tread_only\x120\n" +
-	"\x13auto_discover_local\x18\x1a \x01(\bR\x13auto_discover_local\"w\n" +
+	"\x13auto_discover_local\x18\x1a \x01(\bR\x13auto_discover_local\x12c\n" +
+	"\x11required_env_vars\x18\x1b \x03(\v25.mcpany.config.v1.GlobalSettings.RequiredEnvVarsEntryR\x11required_env_vars\x1aB\n" +
+	"\x14RequiredEnvVarsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"w\n" +
 	"\bLogLevel\x12\x19\n" +
 	"\x15LOG_LEVEL_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eLOG_LEVEL_INFO\x10\x01\x12\x12\n" +
@@ -3385,7 +3404,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),   // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),  // 1: mcpany.config.v1.GlobalSettings.LogFormat
@@ -3406,52 +3425,54 @@ var file_proto_config_v1_config_proto_goTypes = []any{
 	(*ProfileDefinition)(nil),      // 16: mcpany.config.v1.ProfileDefinition
 	(*ProfileSelector)(nil),        // 17: mcpany.config.v1.ProfileSelector
 	(*Middleware)(nil),             // 18: mcpany.config.v1.Middleware
-	nil,                            // 19: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                            // 20: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	nil,                            // 21: mcpany.config.v1.ProfileDefinition.SecretsEntry
-	nil,                            // 22: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),  // 23: mcpany.config.v1.UpstreamServiceConfig
-	(*Collection)(nil),             // 24: mcpany.config.v1.Collection
-	(*User)(nil),                   // 25: mcpany.config.v1.User
-	(*bus.MessageBus)(nil),         // 26: bus.MessageBus
-	(*RateLimitConfig)(nil),        // 27: mcpany.config.v1.RateLimitConfig
-	(*ProfileServiceConfig)(nil),   // 28: mcpany.config.v1.ProfileServiceConfig
-	(*SecretValue)(nil),            // 29: mcpany.config.v1.SecretValue
+	nil,                            // 19: mcpany.config.v1.GlobalSettings.RequiredEnvVarsEntry
+	nil,                            // 20: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                            // 21: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	nil,                            // 22: mcpany.config.v1.ProfileDefinition.SecretsEntry
+	nil,                            // 23: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),  // 24: mcpany.config.v1.UpstreamServiceConfig
+	(*Collection)(nil),             // 25: mcpany.config.v1.Collection
+	(*User)(nil),                   // 26: mcpany.config.v1.User
+	(*bus.MessageBus)(nil),         // 27: bus.MessageBus
+	(*RateLimitConfig)(nil),        // 28: mcpany.config.v1.RateLimitConfig
+	(*ProfileServiceConfig)(nil),   // 29: mcpany.config.v1.ProfileServiceConfig
+	(*SecretValue)(nil),            // 30: mcpany.config.v1.SecretValue
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
 	6,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	23, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	24, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
-	25, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
+	24, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	25, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
+	26, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
 	4,  // 4: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
 	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
 	1,  // 6: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	26, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	27, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
 	13, // 8: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
 	12, // 9: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
 	11, // 10: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
 	10, // 11: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	27, // 12: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	28, // 12: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
 	9,  // 13: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
 	16, // 14: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
 	18, // 15: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
 	7,  // 16: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
 	8,  // 17: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
-	2,  // 18: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	19, // 19: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	14, // 20: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	15, // 21: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	17, // 22: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	20, // 23: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	21, // 24: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
-	22, // 25: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	28, // 26: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
-	29, // 27: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
-	28, // [28:28] is the sub-list for method output_type
-	28, // [28:28] is the sub-list for method input_type
-	28, // [28:28] is the sub-list for extension type_name
-	28, // [28:28] is the sub-list for extension extendee
-	0,  // [0:28] is the sub-list for field type_name
+	19, // 18: mcpany.config.v1.GlobalSettings.required_env_vars:type_name -> mcpany.config.v1.GlobalSettings.RequiredEnvVarsEntry
+	2,  // 19: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	20, // 20: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	14, // 21: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	15, // 22: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	17, // 23: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	21, // 24: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	22, // 25: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
+	23, // 26: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	29, // 27: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
+	30, // 28: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -3470,7 +3491,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   20,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

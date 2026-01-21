@@ -15,6 +15,9 @@ import { Wrench, AlertTriangle, TrendingUp, Braces } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 import { SchemaVisualizer } from "./schema-visualizer";
+import { estimateTokens } from "@/lib/token-estimator";
+import { Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
  * Displays details of a specific tool within a service.
@@ -105,6 +108,13 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
 
   const usageCount = metrics?.[`tool_usage:${tool.name}`] ?? 'N/A';
 
+  const contextCost = estimateTokens({
+    name: tool.name,
+    description: tool.description,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    input_schema: tool.inputSchema || (tool as any).input_schema,
+  });
+
   return (
     <Card className="w-full max-w-4xl shadow-2xl shadow-primary/5">
       <CardHeader>
@@ -136,13 +146,36 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
 
         <Card>
             <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Usage Metrics</CardTitle>
+                <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Usage & Costs</CardTitle>
             </CardHeader>
             <CardContent>
                  <dl className="space-y-2">
-                    <div className="flex justify-between items-start">
-                        <dt className="text-muted-foreground">Total Calls</dt>
+                    <div className="flex justify-between items-center py-2 border-b last:border-0">
+                        <dt className="text-muted-foreground font-medium">Total Calls</dt>
                         <dd className="text-right font-mono text-sm">{usageCount.toLocaleString()}</dd>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b last:border-0">
+                        <dt className="text-muted-foreground font-medium flex items-center gap-2">
+                            Est. Context Cost
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-4 w-4 text-muted-foreground/70" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p className="w-[200px] text-xs">
+                                            Approximate number of tokens this tool definition consumes in the LLM context window.
+                                            Based on 4 chars/token.
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </dt>
+                        <dd className="text-right font-mono text-sm flex items-center gap-2">
+                            <span className={contextCost > 1000 ? "text-red-500 font-bold" : contextCost > 500 ? "text-yellow-500 font-bold" : "text-green-500"}>
+                                {contextCost.toLocaleString()} tokens
+                            </span>
+                        </dd>
                     </div>
                  </dl>
             </CardContent>
