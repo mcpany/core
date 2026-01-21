@@ -116,6 +116,12 @@ func TestRunChecks_Grpc(t *testing.T) {
 	assert.Equal(t, StatusError, results[1].Status)
 }
 
+func TestRunChecks_Empty(t *testing.T) {
+	config := &configv1.McpAnyServerConfig{}
+	results := RunChecks(context.Background(), config)
+	assert.Empty(t, results)
+}
+
 func TestRunChecks_OpenAPI(t *testing.T) {
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

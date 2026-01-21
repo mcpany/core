@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -240,6 +241,43 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				_, _ = fmt.Fprintf(cmd.OutOrStderr(), "\n🚀 Starting %s v%s...\n", appconsts.Name, Version)
 				if len(configPaths) > 0 {
 					_, _ = fmt.Fprintf(cmd.OutOrStderr(), "📋 Loading configuration from: %s\n", strings.Join(configPaths, ", "))
+
+					// Track 2: Experience Crafter - Async Health Check
+					// We load the config again (lightweight) to run checks.
+					// We do this in a goroutine so we don't block startup.
+					go func() {
+						// Give the server a moment to start logging its init stuff so we don't interleave too badly initially
+						time.Sleep(500 * time.Millisecond)
+
+						// We need a fresh context for this background task
+						checkCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+						defer cancel()
+
+						store := config.NewFileStore(osFs, configPaths)
+						configs, err := config.LoadResolvedConfig(checkCtx, store)
+						if err != nil {
+							// If config loading fails here, it likely failed in main thread too, so just exit
+							// But let's log it for debugging just in case it's different from main thread
+							_, _ = fmt.Fprintf(os.Stderr, "⚠️  Async health check failed to load config: %v\n", err)
+							return
+						}
+
+						results := doctor.RunChecks(checkCtx, configs)
+
+						// Buffer the output so it prints as a block
+						var buf bytes.Buffer
+						buf.WriteString("\n--- 🩺 Service Health Check ---\n")
+						if len(results) == 0 {
+							buf.WriteString("No services found to check.\n")
+						} else {
+							doctor.PrintResults(&buf, results)
+						}
+						buf.WriteString("-------------------------------\n")
+
+						// Print to Stderr
+						// Use os.Stderr explicitly to ensure visibility if cmd.OutOrStderr is redirected strangely
+						_, _ = fmt.Fprint(os.Stderr, buf.String())
+					}()
 				}
 			}
 
