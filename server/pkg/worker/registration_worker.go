@@ -152,7 +152,15 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 					}
 				}()
 			} else {
-				log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
+				if len(discoveredTools) == 0 && len(discoveredResources) == 0 {
+					log.Warn("⚠️  Service registered but no tools or resources were found. Check if 'auto_discover_tool' is enabled or 'tools' are defined in the configuration.",
+						"service", req.Config.GetName(),
+						"tools_count", 0,
+						"resources_count", 0,
+					)
+				} else {
+					log.Info("Successfully registered service", "service", req.Config.GetName(), "tools_count", len(discoveredTools), "resources_count", len(discoveredResources))
+				}
 				metrics.IncrCounter([]string{"worker", "registration", "request", "success"}, 1)
 			}
 			res.SetCorrelationID(req.CorrelationID())

@@ -50,6 +50,10 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 	}
 }
 
+// ContextKeySkipConnectionCheck is the context key to skip connection checks during registration.
+// Value should be true.
+const ContextKeySkipConnectionCheck = "skip_connection_check"
+
 // Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints. It handles the registration of tools
 // defined in the service configuration.
@@ -172,45 +176,47 @@ func (u *Upstream) Register(
 
 	// Verify that the upstream is reachable.
 	// This is a startup check to warn the user if the service configuration is incorrect or the service is down.
-	if err := util.CheckConnection(ctx, address); err != nil {
-		// Track 1: Friction Fighter - Automated Diagnosis
-		// If basic connectivity fails, we run a full Doctor check to give actionable advice.
-		log.Warn("⚠️  Upstream service appears unreachable. Running diagnostic...", "service", serviceConfig.GetName())
-		diagnosis := doctor.CheckService(ctx, serviceConfig)
+	// We skip this check if the context key is set (used in tests).
+	if ctx.Value(ContextKeySkipConnectionCheck) != true {
+		if err := util.CheckConnection(ctx, address); err != nil {
+			// Track 1: Friction Fighter - Automated Diagnosis
+			// If basic connectivity fails, we run a full Doctor check to give actionable advice.
+			log.Warn("⚠️  Upstream service appears unreachable. Running diagnostic...", "service", serviceConfig.GetName())
+			diagnosis := doctor.CheckService(ctx, serviceConfig)
 
-		// Format the diagnosis box
-		border := strings.Repeat("-", 60)
-		var msg string
-		if diagnosis.Status == doctor.StatusOk {
-			// Transient failure that recovered
-			msg = fmt.Sprintf("\n%s\nCONNECTION FLAPPING: %s\n%s\nStatus:  %s\nDetails: %s\n%s\n",
-				border,
-				serviceConfig.GetName(),
-				border,
-				"RECOVERED",
-				"Connection succeeded during diagnostic check (transient failure).",
-				border,
-			)
-			log.Warn(msg)
-		} else {
-			// Confirmed failure
-			msg = fmt.Sprintf("\n%s\nFAILED TO CONNECT: %s\n%s\nStatus:  %s\nDetails: %s\nError:   %v\n%s\n",
-				border,
-				serviceConfig.GetName(),
-				border,
-				diagnosis.Status,
-				diagnosis.Message,
-				diagnosis.Error,
-				border,
-			)
-			// We log as Error to make it stand out, even though we continue startup
-			log.Error(msg)
+			// Format the diagnosis box
+			border := strings.Repeat("-", 60)
+			var msg string
+			if diagnosis.Status == doctor.StatusOk {
+				// Transient failure that recovered
+				msg = fmt.Sprintf("\n%s\nCONNECTION FLAPPING: %s\n%s\nStatus:  %s\nDetails: %s\n%s\n",
+					border,
+					serviceConfig.GetName(),
+					border,
+					"RECOVERED",
+					"Connection succeeded during diagnostic check (transient failure).",
+					border,
+				)
+				log.Warn(msg)
+			} else {
+				// Confirmed failure
+				msg = fmt.Sprintf("\n%s\nFAILED TO CONNECT: %s\n%s\nStatus:  %s\nDetails: %s\nError:   %v\n%s\n",
+					border,
+					serviceConfig.GetName(),
+					border,
+					diagnosis.Status,
+					diagnosis.Message,
+					diagnosis.Error,
+					border,
+				)
+				// We log as Error to make it stand out, even though we continue startup
+				log.Error(msg)
+			}
+
+			// Return error to prevent registration of broken service.
+			// This triggers the retry logic in the registration worker.
+			return "", nil, nil, fmt.Errorf("failed to connect to upstream service %s: %w", serviceConfig.GetName(), err)
 		}
-
-		log.Warn("Tools will still be registered but will likely fail at runtime.",
-			"service", serviceConfig.GetName(),
-			"address", address,
-		)
 	}
 
 	// Auto-discovery of tools from calls

@@ -68,7 +68,7 @@ func TestCoverageEnhancement_DynamicResourceErrors(t *testing.T) {
     // Make AddTool fail so op1 is not registered
     mockTm.addError = assert.AnError
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
     // Verify resources were NOT registered
@@ -105,7 +105,7 @@ func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     // Expect tool to NOT be registered because url.Parse fails
@@ -137,7 +137,7 @@ func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     // The tool should be registered, but the invalid part in query should be handled (preserved)
@@ -183,7 +183,7 @@ func TestCoverageEnhancement_MTLSError(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
     // NewHTTPPool should fail due to missing certs
 	require.Error(t, err)
     assert.Contains(t, err.Error(), "failed to create HTTP pool")
@@ -228,7 +228,7 @@ func TestCoverageEnhancement_URLConstruction(t *testing.T) {
         // Clear previous tools
         mockTm.addedTools = nil
 
-        _, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+        _, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
         require.NoError(t, err)
         require.Len(t, discoveredTools, 1)
 
@@ -269,7 +269,7 @@ func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
     // Should only have public-tool
@@ -307,7 +307,7 @@ func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
     // Register should fail because CompileCallPolicies fails
 	require.Nil(t, discoveredTools)
     assert.NoError(t, err) // It doesn't return error, just logs it and returns nil tools.
@@ -344,7 +344,7 @@ func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
     // Resource should NOT be registered
@@ -383,7 +383,7 @@ func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, rm, false)
 	require.NoError(t, err)
 
     // Resource should NOT be registered
@@ -424,7 +424,7 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     tools := mockTm.ListTools()
@@ -487,7 +487,7 @@ func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     tools := mockTm.ListTools()
@@ -519,7 +519,7 @@ func TestCoverageEnhancement_EmptyAddress(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.Error(t, err)
     assert.Contains(t, err.Error(), "address is required")
 }
@@ -563,7 +563,7 @@ func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     tools := mockTm.ListTools()
@@ -666,7 +666,7 @@ func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 }
 
@@ -701,7 +701,7 @@ func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     tools := mockTm.ListTools()
@@ -751,7 +751,7 @@ func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
     tools := mockTm.ListTools()

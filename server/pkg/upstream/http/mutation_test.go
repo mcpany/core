@@ -55,7 +55,7 @@ func TestInputSchemaMutation(t *testing.T) {
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	// First registration
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	sanitizedToolName, _ := util.SanitizeToolName("test-op")

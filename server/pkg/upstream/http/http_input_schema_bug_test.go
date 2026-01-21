@@ -70,7 +70,7 @@ func TestInputSchemaRequiredCorruption(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, nil, nil, false)
 	require.NoError(t, err)
 
 	sanitizedToolName, _ := util.SanitizeToolName("test-op")

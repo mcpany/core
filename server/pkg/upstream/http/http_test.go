@@ -114,7 +114,7 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	// Verify that the tool can be called successfully, which proves the TLS handshake worked.
@@ -180,7 +180,7 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 
-	serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	serviceID, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)
 
 	// Check Tools
@@ -245,7 +245,7 @@ func TestDeterminismInToolNaming(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 2)
 	assert.Equal(t, "op_call1", discoveredTools[0].GetName())
@@ -276,7 +276,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 1)
 	assert.Equal(t, "op_test-op-call", discoveredTools[0].GetName())
@@ -309,7 +309,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceID, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
 		expectedKey, _ := util.SanitizeServiceName("test-service")
 		assert.Equal(t, expectedKey, serviceID)
@@ -328,7 +328,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "http service config is nil")
 	})
@@ -342,7 +342,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "id cannot be empty")
 	})
@@ -372,7 +372,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "invalid http service address scheme")
 		assert.Contains(t, err.Error(), "file")
@@ -414,7 +414,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		serviceID, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		require.Len(t, discoveredTools, 2)
 
@@ -464,7 +464,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		serviceConfig := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
 		assert.Len(t, discoveredTools, 1, "Tool should still be registered even if auth is nil")
 	})
@@ -511,7 +511,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 			return originalNewHTTPPool(minSize, maxSize, idleTimeout, config)
 		}
 
-		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
 
 		assert.Equal(t, 10, capturedMinSize)
@@ -557,7 +557,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 			return originalNewHTTPPool(minSize, maxSize, idleTimeout, config)
 		}
 
-		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+		_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 		assert.NoError(t, err)
 
 		assert.Equal(t, 10, capturedMinSize)
@@ -601,7 +601,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, promptManager, resourceManager, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, mockTm, promptManager, resourceManager, false)
 
 	require.NoError(t, err)
 	assert.Empty(t, discoveredTools, "No tools should be discovered if AddTool fails")
@@ -630,7 +630,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	serviceConfig1 := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON1), serviceConfig1))
 
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig1, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
 
@@ -655,7 +655,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 	// Since the upstream doesn't expose the tool manager, this is the best we can do
 	// without further refactoring. The logic is tested implicitly by checking the
 	// final state of the tools.
-	_, _, _, err = upstream.Register(context.Background(), serviceConfig2, tm, nil, nil, true)
+	_, _, _, err = upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig2, tm, nil, nil, true)
 	require.NoError(t, err)
 	assert.Len(t, tm.ListTools(), 1)
 	sanitizedToolName, _ := util.SanitizeToolName("op2")
@@ -690,7 +690,7 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 	assert.Len(t, discoveredTools, 0, "No tools should be registered for an invalid method")
 }
@@ -846,7 +846,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 			serviceConfig := &configv1.UpstreamServiceConfig{}
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+			serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 			assert.NoError(t, err)
 
 			sanitizedToolName, _ := util.SanitizeToolName("test-op")
@@ -889,7 +889,7 @@ func TestHTTPUpstream_Register_Blocked(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, discoveredTools, 1)
 	assert.Equal(t, "allowed", discoveredTools[0].GetName())
@@ -923,7 +923,9 @@ func TestHTTPUpstream_CheckHealth(t *testing.T) {
 	tm := tool.NewManager(nil)
 
 	// Register populates address
-	_, _, _, err = u.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	// We use skipped context so Register succeeds despite bad address
+	ctx := context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true)
+	_, _, _, err = u.Register(ctx, serviceConfig, tm, nil, nil, false)
 	assert.NoError(t, err)
 
 	// Check health (should fail connection)

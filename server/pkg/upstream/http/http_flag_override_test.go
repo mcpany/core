@@ -51,7 +51,7 @@ func TestHTTPUpstream_URLConstruction_FlagOverride(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
+			ctx := context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true)
 			pm := pool.NewManager()
 			u := NewUpstream(pm)
 

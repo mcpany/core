@@ -46,7 +46,7 @@ func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	// Register returns error only on critical setup. Call policy failure in createAndRegisterHTTPTools returns nil (logs error).
 	// But `createAndRegisterHTTPTools` returns nil slice on compile error.
 	require.NoError(t, err)
@@ -75,7 +75,7 @@ func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, discoveredTools, 0)
 }
@@ -110,7 +110,7 @@ func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
 	// If recovery works, it becomes "///:invalid" which is valid path.
 	// So tool should be created.
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	// If it recovered, we have 1 tool. If not, 0.
@@ -163,7 +163,7 @@ func TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	toolID := "schema-bad-props.op"
@@ -206,7 +206,7 @@ func TestHTTPUpstream_Register_EmptyAddress(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "http service address is required")
 }
@@ -234,7 +234,7 @@ func TestHTTPUpstream_Register_DoubleSlashPath(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, discoveredTools, 1)
 
@@ -287,7 +287,7 @@ func TestHTTPUpstream_Register_ExplicitInputSchema_Merging(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	toolID := "explicit-schema-merge.op"
@@ -341,7 +341,7 @@ func TestHTTPUpstream_Register_EndpointParseFailure(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Len(t, discoveredTools, 0)
 }
@@ -425,7 +425,7 @@ func TestHTTPUpstream_Register_DisabledTool(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Empty(t, discoveredTools)
 }
@@ -450,7 +450,7 @@ func TestHTTPUpstream_Register_DisabledResource(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, rm, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, rm, false)
 	require.NoError(t, err)
 
 	_, ok := rm.GetResource("http://res1")
@@ -475,7 +475,7 @@ func TestHTTPUpstream_Register_DisabledPrompt(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, prompts, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, prompts, nil, false)
 	require.NoError(t, err)
 
 	_, ok := prompts.GetPrompt("prompt1")
@@ -515,7 +515,7 @@ func TestHTTPUpstream_Register_InputSchema_NoProperties(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	tools := tm.ListTools()
@@ -563,7 +563,7 @@ func TestHTTPUpstream_Register_InputSchema_NoRequired(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	tools := tm.ListTools()
@@ -611,7 +611,7 @@ func TestHTTPUpstream_Register_InputSchema_InvalidRequired(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	tools := tm.ListTools()
@@ -643,7 +643,7 @@ func TestHTTPUpstream_Register_AuthenticatorError(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	// Should still register tools, but without auth (logged error)
 	assert.NotEmpty(t, discoveredTools)
@@ -673,7 +673,7 @@ func TestHTTPUpstream_Register_ExportPolicy_UnexportTool(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	_, discoveredTools, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Empty(t, discoveredTools)
 }
@@ -699,7 +699,7 @@ func TestHTTPUpstream_Register_ExportPolicy_UnexportResource(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, rm, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, rm, false)
 	require.NoError(t, err)
 
 	_, ok := rm.GetResource("http://res1")
@@ -727,7 +727,7 @@ func TestHTTPUpstream_Register_ExportPolicy_UnexportPrompt(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, prompts, nil, false)
+	_, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, prompts, nil, false)
 	require.NoError(t, err)
 
 	_, ok := prompts.GetPrompt("prompt1")

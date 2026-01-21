@@ -62,7 +62,7 @@ func TestHTTPUpstream_URLConstruction_LossyQueryBug(t *testing.T) {
 			serviceConfig := &configv1.UpstreamServiceConfig{}
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+			serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 			assert.NoError(t, err)
 
 			sanitizedToolName, _ := util.SanitizeToolName("test-op")

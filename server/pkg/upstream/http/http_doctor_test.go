@@ -17,7 +17,7 @@ import (
 
 func TestHTTPUpstream_Register_Unreachable(t *testing.T) {
 	// This test verifies that the Register method calls the doctor check (via log emission)
-	// when the service is unreachable, but does NOT return an error.
+	// when the service is unreachable, and returns an error (blocking registration).
 
 	// We use a port that is unlikely to be open.
 	unreachableAddr := "http://127.0.0.1:59999"
@@ -39,12 +39,12 @@ func TestHTTPUpstream_Register_Unreachable(t *testing.T) {
 	}
 
 	// Execution
-	// This should log the large ERROR box but NOT return an error.
+	// This should log the large ERROR box and return an error.
+	// We do NOT use the skip flag here because we want to verify the failure logic.
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 
 	// Assertion
-	// The key behavior we are testing is that startup is NOT blocked (err is nil).
-	// Verifying the log output in unit tests is complex and usually fragile,
-	// but ensuring this code path executes without panic or error is sufficient for coverage.
-	assert.NoError(t, err)
+	// The key behavior we are testing is that startup IS blocked (err is NOT nil) for unreachable services.
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to connect")
 }

@@ -61,7 +61,7 @@ func TestPathEncodingBug(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), httppkg.ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	sanitizedToolName, _ := util.SanitizeToolName("test-op")
@@ -144,7 +144,7 @@ func TestPathEncoding_SlashInParameter_WithTrailingSlash(t *testing.T) {
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, _, _, err := upstream.Register(context.WithValue(context.Background(), httppkg.ContextKeySkipConnectionCheck, true), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 
 	sanitizedToolName, _ := util.SanitizeToolName("test-op")
