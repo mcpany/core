@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -75,6 +76,16 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		return strings.TrimSpace(string(content)), nil
 	case configv1.SecretValue_RemoteContent_case:
 		remote := secret.GetRemoteContent()
+
+		// Validate URL Scheme
+		u, err := url.Parse(remote.GetHttpUrl())
+		if err != nil {
+			return "", fmt.Errorf("invalid remote secret URL: %w", err)
+		}
+		if u.Scheme != "http" && u.Scheme != "https" {
+			return "", fmt.Errorf("unsupported remote secret URL scheme: %s", u.Scheme)
+		}
+
 		req, err := http.NewRequestWithContext(ctx, "GET", remote.GetHttpUrl(), nil)
 		if err != nil {
 			return "", fmt.Errorf("failed to create request for remote secret: %w", err)

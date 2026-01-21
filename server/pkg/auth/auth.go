@@ -16,6 +16,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util/passhash"
+	"github.com/mcpany/core/server/pkg/logging"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
@@ -383,6 +384,10 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	// If no authenticator is configured for the service:
 	// If we authenticated via Global API Key, we allow it.
 	if am.apiKey != "" {
+		if serviceID != "" {
+			// Only log warning if accessing a specific service and using fallback
+			logging.GetLogger().Warn("Allowed access to service using Global API Key fallback. No specific authentication configured for service.", "service_id", serviceID)
+		}
 		return ctx, nil
 	}
 	// Otherwise, Fail Closed.

@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -1753,7 +1754,19 @@ func (a *Application) runServerMode(
 	// This helps prevent basic DoS attacks on all HTTP endpoints, including /upload.
 	// We enable trustProxy if MCPANY_TRUST_PROXY is set, to handle load balancers correctly.
 	// trustProxy is already defined above
-	rateLimiter := middleware.NewHTTPRateLimitMiddleware(20, 50, middleware.WithTrustProxy(trustProxy))
+	rps := 20
+	if val := os.Getenv("MCPANY_HTTP_RATE_LIMIT_RPS"); val != "" {
+		if v, err := strconv.Atoi(val); err == nil && v > 0 {
+			rps = v
+		}
+	}
+	burst := 50
+	if val := os.Getenv("MCPANY_HTTP_RATE_LIMIT_BURST"); val != "" {
+		if v, err := strconv.Atoi(val); err == nil && v > 0 {
+			burst = v
+		}
+	}
+	rateLimiter := middleware.NewHTTPRateLimitMiddleware(float64(rps), burst, middleware.WithTrustProxy(trustProxy))
 
 	// Apply CORS Middleware
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
