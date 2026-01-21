@@ -4,6 +4,9 @@
 
 ### Status: Active Development
 
+- **Actionable Configuration Errors**
+    - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
+    - **Status**: Completed.
 
 ## 2. Top 10 Recommended Features
 
@@ -35,6 +38,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 26   | **Linter Git Hook**                           | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs.                                                             | Low        |
 | 27   | **Secret Rotation Helper**                    | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream.                                                  | Medium     |
 | 28   | **Structured Logging for Config Errors**      | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error.                                                                             | Low        |
+| 33   | **Interactive Config Validator**              | **DevX**: A CLI mode that walks through validation errors one by one and asks the user for the correct value interactively.                                                                                        | Medium     |
+| 34   | **Secret Validation Pre-flight**              | **Security**: Validate all secrets (files, env vars, remote) before starting the server to ensure all credentials are accessible.                                                                                  | Low        |
 | 29   | **Automatic Config Fixer**                    | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically.                                                                             | Medium     |
 | 30   | **Windows Filesystem Locking Fix**            | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability.                                                                                               | Medium     |
 | 31   | **Async Tool Loading**                        | **Reliability**: Ensure server waits for initial roots/tools to be loaded before accepting requests to prevent race conditions on startup.                                                                         | Medium     |

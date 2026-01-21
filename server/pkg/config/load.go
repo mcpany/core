@@ -5,6 +5,7 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -35,6 +36,14 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 	fileConfig, err := LoadResolvedConfig(ctx, store)
 	if err != nil {
+		var ae *ActionableError
+		if errors.As(err, &ae) {
+			var sb strings.Builder
+			sb.WriteString("\n❌ Configuration Loading Failed:\n")
+			sb.WriteString(fmt.Sprintf("    Error: %v\n", ae.Err))
+			sb.WriteString(fmt.Sprintf("    💡 Fix: %s\n", ae.Suggestion))
+			return nil, fmt.Errorf("%s", sb.String())
+		}
 		return nil, err
 	}
 
