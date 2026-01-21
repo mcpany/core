@@ -196,6 +196,7 @@ type browserCallable struct {
 	toolName string
 }
 
+// Call executes the browser tool.
 func (c *browserCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.upstream.handleToolExecution(ctx, c.toolName, req.Arguments)
 }

@@ -304,6 +304,15 @@ We strive for high code quality. Please ensure the following before submitting a
   make lint
   ```
 
+## 📝 Documentation
+
+We take documentation seriously. This repository enforces 100% docstring coverage for all public functions, methods, and classes in both Go and TypeScript.
+
+- **Go**: Every exported symbol must have a comment starting with the symbol name.
+- **TypeScript**: Every exported component, interface, or function must have a JSDoc block.
+
+This ensures that the codebase remains accessible and maintainable for new contributors.
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.

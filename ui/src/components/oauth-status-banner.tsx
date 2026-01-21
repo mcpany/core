@@ -15,6 +15,15 @@ interface OAuthStatusBannerProps {
     errorMessage?: string;
 }
 
+/**
+ * OAuthStatusBanner component.
+ * @param props - The component props.
+ * @param props.status - The current status.
+ * @param props.serviceName - The name of the service.
+ * @param props.onConnect - The onConnect property.
+ * @param props.errorMessage - The error message or object.
+ * @returns The rendered component.
+ */
 export const OAuthStatusBanner: React.FC<OAuthStatusBannerProps> = ({
     status,
     serviceName,

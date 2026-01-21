@@ -51,6 +51,15 @@ const TypeBadge = ({ type }: { type: string }) => {
 };
 
 // Optimization: Memoize SchemaNode to prevent unnecessary recursive re-renders when parent re-renders but sub-schema is unchanged.
+/**
+ * SchemaNode component.
+ * @param props - The component props.
+ * @param props.name - The name.
+ * @param props.schema - The schema definition.
+ * @param props.required - Whether the field is required.
+ * @param props.level - The level property.
+ * @returns The rendered component.
+ */
 const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps) => {
   const [expanded, setExpanded] = useState(true);
 
@@ -139,6 +148,12 @@ SchemaNode.displayName = "SchemaNode";
  * @param { schema - The { schema.
  */
 // Optimization: Memoize SchemaVisualizer to prevent re-renders when parent component updates unrelated state.
+/**
+ * SchemaVisualizer component.
+ * @param props - The component props.
+ * @param props.schema - The schema definition.
+ * @returns The rendered component.
+ */
 export const SchemaVisualizer = memo(function SchemaVisualizer({ schema }: { schema: any }) {
   if (!schema || Object.keys(schema).length === 0) {
     return (
