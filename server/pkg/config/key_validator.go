@@ -21,16 +21,7 @@ func ValidateMapKeys(path string, m map[string]interface{}, md protoreflect.Mess
 	for key, val := range m {
 		fd := findField(md, key)
 		if fd == nil {
-			// Key not found. Find suggestions.
-			suggestion := suggestFixContextAware(key, md)
-			fullPath := key
-			if path != "" {
-				fullPath = path + "." + key
-			}
-			if suggestion != "" {
-				return fmt.Errorf("unknown field %q in %s\n\n%s", fullPath, md.Name(), suggestion)
-			}
-			return fmt.Errorf("unknown field %q in %s", fullPath, md.Name())
+			return handleUnknownField(path, key, md)
 		}
 
 		// Recurse if it's a message
@@ -38,70 +29,89 @@ func ValidateMapKeys(path string, m map[string]interface{}, md protoreflect.Mess
 			continue
 		}
 
-		// Handle list of messages
-		if fd.IsList() && fd.Kind() == protoreflect.MessageKind {
-			// val should be a slice
-			if slice, ok := val.([]interface{}); ok {
-				for i, item := range slice {
-					if itemMap, ok := item.(map[string]interface{}); ok {
-						newPath := fmt.Sprintf("%s.%s[%d]", path, key, i)
-						if path == "" {
-							newPath = fmt.Sprintf("%s[%d]", key, i)
-						}
-						if err := ValidateMapKeys(newPath, itemMap, fd.Message()); err != nil {
-							return err
-						}
+		if err := validateField(path, key, val, fd); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func handleUnknownField(path, key string, md protoreflect.MessageDescriptor) error {
+	// Key not found. Find suggestions.
+	suggestion := suggestFixContextAware(key, md)
+	fullPath := key
+	if path != "" {
+		fullPath = path + "." + key
+	}
+	if suggestion != "" {
+		return fmt.Errorf("unknown field %q in %s\n\n%s", fullPath, md.Name(), suggestion)
+	}
+	return fmt.Errorf("unknown field %q in %s", fullPath, md.Name())
+}
+
+func validateField(path, key string, val interface{}, fd protoreflect.FieldDescriptor) error {
+	// Handle list of messages
+	if fd.IsList() && fd.Kind() == protoreflect.MessageKind {
+		return validateListField(path, key, val, fd)
+	}
+
+	if fd.Kind() == protoreflect.MessageKind && !fd.IsMap() {
+		// Single message
+		if valMap, ok := val.(map[string]interface{}); ok {
+			newPath := path + "." + key
+			if path == "" {
+				newPath = key
+			}
+			return ValidateMapKeys(newPath, valMap, fd.Message())
+		}
+	}
+
+	// We ignore Map fields (IsMap()) because map keys are dynamic (string/int).
+	// But map values (if message) should be validated?
+	if fd.IsMap() && fd.MapValue().Kind() == protoreflect.MessageKind {
+		if valMap, ok := val.(map[string]interface{}); ok {
+			for k, v := range valMap {
+				if vMap, ok := v.(map[string]interface{}); ok {
+					newPath := fmt.Sprintf("%s.%s[%s]", path, key, k)
+					if path == "" {
+						newPath = fmt.Sprintf("%s[%s]", key, k)
+					}
+					if err := ValidateMapKeys(newPath, vMap, fd.MapValue().Message()); err != nil {
+						return err
 					}
 				}
 			}
-			// If it's a map (converted from yaml map with indices), handle that too
-			if valMap, ok := val.(map[string]interface{}); ok {
-				// We need to iterate values, assuming keys are indices or arbitrary
-				// Actually store.go `fixTypes` converts maps to slices later.
-				// But we are running BEFORE fixTypes?
-				// yaml.Unmarshal unmarshals YAML lists to []interface{}.
-				// But if user wrote a map where list is expected?
-				// ValidateMapKeys is primarily for key validation.
-				// If structure is wrong (map instead of list), protojson will catch it later.
-				// But if the map values are objects, we should validate them.
-				for k, v := range valMap {
-					if vMap, ok := v.(map[string]interface{}); ok {
-						newPath := fmt.Sprintf("%s.%s[%s]", path, key, k)
-						if path == "" {
-							newPath = fmt.Sprintf("%s[%s]", key, k)
-						}
-						if err := ValidateMapKeys(newPath, vMap, fd.Message()); err != nil {
-							return err
-						}
-					}
-				}
-			}
-		} else if fd.Kind() == protoreflect.MessageKind && !fd.IsMap() {
-			// Single message
-			if valMap, ok := val.(map[string]interface{}); ok {
-				newPath := path + "." + key
+		}
+	}
+	return nil
+}
+
+func validateListField(path, key string, val interface{}, fd protoreflect.FieldDescriptor) error {
+	// val should be a slice
+	if slice, ok := val.([]interface{}); ok {
+		for i, item := range slice {
+			if itemMap, ok := item.(map[string]interface{}); ok {
+				newPath := fmt.Sprintf("%s.%s[%d]", path, key, i)
 				if path == "" {
-					newPath = key
+					newPath = fmt.Sprintf("%s[%d]", key, i)
 				}
-				if err := ValidateMapKeys(newPath, valMap, fd.Message()); err != nil {
+				if err := ValidateMapKeys(newPath, itemMap, fd.Message()); err != nil {
 					return err
 				}
 			}
 		}
-		// We ignore Map fields (IsMap()) because map keys are dynamic (string/int).
-		// But map values (if message) should be validated?
-		if fd.IsMap() && fd.MapValue().Kind() == protoreflect.MessageKind {
-			if valMap, ok := val.(map[string]interface{}); ok {
-				for k, v := range valMap {
-					if vMap, ok := v.(map[string]interface{}); ok {
-						newPath := fmt.Sprintf("%s.%s[%s]", path, key, k)
-						if path == "" {
-							newPath = fmt.Sprintf("%s[%s]", key, k)
-						}
-						if err := ValidateMapKeys(newPath, vMap, fd.MapValue().Message()); err != nil {
-							return err
-						}
-					}
+	}
+	// If it's a map (converted from yaml map with indices), handle that too
+	if valMap, ok := val.(map[string]interface{}); ok {
+		// We need to iterate values, assuming keys are indices or arbitrary
+		for k, v := range valMap {
+			if vMap, ok := v.(map[string]interface{}); ok {
+				newPath := fmt.Sprintf("%s.%s[%s]", path, key, k)
+				if path == "" {
+					newPath = fmt.Sprintf("%s[%s]", key, k)
+				}
+				if err := ValidateMapKeys(newPath, vMap, fd.Message()); err != nil {
+					return err
 				}
 			}
 		}
