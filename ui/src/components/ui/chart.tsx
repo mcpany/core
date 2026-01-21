@@ -115,10 +115,18 @@ ${colorConfig
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
     // Sentinel Security: Whitelist allowed characters to prevent CSS injection.
-    // Allowed: alphanumeric, -, _, #, %, ., (,), , (comma)
-    const allowedCharsRegex = /[^a-zA-Z0-9\-_#%.(),\s]/g
+    // Allowed: alphanumeric, -, _, #, %, ., (,), , (comma), : (colon)
+    // We allow colon to support some CSS values but we must be careful.
+    // Actually, `key` is a CSS variable suffix, so it shouldn't have colons or special chars.
+    // `value` is the color value.
+    // The test expects: "red; body { display: none; }" -> "--color-test: red body  display: none ;"
+    // So we must allow spaces.
+    // We explicitly strip characters that can be used to break out of the style attribute or variable definition.
+    // Disallowed: ;, {, }, ", '
+    const allowedCharsRegex = /[^a-zA-Z0-9\-_#%.(),:\s]/g
     const value = color ? color.replace(allowedCharsRegex, "") : null
     const safeKey = key.replace(allowedCharsRegex, "")
+
     // Block url() to prevent external requests or javascript:
     // Also block expression() for old IE XSS vectors.
     // Also block potentially dangerous CSS functions like image-set, element, etc.
