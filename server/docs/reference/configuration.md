@@ -19,10 +19,10 @@ upstream_services:
       api_key:
         header_name: "X-API-Key"
         api_key:
-          plain_text: "${API_KEY:my-secret-key}"
+          plain_text: "${API_KEY:REPLACE_WITH_REAL_KEY}"
 ```
 
-In this example, the `api_key` will be set to the value of the `API_KEY` environment variable. If `API_KEY` is not set, it will default to `my-secret-key`.
+In this example, the `api_key` will be set to the value of the `API_KEY` environment variable. If `API_KEY` is not set, it will default to `REPLACE_WITH_REAL_KEY`.
 
 ## Root Server Configuration (`McpAnyServerConfig`)
 

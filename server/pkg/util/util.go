@@ -6,10 +6,11 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"math"
-	"math/rand"
+	"math/big"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -555,9 +556,16 @@ func ToString(v any) string {
 }
 
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
-// It uses the global math/rand source.
+// It uses crypto/rand for secure random number generation.
 func RandomFloat64() float64 {
-	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
+	// Generate a random 53-bit integer to map to [0, 1) with float64 precision.
+	// 2^53 = 9007199254740992
+	const max53Bit = int64(1) << 53
+	n, err := rand.Int(rand.Reader, big.NewInt(max53Bit))
+	if err != nil {
+		panic(fmt.Errorf("crypto/rand failed: %w", err))
+	}
+	return float64(n.Int64()) / float64(max53Bit)
 }
 
 // SanitizeFilename cleans a filename to ensure it is safe to use.
