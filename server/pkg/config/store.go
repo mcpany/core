@@ -93,6 +93,34 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
 
 	if v != nil {
+		// Common mistake checks (Claude config, aliases) before strict validation
+		if _, ok := yamlMap["mcpServers"]; ok {
+			// revive:disable-next-line:error-strings
+			//nolint:staticcheck
+			return fmt.Errorf("failed to unmarshal config: unknown field \"mcpServers\" in McpAnyServerConfig\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.")
+		}
+		if _, ok := yamlMap["services"]; ok {
+			// revive:disable-next-line:error-strings
+			//nolint:staticcheck
+			return fmt.Errorf("failed to unmarshal config: unknown field \"services\" in McpAnyServerConfig\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.")
+		}
+		if services, ok := yamlMap["upstream_services"].([]interface{}); ok {
+			for _, s := range services {
+				if service, ok := s.(map[string]interface{}); ok {
+					if _, ok := service["service_config"]; ok {
+						// revive:disable-next-line:error-strings
+						//nolint:staticcheck
+						return fmt.Errorf("failed to unmarshal config: unknown field \"upstream_services[0].service_config\" in UpstreamServiceConfig\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.")
+					}
+				}
+			}
+		}
+
+		// Strict validation of keys against schema before unmarshalling to proto.
+		// This provides context-aware error messages for typos.
+		if err := ValidateMapKeys("", yamlMap, v.ProtoReflect().Descriptor()); err != nil {
+			return err
+		}
 		fixTypes(yamlMap, v.ProtoReflect().Descriptor())
 	}
 
@@ -191,6 +219,21 @@ type jsonEngine struct{}
 //
 // Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
+	// Strict validation of keys against schema before unmarshalling to proto.
+	// We unmarshal to map first just for validation.
+	var jsonMap map[string]interface{}
+	if err := json.Unmarshal(b, &jsonMap); err == nil {
+		if _, ok := jsonMap["mcpServers"]; ok {
+			// revive:disable-next-line:error-strings
+			//nolint:staticcheck
+			return fmt.Errorf("failed to unmarshal config: unknown field \"mcpServers\" in McpAnyServerConfig\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.")
+		}
+
+		if err := ValidateMapKeys("", jsonMap, v.ProtoReflect().Descriptor()); err != nil {
+			return err
+		}
+	}
+
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
