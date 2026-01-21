@@ -41,4 +41,28 @@ func TestUploadFile_Coverage(t *testing.T) {
 		// If file is missing, FormFile returns error
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
+
+	t.Run("Unicode Filename", func(t *testing.T) {
+		body := &bytes.Buffer{}
+		writer := multipart.NewWriter(body)
+		part, err := writer.CreateFormFile("file", "测试.txt")
+		assert.NoError(t, err)
+		_, err = part.Write([]byte("content"))
+		assert.NoError(t, err)
+		writer.Close()
+
+		req := httptest.NewRequest("POST", "/upload", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		w := httptest.NewRecorder()
+
+		app.uploadFile(w, req)
+
+		resp := w.Result()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		// Read response body
+		respBody := w.Body.String()
+		// Expect: File '测试.txt' uploaded successfully
+		assert.Contains(t, respBody, "测试.txt")
+	})
 }
