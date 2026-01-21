@@ -77,6 +77,47 @@ func TestRedactDSN(t *testing.T) {
 			input:    "user:password@tcp(host:3306)/db",
 			expected: "user:[REDACTED]@tcp(host:3306)/db",
 		},
+		// New cases for regex fallback improvements
+		{
+			name:     "fallback: password with colon (invalid scheme)",
+			input:    "post gres://user:pass:word@localhost:5432/db",
+			expected: "post gres://user:[REDACTED]@localhost:5432/db",
+		},
+		{
+			name:     "fallback: schemeless with colon in password",
+			input:    "user:pass:word@host",
+			expected: "user:[REDACTED]@host",
+		},
+		{
+			name:     "fallback: password with space",
+			input:    "postgres://user:pass word@localhost:5432/db",
+			expected: "postgres://user:[REDACTED]@localhost:5432/db",
+		},
+		{
+			name:     "fallback: empty password",
+			input:    "user:@host",
+			expected: "user:[REDACTED]@host",
+		},
+		{
+			name:     "fallback: password starting with slash",
+			input:    "user:/pass@host",
+			expected: "user:[REDACTED]@host",
+		},
+		{
+			name:     "fallback: password starting with double slash (leak/limitation - looks like scheme)",
+			input:    "user://pass@host",
+			expected: "user://pass@host",
+		},
+		{
+			name:     "fallback: password with colon and at sign",
+			input:    "user:pass:word@part@host",
+			expected: "user:[REDACTED]@part@host", // Non-greedy: stops at first @
+		},
+		{
+			name:     "fallback: empty user with password",
+			input:    "postgres://:password@host",
+			expected: "postgres://:[REDACTED]@host",
+		},
 	}
 
 	for _, tt := range tests {

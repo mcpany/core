@@ -240,7 +240,7 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Invalid URL: %v", err),
+			Message: fmt.Sprintf("Invalid URL: %v", util.RedactDSN(err.Error())),
 			Error:   err,
 		}
 	}
