@@ -25,7 +25,10 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-const maxSecretRecursionDepth = 10
+const (
+	maxSecretRecursionDepth = 10
+	maxSecretSize           = 64 * 1024 // 64KB limit for secrets
+)
 
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
@@ -86,8 +89,14 @@ func resolveSecretImplementation(ctx context.Context, secret *configv1.SecretVal
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// File reading is blocking and generally fast, but technically could verify context.
-		// For simplicity and standard library limits, we just read.
-		content, err := os.ReadFile(secret.GetFilePath())
+		f, err := os.Open(secret.GetFilePath())
+		if err != nil {
+			return "", fmt.Errorf("failed to open secret file %q: %w", secret.GetFilePath(), err)
+		}
+		defer func() { _ = f.Close() }()
+
+		// Limit the read size to prevent DoS from large files
+		content, err := io.ReadAll(io.LimitReader(f, maxSecretSize))
 		if err != nil {
 			return "", fmt.Errorf("failed to read secret from file %q: %w", secret.GetFilePath(), err)
 		}

@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"os/exec"
@@ -325,10 +326,15 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		case configv1.SecretValue_FilePath_case:
 			// Read the file content for validation
 			// Note: We already validated FileExists above, so this should generally succeed.
-			content, err := os.ReadFile(secret.GetFilePath())
+			f, err := os.Open(secret.GetFilePath())
 			if err == nil {
-				valueToValidate = strings.TrimSpace(string(content))
-				shouldValidate = true
+				defer func() { _ = f.Close() }()
+				// Limit read to prevent DoS (64KB)
+				content, err := io.ReadAll(io.LimitReader(f, 64*1024))
+				if err == nil {
+					valueToValidate = strings.TrimSpace(string(content))
+					shouldValidate = true
+				}
 			}
 		}
 
