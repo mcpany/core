@@ -20,13 +20,65 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// browserPage defines the interface for browser interactions to allow mocking.
+type browserPage interface {
+	Close() error
+	Title() (string, error)
+	Goto(url string) error
+	Click(selector string) error
+	Fill(selector, value string) error
+	Screenshot() ([]byte, error)
+	Content() (string, error)
+	Evaluate(script string) (interface{}, error)
+}
+
+// playwrightPage adapts playwright.Page to browserPage interface.
+type playwrightPage struct {
+	page playwright.Page
+}
+
+func (p *playwrightPage) Close() error {
+	return p.page.Close()
+}
+
+func (p *playwrightPage) Title() (string, error) {
+	return p.page.Title()
+}
+
+func (p *playwrightPage) Goto(url string) error {
+	_, err := p.page.Goto(url, playwright.PageGotoOptions{
+		Timeout: playwright.Float(30000),
+	})
+	return err
+}
+
+func (p *playwrightPage) Click(selector string) error {
+	return p.page.Locator(selector).Click()
+}
+
+func (p *playwrightPage) Fill(selector, value string) error {
+	return p.page.Locator(selector).Fill(value)
+}
+
+func (p *playwrightPage) Screenshot() ([]byte, error) {
+	return p.page.Screenshot()
+}
+
+func (p *playwrightPage) Content() (string, error) {
+	return p.page.Content()
+}
+
+func (p *playwrightPage) Evaluate(script string) (interface{}, error) {
+	return p.page.Evaluate(script)
+}
+
 // Upstream implements the Upstream interface for browser automation.
 type Upstream struct {
 	mu          sync.Mutex
 	pw          *playwright.Playwright
 	browser     playwright.Browser
 	context     playwright.BrowserContext
-	page        playwright.Page
+	page        browserPage
 	serviceKey  string
 	initialized bool
 }
@@ -34,6 +86,12 @@ type Upstream struct {
 // NewUpstream creates a new browser upstream instance.
 func NewUpstream() *Upstream {
 	return &Upstream{}
+}
+
+// SetPageForTest sets the page for testing purposes.
+func (u *Upstream) SetPageForTest(page browserPage) {
+	u.page = page
+	u.initialized = true
 }
 
 // Shutdown stops the playwright instance and closes the browser.
@@ -232,7 +290,7 @@ func (u *Upstream) initializeBrowser() error {
 		_ = pw.Stop()
 		return fmt.Errorf("could not create page: %w", err)
 	}
-	u.page = page
+	u.page = &playwrightPage{page: page}
 
 	return nil
 }
@@ -251,11 +309,7 @@ func (u *Upstream) handleToolExecution(_ context.Context, name string, args map[
 		if !ok {
 			return nil, fmt.Errorf("url argument required")
 		}
-		// Use a reasonable timeout
-		_, err := u.page.Goto(url, playwright.PageGotoOptions{
-			Timeout: playwright.Float(30000),
-		})
-		if err != nil {
+		if err := u.page.Goto(url); err != nil {
 			return nil, err
 		}
 		return map[string]interface{}{"result": "navigated to " + url}, nil
@@ -265,8 +319,7 @@ func (u *Upstream) handleToolExecution(_ context.Context, name string, args map[
 		if !ok {
 			return nil, fmt.Errorf("selector argument required")
 		}
-		err := u.page.Locator(selector).Click()
-		if err != nil {
+		if err := u.page.Click(selector); err != nil {
 			return nil, err
 		}
 		return map[string]interface{}{"result": "clicked " + selector}, nil
@@ -280,8 +333,7 @@ func (u *Upstream) handleToolExecution(_ context.Context, name string, args map[
 		if !ok {
 			return nil, fmt.Errorf("value argument required")
 		}
-		err := u.page.Locator(selector).Fill(value)
-		if err != nil {
+		if err := u.page.Fill(selector, value); err != nil {
 			return nil, err
 		}
 		return map[string]interface{}{"result": "filled " + selector}, nil
