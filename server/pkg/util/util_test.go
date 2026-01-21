@@ -605,6 +605,11 @@ func TestSanitizeFilename(t *testing.T) {
 			input:    strings.Repeat("a", 300),
 			expected: strings.Repeat("a", 255),
 		},
+		{
+			name:     "unicode characters preserved",
+			input:    "测试.txt",
+			expected: "测试.txt",
+		},
 	}
 
 	for _, tt := range tests {

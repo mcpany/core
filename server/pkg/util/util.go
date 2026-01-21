@@ -16,6 +16,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"unicode"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -572,7 +573,7 @@ func SanitizeFilename(filename string) string {
 	// 3. Remove non-allowed characters
 	var sb strings.Builder
 	for _, c := range filename {
-		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '-' || c == '_' {
+		if unicode.IsLetter(c) || unicode.IsNumber(c) || c == '.' || c == '-' || c == '_' {
 			sb.WriteRune(c)
 		} else {
 			sb.WriteRune('_')
