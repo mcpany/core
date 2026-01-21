@@ -48,6 +48,10 @@
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [ ] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
+- [x] Export Playground History: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
+- [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
+- [ ] **Playground Session Management**: Save, name, and switch between multiple playground sessions/workspaces to organize different debugging tasks.
+- [ ] **Tool Output Visual Diff**: Visually compare the JSON output of two different tool executions to spot regressions or changes.
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 - [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [ ] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
