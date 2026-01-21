@@ -170,7 +170,7 @@ func TestBroadcaster(t *testing.T) {
 
 func TestBroadcastHandler(t *testing.T) {
 	b := NewBroadcaster()
-	h := NewBroadcastHandler(b)
+	h := NewBroadcastHandler(b, slog.LevelInfo)
 
 	ch := b.Subscribe()
 	defer b.Unsubscribe(ch)
