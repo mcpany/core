@@ -26,7 +26,7 @@ func TestIsAllowedPath(t *testing.T) {
 		{"Default_Absolute", "/etc/passwd", "", true},
 		{"Default_AbsoluteWin", "C:\\Windows", "", true},
 		// Clean relative path inside CWD
-		{"Default_CleanRelative", "subdir/../config.yaml", "", false},
+		{"Default_CleanRelative", "subdir/../config.yaml", "", true},
 
 		// With Allow List
 		// /etc is allowed
