@@ -351,6 +351,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	healthCmd.Flags().Duration("timeout", 5*time.Second, "Timeout for the health check.")
 	rootCmd.AddCommand(healthCmd)
 
+	rootCmd.AddCommand(initCmd)
+
 	doctorCmd := &cobra.Command{
 		Use:   "doctor",
 		Short: "Check the health and connectivity of upstream services",
