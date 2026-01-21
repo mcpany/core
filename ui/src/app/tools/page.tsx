@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -19,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wrench, Play, Star } from "lucide-react";
+import { Wrench, Play, Star, Search } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
@@ -36,6 +37,7 @@ export default function ToolsPage() {
   const { isPinned, togglePin, isLoaded } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchTools();
@@ -80,6 +82,11 @@ export default function ToolsPage() {
   const filteredTools = tools
     .filter((t) => !showPinnedOnly || isPinned(t.name))
     .filter((t) => selectedService === "all" || t.serviceId === selectedService)
+    .filter((t) =>
+      searchQuery === "" ||
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     .sort((a, b) => {
       const aPinned = isPinned(a.name);
       const bPinned = isPinned(b.name);
@@ -97,6 +104,15 @@ export default function ToolsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
         <div className="flex items-center space-x-4">
+            <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search tools..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-[250px] pl-8 backdrop-blur-sm bg-background/50"
+                />
+            </div>
             <div className="flex items-center space-x-2">
                 <Select value={selectedService} onValueChange={setSelectedService}>
                     <SelectTrigger className="w-[200px] backdrop-blur-sm bg-background/50">
