@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +39,7 @@ interface ServiceListProps {
   onBulkToggle?: (names: string[], enabled: boolean) => void;
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
+  onRestart?: (name: string) => void;
 }
 
 /**
@@ -46,7 +47,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -175,6 +176,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                   onDuplicate={onDuplicate}
                   onExport={onExport}
                   onLogin={onLogin}
+                  onRestart={onRestart}
                />
             ))}
             {filteredServices.length === 0 && (
@@ -205,7 +207,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
  * @param props.onLogin - The onLogin property.
  * @returns The rendered component.
  */
-const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin }: {
+const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
     service: UpstreamServiceConfig,
     isSelected: boolean,
     onSelect: (name: string, checked: boolean) => void,
@@ -214,7 +216,8 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     onDelete?: (name: string) => void,
     onDuplicate?: (service: UpstreamServiceConfig) => void,
     onExport?: (service: UpstreamServiceConfig) => void,
-    onLogin?: (service: UpstreamServiceConfig) => void
+    onLogin?: (service: UpstreamServiceConfig) => void,
+    onRestart?: (name: string) => void
 }) {
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
@@ -355,6 +358,12 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                                 </DropdownMenuItem>
                             }
                         />
+                        {onRestart && (
+                            <DropdownMenuItem onClick={() => onRestart(service.name)}>
+                                <RefreshCw className="mr-2 h-4 w-4" />
+                                Restart
+                            </DropdownMenuItem>
+                        )}
                         {onEdit && (
                             <DropdownMenuItem onClick={() => onEdit(service)}>
                                 <Settings className="mr-2 h-4 w-4" />

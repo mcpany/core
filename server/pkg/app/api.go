@@ -391,6 +391,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "restart" {
+			a.handleServiceRestart(w, r, name, store)
+			return
+		}
+
 		if len(parts) > 1 {
 			http.NotFound(w, r)
 			return
@@ -507,6 +512,41 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 		"status":  status,
 		"metrics": map[string]any{},
 	})
+}
+
+func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	svc, err := store.GetService(r.Context(), name)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if svc == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	if a.ServiceRegistry != nil {
+		// Unregister to force stop
+		if err := a.ServiceRegistry.UnregisterService(r.Context(), name); err != nil {
+			logging.GetLogger().Error("failed to unregister service during restart", "name", name, "error", err)
+			// Continue to reload, as it might just be not running or already stopped
+		}
+	}
+
+	// Trigger reload to re-register
+	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+		logging.GetLogger().Error("failed to reload config after restart", "error", err)
+		http.Error(w, "Failed to restart service: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("{}"))
 }
 
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {

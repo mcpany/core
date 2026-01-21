@@ -383,4 +383,18 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stats.png'), fullPage: true });
   });
 
+  test('Service Actions Screenshots', async ({ page }) => {
+      await page.goto('/upstream-services');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+
+      // Open Actions Dropdown
+      // We target the first row's actions button (MoreHorizontal)
+      const actionButton = page.locator('tbody tr').first().locator('button').last();
+      await actionButton.click();
+      await page.waitForTimeout(500);
+
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
+  });
+
 });

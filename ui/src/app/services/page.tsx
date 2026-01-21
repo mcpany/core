@@ -244,6 +244,24 @@ export default function ServicesPage() {
       }
   }, [toast]);
 
+  const handleRestart = useCallback(async (name: string) => {
+    try {
+        await apiClient.restartService(name);
+        toast({
+            title: "Service Restarted",
+            description: `Service ${name} has been restarted.`
+        });
+        fetchServices();
+    } catch (e) {
+        console.error("Failed to restart service", e);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to restart service."
+        });
+    }
+  }, [fetchServices, toast]);
+
   const handleSave = async () => {
       if (!selectedService) return;
 
@@ -295,6 +313,7 @@ export default function ServicesPage() {
                 onBulkToggle={bulkToggleService}
                 onBulkDelete={bulkDeleteService}
                 onLogin={handleLogin}
+                onRestart={handleRestart}
              />
         </CardContent>
       </Card>

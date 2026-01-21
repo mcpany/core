@@ -247,6 +247,19 @@ export const apiClient = {
     },
 
     /**
+     * Restarts a service.
+     * @param name The name of the service to restart.
+     * @returns A promise that resolves when the service is restarted.
+     */
+    restartService: async (name: string) => {
+        const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
+            method: 'POST'
+        });
+        if (!response.ok) throw new Error('Failed to restart service');
+        return {};
+    },
+
+    /**
      * Registers a new upstream service.
      * @param config The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
