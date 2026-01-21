@@ -13,6 +13,11 @@ import (
 // ValidateMapKeys validates that all keys in the map exist in the protobuf message descriptor.
 // It recursively validates nested messages.
 func ValidateMapKeys(path string, m map[string]interface{}, md protoreflect.MessageDescriptor) error {
+	// Skip validation for google.protobuf.Struct as it allows arbitrary keys
+	if md.FullName() == "google.protobuf.Struct" {
+		return nil
+	}
+
 	for key, val := range m {
 		fd := findField(md, key)
 		if fd == nil {
