@@ -93,34 +93,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	applySetOverrides(yamlMap, GlobalSettings().SetValues(), v)
 
 	if v != nil {
-		// Common mistake checks (Claude config, aliases) before strict validation
-		if _, ok := yamlMap["mcpServers"]; ok {
-			// revive:disable-next-line:error-strings
-			//nolint:staticcheck
-			return fmt.Errorf("failed to unmarshal config: unknown field \"mcpServers\" in McpAnyServerConfig\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.")
-		}
-		if _, ok := yamlMap["services"]; ok {
-			// revive:disable-next-line:error-strings
-			//nolint:staticcheck
-			return fmt.Errorf("failed to unmarshal config: unknown field \"services\" in McpAnyServerConfig\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.")
-		}
-		if services, ok := yamlMap["upstream_services"].([]interface{}); ok {
-			for _, s := range services {
-				if service, ok := s.(map[string]interface{}); ok {
-					if _, ok := service["service_config"]; ok {
-						// revive:disable-next-line:error-strings
-						//nolint:staticcheck
-						return fmt.Errorf("failed to unmarshal config: unknown field \"upstream_services[0].service_config\" in UpstreamServiceConfig\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.")
-					}
-				}
-			}
-		}
-
-		// Strict validation of keys against schema before unmarshalling to proto.
-		// This provides context-aware error messages for typos.
-		if err := ValidateMapKeys("", yamlMap, v.ProtoReflect().Descriptor()); err != nil {
-			return err
-		}
 		fixTypes(yamlMap, v.ProtoReflect().Descriptor())
 	}
 
@@ -141,6 +113,14 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
+		// Attempt to find the line number in the original YAML
+		if matches := unknownFieldRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
+			unknownField := matches[1]
+			if line := findKeyLine(b, unknownField); line > 0 {
+				err = fmt.Errorf("line %d: %w", line, err)
+			}
+		}
+
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
@@ -219,21 +199,6 @@ type jsonEngine struct{}
 //
 // Returns an error if the operation fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
-	// Strict validation of keys against schema before unmarshalling to proto.
-	// We unmarshal to map first just for validation.
-	var jsonMap map[string]interface{}
-	if err := json.Unmarshal(b, &jsonMap); err == nil {
-		if _, ok := jsonMap["mcpServers"]; ok {
-			// revive:disable-next-line:error-strings
-			//nolint:staticcheck
-			return fmt.Errorf("failed to unmarshal config: unknown field \"mcpServers\" in McpAnyServerConfig\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.")
-		}
-
-		if err := ValidateMapKeys("", jsonMap, v.ProtoReflect().Descriptor()); err != nil {
-			return err
-		}
-	}
-
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
@@ -474,7 +439,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 
 		b, err = expand(b)
 		if err != nil {
-			return nil, fmt.Errorf("failed to expand environment variables in %s: %w", path, err)
+			return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
 		}
 
 		engine, err := NewEngine(path)
@@ -1108,4 +1073,43 @@ func (ms *MultiStore) HasConfigSources() bool {
 		}
 	}
 	return false
+}
+
+func findKeyLine(b []byte, key string) int {
+	var node yaml.Node
+	if err := yaml.Unmarshal(b, &node); err != nil {
+		return 0
+	}
+	return findKeyInNode(&node, key)
+}
+
+func findKeyInNode(node *yaml.Node, key string) int {
+	switch node.Kind {
+	case yaml.DocumentNode:
+		for _, child := range node.Content {
+			if line := findKeyInNode(child, key); line > 0 {
+				return line
+			}
+		}
+	case yaml.MappingNode:
+		for i := 0; i < len(node.Content); i += 2 {
+			keyNode := node.Content[i]
+			valNode := node.Content[i+1]
+
+			if keyNode.Value == key {
+				return keyNode.Line
+			}
+
+			if line := findKeyInNode(valNode, key); line > 0 {
+				return line
+			}
+		}
+	case yaml.SequenceNode:
+		for _, child := range node.Content {
+			if line := findKeyInNode(child, key); line > 0 {
+				return line
+			}
+		}
+	}
+	return 0
 }

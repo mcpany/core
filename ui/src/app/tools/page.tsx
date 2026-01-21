@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wrench, Play, Star, Search } from "lucide-react";
+import { Wrench, Play, Star, Search, List, LayoutList } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
@@ -38,6 +39,12 @@ export default function ToolsPage() {
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isCompact, setIsCompact] = useState(false);
+
+  useEffect(() => {
+    const savedCompact = localStorage.getItem("tools_compact_view") === "true";
+    setIsCompact(savedCompact);
+  }, []);
 
   useEffect(() => {
     fetchTools();
@@ -74,6 +81,12 @@ export default function ToolsPage() {
     }
   };
 
+  const toggleCompact = () => {
+    const newState = !isCompact;
+    setIsCompact(newState);
+    localStorage.setItem("tools_compact_view", String(newState));
+  };
+
   const openInspector = (tool: ToolDefinition) => {
       setSelectedTool(tool);
       setInspectorOpen(true);
@@ -96,7 +109,11 @@ export default function ToolsPage() {
     });
 
   if (!isLoaded) {
-      return null;
+      return (
+          <div className="flex-1 p-8 animate-pulse text-muted-foreground">
+              Loading tools...
+          </div>
+      );
   }
 
   return (
@@ -138,6 +155,15 @@ export default function ToolsPage() {
                     Show Pinned Only
                 </label>
             </div>
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleCompact}
+                title={isCompact ? "Comfortable View" : "Compact View"}
+                className="h-9 w-9"
+            >
+                {isCompact ? <LayoutList className="h-4 w-4" /> : <List className="h-4 w-4" />}
+            </Button>
         </div>
       </div>
 
@@ -160,8 +186,8 @@ export default function ToolsPage() {
             </TableHeader>
             <TableBody>
               {filteredTools.map((tool) => (
-                <TableRow key={tool.name} className="group">
-                  <TableCell>
+                <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -172,28 +198,29 @@ export default function ToolsPage() {
                           <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
                       </Button>
                   </TableCell>
-                  <TableCell className="font-medium flex items-center">
-                    <Wrench className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <TableCell className={cn("font-medium flex items-center", isCompact ? "py-0 px-2 h-8" : "")}>
+                    <Wrench className={cn("mr-2 text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
                     {tool.name}
                   </TableCell>
-                  <TableCell>{tool.description}</TableCell>
-                  <TableCell>
-                      <Badge variant="outline">{tool.serviceId}</Badge>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>{tool.description}</TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                      <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
                     <div className="flex items-center space-x-2">
                         <Switch
                             checked={!tool.disable}
                             onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
+                            className={isCompact ? "scale-75" : ""}
                         />
-                        <span className="text-sm text-muted-foreground w-16">
+                        <span className={cn("text-muted-foreground", isCompact ? "text-[10px] w-12" : "text-sm w-16")}>
                             {!tool.disable ? "Enabled" : "Disabled"}
                         </span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => openInspector(tool)}>
-                          <Play className="h-3 w-3 mr-1" /> Inspect
+                  <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
+                      <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
+                          <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
                       </Button>
                   </TableCell>
                 </TableRow>

@@ -91,27 +91,31 @@ type poolImpl[T ClosableClient] struct {
 //
 // Parameters:
 //   - factory: A function that creates new clients.
-//   - minSize: The initial number of clients to create.
-//   - maxSize: The maximum number of clients the pool can hold.
+//   - initialSize: The number of clients to create initially (pre-fill).
+//   - maxIdleSize: The maximum number of idle clients the pool can hold.
+//   - maxSize: The maximum number of clients the pool can hold (active + idle).
 //   - idleTimeout: (Not yet used) Intended for future implementation of idle
 //     connection handling.
 //
 // Returns a new `Pool` instance or an error if the configuration is invalid.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
-	minSize, maxSize int,
+	initialSize, maxIdleSize, maxSize int,
 	_ time.Duration, // idleTimeout is not used yet
 	disableHealthCheck bool,
 ) (Pool[T], error) {
 	if maxSize <= 0 {
 		return nil, fmt.Errorf("maxSize must be positive")
 	}
-	if minSize < 0 || minSize > maxSize {
-		return nil, fmt.Errorf("invalid minSize/maxSize configuration")
+	if maxIdleSize < 0 || maxIdleSize > maxSize {
+		return nil, fmt.Errorf("invalid maxIdleSize/maxSize configuration")
+	}
+	if initialSize < 0 || initialSize > maxIdleSize {
+		return nil, fmt.Errorf("initialSize must be between 0 and maxIdleSize")
 	}
 
 	p := &poolImpl[T]{
-		clients:            make(chan poolItem[T], maxSize),
+		clients:            make(chan poolItem[T], maxIdleSize),
 		factory:            factory,
 		maxSize:            int64(maxSize),
 		disableHealthCheck: disableHealthCheck,
@@ -119,7 +123,7 @@ func New[T ClosableClient](
 
 	// If health checks are disabled, we can pre-fill the pool without checks.
 	if disableHealthCheck {
-		for i := 0; i < minSize; i++ {
+		for i := 0; i < initialSize; i++ {
 			client, err := factory(context.Background())
 			if err != nil {
 				if closeErr := p.Close(); closeErr != nil {
@@ -134,14 +138,13 @@ func New[T ClosableClient](
 			}
 			p.clients <- poolItem[T]{client: client}
 		}
-		if !p.tryAcquire(int64(minSize)) {
-			return nil, fmt.Errorf("failed to acquire permits for initial clients")
-		}
+		// Take permits for the initial clients. Guaranteed to succeed as initialSize <= maxIdleSize <= maxSize.
+		p.activeCount.Add(int64(initialSize))
 		return p, nil
 	}
 
 	// With health checks enabled, we need to ensure clients are healthy before adding.
-	for i := 0; i < minSize; i++ {
+	for i := 0; i < initialSize; i++ {
 		client, err := factory(context.Background())
 		if err != nil {
 			if closeErr := p.Close(); closeErr != nil {
@@ -156,11 +159,8 @@ func New[T ClosableClient](
 		}
 		p.clients <- poolItem[T]{client: client}
 	}
-	// Take permits for the initial clients
-	if !p.tryAcquire(int64(minSize)) {
-		// This should not happen given the checks above
-		return nil, fmt.Errorf("failed to acquire permits for initial clients")
-	}
+	// Take permits for the initial clients. Guaranteed to succeed as initialSize <= maxIdleSize <= maxSize.
+	p.activeCount.Add(int64(initialSize))
 
 	return p, nil
 }
@@ -187,8 +187,8 @@ func (p *poolImpl[T]) release(n int64) {
 }
 
 // Get retrieves a client from the pool. It first attempts to fetch an idle
-// client from the channel. If none are available and the pool has not reached
-// its maximum size, it creates a new client using the pool's factory.
+// client from the channel. If none are available and the pool is not full, it
+// may create a new one.
 //
 // The method ensures that any client returned is healthy by checking
 // `IsHealthy()`. If an unhealthy client is found, it is closed, and the process
@@ -379,8 +379,7 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
-		// Do nothing. Client is nil, meaning either Get failed (and released permit)
-		// or user is misusing Put. We assume the former (defer pattern).
+		p.release(1)
 		return
 	}
 
@@ -411,13 +410,10 @@ func (p *poolImpl[T]) Put(client T) {
 	case p.clients <- poolItem[T]{client: client}:
 		p.mu.RUnlock()
 	default:
-		// Idle pool is full, discard client. The permit for this client is
-		// effectively leaked, but this is the only safe option. Releasing
-		// the permit would allow the pool to create more clients than
-		// maxSize, and we can't tell if this client came from the pool
-		// in the first place.
+		// Idle pool is full, discard client.
 		p.mu.RUnlock()
 		_ = lo.Try(client.Close)
+		p.release(1)
 	}
 }
 

@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"context"
@@ -27,20 +27,23 @@ func TestSplunkAuditStore(t *testing.T) {
 		assert.Equal(t, "Splunk my-token", r.Header.Get("Authorization"))
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
 
-		var body map[string]interface{}
-		err := json.NewDecoder(r.Body).Decode(&body)
-		require.NoError(t, err)
+		decoder := json.NewDecoder(r.Body)
+		for decoder.More() {
+			var body map[string]interface{}
+			err := decoder.Decode(&body)
+			require.NoError(t, err)
 
-		assert.Equal(t, "my-source", body["source"])
-		assert.Equal(t, "my-sourcetype", body["sourcetype"])
-		assert.Equal(t, "my-index", body["index"])
+			assert.Equal(t, "my-source", body["source"])
+			assert.Equal(t, "my-sourcetype", body["sourcetype"])
+			assert.Equal(t, "my-index", body["index"])
 
-		event, ok := body["event"].(map[string]interface{})
-		require.True(t, ok)
-		assert.Equal(t, "test-tool", event["tool_name"])
+			event, ok := body["event"].(map[string]interface{})
+			require.True(t, ok)
+			assert.Equal(t, "test-tool", event["tool_name"])
 
+			atomic.AddInt32(&receivedCount, 1)
+		}
 		w.WriteHeader(http.StatusOK)
-		atomic.AddInt32(&receivedCount, 1)
 		received <- struct{}{}
 	}))
 	defer ts.Close()
@@ -54,9 +57,8 @@ func TestSplunkAuditStore(t *testing.T) {
 	}
 
 	store := NewSplunkAuditStore(config)
-	defer store.Close()
 
-	entry := AuditEntry{
+	entry := Entry{
 		Timestamp:  time.Now(),
 		ToolName:   "test-tool",
 		Duration:   "100ms",
@@ -64,6 +66,10 @@ func TestSplunkAuditStore(t *testing.T) {
 	}
 
 	err := store.Write(context.Background(), entry)
+	assert.NoError(t, err)
+
+	// Close to flush
+	err = store.Close()
 	assert.NoError(t, err)
 
 	// Wait for processing
@@ -75,4 +81,43 @@ func TestSplunkAuditStore(t *testing.T) {
 	}
 
 	assert.Equal(t, int32(1), atomic.LoadInt32(&receivedCount))
+}
+
+func TestSplunkAuditStore_Batch(t *testing.T) {
+	var totalReceived int32
+	done := make(chan struct{})
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		decoder := json.NewDecoder(r.Body)
+		count := 0
+		for decoder.More() {
+			var body map[string]interface{}
+			_ = decoder.Decode(&body)
+			count++
+		}
+		atomic.AddInt32(&totalReceived, int32(count))
+		w.WriteHeader(http.StatusOK)
+		if atomic.LoadInt32(&totalReceived) >= 5 {
+			done <- struct{}{}
+		}
+	}))
+	defer ts.Close()
+
+	config := &configv1.SplunkConfig{
+		HecUrl: proto.String(ts.URL),
+	}
+	store := NewSplunkAuditStore(config)
+
+	for i := 0; i < 5; i++ {
+		_ = store.Write(context.Background(), Entry{ToolName: "test"})
+	}
+
+	_ = store.Close()
+
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+	}
+
+	assert.Equal(t, int32(5), atomic.LoadInt32(&totalReceived))
 }

@@ -61,7 +61,7 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			mainHandler = slog.NewTextHandler(output, opts)
 		}
 
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster)
+		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
 		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
 
 		defaultLogger.Store(slog.New(teeHandler))
