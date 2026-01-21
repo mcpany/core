@@ -3242,3 +3242,65 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 	tm := NewTemplateManager(tmpDir)
 	assert.Empty(t, tm.ListTemplates())
 }
+
+func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
+	// Set TRUST PROXY to simulate forwarded IP
+	t.Setenv("MCPANY_TRUST_PROXY", "true")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	bindAddress := l.Addr().String()
+	_ = l.Close()
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	// NO API Key configured!
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	config.GlobalSettings().SetAPIKey("")
+
+	authManager := auth.NewManager()
+	app.AuthManager = authManager
+	app.ProfileManager = profile.NewManager(nil)
+
+	serviceRegistry := serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
+	require.NoError(t, err)
+
+	// Setup a user to access
+	users := []*configv1.User{
+		{
+			Id:         proto.String("user_no_auth"),
+			ProfileIds: []string{"profileB"},
+		},
+	}
+	authManager.SetUsers(users)
+
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil)
+	}()
+
+	waitForServerReady(t, bindAddress)
+	baseURL := fmt.Sprintf("http://%s", bindAddress)
+
+	// Simulate a request from a PUBLIC IP
+	req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
+	req.Header.Set("X-Forwarded-For", "8.8.8.8")
+
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode, "Public access should be blocked when no API Key is configured")
+
+	cancel()
+	<-errChan
+}
