@@ -65,6 +65,12 @@ func BenchmarkPrimitiveSliceTokenization(b *testing.B) {
 		floats[i] = float64(i) * 1.2345
 	}
 
+	// Create a large slice of floats that are actually integers
+	floatInts := make([]float64, 1000)
+	for i := 0; i < 1000; i++ {
+		floatInts[i] = float64(i * 12345)
+	}
+
 	b.Run("IntSlice", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_, _ = CountTokensInValue(t, ints)
@@ -74,6 +80,12 @@ func BenchmarkPrimitiveSliceTokenization(b *testing.B) {
 	b.Run("FloatSlice", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_, _ = CountTokensInValue(t, floats)
+		}
+	})
+
+	b.Run("FloatIntSlice", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = CountTokensInValue(t, floatInts)
 		}
 	})
 }
