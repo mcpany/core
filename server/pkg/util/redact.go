@@ -455,10 +455,6 @@ func isKeyColon(input []byte, endOffset int) bool {
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
 var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)`)
 
-// dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
-// This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
-var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
-
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 func RedactDSN(dsn string) string {
@@ -482,18 +478,96 @@ func RedactDSN(dsn string) string {
 		return dsn
 	}
 
-	// Fallback to regex if parsing fails (e.g. not a valid URL)
-	// OR if url.Parse succeeded but found no user/password structure (e.g. user:pass@tcp(...) where Scheme is "user" and User is nil).
-	// But note: the regex is known to be imperfect for complex cases (e.g. colons in password).
-	// We apply the regex as a best-effort attempt.
+	// Fallback to regex/manual scanning if parsing fails (e.g. not a valid URL)
+	// OR if url.Parse succeeded but found no user/password structure.
 
-	// If the DSN has a scheme, use the scheme-aware regex which is more robust for complex passwords
-	// (e.g. containing colons or @) but assumes a single DSN string.
+	// Scan for scheme-like strings manually to handle multiple DSNs and edge cases
+	// that standard regex or greedy match might miss or mishandle.
 	if strings.Contains(dsn, "://") {
-		// Use greedy match to handle special characters in password
-		if dsnSchemeRegex.MatchString(dsn) {
-			return dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+		var result strings.Builder
+		lastIndex := 0
+		input := dsn
+
+		for {
+			// Find "://" starting from lastIndex
+			schemeRelativeIdx := strings.Index(input[lastIndex:], "://")
+			if schemeRelativeIdx == -1 {
+				break
+			}
+			schemeIdx := lastIndex + schemeRelativeIdx
+
+			// Find start of next scheme to limit our search area
+			nextSchemeRelativeIdx := strings.Index(input[schemeIdx+3:], "://")
+			var searchLimit int
+			if nextSchemeRelativeIdx != -1 {
+				searchLimit = schemeIdx + 3 + nextSchemeRelativeIdx
+			} else {
+				searchLimit = len(input)
+			}
+
+			// We are looking for: scheme://user:password@...
+			// So after "://", we look for the FIRST colon.
+			// And the LAST @ before searchLimit.
+
+			// Find last @ in the segment [schemeIdx+3 : searchLimit]
+			segment := input[schemeIdx+3 : searchLimit]
+			lastAtIdx := strings.LastIndex(segment, "@")
+
+			if lastAtIdx != -1 {
+				// Convert segment relative index to absolute index
+				absAtIdx := schemeIdx + 3 + lastAtIdx
+
+				// Search for FIRST colon in [schemeIdx+3 : absAtIdx]
+				// Note: dsnSchemeRegex was `(://[^:]*):`. It means it allows non-colons after scheme, then a colon.
+				// This usually captures "user".
+				userSegment := input[schemeIdx+3 : absAtIdx]
+				firstColonIdx := strings.Index(userSegment, ":")
+
+				if firstColonIdx != -1 {
+					// We found a colon before the @.
+					absColonIdx := schemeIdx + 3 + firstColonIdx
+
+					// Redact everything between absColonIdx+1 and absAtIdx
+					result.WriteString(input[lastIndex : absColonIdx+1])
+					result.WriteString(redactedPlaceholder)
+					result.WriteString("@")
+
+					// Update lastIndex to point after the @
+					lastIndex = absAtIdx + 1
+					continue
+				}
+			}
+
+			// If no pattern matched, we just advance past this "://" so we don't loop
+			// But we need to write what we skipped?
+			// No, we only write when we confirm a match and "continue".
+			// If we didn't match, we shouldn't advance `lastIndex` arbitrarily,
+			// effectively skipping content.
+			// However, if we process sequentially, we should write the "skipped" part eventually.
+
+			// If we are here, we found "://" but it didn't look like a DSN with password.
+			// e.g. "http://example.com" (no @) or "postgres://user@host" (no colon).
+			// We should treat it as non-sensitive and move on to next scheme?
+			// But we haven't written it to result yet.
+			// We can just set loop start to searchLimit?
+			// But we need to make sure we don't miss text between current `lastIndex` and `searchLimit`.
+			// The issue is `searchLimit` is the start of NEXT scheme.
+
+			// Actually, if we fail to match a password-DSN pattern here, we should just
+			// let the loop continue searching for the *next* "://".
+			// But `strings.Index(input[lastIndex:]` finds the *first* match.
+			// If we don't update `lastIndex`, we loop forever.
+			// So we MUST advance `lastIndex`.
+			// Since we checked this "://" instance and found no password, we can safely
+			// write everything up to `schemeIdx + 3` (just past "://") and continue search.
+
+			result.WriteString(input[lastIndex : schemeIdx+3])
+			lastIndex = schemeIdx + 3
 		}
+
+		// Write remaining part
+		result.WriteString(input[lastIndex:])
+		return result.String()
 	}
 
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")

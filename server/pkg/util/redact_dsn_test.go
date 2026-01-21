@@ -94,6 +94,11 @@ func TestRedactDSN(t *testing.T) {
 			expected: "postgres://user:[REDACTED]@localhost:5432/db",
 		},
 		{
+			name:     "fallback: multiple DSNs in one line",
+			input:    "Log: Connection 1: postgres://u1:p1@h1 and Connection 2: postgres://u2:p2@h2",
+			expected: "Log: Connection 1: postgres://u1:[REDACTED]@h1 and Connection 2: postgres://u2:[REDACTED]@h2",
+		},
+		{
 			name:     "fallback: empty password",
 			input:    "user:@host",
 			expected: "user:[REDACTED]@host",
