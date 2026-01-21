@@ -319,13 +319,13 @@ func TestPool_PutOnClosedPool(t *testing.T) {
 	p.Put(c)
 	// The client should be closed because the pool is closed.
 	assert.True(t, c.isClosed)
-	// To verify the fix, we check if we can acquire and release the semaphore again.
-	// In the buggy version, the semaphore is never released, so this would hang.
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-	err = p.(*poolImpl[*mockClient]).sem.Acquire(ctx, 1)
-	require.NoError(t, err, "Semaphore should not be locked after returning a client to a closed pool")
-	p.(*poolImpl[*mockClient]).sem.Release(1)
+	// To verify the fix, we check if we can acquire the permit again.
+	// In the buggy version, the permit is never released.
+	success := p.(*poolImpl[*mockClient]).tryAcquire(1)
+	require.True(t, success, "Should be able to acquire permit after returning a client to a closed pool")
+	if success {
+		p.(*poolImpl[*mockClient]).release(1)
+	}
 }
 
 func TestPool_ConcurrentGetPut(t *testing.T) {
@@ -750,13 +750,13 @@ func TestPool_Get_RaceWithClose(t *testing.T) {
 	// Wait for the Get goroutine to finish
 	wg.Wait()
 
-	// To verify the fix, we check if we can acquire and release the semaphore.
-	// In a buggy version, the semaphore might be leaked.
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-	err = p.(*poolImpl[*mockClient]).sem.Acquire(ctx, 1)
-	require.NoError(t, err, "Semaphore should not be locked")
-	p.(*poolImpl[*mockClient]).sem.Release(1)
+	// To verify the fix, we check if we can acquire the permit.
+	// In a buggy version, the permit might be leaked.
+	success := p.(*poolImpl[*mockClient]).tryAcquire(1)
+	require.True(t, success, "Should be able to acquire permit")
+	if success {
+		p.(*poolImpl[*mockClient]).release(1)
+	}
 }
 
 func TestPool_Get_RaceWithPut(t *testing.T) {

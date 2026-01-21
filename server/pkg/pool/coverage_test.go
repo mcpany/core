@@ -66,7 +66,7 @@ func TestGet_Unhealthy_InFirstLoop_Coverage(t *testing.T) {
 	expected := &mockClient{isHealthy: true}
 
 	// Manually acquire permits for the injected items because Get/Release logic expects permits to be held for items in channel
-	require.True(t, pool.sem.TryAcquire(2))
+	require.True(t, pool.tryAcquire(2))
 
 	// Inject unhealthy client
 	pool.clients <- poolItem[*mockClient]{client: unhealthy}
