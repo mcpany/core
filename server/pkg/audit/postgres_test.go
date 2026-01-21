@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"context"
@@ -38,7 +38,7 @@ func TestPostgresAuditStore_Write(t *testing.T) {
 		db: db,
 	}
 
-	entry := AuditEntry{
+	entry := Entry{
 		Timestamp:  time.Now(),
 		ToolName:   "test_tool",
 		UserID:     "user1",

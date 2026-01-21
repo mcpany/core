@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"context"
@@ -48,7 +48,7 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
-func (s *FileAuditStore) Write(_ context.Context, entry AuditEntry) error {
+func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -62,8 +62,8 @@ func (s *FileAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	return json.NewEncoder(w).Encode(entry)
 }
 
-// Read implements the AuditStore interface.
-func (s *FileAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
+// Read implements the Store interface.
+func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
