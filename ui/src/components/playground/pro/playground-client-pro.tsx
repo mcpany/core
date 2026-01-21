@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap } from "lucide-react";
+import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -174,6 +174,19 @@ export function PlaygroundClientPro() {
       inputRef.current?.focus();
   };
 
+  const handleExport = () => {
+      const dataStr = JSON.stringify(messages, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `mcp-playground-history-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+  };
+
   const processResponse = async (userInput: string) => {
       const firstSpaceIndex = userInput.indexOf(' ');
       let toolName = userInput;
@@ -274,6 +287,16 @@ export function PlaygroundClientPro() {
                         </h2>
                      </div>
                      <div className="flex items-center gap-2">
+                          <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs gap-1"
+                              onClick={handleExport}
+                              disabled={displayMessages.length === 0}
+                          >
+                              <Download className="size-3" />
+                              Export
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
