@@ -24,6 +24,16 @@ import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
+import { BulkServiceImport } from "@/components/services/bulk-service-import";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Download } from "lucide-react";
 
 /**
  * ServicesPage component.
@@ -145,6 +155,31 @@ export default function ServicesPage() {
         });
     }
   }, [fetchServices, toast]);
+
+  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+    try {
+        const servicesToUpdate = services.filter(s => names.includes(s.name));
+        await Promise.all(servicesToUpdate.map(service => {
+            const updated = { ...service };
+            if (updates.tags) {
+                updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
+            }
+            return apiClient.updateService(updated as any);
+        }));
+        toast({
+            title: "Services Updated",
+            description: `${names.length} services have been updated.`
+        });
+        fetchServices();
+    } catch (e) {
+        console.error("Failed to bulk edit services", e);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update some services."
+        });
+    }
+  }, [services, fetchServices, toast]);
 
   const openEdit = useCallback((service: UpstreamServiceConfig) => {
       setSelectedService(service);
@@ -291,9 +326,30 @@ export default function ServicesPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Services</h2>
-        <Button onClick={openNew}>
-            <Plus className="mr-2 h-4 w-4" /> Add Service
-        </Button>
+        <div className="flex items-center gap-2">
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="outline">
+                        <Download className="mr-2 h-4 w-4" /> Bulk Import
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-xl">
+                    <DialogHeader>
+                        <DialogTitle>Bulk Service Import</DialogTitle>
+                        <DialogDescription>
+                            Import multiple services at once from a JSON configuration.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <BulkServiceImport
+                        onImportSuccess={() => fetchServices()}
+                        onCancel={() => {}}
+                    />
+                </DialogContent>
+            </Dialog>
+            <Button onClick={openNew}>
+                <Plus className="mr-2 h-4 w-4" /> Add Service
+            </Button>
+        </div>
       </div>
 
       <Card className="backdrop-blur-sm bg-background/50">
@@ -312,6 +368,7 @@ export default function ServicesPage() {
                 onExport={handleExport}
                 onBulkToggle={bulkToggleService}
                 onBulkDelete={bulkDeleteService}
+                onBulkEdit={handleBulkEdit}
                 onLogin={handleLogin}
                 onRestart={handleRestart}
              />
