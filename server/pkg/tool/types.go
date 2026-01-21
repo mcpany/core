@@ -652,6 +652,14 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 				displayBody = displayBody[:maxErrorBodyLen] + "... (truncated)"
 			}
 
+			// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
+			// util.RedactJSON returns the original input if it's not JSON.
+			// If it was JSON, it is already redacted.
+			isDebug := os.Getenv("MCPANY_DEBUG") == "true"
+			if !isDebug && !fastJSON.Valid(bodyBytes) {
+				displayBody = "[Body hidden for security. Enable debug mode to view.]"
+			}
+
 			errMsg := fmt.Errorf("upstream HTTP request failed with status %d: %s", attemptResp.StatusCode, displayBody)
 
 			if attemptResp.StatusCode < 500 {
@@ -2357,6 +2365,12 @@ func isSensitiveHeader(key string) bool {
 		return true
 	}
 	if strings.Contains(k, "token") || strings.Contains(k, "secret") || strings.Contains(k, "password") {
+		return true
+	}
+	if strings.Contains(k, "access-token") || strings.Contains(k, "x-auth") || strings.Contains(k, "csrf") || strings.Contains(k, "xsrf") {
+		return true
+	}
+	if strings.Contains(k, "signature") {
 		return true
 	}
 	return false

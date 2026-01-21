@@ -89,8 +89,14 @@ var NewHTTPPool = func(
 		MaxIdleConnsPerHost: maxSize,
 	}
 
+	clientTimeout := 30 * time.Second
+	if config.GetResilience() != nil && config.GetResilience().GetTimeout() != nil {
+		clientTimeout = config.GetResilience().GetTimeout().AsDuration()
+	}
+
 	sharedClient := &http.Client{
 		Transport: otelhttp.NewTransport(baseTransport),
+		Timeout:   clientTimeout,
 	}
 
 	// Create a shared health checker for all clients in this pool
