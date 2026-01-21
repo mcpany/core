@@ -477,6 +477,10 @@ func isKeyColon(input []byte, endOffset int) bool {
 // dsnPasswordRegex handles fallback cases but we prefer net/url
 var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
 
+// dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
+// This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
+var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
+
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 func RedactDSN(dsn string) string {
@@ -504,5 +508,15 @@ func RedactDSN(dsn string) string {
 	// OR if url.Parse succeeded but found no user/password structure (e.g. user:pass@tcp(...) where Scheme is "user" and User is nil).
 	// But note: the regex is known to be imperfect for complex cases (e.g. colons in password).
 	// We apply the regex as a best-effort attempt.
+
+	// If the DSN has a scheme, use the scheme-aware regex which is more robust for complex passwords
+	// (e.g. containing colons or @) but assumes a single DSN string.
+	if strings.Contains(dsn, "://") {
+		// Use greedy match to handle special characters in password
+		if dsnSchemeRegex.MatchString(dsn) {
+			return dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+		}
+	}
+
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
