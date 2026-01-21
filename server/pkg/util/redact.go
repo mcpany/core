@@ -475,7 +475,9 @@ func isKeyColon(input []byte, endOffset int) bool {
 }
 
 // dsnPasswordRegex handles fallback cases but we prefer net/url.
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^:@]+)(@)`)
+// Matches colon, followed by password (which may start with / if followed by non-/, or be empty), followed by @.
+// We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@][^@]*|/[^/@][^@]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
