@@ -36,3 +36,11 @@ export const LazyTopToolsWidget = dynamic(
     loading: () => <ChartSkeleton />,
   }
 );
+
+export const LazyHealthHistoryChart = dynamic(
+  () => import("@/components/stats/health-history-chart").then((mod) => mod.HealthHistoryChart),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  }
+);

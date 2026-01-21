@@ -9,8 +9,7 @@ import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { LazyRequestVolumeChart, LazyTopToolsWidget } from "@/components/dashboard/lazy-charts";
-import { HealthHistoryChart } from "@/components/stats/health-history-chart";
+import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -61,7 +60,7 @@ export function DashboardGrid() {
     const renderWidget = (id: string) => {
         switch (id) {
             case "metrics": return <MetricsOverview />;
-            case "uptime": return <HealthHistoryChart />;
+            case "uptime": return <LazyHealthHistoryChart />;
             case "failure-rate": return <ToolFailureRateWidget />;
             case "request-volume": return <LazyRequestVolumeChart />;
             case "top-tools": return <LazyTopToolsWidget />;
