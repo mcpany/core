@@ -35,6 +35,8 @@ import (
 // corresponding string representation from the net/http package.
 func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
 	switch method {
+	case configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED:
+		return http.MethodGet, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
 		return http.MethodGet, nil
 	case configv1.HttpCallDefinition_HTTP_METHOD_POST:

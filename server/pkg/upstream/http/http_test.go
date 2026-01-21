@@ -57,8 +57,8 @@ func TestHttpMethodToString(t *testing.T) {
 		{
 			name:          "unspecified",
 			method:        configv1.HttpCallDefinition_HTTP_METHOD_UNSPECIFIED,
-			expected:      "",
-			expectAnError: true,
+			expected:      "GET",
+			expectAnError: false,
 		},
 		{
 			name:          "invalid",

@@ -5,8 +5,16 @@ package http
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"math/big"
 	"net/http"
+	"os"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/client"
@@ -14,6 +22,7 @@ import (
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -55,13 +64,13 @@ func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
 }
 
 
-func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
+func TestHTTPUpstream_Register_UnspecifiedMethod_Success(t *testing.T) {
 	pm := pool.NewManager()
 	tm := tool.NewManager(nil)
 	upstream := NewUpstream(pm)
 
 	configJSON := `{
-		"name": "unsupported-method",
+		"name": "unspecified-method-success",
 		"http_service": {
 			"address": "http://127.0.0.1",
 			"tools": [{"name": "op", "call_id": "call"}],
@@ -70,14 +79,22 @@ func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
 			}
 		}
 	}`
-	// UNSPECIFIED -> httpMethodToString returns error.
+	// UNSPECIFIED -> now defaults to GET.
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
-	assert.Len(t, discoveredTools, 0)
+	assert.Len(t, discoveredTools, 1)
+	assert.Equal(t, "op", discoveredTools[0].GetName())
+
+	sanitizedToolName, _ := util.SanitizeToolName("op")
+	toolID := serviceID + "." + sanitizedToolName
+	tool, ok := tm.GetTool(toolID)
+	assert.True(t, ok)
+	fqn := tool.Tool().GetUnderlyingMethodFqn()
+	assert.Contains(t, fqn, "GET ")
 }
 
 func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
@@ -480,6 +497,207 @@ func TestHTTPUpstream_Register_DisabledPrompt(t *testing.T) {
 
 	_, ok := prompts.GetPrompt("prompt1")
 	assert.False(t, ok)
+}
+
+func createTempCertFiles(t *testing.T) (string, string) {
+	// Generate private key
+	priv, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+
+	// Generate cert
+	template := x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			Organization: []string{"Test Org"},
+		},
+		NotBefore: time.Now(),
+		NotAfter:  time.Now().Add(time.Hour),
+		KeyUsage:  x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+	}
+	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
+	require.NoError(t, err)
+
+	// Write cert
+	certFile, err := os.CreateTemp("", "cert-*.pem")
+	require.NoError(t, err)
+	pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	certFile.Close()
+
+	// Write key
+	keyFile, err := os.CreateTemp("", "key-*.pem")
+	require.NoError(t, err)
+	privBytes := x509.MarshalPKCS1PrivateKey(priv)
+	pem.Encode(keyFile, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: privBytes})
+	keyFile.Close()
+
+	return certFile.Name(), keyFile.Name()
+}
+
+func TestNewHTTPPool_MTLS_CaCertError(t *testing.T) {
+	certFile, keyFile := createTempCertFiles(t)
+	defer os.Remove(certFile)
+	defer os.Remove(keyFile)
+
+	configJSON := `{
+		"upstream_auth": {
+			"mtls": {
+				"client_cert_path": "` + certFile + `",
+				"client_key_path": "` + keyFile + `",
+				"ca_cert_path": "non-existent-ca"
+			}
+		},
+		"http_service": {
+			"tls_config": {}
+		}
+	}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	_, err := NewHTTPPool(1, 1, 0, config)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "open non-existent-ca")
+}
+
+func TestNewHTTPPool_PrivateNetworkAllowed(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+	configJSON := `{"http_service": {"tls_config": {}}}`
+	config := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
+
+	_, err := NewHTTPPool(1, 1, 0, config)
+	assert.NoError(t, err)
+}
+
+func TestHTTPUpstream_Register_URLCoverage(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewManager(nil)
+	upstream := NewUpstream(pm)
+
+	testCases := []struct {
+		name         string
+		address      string
+		endpointPath string
+		expected     string
+	}{
+		{
+			name:         "double slash root",
+			address:      "http://example.com",
+			endpointPath: "//",
+			expected:     "GET http://example.com//",
+		},
+		{
+			name:         "invalid query key in base",
+			address:      "http://example.com?%GG=1",
+			endpointPath: "test",
+			expected:     "GET http://example.com/test?%GG=1",
+		},
+		{
+			name:         "invalid query key in endpoint",
+			address:      "http://example.com",
+			endpointPath: "test?%GG=2",
+			expected:     "GET http://example.com/test?%GG=2",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			configJSON := `{
+				"name": "url-coverage-service",
+				"http_service": {
+					"address": "` + tc.address + `",
+					"tools": [{"name": "op", "call_id": "call"}],
+					"calls": {
+						"call": {
+							"id": "call",
+							"method": "HTTP_METHOD_GET",
+							"endpoint_path": "` + tc.endpointPath + `"
+						}
+					}
+				}
+			}`
+			serviceConfig := &configv1.UpstreamServiceConfig{}
+			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, true)
+			require.NoError(t, err)
+
+			sanitizedToolName, _ := util.SanitizeToolName("op")
+			toolID := serviceID + "." + sanitizedToolName
+			tool, ok := tm.GetTool(toolID)
+			assert.True(t, ok)
+			fqn := tool.Tool().GetUnderlyingMethodFqn()
+			assert.Equal(t, tc.expected, fqn)
+		})
+	}
+}
+
+func TestHTTPUpstream_Register_InputSchema_Merging_Overlap(t *testing.T) {
+	pm := pool.NewManager()
+	tm := tool.NewManager(nil)
+	upstream := NewUpstream(pm)
+
+	configJSON := `{
+		"name": "schema-merge-overlap",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op", "call_id": "call"}],
+			"calls": {
+				"call": {
+					"id": "call",
+					"method": "HTTP_METHOD_GET",
+					"input_schema": {
+						"properties": {
+							"shared_prop": "manual"
+						},
+						"required": ["shared_prop"]
+					},
+					"parameters": [
+						{
+							"schema": {
+								"name": "shared_prop",
+								"type": "STRING",
+								"is_required": true
+							}
+						}
+					]
+				}
+			}
+		}
+	}`
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	toolID := "schema-merge-overlap.op"
+	tool, ok := tm.GetTool(toolID)
+	assert.True(t, ok)
+
+	schema := tool.Tool().GetAnnotations().GetInputSchema()
+	fields := schema.GetFields()
+
+	// Check properties: "manual" should be preserved (input_schema takes precedence over parameters in initial property check?
+	// The code:
+	// if _, ok := existingProps[k]; !ok { existingProps[k] = v }
+	// So if existingProps has key, it skips.
+	// So "shared_prop" should remain "manual" (string).
+	props := fields["properties"].GetStructValue().GetFields()
+	assert.Contains(t, props, "shared_prop")
+	assert.Equal(t, "manual", props["shared_prop"].GetStringValue())
+
+	// Check required: should not duplicate
+	reqs := fields["required"].GetListValue().GetValues()
+	count := 0
+	for _, v := range reqs {
+		if v.GetStringValue() == "shared_prop" {
+			count++
+		}
+	}
+	assert.Equal(t, 1, count, "Duplicate required param should be avoided")
 }
 
 func TestHTTPUpstream_Register_InputSchema_NoProperties(t *testing.T) {
