@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"context"
@@ -72,7 +72,7 @@ func TestSQLiteAuditStore(t *testing.T) {
 	defer store.Close()
 
 	// Create a sample entry
-	entry := AuditEntry{
+	entry := Entry{
 		Timestamp:  time.Date(2023, 10, 27, 12, 0, 0, 0, time.UTC),
 		ToolName:   "test_tool",
 		UserID:     "user123",
@@ -132,7 +132,7 @@ func TestSQLiteAuditStore_TamperEvident(t *testing.T) {
 
 	// Write 3 entries
 	for i := 0; i < 3; i++ {
-		entry := AuditEntry{
+		entry := Entry{
 			Timestamp:  time.Now(),
 			ToolName:   "test_tool",
 			DurationMs: int64(i),
@@ -294,7 +294,7 @@ func TestSQLiteAuditStore_BackwardCompatibility(t *testing.T) {
 	assert.True(t, valid, "Verification should pass for legacy hash")
 
 	// Now add a NEW entry using the store (which uses new hashing)
-	newEntry := AuditEntry{
+	newEntry := Entry{
 		Timestamp:  time.Now(),
 		ToolName:   "new_tool",
 		DurationMs: 200,
@@ -415,7 +415,7 @@ func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
 	// Close the DB underneath
 	store.db.Close()
 
-	entry := AuditEntry{
+	entry := Entry{
 		Timestamp: time.Now(),
 		ToolName:  "test",
 	}
@@ -464,7 +464,7 @@ func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
 	require.NoError(t, err)
 	defer store.Close()
 
-	entry := AuditEntry{
+	entry := Entry{
 		Timestamp:  time.Now(),
 		ToolName:   "complex_tool",
 		Arguments:  nil, // Should become "{}"
@@ -502,8 +502,8 @@ func TestSQLiteAuditStore_IntegrityViolation_PrevHash(t *testing.T) {
 	require.NoError(t, err)
 
 	// Write 2 entries
-	require.NoError(t, store.Write(context.Background(), AuditEntry{Timestamp: time.Now(), ToolName: "1"}))
-	require.NoError(t, store.Write(context.Background(), AuditEntry{Timestamp: time.Now(), ToolName: "2"}))
+	require.NoError(t, store.Write(context.Background(), Entry{Timestamp: time.Now(), ToolName: "1"}))
+	require.NoError(t, store.Write(context.Background(), Entry{Timestamp: time.Now(), ToolName: "2"}))
 	store.Close()
 
 	// Manually tamper prev_hash of second entry
@@ -570,7 +570,7 @@ func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
 
 	for i := 0; i < concurrency; i++ {
 		go func(idx int) {
-			err := store.Write(context.Background(), AuditEntry{
+			err := store.Write(context.Background(), Entry{
 				Timestamp: time.Now(),
 				ToolName:  fmt.Sprintf("tool_%d", idx),
 			})

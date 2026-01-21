@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"bytes"
@@ -60,7 +60,7 @@ func TestFileAuditStore_Write_File(t *testing.T) {
 	require.NoError(t, err)
 	defer store.Close()
 
-	entry := AuditEntry{
+	entry := Entry{
 		ToolName: "test-tool",
 		Error:    "test-error", // Replacing Status with Error, as Status doesn't exist
 	}
@@ -72,7 +72,7 @@ func TestFileAuditStore_Write_File(t *testing.T) {
 	content, err := os.ReadFile(logFile)
 	require.NoError(t, err)
 
-	var readEntry AuditEntry
+	var readEntry Entry
 	err = json.Unmarshal(content, &readEntry)
 	require.NoError(t, err)
 	assert.Equal(t, entry.ToolName, readEntry.ToolName)
@@ -89,7 +89,7 @@ func TestFileAuditStore_Write_Stdout(t *testing.T) {
 	require.NoError(t, err)
 	defer store.Close()
 
-	entry := AuditEntry{
+	entry := Entry{
 		ToolName: "stdout-tool",
 		Error:    "failure",
 	}
@@ -106,7 +106,7 @@ func TestFileAuditStore_Write_Stdout(t *testing.T) {
 	_, err = io.Copy(&buf, r)
 	require.NoError(t, err)
 
-	var readEntry AuditEntry
+	var readEntry Entry
 	err = json.Unmarshal(buf.Bytes(), &readEntry)
 	require.NoError(t, err)
 	assert.Equal(t, entry.ToolName, readEntry.ToolName)

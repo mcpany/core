@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/audit"
 )
 
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +19,7 @@ func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Basic filtering from query params
-	filter := middleware.AuditFilter{}
+	filter := audit.Filter{}
 	if start := r.URL.Query().Get("start_time"); start != "" {
 		if t, err := time.Parse(time.RFC3339, start); err == nil {
 			filter.StartTime = &t
