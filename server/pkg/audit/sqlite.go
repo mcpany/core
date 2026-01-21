@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"context"
@@ -135,7 +135,7 @@ func ensureColumn(db *sql.DB, colName string) error {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
-func (s *SQLiteAuditStore) Write(ctx context.Context, entry AuditEntry) error {
+func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -190,7 +190,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry AuditEntry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
-func (s *SQLiteAuditStore) Read(ctx context.Context, filter AuditFilter) ([]AuditEntry, error) {
+func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -235,9 +235,9 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter AuditFilter) ([]Audi
 	}
 	defer func() { _ = rows.Close() }()
 
-	var entries []AuditEntry
+	var entries []Entry
 	for rows.Next() {
-		var entry AuditEntry
+		var entry Entry
 		var tsStr, argsStr, resultStr string
 		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
 			return nil, err

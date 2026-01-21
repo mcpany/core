@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package audit
 
 import (
 	"context"
@@ -83,7 +83,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
-func (s *PostgresAuditStore) Write(ctx context.Context, entry AuditEntry) error {
+func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
 
@@ -163,8 +163,8 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry AuditEntry) error 
 	return tx.Commit()
 }
 
-// Read implements the AuditStore interface.
-func (s *PostgresAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
+// Read implements the Store interface.
+func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
