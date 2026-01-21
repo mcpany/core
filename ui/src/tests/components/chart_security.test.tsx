@@ -17,7 +17,7 @@ vi.mock('recharts', async () => {
   };
 });
 
-describe('ChartContainer ID XSS Security', () => {
+describe('ChartContainer Security', () => {
   it('should not allow XSS via id prop escaping style tag', () => {
     const maliciousId = 'test</style><div id="injected">XSS</div><style>';
     const config: ChartConfig = {
@@ -30,19 +30,51 @@ describe('ChartContainer ID XSS Security', () => {
       </ChartContainer>
     );
 
-    // If vulnerable, the style tag will be closed and the div will be rendered as HTML
-    // However, React renders `id` prop safely in the <div>.
-    // The vulnerability is in `ChartStyle` which uses `dangerouslySetInnerHTML`.
+    const styleTag = container.querySelector('style');
+    const content = styleTag?.innerHTML || '';
+
+    // The ID is sanitized by replacing non-alphanumeric chars with -
+    expect(content).not.toContain('</style>');
+    // It should contain the sanitized ID
+    // The regex /[^a-zA-Z0-9\-_]/g replaces special chars with -
+    // test</style><div id="injected">XSS</div><style> -> test--style--div-id--injected--XSS--div--style-
+    expect(content).toContain('test--style--div-id--injected--XSS--div--style-');
+  });
+
+  it('should sanitize CSS values in config', () => {
+    const maliciousConfig: ChartConfig = {
+      test: {
+        label: "Test",
+        // Try to break out of the property: "red; background: url(javascript:alert(1))"
+        // Try to close style tag: "red</style><script>alert(1)</script>"
+        color: "red; background: url(javascript:alert(1)); </style><script>alert(1)</script>"
+      }
+    };
+
+    const { container } = render(
+      <ChartContainer config={maliciousConfig}>
+        <div>Chart Content</div>
+      </ChartContainer>
+    );
 
     const styleTag = container.querySelector('style');
     const content = styleTag?.innerHTML || '';
 
-    // If vulnerable, content will contain the closing style tag literally
-    // AND the subsequent injected HTML might be interpretted by browser (but JSDOM might just show text in style).
-    // The key is that `dangerouslySetInnerHTML` puts the string raw into the style element.
-    // If the string contains `</style>`, the browser will close the style block.
+    // Verify allowed characters only
+    // Colon, semicolon, slash, angle brackets should be stripped.
+    // "red; background: url(javascript:alert(1)); </style><script>alert(1)</script>"
+    // -> "red background url(javascriptalert(1)) style scriptalert(1)script"
+    // Wait, regex is /[^a-zA-Z0-9\-_#%.(),\s]/g
+    // ; -> stripped
+    // : -> stripped
+    // / -> stripped
+    // < -> stripped
+    // > -> stripped
 
-    // We check if the malicious string is present in the style tag content.
-    expect(content).not.toContain('</style><div id="injected">XSS</div>');
+    expect(content).not.toContain(';');
+    expect(content).not.toContain(':');
+    expect(content).not.toContain('<');
+    expect(content).not.toContain('>');
+    expect(content).not.toContain('url('); // url( is blocked by specific check too
   });
 });
