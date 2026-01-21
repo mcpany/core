@@ -36,7 +36,7 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: s.Client()}, nil
 	}
-	p, _ := pool.New(factory, 1, 1, 0, false)
+	p, _ := pool.New(factory, 1, 1, 1, 0, false)
 	pm.Register("http-service", p)
 
 	toolDef := &pb.Tool{
@@ -84,7 +84,7 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: s.Client()}, nil
 	}
-	p, _ := pool.New(factory, 1, 1, 0, false)
+	p, _ := pool.New(factory, 1, 1, 1, 0, false)
 	pm.Register("http-service", p)
 
 	toolDef := &pb.Tool{
@@ -129,7 +129,7 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: s.Client()}, nil
 	}
-	p, _ := pool.New(factory, 1, 1, 0, false)
+	p, _ := pool.New(factory, 1, 1, 1, 0, false)
 	pm.Register("s", p)
 
 	mockAuth := &MockTypesAuthenticator{

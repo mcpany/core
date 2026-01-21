@@ -25,6 +25,7 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 		},
 		1,
 		10,
+		10,
 		1*time.Minute,
 		false,
 	)

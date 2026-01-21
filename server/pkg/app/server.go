@@ -608,7 +608,7 @@ func (a *Application) Run(opts RunOptions) error {
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(ctx)
+		discovered, err := ollamaProvider.Discover(opts.Ctx)
 		if err != nil {
 			log.Warn("Failed to auto-discover local services", "provider", ollamaProvider.Name(), "error", err)
 		} else {

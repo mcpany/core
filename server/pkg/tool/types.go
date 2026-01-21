@@ -2600,6 +2600,11 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
 	charsToCheck := dangerousChars
+	// Block space only if it is a substitution in unquoted context to prevent argument splitting.
+	// If it is a full argument (template == ""), space is allowed (e.g. "echo hello world").
+	if template != "" && quoteLevel == 0 {
+		charsToCheck += " "
+	}
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
 	if filepath.Base(command) == "env" {
 		charsToCheck += "="

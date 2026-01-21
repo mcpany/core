@@ -54,7 +54,7 @@ func TestHTTPTool_Execute_LogsSensitiveHeaders(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 0, true)
+	}, 1, 1, 1, 0, true)
 	poolManager.Register("test-service", p)
 
 	mcpTool := v1.Tool_builder{
