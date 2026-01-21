@@ -8,8 +8,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/subtle"
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -123,29 +121,30 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-
-
-// RunOptions defines the options for running the application.
-type RunOptions struct {
-	Ctx             context.Context
-	Fs              afero.Fs
-	Stdio           bool
-	JSONRPCPort     string
-	GRPCPort        string
-	ConfigPaths     []string
-	APIKey          string
-	ShutdownTimeout time.Duration
-	TLSCert         string
-	TLSKey          string
-	TLSClientCA     string
-}
-
 // Runner defines the interface for running the MCP Any application. It abstracts
 // the application's entry point, allowing for different implementations or mocks
 // for testing purposes.
 type Runner interface {
-	// Run starts the application with the given options.
-	Run(opts RunOptions) error
+	// Run starts the MCP Any application with the given context, filesystem, and
+	// configuration. It is the primary entry point for the server.
+	//
+	// ctx is the context that controls the application's lifecycle.
+	// fs is the filesystem interface for reading configurations.
+	// stdio specifies whether to run in standard I/O mode.
+	// jsonrpcPort is the port for the JSON-RPC server.
+	// grpcPort is the port for the gRPC registration server.
+	// configPaths is a slice of paths to configuration files.
+	//
+	// It returns	// Run starts the application with the given configuration.
+	Run(
+		ctx context.Context,
+		fs afero.Fs,
+		stdio bool,
+		jsonrpcPort, grpcPort string,
+		configPaths []string,
+		apiKey string,
+		shutdownTimeout time.Duration,
+	) error
 
 	// ReloadConfig reloads the application configuration from the provided file system
 	// and paths. It updates the internal state of the application, such as
@@ -287,15 +286,23 @@ func NewApplication() *Application {
 // Returns an error if any part of the startup or execution fails.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
-func (a *Application) Run(opts RunOptions) error {
+func (a *Application) Run(
+	ctx context.Context,
+	fs afero.Fs,
+	stdio bool,
+	jsonrpcPort, grpcPort string,
+	configPaths []string,
+	apiKey string,
+	shutdownTimeout time.Duration,
+) error {
 	log := logging.GetLogger()
-	fs, err := setup(opts.Fs)
+	fs, err := setup(fs)
 	if err != nil {
 		return fmt.Errorf("failed to setup filesystem: %w", err)
 	}
 	a.fs = fs
-	a.configPaths = opts.ConfigPaths
-	a.explicitAPIKey = opts.APIKey
+	a.configPaths = configPaths
+	a.explicitAPIKey = apiKey
 
 	// Telemetry initialization moved after config loading
 
@@ -346,7 +353,7 @@ func (a *Application) Run(opts RunOptions) error {
 	var stores []config.Store
 
 	// Initialize DB if empty
-	if err := a.initializeDatabase(opts.Ctx, storageStore); err != nil {
+	if err := a.initializeDatabase(ctx, storageStore); err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
@@ -355,33 +362,32 @@ func (a *Application) Run(opts RunOptions) error {
 	stores = append(stores, storageStore)
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if len(opts.ConfigPaths) > 0 {
+	if len(configPaths) > 0 {
 		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
-			stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", configPaths)
+			stores = append(stores, config.NewFileStore(fs, configPaths))
 		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", opts.ConfigPaths)
+			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", configPaths)
 		}
 	}
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
-	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
+	cfg, err = config.LoadServices(ctx, multiStore, "server")
 	if err != nil {
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
-	a.lastReloadTime = time.Now()
 
 	// Populate initial good config for diffing
-	if len(opts.ConfigPaths) > 0 {
-		a.lastGoodConfig, _ = a.readConfigFiles(fs, opts.ConfigPaths)
+	if len(configPaths) > 0 {
+		a.lastGoodConfig, _ = a.readConfigFiles(fs, configPaths)
 	}
 
 	// Initialize Telemetry with loaded config
-	shutdownTelemetry, err := telemetry.InitTelemetry(opts.Ctx, appconsts.Name, appconsts.Version, cfg.GetGlobalSettings().GetTelemetry(), os.Stderr)
+	shutdownTelemetry, err := telemetry.InitTelemetry(ctx, appconsts.Name, appconsts.Version, cfg.GetGlobalSettings().GetTelemetry(), os.Stderr)
 	if err != nil {
 		// Log error but don't fail startup just for telemetry if we want resilience,
 		// but typically we might want to know.
@@ -396,12 +402,12 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Initialize Settings Manager
 	a.SettingsManager = NewGlobalSettingsManager(
-		opts.APIKey,
+		apiKey,
 		cfg.GetGlobalSettings().GetAllowedIps(),
 		// Logic for origins default moved to inside NewGlobalSettingsManager or updated here
 		nil,
 	)
-	a.SettingsManager.Update(cfg.GetGlobalSettings(), opts.APIKey)
+	a.SettingsManager.Update(cfg.GetGlobalSettings(), apiKey)
 
 	busConfig := cfg.GetGlobalSettings().GetMessageBus()
 	busProvider, err := bus.NewProvider(busConfig)
@@ -492,7 +498,7 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Create a context for workers that we can cancel on shutdown
-	workerCtx, workerCancel := context.WithCancel(opts.Ctx)
+	workerCtx, workerCancel := context.WithCancel(ctx)
 	defer workerCancel()
 
 	// Start background workers
@@ -537,7 +543,7 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Initialize servers with the message bus
 	mcpSrv, err := mcpserver.NewServer(
-		opts.Ctx,
+		ctx,
 		a.ToolManager,
 		a.PromptManager,
 		a.ResourceManager,
@@ -554,7 +560,7 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	mcpSrv.SetReloadFunc(func(ctx context.Context) error {
-		return a.ReloadConfig(ctx, fs, opts.ConfigPaths)
+		return a.ReloadConfig(ctx, fs, configPaths)
 	})
 
 	// Register Skill resources
@@ -589,7 +595,7 @@ func (a *Application) Run(opts RunOptions) error {
 			)
 			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
 			// We don't need a correlation ID since we are not waiting for a response here
-			if err := registrationBus.Publish(opts.Ctx, "request", regReq); err != nil {
+			if err := registrationBus.Publish(ctx, "request", regReq); err != nil {
 				log.Error("Failed to publish registration request", "error", err)
 			}
 		}
@@ -619,7 +625,7 @@ func (a *Application) Run(opts RunOptions) error {
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(opts.Ctx)
+		discovered, err := ollamaProvider.Discover(ctx)
 		if err == nil {
 			for _, svc := range discovered {
 				log.Info("Auto-discovered local service", "name", svc.GetName())
@@ -674,7 +680,7 @@ func (a *Application) Run(opts RunOptions) error {
 	// an HTTP request availability in the context, which is not present in stdio.
 	// Stdio mode implies local access (shell), so we trust the user.
 	// Stdio mode implies local access (shell), so we trust the user.
-	if opts.Stdio {
+	if stdio {
 		var filtered []*config_v1.Middleware
 		for _, m := range middlewares {
 			if m.GetName() != authMiddlewareName {
@@ -713,15 +719,15 @@ func (a *Application) Run(opts RunOptions) error {
 	// We use SimpleTokenizer for low-overhead token counting
 	mcpSrv.Server().AddReceivingMiddleware(middleware.PrometheusMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
 
-	if opts.Stdio {
-		err := a.runStdioModeFunc(opts.Ctx, mcpSrv)
+	if stdio {
+		err := a.runStdioModeFunc(ctx, mcpSrv)
 		workerCancel()
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
 		return err
 	}
 
-	bindAddress := opts.JSONRPCPort
+	bindAddress := jsonrpcPort
 	if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 		bindAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
 	}
@@ -753,21 +759,18 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Start servers
 	if err := a.runServerMode(
-		opts.Ctx,
+		ctx,
 		mcpSrv,
 		busProvider,
 		bindAddress,
-		opts.GRPCPort,
-		opts.ShutdownTimeout,
+		grpcPort,
+		shutdownTimeout,
 		cfg.GetGlobalSettings(),
 		cachingMiddleware,
 		standardMiddlewares,
 		s,
 		serviceRegistry,
 		startupCallback,
-		opts.TLSCert,
-		opts.TLSKey,
-		opts.TLSClientCA,
 	); err != nil {
 		workerCancel()
 		upstreamWorker.Stop()
@@ -1309,9 +1312,7 @@ func (a *Application) runServerMode(
 	standardMiddlewares *middleware.StandardMiddlewares,
 	store storage.Storage,
 	serviceRegistry *serviceregistry.ServiceRegistry,
-
 	startupCallback func(),
-	tlsCert, tlsKey, tlsClientCA string,
 ) error {
 	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs())
 	if err != nil {
@@ -1324,7 +1325,7 @@ func (a *Application) runServerMode(
 	localCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-
+	defer cancel()
 
 	errChan := make(chan error, 2)
 	readyChan := make(chan struct{}, 2)
@@ -1892,12 +1893,6 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	// Register Health Check
-	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	})
-
 	// Register Root Handler with gRPC-Web support
 	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
@@ -1907,50 +1902,10 @@ func (a *Application) runServerMode(
 		httpHandler.ServeHTTP(w, r)
 	})))
 
-	var httpLis net.Listener
-
-
-	if tlsCert != "" && tlsKey != "" {
-		cert, err := tls.LoadX509KeyPair(tlsCert, tlsKey)
-		if err != nil {
-			return fmt.Errorf("failed to load TLS key pair: %w", err)
-		}
-
-		tlsConfig := &tls.Config{
-			Certificates: []tls.Certificate{cert},
-			MinVersion:   tls.VersionTLS12,
-		}
-
-		if tlsClientCA != "" {
-			//nolint:gosec // File path comes from trusted configuration
-			caCert, err := os.ReadFile(tlsClientCA)
-			if err != nil {
-				return fmt.Errorf("failed to read TLS client CA: %w", err)
-			}
-			caCertPool := x509.NewCertPool()
-			caCertPool.AppendCertsFromPEM(caCert)
-			tlsConfig.ClientCAs = caCertPool
-			tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
-		}
-
-		logging.GetLogger().Info("Enabling TLS for HTTP server", "mtls_enabled", tlsConfig.ClientAuth == tls.RequireAndVerifyClientCert)
-
-		// Use standard Listen and then wrap with TLS
-		l, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
-		if err != nil {
-			// Handle error
-			errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
-		} else {
-			httpLis = tls.NewListener(l, tlsConfig)
-		}
+	httpLis, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
+	if err != nil {
+		errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
 	} else {
-		httpLis, err = util.ListenWithRetry(ctx, "tcp", httpBindAddress)
-		if err != nil {
-			errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
-		}
-	}
-
-	if httpLis != nil {
 		if addr, ok := httpLis.Addr().(*net.TCPAddr); ok {
 			a.BoundHTTPPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
 		}

@@ -8,7 +8,6 @@ import (
 )
 
 // MCPServerSpec defines the desired state of MCPServer
-// +kubebuilder:object:generate=true
 type MCPServerSpec struct {
 	// Replicas is the number of replicas for the server
 	Replicas *int32 `json:"replicas,omitempty"`
@@ -22,7 +21,6 @@ type MCPServerSpec struct {
 }
 
 // MCPServerStatus defines the observed state of MCPServer
-// +kubebuilder:object:generate=true
 type MCPServerStatus struct {
 	// AvailableReplicas is the number of available replicas
 	AvailableReplicas int32 `json:"availableReplicas"`
