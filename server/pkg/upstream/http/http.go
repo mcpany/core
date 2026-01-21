@@ -477,12 +477,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				decodedKey, errKey := url.QueryUnescape(key)
 				_, errVal := url.QueryUnescape(value)
 
-				if errKey == nil {
-					qp.key = decodedKey
-				}
-
 				if errKey != nil || errVal != nil {
 					qp.isInvalid = true
+				} else {
+					qp.key = decodedKey
 				}
 				parts = append(parts, qp)
 			}
@@ -497,7 +495,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Index endpoint parts by key
 			endPartsByKey := make(map[string][]string)
 			for _, p := range endParts {
-				if p.key != "" {
+				if !p.isInvalid {
 					endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
 				}
 			}
@@ -507,7 +505,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Process base parts
 			for _, bp := range baseParts {
-				if bp.key == "" {
+				if bp.isInvalid {
 					finalParts = append(finalParts, bp.raw)
 					continue
 				}
@@ -525,13 +523,17 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Append remaining endpoint parts
 			for _, ep := range endParts {
-				// If the key was present in the base URL, we already added the override value(s)
-				// during the base parts loop (see keysOverridden usage above).
-				// So we skip it here to avoid duplication.
-				if ep.key != "" && keysOverridden[ep.key] {
+				if ep.isInvalid {
+					finalParts = append(finalParts, ep.raw)
 					continue
 				}
-				finalParts = append(finalParts, ep.raw)
+				// If key was not in base (so not added via base loop overrides), add it now.
+				if !keysOverridden[ep.key] {
+					finalParts = append(finalParts, ep.raw)
+					// We do not mark as overridden here because if multiple parts in endpoint have same key,
+					// they should all be added. Since keysOverridden is only set if found in base,
+					// we are safe to add duplicates from endpoint if they are new keys.
+				}
 			}
 
 			resolvedURL.RawQuery = strings.Join(finalParts, "&")

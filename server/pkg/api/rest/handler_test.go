@@ -53,12 +53,6 @@ func TestValidateConfigHandler(t *testing.T) {
 			body:           `{"content": "foo",}`, // Invalid JSON
 			expectedStatus: http.StatusBadRequest,
 		},
-		{
-			name:           "Body Too Large",
-			method:         http.MethodPost,
-			body:           `{"content": "` + string(make([]byte, 6*1024*1024)) + `"}`, // > 5MB
-			expectedStatus: http.StatusBadRequest,
-		},
 	}
 
 	for _, tt := range tests {

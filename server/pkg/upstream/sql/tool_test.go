@@ -29,7 +29,7 @@ func TestTool_Execute(t *testing.T) {
 		ParameterOrder: []string{"age"},
 	}
 
-	toolInstance := NewTool(&v1.Tool{Name: proto.String("get_users")}, db, callDef)
+	toolInstance := NewTool(&v1.Tool{Name: proto.String("get_users")}, db, callDef, nil, "get_users_call")
 
 	t.Run("success", func(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "name"}).
@@ -104,8 +104,35 @@ func TestTool_Execute(t *testing.T) {
 				Ttl: durationpb.New(60 * time.Second),
 			},
 		}
-		cachedTool := NewTool(&v1.Tool{Name: proto.String("cached_tool")}, db, cachedCallDef)
+		cachedTool := NewTool(&v1.Tool{Name: proto.String("cached_tool")}, db, cachedCallDef, nil, "cached_tool_call")
 		assert.NotNil(t, cachedTool.GetCacheConfig())
 		assert.Equal(t, int64(60), cachedTool.GetCacheConfig().GetTtl().GetSeconds())
+	})
+
+	t.Run("policy blocked", func(t *testing.T) {
+		policy := &configv1.CallPolicy{
+			Rules: []*configv1.CallPolicyRule{
+				{
+					Action: configv1.CallPolicy_DENY.Enum(),
+				},
+			},
+			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+		}
+
+		blockedTool := NewTool(&v1.Tool{Name: proto.String("blocked_tool")}, db, callDef, []*configv1.CallPolicy{policy}, "blocked_tool_call")
+
+		inputs := map[string]interface{}{
+			"age": 20,
+		}
+		inputsBytes, _ := json.Marshal(inputs)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "blocked_tool",
+			ToolInputs: inputsBytes,
+		}
+
+		_, err := blockedTool.Execute(context.Background(), req)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "blocked by policy")
 	})
 }
