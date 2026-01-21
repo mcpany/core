@@ -73,7 +73,13 @@ func TestServiceRetry(t *testing.T) {
 
 	go func() {
 		// Empty config paths as we supply config via Storage
-		err := a.Run(ctx, afero.NewMemMapFs(), false, fmt.Sprintf("127.0.0.2:%d", appPort), "", nil, "", 1*time.Second)
+		err := a.Run(app.RunOptions{
+			Ctx:             ctx,
+			Fs:              afero.NewMemMapFs(),
+			Stdio:           false,
+			JSONRPCPort:     fmt.Sprintf("127.0.0.2:%d", appPort),
+			ShutdownTimeout: 1 * time.Second,
+		})
 		if err != nil && ctx.Err() == nil {
 			t.Logf("Application run error: %v", err)
 		}

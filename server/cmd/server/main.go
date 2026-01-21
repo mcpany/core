@@ -266,7 +266,23 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				}
 			}
 
-			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
+			tlsCert, _ := cmd.Flags().GetString("tls-cert")
+			tlsKey, _ := cmd.Flags().GetString("tls-key")
+			tlsClientCA, _ := cmd.Flags().GetString("tls-client-ca")
+
+			if err := appRunner.Run(app.RunOptions{
+				Ctx:             ctx,
+				Fs:              osFs,
+				Stdio:           stdio,
+				JSONRPCPort:     bindAddress,
+				GRPCPort:        grpcPort,
+				ConfigPaths:     configPaths,
+				APIKey:          cfg.APIKey(),
+				ShutdownTimeout: shutdownTimeout,
+				TLSCert:         tlsCert,
+				TLSKey:          tlsKey,
+				TLSClientCA:     tlsClientCA,
+			}); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}
@@ -275,6 +291,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	runCmd.Flags().Bool("strict", false, "Run in strict mode (validate upstream connectivity before starting)")
+	runCmd.Flags().String("tls-cert", "", "Path to TLS certificate file")
+	runCmd.Flags().String("tls-key", "", "Path to TLS key file")
+	runCmd.Flags().String("tls-client-ca", "", "Path to TLS client CA file (for mTLS)")
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
 

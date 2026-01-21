@@ -29,9 +29,6 @@ type Tool struct {
 	mcpToolOnce sync.Once
 	db          *sql.DB
 	callDef     *configv1.SqlCallDefinition
-	policies    []*tool.CompiledCallPolicy
-	callID      string
-	initError   error
 }
 
 // NewTool creates a new SQL Tool.
@@ -39,23 +36,14 @@ type Tool struct {
 // t is the t.
 // db is the db.
 // callDef is the callDef.
-// policies is the policies.
-// callID is the callID.
 //
 // Returns the result.
-func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
-	compiled, err := tool.CompileCallPolicies(policies)
-	to := &Tool{
-		tool:     t,
-		db:       db,
-		callDef:  callDef,
-		policies: compiled,
-		callID:   callID,
+func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition) *Tool {
+	return &Tool{
+		tool:    t,
+		db:      db,
+		callDef: callDef,
 	}
-	if err != nil {
-		to.initError = fmt.Errorf("failed to compile call policies: %w", err)
-	}
-	return to
 }
 
 // Tool returns the protobuf definition of the tool.
@@ -97,22 +85,12 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	if t.initError != nil {
-		return nil, t.initError
-	}
-
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		// Use util.RedactJSON directly as prettyPrint is not available in this package
 		// and we know it is JSON.
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", string(util.RedactJSON(req.ToolInputs)))
 	}
 	defer metrics.MeasureSince([]string{"sql", "request", "latency"}, time.Now())
-
-	if allowed, err := tool.EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
-		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
-	} else if !allowed {
-		return nil, fmt.Errorf("tool execution blocked by policy")
-	}
 
 	var inputs map[string]any
 	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {

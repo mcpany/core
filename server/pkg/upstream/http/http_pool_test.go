@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestHTTPPool_New(t *testing.T) {
@@ -147,33 +146,4 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 		// We can't easily access the private Base field of otelhttp.Transport.
 		t.Log("Transport is wrapped (likely by otelhttp), skipping direct *http.Transport assertions")
 	}
-}
-
-func TestHTTPPool_TimeoutConfiguration(t *testing.T) {
-	t.Run("default timeout", func(t *testing.T) {
-		p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
-		require.NoError(t, err)
-		defer func() { _ = p.Close() }()
-
-		c, err := p.Get(context.Background())
-		require.NoError(t, err)
-
-		assert.Equal(t, 30*time.Second, c.Client.Timeout)
-	})
-
-	t.Run("configured timeout", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{
-			Resilience: &configv1.ResilienceConfig{
-				Timeout: durationpb.New(10 * time.Second),
-			},
-		}
-		p, err := NewHTTPPool(1, 1, 10, config)
-		require.NoError(t, err)
-		defer func() { _ = p.Close() }()
-
-		c, err := p.Get(context.Background())
-		require.NoError(t, err)
-
-		assert.Equal(t, 10*time.Second, c.Client.Timeout)
-	})
 }

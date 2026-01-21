@@ -583,7 +583,15 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -610,7 +618,15 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	app.Storage = mockStore
 
 	// Should return error, as we are now strict about config errors during startup
-	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ConfigPaths:     []string{"/config.yaml"},
+		ShutdownTimeout: 5 * time.Second,
+	})
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "malformed yaml")
 }
@@ -629,7 +645,15 @@ func TestRun_BusProviderError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ConfigPaths:     []string{"/config.yaml"},
+		ShutdownTimeout: 5 * time.Second,
+	})
 
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
@@ -646,7 +670,15 @@ func TestRun_EmptyConfig(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic
-	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ConfigPaths:     []string{"/config.yaml"},
+		ShutdownTimeout: 5 * time.Second,
+	})
 	require.NoError(t, err)
 }
 
@@ -665,7 +697,14 @@ func TestRun_StdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
+	err := app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           true,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ShutdownTimeout: 5 * time.Second,
+	})
 
 	assert.True(t, stdioModeCalled, "runStdioMode should have been called")
 	assert.EqualError(t, err, "stdio mode error")
@@ -679,7 +718,14 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	err := <-errChan
@@ -699,7 +745,14 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 		defer cancel()
 
-		err := app.Run(ctx, nil, false, "0", "0", nil, "", 5*time.Second)
+		err := app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              nil,
+			Stdio:           false,
+			JSONRPCPort:     "0",
+			GRPCPort:        "0",
+			ShutdownTimeout: 5 * time.Second,
+		})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to setup filesystem")
 	})
@@ -716,7 +769,14 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
-		err = app.Run(ctx, fs, false, fmt.Sprintf("%d", port), "0", nil, "", 5*time.Second)
+		err = app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     fmt.Sprintf("%d", port),
+			GRPCPort:        "0",
+			ShutdownTimeout: 5 * time.Second,
+		})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
@@ -733,7 +793,14 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
-		err = app.Run(ctx, fs, false, "0", fmt.Sprintf("%d", port), nil, "", 5*time.Second)
+		err = app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "0",
+			GRPCPort:        fmt.Sprintf("%d", port),
+			ShutdownTimeout: 5 * time.Second,
+		})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to start a server")
 	})
@@ -755,7 +822,14 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	runErr := app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", nil, "", 1*time.Second)
+	runErr := app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     fmt.Sprintf("127.0.0.1:%d", httpPort),
+		GRPCPort:        "127.0.0.1:0",
+		ShutdownTimeout: 1 * time.Second,
+	})
 
 	require.Error(t, runErr, "app.Run should return an error")
 	assert.Contains(t, runErr.Error(), "failed to start a server", "The error should indicate a server startup failure.")
@@ -786,7 +860,14 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	go func() {
 		// Run with empty jsonrpcPort. gRPC is on an ephemeral port.
 		// Because we set MCPANY_DEFAULT_HTTP_ADDR="127.0.0.1:0", empty string means 127.0.0.1:0
-		errChan <- app.Run(ctx, fs, false, "", "127.0.0.1:0", nil, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "",
+			GRPCPort:        "127.0.0.1:0",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	// Wait for the server to start up and bind
@@ -835,7 +916,14 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 
 	go func() {
 		// Run with "127.0.0.1:0" to use loopback ephemeral port
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	// Wait for the server to start up and bind
@@ -909,7 +997,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Use ephemeral ports to avoid conflicts.
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil, "", "", "")
 	}()
 
 	// Give the servers a moment to start up.
@@ -988,7 +1076,14 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 1*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ShutdownTimeout: 1 * time.Second,
+		})
 	}()
 
 	err := <-errChan
@@ -1390,7 +1485,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil, "", "", "")
 	}()
 
 	// Allow some time for the servers to start up
@@ -1422,7 +1517,14 @@ func TestRunStdioMode(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
-	err := app.Run(ctx, fs, true, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
+	err := app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           true,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ShutdownTimeout: 5 * time.Second,
+	})
 
 	assert.True(t, called, "runStdioMode should have been called")
 	assert.NoError(t, err, "runStdioMode should not return an error in this mock")
@@ -1504,7 +1606,15 @@ func TestRun_InMemoryBus(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic and should exit gracefully.
-	err = app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ConfigPaths:     []string{"/config.yaml"},
+		ShutdownTimeout: 5 * time.Second,
+	})
 	require.NoError(t, err)
 }
 
@@ -1528,7 +1638,14 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	}
 	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
 
-	err = app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "",
+		ShutdownTimeout: 5 * time.Second,
+	})
 	require.NoError(t, err)
 
 	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
@@ -1759,7 +1876,15 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	// Allow some time for the services to be published.
@@ -1823,7 +1948,15 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	time.Sleep(100 * time.Millisecond) // Allow time for publication.
@@ -1849,7 +1982,14 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", nil, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	err := <-errChan
@@ -1864,7 +2004,14 @@ func TestRun_NoConfig(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "", nil, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	runErr := <-errChan
@@ -2070,7 +2217,7 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	errChan := make(chan error, 1)
 	go func() {
 		// Pass required args
-		errChan <- app.runServerMode(ctx, nil, busProvider, "127.0.0.1:0", fmt.Sprintf("127.0.0.1:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil)
+		errChan <- app.runServerMode(ctx, nil, busProvider, "127.0.0.1:0", fmt.Sprintf("127.0.0.1:%d", port), 5*time.Second, nil, nil, nil, nil, nil, nil, "", "", "")
 	}()
 
 	select {
@@ -2176,7 +2323,15 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	_ = l.Close()
 
 	go func() {
-		errChan <- app.Run(ctx, fs, false, addr, "", nil, viper.GetString("api-key"), 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			APIKey:          viper.GetString("api-key"),
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	// Wait for the server to be ready
@@ -2291,7 +2446,15 @@ upstream_services:
 
 		errChan := make(chan error, 1)
 		go func() {
-			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+			errChan <- app.Run(RunOptions{
+				Ctx:             ctx,
+				Fs:              fs,
+				Stdio:           false,
+				JSONRPCPort:     addr,
+				GRPCPort:        "",
+				ConfigPaths:     []string{"/config.yaml"},
+				ShutdownTimeout: 5 * time.Second,
+			})
 		}()
 
 		waitForServerReady(t, addr)
@@ -2335,7 +2498,15 @@ upstream_services: []
 
 		errChan := make(chan error, 1)
 		go func() {
-			errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+			errChan <- app.Run(RunOptions{
+				Ctx:             ctx,
+				Fs:              fs,
+				Stdio:           false,
+				JSONRPCPort:     addr,
+				GRPCPort:        "",
+				ConfigPaths:     []string{"/config.yaml"},
+				ShutdownTimeout: 5 * time.Second,
+			})
 		}()
 
 		waitForServerReady(t, addr)
@@ -2446,7 +2617,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
 	}()
 
 	waitForServerReady(t, bindAddress)
@@ -2537,7 +2708,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, middleware.NewCachingMiddleware(app.ToolManager), nil, nil, serviceRegistry, nil)
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, middleware.NewCachingMiddleware(app.ToolManager), nil, nil, serviceRegistry, nil, "", "", "")
 	}()
 
 	waitForServerReady(t, bindAddress)
@@ -2580,7 +2751,16 @@ func TestServer_CORS(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2613,7 +2793,16 @@ func TestServer_CORS_Strict(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2645,7 +2834,15 @@ func TestRun_WithListenAddress(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "", "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "",
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	time.Sleep(100 * time.Millisecond)
@@ -2698,7 +2895,16 @@ func TestMultiUserHandler_EdgeCases(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2746,7 +2952,16 @@ func TestMultiUserHandler_UserAuth(t *testing.T) {
 	_ = l.Close()
 
 	go func() {
-		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+		app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2789,7 +3004,16 @@ func TestReloadConfig_DynamicUpdates(t *testing.T) {
 	_ = l.Close()
 
 	go func() {
-		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+		app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))
@@ -2824,7 +3048,16 @@ func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
 	_ = l.Close()
 
 	go func() {
-		app.Run(ctx, fs, false, addr, "", []string{"/config.yaml"}, "", 5*time.Second)
+		app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2958,7 +3191,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		logging.ForTestsOnlyResetLogger()
 		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelInfo, &buf)
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil, "", "", "")
 		assert.Contains(t, buf.String(), "No UI directory found")
 	})
 }
@@ -3061,7 +3294,16 @@ upstream_services:
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	require.Eventually(t, func() bool { return app.BoundHTTPPort.Load() != 0 }, 5*time.Second, 100*time.Millisecond)
@@ -3087,7 +3329,16 @@ func TestFix_ReloadReliability(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{configPath}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{configPath},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))
@@ -3106,7 +3357,16 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, "127.0.0.1:0", "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	startupCtx, scancel := context.WithTimeout(ctx, 5*time.Second)

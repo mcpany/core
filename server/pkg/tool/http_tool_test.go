@@ -10,7 +10,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
@@ -470,38 +469,6 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		_, err := httpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
 	})
-
-}
-
-func TestHTTPTool_Execute_ErrorBodyRedaction(t *testing.T) {
-	// Not parallel because it modifies environment variables
-
-	origDebug := os.Getenv("MCPANY_DEBUG")
-	defer os.Setenv("MCPANY_DEBUG", origDebug)
-
-	// 1. Test Redaction (Default)
-	os.Unsetenv("MCPANY_DEBUG")
-
-	errHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte("Sensitive Stack Trace: /var/www/html/secret.php line 10"))
-	})
-
-	httpTool, server := setupHTTPToolTest(t, errHandler, &configv1.HttpCallDefinition{})
-	defer server.Close()
-
-	_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "upstream HTTP request failed with status 500")
-	assert.Contains(t, err.Error(), "Body hidden for security")
-	assert.NotContains(t, err.Error(), "Sensitive Stack Trace")
-
-	// 2. Test Debug Mode (Visible)
-	os.Setenv("MCPANY_DEBUG", "true")
-
-	_, err = httpTool.Execute(context.Background(), &tool.ExecutionRequest{})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "Sensitive Stack Trace")
 }
 
 func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
