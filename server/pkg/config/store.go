@@ -1084,13 +1084,14 @@ func findKeyLine(b []byte, key string) int {
 }
 
 func findKeyInNode(node *yaml.Node, key string) int {
-	if node.Kind == yaml.DocumentNode {
+	switch node.Kind {
+	case yaml.DocumentNode:
 		for _, child := range node.Content {
 			if line := findKeyInNode(child, key); line > 0 {
 				return line
 			}
 		}
-	} else if node.Kind == yaml.MappingNode {
+	case yaml.MappingNode:
 		for i := 0; i < len(node.Content); i += 2 {
 			keyNode := node.Content[i]
 			valNode := node.Content[i+1]
@@ -1103,7 +1104,7 @@ func findKeyInNode(node *yaml.Node, key string) int {
 				return line
 			}
 		}
-	} else if node.Kind == yaml.SequenceNode {
+	case yaml.SequenceNode:
 		for _, child := range node.Content {
 			if line := findKeyInNode(child, key); line > 0 {
 				return line
