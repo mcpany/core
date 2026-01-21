@@ -53,6 +53,7 @@ const (
 var (
 	osStat       = os.Stat
 	execLookPath = exec.LookPath
+	osReadFile   = os.ReadFile
 )
 
 // ValidationError encapsulates a validation error for a specific service.
@@ -321,6 +322,13 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			shouldValidate = true
 		case configv1.SecretValue_EnvironmentVariable_case:
 			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
+			shouldValidate = true
+		case configv1.SecretValue_FilePath_case:
+			content, err := osReadFile(secret.GetFilePath())
+			if err != nil {
+				return fmt.Errorf("failed to read secret file %q for validation: %w", secret.GetFilePath(), err)
+			}
+			valueToValidate = string(bytes.TrimSpace(content))
 			shouldValidate = true
 		}
 

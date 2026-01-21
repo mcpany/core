@@ -36,6 +36,16 @@ func TestValidateSecretValue(t *testing.T) {
 		return os.ErrNotExist
 	}
 
+	// Mock osReadFile
+	oldOsReadFile := osReadFile
+	defer func() { osReadFile = oldOsReadFile }()
+	osReadFile = func(name string) ([]byte, error) {
+		if name == "secrets.txt" {
+			return []byte("secret-content"), nil
+		}
+		return nil, os.ErrNotExist
+	}
+
 	// Mock Env vars
 	os.Setenv("TEST_ENV_VAR", "exists")
 	defer os.Unsetenv("TEST_ENV_VAR")
@@ -206,6 +216,27 @@ func TestValidateSecretValue(t *testing.T) {
 					PlainText: "",
 				},
 				ValidationRegex: proto.String(`^.+$`),
+			},
+			expectErr: true,
+			errMsg:    "secret value does not match validation regex",
+		},
+		{
+			name: "Valid regex match (file_path)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "secrets.txt",
+				},
+				ValidationRegex: proto.String(`^.+$`),
+			},
+			expectErr: false,
+		},
+		{
+			name: "Invalid regex match (file_path)",
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "secrets.txt",
+				},
+				ValidationRegex: proto.String(`^match_nothing$`),
 			},
 			expectErr: true,
 			errMsg:    "secret value does not match validation regex",
