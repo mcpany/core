@@ -113,6 +113,48 @@ func TestWalkJSONStrings(t *testing.T) {
 			expected: `{"key": "REPLACED" // comment
 }`,
 		},
+		// Bug fix tests
+		{
+			name:  "quote inside block comment should be ignored",
+			input: `{ /* "fake" */ "real": "value" }`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"fake"` {
+					return []byte(`"FAIL"`), true
+				}
+				if string(raw) == `"value"` {
+					return []byte(`"PASS"`), true
+				}
+				return nil, false
+			},
+			expected: `{ /* "fake" */ "real": "PASS" }`,
+		},
+		{
+			name: "quote inside line comment should be ignored",
+			input: `{ // "fake"
+"real": "value" }`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"fake"` {
+					return []byte(`"FAIL"`), true
+				}
+				if string(raw) == `"value"` {
+					return []byte(`"PASS"`), true
+				}
+				return nil, false
+			},
+			expected: `{ // "fake"
+"real": "PASS" }`,
+		},
+		{
+			name:  "unbalanced quote inside block comment",
+			input: `{ /* " */ "real": "value" }`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"value"` {
+					return []byte(`"PASS"`), true
+				}
+				return nil, false
+			},
+			expected: `{ /* " */ "real": "PASS" }`,
+		},
 	}
 
 	for _, tt := range tests {
