@@ -8,7 +8,6 @@ import (
 )
 
 // ToolSpec defines the desired state of Tool
-// +kubebuilder:object:generate=true
 type ToolSpec struct {
 	// Type is the type of tool (e.g., "container", "binary", "script")
 	// +kubebuilder:validation:Enum=container;binary;script
@@ -28,7 +27,6 @@ type ToolSpec struct {
 }
 
 // ToolStatus defines the observed state of Tool
-// +kubebuilder:object:generate=true
 type ToolStatus struct {
 	// Ready indicates if the tool is ready to be used
 	Ready bool `json:"ready"`

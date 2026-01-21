@@ -1249,7 +1249,7 @@ func TestHandleAuditExport(t *testing.T) {
 	app.standardMiddlewares.Audit = audit
 	defer audit.Close()
 
-	req, _ := http.NewRequest("GET", "/audit/export?tool_name=tool-1", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/audit/export?tool_name=tool-1", nil)
 	rr := httptest.NewRecorder()
 	mux := app.createAPIHandler(app.Storage)
 	mux.ServeHTTP(rr, req)
