@@ -625,8 +625,10 @@ func (a *Application) Run(
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(ctx)
-		if err == nil {
+		discovered, err := ollamaProvider.Discover(opts.Ctx)
+		if err != nil {
+			log.Warn("Failed to auto-discover local services", "provider", ollamaProvider.Name(), "error", err)
+		} else {
 			for _, svc := range discovered {
 				log.Info("Auto-discovered local service", "name", svc.GetName())
 				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
@@ -916,7 +918,9 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
 		discovered, err := ollamaProvider.Discover(ctx)
-		if err == nil {
+		if err != nil {
+			log.Warn("Failed to auto-discover local services during reload", "provider", ollamaProvider.Name(), "error", err)
+		} else {
 			for _, svc := range discovered {
 				log.Info("Auto-discovered local service during reload", "name", svc.GetName())
 				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)

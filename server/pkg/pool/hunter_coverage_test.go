@@ -69,15 +69,16 @@ func TestPut_Nil(t *testing.T) {
     c1, _ := p.Get(context.Background())
     assert.NotNil(t, c1)
 
-    // Put nil client. Should be ignored to avoid double release issues.
+    // Put nil client
     var c *mockClient = nil
     p.Put(c)
 
-    // Now we should NOT be able to Get again if permit was NOT released.
+    // Now we should be able to Get again if permit was released.
     ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
     defer cancel()
-    _, err := p.Get(ctx)
-    assert.ErrorIs(t, err, context.DeadlineExceeded)
+    c2, err := p.Get(ctx)
+    assert.NoError(t, err)
+    assert.NotNil(t, c2)
 }
 
 // Test retry logic in loop (retry item in channel)
@@ -154,14 +155,15 @@ func TestPut_NilInterface(t *testing.T) {
     // Acquire permit
     _, _ = p.Get(context.Background())
 
-    // Put nil interface. Should be ignored.
+    // Put nil interface
     p.Put(nil)
 
     // Check if permit released
     ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
     defer cancel()
-    _, err := p.Get(ctx)
-    assert.ErrorIs(t, err, context.DeadlineExceeded)
+    c2, err := p.Get(ctx)
+    assert.NoError(t, err)
+    assert.NotNil(t, c2)
 }
 
 // Test Close handles retry items in channel

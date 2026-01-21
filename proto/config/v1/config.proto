@@ -124,8 +124,6 @@ message GlobalSettings {
   bool read_only = 25 [json_name = "read_only"];
   // Whether to auto-discover local services (e.g. Ollama).
   bool auto_discover_local = 26 [json_name = "auto_discover_local"];
-  // Map of environment variable name to validation regex.
-  map<string, string> required_env_vars = 27 [json_name = "required_env_vars"];
 }
 
 message ContextOptimizerConfig {

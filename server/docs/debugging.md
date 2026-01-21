@@ -21,11 +21,11 @@ When debug mode is enabled, the server will log the full JSON-RPC request and re
 
 ## Example Log Output
 
-Here is an example of the log output when debug mode is enabled:
+Here is an example of the log output when debug mode is enabled (using structured logging):
 
-```
-DEBG MCP Request method=tools/list request={"jsonrpc":"2.0","method":"tools/list","id":1}
-DEBG MCP Response method=tools/list response={"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"my-tool"}]}}
+```text
+level=DEBUG msg="MCP Request" method=tools/list request="{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":1}"
+level=DEBUG msg="MCP Response" method=tools/list response="{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"tools\":[{\"name\":\"my-tool\"}]}}"
 ```
 
 The log output includes the following information:
