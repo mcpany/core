@@ -45,21 +45,31 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 FROM debian:bookworm-slim
 WORKDIR /app
 
+# Create a non-root user
+RUN addgroup --system --gid 1001 mcpany && \
+    adduser --system --uid 1001 --gid 1001 --no-create-home mcpany
+
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the builder stage
 # Copy the binary from the builder stage
-COPY --from=builder /server /app/server
+COPY --from=builder --chown=mcpany:mcpany /server /app/server
 # Copy curl from the builder stage to be used in healthchecks
 # COPY --from=builder /usr/bin/curl /usr/bin/curl
 
 # Copy proto files for runtime usage
-COPY --from=builder /app/proto /app/proto
+COPY --from=builder --chown=mcpany:mcpany /app/proto /app/proto
+
+# Ensure /app is owned by the non-root user
+RUN chown mcpany:mcpany /app
 
 # Expose the ports the server listens on
 EXPOSE 50050
 EXPOSE 50051
+
+# Switch to non-root user
+USER mcpany
 
 # Set the entrypoint to run the server
 ENTRYPOINT ["/app/server"]
