@@ -203,12 +203,9 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 			if err == nil {
 				redactedBytes, err := redactor.RedactJSON(jsonBytes)
 				if err == nil {
-					// We can store it as RawMessage if we change AuditEntry, but AuditEntry.Result is `any`.
-					// Let's decode it back to generic interface to keep it compatible with whatever the store expects (usually JSON marshaling).
-					var redactedResult interface{}
-					if err := json.Unmarshal(redactedBytes, &redactedResult); err == nil {
-						logResult = redactedResult
-					}
+					// Optimization: Store as json.RawMessage directly to avoid unmarshal + marshal cycle.
+					// AuditEntry.Result is `any`, so it can hold json.RawMessage which implements Marshaler.
+					logResult = json.RawMessage(redactedBytes)
 				}
 			}
 		}

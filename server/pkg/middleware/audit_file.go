@@ -49,6 +49,14 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Returns an error if the operation fails.
 func (s *FileAuditStore) Write(_ context.Context, entry AuditEntry) error {
+	// Optimization: Marshal JSON before locking to reduce critical section duration.
+	// We also append the newline character manually, which json.Encoder would do.
+	b, err := json.Marshal(entry)
+	if err != nil {
+		return err
+	}
+	b = append(b, '\n')
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -59,7 +67,8 @@ func (s *FileAuditStore) Write(_ context.Context, entry AuditEntry) error {
 		w = os.Stdout
 	}
 
-	return json.NewEncoder(w).Encode(entry)
+	_, err = w.Write(b)
+	return err
 }
 
 // Read implements the AuditStore interface.
