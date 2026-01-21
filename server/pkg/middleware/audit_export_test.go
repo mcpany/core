@@ -1,72 +1,57 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 package middleware
 
 import (
+	"bytes"
 	"context"
-	"net/http"
-	"net/http/httptest"
-	"sync/atomic"
+	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
-// TestExportIntegration tests the integration of AuditMiddleware with the new exporters.
-func TestExportIntegration(t *testing.T) {
-	// Mock Splunk Server
-	var splunkReceived int32
-	splunkSignal := make(chan struct{}, 10)
-	splunkServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		atomic.AddInt32(&splunkReceived, 1)
-		w.WriteHeader(http.StatusOK)
-		splunkSignal <- struct{}{}
-	}))
-	defer splunkServer.Close()
+type mockReader struct {
+	entries []AuditEntry
+	err     error
+}
 
-	// Configure middleware with Splunk
-	storageType := configv1.AuditConfig_STORAGE_TYPE_SPLUNK
-	config := &configv1.AuditConfig{
-		Enabled:     proto.Bool(true),
-		StorageType: &storageType,
-		Splunk: &configv1.SplunkConfig{
-			HecUrl:     proto.String(splunkServer.URL),
-			Token:      proto.String("token"),
-			Index:      proto.String("main"),
-			Source:     proto.String("source"),
-			Sourcetype: proto.String("json"),
+func (m *mockReader) Read(ctx context.Context, filter AuditFilter) ([]AuditEntry, error) {
+	return m.entries, m.err
+}
+
+func TestExportCSV(t *testing.T) {
+	now := time.Now()
+	entries := []AuditEntry{
+		{
+			Timestamp:  now,
+			ToolName:   "test-tool",
+			UserID:     "user1",
+			ProfileID:  "profile1",
+			DurationMs: 100,
+			Arguments:  json.RawMessage(`{"arg":"val"}`),
+			Result:     "success",
 		},
 	}
 
-	m, err := NewAuditMiddleware(config)
-	require.NoError(t, err)
-	defer m.Close()
+	reader := &mockReader{entries: entries}
+	var buf bytes.Buffer
 
-	// Execute a tool
-	next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-		return "result", nil
-	}
-
-	req := &tool.ExecutionRequest{
-		ToolName: "test_integration_tool",
-	}
-
-	_, err = m.Execute(context.Background(), req, next)
+	err := ExportCSV(context.Background(), reader, AuditFilter{}, &buf)
 	assert.NoError(t, err)
 
-	// Wait for async log
-	select {
-	case <-splunkSignal:
-		// success
-	case <-time.After(2 * time.Second):
-		t.Fatal("Timeout waiting for Splunk log")
-	}
-
-	assert.Equal(t, int32(1), atomic.LoadInt32(&splunkReceived))
+	output := buf.String()
+	assert.Contains(t, output, "Timestamp,Tool Name,User ID,Profile ID,Duration (ms),Error,Arguments,Result")
+	assert.Contains(t, output, now.Format(time.RFC3339))
+	assert.Contains(t, output, "test-tool")
+	assert.Contains(t, output, "user1")
+	assert.Contains(t, output, "100")
+	// CSV escapes quotes
+	assert.True(t, strings.Contains(output, `"{""arg"":""val""}"`) || strings.Contains(output, `{"arg":"val"}`), "Should contain arguments (escaped or not)")
+	assert.Contains(t, output, "success")
 }

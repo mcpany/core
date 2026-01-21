@@ -148,6 +148,24 @@ func NewServer(
 					ToolInputs: r.Params.Arguments,
 				}
 
+				// Check for _dry_run flag in arguments
+				// We support "_dry_run": true in the arguments to trigger a dry run
+				if len(r.Params.Arguments) > 0 {
+					var tempArgs map[string]any
+					if err := jsoniter.Unmarshal(r.Params.Arguments, &tempArgs); err == nil {
+						if val, ok := tempArgs["_dry_run"]; ok {
+							if boolVal, ok := val.(bool); ok {
+								execReq.DryRun = boolVal
+								// Remove _dry_run from arguments to prevent validation errors in strict tools
+								delete(tempArgs, "_dry_run")
+								if newArgs, err := jsoniter.Marshal(tempArgs); err == nil {
+									execReq.ToolInputs = newArgs
+								}
+							}
+						}
+					}
+				}
+
 				session := req.GetSession()
 				if serverSession, ok := session.(*mcp.ServerSession); ok {
 					mcpSession := NewMCPSession(serverSession)

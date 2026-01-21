@@ -83,6 +83,29 @@ var healthCheckClient = &http.Client{
 	},
 }
 
+func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
+		http.Error(w, "Audit middleware not enabled", http.StatusServiceUnavailable)
+		return
+	}
+
+	filter := middleware.AuditFilter{
+		Limit: 1000,
+	}
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", "attachment; filename=audit_report.csv")
+
+	if err := middleware.ExportCSV(r.Context(), a.standardMiddlewares.Audit, filter, w); err != nil {
+		logging.GetLogger().Error("Failed to export CSV", "error", err)
+	}
+}
+
 func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -618,12 +641,21 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
-		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(opts.Ctx)
-		if err == nil {
-			for _, svc := range discovered {
-				log.Info("Auto-discovered local service", "name", svc.GetName())
-				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+		providers := []discovery.Provider{
+			&discovery.OllamaProvider{Endpoint: "http://localhost:11434"},
+			&discovery.LMStudioProvider{Endpoint: "http://localhost:1234"},
+		}
+
+		for _, p := range providers {
+			discovered, err := p.Discover(opts.Ctx)
+			if err == nil {
+				for _, svc := range discovered {
+					log.Info("Auto-discovered local service", "provider", p.Name(), "name", svc.GetName())
+					cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+				}
+			} else {
+				// Don't log error as it's expected if service is not running
+				log.Debug("Local service not found", "provider", p.Name(), "error", err)
 			}
 		}
 	}
@@ -911,12 +943,20 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
-		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(ctx)
-		if err == nil {
-			for _, svc := range discovered {
-				log.Info("Auto-discovered local service during reload", "name", svc.GetName())
-				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+		providers := []discovery.Provider{
+			&discovery.OllamaProvider{Endpoint: "http://localhost:11434"},
+			&discovery.LMStudioProvider{Endpoint: "http://localhost:1234"},
+		}
+
+		for _, p := range providers {
+			discovered, err := p.Discover(ctx)
+			if err == nil {
+				for _, svc := range discovered {
+					log.Info("Auto-discovered local service during reload", "provider", p.Name(), "name", svc.GetName())
+					cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
+				}
+			} else {
+				log.Debug("Local service not found during reload", "provider", p.Name(), "error", err)
 			}
 		}
 	}
@@ -1700,6 +1740,14 @@ func (a *Application) runServerMode(
 
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
+	mux.Handle("/api/v1/audit/export", authMiddleware(http.HandlerFunc(a.handleAuditExport)))
+	mux.Handle("/health/filesystem", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		result := a.filesystemHealthCheck(r.Context())
+		if result.Status != "ok" {
+			w.WriteHeader(http.StatusServiceUnavailable)
+		}
+		_ = json.NewEncoder(w).Encode(result)
+	})))
 
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 

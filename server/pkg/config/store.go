@@ -291,24 +291,44 @@ func expand(b []byte) ([]byte, error) {
 		var hasDefault bool
 
 		// Check which form matches
+		var validationRegex string
 		if bytes.HasPrefix(match, []byte("${")) {
 			// ${VAR} form
 			s := string(match[2 : len(match)-1])
 			parts := strings.SplitN(s, ":", 2)
 			varName = parts[0]
-			hasDefault = len(parts) > 1
+			if len(parts) > 1 {
+				if strings.HasPrefix(parts[1], "regex=") {
+					validationRegex = strings.TrimPrefix(parts[1], "regex=")
+					hasDefault = false
+				} else {
+					hasDefault = true
+				}
+			}
 		} else {
 			// $VAR form
 			varName = string(match[1:])
 			hasDefault = false
 		}
 
-		_, ok := os.LookupEnv(varName)
+		val, ok := os.LookupEnv(varName)
 		if !ok && !hasDefault {
 			// Missing and no default value
 			missingCount++
 			lineNum := bytes.Count(b[:loc[0]], []byte("\n")) + 1
 			missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable %s is missing", lineNum, varName))
+		} else if ok && validationRegex != "" {
+			matched, err := regexp.MatchString(validationRegex, val)
+			if err != nil {
+				missingCount++
+				lineNum := bytes.Count(b[:loc[0]], []byte("\n")) + 1
+				missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: invalid regex pattern for variable %s: %v", lineNum, varName, err))
+			} else if !matched {
+				missingCount++
+				lineNum := bytes.Count(b[:loc[0]], []byte("\n")) + 1
+				// Don't show the value in error message to avoid leaking secrets
+				missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable %s does not match required pattern %s", lineNum, varName, validationRegex))
+			}
 		}
 	}
 
@@ -330,8 +350,10 @@ func expand(b []byte) ([]byte, error) {
 			parts := strings.SplitN(s, ":", 2)
 			varName = parts[0]
 			if len(parts) > 1 {
-				defaultValue = parts[1]
-				hasDefault = true
+				if !strings.HasPrefix(parts[1], "regex=") {
+					defaultValue = parts[1]
+					hasDefault = true
+				}
 			}
 		} else {
 			// $VAR form

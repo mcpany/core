@@ -23,7 +23,6 @@ type Provider interface {
 }
 
 // OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
 type OllamaProvider struct {
 	Endpoint string // e.g., "http://localhost:11434"
 }
@@ -66,6 +65,52 @@ func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServ
 				},
 			},
 			Tags: []string{"local-llm", "ollama", "openai-compatible"},
+		},
+	}, nil
+}
+
+// LMStudioProvider discovers local LM Studio instances.
+type LMStudioProvider struct {
+	Endpoint string // e.g., "http://localhost:1234"
+}
+
+// Name returns the name of the provider.
+func (p *LMStudioProvider) Name() string {
+	return "lm-studio"
+}
+
+// Discover attempts to find local LM Studio instances and return them as tools.
+func (p *LMStudioProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	client := &http.Client{
+		Timeout: 2 * time.Second,
+	}
+
+	// LM Studio exposes standard OpenAI /v1/models
+	req, err := http.NewRequestWithContext(ctx, "GET", p.Endpoint+"/v1/models", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("lm-studio not found at %s: %w", p.Endpoint, err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("lm-studio returned status %d", resp.StatusCode)
+	}
+
+	return []*configv1.UpstreamServiceConfig{
+		{
+			Name:    proto.String("Local LM Studio"),
+			Version: proto.String("v1"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+				HttpService: &configv1.HttpUpstreamService{
+					Address: proto.String(p.Endpoint + "/v1"),
+				},
+			},
+			Tags: []string{"local-llm", "lm-studio", "openai-compatible"},
 		},
 	}, nil
 }

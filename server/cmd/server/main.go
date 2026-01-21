@@ -224,6 +224,29 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				if hasErrors {
 					return fmt.Errorf("strict mode validation failed: one or more upstream services are unreachable or misconfigured")
 				}
+
+				// Strict Mode: Run Linter and fail on warnings
+				linter := lint.NewLinter(configs)
+				lintResults, err := linter.Run(ctx)
+				if err != nil {
+					return fmt.Errorf("linting failed: %w", err)
+				}
+				if len(lintResults) > 0 {
+					hasLintIssues := false
+					for _, res := range lintResults {
+						// In strict mode, we treat warnings as errors
+						if res.Severity == lint.Error || res.Severity == lint.Warning {
+							log.Error(fmt.Sprintf("Lint Issue: %s", res.String()))
+							hasLintIssues = true
+						} else {
+							log.Info(fmt.Sprintf("Lint Info: %s", res.String()))
+						}
+					}
+					if hasLintIssues {
+						return fmt.Errorf("strict mode: configuration linting failed (warnings treated as errors)")
+					}
+				}
+
 				log.Info("Strict mode validation passed.")
 			}
 

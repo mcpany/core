@@ -648,6 +648,11 @@ func (tm *Manager) AddTool(tool Tool) error {
 	}
 	toolID := tool.Tool().GetServiceId() + "." + sanitizedToolName
 	log := logging.GetLogger().With("toolID", toolID)
+
+	if _, loaded := tm.tools.Load(toolID); loaded {
+		log.Warn("Duplicate tool registration detected. Overwriting existing tool.", "toolID", toolID)
+	}
+
 	log.Debug("Adding tool to Manager")
 	tm.tools.Store(toolID, tool)
 
@@ -656,13 +661,20 @@ func (tm *Manager) AddTool(tool Tool) error {
 	// If the tool has a Service ID, we ONLY expose the namespaced version "service.tool"
 	// to prevent auth bypasses and collisions.
 	// If it doesn't have a Service ID (e.g. internal tools), we expose the short name.
+	var exposedName string
 	if tool.Tool().GetServiceId() == "" {
-		tm.nameMap.Store(tool.Tool().GetName(), toolID)
+		exposedName = tool.Tool().GetName()
 	} else {
 		// Enforce namespacing for service tools
-		fullExposedName := tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
-		tm.nameMap.Store(fullExposedName, toolID)
+		exposedName = tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
 	}
+
+	if existingID, loaded := tm.nameMap.Load(exposedName); loaded {
+		if existingID != toolID {
+			log.Warn("Tool name collision detected", "name", exposedName, "existingID", existingID, "newID", toolID)
+		}
+	}
+	tm.nameMap.Store(exposedName, toolID)
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
