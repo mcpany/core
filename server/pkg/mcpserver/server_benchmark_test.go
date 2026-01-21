@@ -11,7 +11,10 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"io"
+	"log/slog"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/mcpserver"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -48,6 +51,9 @@ func (m *mockMapTool) MCPTool() *mcp.Tool {
 }
 
 func BenchmarkCallTool_MapResult(b *testing.B) {
+	logging.ForTestsOnlyResetLogger()
+	logging.Init(slog.LevelError, io.Discard)
+
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
