@@ -82,7 +82,16 @@ upstream_services:
 		jsonrpcAddress := "127.0.0.1:0"
 		grpcRegAddress := "127.0.0.1:0"
 		// Pass a test API key
-		err := appRunner.Run(ctx, afero.NewOsFs(), false, jsonrpcAddress, grpcRegAddress, []string{tmpFile.Name()}, "test-api-key", 5*time.Second)
+		err := appRunner.Run(app.RunOptions{
+			Ctx:             ctx,
+			Fs:              afero.NewOsFs(),
+			Stdio:           false,
+			JSONRPCPort:     jsonrpcAddress,
+			GRPCPort:        grpcRegAddress,
+			ConfigPaths:     []string{tmpFile.Name()},
+			APIKey:          "test-api-key",
+			ShutdownTimeout: 5 * time.Second,
+		})
 		if err != nil && err != context.Canceled {
 			errChan <- err
 		}
