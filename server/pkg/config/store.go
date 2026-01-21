@@ -672,6 +672,22 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 			kind := fd.Kind()
 
 			if fd.IsList() {
+				trimmed := strings.TrimSpace(value)
+				// Special handling for JSON arrays/objects in environment variables.
+				// This allows setting repeated fields (especially messages) using valid JSON syntax.
+				if strings.HasPrefix(trimmed, "[") {
+					var jsonList []interface{}
+					if json.Unmarshal([]byte(value), &jsonList) == nil {
+						return jsonList
+					}
+				}
+				if strings.HasPrefix(trimmed, "{") {
+					var jsonObj map[string]interface{}
+					if json.Unmarshal([]byte(value), &jsonObj) == nil {
+						return []interface{}{jsonObj}
+					}
+				}
+
 				// Repeated field: split by comma
 				r := csv.NewReader(strings.NewReader(value))
 				r.TrimLeadingSpace = true
@@ -683,14 +699,23 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 				var list []interface{}
 				for _, part := range parts {
 					part = strings.TrimSpace(part)
-					if kind == protoreflect.BoolKind {
+					switch kind {
+					case protoreflect.BoolKind:
 						b, err := strconv.ParseBool(part)
 						if err == nil {
 							list = append(list, b)
 						} else {
 							list = append(list, part)
 						}
-					} else {
+					case protoreflect.MessageKind:
+						// For repeated messages, try to unmarshal each part as JSON
+						var msgMap map[string]interface{}
+						if json.Unmarshal([]byte(part), &msgMap) == nil {
+							list = append(list, msgMap)
+						} else {
+							list = append(list, part)
+						}
+					default:
 						list = append(list, part)
 					}
 				}
