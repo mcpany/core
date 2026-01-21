@@ -541,8 +541,11 @@ func (s *Server) ListTools() []tool.Tool {
 //   - The result of the tool execution.
 //   - An error if the tool execution fails or access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	// ⚡ Bolt Optimization: Use LazyRedact to avoid redaction overhead if log level is disabled.
-	logging.GetLogger().Info("Calling tool...", "toolName", req.ToolName, "arguments", LazyRedact(req.ToolInputs))
+	logger := logging.GetLogger()
+	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
+	if logger.Enabled(ctx, slog.LevelInfo) {
+		logger.Info("Calling tool...", "toolName", req.ToolName, "arguments", LazyRedact(req.ToolInputs))
+	}
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
@@ -581,7 +584,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			{Name: "service_id", Value: serviceID},
 		})
 	}
-	logging.GetLogger().Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
+	if logger.Enabled(ctx, slog.LevelInfo) {
+		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
+	}
 
 	if err != nil {
 		return nil, err
