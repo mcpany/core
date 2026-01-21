@@ -1249,7 +1249,7 @@ func TestHandleAuditExport(t *testing.T) {
 	app.standardMiddlewares.Audit = audit
 	defer audit.Close()
 
-	req, _ := http.NewRequest("GET", "/api/v1/audit/export?tool_name=tool-1", nil)
+	req, _ := http.NewRequest("GET", "/audit/export?tool_name=tool-1", nil)
 	rr := httptest.NewRecorder()
 	mux := app.createAPIHandler(app.Storage)
 	mux.ServeHTTP(rr, req)
@@ -1335,14 +1335,14 @@ func TestHandleUploadSkillAsset(t *testing.T) {
 		expectedStatus int
 	}{
 		{
-			name:           "Valid upload via /v1/ prefix",
+			name:           "Valid Upload via /v1/",
 			method:         http.MethodPost,
 			url:            "/v1/skills/test-skill/assets?path=script.py",
 			body:           "print('hello')",
 			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "Valid upload via /api/v1/ prefix",
+			name:           "Valid Upload via /api/v1/",
 			method:         http.MethodPost,
 			url:            "/api/v1/skills/test-skill/assets?path=data.json",
 			body:           "{}",
@@ -1394,16 +1394,8 @@ func TestHandleUploadSkillAsset(t *testing.T) {
 	}
 
 	t.Run("Large Body Limit", func(t *testing.T) {
-		// 25MB + 1 byte
 		size := 25*1024*1024 + 1
-		// Use a fixed byte slice to avoid allocating 25MB string
-		// However, bytes.NewReader still needs the slice.
-		// For test speed/memory, we might want to mock the reader?
-		// But MaxBytesReader wraps the request Body.
-		// We can use a custom reader that returns 'a' indefinitely up to size.
-		// But generating 25MB is fast enough in Go.
 		largeBody := bytes.NewReader(make([]byte, size))
-
 		req := httptest.NewRequest(http.MethodPost, "/v1/skills/test-skill/assets?path=large.txt", largeBody)
 		w := httptest.NewRecorder()
 		app.handleUploadSkillAsset().ServeHTTP(w, req)
@@ -1838,7 +1830,15 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
+	errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     fmt.Sprintf("127.0.0.1:%d", httpPort),
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			ShutdownTimeout: 5 * time.Second,
+		})
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))

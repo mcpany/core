@@ -20,6 +20,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
@@ -44,13 +45,13 @@ type mockRunner struct {
 	capturedShutdownTimeout  time.Duration
 }
 
-func (m *mockRunner) Run(_ context.Context, _ afero.Fs, stdio bool, mcpListenAddress, grpcPort string, configPaths []string, apiKey string, shutdownTimeout time.Duration) error {
+func (m *mockRunner) Run(opts app.RunOptions) error {
 	m.called = true
-	m.capturedStdio = stdio
-	m.capturedMcpListenAddress = mcpListenAddress
-	m.capturedGrpcPort = grpcPort
-	m.capturedConfigPaths = configPaths
-	m.capturedShutdownTimeout = shutdownTimeout
+	m.capturedStdio = opts.Stdio
+	m.capturedMcpListenAddress = opts.JSONRPCPort
+	m.capturedGrpcPort = opts.GRPCPort
+	m.capturedConfigPaths = opts.ConfigPaths
+	m.capturedShutdownTimeout = opts.ShutdownTimeout
 	return nil
 }
 
