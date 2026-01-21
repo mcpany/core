@@ -625,7 +625,7 @@ func (a *Application) Run(
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(opts.Ctx)
+		discovered, err := ollamaProvider.Discover(ctx)
 		if err != nil {
 			log.Warn("Failed to auto-discover local services", "provider", ollamaProvider.Name(), "error", err)
 		} else {
@@ -1513,6 +1513,13 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// No auth configured at any level
+				// Sentinel Security: Enforce private network access if no auth is configured.
+				ip := util.GetClientIP(r, trustProxy)
+				if !util.IsPrivateIP(net.ParseIP(ip)) {
+					logging.GetLogger().Warn("Blocked public internet request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
+					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+					return
+				}
 				isAuthenticated = true
 			}
 		}
