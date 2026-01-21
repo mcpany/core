@@ -1762,15 +1762,7 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-	errChan <- app.Run(RunOptions{
-			Ctx:             ctx,
-			Fs:              fs,
-			Stdio:           false,
-			JSONRPCPort:     fmt.Sprintf("127.0.0.1:%d", httpPort),
-			GRPCPort:        "127.0.0.1:0",
-			ConfigPaths:     []string{"/config.yaml"},
-			ShutdownTimeout: 5 * time.Second,
-		})
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))

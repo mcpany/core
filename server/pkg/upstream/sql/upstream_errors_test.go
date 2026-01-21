@@ -155,7 +155,7 @@ func TestSQLUpstream_Execute_Errors(t *testing.T) {
 		Query: ptrTest("SELECT * FROM non_existent_table"),
 	}
 
-	toolInstance := NewTool(&v1.Tool{Name: ptrTest("test")}, db, callDef)
+	toolInstance := NewTool(&v1.Tool{Name: ptrTest("test")}, db, callDef, nil, "test_call")
 
 	// Case 1: Invalid Input JSON
 	req := &tool.ExecutionRequest{
@@ -193,7 +193,7 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 		Query:          ptrTest("SELECT ? IS NULL as is_null"),
 		ParameterOrder: []string{"missing_param"},
 	}
-	toolInstance := NewTool(&v1.Tool{Name: ptrTest("test_null")}, db, callDef)
+	toolInstance := NewTool(&v1.Tool{Name: ptrTest("test_null")}, db, callDef, nil, "test_null_call")
 
 	req := &tool.ExecutionRequest{
 		ToolName:   "test_null",
@@ -210,7 +210,7 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 	callDefBlob := &configv1.SqlCallDefinition{
 		Query: ptrTest("SELECT data FROM edge_cases WHERE id = 1"),
 	}
-	toolInstanceBlob := NewTool(&v1.Tool{Name: ptrTest("test_blob")}, db, callDefBlob)
+	toolInstanceBlob := NewTool(&v1.Tool{Name: ptrTest("test_blob")}, db, callDefBlob, nil, "test_blob_call")
 	reqBlob := &tool.ExecutionRequest{
 		ToolName:   "test_blob",
 		ToolInputs: json.RawMessage(`{}`),
@@ -233,7 +233,7 @@ func TestSQLTool_Methods(t *testing.T) {
 	toolInstance := NewTool(&v1.Tool{
 		Name:      ptrTest("test_tool"),
 		ServiceId: ptrTest("service"),
-	}, db, callDef)
+	}, db, callDef, nil, "test_tool_call")
 
 	assert.NotNil(t, toolInstance.Tool())
 	assert.Equal(t, "test_tool", *toolInstance.Tool().Name)
@@ -252,13 +252,13 @@ func TestSQLTool_GetCacheConfig(t *testing.T) {
 				Ttl: durationpb.New(time.Second * 60),
 			},
 		}
-		toolInstance := NewTool(nil, nil, callDef)
+		toolInstance := NewTool(nil, nil, callDef, nil, "")
 		assert.NotNil(t, toolInstance.GetCacheConfig())
 		assert.Equal(t, int64(60), toolInstance.GetCacheConfig().GetTtl().Seconds)
 	})
 
 	t.Run("Returns Nil when CallDef is Nil", func(t *testing.T) {
-		toolInstance := NewTool(nil, nil, nil)
+		toolInstance := NewTool(nil, nil, nil, nil, "")
 		assert.Nil(t, toolInstance.GetCacheConfig())
 	})
 }
