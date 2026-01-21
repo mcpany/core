@@ -814,12 +814,12 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 				},
 			},
 		}
-		err := validateAuthentication(ctx, mtls)
+		err := validateAuthentication(ctx, mtls, AuthValidationContextOutgoing)
 		require.NoError(t, err)
 
 		// Test insecure path
 		mtls.GetMtls().ClientCertPath = strPtr("/etc/cert.pem")
-		err = validateAuthentication(ctx, mtls)
+		err = validateAuthentication(ctx, mtls, AuthValidationContextOutgoing)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not a secure path")
 	})
