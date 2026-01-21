@@ -502,7 +502,41 @@ func RedactDSN(dsn string) string {
 
 	// Fallback to regex if parsing fails (e.g. not a valid URL)
 	// OR if url.Parse succeeded but found no user/password structure (e.g. user:pass@tcp(...) where Scheme is "user" and User is nil).
-	// But note: the regex is known to be imperfect for complex cases (e.g. colons in password).
-	// We apply the regex as a best-effort attempt.
-	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
+	// We use a manual parsing approach to handle complex passwords (e.g. with colons or @) more robustly than a simple regex.
+
+	// 1. Find the start of the authority section (skip scheme)
+	start := 0
+	if idx := strings.Index(dsn, "://"); idx != -1 {
+		start = idx + 3
+	}
+
+	// 2. Find the end of the authority section (start of path or query)
+	// We scan from 'start' to avoid matching slashes in the scheme.
+	end := len(dsn)
+	if idx := strings.IndexAny(dsn[start:], "/?"); idx != -1 {
+		end = start + idx
+	}
+
+	// 3. Scan the authority section for the last '@' (separates userinfo from host)
+	authority := dsn[start:end]
+	lastAt := strings.LastIndex(authority, "@")
+	if lastAt == -1 {
+		// No user info separator found
+		return dsn
+	}
+
+	// 4. Scan the userinfo for the first ':' (separates user from password)
+	// userinfo is everything before the last '@'
+	userInfo := authority[:lastAt]
+	colonIdx := strings.Index(userInfo, ":")
+	if colonIdx == -1 {
+		// No password separator found (e.g. user@host)
+		return dsn
+	}
+
+	// 5. Redact
+	// Construct the result: prefix + colon + placeholder + suffix (starting from @)
+	// dsn[:start+colonIdx+1] includes the first colon.
+	// dsn[start+lastAt:] starts at the last '@'.
+	return dsn[:start+colonIdx+1] + redactedPlaceholder + dsn[start+lastAt:]
 }
