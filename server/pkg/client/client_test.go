@@ -25,6 +25,7 @@ import (
 )
 
 func TestHTTPClientWrapper(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -85,6 +86,7 @@ func TestHTTPClientWrapper(t *testing.T) {
 }
 
 func TestGrpcClientWrapper(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	// Set up a dummy gRPC server to connect to
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -174,6 +176,7 @@ func TestGrpcClientWrapper(t *testing.T) {
 }
 
 func TestWebsocketClientWrapper(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	upgrader := websocket.Upgrader{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -214,6 +217,7 @@ func TestWebsocketClientWrapper(t *testing.T) {
 }
 
 func TestGrpcClientWrapper_WithHealthCheck(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 

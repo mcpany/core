@@ -15,10 +15,10 @@ import (
 )
 
 func TestHTTPTool_Execute_ErrorMessagesWithBody(t *testing.T) {
-	t.Parallel()
+	// Cannot use t.Parallel() with t.Setenv()
 
 	t.Run("400_bad_request_with_json_body", func(t *testing.T) {
-		t.Parallel()
+		t.Setenv("MCPANY_DEBUG", "true")
 		errorBody := `{"error": "Missing parameter 'q'"}`
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
@@ -35,7 +35,7 @@ func TestHTTPTool_Execute_ErrorMessagesWithBody(t *testing.T) {
 	})
 
 	t.Run("500_internal_error_with_text_body", func(t *testing.T) {
-		t.Parallel()
+		t.Setenv("MCPANY_DEBUG", "true")
 		errorBody := "Database connection failed"
 		handler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
