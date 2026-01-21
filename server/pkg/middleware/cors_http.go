@@ -72,7 +72,16 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		m.mu.RUnlock()
 
 		if !allowed && !wildcardAllowed {
-			// CORS check failed
+			// CORS check failed. The origin is not allowed.
+			// For OPTIONS (preflight), we should stop processing and return 403 Forbidden
+			// to clearly indicate the request is not allowed by CORS policy.
+			// For other methods (Simple Requests), standard behavior is to proceed without CORS headers,
+			// causing the browser to block the response reading. However, failing closed is often safer.
+			// Here we stick to standard behavior for non-OPTIONS but block OPTIONS.
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -93,6 +102,7 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key, X-Requested-With, x-grpc-web, grpc-timeout, x-user-agent")
 		w.Header().Set("Access-Control-Expose-Headers", "grpc-status, grpc-message, Date, Content-Length, Content-Type")
+		w.Header().Set("Access-Control-Max-Age", "86400") // 24 hours
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
