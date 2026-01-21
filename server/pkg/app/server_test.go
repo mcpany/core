@@ -2890,6 +2890,39 @@ func TestConfigureUIHandler(t *testing.T) {
 		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
 		assert.Contains(t, buf.String(), "No UI directory found")
 	})
+
+	t.Run("UI directory without index.html", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		fs.MkdirAll("ui", 0755) // Empty UI directory
+		app := NewApplication()
+		app.fs = fs
+		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() { time.Sleep(50 * time.Millisecond); cancel() }()
+		logging.ForTestsOnlyResetLogger()
+		var buf ThreadSafeBuffer
+		logging.Init(slog.LevelInfo, &buf)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
+		assert.Contains(t, buf.String(), "UI directory ./ui does not contain index.html")
+	})
+
+	t.Run("UI directory with index.html", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		fs.MkdirAll("ui", 0755)
+		afero.WriteFile(fs, "ui/index.html", []byte("<html></html>"), 0644)
+		app := NewApplication()
+		app.fs = fs
+		app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+		ctx, cancel := context.WithCancel(context.Background())
+		go func() { time.Sleep(50 * time.Millisecond); cancel() }()
+		logging.ForTestsOnlyResetLogger()
+		var buf ThreadSafeBuffer
+		logging.Init(slog.LevelInfo, &buf)
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil)
+		// Should not complain about missing index.html or no UI directory
+		assert.NotContains(t, buf.String(), "No UI directory found")
+		assert.NotContains(t, buf.String(), "UI directory ./ui does not contain index.html")
+	})
 }
 
 func TestFilesystemHealthCheck(t *testing.T) {
