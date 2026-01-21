@@ -40,6 +40,16 @@ const (
 	Client
 )
 
+// AuthValidationContext defines the context for authentication validation.
+type AuthValidationContext int
+
+const (
+	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+	AuthValidationContextIncoming AuthValidationContext = iota
+	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+	AuthValidationContextOutgoing
+)
+
 var (
 	osStat       = os.Stat
 	execLookPath = exec.LookPath
@@ -163,7 +173,7 @@ func validateCollection(ctx context.Context, collection *configv1.Collection) er
 	}
 
 	if authConfig := collection.GetAuthentication(); authConfig != nil {
-		if err := validateUpstreamAuthentication(ctx, authConfig); err != nil {
+		if err := validateUpstreamAuthentication(ctx, authConfig, AuthValidationContextOutgoing); err != nil {
 			return err
 		}
 	}
@@ -384,7 +394,7 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 	}
 
 	if authConfig := service.GetUpstreamAuth(); authConfig != nil {
-		if err := validateAuthentication(ctx, authConfig); err != nil {
+		if err := validateAuthentication(ctx, authConfig, AuthValidationContextOutgoing); err != nil {
 			return err
 		}
 	}
@@ -393,10 +403,10 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 
 // ... (other functions)
 
-func validateAuthentication(ctx context.Context, authConfig *configv1.Authentication) error {
+func validateAuthentication(ctx context.Context, authConfig *configv1.Authentication, authCtx AuthValidationContext) error {
 	switch authConfig.WhichAuthMethod() {
 	case configv1.Authentication_ApiKey_case:
-		return validateAPIKeyAuth(ctx, authConfig.GetApiKey())
+		return validateAPIKeyAuth(ctx, authConfig.GetApiKey(), authCtx)
 	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.Authentication_BasicAuth_case:
@@ -735,10 +745,10 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 	return nil
 }
 
-func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Authentication) error {
+func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Authentication, authCtx AuthValidationContext) error {
 	switch authConfig.WhichAuthMethod() {
 	case configv1.Authentication_ApiKey_case:
-		return validateAPIKeyAuth(ctx, authConfig.GetApiKey())
+		return validateAPIKeyAuth(ctx, authConfig.GetApiKey(), authCtx)
 	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.Authentication_BasicAuth_case:
@@ -751,25 +761,34 @@ func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Au
 	return nil
 }
 
-func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth) error {
+func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCtx AuthValidationContext) error {
 	if apiKey.GetParamName() == "" {
 		return &ActionableError{
 			Err:        fmt.Errorf("api key 'param_name' is empty"),
 			Suggestion: "Set the 'param_name' (e.g., 'X-API-Key' or 'api_key').",
 		}
 	}
-	// Value might be nil but usually we want to validate it resolves if present,
-	// or ensure it IS present if required. For upstream, it's usually required.
-	if apiKey.GetValue() == nil && apiKey.GetVerificationValue() == "" {
-		// If both are missing, it's invalid?
-		// VerificationValue is for incoming, Value (SecretValue) is for outgoing.
-		// Detailed validation might depend on context (incoming vs outgoing),
-		// but here we are validating "UpstreamServiceConfig" which implies outgoing.
-		return &ActionableError{
-			Err:        fmt.Errorf("api key 'value' is missing (required for outgoing auth)"),
-			Suggestion: "Set the 'value' field using a secret (environment variable or file) for the API key.",
+
+	// Validation depends on context (Incoming vs Outgoing)
+
+	if authCtx == AuthValidationContextOutgoing {
+		// Outgoing: We need the 'Value' (the secret to send)
+		if apiKey.GetValue() == nil {
+			return &ActionableError{
+				Err:        fmt.Errorf("api key 'value' is missing (required for outgoing auth)"),
+				Suggestion: "Set the 'value' field using a secret (environment variable or file) for the API key.",
+			}
+		}
+	} else {
+		// Incoming: We need either 'VerificationValue' (hardcoded) or 'Value' (secret reference) to verify against
+		if apiKey.GetValue() == nil && apiKey.GetVerificationValue() == "" {
+			return &ActionableError{
+				Err:        fmt.Errorf("api key configuration is empty"),
+				Suggestion: "Set either 'verification_value' (for static keys) or 'value' (for secret-based keys).",
+			}
 		}
 	}
+
 	if apiKey.GetValue() != nil {
 		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
 		if err != nil {
@@ -959,7 +978,7 @@ func validateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetAuthentication() == nil {
 		return nil // No auth config means no authentication required (Open Access)
 	}
-	if err := validateAuthentication(ctx, user.GetAuthentication()); err != nil {
+	if err := validateAuthentication(ctx, user.GetAuthentication(), AuthValidationContextIncoming); err != nil {
 		return err
 	}
 	return nil

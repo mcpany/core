@@ -147,7 +147,7 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 			},
 		},
 	}
-	err := validateUpstreamAuthentication(ctx, auth)
+	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Bearer Token errors
@@ -158,7 +158,7 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 			},
 		},
 	}
-	err = validateUpstreamAuthentication(ctx, auth)
+	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Basic Auth errors
@@ -169,7 +169,7 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 			},
 		},
 	}
-	err = validateUpstreamAuthentication(ctx, auth)
+	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 }
 
@@ -244,7 +244,7 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 			Oauth2: &configv1.OAuth2Auth{TokenUrl: proto.String("")},
 		},
 	}
-	err := validateUpstreamAuthentication(ctx, auth)
+	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Mtls
@@ -253,7 +253,7 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 			Mtls: &configv1.MTLSAuth{ClientCertPath: proto.String("")},
 		},
 	}
-	err = validateUpstreamAuthentication(ctx, auth)
+	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 }
 
@@ -314,7 +314,7 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 			},
 		},
 	}
-	err := validateUpstreamAuthentication(ctx, auth)
+	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "required for outgoing")
 
@@ -329,9 +329,30 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 			},
 		},
 	}
-	err = validateUpstreamAuthentication(ctx, auth)
+	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "resolved api key value is empty")
+}
+
+func TestValidateAPIKeyAuth_Incoming_Errors(t *testing.T) {
+	ctx := context.Background()
+	// Both Value and VerificationValue missing
+	auth := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: &configv1.APIKeyAuth{
+				ParamName: proto.String("api_key"),
+			},
+		},
+	}
+	// Use validateAuthentication to access internal logic via authCtx
+	err := validateAuthentication(ctx, auth, AuthValidationContextIncoming)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "api key configuration is empty")
+
+	// VerificationValue present (Valid for Incoming)
+	auth.GetApiKey().VerificationValue = proto.String("static-key")
+	err = validateAuthentication(ctx, auth, AuthValidationContextIncoming)
+	assert.NoError(t, err)
 }
 
 func TestValidateMcpService_BundleErrors(t *testing.T) {
