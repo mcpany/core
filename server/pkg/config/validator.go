@@ -209,6 +209,11 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 			if isPython && arg == "-m" {
 				return nil
 			}
+			// Special case for -c (command) or -e/--eval (eval)
+			// If we see these flags, the next argument is code, not a file.
+			if arg == "-c" || arg == "-e" || arg == "--eval" || arg == "-p" || arg == "--print" {
+				return nil
+			}
 			continue
 		}
 
