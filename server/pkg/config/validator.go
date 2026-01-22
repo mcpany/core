@@ -280,9 +280,41 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if _, exists := os.LookupEnv(envVar); !exists {
+			suggestion := fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar)
+
+			// Fuzzy matching for typos
+			var bestMatch string
+			minDist := 100 // High initial value
+
+			for _, e := range os.Environ() {
+				parts := strings.SplitN(e, "=", 2)
+				if len(parts) == 0 {
+					continue
+				}
+				key := parts[0]
+				dist := util.LevenshteinDistance(envVar, key)
+
+				// Heuristic: Distance should be small (e.g. <= 4) and reasonably close relative to length
+				// Allow up to 4 edits, but ensuring we don't match short strings too easily (e.g. "A" vs "B" is dist 1)
+				// We enforce that the distance is less than half the length of the variable name for short vars,
+				// or just a small constant for longer ones.
+				if dist < minDist && dist <= 4 {
+					// Additional check to avoid silly matches for short strings
+					if len(envVar) < 4 && dist > 1 {
+						continue
+					}
+					minDist = dist
+					bestMatch = key
+				}
+			}
+
+			if bestMatch != "" {
+				suggestion += fmt.Sprintf(" Did you mean %q?", bestMatch)
+			}
+
 			return &ActionableError{
 				Err:        fmt.Errorf("environment variable %q is not set", envVar),
-				Suggestion: fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar),
+				Suggestion: suggestion,
 			}
 		}
 	case configv1.SecretValue_FilePath_case:
