@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Pre-flight Command Validation**
+  - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
   - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
 - **RegEx Environment Variable Validation**
@@ -105,6 +107,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
 | 76   | **Config Auto-Format API**                    | **DevX**: API endpoint to format uploaded config (JSON/YAML) according to standard style.                                                                                                                        | Low        |
 | 77   | **Service Dependency Alerts**                 | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes.                                                                                                                          | Medium     |
+| 78   | **Tool Execution Timeout Configuration**      | **Resilience**: Allow configuring timeouts per-tool or per-service to prevent hanging tools.                                                                                                                     | Medium     |
+| 79   | **Secret Versioning Support**                 | **Security**: Allow referencing specific versions of secrets in configuration (e.g. `secret:my-secret:v1`).                                                                                                      | Medium     |
 | 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
 | 74   | **gRPC Health Checks**                        | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.                                                                     | Medium     |
 | 75   | **Health Check Flap Damping**                 | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues.                                      | Medium     |

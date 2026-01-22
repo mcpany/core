@@ -61,7 +61,9 @@ func (m *MockClientSession) Close() error {
 
 func TestMcpConnection_CallTool(t *testing.T) {
 	conn := &mcpConnection{
-		stdioConfig: &configv1.McpStdioConnection{},
+		stdioConfig: &configv1.McpStdioConnection{
+			Command: &[]string{"echo"}[0],
+		},
 	}
 	ctx := context.Background()
 	params := &mcp.CallToolParams{Name: "test-tool"}

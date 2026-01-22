@@ -437,6 +437,16 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 		return nil, err
 	}
 
+	// Pre-flight check: Ensure the command exists.
+	// We only do this check if it's not a docker command, because "docker"
+	// is generally assumed to be in PATH, and we might be prepending "sudo" later.
+	// However, if the command is NOT docker, we should check if it exists.
+	if command != "docker" {
+		if _, err := exec.LookPath(command); err != nil {
+			return nil, fmt.Errorf("command not found: %s. Please check that the executable exists and is in the system PATH", command)
+		}
+	}
+
 	// If the command is docker, we might need to prepend sudo.
 	if command == "docker" {
 		if useSudo {
