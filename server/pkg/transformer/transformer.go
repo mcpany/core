@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -85,7 +86,12 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	return out, nil
 }
 
-func joinFunc(sep string, a []any) string {
+func joinFunc(sep string, input any) (string, error) {
+	a, err := toAnySlice(input)
+	if err != nil {
+		return "", fmt.Errorf("join: %w", err)
+	}
+
 	var sb strings.Builder
 	sepLen := len(sep)
 	var totalLen int
@@ -180,7 +186,23 @@ func joinFunc(sep string, a []any) string {
 			fmt.Fprint(&sb, v)
 		}
 	}
-	return sb.String()
+	return sb.String(), nil
+}
+
+func toAnySlice(input any) ([]any, error) {
+	if s, ok := input.([]any); ok {
+		return s, nil
+	}
+	val := reflect.ValueOf(input)
+	if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
+		return nil, fmt.Errorf("expected slice or array, got %T", input)
+	}
+	l := val.Len()
+	a := make([]any, l)
+	for i := 0; i < l; i++ {
+		a[i] = val.Index(i).Interface()
+	}
+	return a, nil
 }
 
 func estimateLen(v any) int {
