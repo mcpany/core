@@ -396,3 +396,18 @@ upstream_services:
 	// Expect the new helpful error message
 	assert.Contains(t, err.Error(), "without a 'service_config' wrapper")
 }
+
+func TestYamlEngine_SchemaValidationLineNumber(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Invalid config: log_level is integer (should be string)
+	// Line 1: global_settings:
+	// Line 2:   log_level: 123
+	require.NoError(t, afero.WriteFile(fs, "/config/schema_fail.yaml", []byte("global_settings:\n  log_level: 123\n"), 0644))
+
+	store := NewFileStore(fs, []string{"/config/schema_fail.yaml"})
+	_, err := store.Load(context.Background())
+	assert.Error(t, err)
+	// We expect "line 2"
+	assert.Contains(t, err.Error(), "line 2")
+	assert.Contains(t, err.Error(), "expected string, but got number")
+}
