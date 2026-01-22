@@ -280,9 +280,13 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if _, exists := os.LookupEnv(envVar); !exists {
+			suggestion := fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar)
+			if similar := findSimilarEnvVar(envVar); similar != "" {
+				suggestion = fmt.Sprintf("Did you mean %q? %s", similar, suggestion)
+			}
 			return &ActionableError{
 				Err:        fmt.Errorf("environment variable %q is not set", envVar),
-				Suggestion: fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar),
+				Suggestion: suggestion,
 			}
 		}
 	case configv1.SecretValue_FilePath_case:
@@ -1186,4 +1190,40 @@ func validateDirectoryExists(path string) error {
 		return fmt.Errorf("%q is not a directory", path)
 	}
 	return nil
+}
+
+func findSimilarEnvVar(target string) string {
+	environ := os.Environ()
+	bestMatch := ""
+	minDist := 1000
+
+	for _, env := range environ {
+		parts := strings.SplitN(env, "=", 2)
+		key := parts[0]
+
+		// Skip exact match (shouldn't happen if we are here)
+		if key == target {
+			continue
+		}
+
+		dist := util.LevenshteinDistance(target, key)
+
+		// Threshold: Allow edits up to 1/3 of the string length, but at least 1 and max 5.
+		// For very short strings (len < 3), require exact match (so threshold 0, which means no fuzzy match).
+		if len(target) < 3 {
+			continue
+		}
+
+		threshold := len(target) / 3
+		if threshold > 5 {
+			threshold = 5
+		}
+
+		if dist <= threshold && dist < minDist {
+			minDist = dist
+			bestMatch = key
+		}
+	}
+
+	return bestMatch
 }

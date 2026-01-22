@@ -76,6 +76,16 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 		return 0, nil
 	}
 
+	wordCount := countWords(text)
+
+	count := int(float64(wordCount) * t.Factor)
+	if count < 1 && len(text) > 0 {
+		count = 1
+	}
+	return count, nil
+}
+
+func countWords(text string) int {
 	// Count words by iterating through the string and counting transitions
 	// from whitespace to non-whitespace. This avoids allocating a slice of strings.
 	wordCount := 0
@@ -136,12 +146,7 @@ func (t *WordTokenizer) CountTokens(text string) (int, error) {
 			i += w
 		}
 	}
-
-	count := int(float64(wordCount) * t.Factor)
-	if count < 1 && len(text) > 0 {
-		count = 1
-	}
-	return count, nil
+	return wordCount
 }
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
@@ -161,8 +166,8 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 			return c, err
 		}
 	} else if wt, ok := t.(*WordTokenizer); ok && wt != nil {
-		if c, handled, err := countTokensInValueWordFast(wt, v); handled {
-			return c, err
+		if c, handled := countTokensInValueWordFast(wt, v); handled {
+			return c, nil
 		}
 	} else {
 		// Generic fallback for other Tokenizer implementations
@@ -180,6 +185,64 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	visitedPool.Put(visited)
 
 	return c, err
+}
+
+// rawWordCounter implements the recursiveTokenizer interface but counts raw words instead of tokens.
+type rawWordCounter struct{}
+
+func (r *rawWordCounter) CountTokens(text string) (int, error) {
+	return countWords(text), nil
+}
+
+func (r *rawWordCounter) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
+	// Try the fast path first
+	if c, handled := countWordsInValueFast(v); handled {
+		return c, nil
+	}
+
+	// Optimization: Handle map[string]interface{} explicitly to avoid reflection.
+	if m, ok := v.(map[string]interface{}); ok {
+		return countMapStringInterface(r, m, visited)
+	}
+
+	// Optimization: Handle []interface{} explicitly to avoid reflection.
+	if s, ok := v.([]interface{}); ok {
+		return countSliceInterface(r, s, visited)
+	}
+
+	return countTokensReflectGeneric(r, v, visited)
+}
+
+// countWordsInValueFast handles fast-path word counting.
+func countWordsInValueFast(v interface{}) (int, bool) {
+	switch val := v.(type) {
+	case string:
+		return countWords(val), true
+	case int, int64, float64, bool, nil:
+		return 1, true
+	case []string:
+		count := 0
+		for _, item := range val {
+			count += countWords(item)
+		}
+		return count, true
+	case []int:
+		return len(val), true
+	case []int64:
+		return len(val), true
+	case []float64:
+		return len(val), true
+	case []bool:
+		return len(val), true
+	case map[string]string:
+		count := 0
+		for key, item := range val {
+			count += countWords(key)
+			count += countWords(item)
+		}
+		return count, true
+	}
+	return 0, false
 }
 
 // countTokensInValueSimpleFast handles fast-path tokenization for SimpleTokenizer.
@@ -265,51 +328,22 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		}
 		return count, true, nil
 	}
+	// Fallback to generic unhandled case
 	return 0, false, nil
 }
 
 // countTokensInValueWordFast handles fast-path tokenization for WordTokenizer.
-// It returns (count, handled, error). If handled is false, the caller should fallback.
-func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, error) {
-	// For single items, we just use the factor truncated.
-	// We ensure at least 1 token if the factor is small.
-	singleItemCount := int(wt.Factor)
-	if singleItemCount < 1 {
-		singleItemCount = 1
-	}
-
-	switch val := v.(type) {
-	case string:
-		c, err := wt.CountTokens(val)
-		return c, true, err
-	case int, int64, float64, bool, nil:
-		return singleItemCount, true, nil
-	case []string:
-		count := 0
-		for _, item := range val {
-			c, _ := wt.CountTokens(item)
-			count += c
+// It returns (count, handled). If handled is false, the caller should fallback.
+func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool) {
+	if words, handled := countWordsInValueFast(v); handled {
+		count := int(float64(words) * wt.Factor)
+		if count < 1 && words > 0 {
+			count = 1
 		}
-		return count, true, nil
-	case []int:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
-	case []int64:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
-	case []float64:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
-	case []bool:
-		return calculateWordTokens(len(val), wt.Factor), true, nil
-	case map[string]string:
-		count := 0
-		for key, item := range val {
-			kc, _ := wt.CountTokens(key)
-			count += kc
-			vc, _ := wt.CountTokens(item)
-			count += vc
-		}
-		return count, true, nil
+		return count, true
 	}
-	return 0, false, nil
+	// Fallback to generic unhandled case
+	return 0, false
 }
 
 func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
@@ -402,21 +436,21 @@ func (t *SimpleTokenizer) countRecursive(v interface{}, visited map[uintptr]bool
 
 func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Try the fast path first
-	if c, handled, err := countTokensInValueWordFast(t, v); handled {
-		return c, err
+	if c, handled := countTokensInValueWordFast(t, v); handled {
+		return c, nil
 	}
 
-	// Optimization: Handle map[string]interface{} explicitly to avoid reflection.
-	if m, ok := v.(map[string]interface{}); ok {
-		return countMapStringInterface(t, m, visited)
+	r := &rawWordCounter{}
+	words, err := r.countRecursive(v, visited)
+	if err != nil {
+		return 0, err
 	}
 
-	// Optimization: Handle []interface{} explicitly to avoid reflection.
-	if s, ok := v.([]interface{}); ok {
-		return countSliceInterface(t, s, visited)
+	count := int(float64(words) * t.Factor)
+	if count < 1 && words > 0 {
+		count = 1
 	}
-
-	return countTokensReflectGeneric(t, v, visited)
+	return count, nil
 }
 
 func (t *WordTokenizer) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
@@ -715,16 +749,6 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 	return count, nil
 }
 
-func calculateWordTokens(n int, factor float64) int {
-	if n == 0 {
-		return 0
-	}
-	count := int(float64(n) * factor)
-	if count < 1 {
-		count = 1
-	}
-	return count
-}
 
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.

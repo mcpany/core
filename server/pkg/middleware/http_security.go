@@ -50,10 +50,9 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 			// - object-src 'none': Blocks plugins like Flash/Java.
 			// - base-uri 'self': Prevents base tag hijacking.
 			// - img-src 'self' data: https: : Allows images from self, data URIs, and HTTPS sources.
-			// - frame-ancestors 'none': Prevents clickjacking by disallowing framing completely.
-			w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests")
-			w.Header().Set("X-Frame-Options", "DENY")
-			w.Header().Set("Referrer-Policy", "no-referrer")
+			// - frame-ancestors 'self': Prevents clickjacking by only allowing framing from the same origin.
+			w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests")
+			w.Header().Set("X-Frame-Options", "SAMEORIGIN")
 
 			// Prevent caching of sensitive data
 			w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
