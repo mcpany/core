@@ -6,12 +6,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { apiClient } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2 } from "lucide-react";
@@ -27,6 +30,22 @@ interface User {
   };
 }
 
+// Validation schema
+const userSchema = z.object({
+  id: z.string().min(3, "Username must be at least 3 characters").max(50, "Username too long").regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and dashes"),
+  role: z.string().min(1, "Role is required"),
+  password: z.string().optional(),
+}).refine(() => {
+  // If editing, password is optional (unchanged). If creating, password is required if we assume Basic Auth.
+  // But maybe we want to allow creating users without password initially (e.g. only API key later)?
+  // For now, let's enforce password for creation if we are setting up Basic Auth.
+  // But the form doesn't track "isEditing" inside the schema easily without passing context.
+  // We'll handle "required for new user" in the submit handler or just checking if password is empty for new user.
+  return true;
+});
+
+type UserValues = z.infer<typeof userSchema>;
+
 /**
  * UsersPage component.
  * @returns The rendered component.
@@ -37,11 +56,13 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Form state
-  const [formData, setFormData] = useState({
-    id: "",
-    role: "",
-    password: "", // Only for new/update
+  const form = useForm<UserValues>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      id: "",
+      role: "",
+      password: "",
+    },
   });
 
   async function loadUsers() {
@@ -64,23 +85,32 @@ export default function UsersPage() {
     loadUsers();
   }, []);
 
+  // Reset form when dialog opens/closes or editing user changes
+  useEffect(() => {
+    if (isDialogOpen) {
+      if (editingUser) {
+        form.reset({
+          id: editingUser.id,
+          role: editingUser.roles[0] || "",
+          password: "",
+        });
+      } else {
+        form.reset({
+          id: "",
+          role: "viewer",
+          password: "",
+        });
+      }
+    }
+  }, [isDialogOpen, editingUser, form]);
+
   const handleEdit = (user: User) => {
     setEditingUser(user);
-    setFormData({
-        id: user.id,
-        role: user.roles[0] || "",
-        password: "",
-    });
     setIsDialogOpen(true);
   };
 
   const handleCreate = () => {
     setEditingUser(null);
-    setFormData({
-        id: "",
-        role: "viewer",
-        password: "",
-    });
     setIsDialogOpen(true);
   };
 
@@ -94,14 +124,25 @@ export default function UsersPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data: UserValues) => {
+    // Custom validation for new user password
+    if (!editingUser && !data.password) {
+        form.setError("password", { message: "Password is required for new users" });
+        return;
+    }
+    // Enforce strong password if provided
+    if (data.password && data.password.length < 8) {
+        form.setError("password", { message: "Password must be at least 8 characters" });
+        return;
+    }
+
     try {
         const userPayload = {
-            id: formData.id,
-            roles: formData.role ? [formData.role] : [],
-             authentication: formData.password ? {
+            id: data.id,
+            roles: data.role ? [data.role] : [],
+             authentication: data.password ? {
                 basic_auth: {
-                    password_hash: formData.password // sent as plain text, server hashes it
+                    password_hash: data.password // sent as plain text, server hashes it
                 }
             } : editingUser?.authentication // keep existing auth if password not changed
         };
@@ -115,6 +156,7 @@ export default function UsersPage() {
         loadUsers();
     } catch (e) {
         console.error("Failed to save user", e);
+        // Could set a form error here if API returns a message
     }
   };
 
@@ -187,48 +229,52 @@ export default function UsersPage() {
                     {editingUser ? "Update user details." : "Add a new user to the system."}
                 </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
-                        Username
-                    </Label>
-                    <Input
-                        id="username"
-                        value={formData.id}
-                        onChange={(e) => setFormData({...formData, id: e.target.value})}
-                        className="col-span-3"
-                        disabled={!!editingUser}
-                    />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="role" className="text-right">
-                        Role
-                    </Label>
-                    <Input
-                        id="role"
-                        value={formData.role}
-                        onChange={(e) => setFormData({...formData, role: e.target.value})}
-                        className="col-span-3"
-                        placeholder="admin, viewer, etc."
-                    />
-                </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="password" className="text-right">
-                        Password
-                    </Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        className="col-span-3"
-                        placeholder={editingUser ? "(Unchanged)" : "Required for Basic Auth"}
-                    />
-                </div>
-            </div>
-            <DialogFooter>
-                <Button onClick={handleSubmit}>Save changes</Button>
-            </DialogFooter>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input disabled={!!editingUser} placeholder="username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <FormControl>
+                        <Input placeholder="admin, viewer, etc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder={editingUser ? "(Unchanged)" : "Required for new user"} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                    <Button type="submit">Save changes</Button>
+                </DialogFooter>
+              </form>
+            </Form>
         </DialogContent>
       </Dialog>
     </div>
