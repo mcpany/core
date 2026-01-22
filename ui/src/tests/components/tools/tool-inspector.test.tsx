@@ -67,7 +67,7 @@ describe('ToolInspector', () => {
 
   it('renders input fields based on schema', () => {
     render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
-    expect(screen.getByText(/arg1/)).toBeDefined();
+    expect(screen.getAllByText(/arg1/).length).toBeGreaterThan(0);
     expect(screen.getByText(/"string"/)).toBeDefined();
     // In a real DOM (not mocked Sheet), we would look for the input
   });
