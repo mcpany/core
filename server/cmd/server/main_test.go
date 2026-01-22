@@ -14,14 +14,18 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
 	"testing"
 	"time"
 
+	"log/slog"
+
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
@@ -138,6 +142,51 @@ func TestRootCmd(t *testing.T) {
 	assert.Equal(t, fmt.Sprintf("%d", grpcPort), mock.capturedGrpcPort, "grpc-port should be captured")
 	assert.Equal(t, []string{tmpFilePath, tmpDir}, mock.capturedConfigPaths, "config-path should be captured")
 	assert.Equal(t, 10*time.Second, mock.capturedShutdownTimeout, "shutdown-timeout should be captured")
+}
+
+func TestRunCmd_BackgroundDoctorChecks(t *testing.T) {
+	viper.Reset()
+	mock := &mockRunner{}
+	originalRunner := appRunner
+	appRunner = mock
+	defer func() { appRunner = originalRunner }()
+
+	// Reset logger to capture output
+	logging.ForTestsOnlyResetLogger()
+	var logBuf bytes.Buffer
+	logging.Init(slog.LevelInfo, &logBuf)
+	defer logging.ForTestsOnlyResetLogger()
+
+	// Create a valid config file
+	tmpDir := t.TempDir()
+	configFile := filepath.Join(tmpDir, "config.yaml")
+	err := os.WriteFile(configFile, []byte(`
+global_settings:
+  mcp_listen_address: "127.0.0.1:0"
+upstream_services:
+  - name: "test-service"
+    http_service:
+      address: "http://localhost:12345"
+`), 0644)
+	assert.NoError(t, err)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{
+		"run",
+		// No --stdio
+		"--config-path", configFile,
+	})
+
+	// Run command
+	err = rootCmd.Execute()
+	assert.NoError(t, err)
+
+	// Wait enough time for the background goroutine (100ms sleep + execution)
+	assert.Eventually(t, func() bool {
+		output := logBuf.String()
+		return strings.Contains(output, "Running background connectivity checks") ||
+			strings.Contains(output, "Upstream Service Unreachable")
+	}, 1*time.Second, 50*time.Millisecond, "Output should contain evidence of background checks running")
 }
 
 func TestVersionCmd(t *testing.T) {
