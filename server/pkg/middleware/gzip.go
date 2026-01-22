@@ -98,15 +98,6 @@ func (w *gzipResponseWriter) WriteHeader(code int) {
 	w.wroteHeader = true
 
 	contentType := w.Header().Get("Content-Type")
-	if contentType == "" {
-		// Sniff content type if not set
-		// But we don't have the body yet.
-		// If explicit WriteHeader is called without setting Content-Type, we might miss it.
-		// However, standard net/http behaviour sniff on first Write.
-		// If we are in Write(), we have `b`. We could sniff there.
-		// For simplicity, we rely on Content-Type being set by handlers (like http.FileServer)
-		// http.FileServer ALWAYS sets Content-Type.
-	}
 
 	if isCompressible(contentType) {
 		w.shouldGzip = true
@@ -124,7 +115,7 @@ func (w *gzipResponseWriter) WriteHeader(code int) {
 
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
-		w.writer.Close()
+		_ = w.writer.Close()
 		w.pool.Put(w.writer)
 		w.writer = nil
 	}
