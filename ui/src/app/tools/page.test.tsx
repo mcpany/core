@@ -31,21 +31,21 @@ vi.mock('@/hooks/use-pinned-tools', () => ({
 // Mock Select component to avoid Radix UI interaction issues in JSDOM
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 vi.mock('@/components/ui/select', () => ({
-    Select: ({ value, onValueChange }: { value: string; onValueChange: (val: string) => void; _children: React.ReactNode }) => (
-        <div data-testid="select-mock">
+    Select: ({ value, onValueChange, children }: { value: string; onValueChange: (val: string) => void; children: React.ReactNode }) => (
+        <div data-testid={`select-mock-${value}`}>
             <select
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
                 data-testid="select-native"
             >
-                {/* We need to render children to find SelectItem, but SelectItem structure is complex in Radix.
-                    We will just render options manually based on children if we could, but children are ReactNodes.
-                    Instead, we can just expose a way to trigger change.
-                 */}
                  <option value="all">All Services</option>
                  <option value="service1-id">Service One</option>
                  <option value="service2-id">Service Two</option>
+                 <option value="none">No Grouping</option>
+                 <option value="service">Group by Service</option>
+                 <option value="category">Group by Category</option>
             </select>
+            {children}
         </div>
     ),
     SelectContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -105,8 +105,14 @@ describe('ToolsPage', () => {
 
         expect(apiClient.listServices).toHaveBeenCalled();
 
-        // Select 'Service One' using the mock native select
-        const select = screen.getByTestId('select-native');
+        // Select 'Service One' using the mock native select. We need to distinguish between the two selects.
+        // The service filter select initializes with "all".
+        const select = screen.getAllByTestId('select-native').find(
+            (el) => (el as HTMLSelectElement).value === 'all'
+        );
+
+        if (!select) throw new Error("Service filter select not found");
+
         fireEvent.change(select, { target: { value: 'service1-id' } });
 
         await waitFor(() => {
@@ -149,6 +155,37 @@ describe('ToolsPage', () => {
         await waitFor(() => {
             expect(screen.getByText('special-tool')).toBeInTheDocument();
             expect(screen.queryByText('tool1')).not.toBeInTheDocument();
+        });
+    });
+
+    it('groups tools by category', async () => {
+        const mockToolsWithTags = [
+            { name: 'tool1', description: 'Tool 1', serviceId: 'service1-id', disable: false, tags: ['search'] },
+            { name: 'tool2', description: 'Tool 2', serviceId: 'service2-id', disable: false, tags: ['database'] },
+            { name: 'tool3', description: 'Tool 3', serviceId: 'service1-id', disable: false, tags: ['search'] },
+        ];
+        (apiClient.listTools as Mock).mockResolvedValue({ tools: mockToolsWithTags });
+
+        render(<ToolsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('tool1')).toBeInTheDocument();
+        });
+
+        // Find the group by select which initializes with "none"
+        const selects = screen.getAllByTestId('select-native');
+        const groupBySelect = selects.find(
+            (el) => (el as HTMLSelectElement).value === 'none'
+        );
+
+        if (!groupBySelect) throw new Error("Group By select not found");
+
+        fireEvent.change(groupBySelect, { target: { value: 'category' } });
+
+        await waitFor(() => {
+            // Check if group headers exist
+            expect(screen.getByText('search')).toBeInTheDocument();
+            expect(screen.getByText('database')).toBeInTheDocument();
         });
     });
 });

@@ -43,7 +43,7 @@
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
-- [ ] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
+- [x] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
