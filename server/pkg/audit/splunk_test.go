@@ -85,7 +85,7 @@ func TestSplunkAuditStore(t *testing.T) {
 
 func TestSplunkAuditStore_Batch(t *testing.T) {
 	var totalReceived int32
-	done := make(chan struct{})
+	done := make(chan struct{}, 1)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
@@ -95,10 +95,13 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 			_ = decoder.Decode(&body)
 			count++
 		}
-		atomic.AddInt32(&totalReceived, int32(count))
+		newVal := atomic.AddInt32(&totalReceived, int32(count))
 		w.WriteHeader(http.StatusOK)
-		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
+		if newVal >= 5 {
+			select {
+			case done <- struct{}{}:
+			default:
+			}
 		}
 	}))
 	defer ts.Close()
@@ -112,12 +115,61 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 		_ = store.Write(context.Background(), Entry{ToolName: "test"})
 	}
 
-	_ = store.Close()
+	// Wait a bit to ensure worker picks up everything (though Close should handle it)
+	err := store.Close()
+	assert.NoError(t, err)
 
 	select {
 	case <-done:
 	case <-time.After(2 * time.Second):
+		if atomic.LoadInt32(&totalReceived) < 5 {
+			t.Fatal("timed out waiting for splunk batch")
+		}
 	}
 
 	assert.Equal(t, int32(5), atomic.LoadInt32(&totalReceived))
+}
+
+func TestSplunkAuditStore_QueueFull(t *testing.T) {
+	config := &configv1.SplunkConfig{HecUrl: proto.String("http://localhost")}
+	store := NewSplunkAuditStore(config)
+
+	// Close existing workers
+	close(store.queue)
+	store.wg.Wait()
+
+	store.queue = make(chan Entry, splunkBufferSize)
+
+	// Fill queue
+	for i := 0; i < splunkBufferSize; i++ {
+		store.queue <- Entry{}
+	}
+
+	// Next write should fail
+	err := store.Write(context.Background(), Entry{})
+	assert.Error(t, err)
+	assert.Equal(t, "audit queue full", err.Error())
+}
+
+func TestSplunkAuditStore_Read_NotImplemented(t *testing.T) {
+	store := NewSplunkAuditStore(nil)
+	defer store.Close()
+	_, err := store.Read(context.Background(), Filter{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "read not implemented")
+}
+
+func TestSplunkAuditStore_HTTPError(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer ts.Close()
+
+	config := &configv1.SplunkConfig{HecUrl: proto.String(ts.URL)}
+	store := NewSplunkAuditStore(config)
+
+	err := store.Write(context.Background(), Entry{ToolName: "test"})
+	assert.NoError(t, err)
+
+	store.Close()
 }
