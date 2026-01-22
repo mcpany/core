@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PlaygroundClient } from './playground-client';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { apiClient } from '@/lib/client';
 
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
@@ -44,5 +45,32 @@ describe('PlaygroundClient', () => {
       // Basic render test
       render(<PlaygroundClient />);
       expect(screen.getByText('Playground')).toBeInTheDocument();
+  });
+
+  it('displays execution duration after tool execution', async () => {
+      // Mock executeTool to take some time
+      (apiClient.executeTool as any).mockImplementation(async () => {
+          await new Promise(resolve => setTimeout(resolve, 50)); // 50ms delay
+          return { result: "success" };
+      });
+
+      render(<PlaygroundClient />);
+
+      const input = screen.getByPlaceholderText(/e.g. calculator/);
+      // Use fireEvent to simulate typing
+      fireEvent.change(input, { target: { value: 'test_tool {}' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      // Wait for the result
+      await waitFor(() => {
+          expect(screen.getByText(/Result \(test_tool\)/)).toBeInTheDocument();
+      });
+
+      // Check for duration badge (regex for "Xms")
+      // It should be around 50ms, but we just check if any "ms" badge exists
+      const durationBadge = screen.getByText(/\d+ms/);
+      expect(durationBadge).toBeInTheDocument();
+      // Optional: check it's visible
+      expect(durationBadge).toBeVisible();
   });
 });
