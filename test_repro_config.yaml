@@ -1,0 +1,4 @@
+upstream_services:
+  - name: "broken-command-service"
+    command_line_service:
+      command: "this-command-does-not-exist arg1"
