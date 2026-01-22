@@ -370,12 +370,21 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") {
 			if endpointURL.Host != "" {
 				// It was treated as scheme-relative (//Host/Path).
-				// Restore it to be just Path by prepending "//" + Host.
-				endpointURL.Path = "//" + endpointURL.Host + endpointURL.Path
+				// Restore it to be just Path by prepending "//" + [User@] + Host.
+				// Note: url.Parse treats //user:pass@host/path as scheme-relative too.
+				// We need to preserve User info if present.
+				prefix := "//"
+				if endpointURL.User != nil {
+					prefix += endpointURL.User.String() + "@"
+				}
+				prefix += endpointURL.Host
+
+				endpointURL.Path = prefix + endpointURL.Path
 				if endpointURL.RawPath != "" {
-					endpointURL.RawPath = "//" + endpointURL.Host + endpointURL.RawPath
+					endpointURL.RawPath = prefix + endpointURL.RawPath
 				}
 				endpointURL.Host = ""
+				endpointURL.User = nil
 			} else if endpointURL.Path == "" {
 				// It was treated as scheme-relative with empty host (e.g. "//") which results in empty path
 				endpointURL.Path = "//"
