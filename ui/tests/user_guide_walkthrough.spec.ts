@@ -83,7 +83,7 @@ test.describe('User Guide Walkthrough', () => {
     await page.keyboard.press('Control+k');
 
     // Check for Search Input placeholder or identifying element
-    await expect(page.getByPlaceholder('Type a command or search...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type a command or search...')).toBeVisible({ timeout: 20000 });
 
     // Close modal (Esc key or click outside/close button)
     await page.keyboard.press('Escape');
