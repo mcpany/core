@@ -938,6 +938,11 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
+	args := m.Called(serviceID)
+	return args.String(0), args.Get(1).(time.Duration), args.Get(2).(time.Time), args.Bool(3)
+}
+
 func TestHandleServices_IncludesError(t *testing.T) {
 	db, err := sqlite.NewDB(":memory:")
 	require.NoError(t, err)
@@ -959,9 +964,10 @@ func TestHandleServices_IncludesError(t *testing.T) {
 	}
 
 	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{service1, service2, service3}, nil)
-	mockRegistry.On("GetServiceError", "service-1").Return("", false)
-	mockRegistry.On("GetServiceError", "service-2").Return("Connection refused", true)
-	mockRegistry.On("GetServiceError", "service-3-sanitized").Return("Another error", true)
+	// GetServiceHealth returns: error string, latency, lastCheck, bool (exists)
+	mockRegistry.On("GetServiceHealth", "service-1").Return("", time.Duration(0), time.Time{}, true)
+	mockRegistry.On("GetServiceHealth", "service-2").Return("Connection refused", time.Duration(0), time.Time{}, true)
+	mockRegistry.On("GetServiceHealth", "service-3-sanitized").Return("Another error", time.Duration(0), time.Time{}, true)
 
 	app := NewApplication()
 	app.ServiceRegistry = mockRegistry
@@ -1603,6 +1609,9 @@ func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.
 	return nil, false
 }
 func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+func (m *TestMockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
+	return "", 0, time.Time{}, false
+}
 
 func TestHandleServices_ToolCount(t *testing.T) {
 	busProvider, _ := bus.NewProvider(nil)
