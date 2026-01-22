@@ -313,105 +313,27 @@ func expand(b []byte) ([]byte, error) {
 
 		// Case 1: ${...}
 		if b[i+1] == '{' {
-			// Find matching '}' accounting for nesting
-			start := i
-			innerStart := i + 2
-			depth := 1
-			j := innerStart
-			for j < len(b) {
-				if b[j] == '{' {
-					depth++
-				} else if b[j] == '}' {
-					depth--
-					if depth == 0 {
-						break
-					}
-				}
-				j++
-			}
-
-			if depth > 0 {
-				// Unclosed brace, treat as literal
-				buf.WriteByte(b[i])
-				i++
+			consumed := handleBracedVar(b, i, &buf, &missingErrBuilder, &missingCount)
+			if consumed > 0 {
+				i += consumed
 				continue
 			}
-
-			// Content inside ${...}
-			content := string(b[innerStart:j])
-			parts := strings.SplitN(content, ":", 2)
-			varName := parts[0]
-			var hasDefault bool
-			var defaultValue string
-
-			if len(parts) > 1 {
-				hasDefault = true
-				defaultValue = parts[1]
-			}
-
-			val, ok := os.LookupEnv(varName)
-			if !ok && !hasDefault {
-				missingCount++
-				lineNum := bytes.Count(b[:start], []byte("\n")) + 1
-				missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable %s is missing", lineNum, varName))
-				// We continue processing to find all missing variables
-				// But we write the original string to buffer to keep alignment roughly correct for line counts?
-				// Actually if we return error, the buffer content doesn't matter.
-				i = j + 1
-				continue
-			}
-
-			if ok {
-				if val == "" && hasDefault {
-					buf.WriteString(defaultValue)
-				} else {
-					buf.WriteString(val)
-				}
-			} else {
-				// Must have default
-				buf.WriteString(defaultValue)
-			}
-
-			i = j + 1
-			continue
-		}
-
-		// Case 2: $VAR (alphanumeric + _)
-		// Scan for variable name
-		// First char must be [a-zA-Z_]
-		first := b[i+1]
-		isFirstValid := (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') || first == '_'
-
-		if !isFirstValid {
-			// Not a variable start
+			// If not consumed (e.g. unclosed brace), treat as literal
 			buf.WriteByte(b[i])
 			i++
 			continue
 		}
 
-		start := i
-		j := i + 1
-		for j < len(b) {
-			c := b[j]
-			isAlphaNum := (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
-			if !isAlphaNum {
-				break
-			}
-			j++
-		}
-
-		varName := string(b[i+1 : j])
-		val, ok := os.LookupEnv(varName)
-		if !ok {
-			missingCount++
-			lineNum := bytes.Count(b[:start], []byte("\n")) + 1
-			missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable %s is missing", lineNum, varName))
-			i = j
+		// Case 2: $VAR (alphanumeric + _)
+		consumed := handleSimpleVar(b, i, &buf, &missingErrBuilder, &missingCount)
+		if consumed > 0 {
+			i += consumed
 			continue
 		}
 
-		buf.WriteString(val)
-		i = j
+		// Not a variable
+		buf.WriteByte(b[i])
+		i++
 	}
 
 	if missingCount > 0 {
@@ -421,6 +343,99 @@ func expand(b []byte) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilder *strings.Builder, missingCount *int) int {
+	// Find matching '}' accounting for nesting
+	innerStart := startIdx + 2
+	depth := 1
+	j := innerStart
+	for j < len(b) {
+		if b[j] == '{' {
+			depth++
+		} else if b[j] == '}' {
+			depth--
+			if depth == 0 {
+				break
+			}
+		}
+		j++
+	}
+
+	if depth > 0 {
+		// Unclosed brace, treat as literal
+		return 0
+	}
+
+	// Content inside ${...}
+	content := string(b[innerStart:j])
+	parts := strings.SplitN(content, ":", 2)
+	varName := parts[0]
+	var hasDefault bool
+	var defaultValue string
+
+	if len(parts) > 1 {
+		hasDefault = true
+		defaultValue = parts[1]
+	}
+
+	val, ok := os.LookupEnv(varName)
+	if !ok && !hasDefault {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
+		// We continue processing to find all missing variables
+		return j + 1 - startIdx
+	}
+
+	if ok {
+		if val == "" && hasDefault {
+			buf.WriteString(defaultValue)
+		} else {
+			buf.WriteString(val)
+		}
+	} else {
+		// Must have default
+		buf.WriteString(defaultValue)
+	}
+
+	return j + 1 - startIdx
+}
+
+func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilder *strings.Builder, missingCount *int) int {
+	// Scan for variable name
+	// First char must be [a-zA-Z_]
+	if startIdx+1 >= len(b) {
+		return 0
+	}
+	first := b[startIdx+1]
+	isFirstValid := (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') || first == '_'
+
+	if !isFirstValid {
+		return 0
+	}
+
+	j := startIdx + 1
+	for j < len(b) {
+		c := b[j]
+		isAlphaNum := (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
+		if !isAlphaNum {
+			break
+		}
+		j++
+	}
+
+	varName := string(b[startIdx+1 : j])
+	val, ok := os.LookupEnv(varName)
+	if !ok {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
+		return j - startIdx
+	}
+
+	buf.WriteString(val)
+	return j - startIdx
 }
 
 // FileStore implements the `Store` interface for loading configurations from one
@@ -635,7 +650,6 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 func isURL(path string) bool {
 	return strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://")
 }
-
 
 // applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
 func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.Message) {
