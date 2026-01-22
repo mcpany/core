@@ -31,7 +31,6 @@ type DatadogAuditStore struct {
 	url    string
 	queue  chan Entry
 	wg     sync.WaitGroup
-	done   chan struct{}
 }
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
@@ -52,7 +51,6 @@ func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 		},
 		url:   url,
 		queue: make(chan Entry, datadogBufferSize),
-		done:  make(chan struct{}),
 	}
 
 	for i := 0; i < datadogWorkers; i++ {
@@ -86,17 +84,6 @@ func (e *DatadogAuditStore) worker() {
 				e.sendBatch(batch)
 				batch = nil
 			}
-		case <-e.done:
-			// Drain queue
-			for entry := range e.queue {
-				batch = append(batch, entry)
-				if len(batch) >= datadogBatchSize {
-					e.sendBatch(batch)
-					batch = nil
-				}
-			}
-			e.sendBatch(batch)
-			return
 		}
 	}
 }
@@ -164,9 +151,6 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 
 // Close closes the queue and waits for workers to finish.
 func (e *DatadogAuditStore) Close() error {
-	if e.done != nil {
-		close(e.done)
-	}
 	if e.queue != nil {
 		close(e.queue)
 	}
