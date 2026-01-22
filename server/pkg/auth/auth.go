@@ -181,7 +181,9 @@ type BasicAuthenticator struct {
 //
 // Returns the result.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
-	if config == nil || config.GetPasswordHash() == "" {
+	// Require both PasswordHash AND Username to be present.
+	// We do not support password-only basic auth (which would allow any username).
+	if config == nil || config.GetPasswordHash() == "" || config.GetUsername() == "" {
 		return nil
 	}
 	return &BasicAuthenticator{
@@ -203,12 +205,8 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 		return ctx, fmt.Errorf("unauthorized")
 	}
 
-	usernameMatch := true
-	if a.Username != "" {
-		if subtle.ConstantTimeCompare([]byte(user), []byte(a.Username)) != 1 {
-			usernameMatch = false
-		}
-	}
+	// Username is now required by NewBasicAuthenticator, so we always check it.
+	usernameMatch := subtle.ConstantTimeCompare([]byte(user), []byte(a.Username)) == 1
 
 	// Always check password to avoid timing attacks that could reveal if the username is correct
 	passwordMatch := passhash.CheckPassword(password, a.PasswordHash)

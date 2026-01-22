@@ -45,13 +45,18 @@ export function middleware(request: NextRequest) {
   });
 
   // Add Security Headers
+  const isDev = process.env.NODE_ENV === 'development';
+  const connectSrc = isDev
+    ? "connect-src 'self' https://cdn.jsdelivr.net http: https:" // Allow http/https for diagnostics in dev
+    : "connect-src 'self' https://cdn.jsdelivr.net https:"; // Restrict to https in production
+
   const csp = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net for Monaco Editor
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
     "img-src 'self' data: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://cdn.jsdelivr.net http: https:", // Added cdn.jsdelivr.net and http/https for diagnostics
+    connectSrc,
     "worker-src 'self' blob:", // Added for Monaco Editor workers
     "frame-ancestors 'none'",
     "object-src 'none'",

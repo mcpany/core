@@ -501,6 +501,7 @@ func TestBasicAuthenticator(t *testing.T) {
 	hashed, _ := passhash.Password(password)
 	config := &configv1.BasicAuth{
 		PasswordHash: proto.String(hashed),
+		Username:     proto.String("user"),
 	}
 
 	authenticator := NewBasicAuthenticator(config)
