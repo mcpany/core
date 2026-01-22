@@ -21,7 +21,7 @@ export async function GET() {
     const res = await fetch(`${backendUrl}/api/v1/services`, {
       cache: 'no-store', // Always fetch fresh data
       headers: {
-        // Add auth headers if needed in the future
+        'X-API-Key': process.env.MCPANY_API_KEY || ''
       }
     });
 

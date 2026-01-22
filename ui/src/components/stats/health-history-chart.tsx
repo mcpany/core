@@ -31,44 +31,53 @@ export function HealthHistoryChart() {
                 // In a real app, this would be a dedicated history endpoint.
                 // For this implementation, we simulate 24 hours of data based on
                 // the current status and some randomized historical noise.
-                const status = await apiClient.getDoctorStatus();
+                const [status, traffic] = await Promise.all([
+                    apiClient.getDoctorStatus(),
+                    apiClient.getDashboardTraffic()
+                ]);
 
                 const points: HealthPoint[] = [];
-                const now = new Date();
 
-                for (let i = 23; i >= 0; i--) {
-                    const time = new Date(now.getTime() - i * 60 * 60 * 1000);
-                    const hour = time.getHours();
-                    const timeStr = `${hour}:00`;
+                // Use traffic history to infer historical health
+                // If we have errors in a given interval (minute), we can mark it as degraded or error.
+                // Traffic history is minute-by-minute (last 60 mins)
+                // We want to show 24 hours?
+                // The backend now returns last 60 minutes of data.
+                // The UI expects 24 hours?
+                // "Displays server uptime history over the last 24 hours." description says so.
+                // But our backend now only returns 60 minutes.
+                // Let's adjust the chart to show available history (60 mins) or whatever backend returns.
+                // If backend returns 60 points, we show 60 points.
 
-                    // Simulate some downtime or degradation in history
-                    // but keep current status accurate
-                    let currentStatus: HealthPoint["status"] = "ok";
-                    let uptime = 100;
+                if (traffic && traffic.length > 0) {
+                     for (const t of traffic) {
+                        let pointStatus: HealthPoint["status"] = "ok";
+                        let uptime = 100;
 
-                    if (i === 0) {
-                        currentStatus = status.status === "ok" ? "ok" : (status.status === "degraded" ? "degraded" : "error");
-                        uptime = status.status === "ok" ? 100 : (status.status === "degraded" ? 85 : 0);
-                    } else {
-                        // Mock historical data
-                        const rand = Math.random();
-                        if (rand > 0.95) {
-                            currentStatus = "error";
-                            uptime = 0;
-                        } else if (rand > 0.85) {
-                            currentStatus = "degraded";
-                            uptime = Math.floor(Math.random() * 40) + 50;
-                        } else {
-                            currentStatus = "ok";
-                            uptime = 100;
+                        // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
+                        const reqs = t.requests || t.total || 0;
+                        const errs = t.errors || 0;
+
+                        if (errs > 0) {
+                            if (reqs > 0 && (errs / reqs) > 0.1) { // >10% error rate
+                                pointStatus = "degraded";
+                                uptime = 80;
+                            }
+                             if (reqs > 0 && (errs / reqs) > 0.5) { // >50% error rate
+                                pointStatus = "error";
+                                uptime = 0;
+                            }
                         }
-                    }
 
-                    points.push({
-                        time: timeStr,
-                        status: currentStatus,
-                        uptime: uptime
-                    });
+                        points.push({
+                            time: t.time,
+                            status: pointStatus,
+                            uptime: uptime
+                        });
+                     }
+                } else {
+                     // Fallback to showing just current status if no history
+                     // Or just empty
                 }
                 setData(points);
             } catch (error) {

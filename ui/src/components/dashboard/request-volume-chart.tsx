@@ -73,7 +73,7 @@ export function RequestVolumeChart() {
                 />
                 <Area
                     type="monotone"
-                    dataKey="total"
+                    dataKey="requests"
                     stroke="#8884d8"
                     fillOpacity={1}
                     fill="url(#colorTotal)"

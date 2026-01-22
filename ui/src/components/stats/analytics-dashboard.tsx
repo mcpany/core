@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     Area,
     AreaChart,
@@ -29,9 +29,7 @@ import {
     Activity,
     Clock,
     AlertTriangle,
-    CheckCircle2,
     Calendar,
-    Download
 } from "lucide-react";
 import {
     Card,
@@ -50,38 +48,10 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { apiClient } from "@/lib/client";
 
-// Mock Data Generators
-
-const generateTimeData = (points: number) => {
-    const data = [];
-    const now = new Date();
-    for (let i = 0; i < points; i++) {
-        const time = new Date(now.getTime() - (points - i) * 60000);
-        data.push({
-            time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
-            requests: Math.floor(Math.random() * 100) + 50,
-            errors: Math.floor(Math.random() * 10),
-            latency: Math.floor(Math.random() * 200) + 50
-        });
-    }
-    return data;
-};
-
-const TOOL_USAGE_DATA = [
-    { name: 'read_file', value: 400, color: '#3b82f6' },
-    { name: 'list_files', value: 300, color: '#10b981' },
-    { name: 'web_search', value: 300, color: '#f59e0b' },
-    { name: 'execute_command', value: 200, color: '#8b5cf6' },
-    { name: 'git_commit', value: 100, color: '#ef4444' },
-];
-
-const ERROR_DISTRIBUTION = [
-    { name: 'Timeout', value: 45 },
-    { name: 'Auth Failed', value: 25 },
-    { name: 'Invalid Args', value: 20 },
-    { name: 'Internal Error', value: 10 },
-];
+// Tool usage colors
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
 
 /**
  * AnalyticsDashboard component.
@@ -92,20 +62,47 @@ export function AnalyticsDashboard() {
     const [activeTab, setActiveTab] = useState("overview");
 
     const [trafficData, setTrafficData] = useState<any[]>([]);
+    const [toolUsageData, setToolUsageData] = useState<any[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-        setTrafficData(generateTimeData(20));
+        const fetchData = async () => {
+            try {
+                const [traffic, tools] = await Promise.all([
+                    apiClient.getDashboardTraffic(),
+                    apiClient.getTopTools()
+                ]);
+                setTrafficData(traffic || []);
+
+                // Format tool usage data
+                const formattedTools = (tools || []).map((t: any, index: number) => ({
+                    name: t.name,
+                    value: t.count,
+                    color: COLORS[index % COLORS.length]
+                }));
+                setToolUsageData(formattedTools);
+            } catch (error) {
+                console.error("Failed to fetch dashboard data", error);
+            }
+        };
+
+        fetchData();
+        const interval = setInterval(fetchData, 30000);
+        return () => clearInterval(interval);
     }, [timeRange]);
 
-    const totalRequests = trafficData.reduce((acc, cur) => acc + cur.requests, 0);
-    const avgLatency = trafficData.length ? Math.floor(trafficData.reduce((acc, cur) => acc + cur.latency, 0) / trafficData.length) : 0;
-    const errorRate = totalRequests ? (trafficData.reduce((acc, cur) => acc + cur.errors, 0) / totalRequests * 100).toFixed(2) : "0.00";
-    // Assuming 1 minute per data point
-    const avgRps = (trafficData.length && totalRequests) ? (totalRequests / (trafficData.length * 60)).toFixed(2) : "0.00";
+    const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+    const avgLatency = trafficData.length
+        ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+        : 0;
+    const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+    const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
+    // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
+    const durationMinutes = trafficData.length;
+    const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
-    if (!isMounted) return null; // Prevent server mapping issues or return skeleton
+    if (!isMounted) return null;
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-full overflow-y-auto">
@@ -123,11 +120,9 @@ export function AnalyticsDashboard() {
                         <SelectContent>
                             <SelectItem value="1h">Last 1 Hour</SelectItem>
                             <SelectItem value="24h">Last 24 Hours</SelectItem>
-                            <SelectItem value="7d">Last 7 Days</SelectItem>
-                            <SelectItem value="30d">Last 30 Days</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button>
+                    <Button disabled>
                         <ArrowDownRight className="mr-2 h-4 w-4" /> Export Report
                     </Button>
                 </div>
@@ -151,9 +146,8 @@ export function AnalyticsDashboard() {
                                 <div className="text-2xl font-bold">{totalRequests.toLocaleString()}</div>
                                 <p className="text-xs text-muted-foreground">
                                     <span className="text-emerald-500 flex items-center">
-                                        +20.1% <ArrowUpRight className="h-3 w-3 ml-1" />
+                                       <Activity className="h-3 w-3 mr-1" /> Live
                                     </span>
-                                    from last period
                                 </p>
                             </CardContent>
                         </Card>
@@ -164,12 +158,6 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{avgRps} rps</div>
-                                <p className="text-xs text-muted-foreground">
-                                    <span className="text-emerald-500 flex items-center">
-                                        +12.5% <ArrowUpRight className="h-3 w-3 ml-1" />
-                                    </span>
-                                    improvement
-                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -179,12 +167,6 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{avgLatency}ms</div>
-                                <p className="text-xs text-muted-foreground">
-                                    <span className="text-rose-500 flex items-center">
-                                        +4.5% <ArrowUpRight className="h-3 w-3 ml-1" />
-                                    </span>
-                                    slower than usual
-                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -194,12 +176,6 @@ export function AnalyticsDashboard() {
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{errorRate}%</div>
-                                <p className="text-xs text-muted-foreground">
-                                    <span className="text-emerald-500 flex items-center">
-                                        -1.2% <ArrowDownRight className="h-3 w-3 ml-1" />
-                                    </span>
-                                    improvement
-                                </p>
                             </CardContent>
                         </Card>
                     </div>
@@ -266,14 +242,14 @@ export function AnalyticsDashboard() {
                                     <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
                                             <Pie
-                                                data={TOOL_USAGE_DATA}
+                                                data={toolUsageData}
                                                 cx="50%"
                                                 cy="50%"
                                                 innerRadius={60}
                                                 outerRadius={80}
                                                 dataKey="value"
                                             >
-                                                {TOOL_USAGE_DATA.map((entry, index) => (
+                                                {toolUsageData.map((entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
@@ -329,7 +305,7 @@ export function AnalyticsDashboard() {
 
                  <TabsContent value="errors" className="space-y-4">
                      <div className="grid gap-4 md:grid-cols-2">
-                        <Card>
+                        <Card className="col-span-2">
                             <CardHeader>
                                 <CardTitle>Error Trend</CardTitle>
                                 <CardDescription>Number of failed requests over time.</CardDescription>
@@ -358,28 +334,6 @@ export function AnalyticsDashboard() {
                                             <Line type="monotone" dataKey="errors" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} />
                                         </LineChart>
                                     </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Error Types</CardTitle>
-                                <CardDescription>Categorization of system errors.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {ERROR_DISTRIBUTION.map((err) => (
-                                        <div key={err.name} className="flex items-center">
-                                            <div className="w-[100px] text-sm font-medium">{err.name}</div>
-                                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-destructive"
-                                                    style={{ width: `${err.value}%` }}
-                                                />
-                                            </div>
-                                            <div className="w-[50px] text-right text-sm text-muted-foreground">{err.value}%</div>
-                                        </div>
-                                    ))}
                                 </div>
                             </CardContent>
                         </Card>

@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -106,5 +107,31 @@ func (a *Application) handleDashboardTraffic() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(points)
+	}
+}
+
+// handleDebugSeedTraffic seeds the traffic history.
+func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.TopologyManager == nil {
+			http.Error(w, "Topology manager not initialized", http.StatusServiceUnavailable)
+			return
+		}
+
+		var points []topology.TrafficPoint
+		if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		a.TopologyManager.SeedTrafficHistory(points)
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
 	}
 }
