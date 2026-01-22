@@ -39,16 +39,17 @@ func ExtractIP(addr string) string {
 	needsSplit := true
 	firstColon := strings.IndexByte(addr, ':')
 
-	if firstColon == -1 {
+	switch {
+	case firstColon == -1:
 		// No colon -> No port (e.g. "1.2.3.4", "localhost")
 		needsSplit = false
-	} else if addr[0] == '[' {
+	case addr[0] == '[':
 		// Starts with bracket
 		// If it ends with bracket, it's just "[IPv6]" (no port)
 		if addr[len(addr)-1] == ']' {
 			needsSplit = false
 		}
-	} else {
+	default:
 		// No brackets, but has colon.
 		// If multiple colons -> IPv6 literal (e.g. "::1") -> No port (SplitHostPort would fail)
 		// If single colon -> IPv4 with port (e.g. "1.2.3.4:80")
