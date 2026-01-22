@@ -255,6 +255,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
+		tools := m.toolManager.ListTools()
 		for _, svc := range services {
 			svcNode := &topologyv1.Node{
 				Id:     "svc-" + svc.GetName(),
@@ -267,7 +268,6 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			}
 
 			// Add Tools
-			tools := m.toolManager.ListTools()
 			for _, t := range tools {
 				if t.Tool().GetServiceId() == svc.GetName() {
 					toolNode := &topologyv1.Node{
