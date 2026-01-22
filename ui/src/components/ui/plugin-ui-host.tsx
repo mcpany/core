@@ -73,6 +73,9 @@ export function PluginUIHost({ src, title = "Plugin UI", className, serviceId }:
             className="w-full h-full border-none"
             onLoad={handleLoad}
             onError={handleError}
+            // SECURITY WARNING: allow-same-origin is dangerous if the plugin content is not trusted.
+            // It allows the iframe to access the same local storage and cookies as the parent if origins match.
+            // Ensure plugins are from trusted sources or served from a different origin.
             sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
             referrerPolicy="no-referrer"
         />
