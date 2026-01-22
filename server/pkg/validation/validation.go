@@ -208,6 +208,13 @@ func IsValidURL(s string) bool {
 		return false
 	}
 
+	// Reject control characters (ASCII < 32 or == 127)
+	for _, r := range s {
+		if r < 32 || r == 127 {
+			return false
+		}
+	}
+
 	u, err := url.Parse(s)
 	if err != nil {
 		return false
