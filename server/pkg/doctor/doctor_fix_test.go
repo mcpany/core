@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -57,4 +58,37 @@ func TestRunChecks_Filesystem_Fix(t *testing.T) {
 	resultsAgain := RunChecks(context.Background(), config)
 	require.Len(t, resultsAgain, 1)
 	assert.Equal(t, StatusOk, resultsAgain[0].Status, "Status should be OK after fix")
+}
+
+func TestRunChecks_Filesystem_PermissionError(t *testing.T) {
+	// Mock FileExists to simulate a permission error
+	// We use the validation package's variable which is designed for this
+	originalFileExists := validation.FileExists
+	defer func() { validation.FileExists = originalFileExists }()
+
+	validation.FileExists = func(path string) error {
+		return os.ErrPermission
+	}
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: strPtr("invalid-fs-perm"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+					FilesystemService: &configv1.FilesystemUpstreamService{
+						RootPaths: map[string]string{
+							"/data": "/some/protected/path",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	results := RunChecks(context.Background(), config)
+
+	require.Len(t, results, 1)
+	assert.Equal(t, StatusError, results[0].Status)
+	// Should NOT offer a fix because it's not a simple "not exist" error
+	assert.Nil(t, results[0].Fix, "Fix function should be nil for permission errors")
 }

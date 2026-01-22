@@ -15,6 +15,7 @@ func TestPrintResults(t *testing.T) {
 		{ServiceName: "ServiceB", Status: StatusWarning, Message: "Something minor"},
 		{ServiceName: "ServiceC", Status: StatusError, Message: "Critical failure"},
 		{ServiceName: "ServiceD", Status: StatusSkipped, Message: "Disabled"},
+		{ServiceName: "ServiceE", Status: StatusError, Message: "Missing dir", FixName: "Create dir", Fix: func() error { return nil }},
 	}
 
 	var buf bytes.Buffer
@@ -39,5 +40,8 @@ func TestPrintResults(t *testing.T) {
 	}
 	if !strings.Contains(output, "Critical failure") {
 		t.Errorf("Expected error message")
+	}
+	if !strings.Contains(output, "🔧 Fix available: Create dir") {
+		t.Errorf("Expected fix availability message")
 	}
 }
