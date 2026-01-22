@@ -2608,6 +2608,24 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
+
+		// Check for language-specific interpolation vulnerabilities in double-quoted strings
+		baseCmd := filepath.Base(command)
+
+		// Ruby string interpolation #{...} works inside double quotes
+		if strings.HasPrefix(baseCmd, "ruby") || baseCmd == "irb" {
+			if strings.Contains(val, "#{") {
+				return fmt.Errorf("shell injection detected: ruby interpolation '#{' detected inside double-quoted argument")
+			}
+		}
+
+		// Perl array interpolation @... works inside double quotes
+		if strings.HasPrefix(baseCmd, "perl") {
+			if strings.Contains(val, "@") {
+				return fmt.Errorf("shell injection detected: perl interpolation '@' detected inside double-quoted argument")
+			}
+		}
+
 		return nil
 	}
 
