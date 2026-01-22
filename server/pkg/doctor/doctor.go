@@ -43,6 +43,10 @@ type CheckResult struct {
 	Status      Status
 	Message     string
 	Error       error
+	// Fix is an optional function that can be called to attempt to fix the issue.
+	Fix func() error
+	// FixName is a human-readable description of what the fix does.
+	FixName string
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
@@ -469,11 +473,20 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 func checkFilesystemService(_ context.Context, s *configv1.FilesystemUpstreamService) CheckResult {
 	for vPath, hostPath := range s.GetRootPaths() {
 		if err := validation.FileExists(hostPath); err != nil {
-			return CheckResult{
+			res := CheckResult{
 				Status:  StatusError,
 				Message: fmt.Sprintf("Root path %q -> %q not found or inaccessible: %v", vPath, hostPath, err),
 				Error:   err,
 			}
+			// If the error is that the file/directory does not exist, we can offer to create it.
+			if os.IsNotExist(err) {
+				res.FixName = fmt.Sprintf("Create missing directory: %s", hostPath)
+				res.Fix = func() error {
+					// 0750 is safer (no public access)
+					return os.MkdirAll(hostPath, 0750)
+				}
+			}
+			return res
 		}
 	}
 	return CheckResult{

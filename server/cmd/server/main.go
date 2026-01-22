@@ -380,11 +380,24 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			doctor.PrintResults(cmd.OutOrStdout(), results)
 
+			autoFix, _ := cmd.Flags().GetBool("fix")
 			hasErrors := false
+
 			for _, res := range results {
-				if res.Status == doctor.StatusError {
+				if autoFix && res.Fix != nil && (res.Status == doctor.StatusError || res.Status == doctor.StatusWarning) {
+					fmt.Printf("🔧 Attempting fix for %s: %s...\n", res.ServiceName, res.FixName)
+					if err := res.Fix(); err != nil {
+						fmt.Printf("❌ Fix failed: %v\n", err)
+						if res.Status == doctor.StatusError {
+							hasErrors = true
+						}
+					} else {
+						fmt.Printf("✅ Fix applied successfully!\n")
+						// If successfully fixed, we don't count it as an error for the final status
+						continue
+					}
+				} else if res.Status == doctor.StatusError {
 					hasErrors = true
-					break
 				}
 			}
 
@@ -395,6 +408,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			return nil
 		},
 	}
+	doctorCmd.Flags().Bool("fix", false, "Automatically fix issues if possible")
 	rootCmd.AddCommand(doctorCmd)
 
 	configCmd := &cobra.Command{

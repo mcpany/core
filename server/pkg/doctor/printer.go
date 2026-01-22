@@ -34,7 +34,11 @@ func PrintResults(w io.Writer, results []CheckResult) {
 			icon = "?"
 		}
 
-		_, _ = fmt.Fprintf(tw, "%s\t[%s]\t%s\t: %s\n", icon, res.Status, res.ServiceName, res.Message)
+		fixMsg := ""
+		if res.Fix != nil {
+			fixMsg = fmt.Sprintf(" (🔧 Fix available: %s)", res.FixName)
+		}
+		_, _ = fmt.Fprintf(tw, "%s\t[%s]\t%s\t: %s%s\n", icon, res.Status, res.ServiceName, res.Message, fixMsg)
 	}
 	_ = tw.Flush()
 }
