@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Interactive Service Diagnostics**
+  - **Description**: Added a "Diagnose" feature in the UI that runs deep connectivity and configuration checks (using the `doctor` package) on a specific service and reports detailed status, latencies, and errors to the user.
 - **Config Schema Validation with Line Numbers**
   - **Description**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.
 - **Pre-flight Command Validation**
@@ -106,7 +108,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 69 | **Secure Defaults Enforcer** | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard. | Medium |
 | 70 | **Interactive Doctor Fixer** | **DevX**: Extend the doctor command to automatically fix common configuration issues (e.g. creating missing files, updating schema versions). | High |
 | 71 | **Config Validation Webhook** | **Ops**: A pre-commit or CI webhook that runs `mcpany config validate` on changed files to prevent bad config from being merged. | Medium |
-| 72 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
+| 70 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
 
 | 70 | **User Preference Storage** | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database. | Low |
 | 71 | **Top Tools API Extensions** | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available. | Medium |
@@ -126,6 +128,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 76 | **Auto-Discovery Status API** | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing. | Low |
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **Diagnostic History Persistence** | **Observability**: Store the history of diagnostic runs (from the new "Diagnose" feature) in the database to allow tracking service stability over time. | Low |
+| 81 | **Automated Scheduled Diagnostics** | **Resilience**: Allow users to schedule "deep" diagnostic checks (HTTP probes, auth checks) periodically for critical services, alerting on failure. | Medium |
 | 80 | **Intelligent Rate Limiting** | **Resilience**: Rate limiting based on token usage, not just request count, to better manage LLM costs and load. | High |
 | 81 | **Response Caching with TTL Overrides** | **Performance**: Allow specific tools to override global cache TTL in their response (via headers or side-channel) for dynamic data freshness. | Medium |
 

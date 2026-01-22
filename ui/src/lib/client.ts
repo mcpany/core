@@ -122,6 +122,16 @@ export interface CheckResult {
 }
 
 /**
+ * Result of a service diagnostic check.
+ */
+export interface ServiceDiagnosticResult {
+    service_name: string;
+    status: string;
+    message: string;
+    error?: any;
+}
+
+/**
  * Full doctor report containing system health status.
  */
 export interface DoctorReport {
@@ -1014,5 +1024,16 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/doctor');
         if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
+    },
+
+    /**
+     * Diagnoses a service by running a health check.
+     * @param name The name of the service.
+     * @returns A promise that resolves to the diagnostic result.
+     */
+    diagnoseService: async (name: string): Promise<ServiceDiagnosticResult> => {
+        const response = await fetchWithAuth(`/api/v1/services/${name}/diagnose`);
+        if (!response.ok) throw new Error('Failed to diagnose service');
+        return response.json();
     }
 };
