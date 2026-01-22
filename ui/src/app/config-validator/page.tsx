@@ -12,6 +12,11 @@ import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 
+/**
+ * ConfigValidatorPage allows users to validate their YAML or JSON configuration
+ * against the server schema using an interactive editor.
+ * @returns The Config Validator page component.
+ */
 export default function ConfigValidatorPage() {
   const [content, setContent] = useState("");
   const [isValidating, setIsValidating] = useState(false);

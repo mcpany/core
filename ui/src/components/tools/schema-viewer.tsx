@@ -11,6 +11,9 @@ import { ChevronRight, ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+/**
+ * Schema represents a JSON Schema object used for defining tool input parameters.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;

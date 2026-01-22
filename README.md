@@ -295,6 +295,10 @@ We strive for high code quality. Please ensure the following before submitting a
     ```bash
     python3 server/tools/fix_ts_docs.py
     ```
+  - You can verify TypeScript documentation coverage with:
+    ```bash
+    python3 server/tools/check_ts_doc.py
+    ```
 - **Testing**: Add unit tests for new functionality. Run all tests with:
   ```bash
   make test
