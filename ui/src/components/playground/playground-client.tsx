@@ -46,6 +46,7 @@ interface Message {
   toolName?: string;
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
+  duration?: number;
   timestamp: Date;
 }
 
@@ -196,16 +197,20 @@ export function PlaygroundClient() {
       }]);
 
       try {
+          const startTime = performance.now();
           const result = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
           });
+          const endTime = performance.now();
+          const duration = Math.round(endTime - startTime);
 
           setMessages(prev => [...prev, {
               id: Date.now().toString() + "-result",
               type: "tool-result",
               toolName: toolName,
               toolResult: result,
+              duration: duration,
               timestamp: new Date(),
           }]);
 
@@ -421,6 +426,11 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <Sparkles className="size-3 text-green-500" />
                             <span className="font-medium">Result ({message.toolName})</span>
+                            {message.duration !== undefined && (
+                                <Badge variant="outline" className="ml-2 text-[10px] h-5 px-1.5 font-mono text-muted-foreground bg-background/50">
+                                    {message.duration}ms
+                                </Badge>
+                            )}
                         </div>
                         <CollapsibleTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
