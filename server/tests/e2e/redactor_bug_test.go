@@ -55,3 +55,24 @@ func TestRedactor_Bug_PlainText(t *testing.T) {
 	// Should verify it is NOT redacted
 	assert.Equal(t, input, string(redacted))
 }
+
+func TestRedactor_Bug_StringInComment_CorruptsStructure(t *testing.T) {
+	// PII in a comment, but the comment contains an unclosed quote from the walker's perspective.
+	// Walker sees: "user@example.com */ "
+	// It replaces it with "***REDACTED***"
+	// Result: {"key": /* "***REDACTED***"value"}
+	// The comment closer */ is eaten.
+	input := `{"key": /* "user@example.com */ "value"}`
+
+	cfg := &configv1.DLPConfig{
+		Enabled: proto.Bool(true),
+	}
+
+	r := middleware.NewRedactor(cfg, nil)
+
+	redacted, err := r.RedactJSON([]byte(input))
+	assert.NoError(t, err)
+
+	expected := input
+	assert.Equal(t, expected, string(redacted))
+}
