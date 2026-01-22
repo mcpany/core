@@ -283,7 +283,8 @@ func TestUpstream_Register(t *testing.T) {
 		config.SetName("test-service-with-setup")
 		mcpService := &configv1.McpUpstreamService{}
 		stdioConnection := &configv1.McpStdioConnection{}
-		stdioConnection.SetCommand("main_command")
+		// We use "echo" which is likely to exist.
+		stdioConnection.SetCommand("echo")
 		stdioConnection.SetSetupCommands([]string{"setup1", "setup2"})
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
@@ -296,7 +297,7 @@ func TestUpstream_Register(t *testing.T) {
 		cmdTransport, ok := capturedTransport.(*StdioTransport)
 		require.True(t, ok, "transport should be StdioTransport")
 		assert.Equal(t, "/bin/sh", cmdTransport.Command.Path)
-		assert.Equal(t, []string{"/bin/sh", "-c", "setup1 && setup2 && exec main_command"}, cmdTransport.Command.Args)
+		assert.Equal(t, []string{"/bin/sh", "-c", "setup1 && setup2 && exec echo"}, cmdTransport.Command.Args)
 	})
 
 	t.Run("successful registration with user-specified container image", func(t *testing.T) {
@@ -632,13 +633,13 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "true")
 
 		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("my-app")
+		stdio.SetCommand("echo")
 		stdio.SetArgs([]string{"--verbose"})
 		stdio.SetSetupCommands([]string{"cd /tmp", "export FOO=bar"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.NoError(t, err)
 		assert.Equal(t, "/bin/sh", cmd.Path)
-		assert.Equal(t, []string{"/bin/sh", "-c", "cd /tmp && export FOO=bar && exec my-app --verbose"}, cmd.Args)
+		assert.Equal(t, []string{"/bin/sh", "-c", "cd /tmp && export FOO=bar && exec echo --verbose"}, cmd.Args)
 	})
 
 	t.Run("with setup commands disabled", func(t *testing.T) {
@@ -646,7 +647,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "")
 
 		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("my-app")
+		stdio.SetCommand("echo")
 		stdio.SetSetupCommands([]string{"cd /tmp"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
 		assert.Error(t, err)
