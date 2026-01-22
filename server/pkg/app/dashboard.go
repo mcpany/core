@@ -31,12 +31,24 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 		var totalRequests int64
 		var avgLatency time.Duration
 		var errorRate float64
+		var throughput float64
 
 		if a.TopologyManager != nil {
 			stats := a.TopologyManager.GetStats()
 			totalRequests = stats.TotalRequests
 			avgLatency = stats.AvgLatency
 			errorRate = stats.ErrorRate
+
+			// Calculate throughput from history (last 60m)
+			history := a.TopologyManager.GetTrafficHistory()
+			var totalInWindow int64
+			for _, p := range history {
+				totalInWindow += p.Total
+			}
+			if len(history) > 0 {
+				// history is minutes. len(history) * 60 seconds
+				throughput = float64(totalInWindow) / (float64(len(history)) * 60.0)
+			}
 		}
 
 		var serviceCount int
@@ -68,6 +80,14 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 				Trend:    "neutral",
 				Icon:     "Activity",
 				SubLabel: "Since startup",
+			},
+			{
+				Label:    "Avg Throughput",
+				Value:    fmt.Sprintf("%.2f rps", throughput),
+				Change:   "--",
+				Trend:    "neutral",
+				Icon:     "Activity",
+				SubLabel: "Last 60m",
 			},
 			{
 				Label:    "Active Services",
