@@ -199,7 +199,10 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		return 1, true, nil
 	case float64:
 		// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-		if i := int64(val); float64(i) == val {
+		// Only apply this optimization for values where the integer representation
+		// produces the same token count as the string representation (no scientific notation).
+		// Typically |val| < 1000000 avoids scientific notation in default formatting.
+		if i := int64(val); float64(i) == val && i > -1000000 && i < 1000000 {
 			return simpleTokenizeInt64(i), true, nil
 		}
 		// OPTIMIZATION: Use stack buffer to avoid string allocation.
@@ -239,7 +242,8 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		var buf [64]byte
 		for _, item := range val {
 			// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-			if i := int64(item); float64(i) == item {
+			// Same range restriction as for scalar float64.
+			if i := int64(item); float64(i) == item && i > -1000000 && i < 1000000 {
 				count += simpleTokenizeInt64(i)
 				continue
 			}
@@ -361,7 +365,7 @@ func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr
 	case nil:
 		return t.CountTokens("null")
 	default:
-		return countTokensReflect(t, val, visited, nil)
+		return countTokensReflect(t, val, visited)
 	}
 }
 
@@ -541,7 +545,7 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 }
 
 // countTokensReflect is the fallback for non-recursiveTokenizer implementations.
-func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool, _ func(interface{}, map[uintptr]bool) (int, error)) (int, error) {
+func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Check for fmt.Stringer first to respect custom formatting
 	if s, ok := v.(fmt.Stringer); ok {
 		return t.CountTokens(s.String())
@@ -637,23 +641,20 @@ func simpleTokenizeInt(n int) int {
 		return 1
 	}
 
+	// n cannot be 0 here because it's handled by the fast path.
 	l := 0
-	if n == 0 {
-		l = 1
-	} else {
-		if n < 0 {
-			l = 1 // count the sign
-			// Handle MinInt special case where -n overflows
-			// For int64 (usually int is int64), MinInt is -9223372036854775808
-			// which has 19 digits.
-			// We can just divide by 10 once to make it safe to negate,
-			// or process negative numbers.
-		}
+	if n < 0 {
+		l = 1 // count the sign
+		// Handle MinInt special case where -n overflows
+		// For int64 (usually int is int64), MinInt is -9223372036854775808
+		// which has 19 digits.
+		// We can just divide by 10 once to make it safe to negate,
+		// or process negative numbers.
+	}
 
-		for n != 0 {
-			l++
-			n /= 10
-		}
+	for n != 0 {
+		l++
+		n /= 10
 	}
 
 	count := l / 4
@@ -731,18 +732,15 @@ func simpleTokenizeInt64(n int64) int {
 		return 1
 	}
 
+	// n cannot be 0 here because it's handled by the fast path.
 	l := 0
-	if n == 0 {
-		l = 1
-	} else {
-		if n < 0 {
-			l = 1 // count the sign
-		}
+	if n < 0 {
+		l = 1 // count the sign
+	}
 
-		for n != 0 {
-			l++
-			n /= 10
-		}
+	for n != 0 {
+		l++
+		n /= 10
 	}
 
 	count := l / 4
