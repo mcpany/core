@@ -49,7 +49,7 @@ func setupHTTPTool(t *testing.T, handler http.Handler, callDef *configv1.HttpCal
 	poolManager := pool.NewManager()
 	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	poolManager.Register("s", p)
 
 	method := "GET " + server.URL
@@ -363,7 +363,7 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
     poolManager := pool.NewManager()
 	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	poolManager.Register("s", p)
 
 	method := "POST " + server.URL

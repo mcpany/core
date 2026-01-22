@@ -102,7 +102,7 @@ func NewWebrtcTool(
 		p, found := pool.Get[*peerConnectionWrapper](poolManager, serviceID)
 		if !found {
 			var err error
-			p, err = pool.New(t.newPeerConnection, 5, 5, 20, 1*time.Minute, false)
+			p, err = pool.New(t.newPeerConnection, 5, 20, 1*time.Minute, false)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create webrtc pool: %w", err)
 			}

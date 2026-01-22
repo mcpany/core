@@ -32,8 +32,7 @@ func TestPoolGet_BusyLoop(t *testing.T) {
 	}
 
 	// Create a pool with 1 connection, disableHealthCheck=FALSE
-	// initial=1, maxIdle=1, maxActive=1
-	p, err := New[*mockUnhealthyClient](factory, 1, 1, 1, 0, false)
+	p, err := New[*mockUnhealthyClient](factory, 1, 1, 0, false)
 	require.NoError(t, err)
 	defer p.Close()
 

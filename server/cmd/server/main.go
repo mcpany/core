@@ -243,16 +243,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				}
 			}
 
-			if err := appRunner.Run(app.RunOptions{
-				Ctx:             ctx,
-				Fs:              osFs,
-				Stdio:           stdio,
-				JSONRPCPort:     bindAddress,
-				GRPCPort:        grpcPort,
-				ConfigPaths:     configPaths,
-				APIKey:          cfg.APIKey(),
-				ShutdownTimeout: shutdownTimeout,
-			}); err != nil {
+			if err := appRunner.Run(ctx, osFs, stdio, bindAddress, grpcPort, configPaths, cfg.APIKey(), shutdownTimeout); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
 			}

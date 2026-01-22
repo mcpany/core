@@ -16,7 +16,7 @@ test.describe('Tool Exploration', () => {
                             name: 'weather-tool',
                             description: 'Get weather for a location',
                             source: 'configured',
-                            serviceId: 'weather-service',
+                            serviceName: 'weather-service',
                             inputSchema: {
                                 type: 'object',
                                 properties: {
@@ -28,7 +28,7 @@ test.describe('Tool Exploration', () => {
                             name: 'calculator',
                             description: 'Perform basic math',
                             source: 'discovered',
-                            serviceId: 'math-service'
+                            serviceName: 'math-service'
                         }
                     ]
                 }
@@ -62,9 +62,10 @@ test.describe('Tool Exploration', () => {
         // Inspection relies on schema being present in the tool definition
         // The mock in beforeEach includes a basic definition
         const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
-        await toolRow.getByText('Inspect').click();
+        await toolRow.getByRole('button', { name: 'Inspect' }).click();
 
-        await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('weather-tool').first()).toBeVisible();
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await expect(page.getByText('Schema', { exact: true })).toBeVisible();
+        await expect(page.getByRole('dialog').getByText('weather-tool')).toBeVisible();
     });
 });

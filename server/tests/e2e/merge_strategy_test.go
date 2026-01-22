@@ -166,17 +166,7 @@ upstream_services:
 	grpcPort := "" // Disable gRPC for this test
 
 	go func() {
-		opts := app.RunOptions{
-			Ctx:             ctx,
-			Fs:              fs,
-			Stdio:           false,
-			JSONRPCPort:     jsonrpcPort,
-			GRPCPort:        grpcPort,
-			ConfigPaths:     []string{configPath},
-			APIKey:          "",
-			ShutdownTimeout: 5 * time.Second,
-		}
-		if err := runner.Run(opts); err != nil {
+		if err := runner.Run(ctx, fs, false, jsonrpcPort, grpcPort, []string{configPath}, "", 5*time.Second); err != nil {
 			// It might return error on cancel, which is expected
 			if ctx.Err() == nil {
 				t.Logf("Server failed: %v", err)

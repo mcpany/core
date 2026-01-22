@@ -65,7 +65,7 @@ func TestWebsocketTool_Execute_Success(t *testing.T) {
 		return &client.WebsocketClientWrapper{Conn: c}, nil
 	}
 
-	p, err := pool.New(factory, 1, 1, 1, 0, false)
+	p, err := pool.New(factory, 1, 1, 0, false)
 	require.NoError(t, err)
 	defer func() {
 		if err := p.Close(); err != nil {
@@ -114,7 +114,7 @@ func TestWebsocketTool_Execute_PoolGetError(t *testing.T) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		return nil, fmt.Errorf("factory failed")
 	}
-	p, err := pool.New(factory, 0, 0, 1, 0, true) // 0 min size, disable health check? Or just empty.
+	p, err := pool.New(factory, 0, 1, 0, true) // 0 min size, disable health check? Or just empty.
 	require.NoError(t, err)
 
 	pm := pool.NewManager()
@@ -154,7 +154,7 @@ func TestWebsocketTool_Execute_WriteError(t *testing.T) {
 		}
 		return &client.WebsocketClientWrapper{Conn: c}, err
 	}
-	p, err := pool.New(factory, 1, 1, 1, 0, true)
+	p, err := pool.New(factory, 1, 1, 0, true)
 	require.NoError(t, err)
 	defer func() {
 		_ = p.Close()
@@ -198,7 +198,7 @@ func TestWebsocketTool_Execute_Transformer(t *testing.T) {
 		}
 		return &client.WebsocketClientWrapper{Conn: c}, err
 	}
-	p, _ := pool.New(factory, 1, 1, 1, 0, false)
+	p, _ := pool.New(factory, 1, 1, 0, false)
 	defer func() {
 		_ = p.Close()
 	}()
@@ -257,7 +257,7 @@ func TestWebsocketTool_Execute_MalformedInputs(t *testing.T) {
 		}
 		return &client.WebsocketClientWrapper{Conn: c}, err
 	}
-	p, _ := pool.New(factory, 1, 1, 1, 0, false)
+	p, _ := pool.New(factory, 1, 1, 0, false)
 	pm.Register("s5", p)
 
 	wt.serviceID = "s5"
@@ -277,7 +277,7 @@ func TestWebsocketTool_Execute_TemplateError(t *testing.T) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		return &client.WebsocketClientWrapper{}, nil
 	}
-	p, _ := pool.New(factory, 0, 0, 1, 0, true)
+	p, _ := pool.New(factory, 0, 1, 0, true)
 	pm.Register("s", p)
 
 	callDef := &configv1.WebsocketCallDefinition{

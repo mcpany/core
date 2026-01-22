@@ -19,8 +19,7 @@ func TestNew_DisableHealthCheck_FactoryError_Coverage(t *testing.T) {
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return nil, errors.New("factory failure")
 	}
-	// Initial=1
-	_, err := New(factory, 1, 1, 5, 0, true)
+	_, err := New(factory, 1, 5, 0, true)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "factory failed to create initial client")
 }
@@ -29,17 +28,16 @@ func TestNew_DisableHealthCheck_NilClient_Coverage(t *testing.T) {
 	factory := func(ctx context.Context) (*mockClient, error) {
 		return nil, nil // Return nil client without error
 	}
-	// Initial=1
-	_, err := New(factory, 1, 1, 5, 0, true)
+	_, err := New(factory, 1, 5, 0, true)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "factory returned nil client")
 }
 
 
 func TestGet_RetryItem_Coverage_Correct(t *testing.T) {
-	// Create a pool with larger capacity.
-	p := newEmptyBufferedPool(t, newMockClientFactory(true), 2, 2)
-	require.NotNil(t, p)
+	// Create a pool with larger capacity
+	p, err := New(newMockClientFactory(true), 0, 2, 0, false)
+	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
 
 	pool := p.(*poolImpl[*mockClient])
@@ -59,19 +57,15 @@ func TestGet_RetryItem_Coverage_Correct(t *testing.T) {
 
 func TestGet_Unhealthy_InFirstLoop_Coverage(t *testing.T) {
 	// Need capacity >= 2 to hold both unhealthy and healthy without blocking
-	p := newEmptyBufferedPool(t, newMockClientFactory(true), 2, 2)
-	require.NotNil(t, p)
+	p, err := New(newMockClientFactory(true), 0, 2, 0, false)
+	require.NoError(t, err)
 	defer func() { _ = p.Close() }()
 
 	pool := p.(*poolImpl[*mockClient])
-
 	unhealthy := &mockClient{isHealthy: false}
 	expected := &mockClient{isHealthy: true}
 
 	// Manually acquire permits for the injected items because Get/Release logic expects permits to be held for items in channel
-	// activeCount=0 initially (newEmptyBufferedPool).
-	// We inject 2 items. We need 2 permits.
-	// tryAcquire(2) should succeed (0+2 <= 2).
 	require.True(t, pool.tryAcquire(2))
 
 	// Inject unhealthy client
@@ -90,8 +84,7 @@ func TestGet_Unhealthy_InFirstLoop_Coverage(t *testing.T) {
 
 func TestGet_Race_ClosedAfterAcquire_Coverage(t *testing.T) {
 	// This attempts to hit the path where TryAcquire succeeds but then we find the pool closed
-	// unbuffered (maxIdle=0)
-	p, err := New(newMockClientFactory(true), 0, 0, 1, 0, false)
+	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
 
 	factory := func(ctx context.Context) (*mockClient, error) {
@@ -133,8 +126,7 @@ func (m *mockPoolWithCloseErr) Len() int {
 }
 
 func TestPut_Closed_DoubleCheck_Coverage(t *testing.T) {
-	// Pre-fill 1
-	p, err := New(newMockClientFactory(true), 1, 1, 1, 0, false)
+	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
 
 	// Create a healthy client
@@ -152,7 +144,7 @@ func TestPut_Closed_DoubleCheck_Coverage(t *testing.T) {
 }
 
 func TestClose_AlreadyClosed_Coverage(t *testing.T) {
-	p, err := New(newMockClientFactory(true), 0, 0, 1, 0, false)
+	p, err := New(newMockClientFactory(true), 0, 1, 0, false)
 	require.NoError(t, err)
 	err = p.Close()
 	require.NoError(t, err)
@@ -163,20 +155,23 @@ func TestClose_AlreadyClosed_Coverage(t *testing.T) {
 
 func TestGet_Wait_Retry_Coverage(t *testing.T) {
     // This targets the second select statement where we wait for a client.
-    // maxIdle=1. Buffered.
-	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
-    require.NotNil(t, p)
+    // We need:
+    // 1. Pool is full (no permits left).
+    // 2. We call Get (blocks).
+    // 3. We insert a 'retry' item into channel.
+    // 4. Get should wake up, see retry, and continue waiting.
+    // 5. Then we insert a real item.
+
+    p, err := New(newMockClientFactory(true), 1, 1, 0, false)
+    require.NoError(t, err)
     defer func() { _ = p.Close() }()
 
     // Pool has 1 item and size 1.
-    // Get the item to exhaust pool? No, it's empty but buffered.
-    // activeCount=0.
-    // Get(c1) -> tryAcquire(1) -> Success. active=1.
-
+    // Get the item to exhaust pool.
     c1, err := p.Get(context.Background())
     require.NoError(t, err)
 
-    // Now pool is empty and all permits taken (active=1, max=1).
+    // Now pool is empty and all permits taken.
     // Next Get will block on second select.
 
     done := make(chan struct{})
@@ -191,7 +186,7 @@ func TestGet_Wait_Retry_Coverage(t *testing.T) {
     time.Sleep(10 * time.Millisecond)
 
     // Inject retry item.
-    // Channel size is 1.
+    // But channel is size 1.
     p.(*poolImpl[*mockClient]).clients <- poolItem[*mockClient]{retry: true}
 
     // The Get loop should consume this retry item and continue loop.
@@ -211,9 +206,17 @@ func TestGet_Wait_Retry_Coverage(t *testing.T) {
 }
 
 func TestGet_Wait_Unhealthy_Coverage(t *testing.T) {
-    // maxIdle=1. Buffered.
-	p := newEmptyBufferedPool(t, newMockClientFactory(true), 1, 1)
-    require.NotNil(t, p)
+    // Similar to above but with unhealthy item.
+    // 1. Exhaust pool.
+    // 2. Get blocks.
+    // 3. Put unhealthy item.
+    // 4. Get wakes up, sees unhealthy, closes it, releases permit.
+    // 5. Loops back.
+    // 6. TryAcquire succeeds (permit released).
+    // 7. Creates new client.
+
+    p, err := New(newMockClientFactory(true), 1, 1, 0, false)
+    require.NoError(t, err)
     defer func() { _ = p.Close() }()
 
     c1, err := p.Get(context.Background())
