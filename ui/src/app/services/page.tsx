@@ -34,6 +34,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
+import { TemplateConfigForm } from "@/components/services/template-config-form";
+import { applyTemplateFields } from "@/lib/template-utils";
+
 
 /**
  * ServicesPage component.
@@ -42,6 +45,7 @@ import { Download } from "lucide-react";
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
+  const [configuringTemplate, setConfiguringTemplate] = useState<ServiceTemplate | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -188,12 +192,13 @@ export default function ServicesPage() {
 
   const openNew = () => {
       setSelectedService(null);
+      setConfiguringTemplate(null);
       setIsSheetOpen(true);
   };
 
-  const handleTemplateSelect = (template: ServiceTemplate) => {
+  const initServiceFromConfig = (config: Partial<UpstreamServiceConfig>) => {
       // Deep copy config to avoid mutating template
-      const newService = JSON.parse(JSON.stringify(template.config));
+      const newService = JSON.parse(JSON.stringify(config));
       // Ensure defaults
       newService.version = newService.version || "1.0.0";
       newService.priority = newService.priority || 0;
@@ -201,7 +206,26 @@ export default function ServicesPage() {
       // Ensure ID is empty to mark as new
       newService.id = "";
 
+      return newService;
+  }
+
+  const handleTemplateSelect = (template: ServiceTemplate) => {
+      if (template.fields && template.fields.length > 0) {
+          setConfiguringTemplate(template);
+      } else {
+          const newService = initServiceFromConfig(template.config);
+          setSelectedService(newService);
+      }
+  };
+
+  const handleTemplateConfigSubmit = (values: Record<string, string>) => {
+      if (!configuringTemplate) return;
+
+      const configuredConfig = applyTemplateFields(configuringTemplate, values);
+      const newService = initServiceFromConfig(configuredConfig);
+
       setSelectedService(newService);
+      setConfiguringTemplate(null); // Clear the configuration step
   };
 
   const handleDuplicate = useCallback((service: UpstreamServiceConfig) => {
@@ -303,11 +327,11 @@ export default function ServicesPage() {
       try {
           if (selectedService.id) {
                // Update
-               await apiClient.updateService(selectedService as any);
+               await apiClient.updateService(selectedService);
                toast({ title: "Service Updated", description: "Service configuration saved." });
           } else {
               // Create
-              await apiClient.registerService(selectedService as any);
+              await apiClient.registerService(selectedService);
               toast({ title: "Service Created", description: "New service registered successfully." });
           }
           setIsSheetOpen(false);
@@ -321,6 +345,58 @@ export default function ServicesPage() {
           });
       }
   };
+
+  const renderSheetContent = () => {
+      if (selectedService) {
+          return (
+            <div className="h-[calc(100vh-140px)]">
+                <ServiceEditor
+                    service={selectedService}
+                    onChange={setSelectedService}
+                    onSave={handleSave}
+                    onCancel={() => {
+                        if (!selectedService.id) {
+                            setSelectedService(null);
+                        } else {
+                            setIsSheetOpen(false);
+                        }
+                    }}
+                />
+            </div>
+          );
+      }
+
+      if (configuringTemplate) {
+          return (
+              <div className="h-[calc(100vh-140px)] overflow-y-auto">
+                  <TemplateConfigForm
+                      template={configuringTemplate}
+                      onCancel={() => setConfiguringTemplate(null)}
+                      onSubmit={handleTemplateConfigSubmit}
+                  />
+              </div>
+          );
+      }
+
+      return (
+        <div className="h-[calc(100vh-140px)] overflow-y-auto">
+           <ServiceTemplateSelector onSelect={handleTemplateSelect} />
+        </div>
+      );
+  };
+
+  const getSheetTitle = () => {
+      if (selectedService?.id) return "Edit Service";
+      if (selectedService) return "New Service"; // After template selection/config
+      if (configuringTemplate) return `Configure ${configuringTemplate.name}`;
+      return "New Service"; // Template selection
+  };
+
+  const getSheetDescription = () => {
+      if (selectedService) return "Configure your upstream service details.";
+      if (configuringTemplate) return "Enter the required information to set up this service.";
+      return "Choose a template to start quickly.";
+  }
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -379,37 +455,21 @@ export default function ServicesPage() {
         <SheetContent className="sm:max-w-2xl w-full">
             <SheetHeader className="mb-4">
                 <div className="flex items-center gap-2">
-                     {selectedService && !selectedService.id && (
-                         <Button variant="ghost" size="icon" className="-ml-2 h-8 w-8" onClick={() => setSelectedService(null)}>
+                     {(selectedService && !selectedService.id) || configuringTemplate ? (
+                         <Button variant="ghost" size="icon" className="-ml-2 h-8 w-8" onClick={() => {
+                             if (selectedService) setSelectedService(null);
+                             if (configuringTemplate) setConfiguringTemplate(null);
+                         }}>
                              <ChevronLeft className="h-4 w-4" />
                          </Button>
-                     )}
-                     <SheetTitle>{selectedService?.id ? "Edit Service" : "New Service"}</SheetTitle>
+                     ) : null}
+                     <SheetTitle>{getSheetTitle()}</SheetTitle>
                 </div>
                 <SheetDescription>
-                    {selectedService ? "Configure your upstream service details." : "Choose a template to start quickly."}
+                    {getSheetDescription()}
                 </SheetDescription>
             </SheetHeader>
-            {!selectedService ? (
-                 <div className="h-[calc(100vh-140px)] overflow-y-auto">
-                    <ServiceTemplateSelector onSelect={handleTemplateSelect} />
-                 </div>
-            ) : (
-                <div className="h-[calc(100vh-140px)]">
-                    <ServiceEditor
-                        service={selectedService}
-                        onChange={setSelectedService}
-                        onSave={handleSave}
-                        onCancel={() => {
-                            if (!selectedService.id) {
-                                setSelectedService(null);
-                            } else {
-                                setIsSheetOpen(false);
-                            }
-                        }}
-                    />
-                </div>
-            )}
+            {renderSheetContent()}
         </SheetContent>
       </Sheet>
     </div>

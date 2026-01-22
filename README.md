@@ -59,7 +59,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Advanced Service & Safety Policies**:
   - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
   - **Performance**: Configure [Caching](server/docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
-  - **Semantic Caching**: Intelligent caching using vector embeddings to serve similar requests from cache. Now supports **SQLite persistence** to survive restarts.
+  - **Semantic Caching**: Intelligent caching using vector embeddings to serve similar requests from cache. Supports **SQLite persistence** to survive restarts.
   - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
 - **Network Topology Visualization**: Visualizes your entire MCP ecosystem (Clients, Core, Services, Tools, API Calls) in a 5-level hierarchical interactive graph with real-time QPS and Latency metrics.
   ![Network Topology](ui/docs/screenshots/network.png)
