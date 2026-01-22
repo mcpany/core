@@ -111,3 +111,60 @@ func TestStaticResource(t *testing.T) {
 		assert.Contains(t, err.Error(), "failed to create request")
 	})
 }
+
+func TestStaticResource_InlineContent(t *testing.T) {
+	t.Run("TextContent", func(t *testing.T) {
+		textContent := "Hello, Inline World!"
+		uri := "internal://hello"
+
+		def := &configv1.ResourceDefinition{
+			Uri:      &uri,
+			Name:     strPtr("Inline Resource"),
+			MimeType: strPtr("text/plain"),
+			ResourceType: &configv1.ResourceDefinition_Static{
+				Static: &configv1.StaticResource{
+					ContentType: &configv1.StaticResource_TextContent{
+						TextContent: textContent,
+					},
+				},
+			},
+		}
+
+		r := NewStaticResource(def, "test-service")
+
+		res, err := r.Read(context.Background())
+
+		require.NoError(t, err, "Read should not return error for inline content")
+		require.NotNil(t, res)
+		require.Len(t, res.Contents, 1)
+		assert.Equal(t, textContent, string(res.Contents[0].Blob))
+		assert.Equal(t, "text/plain", res.Contents[0].MIMEType)
+	})
+
+	t.Run("BinaryContent", func(t *testing.T) {
+		binaryContent := []byte{0xDE, 0xAD, 0xBE, 0xEF}
+		uri := "internal://binary"
+
+		def := &configv1.ResourceDefinition{
+			Uri:      &uri,
+			Name:     strPtr("Binary Resource"),
+			MimeType: strPtr("application/octet-stream"),
+			ResourceType: &configv1.ResourceDefinition_Static{
+				Static: &configv1.StaticResource{
+					ContentType: &configv1.StaticResource_BinaryContent{
+						BinaryContent: binaryContent,
+					},
+				},
+			},
+		}
+
+		r := NewStaticResource(def, "test-service")
+
+		res, err := r.Read(context.Background())
+
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.Len(t, res.Contents, 1)
+		assert.Equal(t, binaryContent, res.Contents[0].Blob)
+	})
+}
