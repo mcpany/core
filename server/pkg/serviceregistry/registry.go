@@ -62,6 +62,12 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns the result.
 	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
+	// GetServiceHealth returns the health status, latency, and last check time for a service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the error string (if any), latency, last check time, and true if the service exists/has data.
+	GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -75,6 +81,8 @@ type ServiceRegistry struct {
 	serviceInfo     map[string]*tool.ServiceInfo
 	serviceErrors   map[string]string
 	healthErrors    map[string]string
+	healthLatency   map[string]time.Duration
+	healthLastCheck map[string]time.Time
 	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
 	toolManager     tool.ManagerInterface
@@ -100,6 +108,8 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		serviceErrors:   make(map[string]string),
 		healthErrors:    make(map[string]string),
+		healthLatency:   make(map[string]time.Duration),
+		healthLastCheck: make(map[string]time.Time),
 		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
 		toolManager:     toolManager,
@@ -309,6 +319,9 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	delete(r.serviceConfigs, serviceID)
 	delete(r.serviceInfo, serviceID)
 	delete(r.serviceErrors, serviceID)
+	delete(r.healthErrors, serviceID)
+	delete(r.healthLatency, serviceID)
+	delete(r.healthLastCheck, serviceID)
 	r.toolManager.ClearToolsForService(serviceID)
 	r.promptManager.ClearPromptsForService(serviceID)
 	r.resourceManager.ClearResourcesForService(serviceID)
@@ -362,16 +375,21 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 
 	for id, u := range targets {
 		var errStr string
+		var latency time.Duration
 		if checker, ok := u.(upstream.HealthChecker); ok {
 			// Use a short timeout for health checks
 			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			start := time.Now()
 			if err := checker.CheckHealth(checkCtx); err != nil {
 				errStr = err.Error()
 			}
+			latency = time.Since(start)
 			cancel()
 		}
 
 		r.mu.Lock()
+		r.healthLatency[id] = latency
+		r.healthLastCheck[id] = time.Now()
 		if errStr != "" {
 			r.healthErrors[id] = errStr
 		} else {
@@ -379,6 +397,27 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 		}
 		r.mu.Unlock()
 	}
+}
+
+// GetServiceHealth returns the health status, latency, and last check time for a service.
+//
+// serviceID is the serviceID.
+//
+// Returns the error string (if any), latency, last check time, and true if the service exists/has data.
+func (r *ServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	if _, ok := r.serviceConfigs[serviceID]; !ok {
+		return "", 0, time.Time{}, false
+	}
+
+	errStr := r.healthErrors[serviceID]
+	latency := r.healthLatency[serviceID]
+	lastCheck := r.healthLastCheck[serviceID]
+
+	// If we have an explicit error, return it.
+	// If we don't have an error, but we haven't checked yet (zero time), it's "Unknown" (empty error is fine, but caller handles zero time)
+	return errStr, latency, lastCheck, true
 }
 
 // Close gracefully shuts down all registered services.

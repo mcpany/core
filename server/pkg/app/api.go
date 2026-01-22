@@ -191,15 +191,23 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 		// This is a trade-off for not modifying the proto definition for a transient status.
 		var jsonMap map[string]any
 		if err := json.Unmarshal(b, &jsonMap); err == nil && a.ServiceRegistry != nil {
-			if svcID := svc.GetId(); svcID != "" {
-				if errMsg, ok := a.ServiceRegistry.GetServiceError(svcID); ok {
-					jsonMap["last_error"] = errMsg
-				}
+			svcID := svc.GetId()
+			// Fallback to sanitized name if ID is empty
+			if svcID == "" {
+				svcID = svc.GetSanitizedName()
 			}
-			// Also check sanitize name if ID lookup fails (or both?)
-			if svc.GetId() == "" && svc.GetSanitizedName() != "" {
-				if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetSanitizedName()); ok {
-					jsonMap["last_error"] = errMsg
+
+			if svcID != "" {
+				if errMsg, latency, lastCheck, ok := a.ServiceRegistry.GetServiceHealth(svcID); ok {
+					if errMsg != "" {
+						jsonMap["last_error"] = errMsg
+					}
+					if latency > 0 {
+						jsonMap["latency_ms"] = latency.Milliseconds()
+					}
+					if !lastCheck.IsZero() {
+						jsonMap["last_check"] = lastCheck.Format(time.RFC3339)
+					}
 				}
 			}
 
