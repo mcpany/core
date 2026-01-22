@@ -59,7 +59,7 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 			clientIP, _, _ := strings.Cut(xff, ",")
 			clientIP = strings.TrimSpace(clientIP)
 			if clientIP != "" {
-				ip = clientIP
+				ip = ExtractIP(clientIP)
 			}
 		}
 	}
