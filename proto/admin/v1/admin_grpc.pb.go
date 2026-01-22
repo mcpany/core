@@ -22,16 +22,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName   = "/mcpany.admin.v1.AdminService/ClearCache"
-	AdminService_ListServices_FullMethodName = "/mcpany.admin.v1.AdminService/ListServices"
-	AdminService_GetService_FullMethodName   = "/mcpany.admin.v1.AdminService/GetService"
-	AdminService_ListTools_FullMethodName    = "/mcpany.admin.v1.AdminService/ListTools"
-	AdminService_GetTool_FullMethodName      = "/mcpany.admin.v1.AdminService/GetTool"
-	AdminService_CreateUser_FullMethodName   = "/mcpany.admin.v1.AdminService/CreateUser"
-	AdminService_GetUser_FullMethodName      = "/mcpany.admin.v1.AdminService/GetUser"
-	AdminService_ListUsers_FullMethodName    = "/mcpany.admin.v1.AdminService/ListUsers"
-	AdminService_UpdateUser_FullMethodName   = "/mcpany.admin.v1.AdminService/UpdateUser"
-	AdminService_DeleteUser_FullMethodName   = "/mcpany.admin.v1.AdminService/DeleteUser"
+	AdminService_ClearCache_FullMethodName         = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName       = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName         = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_ListTools_FullMethodName          = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName            = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_CreateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/CreateUser"
+	AdminService_GetUser_FullMethodName            = "/mcpany.admin.v1.AdminService/GetUser"
+	AdminService_ListUsers_FullMethodName          = "/mcpany.admin.v1.AdminService/ListUsers"
+	AdminService_UpdateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/UpdateUser"
+	AdminService_DeleteUser_FullMethodName         = "/mcpany.admin.v1.AdminService/DeleteUser"
+	AdminService_GetDiscoveryStatus_FullMethodName = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -60,6 +61,8 @@ type AdminServiceClient interface {
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	// DeleteUser deletes a user by ID.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
+	// GetDiscoveryStatus returns the status of auto-discovery providers.
+	GetDiscoveryStatus(ctx context.Context, in *GetDiscoveryStatusRequest, opts ...grpc.CallOption) (*GetDiscoveryStatusResponse, error)
 }
 
 type adminServiceClient struct {
@@ -170,6 +173,16 @@ func (c *adminServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReque
 	return out, nil
 }
 
+func (c *adminServiceClient) GetDiscoveryStatus(ctx context.Context, in *GetDiscoveryStatusRequest, opts ...grpc.CallOption) (*GetDiscoveryStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDiscoveryStatusResponse)
+	err := c.cc.Invoke(ctx, AdminService_GetDiscoveryStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -196,6 +209,8 @@ type AdminServiceServer interface {
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	// DeleteUser deletes a user by ID.
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	// GetDiscoveryStatus returns the status of auto-discovery providers.
+	GetDiscoveryStatus(context.Context, *GetDiscoveryStatusRequest) (*GetDiscoveryStatusResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -235,6 +250,9 @@ func (UnimplementedAdminServiceServer) UpdateUser(context.Context, *UpdateUserRe
 }
 func (UnimplementedAdminServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedAdminServiceServer) GetDiscoveryStatus(context.Context, *GetDiscoveryStatusRequest) (*GetDiscoveryStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDiscoveryStatus not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -437,6 +455,24 @@ func _AdminService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_GetDiscoveryStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDiscoveryStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetDiscoveryStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetDiscoveryStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetDiscoveryStatus(ctx, req.(*GetDiscoveryStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -483,6 +519,10 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUser",
 			Handler:    _AdminService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "GetDiscoveryStatus",
+			Handler:    _AdminService_GetDiscoveryStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

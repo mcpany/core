@@ -181,6 +181,9 @@ type Application struct {
 	// AlertsManager manages system alerts
 	AlertsManager *alerts.Manager
 
+	// DiscoveryManager manages auto-discovery providers
+	DiscoveryManager *discovery.Manager
+
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
@@ -414,6 +417,8 @@ func (a *Application) Run(opts RunOptions) error {
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
 	a.ResourceManager = resource.NewManager()
 
+	a.DiscoveryManager = discovery.NewManager()
+
 	// Initialize Skill Manager
 	skillManager, err := skill.NewManager("skills") // Use "skills" directory in CWD for now
 	if err != nil {
@@ -607,15 +612,13 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
-		ollamaProvider := &discovery.OllamaProvider{Endpoint: "http://localhost:11434"}
-		discovered, err := ollamaProvider.Discover(opts.Ctx)
-		if err != nil {
-			log.Warn("Failed to auto-discover local services", "provider", ollamaProvider.Name(), "error", err)
-		} else {
-			for _, svc := range discovered {
-				log.Info("Auto-discovered local service", "name", svc.GetName())
-				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
-			}
+		// Register default providers
+		a.DiscoveryManager.RegisterProvider(&discovery.OllamaProvider{Endpoint: "http://localhost:11434"})
+
+		discovered := a.DiscoveryManager.Run(opts.Ctx)
+		for _, svc := range discovered {
+			log.Info("Auto-discovered local service", "name", svc.GetName())
+			cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
 		}
 	}
 	a.standardMiddlewares = standardMiddlewares
@@ -1831,7 +1834,7 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service

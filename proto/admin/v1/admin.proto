@@ -47,6 +47,9 @@ service AdminService {
 
   // DeleteUser deletes a user by ID.
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+
+  // GetDiscoveryStatus returns the status of auto-discovery providers.
+  rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
 }
 
 message ClearCacheRequest {}
@@ -127,3 +130,17 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {}
+
+message GetDiscoveryStatusRequest {}
+
+message GetDiscoveryStatusResponse {
+  repeated DiscoveryProviderStatus providers = 1;
+}
+
+message DiscoveryProviderStatus {
+  string name = 1;
+  string status = 2; // "OK", "ERROR"
+  string last_error = 3;
+  string last_run_at = 4; // ISO 8601
+  int32 discovered_count = 5;
+}
