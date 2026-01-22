@@ -59,7 +59,7 @@ const mockWebSocketService: UpstreamServiceConfig = {
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
     // Default mock global fetch (Success case)
-    global.fetch = vi.fn((url: string | Request, init?: RequestInit) => {
+    global.fetch = vi.fn((url: string | Request, _init?: RequestInit) => {
         if (typeof url === 'string' && url.includes("/api/dashboard/health")) {
             return Promise.resolve({
                 ok: true,
@@ -79,7 +79,7 @@ describe("ConnectionDiagnosticDialog", () => {
             });
         }
         return Promise.reject("Unknown URL");
-    }) as any;
+    }) as unknown as typeof fetch;
   });
 
   afterEach(() => {
@@ -163,7 +163,7 @@ describe("ConnectionDiagnosticDialog", () => {
                 value: MockWebSocket,
                 writable: true,
             });
-        } catch (e) {
+        } catch (_e) {
             // Ignore if we can't redefine
         }
     }
@@ -196,7 +196,7 @@ describe("ConnectionDiagnosticDialog", () => {
                 { id: "test-service", name: "Test Service", status: "unhealthy", message: "404 Not Found" }
             ]),
         })
-      ) as any;
+      ) as unknown as typeof fetch;
 
       render(<ConnectionDiagnosticDialog service={mockService} />);
 
@@ -227,7 +227,7 @@ describe("ConnectionDiagnosticDialog", () => {
               { id: "test-service", name: "Test Service", status: "unhealthy", message: "dial tcp 127.0.0.1:8080: connect: connection refused" }
           ]),
       })
-    ) as any;
+    ) as unknown as typeof fetch;
 
     render(<ConnectionDiagnosticDialog service={mockService} />);
 

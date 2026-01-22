@@ -119,7 +119,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);
 
         try {
-            const result = await new Promise<string>((resolve, reject) => {
+            await new Promise<string>((resolve, reject) => {
                 const ws = new WebSocket(url);
                 const timer = setTimeout(() => {
                     ws.close();
@@ -132,7 +132,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
                     resolve("Success");
                 };
 
-                ws.onerror = (ev) => {
+                ws.onerror = () => {
                     clearTimeout(timer);
                     reject(new Error("Connection failed (Network error or blocked)"));
                 };
@@ -140,8 +140,9 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
             addLog("browser_connectivity", "Successfully connected to WebSocket server from browser.");
             updateStep("browser_connectivity", { status: "success", detail: "Accessible" });
-        } catch (error: any) {
-            addLog("browser_connectivity", `Failed to connect from browser: ${error.message}`);
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Unknown error";
+            addLog("browser_connectivity", `Failed to connect from browser: ${msg}`);
             addLog("browser_connectivity", "Note: This is expected if the server is internal or behind a firewall not accessible from your browser.");
             updateStep("browser_connectivity", { status: "failure", detail: "Not Accessible" });
             // Don't stop diagnostics, backend might still see it
@@ -159,8 +160,9 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             addLog("browser_connectivity", "Successfully connected to HTTP server from browser.");
             addLog("browser_connectivity", "Note: 'no-cors' mode used. We can reach the server, but cannot read the response due to CORS policy. This confirms network connectivity.");
             updateStep("browser_connectivity", { status: "success", detail: "Accessible" });
-        } catch (error: any) {
-            addLog("browser_connectivity", `Failed to connect from browser: ${error.message}`);
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Unknown error";
+            addLog("browser_connectivity", `Failed to connect from browser: ${msg}`);
             addLog("browser_connectivity", "Possible causes: Server down, blocked by firewall, invalid SSL cert, Mixed Content blocking, or CSP (Content Security Policy) restrictions.");
             updateStep("browser_connectivity", { status: "failure", detail: "Not Accessible" });
             // Don't stop diagnostics
@@ -210,8 +212,9 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
              }
         }
 
-    } catch (error: any) {
-        addLog("backend_health", `Failed to contact backend API: ${error.message}`);
+    } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        addLog("backend_health", `Failed to contact backend API: ${msg}`);
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
     }
 
@@ -257,7 +260,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         <div className="flex-1 overflow-hidden grid grid-cols-3">
             {/* Steps List */}
             <div className="col-span-1 border-r bg-muted/10 overflow-y-auto p-4 space-y-4">
-                {steps.map((step, index) => (
+                {steps.map((step) => (
                     <div key={step.id} className={cn(
                         "relative pl-6 pb-4 border-l-2 last:border-0",
                         step.status === 'success' ? "border-green-500" :
