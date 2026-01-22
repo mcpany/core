@@ -34,8 +34,6 @@
 - [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
 - [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
 - [x] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
-- [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
-- [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
 - [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
@@ -43,15 +41,14 @@
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
+- [x] **Bulk Tool Actions**: Enable/Disable multiple tools at once.
 - [ ] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
-- [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [x] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
 - [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 - [ ] **Playground Session Replay**: Ability to reload a previous session from a JSON file into the playground.
 - [ ] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
-- [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [x] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
 - [ ] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
@@ -65,3 +62,5 @@
 - [ ] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
 - [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
+- [ ] **Tool Usage Heatmap**: Visualize tool usage frequency over time to identify high-traffic periods.
+- [ ] **Interactive Tool Dependencies**: Visual graph showing how tools depend on each other (if applicable).

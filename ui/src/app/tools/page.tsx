@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -21,12 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wrench, Play, Star, Search, List, LayoutList } from "lucide-react";
+import { Wrench, Play, Star, Search, List, LayoutList, PlayCircle, PauseCircle } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Info } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -42,6 +44,8 @@ export default function ToolsPage() {
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -80,6 +84,11 @@ export default function ToolsPage() {
     } catch (e) {
         console.error("Failed to toggle tool", e);
         fetchTools(); // Revert
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update tool status."
+        });
     }
   };
 
@@ -110,6 +119,57 @@ export default function ToolsPage() {
       return a.name.localeCompare(b.name);
     });
 
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelected(new Set(filteredTools.map(t => t.name)));
+    } else {
+      setSelected(new Set());
+    }
+  }, [filteredTools]);
+
+  const handleSelectOne = useCallback((name: string, checked: boolean) => {
+    setSelected(prev => {
+        const newSelected = new Set(prev);
+        if (checked) {
+          newSelected.add(name);
+        } else {
+          newSelected.delete(name);
+        }
+        return newSelected;
+    });
+  }, []);
+
+  const handleBulkToggle = useCallback(async (enable: boolean) => {
+    const names = Array.from(selected);
+    // Optimistic update
+    setTools(prev => prev.map(t => names.includes(t.name) ? { ...t, disable: !enable } : t));
+
+    try {
+        await Promise.all(names.map(name => apiClient.setToolStatus(name, !enable)));
+        toast({
+            title: enable ? "Tools Enabled" : "Tools Disabled",
+            description: `${names.length} tools have been ${enable ? "enabled" : "disabled"}.`
+        });
+        setSelected(new Set());
+    } catch (e) {
+        console.error("Failed to bulk toggle tools", e);
+        fetchTools(); // Revert
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to update some tools."
+        });
+    }
+  }, [selected, toast]);
+
+  const isAllSelected = filteredTools.length > 0 && selected.size === filteredTools.length;
+
+  // Reset selection when filtering changes
+  useEffect(() => {
+    setSelected(new Set());
+  }, [searchQuery, selectedService, showPinnedOnly]);
+
+
   if (!isLoaded) {
       return (
           <div className="flex-1 p-8 animate-pulse text-muted-foreground">
@@ -123,6 +183,17 @@ export default function ToolsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
         <div className="flex items-center space-x-4">
+            {selected.size > 0 && (
+                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkToggle(true)}>
+                        <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkToggle(false)}>
+                        <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
+                    </Button>
+                </div>
+            )}
             <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -178,6 +249,13 @@ export default function ToolsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[40px]">
+                  <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    aria-label="Select all"
+                  />
+                </TableHead>
                 <TableHead className="w-[30px]"></TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
@@ -190,6 +268,13 @@ export default function ToolsPage() {
             <TableBody>
               {filteredTools.map((tool) => (
                 <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                    <Checkbox
+                        checked={selected.has(tool.name)}
+                        onCheckedChange={(checked) => handleSelectOne(tool.name, !!checked)}
+                        aria-label={`Select ${tool.name}`}
+                    />
+                  </TableCell>
                   <TableCell className={isCompact ? "py-0 px-2" : ""}>
                       <Button
                         variant="ghost"
@@ -228,6 +313,7 @@ export default function ToolsPage() {
                     </div>
                   </TableCell>
                   <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
                           <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
                       </Button>

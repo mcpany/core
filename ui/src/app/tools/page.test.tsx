@@ -151,4 +151,60 @@ describe('ToolsPage', () => {
             expect(screen.queryByText('tool1')).not.toBeInTheDocument();
         });
     });
+
+    it('handles select all', async () => {
+        render(<ToolsPage />);
+        await waitFor(() => expect(screen.getByText('tool1')).toBeInTheDocument());
+
+        const selectAllCheckbox = screen.getByLabelText('Select all');
+        fireEvent.click(selectAllCheckbox);
+
+        const selectedCount = await screen.findByText(/selected/);
+        expect(selectedCount).toHaveTextContent('4 selected');
+    });
+
+    it('handles select one', async () => {
+        render(<ToolsPage />);
+        await waitFor(() => expect(screen.getByText('tool1')).toBeInTheDocument());
+
+        const tool1Checkbox = screen.getByLabelText('Select tool1');
+        fireEvent.click(tool1Checkbox);
+
+        const selectedCount = await screen.findByText(/selected/);
+        expect(selectedCount).toHaveTextContent('1 selected');
+    });
+
+    it('handles bulk toggle', async () => {
+        render(<ToolsPage />);
+        await waitFor(() => expect(screen.getByText('tool1')).toBeInTheDocument());
+
+        // Select tool1 and tool2
+        fireEvent.click(screen.getByLabelText('Select tool1'));
+        fireEvent.click(screen.getByLabelText('Select tool2'));
+
+        // Click Disable
+        const disableButton = await screen.findByText('Disable');
+        fireEvent.click(disableButton);
+
+        await waitFor(() => {
+            expect(apiClient.setToolStatus).toHaveBeenCalledWith('tool1', true); // disable: true
+            expect(apiClient.setToolStatus).toHaveBeenCalledWith('tool2', true); // disable: true
+        });
+    });
+
+    it('handles bulk enable', async () => {
+        render(<ToolsPage />);
+        await waitFor(() => expect(screen.getByText('tool3')).toBeInTheDocument()); // tool3 is disabled
+
+        // Select tool3
+        fireEvent.click(screen.getByLabelText('Select tool3'));
+
+        // Click Enable
+        const enableButton = await screen.findByText('Enable');
+        fireEvent.click(enableButton);
+
+        await waitFor(() => {
+            expect(apiClient.setToolStatus).toHaveBeenCalledWith('tool3', false); // disable: false
+        });
+    });
 });
