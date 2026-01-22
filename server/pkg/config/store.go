@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -23,7 +22,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -171,19 +169,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	}
 
 	if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
-		// Attempt to find line number from schema validation error
-		var valErr *jsonschema.ValidationError
-		if errors.As(err, &valErr) {
-			// Traverse to the leaf error to get the most specific location
-			leaf := valErr
-			for len(leaf.Causes) > 0 {
-				leaf = leaf.Causes[0]
-			}
-			// InstanceLocation is the JSON path, e.g. /global_settings/log_level
-			if line := findPathLine(b, leaf.InstanceLocation); line > 0 {
-				return fmt.Errorf("line %d: %w", line, err)
-			}
-		}
 		return fmt.Errorf("schema validation failed: %w", err)
 	}
 
@@ -1196,63 +1181,6 @@ func findKeyInNode(node *yaml.Node, key string) int {
 		for _, child := range node.Content {
 			if line := findKeyInNode(child, key); line > 0 {
 				return line
-			}
-		}
-	}
-	return 0
-}
-
-func findPathLine(b []byte, jsonPath string) int {
-	var node yaml.Node
-	if err := yaml.Unmarshal(b, &node); err != nil {
-		return 0
-	}
-
-	// JSON Schema paths start with /, e.g. /global_settings/log_level
-	// or /upstream_services/0/name
-	parts := strings.Split(strings.TrimPrefix(jsonPath, "/"), "/")
-	// If path is empty or just "/", parts might be [""]
-	if len(parts) == 1 && parts[0] == "" {
-		parts = []string{}
-	}
-
-	return findPathInNodeTraverse(&node, parts)
-}
-
-func findPathInNodeTraverse(node *yaml.Node, path []string) int {
-	if len(path) == 0 {
-		return node.Line
-	}
-
-	currentKey := path[0]
-
-	switch node.Kind {
-	case yaml.DocumentNode:
-		for _, child := range node.Content {
-			if line := findPathInNodeTraverse(child, path); line > 0 {
-				return line
-			}
-		}
-	case yaml.MappingNode:
-		for i := 0; i < len(node.Content); i += 2 {
-			keyNode := node.Content[i]
-			valNode := node.Content[i+1]
-
-			if keyNode.Value == currentKey {
-				if len(path) == 1 {
-					// We found the target key.
-					// If the validation error is about the value (e.g. wrong type), returning valNode.Line is best.
-					// If the key itself is wrong (not likely for schema validation unless required missing), valNode is usually the culprit.
-					return valNode.Line
-				}
-				return findPathInNodeTraverse(valNode, path[1:])
-			}
-		}
-	case yaml.SequenceNode:
-		// Handle array indices
-		if idx, err := strconv.Atoi(currentKey); err == nil {
-			if idx >= 0 && idx < len(node.Content) {
-				return findPathInNodeTraverse(node.Content[idx], path[1:])
 			}
 		}
 	}

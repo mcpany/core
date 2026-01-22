@@ -18,7 +18,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -347,9 +346,14 @@ func (a *Application) Run(opts RunOptions) error {
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
 
+	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(opts.ConfigPaths) > 0 {
-		log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
-		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+		if enableFileConfig {
+			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
+			stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+		} else {
+			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", opts.ConfigPaths)
+		}
 	}
 	multiStore := config.NewMultiStore(stores...)
 
@@ -848,7 +852,8 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 		stores = append(stores, a.Storage)
 	}
 
-	if len(configPaths) > 0 {
+	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	if enableFileConfig && len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 
@@ -1229,55 +1234,6 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	return HealthCheckWithContext(ctx, out, addr)
 }
 
-// servicesHealthCheck checks the status of the upstream services.
-func (a *Application) servicesHealthCheck(_ context.Context) health.CheckResult {
-	if a.ServiceRegistry == nil {
-		return health.CheckResult{Status: "ok"}
-	}
-
-	services, err := a.ServiceRegistry.GetAllServices()
-	if err != nil {
-		return health.CheckResult{
-			Status:  "degraded",
-			Message: fmt.Sprintf("failed to list services: %v", err),
-		}
-	}
-
-	var issues []string
-	start := time.Now()
-
-	for _, svc := range services {
-		id := svc.GetId()
-		// Fallback to sanitized name if ID is missing.
-		// RegisterService uses SanitizedName as key.
-		if id == "" {
-			if s, err := util.SanitizeServiceName(svc.GetName()); err == nil {
-				id = s
-			} else {
-				id = svc.GetName()
-			}
-		}
-
-		if errMsg, ok := a.ServiceRegistry.GetServiceError(id); ok {
-			issues = append(issues, fmt.Sprintf("service %q: %s", svc.GetName(), errMsg))
-		}
-	}
-
-	status := "ok"
-	var message string
-	if len(issues) > 0 {
-		status = "degraded"
-		sort.Strings(issues)
-		message = strings.Join(issues, "; ")
-	}
-
-	return health.CheckResult{
-		Status:  status,
-		Message: message,
-		Latency: time.Since(start).String(),
-	}
-}
-
 // HealthCheckWithContext performs a health check against a running server by
 // sending an HTTP GET request to its /healthz endpoint. This is useful for
 // monitoring and ensuring the server is operational.
@@ -1503,12 +1459,6 @@ func (a *Application) runServerMode(
 		}
 		uid := parts[3]
 		profileID := parts[5]
-
-		// Validate IDs to prevent directory traversal or other injection
-		if !isValidID(uid) || !isValidID(profileID) {
-			http.Error(w, "Invalid user ID or profile ID", http.StatusBadRequest)
-			return
-		}
 
 		// Dynamic User Lookup
 		user, ok := a.AuthManager.GetUser(uid)

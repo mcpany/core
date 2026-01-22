@@ -170,11 +170,6 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
-func (m *MockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
-	// Stub implementation for topology tests
-	return "", 0, time.Time{}, false
-}
-
 func TestManager_RecordActivity(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)

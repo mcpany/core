@@ -1185,9 +1185,6 @@ func findSimilarEnvVar(target string) string {
 
 	for _, env := range environ {
 		parts := strings.SplitN(env, "=", 2)
-		if len(parts) == 0 {
-			continue
-		}
 		key := parts[0]
 
 		// Skip exact match (shouldn't happen if we are here)
@@ -1204,9 +1201,6 @@ func findSimilarEnvVar(target string) string {
 		}
 
 		threshold := len(target) / 3
-		if threshold < 1 {
-			threshold = 1
-		}
 		if threshold > 5 {
 			threshold = 5
 		}
