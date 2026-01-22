@@ -312,16 +312,11 @@ func TestAPIKeyAuthenticator_Query(t *testing.T) {
 	authenticator := NewAPIKeyAuthenticator(config)
 	require.NotNil(t, authenticator)
 
-	t.Run("successful_query_auth", func(t *testing.T) {
+	t.Run("unsupported_query_auth", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/?api_key=secret", nil)
 		_, err := authenticator.Authenticate(context.Background(), req)
-		assert.NoError(t, err)
-	})
-
-	t.Run("failed_query_auth", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/?api_key=wrong", nil)
-		_, err := authenticator.Authenticate(context.Background(), req)
 		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "not supported")
 	})
 
 	t.Run("authentication_with_configured_username", func(t *testing.T) {

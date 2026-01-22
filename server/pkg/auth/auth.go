@@ -153,7 +153,8 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 	case configv1.APIKeyAuth_HEADER:
 		receivedKey = r.Header.Get(a.ParamName)
 	case configv1.APIKeyAuth_QUERY:
-		receivedKey = r.URL.Query().Get(a.ParamName)
+		// Query parameters are not supported for security reasons.
+		return ctx, fmt.Errorf("api key in query parameter is not supported")
 	case configv1.APIKeyAuth_COOKIE:
 		cookie, err := r.Cookie(a.ParamName)
 		if err == nil {
@@ -364,9 +365,6 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
-		if receivedKey == "" {
-			receivedKey = r.URL.Query().Get("api_key")
-		}
 
 		if receivedKey == "" {
 			return ctx, fmt.Errorf("unauthorized")
