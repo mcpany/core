@@ -1460,6 +1460,12 @@ func (a *Application) runServerMode(
 		uid := parts[3]
 		profileID := parts[5]
 
+		// Validate IDs to prevent directory traversal or other injection
+		if !isValidID(uid) || !isValidID(profileID) {
+			http.Error(w, "Invalid user ID or profile ID", http.StatusBadRequest)
+			return
+		}
+
 		// Dynamic User Lookup
 		user, ok := a.AuthManager.GetUser(uid)
 		if !ok {
