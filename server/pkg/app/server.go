@@ -346,14 +346,9 @@ func (a *Application) Run(opts RunOptions) error {
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(opts.ConfigPaths) > 0 {
-		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
-			stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
-		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", opts.ConfigPaths)
-		}
+		log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
+		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
 	}
 	multiStore := config.NewMultiStore(stores...)
 
@@ -852,8 +847,7 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 		stores = append(stores, a.Storage)
 	}
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if enableFileConfig && len(configPaths) > 0 {
+	if len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 
