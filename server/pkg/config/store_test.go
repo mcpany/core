@@ -396,3 +396,56 @@ upstream_services:
 	// Expect the new helpful error message
 	assert.Contains(t, err.Error(), "without a 'service_config' wrapper")
 }
+
+func TestYamlEngine_SchemaValidationLineNumber(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Invalid config: log_level is integer (should be string)
+	// Line 1: global_settings:
+	// Line 2:   log_level: 123
+	require.NoError(t, afero.WriteFile(fs, "/config/schema_fail.yaml", []byte("global_settings:\n  log_level: 123\n"), 0644))
+
+	store := NewFileStore(fs, []string{"/config/schema_fail.yaml"})
+	_, err := store.Load(context.Background())
+	assert.Error(t, err)
+	// We expect "line 2"
+	assert.Contains(t, err.Error(), "line 2")
+	assert.Contains(t, err.Error(), "expected string, but got number")
+}
+
+func TestFindPathLine_Coverage(t *testing.T) {
+	yamlStr := `global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  log_level: 123
+upstream_services:
+  - name: "wttr.in"
+    http_service:
+       address: 123
+`
+	// Line 3: log_level: 123
+	// Line 5: - name: "wttr.in"
+	// Line 7: address: 123
+
+	tests := []struct {
+		name     string
+		path     string
+		expected int
+	}{
+		{"root path", "", 1},
+		{"nested field", "/global_settings/log_level", 3},
+		{"list index", "/upstream_services/0/name", 5},
+		{"deep nested", "/upstream_services/0/http_service/address", 7},
+		{"not found path", "/global_settings/missing", 0},
+		{"invalid list index format", "/upstream_services/foo/name", 0},
+		{"list index out of bounds", "/upstream_services/99/name", 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			line := findPathLine([]byte(yamlStr), tt.path)
+			assert.Equal(t, tt.expected, line)
+		})
+	}
+
+	// Test invalid YAML
+	assert.Equal(t, 0, findPathLine([]byte("invalid: yaml: :"), "/foo"))
+}
