@@ -1789,6 +1789,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
+
+	// Collect secrets for redaction
+	var secrets []string
+	for _, v := range resolvedServiceEnv {
+		secrets = append(secrets, v)
+	}
+
 	for k, v := range resolvedServiceEnv {
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
@@ -1800,6 +1807,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
+			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
@@ -1906,9 +1914,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          stdoutBuf.String(),
-		"stderr":          stderrBuf.String(),
-		"combined_output": combinedBuf.String(),
+		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
+		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
+		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,
@@ -2090,6 +2098,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
 	}
+
+	// Collect secrets for redaction
+	var secrets []string
+	for _, v := range resolvedServiceEnv {
+		secrets = append(secrets, v)
+	}
+
 	for k, v := range resolvedServiceEnv {
 		env = append(env, fmt.Sprintf("%s=%s", k, v))
 	}
@@ -2098,6 +2113,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		resolvedContainerEnv, err := util.ResolveSecretMap(ctx, ce.GetEnv(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to resolve container env: %w", err)
+		}
+		for _, v := range resolvedContainerEnv {
+			secrets = append(secrets, v)
 		}
 		for k, v := range resolvedContainerEnv {
 			env = append(env, fmt.Sprintf("%s=%s", k, v))
@@ -2111,6 +2129,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if err != nil {
 				return nil, fmt.Errorf("failed to resolve secret for parameter %q: %w", name, err)
 			}
+			secrets = append(secrets, secretValue)
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
@@ -2217,9 +2236,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
 		"args":            args,
-		"stdout":          stdoutBuf.String(),
-		"stderr":          stderrBuf.String(),
-		"combined_output": combinedBuf.String(),
+		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
+		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
+		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
 		"start_time":      startTime,
 		"end_time":        endTime,
 		"return_code":     exitCode,

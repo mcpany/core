@@ -78,8 +78,9 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 			},
 		},
 	}
+	// Verify environment variable is passed correctly without leaking it in the output (if we were to echo it)
 	callDef := &configv1.CommandLineCallDefinition{
-		Args: []string{"-c", "echo -n $MY_ENV"},
+		Args: []string{"-c", "if [ \"$MY_ENV\" = \"secret_value\" ]; then echo -n match; else echo -n mismatch; fi"},
 	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
@@ -95,7 +96,43 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 
 	resultMap, ok := result.(map[string]interface{})
 	assert.True(t, ok)
-	assert.Equal(t, "secret_value", resultMap["stdout"])
+	assert.Equal(t, "match", resultMap["stdout"])
+}
+
+func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
+	t.Parallel()
+	tool := &v1.Tool{
+		Name: proto.String("test-tool-redact"),
+	}
+	service := &configv1.CommandLineUpstreamService{
+		Command: proto.String("sh"),
+		Local:   proto.Bool(true),
+		Env: map[string]*configv1.SecretValue{
+			"MY_SECRET": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "SuperSecret123",
+				},
+			},
+		},
+	}
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "echo -n $MY_SECRET"},
+	}
+
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	req := &ExecutionRequest{
+		ToolName:  "test-tool-redact",
+		Arguments: map[string]interface{}{},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	result, err := localTool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resultMap, ok := result.(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, "[REDACTED]", resultMap["stdout"])
 }
 
 func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
