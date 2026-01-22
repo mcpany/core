@@ -16,4 +16,4 @@ Navigate to `/alerts`.
 ![Alerts List](screenshots/alerts_list.png)
 
 ### 2. Investigate
-Click on an alert to view context. The system attempts to link you to the relevant **Log** or **Trace** time window.
+View alert details including severity, status, and service origin. Use the actions menu to acknowledge or resolve alerts.
