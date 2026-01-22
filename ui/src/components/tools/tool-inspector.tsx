@@ -52,7 +52,6 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   if (!tool) return null;
 
 
-
   const handleExecute = async () => {
     setLoading(true);
     setOutput(null);
