@@ -18,9 +18,10 @@ import (
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
 type StaticResource struct {
-	resource   *mcp.Resource
-	serviceID  string
-	httpClient *http.Client
+	resource      *mcp.Resource
+	serviceID     string
+	httpClient    *http.Client
+	staticContent *configv1.StaticResource
 }
 
 // NewStaticResource creates a new instance of StaticResource.
@@ -38,8 +39,9 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 			MIMEType:    def.GetMimeType(),
 			Size:        def.GetSize(),
 		},
-		serviceID:  serviceID,
-		httpClient: util.NewSafeHTTPClient(),
+		serviceID:     serviceID,
+		httpClient:    util.NewSafeHTTPClient(),
+		staticContent: def.GetStatic(),
 	}
 }
 
@@ -64,6 +66,26 @@ func (r *StaticResource) Service() string {
 // Returns the result.
 // Returns an error if the operation fails.
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+	if r.staticContent != nil {
+		var blob []byte
+		switch ct := r.staticContent.ContentType.(type) {
+		case *configv1.StaticResource_TextContent:
+			blob = []byte(ct.TextContent)
+		case *configv1.StaticResource_BinaryContent:
+			blob = ct.BinaryContent
+		}
+
+		return &mcp.ReadResourceResult{
+			Contents: []*mcp.ResourceContents{
+				{
+					URI:      r.resource.URI,
+					Blob:     blob,
+					MIMEType: r.resource.MIMEType,
+				},
+			},
+		}, nil
+	}
+
 	// Simple HTTP get for now
 	// We might want to use a shared client or pool if available, but for now default http client.
 	req, err := http.NewRequestWithContext(ctx, "GET", r.resource.URI, nil)
