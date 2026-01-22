@@ -28,7 +28,12 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			return
 		}
 
-		mfs, err := prometheus.DefaultGatherer.Gather()
+		gatherer := a.MetricsGatherer
+		if gatherer == nil {
+			gatherer = prometheus.DefaultGatherer
+		}
+
+		mfs, err := gatherer.Gather()
 		if err != nil {
 			logging.GetLogger().Error("failed to gather metrics", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -152,7 +157,12 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			return
 		}
 
-		mfs, err := prometheus.DefaultGatherer.Gather()
+		gatherer := a.MetricsGatherer
+		if gatherer == nil {
+			gatherer = prometheus.DefaultGatherer
+		}
+
+		mfs, err := gatherer.Gather()
 		if err != nil {
 			logging.GetLogger().Error("failed to gather metrics", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)

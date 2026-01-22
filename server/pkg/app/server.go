@@ -65,6 +65,7 @@ import (
 	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -234,6 +235,10 @@ type Application struct {
 	// RegistrationRetryDelay allows configuring the retry delay for service registration.
 	// If 0, it defaults to 5 seconds (in the worker).
 	RegistrationRetryDelay time.Duration
+
+	// MetricsGatherer is the interface for gathering metrics.
+	// Defaults to prometheus.DefaultGatherer.
+	MetricsGatherer prometheus.Gatherer
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -254,6 +259,7 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
+		MetricsGatherer: prometheus.DefaultGatherer,
 	}
 }
 

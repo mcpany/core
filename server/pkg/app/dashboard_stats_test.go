@@ -24,28 +24,13 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 		[]string{"tool", "service_id", "status", "error_type"},
 	)
 
-	// Register it if not already registered (handle panic or error)
-	if err := prometheus.Register(toolsCallTotal); err != nil {
-		if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
-			toolsCallTotal = are.ExistingCollector.(*prometheus.CounterVec)
-		} else {
-			// If it's another error, we might just proceed if it's already there?
-			// But for test stability, let's just log.
-			t.Logf("Failed to register metric: %v", err)
-			// Assuming it exists, we try to retrieve it from DefaultGatherer later,
-			// but we need the object to Add values.
-			// We can't easily get the object back unless we keep global reference or lookup.
-			// For this test, if it fails to register because it exists, we assume `toolsCallTotal`
-			// now points to the existing one.
-		}
-	}
+	// Use a local registry for isolation
+	registry := prometheus.NewRegistry()
+	require.NoError(t, registry.Register(toolsCallTotal))
 
-    // Clear existing metrics? Not easily possible with standard Prometheus client without resetting registry.
-    // We will use unique tool names for this test to avoid collision with other tests.
-
-    toolA := "test_tool_failures_A"
-    toolB := "test_tool_failures_B"
-    toolD := "test_tool_failures_D"
+	toolA := "test_tool_failures_A"
+	toolB := "test_tool_failures_B"
+	toolD := "test_tool_failures_D"
 
 	// Tool A: 10 success, 10 error => 50% failure
 	toolsCallTotal.WithLabelValues(toolA, "service1", "success", "").Add(10)
@@ -63,7 +48,9 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	app := &Application{} // We don't need dependencies for this handler
+	app := &Application{
+		MetricsGatherer: registry,
+	}
 
 	handler := app.handleDashboardToolFailures()
 	handler.ServeHTTP(rr, req)
