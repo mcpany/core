@@ -117,6 +117,22 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 			{"TYPE_BOOL", "boolean"},
 			{"TYPE_STRING", "string"},
 			{"TYPE_BYTES", "string"},
+			// Standard lowercase types
+			{"double", "number"},
+			{"float", "number"},
+			{"int32", "integer"},
+			{"int64", "integer"},
+			{"sint32", "integer"},
+			{"sint64", "integer"},
+			{"uint32", "integer"},
+			{"uint64", "integer"},
+			{"fixed32", "integer"},
+			{"fixed64", "integer"},
+			{"sfixed32", "integer"},
+			{"sfixed64", "integer"},
+			{"bool", "boolean"},
+			{"string", "string"},
+			{"bytes", "string"},
 		}
 
 		for _, tc := range testCases {
@@ -128,9 +144,31 @@ func TestGetJSONSchemaForScalarType(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("fallback casing", func(t *testing.T) {
+		testCases := []struct {
+			scalarType string
+			jsonType   string
+		}{
+			// Original code only stripped "TYPE_" (case sensitive) then lowercased.
+			// So "TYPE_String" works -> "String" -> "string"
+			// "String" works -> "String" -> "string"
+			// "type_string" did NOT work (TrimPrefix case sensitive)
+
+			{"TYPE_String", "string"},
+			{"STRING", "string"},
+			{"Int32", "integer"},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.scalarType, func(t *testing.T) {
+				schema, err := GetJSONSchemaForScalarType(tc.scalarType, "description")
+				assert.NoError(t, err)
+				assert.Equal(t, tc.jsonType, schema.Type)
+			})
+		}
+	})
 }
-// ... (skip others if needed or replace block)
-// I will just replace the TestGetJSONSchemaForScalarType block first
 
 
 func TestConvertMCPToolToProto(t *testing.T) {

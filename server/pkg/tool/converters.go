@@ -184,7 +184,7 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 		s.Type = "integer"
 	case "TYPE_BOOL", "bool":
 		s.Type = "boolean"
-	case "TYPE_STRING", "TYPE_BYTES", "string", "bytes":
+	case "TYPE_STRING", "TYPE_BYTES", "string", "bytes": //nolint:goconst // Using raw string is intentional for performance
 		s.Type = "string"
 	default:
 		// Fallback for non-standard casing
