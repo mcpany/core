@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -43,7 +44,30 @@ func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, e
 	return resolveSecretRecursive(ctx, secret, 0)
 }
 
-func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) { //nolint:gocyclo
+func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) {
+	val, err := resolveSecretValue(ctx, secret, depth)
+	if err != nil {
+		return "", err
+	}
+
+	if secret != nil && secret.GetValidationRegex() != "" {
+		re, err := regexp.Compile(secret.GetValidationRegex())
+		if err != nil {
+			return "", fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+		}
+		if !re.MatchString(val) {
+			maskedValue := "EMPTY"
+			if len(val) > 0 {
+				maskedValue = fmt.Sprintf("<%d chars>", len(val))
+			}
+			return "", fmt.Errorf("secret value (length %d) does not match validation regex %q (Ensure the secret value matches the required pattern. Value is currently: %s)", len(val), secret.GetValidationRegex(), maskedValue)
+		}
+	}
+
+	return val, nil
+}
+
+func resolveSecretValue(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) { //nolint:gocyclo
 	if depth > maxSecretRecursionDepth {
 		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
 	}
