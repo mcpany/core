@@ -166,8 +166,8 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 			return c, err
 		}
 	} else if wt, ok := t.(*WordTokenizer); ok && wt != nil {
-		if c, handled, err := countTokensInValueWordFast(wt, v); handled {
-			return c, err
+		if c, handled := countTokensInValueWordFast(wt, v); handled {
+			return c, nil
 		}
 	} else {
 		// Generic fallback for other Tokenizer implementations
@@ -196,8 +196,8 @@ func (r *rawWordCounter) CountTokens(text string) (int, error) {
 
 func (r *rawWordCounter) countRecursive(v interface{}, visited map[uintptr]bool) (int, error) {
 	// Try the fast path first
-	if c, handled, err := countWordsInValueFast(v); handled {
-		return c, err
+	if c, handled := countWordsInValueFast(v); handled {
+		return c, nil
 	}
 
 	// Optimization: Handle map[string]interface{} explicitly to avoid reflection.
@@ -214,35 +214,35 @@ func (r *rawWordCounter) countRecursive(v interface{}, visited map[uintptr]bool)
 }
 
 // countWordsInValueFast handles fast-path word counting.
-func countWordsInValueFast(v interface{}) (int, bool, error) {
+func countWordsInValueFast(v interface{}) (int, bool) {
 	switch val := v.(type) {
 	case string:
-		return countWords(val), true, nil
+		return countWords(val), true
 	case int, int64, float64, bool, nil:
-		return 1, true, nil
+		return 1, true
 	case []string:
 		count := 0
 		for _, item := range val {
 			count += countWords(item)
 		}
-		return count, true, nil
+		return count, true
 	case []int:
-		return len(val), true, nil
+		return len(val), true
 	case []int64:
-		return len(val), true, nil
+		return len(val), true
 	case []float64:
-		return len(val), true, nil
+		return len(val), true
 	case []bool:
-		return len(val), true, nil
+		return len(val), true
 	case map[string]string:
 		count := 0
 		for key, item := range val {
 			count += countWords(key)
 			count += countWords(item)
 		}
-		return count, true, nil
+		return count, true
 	}
-	return 0, false, nil
+	return 0, false
 }
 
 // countTokensInValueSimpleFast handles fast-path tokenization for SimpleTokenizer.
@@ -328,23 +328,22 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		}
 		return count, true, nil
 	}
+	// Fallback to generic unhandled case
 	return 0, false, nil
 }
 
 // countTokensInValueWordFast handles fast-path tokenization for WordTokenizer.
-// It returns (count, handled, error). If handled is false, the caller should fallback.
-func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool, error) {
-	if words, handled, err := countWordsInValueFast(v); handled {
-		if err != nil {
-			return 0, true, err
-		}
+// It returns (count, handled). If handled is false, the caller should fallback.
+func countTokensInValueWordFast(wt *WordTokenizer, v interface{}) (int, bool) {
+	if words, handled := countWordsInValueFast(v); handled {
 		count := int(float64(words) * wt.Factor)
 		if count < 1 && words > 0 {
 			count = 1
 		}
-		return count, true, nil
+		return count, true
 	}
-	return 0, false, nil
+	// Fallback to generic unhandled case
+	return 0, false
 }
 
 func countTokensInValueRecursive(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
@@ -436,6 +435,11 @@ func (t *SimpleTokenizer) countRecursive(v interface{}, visited map[uintptr]bool
 }
 
 func countTokensInValueWord(t *WordTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
+	// Try the fast path first
+	if c, handled := countTokensInValueWordFast(t, v); handled {
+		return c, nil
+	}
+
 	r := &rawWordCounter{}
 	words, err := r.countRecursive(v, visited)
 	if err != nil {
