@@ -2041,14 +2041,21 @@ func (a *Application) runServerMode(
 func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Allow login endpoint without auth
+			if r.URL.Path == "/api/v1/auth/login" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 
 			apiKey := a.SettingsManager.GetAPIKey()
+			authenticated := false
 
-			if !forcePrivateIPOnly && apiKey != "" {
-				// Check X-API-Key or Authorization header
+			// 1. Check Global API Key
+			if apiKey != "" {
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
 					requestKey = r.URL.Query().Get("api_key")
@@ -2060,27 +2067,53 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					}
 				}
 
-				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) != 1 {
-					http.Error(w, "Unauthorized", http.StatusUnauthorized)
-					return
-				}
-			} else {
-				// Sentinel Security: If no API key is configured, enforce localhost-only access.
-				// This prevents accidental exposure of the server to the public internet (RCE risk).
-				host, _, err := net.SplitHostPort(r.RemoteAddr)
-				if err != nil {
-					// Fallback if RemoteAddr is weird, assume host is the string itself
-					host = r.RemoteAddr
-				}
-
-				// Check if the request is from a loopback address
-				ip := net.ParseIP(host)
-				if !util.IsPrivateIP(ip) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
-					return
+				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
+					authenticated = true
+					// Inject API Key into context if needed
+					ctx = auth.ContextWithAPIKey(ctx, requestKey)
 				}
 			}
+
+			// 2. Check User Authentication (Basic Auth)
+			if !authenticated {
+				username, _, ok := r.BasicAuth()
+				if ok && a.AuthManager != nil {
+					if user, found := a.AuthManager.GetUser(username); found {
+						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
+							authenticated = true
+							ctx = auth.ContextWithUser(ctx, username)
+							// Also check/set roles?
+						}
+					}
+				}
+			}
+
+			if authenticated {
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
+
+			if !forcePrivateIPOnly && apiKey != "" {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
+			// This prevents accidental exposure of the server to the public internet (RCE risk).
+			host, _, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				// Fallback if RemoteAddr is weird, assume host is the string itself
+				host = r.RemoteAddr
+			}
+
+			// Check if the request is from a loopback address
+			ipAddr := net.ParseIP(host)
+			if !util.IsPrivateIP(ipAddr) {
+				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+				return
+			}
+
 			next.ServeHTTP(w, r)
 		})
 	}

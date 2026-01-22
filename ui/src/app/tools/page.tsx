@@ -56,7 +56,7 @@ export default function ToolsPage() {
   const fetchTools = async () => {
     try {
       const res = await apiClient.listTools();
-      setTools(res.tools || []);
+      setTools(res?.tools || []);
     } catch (e) {
       console.error("Failed to fetch tools", e);
     }

@@ -81,14 +81,17 @@ export function HealthHistoryChart() {
         fetchData();
     }, []);
 
+    const STATUS_COLORS = {
+        healthy: "hsl(var(--chart-2))",
+        ok: "hsl(var(--chart-2))",
+        degraded: "hsl(var(--chart-4))",
+        error: "hsl(var(--chart-1))",
+        offline: "hsl(var(--muted))",
+        unknown: "hsl(var(--muted))",
+    };
+
     const getBarColor = (status: HealthPoint["status"]) => {
-        switch (status) {
-            case "ok": return "hsl(var(--chart-2))"; // green/emerald
-            case "degraded": return "hsl(var(--chart-4))"; // yellow/amber
-            case "error": return "hsl(var(--chart-1))"; // red/destructive
-            case "offline": return "hsl(var(--muted))";
-            default: return "hsl(var(--muted))";
-        }
+        return STATUS_COLORS[status] || "hsl(var(--muted))";
     };
 
     return (

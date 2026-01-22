@@ -70,7 +70,7 @@ export async function GET(request: Request) {
     });
 
     if (!res.ok) {
-        console.error(`Failed to fetch traces from ${backendUrl}/debug/entries: ${res.status} ${res.statusText}`);
+        console.warn(`Failed to fetch traces from ${backendUrl}/debug/entries: ${res.status} ${res.statusText}`);
         return NextResponse.json([]);
     }
 

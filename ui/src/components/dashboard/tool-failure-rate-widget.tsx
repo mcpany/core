@@ -33,7 +33,8 @@ export function ToolFailureRateWidget() {
             try {
                 // In a real app, this would be a dedicated analytics endpoint.
                 // We'll mock some data based on existing tools.
-                const allTools = await apiClient.listTools();
+                const response = await apiClient.listTools();
+                const allTools = Array.isArray(response.tools) ? response.tools : [];
 
                 // Shuffle and pick 4 with random failure rates for demo
                 const sorted = allTools
