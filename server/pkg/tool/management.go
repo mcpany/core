@@ -750,7 +750,8 @@ func (tm *Manager) AddTool(tool Tool) error {
 				return &mcp.CallToolResult{
 					Content: []mcp.Content{
 						&mcp.TextContent{
-							Text: string(jsonResult),
+							// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
+							Text: util.BytesToString(jsonResult),
 						},
 					},
 				}, nil
