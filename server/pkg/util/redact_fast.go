@@ -40,6 +40,9 @@ func init() {
 	isNumberDelimiter['}'] = true
 	isNumberDelimiter[']'] = true
 	isNumberDelimiter['/'] = true
+	// Quotes and colons should also stop number scanning to avoid consuming keys in invalid JSON
+	isNumberDelimiter['"'] = true
+	isNumberDelimiter[':'] = true
 }
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
