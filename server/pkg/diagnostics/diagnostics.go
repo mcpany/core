@@ -187,7 +187,7 @@ func runHTTPDiagnostics(ctx context.Context, report *DiagnosticReport, address s
 		Timeout: 10 * time.Second,
 		Transport: &http.Transport{
 			// Use the same dialer config
-			DialContext: dialer.DialContext,
+			DialContext:         dialer.DialContext,
 			TLSHandshakeTimeout: 5 * time.Second,
 		},
 	}
