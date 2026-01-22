@@ -74,10 +74,6 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return "", false
 }
 
-func (m *MockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
-	return "", 0, time.Time{}, false
-}
-
 func TestServiceRegistrationWorker_Stop(t *testing.T) {
 	// Setup bus
 	b, err := bus.NewProvider(nil)

@@ -7,7 +7,6 @@ package doctor
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -40,27 +39,10 @@ const (
 
 // CheckResult represents the result of a single service check.
 type CheckResult struct {
-	ServiceName string `json:"service_name"`
-	Status      Status `json:"status"`
-	Message     string `json:"message"`
-	Error       error  `json:"-"`
-}
-
-// MarshalJSON customizes the JSON representation of CheckResult.
-func (r CheckResult) MarshalJSON() ([]byte, error) {
-	type Alias CheckResult
-	return json.Marshal(&struct {
-		Alias
-		Error string `json:"error,omitempty"`
-	}{
-		Alias: (Alias)(r),
-		Error: func() string {
-			if r.Error != nil {
-				return r.Error.Error()
-			}
-			return ""
-		}(),
-	})
+	ServiceName string
+	Status      Status
+	Message     string
+	Error       error
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
