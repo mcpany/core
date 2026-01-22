@@ -28,6 +28,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Service Health Checks in Doctor**
+  - **Description**: Integrated upstream service health status into the `doctor` API and CLI command, providing visibility into connection failures (e.g., "connection refused") alongside configuration checks.
 
 ## 2. Updated Roadmap
 
@@ -79,7 +81,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
 | 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
-| 44 | **Interactive Config Validator** | **DevX**: A CLI mode that walks through validation errors one by one and asks the user for the correct value interactively. | Medium |
 | 43 | **Config Schema Visualization** | **UX**: A UI view to visualize the structure of the loaded configuration, highlighting inheritance or overrides. | Low |
 | 44 | **Validator Plugin System** | **Extensibility**: Allow users to write custom validation rules (e.g. "service name must start with 'prod-'") using Rego or simple scripts. | High |
 
@@ -103,7 +104,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 69 | **Secure Defaults Enforcer** | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard. | Medium |
 | 70 | **Interactive Doctor Fixer** | **DevX**: Extend the doctor command to automatically fix common configuration issues (e.g. creating missing files, updating schema versions). | High |
 | 71 | **Config Validation Webhook** | **Ops**: A pre-commit or CI webhook that runs `mcpany config validate` on changed files to prevent bad config from being merged. | Medium |
-| 70 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
+| 72 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
 
 | 70 | **User Preference Storage** | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database. | Low |
 | 71 | **Top Tools API Extensions** | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available. | Medium |
