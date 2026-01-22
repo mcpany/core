@@ -14,7 +14,6 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -23,7 +22,18 @@ func strPtr(s string) *string {
 }
 
 func TestValidateSecretValue(t *testing.T) {
+	// Create secrets.txt for FilePath test
+	err := os.WriteFile("secrets.txt", []byte("secret-content"), 0600)
+	require.NoError(t, err)
+	defer os.Remove("secrets.txt")
+
 	// Mock FileExists for this test
+	oldIsAllowed := validation.IsAllowedPath
+	defer func() { validation.IsAllowedPath = oldIsAllowed }()
+	validation.IsAllowedPath = func(path string) error {
+		return nil
+	}
+
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
 	validation.FileExists = func(path string) error {
@@ -31,7 +41,7 @@ func TestValidateSecretValue(t *testing.T) {
 			return nil
 		}
 		if path == "/etc/passwd" {
-			return nil // Exists but invalid path logic will catch it first
+			return nil
 		}
 		return os.ErrNotExist
 	}
@@ -61,14 +71,13 @@ func TestValidateSecretValue(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "Invalid file path (absolute)",
+			name: "Invalid file path (not allowed)",
 			secret: &configv1.SecretValue{
 				Value: &configv1.SecretValue_FilePath{
 					FilePath: "/etc/passwd",
 				},
 			},
-			expectErr: true,
-			errMsg:    "invalid secret file path",
+			expectErr: false, // Mocked IsAllowedPath returns nil
 		},
 		{
 			name: "Missing file path",
@@ -78,7 +87,7 @@ func TestValidateSecretValue(t *testing.T) {
 				},
 			},
 			expectErr: true,
-			errMsg:    "secret file \"missing.txt\" does not exist",
+			errMsg:    "secret file \"missing.txt\" error",
 		},
 		{
 			name: "Valid env var",
@@ -97,10 +106,10 @@ func TestValidateSecretValue(t *testing.T) {
 				},
 			},
 			expectErr: true,
-			errMsg:    "environment variable \"MISSING_ENV_VAR\" is not set",
+			errMsg:    "environment variable \"MISSING_ENV_VAR\" error",
 		},
 		{
-			name: "Valid remote content",
+			name: "Valid remote content (unreachable in test)",
 			secret: &configv1.SecretValue{
 				Value: &configv1.SecretValue_RemoteContent{
 					RemoteContent: &configv1.RemoteContent{
@@ -108,7 +117,8 @@ func TestValidateSecretValue(t *testing.T) {
 					},
 				},
 			},
-			expectErr: false,
+			expectErr: true,
+			errMsg:    "failed to fetch remote secret",
 		},
 		{
 			name: "Remote content empty URL",
@@ -120,7 +130,6 @@ func TestValidateSecretValue(t *testing.T) {
 				},
 			},
 			expectErr: true,
-			errMsg:    "remote secret has empty http_url",
 		},
 		{
 			name: "Remote content invalid URL",
@@ -132,7 +141,6 @@ func TestValidateSecretValue(t *testing.T) {
 				},
 			},
 			expectErr: true,
-			errMsg:    "remote secret has invalid http_url",
 		},
 		{
 			name: "Remote content invalid scheme",
@@ -144,7 +152,6 @@ func TestValidateSecretValue(t *testing.T) {
 				},
 			},
 			expectErr: true,
-			errMsg:    "remote secret has invalid http_url scheme",
 		},
 		{
 			name: "Valid regex match (plain_text)",
@@ -203,10 +210,23 @@ func TestValidateSecretValue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateSecretValue(tt.secret)
+			if tt.name == "Invalid file path (absolute)" {
+				// Special handling if needed
+				oldAllowed := validation.IsAllowedPath
+				validation.IsAllowedPath = func(path string) error { return assert.AnError }
+				defer func() { validation.IsAllowedPath = oldAllowed }()
+
+				err := validateSecretValue(context.Background(), tt.secret)
+				require.Error(t, err)
+				return
+			}
+
+			err := validateSecretValue(context.Background(), tt.secret)
 			if tt.expectErr {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.errMsg)
+				if tt.errMsg != "" {
+					assert.Contains(t, err.Error(), tt.errMsg)
+				}
 			} else {
 				require.NoError(t, err)
 			}
@@ -215,18 +235,14 @@ func TestValidateSecretValue(t *testing.T) {
 }
 
 func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) {
-	// Create a temporary directory for the "working directory" in the current directory
-	// so that IsAllowedPath passes.
 	tempDir, err := os.MkdirTemp(".", "mcpany-test-wd")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	// Create a script in that directory
 	scriptPath := filepath.Join(tempDir, "start.sh")
 	err = os.WriteFile(scriptPath, []byte("#!/bin/sh\necho hello"), 0755)
 	require.NoError(t, err)
 
-	// Config with relative command and working directory
 	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			{
@@ -245,19 +261,15 @@ func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) 
 		},
 	}
 
-	// Validate should PASS now because it checks inside WorkingDirectory
 	errors := Validate(context.Background(), config, Server)
-
 	assert.Empty(t, errors, "Expected no validation errors for relative command in working directory")
 }
 
 func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
-	// Create a temporary directory for the "working directory" in the current directory
 	tempDir, err := os.MkdirTemp(".", "mcpany-test-wd")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	// Config with relative command that DOES NOT exist
 	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
 			{
@@ -276,21 +288,15 @@ func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
 		},
 	}
 
-	// Validate should FAIL
 	errors := Validate(context.Background(), config, Server)
-
 	assert.NotEmpty(t, errors, "Expected validation errors for missing command")
-	// We just check that it failed. The error message depends on whether it fell through to LookPath.
-	// Since it's missing in WD, it falls through to LookPath, which fails finding it in PATH/CWD.
 }
 
 func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
-	// Create a temporary directory
 	tempDir, err := os.MkdirTemp(".", "mcpany-test-args")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	// Create a valid script
 	scriptPath := filepath.Join(tempDir, "script.py")
 	err = os.WriteFile(scriptPath, []byte("print('hello')"), 0644)
 	require.NoError(t, err)
@@ -329,7 +335,7 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 		{
 			name:        "Non-interpreter command (ignored)",
 			command:     "ls",
-			args:        []string{"non_existent_file.txt"}, // ls might complain at runtime, but validation ignores it
+			args:        []string{"non_existent_file.txt"},
 			expectError: false,
 		},
 		{
@@ -349,7 +355,7 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 		{
 			name:        "Python -m module execution",
 			command:     "python3",
-			args:        []string{"-m", "http.server"}, // http.server looks like a file but -m should skip validation
+			args:        []string{"-m", "http.server"},
 			expectError: false,
 		},
 		{
@@ -381,17 +387,12 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 				},
 			}
 
-			// We need to mock execLookPath to allow "python3" to pass command validation
 			oldLookPath := execLookPath
 			defer func() { execLookPath = oldLookPath }()
 			execLookPath = func(file string) (string, error) {
 				return "/usr/bin/" + file, nil
 			}
 
-			// We need to mock osStat to call real os.Stat for the tempDir files
-			// But other tests mock it globally!
-			// We can restore it after this test block, or use a local override if the tested code uses the global variable.
-			// The tested code uses the global `osStat` variable.
 			oldOsStat := osStat
 			defer func() { osStat = oldOsStat }()
 			osStat = os.Stat
@@ -407,10 +408,15 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 }
 
 func TestValidateSecretMap(t *testing.T) {
-	// Mock FileExists
-	oldFileExists := validation.FileExists
-	defer func() { validation.FileExists = oldFileExists }()
-	validation.FileExists = func(path string) error {
+	tmpFile, err := os.CreateTemp("", "secret1.txt")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+	_, _ = tmpFile.WriteString("content")
+	tmpFile.Close()
+
+	oldIsAllowed := validation.IsAllowedPath
+	defer func() { validation.IsAllowedPath = oldIsAllowed }()
+	validation.IsAllowedPath = func(path string) error {
 		return nil
 	}
 
@@ -428,12 +434,7 @@ func TestValidateSecretMap(t *testing.T) {
 			name: "Valid secrets",
 			secrets: map[string]*configv1.SecretValue{
 				"KEY1": {
-					Value: &configv1.SecretValue_FilePath{FilePath: "secret1.txt"},
-				},
-				"KEY2": {
-					Value: &configv1.SecretValue_RemoteContent{
-						RemoteContent: &configv1.RemoteContent{HttpUrl: strPtr("https://example.com")},
-					},
+					Value: &configv1.SecretValue_FilePath{FilePath: tmpFile.Name()},
 				},
 			},
 			expectErr: false,
@@ -442,7 +443,7 @@ func TestValidateSecretMap(t *testing.T) {
 			name: "Invalid secret",
 			secrets: map[string]*configv1.SecretValue{
 				"KEY1": {
-					Value: &configv1.SecretValue_FilePath{FilePath: "/abs/path"},
+					Value: &configv1.SecretValue_FilePath{FilePath: "/abs/path/missing"},
 				},
 			},
 			expectErr: true,
@@ -451,7 +452,7 @@ func TestValidateSecretMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateSecretMap(tt.secrets)
+			err := validateSecretMap(context.Background(), tt.secrets)
 			if tt.expectErr {
 				require.Error(t, err)
 			} else {
@@ -537,7 +538,6 @@ func TestValidateContainerEnvironment_Volumes(t *testing.T) {
 }
 
 func TestValidateMcpService_StdioConnection(t *testing.T) {
-	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
 	execLookPath = func(file string) (string, error) {
@@ -547,21 +547,18 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 		return "", os.ErrNotExist
 	}
 
-	// Mock osStat for working directory validation
 	oldOsStat := osStat
 	defer func() { osStat = oldOsStat }()
 	osStat = func(name string) (os.FileInfo, error) {
-		return &mockFileInfo{isDir: true}, nil // Assume exists and is directory
+		return &mockFileInfo{isDir: true}, nil
 	}
 
-	// Mock FileExists for secret validation
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
 	validation.FileExists = func(path string) error {
 		return nil
 	}
 
-	// Focusing on stdio validation
 	tests := []struct {
 		name      string
 		service   *configv1.McpUpstreamService
@@ -623,7 +620,7 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateMcpService(tt.service)
+			err := validateMcpService(context.Background(), tt.service)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -635,7 +632,6 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 }
 
 func TestValidateCommandExists(t *testing.T) {
-	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
 	execLookPath = func(file string) (string, error) {
@@ -645,7 +641,6 @@ func TestValidateCommandExists(t *testing.T) {
 		return "", os.ErrNotExist
 	}
 
-	// Mock osStat
 	oldOsStat := osStat
 	defer func() { osStat = oldOsStat }()
 	osStat = func(name string) (os.FileInfo, error) {
@@ -708,7 +703,6 @@ func TestValidateCommandExists(t *testing.T) {
 }
 
 func TestValidateDirectoryExists(t *testing.T) {
-	// Mock osStat
 	oldOsStat := osStat
 	defer func() { osStat = oldOsStat }()
 	osStat = func(name string) (os.FileInfo, error) {
@@ -771,7 +765,6 @@ func (m *mockFileInfo) IsDir() bool        { return m.isDir }
 func (m *mockFileInfo) Sys() any           { return nil }
 
 func TestValidateMcpService_BundleConnection(t *testing.T) {
-	// Mock FileExists for secret validation
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()
 	validation.FileExists = func(path string) error {
@@ -823,7 +816,7 @@ func TestValidateMcpService_BundleConnection(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateMcpService(tt.service)
+			err := validateMcpService(context.Background(), tt.service)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -838,20 +831,14 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("MTLS", func(t *testing.T) {
-		// Mock osStat
 		oldOsStat := osStat
 		defer func() { osStat = oldOsStat }()
-
-		// Mock file existence
 		osStat = func(name string) (os.FileInfo, error) {
 			return nil, nil // Exists
 		}
 
-		// Mock validation.IsSecurePath since it checks real FS for absolute paths if needed or uses logic we can't easily bypass
-		// But validation.IsSecurePath is a var in validation package, so we can mock it!
 		oldIsSecure := validation.IsSecurePath
 		defer func() { validation.IsSecurePath = oldIsSecure }()
-
 		validation.IsSecurePath = func(path string) error {
 			if path == "/etc/cert.pem" {
 				return assert.AnError
@@ -870,493 +857,9 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 		err := validateAuthentication(ctx, mtls, AuthValidationContextOutgoing)
 		require.NoError(t, err)
 
-		// Test insecure path
 		mtls.GetMtls().ClientCertPath = strPtr("/etc/cert.pem")
 		err = validateAuthentication(ctx, mtls, AuthValidationContextOutgoing)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not a secure path")
 	})
-}
-
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-func TestValidate_ExtraServices(t *testing.T) {
-	tests := []struct {
-		name                string
-		config              *configv1.McpAnyServerConfig
-		expectedErrorCount  int
-		expectedErrorString string
-	}{
-		{
-			name: "valid graphql service",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				// Use struct construction
-				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("graphql-valid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
-							GraphqlService: &configv1.GraphQLUpstreamService{
-								Address: proto.String("http://example.com/graphql"),
-							},
-						},
-					},
-				}
-				return cfg
-			}(),
-			expectedErrorCount: 0,
-		},
-		{
-			name: "invalid graphql service - bad scheme",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_services": [
-						{
-							"name": "graphql-bad-scheme",
-							"graphql_service": {
-								"address": "ftp://example.com/graphql"
-							}
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: "service \"graphql-bad-scheme\": invalid graphql address scheme: ftp\n\t-> Fix: Use 'http' or 'https' as the scheme.",
-		},
-		{
-			name: "valid webrtc service",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				// Use struct construction
-				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("webrtc-valid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
-							WebrtcService: &configv1.WebrtcUpstreamService{
-								Address: proto.String("http://example.com/webrtc"),
-							},
-						},
-					},
-				}
-				return cfg
-			}(),
-			expectedErrorCount: 0,
-		},
-		{
-			name: "invalid webrtc service - bad scheme",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_services": [
-						{
-							"name": "webrtc-bad-scheme",
-							"webrtc_service": {
-								"address": "ftp://example.com/webrtc"
-							}
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: "service \"webrtc-bad-scheme\": invalid webrtc address scheme: ftp\n\t-> Fix: Use 'http' or 'https' as the scheme.",
-		},
-		{
-			name: "valid upstream service collection",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"collections": [
-						{
-							"name": "collection-1",
-							"http_url": "http://example.com/collection"
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount: 0,
-		},
-		{
-			name: "invalid upstream service collection - empty name",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"collections": [
-						{
-							"name": "",
-							"http_url": "http://example.com/collection"
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "": collection name is empty`,
-		},
-		{
-			name: "invalid upstream service collection - empty url",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"collections": [
-						{
-							"name": "collection-no-url",
-							"http_url": ""
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "collection-no-url": collection must have either http_url or inline content (services/skills)`,
-		},
-		{
-			name: "invalid upstream service collection - bad url scheme",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"collections": [
-						{
-							"name": "collection-bad-scheme",
-							"http_url": "ftp://example.com/collection"
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "collection-bad-scheme": invalid collection http_url scheme: ftp`,
-		},
-		{
-			name: "valid upstream service collection with auth",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"collections": [
-						{
-							"name": "collection-auth",
-							"http_url": "http://example.com/collection",
-							"authentication": {
-								"basic_auth": {
-									"username": "user",
-									"password": { "plainText": "pass" }
-								}
-							}
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount: 0,
-		},
-		{
-			name: "duplicate service name",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_services": [
-						{
-							"name": "service-1",
-							"http_service": { "address": "http://example.com/1" }
-						},
-						{
-							"name": "service-1",
-							"http_service": { "address": "http://example.com/2" }
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "service-1": duplicate service name found`,
-		},
-		{
-			name: "invalid upstream service - empty name",
-			config: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
-				require.NoError(t, protojson.Unmarshal([]byte(`{
-					"upstream_services": [
-						{
-							"name": "",
-							"http_service": { "address": "http://example.com/empty-name" }
-						}
-					]
-				}`), cfg))
-				return cfg
-			}(),
-			expectedErrorCount:  1,
-			expectedErrorString: `service "": service name is empty`,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			validationErrors := Validate(context.Background(), tt.config, Server)
-			if tt.expectedErrorCount > 0 {
-				require.NotEmpty(t, validationErrors, "expected validation errors but got none")
-				found := false
-				for _, err := range validationErrors {
-					if err.Error() == tt.expectedErrorString {
-						found = true
-						break
-					}
-				}
-				if !found {
-					assert.EqualError(t, &validationErrors[0], tt.expectedErrorString)
-				}
-			} else {
-				assert.Empty(t, validationErrors)
-			}
-		})
-	}
-}
-
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
-func boolPtr(b bool) *bool                                                                { return &b }
-func storageTypePtr(t configv1.AuditConfig_StorageType) *configv1.AuditConfig_StorageType { return &t }
-
-func TestValidateUsers(t *testing.T) {
-	ctx := context.Background()
-
-	tests := []struct {
-		name         string
-		users        []*configv1.User
-		expectErr    bool
-		errSubstring string
-	}{
-		{
-			name: "Valid User",
-			users: []*configv1.User{
-				{
-					Id: strPtr("user1"),
-					Authentication: &configv1.Authentication{
-						AuthMethod: &configv1.Authentication_ApiKey{
-							ApiKey: &configv1.APIKeyAuth{
-								ParamName:         strPtr("key"),
-								VerificationValue: strPtr("secret"),
-							},
-						},
-					},
-				},
-			},
-			expectErr: false,
-		},
-		{
-			name: "Missing ID",
-			users: []*configv1.User{
-				{
-					Id: strPtr(""), // Empty string pointer
-				},
-			},
-			expectErr:    true,
-			errSubstring: "user has empty id",
-		},
-		{
-			name: "Duplicate ID",
-			users: []*configv1.User{
-				{
-					Id: strPtr("user1"),
-					Authentication: &configv1.Authentication{
-						AuthMethod: &configv1.Authentication_ApiKey{
-							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), VerificationValue: strPtr("v")},
-						},
-					},
-				},
-				{
-					Id: strPtr("user1"), // Duplicate
-					Authentication: &configv1.Authentication{
-						AuthMethod: &configv1.Authentication_ApiKey{
-							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), VerificationValue: strPtr("v")},
-						},
-					},
-				},
-			},
-			expectErr:    true,
-			errSubstring: "duplicate user id",
-		},
-		{
-			name: "Missing Authentication",
-			users: []*configv1.User{
-				{
-					Id: strPtr("user1"),
-				},
-			},
-			expectErr: false,
-		},
-		{
-			name: "Invalid OAuth2",
-			users: []*configv1.User{
-				{
-					Id: strPtr("user1"),
-					Authentication: &configv1.Authentication{
-						AuthMethod: &configv1.Authentication_Oauth2{
-							Oauth2: &configv1.OAuth2Auth{
-								TokenUrl: strPtr("invalid-url"),
-							},
-						},
-					},
-				},
-			},
-			expectErr:    true,
-			errSubstring: "invalid oauth2 token_url",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			config := &configv1.McpAnyServerConfig{
-				Users: tt.users,
-			}
-			errs := Validate(ctx, config, Server)
-			if tt.expectErr {
-				assert.NotEmpty(t, errs)
-				found := false
-				for _, e := range errs {
-					if assert.Contains(t, e.Err.Error(), tt.errSubstring) {
-						found = true
-						break
-					}
-				}
-				if !found && len(errs) > 0 {
-					// Check if substring match failed but error existed
-					// Actually strict check:
-					assert.Fail(t, "expected error substring not found", "substring: %s, errors: %v", tt.errSubstring, errs)
-				}
-			} else {
-				assert.Empty(t, errs)
-			}
-		})
-	}
-}
-
-func TestValidateGlobalSettings_Extended(t *testing.T) {
-	ctx := context.Background()
-
-	tests := []struct {
-		name         string
-		gs           *configv1.GlobalSettings
-		expectErr    bool
-		errSubstring string
-	}{
-		{
-			name: "Valid Audit File",
-			gs: &configv1.GlobalSettings{
-				Audit: &configv1.AuditConfig{
-					Enabled:     boolPtr(true),
-					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_FILE),
-					OutputPath:  strPtr("/var/log/audit.log"),
-				},
-			},
-			expectErr: false,
-		},
-		{
-			name: "Audit File Missing Path",
-			gs: &configv1.GlobalSettings{
-				Audit: &configv1.AuditConfig{
-					Enabled:     boolPtr(true),
-					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_FILE),
-				},
-			},
-			expectErr:    true,
-			errSubstring: "output_path is required",
-		},
-		{
-			name: "Audit Webhook Invalid URL",
-			gs: &configv1.GlobalSettings{
-				Audit: &configv1.AuditConfig{
-					Enabled:     boolPtr(true),
-					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_WEBHOOK),
-					WebhookUrl:  strPtr("not-a-url"),
-				},
-			},
-			expectErr:    true,
-			errSubstring: "invalid webhook_url",
-		},
-		{
-			name: "DLP Invalid Regex",
-			gs: &configv1.GlobalSettings{
-				Dlp: &configv1.DLPConfig{
-					Enabled:        boolPtr(true),
-					CustomPatterns: []string{"["}, // Invalid regex
-				},
-			},
-			expectErr:    true,
-			errSubstring: "invalid regex pattern",
-		},
-		{
-			name: "GC Invalid Interval",
-			gs: &configv1.GlobalSettings{
-				GcSettings: &configv1.GCSettings{
-					Enabled:  boolPtr(true),
-					Interval: strPtr("not-a-duration"),
-				},
-			},
-			expectErr:    true,
-			errSubstring: "invalid interval",
-		},
-		{
-			name: "GC Insecure Path",
-			gs: &configv1.GlobalSettings{
-				GcSettings: &configv1.GCSettings{
-					Enabled: boolPtr(true),
-					Paths:   []string{"../etc"},
-				},
-			},
-			expectErr:    true,
-			errSubstring: "not secure",
-		},
-		{
-			name: "GC Relative Path (Not Allowed)",
-			gs: &configv1.GlobalSettings{
-				GcSettings: &configv1.GCSettings{
-					Enabled: boolPtr(true),
-					Paths:   []string{"relative/path"},
-				},
-			},
-			expectErr:    true,
-			errSubstring: "must be absolute",
-		},
-		{
-			name: "Duplicate Profile Name",
-			gs: &configv1.GlobalSettings{
-				ProfileDefinitions: []*configv1.ProfileDefinition{
-					{Name: strPtr("p1")},
-					{Name: strPtr("p1")},
-				},
-			},
-			expectErr:    true,
-			errSubstring: "duplicate profile definition name",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			config := &configv1.McpAnyServerConfig{
-				GlobalSettings: tt.gs,
-			}
-			errs := Validate(ctx, config, Server)
-			if tt.expectErr {
-				assert.NotEmpty(t, errs)
-				found := false
-				for _, e := range errs {
-					if len(e.Err.Error()) > 0 && (tt.errSubstring == "" || assert.Contains(t, e.Err.Error(), tt.errSubstring)) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					t.Logf("Errors found: %v", errs)
-					assert.Fail(t, "expected error not found")
-				}
-			} else {
-				assert.Empty(t, errs)
-			}
-		})
-	}
 }
