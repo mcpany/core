@@ -453,11 +453,32 @@ func isKeyColon(input []byte, endOffset int) bool {
 // We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
 // We use [^\s] instead of [^@] to allow @ in passwords while stopping at the last @ before a non-password part (heuristic).
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)`)
+// We also capture the preceding user part (anything non-colon non-space) to allow heuristic checks (e.g. skipping labels).
+var dsnPasswordRegex = regexp.MustCompile(`([^:\s]*)(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
 var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
+
+// redactionSkipLabels is a list of labels that look like DSN keys (Word:...) but should not be redacted.
+// This prevents false positives in logs (e.g. "Contact:support@example.com").
+var redactionSkipLabels = map[string]bool{
+	"Error":     true, "ERROR": true,
+	"Warning":   true, "WARNING": true,
+	"Info":      true, "INFO": true,
+	"Debug":     true, "DEBUG": true,
+	"Panic":     true, "PANIC": true,
+	"Fatal":     true, "FATAL": true,
+	"Trace":     true, "TRACE": true,
+	"Contact":   true,
+	"Note":      true,
+	"Exception": true,
+	"Reason":    true,
+	"Message":   true,
+	"URL":       true,
+	"Label":     true,
+	"Example":   true,
+}
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
@@ -496,7 +517,25 @@ func RedactDSN(dsn string) string {
 		}
 	}
 
-	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
+	return dsnPasswordRegex.ReplaceAllStringFunc(dsn, func(match string) string {
+		// match is "User:Pass@" or similar.
+		// Find the first colon to split User and Rest.
+		idx := strings.Index(match, ":")
+		if idx == -1 {
+			return match // Should not happen given regex
+		}
+		user := match[:idx]
+
+		// Heuristic: Check against whitelist of common labels to avoid false positives.
+		if redactionSkipLabels[user] {
+			return match
+		}
+
+		// Redact: user + ":[REDACTED]@"
+		// Note: match ends with @, so we just append it.
+		// We replace everything after colon and before @ with placeholder.
+		return user + ":" + redactedPlaceholder + "@"
+	})
 }
 
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
