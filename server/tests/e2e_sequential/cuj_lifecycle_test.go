@@ -17,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -133,12 +134,7 @@ upstream_services:
 	defer cancel()
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
 	// Use custom HTTP client to inject API key
-	httpClient := &http.Client{
-		Transport: &apiKeyTransport{
-			Base:   http.DefaultTransport,
-			APIKey: "test-key",
-		},
-	}
+	httpClient := integration.NewAPIKeyClient("test-key")
 	transport := &mcp.StreamableClientTransport{
 		Endpoint:   baseURL + "/mcp",
 		HTTPClient: httpClient,
@@ -284,7 +280,10 @@ upstream_services:
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Re-connect
-	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	transport = &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()

@@ -17,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -173,12 +174,7 @@ upstream_services:
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
 	// Use custom HTTP client to inject API key
-	httpClient := &http.Client{
-		Transport: &apiKeyTransport{
-			Base:   http.DefaultTransport,
-			APIKey: "test-key",
-		},
-	}
+	httpClient := integration.NewAPIKeyClient("test-key")
 	transport := &mcp.StreamableClientTransport{
 		Endpoint:   baseURL + "/mcp",
 		HTTPClient: httpClient,
@@ -230,14 +226,4 @@ upstream_services:
 		}
 	}
 	require.True(t, foundFile, "Result did not contain backend_file.txt in %v", res.Content)
-}
-
-type apiKeyTransport struct {
-	Base   http.RoundTripper
-	APIKey string
-}
-
-func (t *apiKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("X-API-Key", t.APIKey)
-	return t.Base.RoundTrip(req)
 }

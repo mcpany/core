@@ -20,6 +20,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -266,12 +267,7 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-weather-client", Version: "1.0"}, nil)
 	// Use custom HTTP client to inject API key
-	httpClient := &http.Client{
-		Transport: &apiKeyTransport{
-			Base:   http.DefaultTransport,
-			APIKey: "demo-key",
-		},
-	}
+	httpClient := integration.NewAPIKeyClient("demo-key")
 	transport := &mcp.StreamableClientTransport{
 		Endpoint:   baseURL + "/mcp",
 		HTTPClient: httpClient,
@@ -461,12 +457,7 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
 	// Use custom HTTP client to inject API key
-	httpClient := &http.Client{
-		Transport: &apiKeyTransport{
-			Base:   http.DefaultTransport,
-			APIKey: "demo-key",
-		},
-	}
+	httpClient := integration.NewAPIKeyClient("demo-key")
 	transport := &mcp.StreamableClientTransport{
 		Endpoint:   baseURL + "/mcp",
 		HTTPClient: httpClient,
