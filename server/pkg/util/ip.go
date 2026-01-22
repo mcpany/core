@@ -30,18 +30,55 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 // ExtractIP extracts the IP address from a host:port string or just an IP string.
 // It also handles IPv6 brackets and strips IPv6 zone indices (e.g., %eth0).
 func ExtractIP(addr string) string {
-	ip, _, err := net.SplitHostPort(addr)
-	if err != nil {
+	if len(addr) == 0 {
+		return ""
+	}
+
+	// ⚡ Bolt Optimization: Fast path to avoid net.SplitHostPort allocation (AddrError).
+	// We only call SplitHostPort if we detect a port is likely present.
+	needsSplit := true
+	firstColon := strings.IndexByte(addr, ':')
+
+	if firstColon == -1 {
+		// No colon -> No port (e.g. "1.2.3.4", "localhost")
+		needsSplit = false
+	} else if addr[0] == '[' {
+		// Starts with bracket
+		// If it ends with bracket, it's just "[IPv6]" (no port)
+		if addr[len(addr)-1] == ']' {
+			needsSplit = false
+		}
+	} else {
+		// No brackets, but has colon.
+		// If multiple colons -> IPv6 literal (e.g. "::1") -> No port (SplitHostPort would fail)
+		// If single colon -> IPv4 with port (e.g. "1.2.3.4:80")
+		if strings.LastIndexByte(addr, ':') != firstColon {
+			needsSplit = false
+		}
+	}
+
+	var ip string
+	if needsSplit {
+		var err error
+		var host string
+		host, _, err = net.SplitHostPort(addr)
+		if err == nil {
+			ip = host
+		} else {
+			ip = addr
+		}
+	} else {
 		ip = addr
 	}
-	if len(ip) > 0 && ip[0] == '[' && ip[len(ip)-1] == ']' {
+
+	// Remove brackets if present (e.g. if we skipped SplitHostPort for "[::1]")
+	if len(ip) > 1 && ip[0] == '[' && ip[len(ip)-1] == ']' {
 		ip = ip[1 : len(ip)-1]
 	}
+
 	// Strip zone index if present (e.g. fe80::1%eth0 -> fe80::1)
-	for i := 0; i < len(ip); i++ {
-		if ip[i] == '%' {
-			return ip[:i]
-		}
+	if idx := strings.IndexByte(ip, '%'); idx != -1 {
+		return ip[:idx]
 	}
 	return ip
 }
