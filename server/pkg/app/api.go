@@ -18,6 +18,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
@@ -406,6 +407,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "diagnose" {
+			a.handleServiceDiagnose(w, r, name, store)
+			return
+		}
+
 		if len(parts) > 1 {
 			http.NotFound(w, r)
 			return
@@ -557,6 +563,31 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("{}"))
+}
+
+func (a *Application) handleServiceDiagnose(w http.ResponseWriter, r *http.Request, name string, store storage.Storage) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	svc, err := store.GetService(r.Context(), name)
+	if err != nil {
+		logging.GetLogger().Error("failed to get service", "name", name, "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if svc == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Call doctor
+	result := doctor.CheckService(r.Context(), svc)
+	result.ServiceName = svc.GetName()
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(result)
 }
 
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
