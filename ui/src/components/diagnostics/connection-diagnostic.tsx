@@ -52,7 +52,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
     ];
 
-    if (service.websocketService) {
+    if (service.websocketService || service.httpService) {
         initialSteps.splice(1, 0, { id: "browser_connectivity", name: "Browser Connectivity Check", status: "pending", logs: [] });
     }
 
@@ -113,7 +113,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     }
     updateStep("config", { status: "success", detail: "Configuration valid" });
 
-    // --- Step 1.5: Browser Connectivity (WebSocket Only) ---
+    // --- Step 1.5: Browser Connectivity (WebSocket & HTTP) ---
     if (service.websocketService) {
         updateStep("browser_connectivity", { status: "running" });
         addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);
@@ -145,6 +145,25 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             addLog("browser_connectivity", "Note: This is expected if the server is internal or behind a firewall not accessible from your browser.");
             updateStep("browser_connectivity", { status: "failure", detail: "Not Accessible" });
             // Don't stop diagnostics, backend might still see it
+        }
+    } else if (service.httpService) {
+        updateStep("browser_connectivity", { status: "running" });
+        const httpUrl = service.httpService.address;
+        addLog("browser_connectivity", `Attempting to connect to ${httpUrl} from browser...`);
+
+        try {
+            // mode: 'no-cors' allows us to send a request to another origin.
+            // We won't see the response, but if it doesn't throw, it means the server is reachable (DNS + TCP + TLS).
+            await fetch(httpUrl, { mode: 'no-cors', cache: 'no-store' });
+
+            addLog("browser_connectivity", "Successfully connected to HTTP server from browser.");
+            addLog("browser_connectivity", "Note: 'no-cors' mode used. We can reach the server, but cannot read the response due to CORS policy. This confirms network connectivity.");
+            updateStep("browser_connectivity", { status: "success", detail: "Accessible" });
+        } catch (error: any) {
+            addLog("browser_connectivity", `Failed to connect from browser: ${error.message}`);
+            addLog("browser_connectivity", "Possible causes: Server down, blocked by firewall, invalid SSL cert, Mixed Content blocking, or CSP (Content Security Policy) restrictions.");
+            updateStep("browser_connectivity", { status: "failure", detail: "Not Accessible" });
+            // Don't stop diagnostics
         }
     }
 
