@@ -225,6 +225,39 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 					return fmt.Errorf("strict mode validation failed: one or more upstream services are unreachable or misconfigured")
 				}
 				log.Info("Strict mode validation passed.")
+			} else if !stdio && len(configPaths) > 0 {
+				// Non-strict mode: Run checks in background to warn user
+				go func() {
+					// Small delay to let startup logs pass
+					time.Sleep(100 * time.Millisecond)
+
+					store := config.NewFileStore(osFs, configPaths)
+					configs, err := config.LoadResolvedConfig(context.Background(), store)
+					if err != nil {
+						log.Warn("Failed to load config for background health check", "error", err)
+						return
+					}
+
+					log.Info("Running background connectivity checks...")
+					results := doctor.RunChecks(context.Background(), configs)
+
+					var problems []string
+					for _, res := range results {
+						switch res.Status {
+						case doctor.StatusError:
+							log.Warn("❌ Upstream Service Unreachable", "service", res.ServiceName, "message", res.Message)
+							problems = append(problems, fmt.Sprintf("%s: %s", res.ServiceName, res.Message))
+						case doctor.StatusWarning:
+							log.Warn("⚠️  Upstream Service Warning", "service", res.ServiceName, "message", res.Message)
+						}
+					}
+
+					if len(problems) > 0 {
+						log.Warn(fmt.Sprintf("⚠️  Found %d upstream connectivity issues. Use --strict to fail on startup.", len(problems)))
+					} else {
+						log.Info("✅ Pre-flight checks passed: All services reachable.")
+					}
+				}()
 			}
 
 			// Track 1: Friction Fighter - Startup Banner

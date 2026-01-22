@@ -265,7 +265,7 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect: %v", err),
+			Message: fmt.Sprintf("Failed to connect: %s", EnhanceErrorMessage(err)),
 			Error:   err,
 		}
 	}
@@ -331,7 +331,7 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect to gRPC endpoint: %v", err),
+			Message: fmt.Sprintf("Failed to connect to gRPC endpoint: %s", EnhanceErrorMessage(err)),
 			Error:   err,
 		}
 	}
@@ -514,4 +514,26 @@ func applyAuthentication(ctx context.Context, req *http.Request, auth *configv1.
 	// For now, we skip full OAuth2 flow injection here unless we want to do full token negotiation.
 
 	return nil
+}
+
+// EnhanceErrorMessage analyzes the error and adds actionable hints.
+func EnhanceErrorMessage(err error) string {
+	if err == nil {
+		return ""
+	}
+	msg := err.Error()
+
+	if strings.Contains(msg, "connection refused") {
+		return fmt.Sprintf("%s (Hint: Is the service running on this port?)", msg)
+	}
+	if strings.Contains(msg, "no such host") {
+		return fmt.Sprintf("%s (Hint: Check the hostname/DNS. Is it correct?)", msg)
+	}
+	if strings.Contains(msg, "i/o timeout") || strings.Contains(msg, "context deadline exceeded") {
+		return fmt.Sprintf("%s (Hint: The service is unreachable or too slow. Check firewalls/network.)", msg)
+	}
+	if strings.Contains(msg, "certificate signed by unknown authority") {
+		return fmt.Sprintf("%s (Hint: Self-signed certificate? Try importing the CA)", msg)
+	}
+	return msg
 }

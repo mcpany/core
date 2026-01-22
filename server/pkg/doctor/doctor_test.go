@@ -5,6 +5,7 @@ package doctor
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -532,4 +533,49 @@ func TestRunChecks_SQL(t *testing.T) {
 	assert.Len(t, results, 2)
 	assert.Equal(t, StatusOk, results[0].Status)
 	assert.Equal(t, StatusError, results[1].Status)
+}
+
+func TestEnhanceErrorMessage(t *testing.T) {
+	tests := []struct {
+		name     string
+		err      error
+		expected string
+	}{
+		{
+			name:     "Connection refused",
+			err:      fmt.Errorf("dial tcp 127.0.0.1:8080: connection refused"),
+			expected: "dial tcp 127.0.0.1:8080: connection refused (Hint: Is the service running on this port?)",
+		},
+		{
+			name:     "No such host",
+			err:      fmt.Errorf("dial tcp: lookup nonexistent.com: no such host"),
+			expected: "dial tcp: lookup nonexistent.com: no such host (Hint: Check the hostname/DNS. Is it correct?)",
+		},
+		{
+			name:     "Timeout",
+			err:      fmt.Errorf("context deadline exceeded"),
+			expected: "context deadline exceeded (Hint: The service is unreachable or too slow. Check firewalls/network.)",
+		},
+		{
+			name:     "Certificate error",
+			err:      fmt.Errorf("x509: certificate signed by unknown authority"),
+			expected: "x509: certificate signed by unknown authority (Hint: Self-signed certificate? Try importing the CA)",
+		},
+		{
+			name:     "No hint needed",
+			err:      fmt.Errorf("unknown error"),
+			expected: "unknown error",
+		},
+		{
+			name:     "Nil error",
+			err:      nil,
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, EnhanceErrorMessage(tt.err))
+		})
+	}
 }
