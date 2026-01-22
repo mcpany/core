@@ -230,7 +230,6 @@ func findFreePort(t *testing.T) int {
 }
 
 func TestGracefulShutdown(t *testing.T) {
-	// t.Skip("Skipping flaky/hanging test in parallel environment")
 	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
 		// Create a temporary log file to capture output and find the port
 		logFile, err := os.CreateTemp("", "mcpany-shutdown-test-*.log")

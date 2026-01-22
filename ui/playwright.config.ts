@@ -26,9 +26,6 @@ export default defineConfig({
   },
   use: {
     baseURL: BASE_URL,
-    // extraHTTPHeaders: {
-    //   'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
-    // },
     trace: 'on-first-retry',
     colorScheme: 'dark',
     actionTimeout: 15000,
