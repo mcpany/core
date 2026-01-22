@@ -1435,6 +1435,315 @@ func (b0 DeleteUserResponse_builder) Build() *DeleteUserResponse {
 	return m0
 }
 
+type GetDiscoveryStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDiscoveryStatusRequest) Reset() {
+	*x = GetDiscoveryStatusRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDiscoveryStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDiscoveryStatusRequest) ProtoMessage() {}
+
+func (x *GetDiscoveryStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type GetDiscoveryStatusRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 GetDiscoveryStatusRequest_builder) Build() *GetDiscoveryStatusRequest {
+	m0 := &GetDiscoveryStatusRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type GetDiscoveryStatusResponse struct {
+	state                protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_Providers *[]*DiscoveryProviderStatus `protobuf:"bytes,1,rep,name=providers"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *GetDiscoveryStatusResponse) Reset() {
+	*x = GetDiscoveryStatusResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDiscoveryStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDiscoveryStatusResponse) ProtoMessage() {}
+
+func (x *GetDiscoveryStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetDiscoveryStatusResponse) GetProviders() []*DiscoveryProviderStatus {
+	if x != nil {
+		if x.xxx_hidden_Providers != nil {
+			return *x.xxx_hidden_Providers
+		}
+	}
+	return nil
+}
+
+func (x *GetDiscoveryStatusResponse) SetProviders(v []*DiscoveryProviderStatus) {
+	x.xxx_hidden_Providers = &v
+}
+
+type GetDiscoveryStatusResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Providers []*DiscoveryProviderStatus
+}
+
+func (b0 GetDiscoveryStatusResponse_builder) Build() *GetDiscoveryStatusResponse {
+	m0 := &GetDiscoveryStatusResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Providers = &b.Providers
+	return m0
+}
+
+type DiscoveryProviderStatus struct {
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name            *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Status          *string                `protobuf:"bytes,2,opt,name=status"`
+	xxx_hidden_LastError       *string                `protobuf:"bytes,3,opt,name=last_error,json=lastError"`
+	xxx_hidden_LastRunAt       *string                `protobuf:"bytes,4,opt,name=last_run_at,json=lastRunAt"`
+	xxx_hidden_DiscoveredCount int32                  `protobuf:"varint,5,opt,name=discovered_count,json=discoveredCount"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *DiscoveryProviderStatus) Reset() {
+	*x = DiscoveryProviderStatus{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DiscoveryProviderStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DiscoveryProviderStatus) ProtoMessage() {}
+
+func (x *DiscoveryProviderStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DiscoveryProviderStatus) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *DiscoveryProviderStatus) GetStatus() string {
+	if x != nil {
+		if x.xxx_hidden_Status != nil {
+			return *x.xxx_hidden_Status
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *DiscoveryProviderStatus) GetLastError() string {
+	if x != nil {
+		if x.xxx_hidden_LastError != nil {
+			return *x.xxx_hidden_LastError
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *DiscoveryProviderStatus) GetLastRunAt() string {
+	if x != nil {
+		if x.xxx_hidden_LastRunAt != nil {
+			return *x.xxx_hidden_LastRunAt
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *DiscoveryProviderStatus) GetDiscoveredCount() int32 {
+	if x != nil {
+		return x.xxx_hidden_DiscoveredCount
+	}
+	return 0
+}
+
+func (x *DiscoveryProviderStatus) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *DiscoveryProviderStatus) SetStatus(v string) {
+	x.xxx_hidden_Status = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *DiscoveryProviderStatus) SetLastError(v string) {
+	x.xxx_hidden_LastError = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *DiscoveryProviderStatus) SetLastRunAt(v string) {
+	x.xxx_hidden_LastRunAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *DiscoveryProviderStatus) SetDiscoveredCount(v int32) {
+	x.xxx_hidden_DiscoveredCount = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+}
+
+func (x *DiscoveryProviderStatus) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DiscoveryProviderStatus) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *DiscoveryProviderStatus) HasLastError() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *DiscoveryProviderStatus) HasLastRunAt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *DiscoveryProviderStatus) HasDiscoveredCount() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *DiscoveryProviderStatus) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *DiscoveryProviderStatus) ClearStatus() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Status = nil
+}
+
+func (x *DiscoveryProviderStatus) ClearLastError() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_LastError = nil
+}
+
+func (x *DiscoveryProviderStatus) ClearLastRunAt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_LastRunAt = nil
+}
+
+func (x *DiscoveryProviderStatus) ClearDiscoveredCount() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_DiscoveredCount = 0
+}
+
+type DiscoveryProviderStatus_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name            *string
+	Status          *string
+	LastError       *string
+	LastRunAt       *string
+	DiscoveredCount *int32
+}
+
+func (b0 DiscoveryProviderStatus_builder) Build() *DiscoveryProviderStatus {
+	m0 := &DiscoveryProviderStatus{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Status = b.Status
+	}
+	if b.LastError != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_LastError = b.LastError
+	}
+	if b.LastRunAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_LastRunAt = b.LastRunAt
+	}
+	if b.DiscoveredCount != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_DiscoveredCount = *b.DiscoveredCount
+	}
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
@@ -1480,7 +1789,17 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v2\x16.mcpany.config.v1.UserR\x04user\",\n" +
 	"\x11DeleteUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x14\n" +
-	"\x12DeleteUserResponse2\xe2\x06\n" +
+	"\x12DeleteUserResponse\"\x1b\n" +
+	"\x19GetDiscoveryStatusRequest\"d\n" +
+	"\x1aGetDiscoveryStatusResponse\x12F\n" +
+	"\tproviders\x18\x01 \x03(\v2(.mcpany.admin.v1.DiscoveryProviderStatusR\tproviders\"\xaf\x01\n" +
+	"\x17DiscoveryProviderStatus\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x1d\n" +
+	"\n" +
+	"last_error\x18\x03 \x01(\tR\tlastError\x12\x1e\n" +
+	"\vlast_run_at\x18\x04 \x01(\tR\tlastRunAt\x12)\n" +
+	"\x10discovered_count\x18\x05 \x01(\x05R\x0fdiscoveredCount2\xd1\a\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -1496,75 +1815,82 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12\".mcpany.admin.v1.UpdateUserRequest\x1a#.mcpany.admin.v1.UpdateUserResponse\x12U\n" +
 	"\n" +
-	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponseB3B\n" +
+	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
+	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponseB3B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
-	(*ClearCacheRequest)(nil),        // 0: mcpany.admin.v1.ClearCacheRequest
-	(*ClearCacheResponse)(nil),       // 1: mcpany.admin.v1.ClearCacheResponse
-	(*ListServicesRequest)(nil),      // 2: mcpany.admin.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),     // 3: mcpany.admin.v1.ListServicesResponse
-	(*ServiceState)(nil),             // 4: mcpany.admin.v1.ServiceState
-	(*GetServiceRequest)(nil),        // 5: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),       // 6: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),         // 7: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),        // 8: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),           // 9: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),          // 10: mcpany.admin.v1.GetToolResponse
-	(*CreateUserRequest)(nil),        // 11: mcpany.admin.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),       // 12: mcpany.admin.v1.CreateUserResponse
-	(*GetUserRequest)(nil),           // 13: mcpany.admin.v1.GetUserRequest
-	(*GetUserResponse)(nil),          // 14: mcpany.admin.v1.GetUserResponse
-	(*ListUsersRequest)(nil),         // 15: mcpany.admin.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),        // 16: mcpany.admin.v1.ListUsersResponse
-	(*UpdateUserRequest)(nil),        // 17: mcpany.admin.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),       // 18: mcpany.admin.v1.UpdateUserResponse
-	(*DeleteUserRequest)(nil),        // 19: mcpany.admin.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),       // 20: mcpany.admin.v1.DeleteUserResponse
-	(*v1.UpstreamServiceConfig)(nil), // 21: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                 // 22: mcpany.mcp_router.v1.Tool
-	(*v1.User)(nil),                  // 23: mcpany.config.v1.User
+	(*ClearCacheRequest)(nil),          // 0: mcpany.admin.v1.ClearCacheRequest
+	(*ClearCacheResponse)(nil),         // 1: mcpany.admin.v1.ClearCacheResponse
+	(*ListServicesRequest)(nil),        // 2: mcpany.admin.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),       // 3: mcpany.admin.v1.ListServicesResponse
+	(*ServiceState)(nil),               // 4: mcpany.admin.v1.ServiceState
+	(*GetServiceRequest)(nil),          // 5: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),         // 6: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),           // 7: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),          // 8: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),             // 9: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),            // 10: mcpany.admin.v1.GetToolResponse
+	(*CreateUserRequest)(nil),          // 11: mcpany.admin.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),         // 12: mcpany.admin.v1.CreateUserResponse
+	(*GetUserRequest)(nil),             // 13: mcpany.admin.v1.GetUserRequest
+	(*GetUserResponse)(nil),            // 14: mcpany.admin.v1.GetUserResponse
+	(*ListUsersRequest)(nil),           // 15: mcpany.admin.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),          // 16: mcpany.admin.v1.ListUsersResponse
+	(*UpdateUserRequest)(nil),          // 17: mcpany.admin.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),         // 18: mcpany.admin.v1.UpdateUserResponse
+	(*DeleteUserRequest)(nil),          // 19: mcpany.admin.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),         // 20: mcpany.admin.v1.DeleteUserResponse
+	(*GetDiscoveryStatusRequest)(nil),  // 21: mcpany.admin.v1.GetDiscoveryStatusRequest
+	(*GetDiscoveryStatusResponse)(nil), // 22: mcpany.admin.v1.GetDiscoveryStatusResponse
+	(*DiscoveryProviderStatus)(nil),    // 23: mcpany.admin.v1.DiscoveryProviderStatus
+	(*v1.UpstreamServiceConfig)(nil),   // 24: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                   // 25: mcpany.mcp_router.v1.Tool
+	(*v1.User)(nil),                    // 26: mcpany.config.v1.User
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	21, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	24, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
-	21, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	21, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	24, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	24, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 4: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
-	22, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	22, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	23, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
-	23, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
-	23, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
-	23, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
-	23, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
-	23, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
-	0,  // 13: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 14: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	5,  // 15: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	7,  // 16: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	9,  // 17: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	11, // 18: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
-	13, // 19: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
-	15, // 20: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
-	17, // 21: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
-	19, // 22: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
-	1,  // 23: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 24: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	6,  // 25: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	8,  // 26: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	10, // 27: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	12, // 28: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
-	14, // 29: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
-	16, // 30: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
-	18, // 31: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
-	20, // 32: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
-	23, // [23:33] is the sub-list for method output_type
-	13, // [13:23] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	25, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	25, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	26, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
+	26, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
+	26, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
+	26, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
+	26, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
+	26, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
+	23, // 13: mcpany.admin.v1.GetDiscoveryStatusResponse.providers:type_name -> mcpany.admin.v1.DiscoveryProviderStatus
+	0,  // 14: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	2,  // 15: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 16: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 17: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 18: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	11, // 19: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
+	13, // 20: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
+	15, // 21: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
+	17, // 22: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
+	19, // 23: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
+	21, // 24: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
+	1,  // 25: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	3,  // 26: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 27: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 28: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 29: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	12, // 30: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
+	14, // 31: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
+	16, // 32: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
+	18, // 33: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
+	20, // 34: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
+	22, // 35: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
+	25, // [25:36] is the sub-list for method output_type
+	14, // [14:25] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -1578,7 +1904,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
