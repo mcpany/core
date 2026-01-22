@@ -636,8 +636,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	if jsonBytes == nil {
 		jsonBytes, marshalErr = json.Marshal(result)
 	}
-	// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-	text := util.BytesToString(jsonBytes)
+	text := string(jsonBytes)
 	if marshalErr != nil {
 		text = util.ToString(result)
 	}

@@ -6,7 +6,6 @@ package admin
 import (
 	"context"
 	"testing"
-	"time"
 
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -46,11 +45,6 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	err, ok := m.errors[serviceID]
 	return err, ok
-}
-
-func (m *MockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
-	// Stub implementation for tests
-	return "", 0, time.Time{}, false
 }
 
 func TestNewServer(t *testing.T) {
