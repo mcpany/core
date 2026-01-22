@@ -153,7 +153,7 @@ export function ServiceHealthWidget() {
           setServices(sorted);
         }
       } catch (error) {
-        console.error("Failed to fetch health data", error);
+        console.warn("Failed to fetch health data", error);
       } finally {
         setIsLoading(false);
       }
