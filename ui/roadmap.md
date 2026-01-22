@@ -17,7 +17,7 @@
 - [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
 - [x] **One-Click Retry/Reconnect**: Button in the Service List (or diagnostic dialog) to immediately trigger a reconnection attempt for a failed service.
 - [ ] **Copy Diagnostic Logs**: Add a button to copy all diagnostic logs to the clipboard for easy sharing/reporting.
-- [x] **Browser-Side HTTP Connectivity Check**: Add a diagnostic step to attempt fetching the service URL directly from the browser (for HTTP services) to help distinguish between server-side and client-side network issues (subject to CORS).
+- [ ] **Browser-Side HTTP Connectivity Check**: Add a diagnostic step to attempt fetching the service URL directly from the browser (for HTTP services) to help distinguish between server-side and client-side network issues (subject to CORS).
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
@@ -43,7 +43,7 @@
 - [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
-- [x] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
+- [ ] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
 - [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.

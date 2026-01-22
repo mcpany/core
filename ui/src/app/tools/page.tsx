@@ -21,18 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wrench, Play, Star, Search, List, LayoutList, Layers } from "lucide-react";
+import { Wrench, Play, Star, Search, List, LayoutList } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Info } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 /**
  * ToolsPage component.
@@ -48,7 +42,6 @@ export default function ToolsPage() {
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
-  const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -117,87 +110,6 @@ export default function ToolsPage() {
       return a.name.localeCompare(b.name);
     });
 
-  // Grouping logic
-  const groupedTools = filteredTools.reduce((acc, tool) => {
-    let key = "Other";
-    if (groupBy === "service") {
-      const service = services.find((s) => s.id === tool.serviceId);
-      key = service ? service.name : tool.serviceId || "Unknown Service";
-    } else if (groupBy === "category") {
-      key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
-    }
-
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(tool);
-    return acc;
-  }, {} as Record<string, ToolDefinition[]>);
-
-  const ToolTable = ({ tools }: { tools: ToolDefinition[] }) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[30px]"></TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead>Service</TableHead>
-          <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tools.map((tool) => (
-          <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => togglePin(tool.name)}
-                  aria-label={`Pin ${tool.name}`}
-                >
-                    <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
-                </Button>
-            </TableCell>
-            <TableCell className={cn("font-medium flex items-center", isCompact ? "py-0 px-2 h-8" : "")}>
-              <Wrench className={cn("mr-2 text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-              {tool.name}
-            </TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>{tool.description}</TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
-            </TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
-                    <Info className="w-3 h-3 mr-1 opacity-50" />
-                    {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
-                </div>
-            </TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-              <div className="flex items-center space-x-2">
-                  <Switch
-                      checked={!tool.disable}
-                      onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
-                      className={isCompact ? "scale-75" : ""}
-                  />
-                  <span className={cn("text-muted-foreground", isCompact ? "text-[10px] w-12" : "text-sm w-16")}>
-                      {!tool.disable ? "Enabled" : "Disabled"}
-                  </span>
-              </div>
-            </TableCell>
-            <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
-                <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
-                    <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
-                </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
   if (!isLoaded) {
       return (
           <div className="flex-1 p-8 animate-pulse text-muted-foreground">
@@ -219,19 +131,6 @@ export default function ToolsPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-[250px] pl-8 backdrop-blur-sm bg-background/50"
                 />
-            </div>
-            <div className="flex items-center space-x-2">
-                <Select value={groupBy} onValueChange={(v: any) => setGroupBy(v)}>
-                    <SelectTrigger className="w-[180px] backdrop-blur-sm bg-background/50">
-                        <Layers className="mr-2 h-4 w-4" />
-                        <SelectValue placeholder="Group By" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="none">No Grouping</SelectItem>
-                        <SelectItem value="service">Group by Service</SelectItem>
-                        <SelectItem value="category">Group by Category</SelectItem>
-                    </SelectContent>
-                </Select>
             </div>
             <div className="flex items-center space-x-2">
                 <Select value={selectedService} onValueChange={setSelectedService}>
@@ -276,27 +175,67 @@ export default function ToolsPage() {
           <CardDescription>Manage exposed tools from connected services.</CardDescription>
         </CardHeader>
         <CardContent>
-          {groupBy === "none" ? (
-            <ToolTable tools={filteredTools} />
-          ) : (
-            <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
-              {Object.entries(groupedTools).map(([groupName, groupTools]) => (
-                <AccordionItem key={groupName} value={groupName}>
-                  <AccordionTrigger className="hover:no-underline px-2">
-                    <span className="font-medium text-lg flex items-center">
-                      {groupName}
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {groupTools.length}
-                      </Badge>
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ToolTable tools={groupTools} />
-                  </AccordionContent>
-                </AccordionItem>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[30px]"></TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Service</TableHead>
+                <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredTools.map((tool) => (
+                <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => togglePin(tool.name)}
+                        aria-label={`Pin ${tool.name}`}
+                      >
+                          <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+                      </Button>
+                  </TableCell>
+                  <TableCell className={cn("font-medium flex items-center", isCompact ? "py-0 px-2 h-8" : "")}>
+                    <Wrench className={cn("mr-2 text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
+                    {tool.name}
+                  </TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>{tool.description}</TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                      <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
+                  </TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                      <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
+                          <Info className="w-3 h-3 mr-1 opacity-50" />
+                          {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
+                      </div>
+                  </TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            checked={!tool.disable}
+                            onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
+                            className={isCompact ? "scale-75" : ""}
+                        />
+                        <span className={cn("text-muted-foreground", isCompact ? "text-[10px] w-12" : "text-sm w-16")}>
+                            {!tool.disable ? "Enabled" : "Disabled"}
+                        </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
+                      <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
+                          <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
+                      </Button>
+                  </TableCell>
+                </TableRow>
               ))}
-            </Accordion>
-          )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

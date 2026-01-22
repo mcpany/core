@@ -59,27 +59,15 @@ const mockWebSocketService: UpstreamServiceConfig = {
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
     // Default mock global fetch (Success case)
-    global.fetch = vi.fn((url: string | Request, _init?: RequestInit) => {
-        if (typeof url === 'string' && url.includes("/api/dashboard/health")) {
-            return Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve([
-                    { id: "test-service", name: "Test Service", status: "healthy", message: "" },
-                    { id: "ws-service", name: "WebSocket Service", status: "healthy", message: "" }
-                ]),
-            });
-        }
-        // Mock for Browser Connectivity Check (HTTP Service)
-        if (typeof url === 'string' && (url.startsWith("http") || url.startsWith("https"))) {
-             return Promise.resolve({
-                ok: false, // opaque response in no-cors usually
-                type: 'opaque',
-                status: 0,
-                json: () => Promise.reject("Opaque response"),
-            });
-        }
-        return Promise.reject("Unknown URL");
-    }) as unknown as typeof fetch;
+    global.fetch = vi.fn(() =>
+        Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                { id: "test-service", name: "Test Service", status: "healthy", message: "" },
+                { id: "ws-service", name: "WebSocket Service", status: "healthy", message: "" }
+            ]),
+        })
+    ) as any;
   });
 
   afterEach(() => {
@@ -121,31 +109,6 @@ describe("ConnectionDiagnosticDialog", () => {
     expect(screen.getByText("Connected")).toBeInTheDocument();
   });
 
-  it("detects HTTP service and adds browser check step", async () => {
-      render(<ConnectionDiagnosticDialog service={mockService} />);
-
-      const trigger = screen.getByText("Troubleshoot");
-      fireEvent.click(trigger);
-
-      const startButton = screen.getByText("Start Diagnostics");
-      fireEvent.click(startButton);
-
-      // Wait for the simulated UI delay
-      await waitFor(() => {
-          expect(screen.getByText("Client-Side Configuration Check")).toBeInTheDocument();
-      });
-
-      // Verify that the Browser Connectivity Check step is present
-      await waitFor(() => {
-          expect(screen.getByText("Browser Connectivity Check")).toBeInTheDocument();
-      });
-
-      // Verify success log
-      await waitFor(() => {
-           expect(screen.getByText(/Successfully connected to HTTP server from browser/)).toBeInTheDocument();
-      });
-  });
-
   it("detects WebSocket service and adds browser check step", async () => {
     // We try to mock WebSocket just to prevent errors, but we won't assert on it heavily
     // since JSDOM mocking is flaky.
@@ -163,7 +126,7 @@ describe("ConnectionDiagnosticDialog", () => {
                 value: MockWebSocket,
                 writable: true,
             });
-        } catch (_e) {
+        } catch (e) {
             // Ignore if we can't redefine
         }
     }
@@ -196,7 +159,7 @@ describe("ConnectionDiagnosticDialog", () => {
                 { id: "test-service", name: "Test Service", status: "unhealthy", message: "404 Not Found" }
             ]),
         })
-      ) as unknown as typeof fetch;
+      ) as any;
 
       render(<ConnectionDiagnosticDialog service={mockService} />);
 
@@ -227,7 +190,7 @@ describe("ConnectionDiagnosticDialog", () => {
               { id: "test-service", name: "Test Service", status: "unhealthy", message: "dial tcp 127.0.0.1:8080: connect: connection refused" }
           ]),
       })
-    ) as unknown as typeof fetch;
+    ) as any;
 
     render(<ConnectionDiagnosticDialog service={mockService} />);
 

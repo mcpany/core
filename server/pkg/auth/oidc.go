@@ -146,6 +146,9 @@ func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	// We'll set a cookie with the user's email signed or just plain for now (INSECURE for prod, use session store)
 	// For this MVP, we will assume we have a session manager.
 	// We'll return a simple JSON response with the user info.
+	// ⚠️ SECURITY NOTE: This is an MVP implementation. In production, this should establish a proper
+	// server-side session (e.g., using a session store) and set a secure, HttpOnly session cookie,
+	// rather than returning user info directly to the client which delegates session management to the frontend.
 
 	resp := map[string]string{
 		"message": "Authenticated",

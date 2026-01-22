@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -41,6 +42,24 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 		return nil, args.Bool(1)
 	}
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
+}
+
+func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
+	args := m.Called(serviceID)
+	if args.Get(0) == nil {
+		return nil, args.Bool(1)
+	}
+	return args.Get(0).(*configv1.UpstreamServiceConfig), args.Bool(1)
+}
+
+func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
+	args := m.Called(serviceID)
+	return args.String(0), args.Bool(1)
+}
+
+func (m *MockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
+	args := m.Called(serviceID)
+	return args.String(0), args.Get(1).(time.Duration), args.Get(2).(time.Time), args.Bool(3)
 }
 
 // MockPrompt is a mock implementation of the Prompt interface.

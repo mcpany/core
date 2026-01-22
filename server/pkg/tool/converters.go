@@ -174,20 +174,35 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 		Description: description,
 	}
 
-	scalarType = strings.TrimPrefix(scalarType, "TYPE_")
-	scalarType = strings.ToLower(scalarType)
-
+	// ⚡ Bolt Optimization: Use switch on raw string to avoid allocation from TrimPrefix/ToLower
+	// Covers standard Protobuf descriptors (uppercase) and simplified names (lowercase).
 	switch scalarType {
-	case "double", "float":
+	case "TYPE_DOUBLE", "TYPE_FLOAT", "double", "float":
 		s.Type = "number"
-	case "int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
+	case "TYPE_INT32", "TYPE_INT64", "TYPE_SINT32", "TYPE_SINT64", "TYPE_UINT32", "TYPE_UINT64", "TYPE_FIXED32", "TYPE_FIXED64", "TYPE_SFIXED32", "TYPE_SFIXED64",
+		"int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
 		s.Type = "integer"
-	case "bool":
+	case "TYPE_BOOL", "bool":
 		s.Type = "boolean"
-	case "string", "bytes":
+	case "TYPE_STRING", "TYPE_BYTES", "string", "bytes": //nolint:goconst // Using raw string is intentional for performance
 		s.Type = "string"
 	default:
-		return nil, fmt.Errorf("unsupported scalar type: %s", scalarType)
+		// Fallback for non-standard casing
+		normalized := strings.TrimPrefix(scalarType, "TYPE_")
+		normalized = strings.ToLower(normalized)
+
+		switch normalized {
+		case "double", "float":
+			s.Type = "number"
+		case "int32", "int64", "sint32", "sint64", "uint32", "uint64", "fixed32", "fixed64", "sfixed32", "sfixed64":
+			s.Type = "integer"
+		case "bool":
+			s.Type = "boolean"
+		case "string", "bytes":
+			s.Type = "string"
+		default:
+			return nil, fmt.Errorf("unsupported scalar type: %s", scalarType)
+		}
 	}
 
 	return s, nil
