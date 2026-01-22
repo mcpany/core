@@ -44,7 +44,7 @@ export default function LoginPage() {
     },
   });
 
-  async function onSubmit(data: LoginValues) {
+  async function onSubmit(_: LoginValues) {
     setLoading(true);
     setError(null);
     try {
@@ -144,7 +144,7 @@ export default function LoginPage() {
           </Button>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
-             <p>Use 'admin' / 'password' for demo.</p>
+             {process.env.NODE_ENV === 'development' && <p>Use 'admin' / 'password' for demo.</p>}
         </CardFooter>
       </Card>
     </div>
