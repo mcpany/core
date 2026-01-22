@@ -303,11 +303,9 @@ type ServiceStore interface {
 }
 
 var (
-	unknownFieldRegex     = regexp.MustCompile(`unknown field "([^"]+)"`)
-	invalidValueRegex     = regexp.MustCompile(`invalid value for .* field (\w+):`)
-	invalidDurationRegex  = regexp.MustCompile(`invalid google.protobuf.Duration value "([^"]+)"`)
-	syntaxErrorRegex      = regexp.MustCompile(`syntax error \(line \d+:\d+\): (.*)`)
-	cannotUnmarshalRegex  = regexp.MustCompile(`cannot unmarshal .* into Go struct field ([^ ]+) of type`)
+	unknownFieldRegex    = regexp.MustCompile(`unknown field "([^"]+)"`)
+	invalidValueRegex    = regexp.MustCompile(`invalid value for .* field (\w+):`)
+	invalidDurationRegex = regexp.MustCompile(`invalid google.protobuf.Duration value "([^"]+)"`)
 )
 
 // expand replaces ${VAR}, $VAR, or ${VAR:default} with environment variables.
