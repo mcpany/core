@@ -281,43 +281,59 @@ type ServiceStore interface {
 	DeleteService(ctx context.Context, name string) error
 }
 
-var envVarRegex = regexp.MustCompile(`\${([^{}]+)}|\$([a-zA-Z_][a-zA-Z0-9_]*)`)
 var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
 // expand replaces ${VAR}, $VAR, or ${VAR:default} with environment variables.
 // If a variable is missing and no default is provided, it returns an error with line number information.
+// It supports nested braces in default values, e.g., ${VAR:{"key": "value"}}.
 func expand(b []byte) ([]byte, error) {
 	var missingErrBuilder strings.Builder
 	missingCount := 0
 
-	// Find all matches first to check for missing variables
-	matches := envVarRegex.FindAllIndex(b, -1)
+	var buf bytes.Buffer
+	// Estimate capacity
+	buf.Grow(len(b))
 
-	for _, loc := range matches {
-		match := b[loc[0]:loc[1]]
-		var varName string
-		var hasDefault bool
-
-		// Check which form matches
-		if bytes.HasPrefix(match, []byte("${")) {
-			// ${VAR} form
-			s := string(match[2 : len(match)-1])
-			parts := strings.SplitN(s, ":", 2)
-			varName = parts[0]
-			hasDefault = len(parts) > 1
-		} else {
-			// $VAR form
-			varName = string(match[1:])
-			hasDefault = false
+	i := 0
+	for i < len(b) {
+		// Look for '$'
+		if b[i] != '$' {
+			buf.WriteByte(b[i])
+			i++
+			continue
 		}
 
-		_, ok := os.LookupEnv(varName)
-		if !ok && !hasDefault {
-			// Missing and no default value
-			missingCount++
-			lineNum := bytes.Count(b[:loc[0]], []byte("\n")) + 1
-			missingErrBuilder.WriteString(fmt.Sprintf("\n  - Line %d: variable %s is missing", lineNum, varName))
+		// Found '$', check next char
+		if i+1 >= len(b) {
+			// Trailing '$', just write it
+			buf.WriteByte(b[i])
+			i++
+			continue
 		}
+
+		// Case 1: ${...}
+		if b[i+1] == '{' {
+			consumed := handleBracedVar(b, i, &buf, &missingErrBuilder, &missingCount)
+			if consumed > 0 {
+				i += consumed
+				continue
+			}
+			// If not consumed (e.g. unclosed brace), treat as literal
+			buf.WriteByte(b[i])
+			i++
+			continue
+		}
+
+		// Case 2: $VAR (alphanumeric + _)
+		consumed := handleSimpleVar(b, i, &buf, &missingErrBuilder, &missingCount)
+		if consumed > 0 {
+			i += consumed
+			continue
+		}
+
+		// Not a variable
+		buf.WriteByte(b[i])
+		i++
 	}
 
 	if missingCount > 0 {
@@ -326,42 +342,100 @@ func expand(b []byte) ([]byte, error) {
 		return nil, fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())
 	}
 
-	// If no missing vars, perform replacement
-	expanded := envVarRegex.ReplaceAllFunc(b, func(match []byte) []byte {
-		var varName string
-		var defaultValue string
-		var hasDefault bool
+	return buf.Bytes(), nil
+}
 
-		if bytes.HasPrefix(match, []byte("${")) {
-			// ${VAR} form
-			s := string(match[2 : len(match)-1])
-			parts := strings.SplitN(s, ":", 2)
-			varName = parts[0]
-			if len(parts) > 1 {
-				defaultValue = parts[1]
-				hasDefault = true
+func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilder *strings.Builder, missingCount *int) int {
+	// Find matching '}' accounting for nesting
+	innerStart := startIdx + 2
+	depth := 1
+	j := innerStart
+	for j < len(b) {
+		if b[j] == '{' {
+			depth++
+		} else if b[j] == '}' {
+			depth--
+			if depth == 0 {
+				break
 			}
+		}
+		j++
+	}
+
+	if depth > 0 {
+		// Unclosed brace, treat as literal
+		return 0
+	}
+
+	// Content inside ${...}
+	content := string(b[innerStart:j])
+	parts := strings.SplitN(content, ":", 2)
+	varName := parts[0]
+	var hasDefault bool
+	var defaultValue string
+
+	if len(parts) > 1 {
+		hasDefault = true
+		defaultValue = parts[1]
+	}
+
+	val, ok := os.LookupEnv(varName)
+	if !ok && !hasDefault {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
+		// We continue processing to find all missing variables
+		return j + 1 - startIdx
+	}
+
+	if ok {
+		if val == "" && hasDefault {
+			buf.WriteString(defaultValue)
 		} else {
-			// $VAR form
-			varName = string(match[1:])
-			hasDefault = false
+			buf.WriteString(val)
 		}
+	} else {
+		// Must have default
+		buf.WriteString(defaultValue)
+	}
 
-		val, ok := os.LookupEnv(varName)
-		if ok {
-			if val == "" && hasDefault {
-				return []byte(defaultValue)
-			}
-			return []byte(val)
-		}
-		if hasDefault {
-			return []byte(defaultValue)
-		}
-		// Unreachable: Missing variables without defaults are caught in the first pass.
-		return match
-	})
+	return j + 1 - startIdx
+}
 
-	return expanded, nil
+func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilder *strings.Builder, missingCount *int) int {
+	// Scan for variable name
+	// First char must be [a-zA-Z_]
+	if startIdx+1 >= len(b) {
+		return 0
+	}
+	first := b[startIdx+1]
+	isFirstValid := (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') || first == '_'
+
+	if !isFirstValid {
+		return 0
+	}
+
+	j := startIdx + 1
+	for j < len(b) {
+		c := b[j]
+		isAlphaNum := (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
+		if !isAlphaNum {
+			break
+		}
+		j++
+	}
+
+	varName := string(b[startIdx+1 : j])
+	val, ok := os.LookupEnv(varName)
+	if !ok {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
+		return j - startIdx
+	}
+
+	buf.WriteString(val)
+	return j - startIdx
 }
 
 // FileStore implements the `Store` interface for loading configurations from one
@@ -576,7 +650,6 @@ func (s *FileStore) collectFilePaths() ([]string, error) {
 func isURL(path string) bool {
 	return strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://")
 }
-
 
 // applyEnvVarsFromSlice is the logic for applyEnvVars, separated for testing.
 func applyEnvVarsFromSlice(m map[string]interface{}, environ []string, v proto.Message) {
