@@ -54,10 +54,12 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 			// Use the first IP in the list (client IP)
-			if parts := strings.Split(xff, ","); len(parts) > 0 {
-				if clientIP := strings.TrimSpace(parts[0]); clientIP != "" {
-					ip = clientIP
-				}
+			// Optimization: Use strings.Cut to avoid allocating a slice for all parts
+			// in case of multiple IPs in the header.
+			clientIP, _, _ := strings.Cut(xff, ",")
+			clientIP = strings.TrimSpace(clientIP)
+			if clientIP != "" {
+				ip = clientIP
 			}
 		}
 	}
