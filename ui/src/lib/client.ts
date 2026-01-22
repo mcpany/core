@@ -133,6 +133,27 @@ export interface DoctorReport {
     checks: Record<string, CheckResult>;
 }
 
+/**
+ * A step in a diagnostic process.
+ */
+export interface DiagnosticStep {
+    name: string;
+    status: 'pending' | 'running' | 'success' | 'failed' | 'skipped';
+    message?: string;
+    details?: string;
+    duration_ms: number;
+}
+
+/**
+ * Report from a service diagnostic run.
+ */
+export interface DiagnosticReport {
+    service_name: string;
+    timestamp: string;
+    steps: DiagnosticStep[];
+    overall: 'pending' | 'running' | 'success' | 'failed' | 'skipped';
+}
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
@@ -257,6 +278,19 @@ export const apiClient = {
         });
         if (!response.ok) throw new Error('Failed to restart service');
         return {};
+    },
+
+    /**
+     * Runs diagnostics for a service.
+     * @param name The name of the service.
+     * @returns A promise that resolves to the diagnostic report.
+     */
+    diagnoseService: async (name: string): Promise<DiagnosticReport> => {
+        const response = await fetchWithAuth(`/api/v1/services/${name}/diagnose`, {
+            method: 'POST'
+        });
+        if (!response.ok) throw new Error('Failed to run diagnostics');
+        return response.json();
     },
 
     /**

@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Service Diagnostics**
+  - **Description**: A "See Inside the Box" feature allowing users to run on-demand health checks (DNS, TCP, HTTP) for registered services directly from the UI, providing granular failure details.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
@@ -119,6 +121,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **gRPC Diagnostics** | **Observability**: Extend diagnostics to support gRPC services, including health probes and reflection checks. | Medium |
+| 81 | **Scheduled Diagnostics** | **Resilience**: Automatically run diagnostics in the background when service health degrades and alert the user with the report. | High |
 
 ## 3. Codebase Health
 

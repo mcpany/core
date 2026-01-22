@@ -5,6 +5,7 @@
 
 "use client";
 
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -16,7 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff } from "lucide-react";
+import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff, Stethoscope } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -33,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { UpstreamServiceConfig } from "@/lib/client";
+import { ServiceDiagnosticsDialog } from "@/components/diagnostics/service-diagnostics-dialog";
 
 interface ServicesTableProps {
     services: UpstreamServiceConfig[];
@@ -47,6 +49,7 @@ interface ServicesTableProps {
  * @param onDelete - The onDelete.
  */
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
+  const [diagnosticsService, setDiagnosticsService] = useState<string | null>(null);
 
   if (loading) {
       return <div className="p-4 text-center text-muted-foreground">Loading services...</div>;
@@ -155,6 +158,9 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                     <DropdownMenuItem>
                       <Settings className="mr-2 h-4 w-4" /> Configure
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setDiagnosticsService(service.name)}>
+                      <Stethoscope className="mr-2 h-4 w-4" /> Diagnose
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-red-600" onClick={() => onDelete(service)}>
                       <Trash className="mr-2 h-4 w-4" /> Delete
@@ -166,6 +172,13 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
           ))}
         </TableBody>
       </Table>
+      {diagnosticsService && (
+        <ServiceDiagnosticsDialog
+            open={!!diagnosticsService}
+            onOpenChange={(open) => !open && setDiagnosticsService(null)}
+            serviceName={diagnosticsService}
+        />
+      )}
     </div>
   );
 }
