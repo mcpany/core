@@ -66,6 +66,16 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
+
+		info, err := os.Stat(secret.GetFilePath())
+		if err != nil {
+			return "", fmt.Errorf("failed to stat secret file %q: %w", secret.GetFilePath(), err)
+		}
+		const maxSecretFileSize = 100 * 1024 // 100KB
+		if info.Size() > maxSecretFileSize {
+			return "", fmt.Errorf("secret file %q is too large (max %d bytes)", secret.GetFilePath(), maxSecretFileSize)
+		}
+
 		// File reading is blocking and generally fast, but technically could verify context.
 		// For simplicity and standard library limits, we just read.
 		content, err := os.ReadFile(secret.GetFilePath())

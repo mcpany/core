@@ -16,6 +16,7 @@ import (
 	armonmetrics "github.com/armon/go-metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -165,6 +166,10 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 		return fmt.Errorf("rate limit check failed: %w", err)
 	}
 	if !allowed {
+		logging.GetLogger().Warn("Rate limit exceeded",
+			"service_id", req.ToolName, // Ideally we want the service ID, but tool name is available here.
+			"cost", cost,
+		)
 		return fmt.Errorf("limit exceeded")
 	}
 	return nil

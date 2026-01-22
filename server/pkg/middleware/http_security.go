@@ -23,6 +23,8 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=()")
+		w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
+		w.Header().Set("X-Download-Options", "noopen")
 
 		// Additional Security Headers
 		// COOP and COEP are commented out to avoid breaking external resource loading (e.g. Google Fonts)

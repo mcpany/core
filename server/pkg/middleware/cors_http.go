@@ -87,7 +87,8 @@ func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 			// Wildcard match: Return "*" and NO credentials
 			logging.GetLogger().Warn("CORS: Allowing wildcard origin", "origin", origin, "source", "HTTPCORSMiddleware")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			// No Access-Control-Allow-Credentials
+			// Explicitly do NOT set Access-Control-Allow-Credentials for wildcard origins.
+			// Setting it to true with "*" origin is invalid in most browsers and a security risk.
 		}
 
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
