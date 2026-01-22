@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -17,7 +18,7 @@ func TestValidatorActionableErrors(t *testing.T) {
 			EnvironmentVariable: "MISSING_ENV_VAR_TEST",
 		},
 	}
-	err := validateSecretValue(secretEnv)
+	err := validateSecretValue(context.Background(), secretEnv)
 	if err == nil {
 		t.Fatal("Expected error for missing env var")
 	}
