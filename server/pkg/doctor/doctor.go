@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
@@ -54,23 +55,30 @@ type CheckResult struct {
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
-	results := make([]CheckResult, 0, len(services))
+	results := make([]CheckResult, len(services))
+	var wg sync.WaitGroup
 
 	// Check upstream services
-	for _, service := range services {
-		if service.GetDisable() {
-			results = append(results, CheckResult{
-				ServiceName: service.GetName(),
-				Status:      StatusSkipped,
-				Message:     "Service is disabled",
-			})
-			continue
-		}
+	for i, service := range services {
+		wg.Add(1)
+		go func(idx int, s *configv1.UpstreamServiceConfig) {
+			defer wg.Done()
+			if s.GetDisable() {
+				results[idx] = CheckResult{
+					ServiceName: s.GetName(),
+					Status:      StatusSkipped,
+					Message:     "Service is disabled",
+				}
+				return
+			}
 
-		res := CheckService(ctx, service)
-		res.ServiceName = service.GetName()
-		results = append(results, res)
+			res := CheckService(ctx, s)
+			res.ServiceName = s.GetName()
+			results[idx] = res
+		}(i, service)
 	}
+
+	wg.Wait()
 
 	return results
 }

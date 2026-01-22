@@ -3304,3 +3304,54 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	cancel()
 	<-errChan
 }
+
+func TestRun_AutoEnableFileConfig(t *testing.T) {
+	// Ensure env var is NOT set
+	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "")
+
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Config with a service. If file config is ignored, this service won't be loaded (assuming empty DB).
+	configContent := `
+upstream_services:
+ - name: "file-service"
+   http_service:
+     address: "http://127.0.0.1:8080"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	app := NewApplication()
+	// Mock store to be empty
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	errChan := make(chan error, 1)
+	go func() {
+		// Pass ConfigPaths but NO env var.
+		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+	}()
+
+	require.NoError(t, app.WaitForStartup(ctx))
+
+	// Verify the service was loaded
+	services, err := app.ServiceRegistry.GetAllServices()
+	require.NoError(t, err)
+	found := false
+	for _, s := range services {
+		if s.GetName() == "file-service" {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "Service from file should be loaded even without MCPANY_ENABLE_FILE_CONFIG env var")
+
+	cancel()
+	<-errChan
+}

@@ -34,6 +34,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -347,6 +348,11 @@ func (a *Application) Run(opts RunOptions) error {
 	stores = append(stores, storageStore)
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	// Track 1: Friction Fighter - Auto-enable file config if paths are provided and env var is not explicitly set
+	if len(opts.ConfigPaths) > 0 && os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "" {
+		enableFileConfig = true
+	}
+
 	if len(opts.ConfigPaths) > 0 {
 		if enableFileConfig {
 			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
@@ -364,6 +370,29 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
+	}
+
+	// Track 1: Friction Fighter - Startup Diagnostics
+	// If we loaded file config, run doctor checks to give immediate feedback.
+	if enableFileConfig && len(opts.ConfigPaths) > 0 && cfg != nil {
+		// Run checks concurrently (thanks to recent refactor)
+		results := doctor.RunChecks(opts.Ctx, cfg)
+		hasErrors := false
+		for _, res := range results {
+			if res.Status == doctor.StatusError {
+				hasErrors = true
+				break
+			}
+		}
+
+		if hasErrors {
+			// Print results to stderr so they are visible even with JSON logs
+			// We print a newline first to separate from potential JSON logs
+			_, _ = fmt.Fprintln(os.Stderr, "\n🔍 Diagnostic Check Results:")
+			doctor.PrintResults(os.Stderr, results)
+			_, _ = fmt.Fprintln(os.Stderr, "") // Newline
+			log.Warn("⚠️  One or more upstream services are unreachable. See diagnostic output above.")
+		}
 	}
 	a.lastReloadTime = time.Now()
 

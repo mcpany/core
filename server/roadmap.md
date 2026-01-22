@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Startup Diagnostics & Reliability**
+  - **Description**: Automatically run connectivity checks ("Doctor") on startup for configured services and report unreachable services to the console immediately. Also auto-enables file configuration if `--config-path` is provided, removing friction.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
@@ -35,8 +37,10 @@ These features represent the next logical steps for the product, focusing on Ent
 
 | Rank | Feature Name                | Why it matters                                                                                                                         | Difficulty |
 | :--- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| 1    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
-| 2    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
+| 1    | **Real-time Log Viewer**    | **Observability**: A built-in UI component to stream server logs (filtered by service) to the dashboard, eliminating the need to tail raw log files. | Medium     |
+| 2    | **Config Schema Linter**    | **DevX**: A standalone CLI tool to validate configuration files against the protobuf schema with helpful error messages (better than current unmarshaling errors). | Low        |
+| 3    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
+| 4    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
 | 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
 | 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
