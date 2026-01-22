@@ -62,6 +62,8 @@
 - [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
-- [ ] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
+- [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
 - [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
+- [ ] **Dashboard Widget Persistence**: Allow users to configure which widgets are shown and their order/size, persisting this preference to the backend (currently local storage).
+- [ ] **Refactor Metrics Testing**: Inject Prometheus Registry/Gatherer into Application struct to allow isolated testing without global state side effects.
