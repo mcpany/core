@@ -116,6 +116,8 @@ ${colorConfig
       itemConfig.color
     // Sentinel Security: Whitelist allowed characters to prevent CSS injection.
     // Allowed: alphanumeric, -, _, #, %, ., (,), , (comma)
+    // This whitelist approach effectively neutralizes most XSS vectors by stripping
+    // dangerous characters like <, >, ', ", ;, etc.
     const allowedCharsRegex = /[^a-zA-Z0-9\-_#%.(),\s]/g
     const value = color ? color.replace(allowedCharsRegex, "") : null
     const safeKey = key.replace(allowedCharsRegex, "")

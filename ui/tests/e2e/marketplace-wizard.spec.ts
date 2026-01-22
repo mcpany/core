@@ -83,7 +83,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // Using specific locator to avoid strict mode violations if multiple inputs exist
     const paramInput = page.locator('input[value="postgresql://user:password@localhost:5432/dbname"]');
     await expect(paramInput).toBeVisible();
-    await paramInput.fill('postgresql://test:test@localhost:5432/testdb');
+    // Sentinel Security: Use non-sensitive placeholder or env var for password
+    const dbPassword = process.env.TEST_DB_PASSWORD || 'test_password_placeholder';
+    await paramInput.fill(`postgresql://test:${dbPassword}@localhost:5432/testdb`);
 
     // Add a new parameter
     await page.getByRole('button', { name: 'Add Parameter' }).click();
@@ -128,7 +130,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // Check if JSON contains our changes
     await expect(page.getByText('"MAX_CONNECTIONS"')).toBeVisible();
     await expect(page.getByText('"100"')).toBeVisible();
-    await expect(page.getByText('postgresql://test:test@localhost:5432/testdb')).toBeVisible();
+    // Sentinel Security: Use non-sensitive placeholder or env var for password
+    const dbPassword = process.env.TEST_DB_PASSWORD || 'test_password_placeholder';
+    await expect(page.getByText(`postgresql://test:${dbPassword}@localhost:5432/testdb`)).toBeVisible();
 
     await page.click('button:has-text("Finish & Save")');
 

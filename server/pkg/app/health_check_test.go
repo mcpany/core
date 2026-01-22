@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -16,6 +17,11 @@ import (
 type mockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
 	errors   map[string]string
+}
+
+func (m *mockServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {}
+func (m *mockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
+	return "ok", 0, time.Time{}, false
 }
 
 func (m *mockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {

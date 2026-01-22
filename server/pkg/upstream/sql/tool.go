@@ -91,6 +91,15 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 
 // Execute runs the SQL query with the provided inputs.
 //
+// Sentinel Security: This function executes a SQL query. The `callDef.GetQuery()` MUST satisfy
+// the following security requirements to prevent SQL Injection:
+// 1. The query MUST be a constant string defined in the configuration.
+// 2. The query MUST use parameterized placeholders (e.g., ?, $1, :name) for any dynamic values.
+// 3. The query MUST NOT be constructed using string concatenation with user input.
+//
+// The `args` passed to `QueryContext` are derived from user input but are passed as parameters,
+// which the underlying database driver handles safely.
+//
 // ctx is the context for the request.
 // req is the request object.
 //

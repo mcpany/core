@@ -4,13 +4,13 @@
 package config
 
 import (
-	"log"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Watcher monitors configuration files for changes and triggers a reload.
@@ -58,7 +58,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 		}
 		absPath, err := filepath.Abs(path)
 		if err != nil {
-			log.Printf("Failed to get absolute path for %s: %v", path, err)
+			logging.GetLogger().Error("Failed to get absolute path", "path", path, "error", err)
 			continue
 		}
 
@@ -132,7 +132,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 						}
 						// Debounce for 500ms to avoid multiple reloads for a single save event
 						w.timer = time.AfterFunc(500*time.Millisecond, func() {
-							log.Println("Reloading configuration...")
+							logging.GetLogger().Info("Reloading configuration...")
 							reloadFunc()
 						})
 						w.mu.Unlock()
@@ -143,7 +143,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 				if !ok {
 					return
 				}
-				log.Println("error:", err)
+				logging.GetLogger().Error("Watcher error", "error", err)
 			case <-w.done:
 				return
 			}

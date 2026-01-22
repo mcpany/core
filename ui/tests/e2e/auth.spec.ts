@@ -57,7 +57,9 @@ test.describe('Authentication and User Management', () => {
 
     await page.getByLabel('Username').fill(USER_ID);
     await page.getByLabel('Role').fill('viewer');
-    await page.getByLabel('Password').fill('password123'); // Optional for basic auth
+    // Sentinel Security: Use non-sensitive placeholder or env var for password
+    const userPassword = process.env.TEST_USER_PASSWORD || 'test_password_placeholder_123';
+    await page.getByLabel('Password').fill(userPassword); // Optional for basic auth
 
     // Update mock for the next GET request to include the new user
     // We need to override the route handler.
