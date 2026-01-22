@@ -1791,7 +1791,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	// Collect secrets for redaction
-	var secrets []string
+	secrets := make([]string, 0, len(resolvedServiceEnv))
 	for _, v := range resolvedServiceEnv {
 		secrets = append(secrets, v)
 	}
@@ -2100,7 +2100,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// Collect secrets for redaction
-	var secrets []string
+	secrets := make([]string, 0, len(resolvedServiceEnv))
 	for _, v := range resolvedServiceEnv {
 		secrets = append(secrets, v)
 	}
