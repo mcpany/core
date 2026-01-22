@@ -26,6 +26,14 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Active Health Monitoring**
+  - **Description**: Real-time health checks for upstream services, tracking latency and uptime status in the dashboard.
+- **Service Health Checks in Doctor**
+  - **Description**: Integrated upstream service health status into the `doctor` API and CLI command, providing visibility into connection failures (e.g., "connection refused") alongside configuration checks.
+- **Config Hot-Reload Validation**
+  - **Description**: Implemented robust validation during configuration hot-reloads to prevent invalid configurations from crashing the server or being applied silently.
+- **Config Reload Status API**
+  - **Description**: Exposed the status of the configuration health and the last reload error in the `/api/v1/system/status` endpoint, enabling visibility into "silent failures".
 
 ## 2. Updated Roadmap
 
@@ -93,7 +101,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 51 | **Tool Execution Simulation** | **DevX**: A UI feature to "mock" tool execution with predefined outputs for testing client integrations without calling real upstreams. | Medium |
 | 62 | **Config Validation Diff** | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration. | High |
 | 64 | **Service Retry Policy** | **Resilience**: Automatically retry connecting to failed services with exponential backoff. | Medium |
-| 65 | **Config Reload Status API** | **DevX**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures. | Low |
 | 66 | **Dynamic Profile Switching** | **UX**: Allow users to switch active profiles dynamically via API without restarting the server. | Medium |
 | 67 | **Config Schema Versioning** | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully. | High |
 | 68 | **Connection Draining** | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting. | Medium |
@@ -103,7 +110,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 70 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
 | 70 | **User Preference Storage** | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database. | Low |
 | 71 | **Top Tools API Extensions** | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available. | Medium |
-| 72 | **Config Hot-Reload Validation** | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config. | High |
 | 76 | **Config Auto-Format API** | **DevX**: API endpoint to format uploaded config (JSON/YAML) according to standard style. | Low |
 | 77 | **Service Dependency Alerts** | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes. | Medium |
 | 78 | **Tool Execution Timeout Configuration** | **Resilience**: Allow configuring timeouts per-tool or per-service to prevent hanging tools. | Medium |
@@ -119,6 +125,12 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **Diagnostic History Persistence** | **Observability**: Store the history of diagnostic runs (from the new "Diagnose" feature) in the database to allow tracking service stability over time. | Low |
+| 81 | **Automated Scheduled Diagnostics** | **Resilience**: Allow users to schedule "deep" diagnostic checks (HTTP probes, auth checks) periodically for critical services, alerting on failure. | Medium |
+| 80 | **Intelligent Rate Limiting** | **Resilience**: Rate limiting based on token usage, not just request count, to better manage LLM costs and load. | High |
+| 81 | **Response Caching with TTL Overrides** | **Performance**: Allow specific tools to override global cache TTL in their response (via headers or side-channel) for dynamic data freshness. | Medium |
+| 82 | **Config Status UI Banner** | **UX**: Display a persistent banner in the dashboard when the system status reports a degraded configuration (from hot-reload failure). | Medium |
+| 83 | **Structured Health API** | **Observability**: Enhance the `/healthz` endpoint to support content negotiation and return structured JSON health data (including config status) for advanced monitoring systems. | Low |
 
 ## 3. Codebase Health
 

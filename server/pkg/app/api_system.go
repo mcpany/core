@@ -21,9 +21,12 @@ type SystemStatusResponse struct {
 	BoundGRPCPort     int      `json:"bound_grpc_port"`
 	Version           string   `json:"version"`
 	SecurityWarnings  []string `json:"security_warnings"`
+	ConfigStatus      string   `json:"config_status,omitempty"`
+	ConfigError       string   `json:"last_reload_error,omitempty"`
+	ConfigReloadTime  string   `json:"last_reload_time,omitempty"`
 }
 
-func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request) {
+func (a *Application) handleSystemStatus(w http.ResponseWriter, r *http.Request) {
 	uptime := int64(time.Since(a.startTime).Seconds())
 	activeConns := atomic.LoadInt32(&a.activeConnections)
 
@@ -32,8 +35,10 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 		warnings = append(warnings, "No API Key configured")
 	}
 
-	// Check if listening on all interfaces is complex due to config structure.
-	// For now, focus on API key warning.
+	// Check config health
+	// We reuse the logic from configHealthCheck but expose it directly in the status
+	// so the UI can show a banner without polling the heavier doctor endpoint.
+	check := a.configHealthCheck(r.Context())
 
 	resp := SystemStatusResponse{
 		UptimeSeconds:     uptime,
@@ -42,6 +47,9 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 		BoundGRPCPort:     int(a.BoundGRPCPort.Load()),
 		Version:           appconsts.Version,
 		SecurityWarnings:  warnings,
+		ConfigStatus:      check.Status,
+		ConfigError:       check.Message,
+		ConfigReloadTime:  check.Latency, // Latency field in checkResult is actually "time since reload"
 	}
 
 	w.Header().Set("Content-Type", "application/json")
