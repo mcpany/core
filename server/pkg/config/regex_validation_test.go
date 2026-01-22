@@ -54,7 +54,7 @@ func TestPlainTextSecretValidation(t *testing.T) {
 
 	assert.NotEmpty(t, errs, "Validation errors expected for invalid PlainText")
 	if len(errs) > 0 {
-		assert.Contains(t, errs[0].Err.Error(), "secret value does not match validation regex")
+		assert.Contains(t, errs[0].Err.Error(), "does not match validation regex")
 	}
 }
 
@@ -94,7 +94,7 @@ func TestEnvSecretValidation(t *testing.T) {
 
 	assert.NotEmpty(t, errs, "Validation errors expected for invalid Env var")
 	if len(errs) > 0 {
-		assert.Contains(t, errs[0].Err.Error(), "secret value does not match validation regex")
+		assert.Contains(t, errs[0].Err.Error(), "does not match validation regex")
 	}
 }
 
@@ -132,6 +132,6 @@ func TestEmptyPlainTextSecretValidation(t *testing.T) {
 	// This should fail because empty string doesn't match ^.+$
 	assert.NotEmpty(t, errs, "Validation errors expected for empty PlainText")
 	if len(errs) > 0 {
-		assert.Contains(t, errs[0].Err.Error(), "secret value does not match validation regex")
+		assert.Contains(t, errs[0].Err.Error(), "does not match validation regex")
 	}
 }

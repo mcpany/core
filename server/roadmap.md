@@ -9,7 +9,7 @@
 - **Improved CLI Config UX**
   - **Description**: Simplified configuration loading by automatically enabling file configuration when `--config-path` is provided, removing the need for the `MCPANY_ENABLE_FILE_CONFIG` environment variable in CLI workflows.
 - **Actionable Configuration Errors**
-  - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
+  - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, invalid paths, YAML syntax errors, and Regex validation failures.
 - **RegEx Environment Variable Validation**
   - **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
 - **Async Tool Loading**
@@ -125,6 +125,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
 | 80 | **Intelligent Rate Limiting** | **Resilience**: Rate limiting based on token usage, not just request count, to better manage LLM costs and load. | High |
 | 81 | **Response Caching with TTL Overrides** | **Performance**: Allow specific tools to override global cache TTL in their response (via headers or side-channel) for dynamic data freshness. | Medium |
+| 82 | **Interactive Regex Debugger** | **DevX**: A CLI tool or UI helper to test regex patterns (for DLP or Secrets) against sample data to prevent configuration errors. | Low |
+| 83 | **Environment Variable Type Checking** | **Safety**: Strictly enforce types (int, bool) for environment variables injected into configuration to prevent runtime type coercion errors. | Medium |
 
 ## 3. Codebase Health
 

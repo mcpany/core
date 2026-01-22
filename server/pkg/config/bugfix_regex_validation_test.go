@@ -68,6 +68,6 @@ func TestReproFileSecretValidation(t *testing.T) {
 
 	assert.NotEmpty(t, errs, "Validation errors expected")
 	if len(errs) > 0 {
-		assert.Contains(t, errs[0].Err.Error(), "secret value does not match validation regex")
+		assert.Contains(t, errs[0].Err.Error(), "does not match validation regex")
 	}
 }

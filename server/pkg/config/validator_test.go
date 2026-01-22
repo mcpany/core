@@ -165,7 +165,7 @@ func TestValidateSecretValue(t *testing.T) {
 				ValidationRegex: proto.String(`^sk-[a-zA-Z0-9]{10}$`),
 			},
 			expectErr: true,
-			errMsg:    "secret value does not match validation regex",
+			errMsg:    "does not match validation regex",
 		},
 		{
 			name: "Valid regex match (env_var)",
@@ -186,7 +186,7 @@ func TestValidateSecretValue(t *testing.T) {
 				ValidationRegex: proto.String(`^wrong$`),
 			},
 			expectErr: true,
-			errMsg:    "secret value does not match validation regex",
+			errMsg:    "does not match validation regex",
 		},
 		{
 			name: "Invalid regex pattern",

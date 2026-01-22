@@ -125,37 +125,49 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+			return &ActionableError{
+				Err:        err,
+				Suggestion: "Did you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.",
+			}
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
+			return &ActionableError{
+				Err:        err,
+				Suggestion: "Did you mean \"upstream_services\"? \"services\" is not a valid top-level key.",
+			}
 		}
 
 		// Detect invalid use of service_config wrapper (common mistake due to old docs)
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
+			return &ActionableError{
+				Err:        err,
+				Suggestion: "It looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.",
+			}
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
 		if strings.Contains(err.Error(), "unknown field") {
 			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
+			var suggestion string
 			if len(matches) > 1 {
 				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
-				}
+				suggestion = suggestFix(unknownField, v)
+			}
+			if suggestion == "" {
+				suggestion = "Check for typos in field names. Refer to the documentation or use 'mcpany config schema' to see valid fields."
+			}
+			return &ActionableError{
+				Err:        err,
+				Suggestion: suggestion,
 			}
 		}
-		return err
+		// If it's a syntax error or other unmarshalling error not caught above, still provide a generic suggestion
+		return &ActionableError{
+			Err:        err,
+			Suggestion: "Check the syntax of your configuration file. Ensure it matches the expected structure.",
+		}
 	}
 	// Debug logging to inspect unmarshaled user
 
@@ -181,10 +193,13 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			}
 			// InstanceLocation is the JSON path, e.g. /global_settings/log_level
 			if line := findPathLine(b, leaf.InstanceLocation); line > 0 {
-				return fmt.Errorf("line %d: %w", line, err)
+				err = fmt.Errorf("line %d: %w", line, err)
 			}
 		}
-		return fmt.Errorf("schema validation failed: %w", err)
+		return &ActionableError{
+			Err:        fmt.Errorf("schema validation failed: %w", err),
+			Suggestion: "The configuration structure is incorrect. Please check that values match the expected types and structure defined in the schema.",
+		}
 	}
 
 	return nil
@@ -217,30 +232,40 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)
+			return &ActionableError{
+				Err:        err,
+				Suggestion: "Did you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.",
+			}
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
-			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
-			//nolint:staticcheck // This error message is user facing and needs to be descriptive
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)
+			return &ActionableError{
+				Err:        err,
+				Suggestion: "Did you mean \"upstream_services\"? \"services\" is not a valid top-level key.",
+			}
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
 		if strings.Contains(err.Error(), "unknown field") {
 			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
+			var suggestion string
 			if len(matches) > 1 {
 				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
-				}
+				suggestion = suggestFix(unknownField, v)
+			}
+			if suggestion == "" {
+				suggestion = "Check for typos in field names. Refer to the documentation or use 'mcpany config schema' to see valid fields."
+			}
+			return &ActionableError{
+				Err:        err,
+				Suggestion: suggestion,
 			}
 		}
-		return err
+		return &ActionableError{
+			Err:        err,
+			Suggestion: "Check the syntax of your JSON configuration file.",
+		}
 	}
 	return nil
 }

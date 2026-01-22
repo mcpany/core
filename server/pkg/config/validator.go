@@ -313,7 +313,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	if secret.GetValidationRegex() != "" {
 		re, err := regexp.Compile(secret.GetValidationRegex())
 		if err != nil {
-			return fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+			return &ActionableError{
+				Err:        fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err),
+				Suggestion: "Check the syntax of your regular expression. Ensure it is valid Go regex.",
+			}
 		}
 
 		var valueToValidate string
@@ -337,7 +340,15 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		}
 
 		if shouldValidate && !re.MatchString(valueToValidate) {
-			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
+			// Mask the value for security if it's not empty, showing only length or generic mask
+			maskedValue := "EMPTY"
+			if len(valueToValidate) > 0 {
+				maskedValue = fmt.Sprintf("<%d chars>", len(valueToValidate))
+			}
+			return &ActionableError{
+				Err:        fmt.Errorf("secret value (length %d) does not match validation regex %q", len(valueToValidate), secret.GetValidationRegex()),
+				Suggestion: fmt.Sprintf("Ensure the secret value matches the required pattern. Value is currently: %s", maskedValue),
+			}
 		}
 	}
 
@@ -1066,7 +1077,10 @@ func validateDLPConfig(dlp *configv1.DLPConfig) error {
 	}
 	for _, pattern := range dlp.GetCustomPatterns() {
 		if _, err := regexp.Compile(pattern); err != nil {
-			return fmt.Errorf("invalid regex pattern %q: %w", pattern, err)
+			return &ActionableError{
+				Err:        fmt.Errorf("invalid regex pattern %q: %w", pattern, err),
+				Suggestion: "Check the syntax of your DLP regex pattern. Ensure it is valid Go regex.",
+			}
 		}
 	}
 	return nil
