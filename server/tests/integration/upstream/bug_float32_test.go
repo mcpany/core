@@ -62,7 +62,12 @@ upstream_services:
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: serverInfo.HTTPEndpoint}, nil)
+	// Inject API Key into transport
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   serverInfo.HTTPEndpoint,
+		HTTPClient: serverInfo.HTTPClient,
+	}
+	cs, err := testMCPClient.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer func() { _ = cs.Close() }()
 
