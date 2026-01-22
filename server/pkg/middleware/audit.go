@@ -12,7 +12,6 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -23,7 +22,7 @@ import (
 type AuditMiddleware struct {
 	mu       sync.RWMutex
 	config   *configv1.AuditConfig
-	store    audit.Store
+	store    AuditStore
 	redactor *Redactor
 }
 
@@ -47,30 +46,32 @@ func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, er
 
 func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	if config != nil && config.GetEnabled() {
-		var store audit.Store
+		var store AuditStore
 		var err error
 
 		// Determine storage type
 		storageType := config.GetStorageType()
+		// Backward compatibility: if unspecified but output_path is set, default to FILE
+		// Also if output_path is empty, default to FILE (stdout)
 		if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED {
 			storageType = configv1.AuditConfig_STORAGE_TYPE_FILE
 		}
 
 		switch storageType {
 		case configv1.AuditConfig_STORAGE_TYPE_POSTGRES:
-			store, err = audit.NewPostgresAuditStore(config.GetOutputPath())
+			store, err = NewPostgresAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_SQLITE:
-			store, err = audit.NewSQLiteAuditStore(config.GetOutputPath())
+			store, err = NewSQLiteAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_FILE:
-			store, err = audit.NewFileAuditStore(config.GetOutputPath())
+			store, err = NewFileAuditStore(config.GetOutputPath())
 		case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
-			store = audit.NewWebhookAuditStore(config.GetWebhookUrl(), config.GetWebhookHeaders())
+			store = NewWebhookAuditStore(config.GetWebhookUrl(), config.GetWebhookHeaders())
 		case configv1.AuditConfig_STORAGE_TYPE_SPLUNK:
-			store = audit.NewSplunkAuditStore(config.GetSplunk())
+			store = NewSplunkAuditStore(config.GetSplunk())
 		case configv1.AuditConfig_STORAGE_TYPE_DATADOG:
-			store = audit.NewDatadogAuditStore(config.GetDatadog())
+			store = NewDatadogAuditStore(config.GetDatadog())
 		default:
-			store, err = audit.NewFileAuditStore(config.GetOutputPath())
+			store, err = NewFileAuditStore(config.GetOutputPath())
 		}
 
 		if err != nil {
@@ -155,7 +156,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	duration := time.Since(start)
 
 	// Prepare audit entry
-	entry := audit.Entry{
+	entry := AuditEntry{
 		Timestamp:  start,
 		ToolName:   req.ToolName,
 		Duration:   duration.String(),
@@ -220,7 +221,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	return result, err
 }
 
-func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry audit.Entry) {
+func (m *AuditMiddleware) writeLog(ctx context.Context, store AuditStore, entry AuditEntry) {
 	if store == nil {
 		return
 	}
@@ -230,7 +231,7 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 }
 
 // Read reads audit entries from the underlying store.
-func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
+func (m *AuditMiddleware) Read(ctx context.Context, filter AuditFilter) ([]AuditEntry, error) {
 	m.mu.RLock()
 	store := m.store
 	m.mu.RUnlock()

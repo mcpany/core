@@ -454,16 +454,7 @@ export const apiClient = {
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
         if (!res.ok) throw new Error('Failed to fetch tools');
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : (data.tools || []);
-        return {
-            tools: list.map((t: any) => ({
-                ...t,
-                serviceId: t.serviceId || t.service_id,
-                inputSchema: t.inputSchema || t.input_schema,
-                outputSchema: t.outputSchema || t.output_schema,
-            }))
-        };
+        return res.json();
     },
 
     /**
@@ -651,16 +642,6 @@ export const apiClient = {
             body: JSON.stringify(settings)
         });
         if (!res.ok) throw new Error('Failed to save global settings');
-    },
-
-    /**
-     * Gets the dashboard traffic history.
-     * @returns A promise that resolves to the traffic history points.
-     */
-    getDashboardTraffic: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/traffic');
-        if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
-        return res.json();
     },
 
     // Stack Management

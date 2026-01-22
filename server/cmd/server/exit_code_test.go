@@ -20,9 +20,18 @@ import (
 
 type mockFailingRunner struct{}
 
-func (m *mockFailingRunner) Run(opts app.RunOptions) error {
-	if opts.ShutdownTimeout != 10*time.Second {
-		return fmt.Errorf("expected shutdown timeout of 10s, but got %v", opts.ShutdownTimeout)
+func (m *mockFailingRunner) Run(
+	_ context.Context,
+	_ afero.Fs,
+	_ bool,
+	_ string,
+	_ string,
+	_ []string,
+	_ string,
+	shutdownTimeout time.Duration,
+) error {
+	if shutdownTimeout != 10*time.Second {
+		return fmt.Errorf("expected shutdown timeout of 10s, but got %v", shutdownTimeout)
 	}
 	return errors.New("mock run failure")
 }

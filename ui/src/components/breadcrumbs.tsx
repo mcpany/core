@@ -7,9 +7,8 @@
 
 import Link from "next/link";
 import { Fragment } from "react";
-import { ChevronRight, ChevronDown, Home, History } from "lucide-react";
+import { ChevronRight, ChevronDown, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,25 +44,6 @@ interface BreadcrumbsProps {
  * @param className - The className.
  */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
-    const [history, setHistory] = useState<BreadcrumbItem[]>([]);
-
-    useEffect(() => {
-        if (items.length === 0) return;
-
-        // Save current path to history
-        const lastItem = items[items.length - 1];
-        const savedHistory = JSON.parse(localStorage.getItem("breadcrumb_history") || "[]") as BreadcrumbItem[];
-
-        // Filter out existing and keep only unique hrefs
-        const updatedHistory = [
-            lastItem,
-            ...savedHistory.filter(h => h.href !== lastItem.href)
-        ].slice(0, 10); // Keep last 10
-
-        localStorage.setItem("breadcrumb_history", JSON.stringify(updatedHistory));
-        setHistory(updatedHistory);
-    }, [items]);
-
     return (
         <nav aria-label="Breadcrumb" className={cn("w-full max-w-6xl mb-4", className)}>
             <ol className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -73,28 +53,6 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                         <span className="sr-only">Home</span>
                     </Link>
                 </li>
-                {history.length > 0 && (
-                    <li>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="flex items-center gap-1.5 p-1 rounded-sm hover:bg-muted transition-colors text-muted-foreground/70 hover:text-foreground">
-                                    <History className="size-4" />
-                                    <span className="sr-only">History</span>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-56">
-                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Recent History</div>
-                                {history.map((h) => (
-                                    <DropdownMenuItem key={h.href} asChild>
-                                        <Link href={h.href} className="cursor-pointer truncate">
-                                            {h.label}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </li>
-                )}
                 {items.map((item, index) => (
                     <Fragment key={item.href}>
                         <li className="flex items-center gap-1">

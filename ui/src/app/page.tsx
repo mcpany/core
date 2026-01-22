@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { MetricsOverview } from "@/components/dashboard/metrics-overview";
+import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
+import { LazyRequestVolumeChart, LazyTopToolsWidget } from "@/components/dashboard/lazy-charts";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -21,7 +23,12 @@ export default function DashboardPage() {
         </div>
       </div>
       <div className="space-y-4">
-        <DashboardGrid />
+        <MetricsOverview />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <ServiceHealthWidget />
+          <LazyRequestVolumeChart />
+          <LazyTopToolsWidget />
+        </div>
       </div>
     </div>
   );

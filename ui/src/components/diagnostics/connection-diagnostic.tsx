@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
@@ -44,7 +44,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
   const [isRunning, setIsRunning] = useState(false);
   const [steps, setSteps] = useState<DiagnosticStep[]>([]);
   const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const resetSteps = () => {
     const initialSteps: DiagnosticStep[] = [
@@ -204,15 +203,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
       if (open && steps.length === 0) {
           resetSteps();
       }
-      setCopied(false);
-  };
-
-  const copyLogs = () => {
-      const allLogs = steps.flatMap(s => s.logs).join('\n');
-      navigator.clipboard.writeText(allLogs).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-      });
   };
 
   return (
@@ -278,21 +268,9 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             <div className="col-span-2 flex flex-col h-full bg-black/90">
                 {/* Logs */}
                 <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs">
-                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10 text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                            <Terminal className="h-3 w-3" />
-                            <span>Diagnostic Logs</span>
-                        </div>
-                        {steps.flatMap(s => s.logs).length > 0 && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-muted-foreground hover:text-white hover:bg-white/10"
-                                onClick={copyLogs}
-                            >
-                                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
-                        )}
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10 text-muted-foreground">
+                        <Terminal className="h-3 w-3" />
+                        <span>Diagnostic Logs</span>
                     </div>
                     <ScrollArea className="flex-1">
                         <div className="space-y-1">

@@ -60,7 +60,6 @@ export function GlobalSearch() {
   const [tools, setTools] = React.useState<ToolDefinition[]>([])
   const [resources, setResources] = React.useState<ResourceDefinition[]>([])
   const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
-  const [recentTools, setRecentTools] = React.useState<ToolDefinition[]>([])
   const [loading, setLoading] = React.useState(false)
   const lastFetched = React.useRef(0)
 
@@ -90,10 +89,6 @@ export function GlobalSearch() {
 
   React.useEffect(() => {
     if (open) {
-      // Load recent tools from localStorage
-      const saved = JSON.parse(localStorage.getItem("recent_tools") || "[]") as ToolDefinition[]
-      setRecentTools(saved)
-
       // ⚡ Bolt Optimization: Prevent redundant API calls if data was fetched recently (< 1 min)
       // This reduces 4 concurrent requests every time the search dialog is opened.
       const now = Date.now()
@@ -108,20 +103,6 @@ export function GlobalSearch() {
     setOpen(false)
     command()
   }, [])
-
-  const selectTool = React.useCallback((tool: ToolDefinition) => {
-    runCommand(() => {
-        // Save to recent tools
-        const updated = [
-            tool,
-            ...recentTools.filter(t => t.name !== tool.name)
-        ].slice(0, 5)
-        localStorage.setItem("recent_tools", JSON.stringify(updated))
-        setRecentTools(updated)
-
-        router.push(`/tools?name=${tool.name}`)
-    })
-  }, [runCommand, router, recentTools])
 
   const copyToClipboard = React.useCallback((text: string, label: string) => {
       runCommand(() => {
@@ -254,17 +235,6 @@ export function GlobalSearch() {
               </CommandItem>
            </CommandGroup>
            <CommandSeparator />
-
-           {recentTools.length > 0 && query.length === 0 && (
-             <CommandGroup heading="Recent Tools">
-               {recentTools.map((tool) => (
-                 <CommandItem key={`recent-${tool.name}`} value={`recent tool ${tool.name}`} onSelect={() => selectTool(tool)}>
-                   <RotateCcw className="mr-2 h-4 w-4 text-muted-foreground" />
-                   <span>{tool.name}</span>
-                 </CommandItem>
-               ))}
-             </CommandGroup>
-           )}
 
           {services.length > 0 && (
              <CommandGroup heading="Services">

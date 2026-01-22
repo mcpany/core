@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package audit
+package middleware
 
 import (
 	"context"
@@ -26,23 +26,20 @@ func TestDatadogAuditStore(t *testing.T) {
 		assert.Equal(t, "my-api-key", r.Header.Get("DD-API-KEY"))
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
 
-		var logs []map[string]interface{}
-		err := json.NewDecoder(r.Body).Decode(&logs)
+		var body map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&body)
 		require.NoError(t, err)
 
-		for _, body := range logs {
-			assert.Equal(t, "mcpany", body["ddsource"])
-			assert.Equal(t, "my-service", body["service"])
-			assert.Equal(t, "env:prod", body["ddtags"])
+		assert.Equal(t, "mcpany", body["ddsource"])
+		assert.Equal(t, "my-service", body["service"])
+		assert.Equal(t, "env:prod", body["ddtags"])
 
-			message, ok := body["message"].(map[string]interface{})
-			require.True(t, ok)
-			assert.Equal(t, "test-tool", message["tool_name"])
-
-			atomic.AddInt32(&receivedCount, 1)
-		}
+		message, ok := body["message"].(map[string]interface{})
+		require.True(t, ok)
+		assert.Equal(t, "test-tool", message["tool_name"])
 
 		w.WriteHeader(http.StatusAccepted)
+		atomic.AddInt32(&receivedCount, 1)
 		received <- struct{}{}
 	}))
 	defer ts.Close()
@@ -56,8 +53,9 @@ func TestDatadogAuditStore(t *testing.T) {
 
 	store := NewDatadogAuditStore(config)
 	store.url = ts.URL
+	defer store.Close()
 
-	entry := Entry{
+	entry := AuditEntry{
 		Timestamp:  time.Now(),
 		ToolName:   "test-tool",
 		Duration:   "100ms",
@@ -65,10 +63,6 @@ func TestDatadogAuditStore(t *testing.T) {
 	}
 
 	err := store.Write(context.Background(), entry)
-	assert.NoError(t, err)
-
-	// Close to flush
-	err = store.Close()
 	assert.NoError(t, err)
 
 	// Wait for processing
@@ -80,39 +74,4 @@ func TestDatadogAuditStore(t *testing.T) {
 	}
 
 	assert.Equal(t, int32(1), atomic.LoadInt32(&receivedCount))
-}
-
-func TestDatadogAuditStore_Batch(t *testing.T) {
-	var totalReceived int32
-	done := make(chan struct{})
-
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var logs []map[string]interface{}
-		_ = json.NewDecoder(r.Body).Decode(&logs)
-		atomic.AddInt32(&totalReceived, int32(len(logs)))
-		w.WriteHeader(http.StatusAccepted)
-		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
-		}
-	}))
-	defer ts.Close()
-
-	config := &configv1.DatadogConfig{
-		ApiKey: proto.String("key"),
-	}
-	store := NewDatadogAuditStore(config)
-	store.url = ts.URL
-
-	for i := 0; i < 5; i++ {
-		_ = store.Write(context.Background(), Entry{ToolName: "test"})
-	}
-
-	_ = store.Close()
-
-	select {
-	case <-done:
-	case <-time.After(2 * time.Second):
-	}
-
-	assert.Equal(t, int32(5), atomic.LoadInt32(&totalReceived))
 }

@@ -45,7 +45,7 @@ func setupHTTPToolTest(t *testing.T, handler http.Handler, callDefinition *confi
 
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	require.NoError(t, err)
 
 	poolManager.Register("test-service", p)
@@ -216,7 +216,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		errorFactory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return nil, errors.New("pool factory error")
 		}
-		p, err := pool.New(errorFactory, 0, 0, 1, 0, true)
+		p, err := pool.New(errorFactory, 0, 1, 0, true)
 		require.NoError(t, err)
 		poolManager.Register("test-service", p)
 
@@ -232,7 +232,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 		invalidTool := v1.Tool_builder{UnderlyingMethodFqn: lo.ToPtr("INVALID")}.Build()
 		httpTool := tool.NewHTTPTool(invalidTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
@@ -274,7 +274,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 		mcpTool := v1.Tool_builder{
 			UnderlyingMethodFqn: lo.ToPtr("GET " + server.URL),
@@ -299,7 +299,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		methodAndURL := "GET " + server.URL + "/users/{{userID}}"
@@ -416,7 +416,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		methodAndURL := "DELETE " + server.URL
@@ -446,7 +446,7 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		methodAndURL := "GET " + server.URL + "/{{ip}}/json"
@@ -623,7 +623,7 @@ func TestHTTPTool_Execute_PathParameterEncoding(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	require.NoError(t, err)
 	poolManager.Register("test-service", p)
 
@@ -670,7 +670,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		mcpTool := v1.Tool_builder{
@@ -701,7 +701,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		mcpTool := v1.Tool_builder{
@@ -733,7 +733,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		mcpTool := v1.Tool_builder{
@@ -774,7 +774,7 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		poolManager := pool.NewManager()
 		p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{Client: server.Client()}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		poolManager.Register("test-service", p)
 
 		mcpTool := v1.Tool_builder{
@@ -809,7 +809,7 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	require.NoError(t, err)
 	poolManager.Register("test-service", p)
 
@@ -875,7 +875,7 @@ func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	poolManager.Register("test-service", p)
 
 	methodAndURL := "GET " + server.URL + "/data/{{value}}"

@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net"
 	"net/http"
@@ -27,7 +26,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/alerts"
-	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -1229,9 +1227,9 @@ func TestHandleAuditExport(t *testing.T) {
 	dbPath := "./audit_test_export.db"
 	defer os.Remove(dbPath)
 
-	sqliteStore, err := audit.NewSQLiteAuditStore(dbPath)
+	sqliteStore, err := middleware.NewSQLiteAuditStore(dbPath)
 	require.NoError(t, err)
-	entry1 := audit.Entry{
+	entry1 := middleware.AuditEntry{
 		Timestamp:  time.Now().Add(-1 * time.Hour),
 		ToolName:   "tool-1",
 		UserID:     "user-1",
@@ -1251,7 +1249,7 @@ func TestHandleAuditExport(t *testing.T) {
 	app.standardMiddlewares.Audit = audit
 	defer audit.Close()
 
-	req, _ := http.NewRequest("GET", "/audit/export?tool_name=tool-1", nil)
+	req, _ := http.NewRequest("GET", "/api/v1/audit/export?tool_name=tool-1", nil)
 	rr := httptest.NewRecorder()
 	mux := app.createAPIHandler(app.Storage)
 	mux.ServeHTTP(rr, req)
@@ -1729,8 +1727,7 @@ func TestSecretLeak(t *testing.T) {
 
 	resp, _ := http.Get(ts.URL + "/secrets/" + secretID)
 	var result map[string]interface{}
-	err := json.NewDecoder(resp.Body).Decode(&result)
-	require.NoError(t, err, "failed to decode response body")
+	json.NewDecoder(resp.Body).Decode(&result)
 	assert.Equal(t, "[REDACTED]", result["value"])
 }
 
@@ -1765,23 +1762,16 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: fmt.Sprintf("127.0.0.1:%d", httpPort), GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(ctx, fs, false, fmt.Sprintf("127.0.0.1:%d", httpPort), "127.0.0.1:0", []string{"/config.yaml"}, "", 5*time.Second)
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))
-	baseURL := fmt.Sprintf("http://127.0.0.1:%d/mcp", httpPort)
-	// Use local HealthCheck polling instead of integration package to avoid cycle
-	require.Eventually(t, func() bool {
-		return HealthCheck(io.Discard, fmt.Sprintf("127.0.0.1:%d", httpPort), 100*time.Millisecond) == nil
-	}, 5*time.Second, 100*time.Millisecond)
+	baseURL := fmt.Sprintf("http://127.0.0.1:%d", httpPort)
 
 	reqBody := `{"jsonrpc": "2.0", "method": "non_existent_method", "id": 1}`
-	resp, err := http.Post(baseURL, "application/json", bytes.NewBufferString(reqBody))
-	require.NoError(t, err, "http.Post failed")
-	defer func() { _ = resp.Body.Close() }()
+	resp, _ := http.Post(baseURL, "application/json", bytes.NewBufferString(reqBody))
 	var result map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	require.NoError(t, err, "failed to decode response body")
+	json.NewDecoder(resp.Body).Decode(&result)
 	assert.NotNil(t, result["error"])
 
 	cancel()

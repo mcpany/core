@@ -78,7 +78,7 @@ func TestHTTPTool_Execute_InvalidFQN(t *testing.T) {
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn("invalid")
@@ -93,7 +93,7 @@ func TestHTTPTool_Execute_BadURL(t *testing.T) {
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 	toolProto := &v1.Tool{}
 	toolProto.SetUnderlyingMethodFqn("GET %")
@@ -112,7 +112,7 @@ func TestHTTPTool_Execute_InputTransformerError(t *testing.T) {
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 
 	toolProto := &v1.Tool{}
@@ -137,7 +137,7 @@ func TestHTTPTool_Execute_OutputTransformerError(t *testing.T) {
 	poolManager := pool.NewManager()
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 
 	toolProto := &v1.Tool{}
@@ -282,7 +282,7 @@ func TestGRPCTool_Execute_Success(t *testing.T) {
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("grpc-service", grpcPool)
 
 	toolProto := &v1.Tool{}
@@ -419,7 +419,7 @@ func TestGRPCTool_Execute_UnmarshalError(t *testing.T) {
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("grpc-error", grpcPool)
 
 	toolProto := &v1.Tool{}
@@ -446,7 +446,7 @@ func TestGRPCTool_Execute_InvokeError(t *testing.T) {
 
 	grpcPool, _ := pool.New[*client.GrpcClientWrapper](func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		return client.NewGrpcClientWrapper(mockConn, &configv1.UpstreamServiceConfig{}, nil), nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("grpc-error", grpcPool)
 
 	toolProto := &v1.Tool{}
@@ -532,7 +532,7 @@ func TestHTTPTool_Execute_UnmarshalError(t *testing.T) {
 
 	httpPool, _ := pool.New[*client.HTTPClientWrapper](func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, false)
+	}, 1, 1, 0, false)
 	poolManager.Register("http-service", httpPool)
 
 	toolProto := &v1.Tool{}

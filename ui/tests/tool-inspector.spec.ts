@@ -35,10 +35,10 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByText('get_weather')).toBeVisible();
 
   // Open inspector for get_weather
-  await page.locator('tr').filter({ hasText: 'get_weather' }).getByText('Inspect').click();
+  await page.getByRole('row', { name: 'get_weather' }).getByRole('button', { name: 'Inspect' }).click();
 
-  // Check if inspector sheet is open (Wait for title)
-  await expect(page.getByText('get_weather').first()).toBeVisible();
+  // Check if inspector sheet is open
+  await expect(page.getByRole('heading', { name: 'get_weather' })).toBeVisible();
 
   // Check if schema is displayed (using the new Sheet layout)
   await expect(page.getByText('Schema', { exact: true })).toBeVisible();
