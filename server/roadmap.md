@@ -28,6 +28,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Active Health Monitoring**
+  - **Description**: Real-time health checks for upstream services, tracking latency and uptime status in the dashboard.
 - **Service Health Checks in Doctor**
   - **Description**: Integrated upstream service health status into the `doctor` API and CLI command, providing visibility into connection failures (e.g., "connection refused") alongside configuration checks.
 
