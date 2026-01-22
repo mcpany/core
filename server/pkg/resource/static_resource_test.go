@@ -110,4 +110,24 @@ func TestStaticResource(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create request")
 	})
+
+	t.Run("ReadMimeTypeFallback", func(t *testing.T) {
+		expectedMimeType := "application/json"
+		fallbackServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", expectedMimeType)
+			_, _ = w.Write([]byte(`{"key": "value"}`))
+		}))
+		defer fallbackServer.Close()
+
+		fallbackDef := &configv1.ResourceDefinition{
+			Uri:  strPtr(fallbackServer.URL),
+			Name: strPtr("Test Resource"),
+		}
+		fallbackR := NewStaticResource(fallbackDef, serviceID)
+		res, err := fallbackR.Read(context.Background())
+		require.NoError(t, err)
+		require.Len(t, res.Contents, 1)
+		content := res.Contents[0]
+		assert.Equal(t, expectedMimeType, content.MIMEType, "MIMEType should fall back to Content-Type header")
+	})
 }
