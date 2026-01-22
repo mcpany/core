@@ -108,12 +108,17 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 		return nil, fmt.Errorf("resource size exceeds limit of %d bytes", limit)
 	}
 
+	mimeType := r.resource.MIMEType
+	if mimeType == "" {
+		mimeType = resp.Header.Get("Content-Type")
+	}
+
 	return &mcp.ReadResourceResult{
 		Contents: []*mcp.ResourceContents{
 			{
 				URI:      r.resource.URI,
 				Blob:     data,
-				MIMEType: r.resource.MIMEType,
+				MIMEType: mimeType,
 			},
 		},
 	}, nil
