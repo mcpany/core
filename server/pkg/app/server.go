@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -1226,6 +1227,55 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	return HealthCheckWithContext(ctx, out, addr)
+}
+
+// servicesHealthCheck checks the status of the upstream services.
+func (a *Application) servicesHealthCheck(_ context.Context) health.CheckResult {
+	if a.ServiceRegistry == nil {
+		return health.CheckResult{Status: "ok"}
+	}
+
+	services, err := a.ServiceRegistry.GetAllServices()
+	if err != nil {
+		return health.CheckResult{
+			Status:  "degraded",
+			Message: fmt.Sprintf("failed to list services: %v", err),
+		}
+	}
+
+	var issues []string
+	start := time.Now()
+
+	for _, svc := range services {
+		id := svc.GetId()
+		// Fallback to sanitized name if ID is missing.
+		// RegisterService uses SanitizedName as key.
+		if id == "" {
+			if s, err := util.SanitizeServiceName(svc.GetName()); err == nil {
+				id = s
+			} else {
+				id = svc.GetName()
+			}
+		}
+
+		if errMsg, ok := a.ServiceRegistry.GetServiceError(id); ok {
+			issues = append(issues, fmt.Sprintf("service %q: %s", svc.GetName(), errMsg))
+		}
+	}
+
+	status := "ok"
+	var message string
+	if len(issues) > 0 {
+		status = "degraded"
+		sort.Strings(issues)
+		message = strings.Join(issues, "; ")
+	}
+
+	return health.CheckResult{
+		Status:  status,
+		Message: message,
+		Latency: time.Since(start).String(),
+	}
 }
 
 // HealthCheckWithContext performs a health check against a running server by

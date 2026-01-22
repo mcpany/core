@@ -60,6 +60,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	doctor := health.NewDoctor()
 	doctor.AddCheck("configuration", a.configHealthCheck)
 	doctor.AddCheck("filesystem", a.filesystemHealthCheck)
+	doctor.AddCheck("services", a.servicesHealthCheck)
 	mux.Handle("/doctor", doctor.Handler())
 	mux.HandleFunc("/system/status", a.handleSystemStatus)
 	mux.HandleFunc("/audit/export", a.handleAuditExport)
