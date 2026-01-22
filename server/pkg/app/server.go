@@ -1704,6 +1704,12 @@ func (a *Application) runServerMode(
 	mux.Handle("/auth/oauth/initiate", authMiddleware(http.HandlerFunc(a.handleInitiateOAuth)))
 	mux.Handle("/auth/oauth/callback", authMiddleware(http.HandlerFunc(a.handleOAuthCallback)))
 
+	// Alerts API
+	mux.Handle("/api/v1/alerts", authMiddleware(a.handleAlerts()))
+	mux.Handle("/api/v1/alerts/", authMiddleware(a.handleAlertDetail()))
+	mux.Handle("/api/v1/alerts/rules", authMiddleware(a.handleAlertRules()))
+	mux.Handle("/api/v1/alerts/rules/", authMiddleware(a.handleAlertRuleDetail()))
+
 	// Credentials API
 	// Note: Standard mux doesn't handle methods nicely, so we route by path and check method in handler.
 	// We route /credentials to list (GET) and create (POST)

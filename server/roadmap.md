@@ -29,6 +29,10 @@
 
 ### Status: Active Development
 
+- **Alerts & Incidents**
+  - **Description**: A centralized console for monitoring system health, viewing active alerts, and managing incident response. Includes a rule engine and webhook notifications.
+  - **Status**: Backend & Frontend Implemented.
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
