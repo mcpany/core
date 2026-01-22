@@ -41,15 +41,17 @@ func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, b
 	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
 }
 
-func (m *MockToolManagerForCost) ListTools() []tool.Tool                           { return nil }
-func (m *MockToolManagerForCost) ListMCPTools() []*github_com_modelcontextprotocol_go_sdk_mcp.Tool { return nil }
-func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                        { return nil }
+func (m *MockToolManagerForCost) ListTools() []tool.Tool { return nil }
+func (m *MockToolManagerForCost) ListMCPTools() []*github_com_modelcontextprotocol_go_sdk_mcp.Tool {
+	return nil
+}
+func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                    { return nil }
 func (m *MockToolManagerForCost) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManagerForCost) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider)  {}
-func (m *MockToolManagerForCost) ClearToolsForService(_ string) {}
+func (m *MockToolManagerForCost) SetMCPServer(_ tool.MCPServerProvider) {}
+func (m *MockToolManagerForCost) ClearToolsForService(_ string)         {}
 func (m *MockToolManagerForCost) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {
 }
 func (m *MockToolManagerForCost) IsServiceAllowed(serviceID, profileID string) bool { return true }

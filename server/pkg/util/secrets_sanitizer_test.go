@@ -211,19 +211,19 @@ func TestStripSecretsFromCalls(t *testing.T) {
 
 func TestHydrateSecretValue_Internal(t *testing.T) {
 	secrets := map[string]*configv1.SecretValue{
-        "API_KEY": {
-            Value: &configv1.SecretValue_PlainText{PlainText: "12345"},
-        },
-    }
+		"API_KEY": {
+			Value: &configv1.SecretValue_PlainText{PlainText: "12345"},
+		},
+	}
 
 	// Test hydrateSecretValue with non-env var
-    plainSecret := &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "plain"}}
-    hydrateSecretValue(plainSecret, secrets) // Should do nothing
+	plainSecret := &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "plain"}}
+	hydrateSecretValue(plainSecret, secrets) // Should do nothing
 	assert.Equal(t, "plain", plainSecret.GetPlainText())
 
-    // Test hydrateSecretValue with missing secret key
-    missingSecret := &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING"}}
-    hydrateSecretValue(missingSecret, secrets) // Should do nothing
+	// Test hydrateSecretValue with missing secret key
+	missingSecret := &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING"}}
+	hydrateSecretValue(missingSecret, secrets) // Should do nothing
 	assert.Equal(t, "MISSING", missingSecret.GetEnvironmentVariable())
 }
 

@@ -105,7 +105,6 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 
 	serviceRateLimitConfig := serviceInfo.Config.GetRateLimit()
 
-
 	// Check for tool-specific limit first
 	var toolLimiter Limiter
 	var toolErr error

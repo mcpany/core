@@ -41,7 +41,7 @@ func TestLevenshteinDistance_NonASCII(t *testing.T) {
 		want   int
 	}{
 		// Non-ASCII
-		{"café", "cafe", 1}, // é vs e
+		{"café", "cafe", 1},  // é vs e
 		{"こんにちは", "こんちは", 1}, // Deletion
 		{"😊", "😊", 0},
 		{"😊", "😢", 1},

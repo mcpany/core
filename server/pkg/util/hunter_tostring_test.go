@@ -52,13 +52,13 @@ func TestToString_EdgeCases(t *testing.T) {
 			expected: "-9223372036854775808",
 		},
 		{
-			name:     "MaxInt64 float - precision loss",
+			name: "MaxInt64 float - precision loss",
 			// This value will be rounded to 2^63 when converted to float64, so it behaves like 2^63
 			input:    float64(math.MaxInt64),
 			expected: "9.223372036854776e+18",
 		},
 		{
-			name:     "Largest safe float integer below MaxInt64",
+			name: "Largest safe float integer below MaxInt64",
 			// 2^63 - 2048
 			input:    math.Pow(2, 63) - 2048,
 			expected: "9223372036854773760",

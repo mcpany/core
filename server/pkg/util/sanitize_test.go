@@ -13,7 +13,7 @@ import (
 
 func TestSanitizeUser(t *testing.T) {
 	u := &configv1.User{
-		Id:   proto.String("user1"),
+		Id: proto.String("user1"),
 		// Name is NOT in User struct.
 		Authentication: &configv1.Authentication{
 			AuthMethod: &configv1.Authentication_BasicAuth{
@@ -120,7 +120,7 @@ func TestSanitizeAuthentication_TrustedHeader(t *testing.T) {
 	a := &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_TrustedHeader{
 			TrustedHeader: &configv1.TrustedHeaderAuth{ // TrustedHeaderAuth
-				HeaderName: proto.String("X-Auth"),
+				HeaderName:  proto.String("X-Auth"),
 				HeaderValue: proto.String("secret"),
 			},
 		},

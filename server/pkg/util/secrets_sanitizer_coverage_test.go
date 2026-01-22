@@ -82,7 +82,7 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 			HttpService: &configv1.HttpUpstreamService{
 				Calls: map[string]*configv1.HttpCallDefinition{
 					"call1": {
-						Id: proto.String("call1"),
+						Id:     proto.String("call1"),
 						Method: httpMethodPtr(configv1.HttpCallDefinition_HTTP_METHOD_GET),
 						Parameters: []*configv1.HttpParameterMapping{
 							{
@@ -225,9 +225,9 @@ func TestHydrateSecrets_Coverage(t *testing.T) {
 		ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
 			CommandLineService: &configv1.CommandLineUpstreamService{
 				Env: map[string]*configv1.SecretValue{
-					"TARGET": {Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MY_SECRET"}},
+					"TARGET":  {Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MY_SECRET"}},
 					"MISSING": {Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "NOT_FOUND"}},
-					"PLAIN": {Value: &configv1.SecretValue_PlainText{PlainText: "plain"}},
+					"PLAIN":   {Value: &configv1.SecretValue_PlainText{PlainText: "plain"}},
 				},
 			},
 		},

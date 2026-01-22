@@ -74,7 +74,7 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	// Should fail for loopback if default
 	dialer := NewSafeDialer()
 	// Split ts.URL (http://127.0.0.1:port)
-	u, _ :=  ts.Listener.Addr().(*net.TCPAddr)
+	u, _ := ts.Listener.Addr().(*net.TCPAddr)
 	addr := u.String()
 
 	_, err = dialer.DialContext(context.Background(), "tcp", addr)
@@ -167,8 +167,8 @@ func TestSafeDialer_Bug_MixedFamilies(t *testing.T) {
 
 func TestSafeDialer_NetworkMapping(t *testing.T) {
 	tests := []struct {
-		network         string
-		expectedLookup  string
+		network        string
+		expectedLookup string
 	}{
 		{"tcp", "ip"},
 		{"tcp4", "ip4"},
