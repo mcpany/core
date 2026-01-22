@@ -663,6 +663,30 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the top used tools.
+     * @returns A promise that resolves to the top tools stats.
+     */
+    getTopTools: async () => {
+        const res = await fetchWithAuth('/api/v1/dashboard/top-tools');
+        // If 404/500, return empty to avoid crashing UI
+        if (!res.ok) return [];
+        return res.json();
+    },
+
+    /**
+     * Seeds the dashboard traffic history (Debug/Test only).
+     * @param points The traffic points to seed.
+     */
+    seedTrafficData: async (points: any[]) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_traffic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(points)
+        });
+        if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
     // Stack Management
 
     /**
