@@ -172,6 +172,7 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	}}
 
 	tm := &serviceInfoProviderToolManager{
+		Manager: *tool.NewManager(busProvider),
 		services: map[string]*tool.ServiceInfo{
 			"global-service":  srvGlobal,
 			"profile-service": srvProfile,
