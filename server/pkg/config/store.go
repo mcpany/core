@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -22,6 +23,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -113,10 +115,26 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
-		// Attempt to find the line number in the original YAML
+		// Attempt to find the line number in the original YAML for unknown fields
 		if matches := unknownFieldRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
 			unknownField := matches[1]
 			if line := findKeyLine(b, unknownField); line > 0 {
+				err = fmt.Errorf("line %d: %w", line, err)
+			}
+		}
+
+		// Attempt to find line number for invalid values (type mismatch)
+		if matches := invalidValueRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
+			fieldName := matches[1]
+			if line := findKeyLine(b, fieldName); line > 0 {
+				err = fmt.Errorf("line %d: %w", line, err)
+			}
+		}
+
+		// Attempt to find line number for invalid duration values
+		if matches := invalidDurationRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
+			val := matches[1]
+			if line := findValueLine(b, val); line > 0 {
 				err = fmt.Errorf("line %d: %w", line, err)
 			}
 		}
@@ -169,6 +187,9 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	}
 
 	if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
+		if enhancedErr := enhanceValidationError(err, b); enhancedErr != nil {
+			return enhancedErr
+		}
 		return fmt.Errorf("schema validation failed: %w", err)
 	}
 
@@ -281,7 +302,13 @@ type ServiceStore interface {
 	DeleteService(ctx context.Context, name string) error
 }
 
-var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
+var (
+	unknownFieldRegex     = regexp.MustCompile(`unknown field "([^"]+)"`)
+	invalidValueRegex     = regexp.MustCompile(`invalid value for .* field (\w+):`)
+	invalidDurationRegex  = regexp.MustCompile(`invalid google.protobuf.Duration value "([^"]+)"`)
+	syntaxErrorRegex      = regexp.MustCompile(`syntax error \(line \d+:\d+\): (.*)`)
+	cannotUnmarshalRegex  = regexp.MustCompile(`cannot unmarshal .* into Go struct field ([^ ]+) of type`)
+)
 
 // expand replaces ${VAR}, $VAR, or ${VAR:default} with environment variables.
 // If a variable is missing and no default is provided, it returns an error with line number information.
@@ -1185,4 +1212,110 @@ func findKeyInNode(node *yaml.Node, key string) int {
 		}
 	}
 	return 0
+}
+
+func findValueLine(b []byte, value string) int {
+	var node yaml.Node
+	if err := yaml.Unmarshal(b, &node); err != nil {
+		return 0
+	}
+	return findValueInNode(&node, value)
+}
+
+func findValueInNode(node *yaml.Node, value string) int {
+	if node.Value == value {
+		return node.Line
+	}
+	for _, child := range node.Content {
+		if line := findValueInNode(child, value); line > 0 {
+			return line
+		}
+	}
+	return 0
+}
+
+func findLineByPointer(b []byte, ptr string) int {
+	var node yaml.Node
+	if err := yaml.Unmarshal(b, &node); err != nil {
+		return 0
+	}
+	return findLineInNode(&node, ptr)
+}
+
+func findLineInNode(node *yaml.Node, ptr string) int {
+	if ptr == "" {
+		return node.Line
+	}
+
+	// JSON Pointer: /foo/bar/0
+	// Split by /
+	parts := strings.Split(strings.TrimPrefix(ptr, "/"), "/")
+	current := node
+
+	// Skip DocumentNode
+	if current.Kind == yaml.DocumentNode {
+		if len(current.Content) > 0 {
+			current = current.Content[0]
+		}
+	}
+
+	for _, part := range parts {
+		found := false
+		if current.Kind == yaml.MappingNode {
+			for i := 0; i < len(current.Content); i += 2 {
+				keyNode := current.Content[i]
+				valNode := current.Content[i+1]
+				if keyNode.Value == part {
+					current = valNode
+					found = true
+					break
+				}
+			}
+		} else if current.Kind == yaml.SequenceNode {
+			idx, err := strconv.Atoi(part)
+			if err == nil && idx >= 0 && idx < len(current.Content) {
+				current = current.Content[idx]
+				found = true
+			}
+		}
+
+		if !found {
+			return 0
+		}
+	}
+
+	return current.Line
+}
+
+func enhanceValidationError(err error, b []byte) error {
+	var ve *jsonschema.ValidationError
+	if !errors.As(err, &ve) {
+		return err
+	}
+
+	// Flatten errors
+	leaves := flattenValidationErrors(ve)
+	var sb strings.Builder
+	sb.WriteString("schema validation failed:\n")
+
+	for _, e := range leaves {
+		line := findLineByPointer(b, e.InstanceLocation)
+		if line > 0 {
+			sb.WriteString(fmt.Sprintf("  - line %d: %s (at %s)\n", line, e.Message, e.InstanceLocation))
+		} else {
+			sb.WriteString(fmt.Sprintf("  - %s (at %s)\n", e.Message, e.InstanceLocation))
+		}
+	}
+	return errors.New(sb.String())
+}
+
+func flattenValidationErrors(ve *jsonschema.ValidationError) []*jsonschema.ValidationError {
+	if len(ve.Causes) == 0 {
+		return []*jsonschema.ValidationError{ve}
+	}
+	var result []*jsonschema.ValidationError
+	for _, c := range ve.Causes {
+		result = append(result, flattenValidationErrors(c)...)
+	}
+	return result
 }
