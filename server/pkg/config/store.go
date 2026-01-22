@@ -6,6 +6,7 @@ package config
 import (
 	"bytes"
 	"context"
+	"errors"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -558,6 +559,33 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 				continue
 			}
 			return nil, logErr
+		}
+
+		// Perform semantic validation on the loaded configuration for this file.
+		// This allows us to report errors with line numbers before merging.
+		for _, service := range cfg.GetUpstreamServices() {
+			if err := ValidateOrError(ctx, service); err != nil {
+				// Found an error. Locate it in the file.
+				line := findServiceLocation(b, service.GetName())
+
+				prefix := fmt.Sprintf("config error in %s", path)
+				if line > 0 {
+					prefix = fmt.Sprintf("config error in %s line %d", path, line)
+				}
+				prefix = fmt.Sprintf("%s (service %q)", prefix, service.GetName())
+
+				// If it's an ActionableError, enrich it
+				var ae *ActionableError
+				if errors.As(err, &ae) {
+					// Re-wrap with location info
+					return nil, &ActionableError{
+						Err:        fmt.Errorf("%s: %w", prefix, ae.Err),
+						Suggestion: ae.Suggestion,
+					}
+				}
+
+				return nil, fmt.Errorf("%s: %w", prefix, err)
+			}
 		}
 
 		if mergedConfig == nil {
@@ -1185,4 +1213,69 @@ func findKeyInNode(node *yaml.Node, key string) int {
 		}
 	}
 	return 0
+}
+
+func findServiceLocation(b []byte, serviceName string) int {
+	var node yaml.Node
+	if err := yaml.Unmarshal(b, &node); err != nil {
+		return 0
+	}
+	// Traverse to find upstream_services -> - name: serviceName
+	return findServiceInNode(&node, serviceName)
+}
+
+func findServiceInNode(node *yaml.Node, serviceName string) int {
+	// Find "upstream_services" or aliases
+	servicesNode := findKeyNode(node, "upstream_services")
+	if servicesNode == nil {
+		servicesNode = findKeyNode(node, "services")
+	}
+	if servicesNode == nil {
+		// Try looking at root if it IS the list (unlikely for this schema)
+		return 0
+	}
+
+	if servicesNode.Kind != yaml.SequenceNode {
+		return 0
+	}
+
+	for _, item := range servicesNode.Content {
+		// item is a MappingNode representing the service
+		// Find "name" key in item
+		nameVal := findKeyValue(item, "name")
+		if nameVal == serviceName {
+			return item.Line
+		}
+	}
+	return 0
+}
+
+func findKeyNode(node *yaml.Node, key string) *yaml.Node {
+	if node.Kind == yaml.DocumentNode {
+		for _, child := range node.Content {
+			if res := findKeyNode(child, key); res != nil {
+				return res
+			}
+		}
+		return nil
+	}
+	if node.Kind == yaml.MappingNode {
+		for i := 0; i < len(node.Content); i += 2 {
+			if node.Content[i].Value == key {
+				return node.Content[i+1]
+			}
+		}
+	}
+	return nil
+}
+
+func findKeyValue(node *yaml.Node, key string) string {
+	if node.Kind == yaml.MappingNode {
+		for i := 0; i < len(node.Content); i += 2 {
+			if node.Content[i].Value == key {
+				return node.Content[i+1].Value
+			}
+		}
+	}
+	return ""
 }

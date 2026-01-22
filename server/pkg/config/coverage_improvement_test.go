@@ -5,6 +5,7 @@ package config_test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -279,17 +280,26 @@ func TestSecretsHydration(t *testing.T) {
 }
 
 func TestResolveEnvValueFallback(t *testing.T) {
+	// Create dummy executable to pass validation
+	tmpDir := t.TempDir()
+	exePath := filepath.Join(tmpDir, "echo")
+	f, err := os.Create(exePath)
+	require.NoError(t, err)
+	f.Close()
+	os.Chmod(exePath, 0755)
+
     // Test the CSV parsing fallback by providing a string that is invalid CSV
     fs := afero.NewMemMapFs()
-    configContent := `
+	// Use ToSlash to ensure the path is valid in YAML string on Windows
+	configContent := fmt.Sprintf(`
 upstream_services:
   - name: "my-service"
     mcp_service:
       stdio_connection:
-        command: "echo"
+        command: "%s"
         args: ["original"]
-`
-    err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+`, filepath.ToSlash(exePath))
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
     require.NoError(t, err)
 
     envVar := "MCPANY__UPSTREAM_SERVICES__0__MCP_SERVICE__STDIO_CONNECTION__ARGS"
@@ -317,6 +327,8 @@ func TestStoreBoolConversion(t *testing.T) {
 upstream_services:
   - name: "my-service"
     disable: false
+    http_service:
+      address: "http://localhost"
 `
     err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
     require.NoError(t, err)

@@ -24,6 +24,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Config Schema Validation with Line Numbers**
+  - **Description**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.
 
 ## 2. Updated Roadmap
 
@@ -100,8 +102,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 70 | **Interactive Doctor Fixer** | **DevX**: Extend the doctor command to automatically fix common configuration issues (e.g. creating missing files, updating schema versions). | High |
 | 71 | **Config Validation Webhook** | **Ops**: A pre-commit or CI webhook that runs `mcpany config validate` on changed files to prevent bad config from being merged. | Medium |
 | 70 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
-
-<<<<<<< HEAD
 | 70   | **User Preference Storage**                   | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database.                                                                                                    | Low        |
 | 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
 | 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
@@ -118,26 +118,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 75   | **Tool Execution Trace ID**                   | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains.                                                                    | Medium     |
 | 76   | **Web UI for Discovery Status**               | **UX**: Visualize the auto-discovery status API in the settings/diagnostics panel so users can see why local tools are missing.                                                                                    | Low        |
 | 77   | **Configurable Discovery Providers**          | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults.                                                  | Medium     |
-| 76   | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.                                             | Medium     |
 | 77   | **YAML AST Caching**                          | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading.                                                                                               | Low        |
-=======
-| 70 | **User Preference Storage** | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database. | Low |
-| 71 | **Top Tools API Extensions** | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available. | Medium |
-| 72 | **Config Hot-Reload Validation** | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config. | High |
-| 76 | **Config Auto-Format API** | **DevX**: API endpoint to format uploaded config (JSON/YAML) according to standard style. | Low |
-| 77 | **Service Dependency Alerts** | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes. | Medium |
-| 73 | **Docker Secret Native Support** | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping. | Medium |
-| 74 | **gRPC Health Checks** | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability. | Medium |
-| 75 | **Health Check Flap Damping** | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues. | Medium |
-| 74 | **Environment Variable Wizard** | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing. | Low |
-| 75 | **Global Redaction Policy** | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces. | Medium |
-| 74 | **Tool Search & Filter API** | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend. | Low |
-| 75 | **Tool Execution Trace ID** | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains. | Medium |
-| 76 | **Auto-Discovery Status API** | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing. | Low |
-| 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
-| 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
-| 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
->>>>>>> cf469fbe9 (feat: Implement Dynamic Configuration Fields for Service Templates)
 
 ## 3. Codebase Health
 
