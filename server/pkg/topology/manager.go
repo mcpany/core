@@ -10,6 +10,7 @@ import (
 	"time"
 
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
 )
@@ -18,7 +19,7 @@ import (
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
-	trafficHistory  map[int64]int64 // Unix timestamp (minute) -> request count
+	trafficHistory  map[int64]*MinuteStats // Unix timestamp (minute) -> stats
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	toolManager     tool.ManagerInterface
 }
@@ -40,10 +41,19 @@ type Stats struct {
 	ErrorRate     float64
 }
 
+// MinuteStats tracks stats for a single minute.
+type MinuteStats struct {
+	Requests int64
+	Errors   int64
+	Latency  int64 // Total latency in ms
+}
+
 // TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
-	Time  string `json:"time"`
-	Total int64  `json:"total"`
+	Time    string `json:"time"`
+	Total   int64  `json:"requests"` // mapped to "requests" for UI
+	Errors  int64  `json:"errors"`
+	Latency int64  `json:"latency"`
 }
 
 // NewManager creates a new Topology Manager.
@@ -55,7 +65,7 @@ type TrafficPoint struct {
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	return &Manager{
 		sessions:        make(map[string]*SessionStats),
-		trafficHistory:  make(map[int64]int64),
+		trafficHistory:  make(map[int64]*MinuteStats),
 		serviceRegistry: registry,
 		toolManager:     tm,
 	}
@@ -92,7 +102,15 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 
 	// Record traffic history
 	now := time.Now().Truncate(time.Minute).Unix()
-	m.trafficHistory[now]++
+	if _, ok := m.trafficHistory[now]; !ok {
+		m.trafficHistory[now] = &MinuteStats{}
+	}
+	stats := m.trafficHistory[now]
+	stats.Requests++
+	stats.Latency += latency.Milliseconds()
+	if isError {
+		stats.Errors++
+	}
 
 	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
 	if m.sessions[sessionID].RequestCount%100 == 0 {
@@ -136,32 +154,85 @@ func (m *Manager) GetStats() Stats {
 }
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.
+// GetTrafficHistory returns the traffic history for the last 24 hours.
 func (m *Manager) GetTrafficHistory() []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	points := make([]TrafficPoint, 0, 24)
+	points := make([]TrafficPoint, 0, 60)
 	now := time.Now()
 
-	// Generate points for the last 24 hours (hourly info for now to match UI chart expectation which seemed to be hourly?)
-	// The mock data was 24 points (00:00 to 23:00).
-	// Let's generate 24 points for the last 24 hours.
-	for i := 23; i >= 0; i-- {
-		t := now.Add(time.Duration(-i) * time.Hour).Truncate(time.Hour)
+	// Generate points for the last 60 minutes
+	for i := 59; i >= 0; i-- {
+		t := now.Add(time.Duration(-i) * time.Minute).Truncate(time.Minute)
+		key := t.Unix()
 
-		// Sum up minutes within this hour
-		var total int64
-		for minIdx := 0; minIdx < 60; minIdx++ {
-			minuteKey := t.Add(time.Duration(minIdx) * time.Minute).Unix()
-			total += m.trafficHistory[minuteKey]
+		stats := m.trafficHistory[key]
+		var reqs, errs, lat int64
+		if stats != nil {
+			reqs = stats.Requests
+			errs = stats.Errors
+			lat = stats.Latency
+		}
+
+		// Calculate avg latency for the point if needed, or just total.
+		// UI `avgLatency` is calculated from total latency / total requests?
+		// The mock data had `latency` as a value around 50-250.
+		// If we return total latency, we should assume UI handles it?
+		// UI code: `avgLatency = ... reduce(acc + cur.latency, 0) / length` -> This implies cur.latency is AVERAGE for that point.
+		// So we should return Average Latency for that minute.
+
+		avgLat := int64(0)
+		if reqs > 0 {
+			avgLat = lat / reqs
 		}
 
 		points = append(points, TrafficPoint{
-			Time:  t.Format("15:04"), // HH:MM
-			Total: total,
+			Time:    t.Format("15:04"),
+			Total:   reqs,
+			Errors:  errs,
+			Latency: avgLat,
 		})
 	}
 	return points
+}
+
+// SeedTrafficHistory allows seeding the traffic history with external data.
+// This is primarily for testing and debugging purposes.
+func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// Clear existing history if needed, or just merge?
+	// For seeding, usually we want to set state.
+	// But since we store as map[int64]int64 (minute -> count), we need to parse the points.
+	// The points are "HH:MM" -> total.
+	// We should map them to today's timestamps.
+
+	now := time.Now()
+	// Clear current history
+	m.trafficHistory = make(map[int64]*MinuteStats)
+	log := logging.GetLogger()
+	log.Info("Seeding traffic history", "points", len(points))
+
+	for _, p := range points {
+		// Parse time "HH:MM"
+		t, err := time.Parse("15:04", p.Time)
+		if err != nil {
+			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
+			continue
+		}
+		// Adjust to today
+		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
+
+		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
+		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
+			Requests: p.Total,
+			Errors:   p.Errors,
+			Latency:  p.Latency * p.Total, // Reverse average
+		}
+		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
+	}
 }
 
 // GetGraph generates the current topology graph.

@@ -16,6 +16,7 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   // Intercept /api/v1 requests AND gRPC requests
+  // console.log(`[Middleware] Processing ${pathname}`);
   if (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/')) {
     // Inject API Key from server-side environment variable
     const apiKey = process.env.MCPANY_API_KEY;
