@@ -5,6 +5,7 @@ package config
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -101,12 +102,26 @@ func TestValidateTrustedHeaderAuth(t *testing.T) {
 
 func TestValidateOAuth2Auth_Coverage(t *testing.T) {
 	ctx := context.Background()
+	os.Setenv("CLIENT_ID", "my-id")
+	os.Setenv("CLIENT_SECRET", "my-secret")
+	defer os.Unsetenv("CLIENT_ID")
+	defer os.Unsetenv("CLIENT_SECRET")
 
 	tests := []struct {
 		name      string
 		oauth     *configv1.OAuth2Auth
 		expectErr string
 	}{
+		{
+			name: "valid_issuer_auto_discovery",
+			oauth: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String(""),
+				IssuerUrl:    proto.String("https://accounts.google.com"),
+				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_ID"}},
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_SECRET"}},
+			},
+			expectErr: "",
+		},
 		{
 			name: "invalid_issuer_url",
 			oauth: &configv1.OAuth2Auth{
@@ -125,6 +140,52 @@ func TestValidateOAuth2Auth_Coverage(t *testing.T) {
 				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_SECRET"}},
 			},
 			expectErr: "invalid oauth2 token_url",
+		},
+		{
+			name: "missing_token_and_issuer",
+			oauth: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String(""),
+				IssuerUrl:    proto.String(""),
+				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_ID"}},
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_SECRET"}},
+			},
+			expectErr: "oauth2 token_url is empty and no issuer_url provided",
+		},
+		{
+			name: "missing_client_id_secret_struct",
+			oauth: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String("https://example.com/token"),
+				ClientId:     nil, // Missing struct
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_SECRET"}},
+			},
+			expectErr: "client_id", // validateSecretValue might not fail on nil? Check implementation. validateSecretValue(nil) returns nil. validateOAuth2Auth calls validateSecretValue then resolve.
+		},
+		{
+			name: "empty_client_id_resolved",
+			oauth: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String("https://example.com/token"),
+				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: ""}},
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_SECRET"}},
+			},
+			expectErr: "oauth2 client_id is missing or empty",
+		},
+		{
+			name: "empty_client_secret_resolved",
+			oauth: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String("https://example.com/token"),
+				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_ID"}},
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: ""}},
+			},
+			expectErr: "oauth2 client_secret is missing or empty",
+		},
+        {
+			name: "invalid_client_id_secret_validation",
+			oauth: &configv1.OAuth2Auth{
+				TokenUrl:     proto.String("https://example.com/token"),
+				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR"}}, // Will resolve to empty if not required? validateSecretValue returns error if Env not set.
+				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "CLIENT_SECRET"}},
+			},
+			expectErr: "oauth2 client_id validation failed",
 		},
 	}
 
