@@ -6,7 +6,6 @@ package rest
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/mcpany/core/server/pkg/config"
@@ -37,7 +36,8 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. Unmarshal into generic map to validate against JSON schema
 	var rawConfig map[string]interface{}
 	if err := yaml.Unmarshal([]byte(req.Content), &rawConfig); err != nil {
-		respondWithValidationErrors(w, []string{fmt.Sprintf("Failed to parse YAML/JSON: %v", err)})
+		// Do not return the specific error to avoid leaking internal details or structure
+		respondWithValidationErrors(w, []string{"Invalid YAML/JSON format"})
 		return
 	}
 

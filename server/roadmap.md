@@ -6,6 +6,8 @@
   - **Description**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
+- **Improved CLI Config UX**
+  - **Description**: Simplified configuration loading by automatically enabling file configuration when `--config-path` is provided, removing the need for the `MCPANY_ENABLE_FILE_CONFIG` environment variable in CLI workflows.
 - **Actionable Configuration Errors**
   - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
 - **RegEx Environment Variable Validation**
