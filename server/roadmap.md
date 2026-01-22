@@ -2,8 +2,12 @@
 
 ## 1. Completed Features
 
+- **Config Schema Validation with Line Numbers**
+  - **Description**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
+- **Improved CLI Config UX**
+  - **Description**: Simplified configuration loading by automatically enabling file configuration when `--config-path` is provided, removing the need for the `MCPANY_ENABLE_FILE_CONFIG` environment variable in CLI workflows.
 - **Actionable Configuration Errors**
   - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
 - **RegEx Environment Variable Validation**
@@ -26,6 +30,8 @@
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
 - **Active Health Monitoring**
   - **Description**: Real-time health checks for upstream services, tracking latency and uptime status in the dashboard.
+- **Service Health Checks in Doctor**
+  - **Description**: Integrated upstream service health status into the `doctor` API and CLI command, providing visibility into connection failures (e.g., "connection refused") alongside configuration checks.
 
 ## 2. Updated Roadmap
 
@@ -77,7 +83,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
 | 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
-| 44 | **Interactive Config Validator** | **DevX**: A CLI mode that walks through validation errors one by one and asks the user for the correct value interactively. | Medium |
 | 43 | **Config Schema Visualization** | **UX**: A UI view to visualize the structure of the loaded configuration, highlighting inheritance or overrides. | Low |
 | 44 | **Validator Plugin System** | **Extensibility**: Allow users to write custom validation rules (e.g. "service name must start with 'prod-'") using Rego or simple scripts. | High |
 
@@ -101,28 +106,28 @@ These features represent the next logical steps for the product, focusing on Ent
 | 69 | **Secure Defaults Enforcer** | **Security**: Automated "Fix-it" suggestions or enforcement of secure defaults based on security warnings visualized in the Health Dashboard. | Medium |
 | 70 | **Interactive Doctor Fixer** | **DevX**: Extend the doctor command to automatically fix common configuration issues (e.g. creating missing files, updating schema versions). | High |
 | 71 | **Config Validation Webhook** | **Ops**: A pre-commit or CI webhook that runs `mcpany config validate` on changed files to prevent bad config from being merged. | Medium |
-| 70 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
+| 72 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
 
-| 70   | **User Preference Storage**                   | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database.                                                                                                    | Low        |
-| 71   | **Top Tools API Extensions**                  | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available.                                                                                        | Medium     |
-| 72   | **Config Hot-Reload Validation**              | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config.                                                                  | High       |
-| 76   | **Config Auto-Format API**                    | **DevX**: API endpoint to format uploaded config (JSON/YAML) according to standard style.                                                                                                                        | Low        |
-| 77   | **Service Dependency Alerts**                 | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes.                                                                                                                          | Medium     |
-| 78   | **Tool Execution Timeout Configuration**      | **Resilience**: Allow configuring timeouts per-tool or per-service to prevent hanging tools.                                                                                                                     | Medium     |
-| 79   | **Secret Versioning Support**                 | **Security**: Allow referencing specific versions of secrets in configuration (e.g. `secret:my-secret:v1`).                                                                                                      | Medium     |
-| 73   | **Docker Secret Native Support**              | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping.                                                | Medium     |
-| 74   | **gRPC Health Checks**                        | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.                                                                     | Medium     |
-| 75   | **Health Check Flap Damping**                 | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues.                                      | Medium     |
-| 74   | **Environment Variable Wizard**               | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing.                                                                       | Low        |
-| 75   | **Global Redaction Policy**                   | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces.                                                                                      | Medium     |
-| 74   | **Tool Search & Filter API**                  | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend.                                                       | Low        |
-| 75   | **Tool Execution Trace ID**                   | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains.                                                                    | Medium     |
-| 76   | **Web UI for Discovery Status**               | **UX**: Visualize the auto-discovery status API in the settings/diagnostics panel so users can see why local tools are missing.                                                                                    | Low        |
-| 77   | **Configurable Discovery Providers**          | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults.                                                  | Medium     |
-| 76   | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.                                             | Medium     |
-| 77   | **YAML AST Caching**                          | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading.                                                                                               | Low        |
-| 80   | **Health Check History**                      | **Observability**: Store health check history (latency, status) in the database to allow visualizing uptime trends over time.                                                                                    | Medium     |
-| 81   | **Slack Notifications for Health**            | **Ops**: Send Slack notifications when a service goes unhealthy or latency exceeds a threshold.                                                                                                                  | Low        |
+| 70 | **User Preference Storage** | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database. | Low |
+| 71 | **Top Tools API Extensions** | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available. | Medium |
+| 72 | **Config Hot-Reload Validation** | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config. | High |
+| 76 | **Config Auto-Format API** | **DevX**: API endpoint to format uploaded config (JSON/YAML) according to standard style. | Low |
+| 77 | **Service Dependency Alerts** | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes. | Medium |
+| 78 | **Tool Execution Timeout Configuration** | **Resilience**: Allow configuring timeouts per-tool or per-service to prevent hanging tools. | Medium |
+| 79 | **Secret Versioning Support** | **Security**: Allow referencing specific versions of secrets in configuration (e.g. `secret:my-secret:v1`). | Medium |
+| 73 | **Docker Secret Native Support** | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping. | Medium |
+| 74 | **gRPC Health Checks** | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability. | Medium |
+| 75 | **Health Check Flap Damping** | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues. | Medium |
+| 74 | **Environment Variable Wizard** | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing. | Low |
+| 75 | **Global Redaction Policy** | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces. | Medium |
+| 74 | **Tool Search & Filter API** | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend. | Low |
+| 75 | **Tool Execution Trace ID** | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains. | Medium |
+| 76 | **Web UI for Discovery Status** | **UX**: Visualize the auto-discovery status API in the settings/diagnostics panel so users can see why local tools are missing. | Low |
+| 76 | **Auto-Discovery Status API** | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing. | Low |
+| 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
+| 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **Intelligent Rate Limiting** | **Resilience**: Rate limiting based on token usage, not just request count, to better manage LLM costs and load. | High |
+| 81 | **Response Caching with TTL Overrides** | **Performance**: Allow specific tools to override global cache TTL in their response (via headers or side-channel) for dynamic data freshness. | Medium |
 
 ## 3. Codebase Health
 
