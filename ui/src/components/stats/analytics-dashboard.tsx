@@ -67,7 +67,7 @@ export function AnalyticsDashboard() {
 
     useEffect(() => {
         setIsMounted(true);
-        const fetchData = async () => {
+        const fetchDashboardData = async () => {
             try {
                 const [traffic, tools] = await Promise.all([
                     apiClient.getDashboardTraffic(),
@@ -87,8 +87,8 @@ export function AnalyticsDashboard() {
             }
         };
 
-        fetchData();
-        const interval = setInterval(fetchData, 30000);
+        fetchDashboardData();
+        const interval = setInterval(fetchDashboardData, 30000);
         return () => clearInterval(interval);
     }, [timeRange]);
 
@@ -221,9 +221,9 @@ export function AnalyticsDashboard() {
                                                 type="monotone"
                                                 dataKey="requests"
                                                 stroke="hsl(var(--primary))"
-                                                strokeWidth={2}
                                                 fillOpacity={1}
                                                 fill="url(#colorRequests)"
+                                                isAnimationActive={false}
                                             />
                                         </AreaChart>
                                     </ResponsiveContainer>
@@ -248,6 +248,7 @@ export function AnalyticsDashboard() {
                                                 innerRadius={60}
                                                 outerRadius={80}
                                                 dataKey="value"
+                                                isAnimationActive={false}
                                             >
                                                 {toolUsageData.map((entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -295,7 +296,7 @@ export function AnalyticsDashboard() {
                                             contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
                                             labelStyle={{ color: 'hsl(var(--foreground))' }}
                                         />
-                                        <Bar dataKey="latency" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="latency" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -331,7 +332,7 @@ export function AnalyticsDashboard() {
                                                 contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
                                                 labelStyle={{ color: 'hsl(var(--foreground))' }}
                                             />
-                                            <Line type="monotone" dataKey="errors" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} />
+                                            <Line type="monotone" dataKey="errors" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} isAnimationActive={false} />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 </div>

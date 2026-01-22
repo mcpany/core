@@ -10,6 +10,7 @@ import (
 	"time"
 
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
 )
@@ -211,11 +212,14 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	now := time.Now()
 	// Clear current history
 	m.trafficHistory = make(map[int64]*MinuteStats)
+	log := logging.GetLogger()
+	log.Info("Seeding traffic history", "points", len(points))
 
 	for _, p := range points {
 		// Parse time "HH:MM"
 		t, err := time.Parse("15:04", p.Time)
 		if err != nil {
+			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
 			continue
 		}
 		// Adjust to today
@@ -227,6 +231,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
 		}
+		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 	}
 }
 
