@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -36,6 +37,13 @@ func (m *mockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 func (m *mockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	err, ok := m.errors[serviceID]
 	return err, ok
+}
+func (m *mockServiceRegistry) GetServiceHealth(serviceID string) (string, time.Duration, time.Time, bool) {
+	if _, ok := m.errors[serviceID]; ok {
+		return m.errors[serviceID], 0, time.Time{}, true
+	}
+	// For healthy services in the mock
+	return "", 0, time.Time{}, true
 }
 func (m *mockServiceRegistry) Close(ctx context.Context) error {
 	return nil
