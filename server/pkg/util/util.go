@@ -567,17 +567,12 @@ func SanitizeFilename(filename string) string {
 	// 1. Base name only
 	filename = filepath.Base(filename)
 
-	// 2. Remove non-allowed characters and null bytes
-	// Optimization: Pre-allocate builder to avoid reallocations.
-	// Since we mostly keep chars or replace with 1-byte char, len(filename) is safe upper bound.
-	var sb strings.Builder
-	sb.Grow(len(filename))
+	// 2. Remove any null bytes
+	filename = strings.ReplaceAll(filename, "\x00", "")
 
+	// 3. Remove non-allowed characters
+	var sb strings.Builder
 	for _, c := range filename {
-		// Remove null bytes
-		if c == 0 {
-			continue
-		}
 		if unicode.IsLetter(c) || unicode.IsNumber(c) || c == '.' || c == '-' || c == '_' {
 			sb.WriteRune(c)
 		} else {
@@ -586,12 +581,12 @@ func SanitizeFilename(filename string) string {
 	}
 	result := sb.String()
 
-	// 3. Ensure not empty
+	// 4. Ensure not empty
 	if result == "" || result == "." || result == ".." {
 		return "unnamed_file"
 	}
 
-	// 4. Truncate
+	// 5. Truncate
 	if len(result) > 255 {
 		result = result[:255]
 	}

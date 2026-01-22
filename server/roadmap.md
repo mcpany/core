@@ -2,16 +2,12 @@
 
 ## 1. Completed Features
 
-- **Interactive Service Diagnostics**
-  - **Description**: Added a "Diagnose" feature in the UI that runs deep connectivity and configuration checks (using the `doctor` package) on a specific service and reports detailed status, latencies, and errors to the user.
-- **Config Schema Validation with Line Numbers**
-  - **Description**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
-- **Improved CLI Config UX**
-  - **Description**: Simplified configuration loading by automatically enabling file configuration when `--config-path` is provided, removing the need for the `MCPANY_ENABLE_FILE_CONFIG` environment variable in CLI workflows.
 - **Actionable Configuration Errors**
   - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
+- **Environment Variable Fuzzy Matching**
+  - **Description**: Enhances "Actionable Errors" by suggesting similar environment variables when a configured variable is missing, helping users catch typos (e.g., "Did you mean 'API_KEY'?").
 - **RegEx Environment Variable Validation**
   - **Description**: Validating the format of environment variables using regex (e.g., ensuring an API key matches a pattern) in addition to existence checks.
 - **Async Tool Loading**
@@ -30,10 +26,6 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
-- **Active Health Monitoring**
-  - **Description**: Real-time health checks for upstream services, tracking latency and uptime status in the dashboard.
-- **Service Health Checks in Doctor**
-  - **Description**: Integrated upstream service health status into the `doctor` API and CLI command, providing visibility into connection failures (e.g., "connection refused") alongside configuration checks.
 
 ## 2. Updated Roadmap
 
@@ -109,7 +101,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 70 | **Interactive Doctor Fixer** | **DevX**: Extend the doctor command to automatically fix common configuration issues (e.g. creating missing files, updating schema versions). | High |
 | 71 | **Config Validation Webhook** | **Ops**: A pre-commit or CI webhook that runs `mcpany config validate` on changed files to prevent bad config from being merged. | Medium |
 | 70 | **Tool Activity Feed** | **UX**: A dedicated UI component to show the tool execution history (structured), separate from raw logs, providing clear visibility into tool usage and performance. | Medium |
-
 | 70 | **User Preference Storage** | **UX/Backend**: API to store and retrieve user-specific UI preferences (layout, theme, etc.) in the database. | Low |
 | 71 | **Top Tools API Extensions** | **Observability**: Enhance the top tools API to support time ranges (last 1h, 24h) using historical metrics if available. | Medium |
 | 72 | **Config Hot-Reload Validation** | **Resilience**: Validate configuration changes before applying them during a hot-reload to prevent breaking the running server with a bad config. | High |
@@ -124,14 +115,10 @@ These features represent the next logical steps for the product, focusing on Ent
 | 75 | **Global Redaction Policy** | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces. | Medium |
 | 74 | **Tool Search & Filter API** | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend. | Low |
 | 75 | **Tool Execution Trace ID** | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains. | Medium |
-| 76 | **Web UI for Discovery Status** | **UX**: Visualize the auto-discovery status API in the settings/diagnostics panel so users can see why local tools are missing. | Low |
 | 76 | **Auto-Discovery Status API** | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing. | Low |
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
+| 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
-| 80 | **Diagnostic History Persistence** | **Observability**: Store the history of diagnostic runs (from the new "Diagnose" feature) in the database to allow tracking service stability over time. | Low |
-| 81 | **Automated Scheduled Diagnostics** | **Resilience**: Allow users to schedule "deep" diagnostic checks (HTTP probes, auth checks) periodically for critical services, alerting on failure. | Medium |
-| 80 | **Intelligent Rate Limiting** | **Resilience**: Rate limiting based on token usage, not just request count, to better manage LLM costs and load. | High |
-| 81 | **Response Caching with TTL Overrides** | **Performance**: Allow specific tools to override global cache TTL in their response (via headers or side-channel) for dynamic data freshness. | Medium |
 
 ## 3. Codebase Health
 

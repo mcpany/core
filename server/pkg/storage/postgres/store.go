@@ -56,8 +56,8 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	// Allow unknown fields to be safe against schema evolution
 	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
-	var configJSON []byte
 	for rows.Next() {
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
@@ -293,8 +293,8 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	// Allow unknown fields to be safe against schema evolution
 	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
-	var configJSON []byte
 	for rows.Next() {
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan user config: %w", err)
 		}
@@ -379,17 +379,14 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	defer func() { _ = rows.Close() }()
 
 	var secrets []*configv1.Secret
-	// Allow unknown fields to be safe against schema evolution
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-
-	var configJSON []byte
 	for rows.Next() {
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
 		var secret configv1.Secret
-		if err := opts.Unmarshal(configJSON, &secret); err != nil {
+		if err := protojson.Unmarshal(configJSON, &secret); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
 		}
 		secrets = append(secrets, &secret)
@@ -489,17 +486,14 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 	defer func() { _ = rows.Close() }()
 
 	var profiles []*configv1.ProfileDefinition
-	// Allow unknown fields to be safe against schema evolution
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-
-	var configJSON []byte
 	for rows.Next() {
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
 		var profile configv1.ProfileDefinition
-		if err := opts.Unmarshal(configJSON, &profile); err != nil {
+		if err := protojson.Unmarshal(configJSON, &profile); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
 		}
 		profiles = append(profiles, &profile)
@@ -599,17 +593,14 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 	defer func() { _ = rows.Close() }()
 
 	var collections []*configv1.Collection
-	// Allow unknown fields to be safe against schema evolution
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-
-	var configJSON []byte
 	for rows.Next() {
+		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
 			return nil, fmt.Errorf("failed to scan config_json: %w", err)
 		}
 
 		var collection configv1.Collection
-		if err := opts.Unmarshal(configJSON, &collection); err != nil {
+		if err := protojson.Unmarshal(configJSON, &collection); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
 		}
 		collections = append(collections, &collection)
