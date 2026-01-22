@@ -131,7 +131,6 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(page.getByText('"MAX_CONNECTIONS"')).toBeVisible();
     await expect(page.getByText('"100"')).toBeVisible();
     // Sentinel Security: Use non-sensitive placeholder or env var for password
-    const dbPassword = process.env.TEST_DB_PASSWORD || 'test_password_placeholder';
     await expect(page.getByText(`postgresql://test:${dbPassword}@localhost:5432/testdb`)).toBeVisible();
 
     await page.click('button:has-text("Finish & Save")');
