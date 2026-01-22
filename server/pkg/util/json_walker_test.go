@@ -113,6 +113,32 @@ func TestWalkJSONStrings(t *testing.T) {
 			expected: `{"key": "REPLACED" // comment
 }`,
 		},
+		{
+			name:  "string in block comment",
+			input: `/* "hidden" */ "visible"`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `/* "hidden" */ "REPLACED"`,
+		},
+		{
+			name: "string in line comment",
+			input: `// "hidden"
+"visible"`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `// "hidden"
+"REPLACED"`,
+		},
+		{
+			name:  "string in block comment before key",
+			input: `{ /* "ignore" */ "key": "value" }`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `{ /* "ignore" */ "key": "REPLACED" }`,
+		},
 	}
 
 	for _, tt := range tests {

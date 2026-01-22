@@ -52,6 +52,7 @@
 - [ ] **Playground Session Replay**: Ability to reload a previous session from a JSON file into the playground.
 - [ ] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
 - [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
+- [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [ ] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
 - [ ] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
 - [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
@@ -61,3 +62,5 @@
 - [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
 - [ ] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
+- [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
+- [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.

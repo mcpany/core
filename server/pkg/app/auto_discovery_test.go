@@ -6,17 +6,19 @@ package app
 import (
 	"context"
 	"log/slog"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestAutoDiscoverySilentFailure(t *testing.T) {
-	// Setup logger capture
+// TestAutoDiscoveryStatus verifies that auto-discovery failure is recorded in the DiscoveryManager
+// and accessible via internal state (and thus via API if we were testing the full API stack).
+func TestAutoDiscoveryStatus(t *testing.T) {
+	// Setup logger capture to ensure we don't spam stdout, though we are not relying on logs primarily now.
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
@@ -55,21 +57,21 @@ upstream_services: []
 	err = app.WaitForStartup(ctx)
 	require.NoError(t, err)
 
-	// Check logs for any warning about discovery failure
-	logs := buf.String()
+	// Check Discovery Status
+	require.NotNil(t, app.DiscoveryManager, "DiscoveryManager should be initialized")
 
-	// If Ollama is not running (which is true in sandbox), discovery fails.
-	// We expect a warning. If no warning is found, it's a silent failure.
-	hasWarning := strings.Contains(logs, "Failed to auto-discover") ||
-		strings.Contains(logs, "ollama not found") ||
-		strings.Contains(logs, "Auto-discovery failed")
+	status, ok := app.DiscoveryManager.GetProviderStatus("ollama")
+	require.True(t, ok, "Ollama provider should be registered")
 
-	if !hasWarning {
-		t.Logf("Full Logs:\n%s", logs)
-		t.Fatal("Silent failure detected: Auto-discovery should have failed (Ollama not present) but no warning was logged.")
-	}
+	assert.Equal(t, "ERROR", status.Status, "Status should be ERROR because Ollama is not running")
+	assert.Contains(t, status.LastError, "ollama not found", "Error message should contain 'ollama not found'")
+	assert.Contains(t, status.LastError, "connection refused", "Error message should contain 'connection refused'")
 
 	// Clean shutdown
 	cancel()
-	<-errChan
+	select {
+	case <-errChan:
+	case <-time.After(1 * time.Second):
+		t.Log("Timed out waiting for shutdown")
+	}
 }

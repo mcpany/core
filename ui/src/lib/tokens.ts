@@ -41,3 +41,15 @@ export function estimateMessageTokens(messages: any[]): number {
         return acc + estimateTokens(content);
     }, 0);
 }
+
+/**
+ * Formats a number of tokens into a human-readable string (e.g., 1.2k).
+ * @param count - The number of tokens.
+ * @returns Formatted string.
+ */
+export function formatTokenCount(count: number): string {
+    if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'k';
+    }
+    return count.toString();
+}

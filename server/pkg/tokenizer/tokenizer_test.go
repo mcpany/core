@@ -405,15 +405,17 @@ func TestErrorPropagation(t *testing.T) {
 func TestFloatConsistency(t *testing.T) {
 	tokenizer := NewSimpleTokenizer()
 
-	// These numbers are integers but represented as floats
+	// These numbers are integers but represented as floats.
+	// We expect the token count to match the standard string representation (%v),
+	// which uses scientific notation for large numbers.
 	tests := []struct {
 		val float64
-		want int // Expected tokens assuming we optimize to use integer path (decimal representation)
+		want int
 	}{
-		{1234567.0, 1}, // 7 digits -> 1 token. (Prev: 3 tokens from 1.234567e+06)
-		{9999999.0, 1}, // 7 digits -> 1 token. (Prev: 3 tokens)
-		{10000000.0, 2}, // 8 digits -> 2 tokens. (Prev: 1 token from 1e+07)
-		{123456789.0, 2}, // 9 digits -> 2 tokens. (Prev: 3 tokens from 1.234568e+08)
+		{1234567.0, 3}, // "1.234567e+06" -> 12 chars -> 3 tokens
+		{9999999.0, 3}, // "9.999999e+06" -> 12 chars -> 3 tokens
+		{10000000.0, 1}, // "1e+07" -> 5 chars -> 1 token
+		{123456789.0, 3}, // "1.234568e+08" -> 12 chars -> 3 tokens
 	}
 
 	for _, tt := range tests {

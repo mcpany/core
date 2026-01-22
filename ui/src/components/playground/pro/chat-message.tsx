@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
+import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 
 /**
  * MessageType type definition.
@@ -101,6 +102,9 @@ export function ChatMessage({ message, onReplay }: ChatMessageProps) {
                              <span className="font-mono text-sm font-medium text-primary">{message.toolName}</span>
                          </div>
                          <div className="flex-1" />
+                         <span className="text-[10px] text-muted-foreground mr-2" title="Estimated token usage for arguments">
+                            {formatTokenCount(estimateTokens(JSON.stringify(message.toolArgs || {})))} tokens
+                         </span>
                          {onReplay && message.toolName && (
                              <TooltipProvider>
                                 <Tooltip>
@@ -158,6 +162,9 @@ export function ChatMessage({ message, onReplay }: ChatMessageProps) {
                                 <Sparkles className="size-3.5 text-green-600 dark:text-green-400" />
                             </div>
                             <span className="font-medium text-green-700 dark:text-green-400">Result: {message.toolName}</span>
+                            <span className="ml-2 text-[10px] opacity-60" title="Estimated token usage for result">
+                                ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
+                            </span>
                         </div>
                         <CollapsibleTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">

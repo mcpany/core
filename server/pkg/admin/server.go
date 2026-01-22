@@ -11,6 +11,7 @@ import (
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage"
@@ -24,10 +25,11 @@ import (
 // Server implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
-	cache           *middleware.CachingMiddleware
-	toolManager     tool.ManagerInterface
-	serviceRegistry serviceregistry.ServiceRegistryInterface
-	storage         storage.Storage
+	cache            *middleware.CachingMiddleware
+	toolManager      tool.ManagerInterface
+	serviceRegistry  serviceregistry.ServiceRegistryInterface
+	storage          storage.Storage
+	discoveryManager *discovery.Manager
 }
 
 // NewServer creates a new Admin Server.
@@ -36,6 +38,7 @@ type Server struct {
 // toolManager is the toolManager.
 // serviceRegistry is the registry of upstream services.
 // storage provides the persistence layer.
+// discoveryManager manages auto-discovery.
 //
 // Returns the result.
 func NewServer(
@@ -43,12 +46,14 @@ func NewServer(
 	toolManager tool.ManagerInterface,
 	serviceRegistry serviceregistry.ServiceRegistryInterface,
 	storage storage.Storage,
+	discoveryManager *discovery.Manager,
 ) *Server {
 	return &Server{
-		cache:           cache,
-		toolManager:     toolManager,
-		serviceRegistry: serviceRegistry,
-		storage:         storage,
+		cache:            cache,
+		toolManager:      toolManager,
+		serviceRegistry:  serviceRegistry,
+		storage:          storage,
+		discoveryManager: discoveryManager,
 	}
 }
 
@@ -295,4 +300,27 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
 	}
 	return &pb.DeleteUserResponse{}, nil
+}
+
+// GetDiscoveryStatus returns the status of auto-discovery providers.
+func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
+	if s.discoveryManager == nil {
+		return &pb.GetDiscoveryStatusResponse{}, nil
+	}
+
+	statuses := s.discoveryManager.GetStatuses()
+	pbStatuses := make([]*pb.DiscoveryProviderStatus, 0, len(statuses))
+
+	for _, st := range statuses {
+		//nolint:gosec // Discovered count fits in int32
+		pbStatuses = append(pbStatuses, &pb.DiscoveryProviderStatus{
+			Name:            proto.String(st.Name),
+			Status:          proto.String(st.Status),
+			LastError:       proto.String(st.LastError),
+			LastRunAt:       proto.String(st.LastRunAt.Format("2006-01-02T15:04:05Z07:00")),
+			DiscoveredCount: proto.Int32(int32(st.DiscoveredCount)),
+		})
+	}
+
+	return &pb.GetDiscoveryStatusResponse{Providers: pbStatuses}, nil
 }
