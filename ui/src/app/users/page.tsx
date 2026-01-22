@@ -14,7 +14,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { apiClient } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +35,7 @@ const userSchema = z.object({
   id: z.string().min(3, "Username must be at least 3 characters").max(50, "Username too long").regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and dashes"),
   role: z.string().min(1, "Role is required"),
   password: z.string().optional(),
-}).refine(data => {
+}).refine(() => {
   // If editing, password is optional (unchanged). If creating, password is required if we assume Basic Auth.
   // But maybe we want to allow creating users without password initially (e.g. only API key later)?
   // For now, let's enforce password for creation if we are setting up Basic Auth.

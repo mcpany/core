@@ -44,7 +44,7 @@ export default function LoginPage() {
     },
   });
 
-  async function onSubmit(data: LoginValues) {
+  async function onSubmit(_: LoginValues) {
     setLoading(true);
     setError(null);
     try {
