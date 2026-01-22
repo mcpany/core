@@ -25,6 +25,8 @@ import { Wrench, Play, Star, Search, List, LayoutList } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
+import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import { Info } from "lucide-react";
 
 /**
  * ToolsPage component.
@@ -180,6 +182,7 @@ export default function ToolsPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Service</TableHead>
+                <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -205,6 +208,12 @@ export default function ToolsPage() {
                   <TableCell className={isCompact ? "py-0 px-2" : ""}>{tool.description}</TableCell>
                   <TableCell className={isCompact ? "py-0 px-2" : ""}>
                       <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
+                  </TableCell>
+                  <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                      <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
+                          <Info className="w-3 h-3 mr-1 opacity-50" />
+                          {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
+                      </div>
                   </TableCell>
                   <TableCell className={isCompact ? "py-0 px-2" : ""}>
                     <div className="flex items-center space-x-2">
