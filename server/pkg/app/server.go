@@ -864,6 +864,11 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 		a.SettingsManager.Update(cfg.GetGlobalSettings(), a.explicitAPIKey)
 	}
 
+	// Update Health Alerts
+	if cfg.GetGlobalSettings().GetAlerts() != nil {
+		health.SetGlobalAlertConfig(cfg.GetGlobalSettings().GetAlerts())
+	}
+
 	// Update dynamic middlewares
 	if a.ipMiddleware != nil {
 		if err := a.ipMiddleware.Update(a.SettingsManager.GetAllowedIPs()); err != nil {

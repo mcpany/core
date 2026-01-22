@@ -7,8 +7,10 @@ package health
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 	"net/http"
 	"os"
 	"strings"
@@ -31,6 +33,18 @@ const (
 	healthStatusGauge        = "mcp_any_health_check_status"
 	healthCheckLatencyMetric = "mcp_any_health_check_latency_seconds"
 )
+
+var (
+	globalAlertConfig   *configv1.AlertConfig
+	globalAlertConfigMu sync.RWMutex
+)
+
+// SetGlobalAlertConfig sets the global alert configuration.
+func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
+	globalAlertConfigMu.Lock()
+	defer globalAlertConfigMu.Unlock()
+	globalAlertConfig = cfg
+}
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
@@ -104,14 +118,35 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 		return err
 	}
 
+	var lastStatus health.AvailabilityStatus
+	var lastStatusMu sync.Mutex
+
 	opts := []health.CheckerOption{
-		health.WithStatusListener(func(_ context.Context, state health.CheckerState) {
+		health.WithStatusListener(func(ctx context.Context, state health.CheckerState) {
+			lastStatusMu.Lock()
+			prev := lastStatus
+			lastStatus = state.Status
+			lastStatusMu.Unlock()
+
+			// Skip if status hasn't changed (deduplication)
+			if prev == state.Status {
+				return
+			}
+
 			status := float32(0.0)
 			if state.Status == health.StatusUp {
 				status = 1.0
 			}
 			metrics.SetGauge(healthStatusGauge, status, serviceName)
 			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
+
+			globalAlertConfigMu.RLock()
+			alertConfig := globalAlertConfig
+			globalAlertConfigMu.RUnlock()
+
+			if alertConfig != nil && alertConfig.GetEnabled() && alertConfig.GetWebhookUrl() != "" {
+				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
+			}
 		}),
 		// Using synchronous checks for now to simplify the implementation and ensure
 		// tests are reliable. Periodic checks can be re-introduced later if needed,
@@ -364,6 +399,42 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 			}
 			return fmt.Errorf("no connection configured for MCP service")
 		},
+	}
+}
+
+func sendWebhook(ctx context.Context, url, serviceName string, status health.AvailabilityStatus) {
+	// Simple webhook implementation: POST JSON payload
+	payload := map[string]interface{}{
+		"event":     "health_status_changed",
+		"service":   serviceName,
+		"status":    string(status),
+		"timestamp": time.Now().Format(time.RFC3339),
+	}
+
+	jsonBody, err := json.Marshal(payload)
+	if err != nil {
+		logging.GetLogger().Error("failed to marshal webhook payload", "error", err)
+		return
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		logging.GetLogger().Error("failed to create webhook request", "error", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Use a short timeout for webhooks
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		logging.GetLogger().Error("failed to send webhook", "error", err)
+		return
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode >= 400 {
+		logging.GetLogger().Error("webhook returned error status", "status", resp.StatusCode)
 	}
 }
 

@@ -13,6 +13,7 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
 2.  **Alert Feed:** A sortable, filterable list of all alerts with color-coded severity badges (Critical, Warning, Info) and status indicators (Active, Acknowledged, Resolved).
 3.  **Filtering:** Users can filter alerts by Severity, Status, or free-text search (Title, Message, Service).
 4.  **Rule Management:** A "Create Alert Rule" dialog allows users to define new monitoring conditions. Backend storage (In-Memory) is fully implemented.
+5.  **Health Webhooks:** The system supports configuring a global webhook URL to receive notifications when upstream service health status changes (e.g. Healthy -> Degraded).
 
 ## Implementation Details
 
