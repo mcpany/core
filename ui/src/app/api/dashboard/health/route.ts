@@ -11,8 +11,7 @@ interface BackendService {
   disable: boolean;
   last_error?: string;
   config_error?: string;
-  latency_ms?: number;
-  last_check?: string;
+  // Other fields we might use later
 }
 
 export async function GET() {
@@ -42,29 +41,14 @@ export async function GET() {
         status = "unhealthy";
       }
 
-      const latency = svc.latency_ms ? `${svc.latency_ms}ms` : "--";
-
-      // Calculate a simple "last seen" or "status" string for uptime column for now
-      let uptime = "--";
-      if (svc.last_check) {
-          const lastCheck = new Date(svc.last_check);
-          const now = new Date();
-          const diffSeconds = Math.floor((now.getTime() - lastCheck.getTime()) / 1000);
-          if (diffSeconds < 60) {
-              uptime = "Just now";
-          } else if (diffSeconds < 3600) {
-              uptime = `${Math.floor(diffSeconds / 60)}m ago`;
-          } else {
-              uptime = "Active";
-          }
-      }
-
+      // We don't have real latency/uptime yet, so we'll leave them as placeholders or specific "Unknown" indicators
+      // that the UI can handle gracefully.
       return {
         id: svc.id || svc.name,
         name: svc.name,
         status: status,
-        latency: latency,
-        uptime: uptime,
+        latency: "--", // Placeholder until metrics are available
+        uptime: "--",  // Placeholder
         message: svc.last_error || svc.config_error // Pass error message to UI
       };
     });

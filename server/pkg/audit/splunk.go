@@ -29,6 +29,7 @@ type SplunkAuditStore struct {
 	client *http.Client
 	queue  chan Entry
 	wg     sync.WaitGroup
+	done   chan struct{}
 }
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
@@ -42,6 +43,7 @@ func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 			Timeout: 10 * time.Second,
 		},
 		queue: make(chan Entry, splunkBufferSize),
+		done:  make(chan struct{}),
 	}
 
 	for i := 0; i < splunkWorkers; i++ {
@@ -75,6 +77,17 @@ func (e *SplunkAuditStore) worker() {
 				e.sendBatch(batch)
 				batch = nil
 			}
+		case <-e.done:
+			// Drain queue
+			for entry := range e.queue {
+				batch = append(batch, entry)
+				if len(batch) >= splunkBatchSize {
+					e.sendBatch(batch)
+					batch = nil
+				}
+			}
+			e.sendBatch(batch)
+			return
 		}
 	}
 }
@@ -143,6 +156,9 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 
 // Close closes the queue and waits for workers to finish.
 func (e *SplunkAuditStore) Close() error {
+	if e.done != nil {
+		close(e.done)
+	}
 	if e.queue != nil {
 		close(e.queue)
 	}

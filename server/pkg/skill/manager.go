@@ -165,17 +165,8 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	// validate path to prevent traversal
 	// filepath.Clean removes ..
 	cleanPath := filepath.Clean(relPath)
-
-	if filepath.IsAbs(cleanPath) {
-		return fmt.Errorf("absolute paths are not allowed: %s", relPath)
-	}
-
 	if strings.Contains(cleanPath, "..") || strings.HasPrefix(cleanPath, "/") {
 		return fmt.Errorf("invalid asset path: %s", relPath)
-	}
-
-	if cleanPath == SkillFileName {
-		return fmt.Errorf("cannot overwrite skill definition file: %s", SkillFileName)
 	}
 
 	skillDir := filepath.Join(m.rootDir, skillName)
