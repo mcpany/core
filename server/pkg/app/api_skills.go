@@ -44,7 +44,8 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 
 		if err := a.SkillManager.SaveAsset(skillName, assetPath, body); err != nil {
 			logging.GetLogger().Error("Failed to save asset", "skill", skillName, "path", assetPath, "error", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// Sentinel Security: Return generic error to avoid leaking path information or internal details
+			http.Error(w, "Failed to save asset", http.StatusInternalServerError)
 			return
 		}
 
