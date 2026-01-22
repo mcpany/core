@@ -103,6 +103,23 @@ export interface DeleteUserRequest {
 export interface DeleteUserResponse {
 }
 
+export interface GetDiscoveryStatusRequest {
+}
+
+export interface GetDiscoveryStatusResponse {
+  providers: DiscoveryProviderStatus[];
+}
+
+export interface DiscoveryProviderStatus {
+  name: string;
+  /** "OK", "ERROR" */
+  status: string;
+  lastError: string;
+  /** ISO 8601 */
+  lastRunAt: string;
+  discoveredCount: number;
+}
+
 function createBaseClearCacheRequest(): ClearCacheRequest {
   return {};
 }
@@ -1311,6 +1328,235 @@ export const DeleteUserResponse: MessageFns<DeleteUserResponse> = {
   },
 };
 
+function createBaseGetDiscoveryStatusRequest(): GetDiscoveryStatusRequest {
+  return {};
+}
+
+export const GetDiscoveryStatusRequest: MessageFns<GetDiscoveryStatusRequest> = {
+  encode(_: GetDiscoveryStatusRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetDiscoveryStatusRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetDiscoveryStatusRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetDiscoveryStatusRequest {
+    return {};
+  },
+
+  toJSON(_: GetDiscoveryStatusRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetDiscoveryStatusRequest>, I>>(base?: I): GetDiscoveryStatusRequest {
+    return GetDiscoveryStatusRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetDiscoveryStatusRequest>, I>>(_: I): GetDiscoveryStatusRequest {
+    const message = createBaseGetDiscoveryStatusRequest();
+    return message;
+  },
+};
+
+function createBaseGetDiscoveryStatusResponse(): GetDiscoveryStatusResponse {
+  return { providers: [] };
+}
+
+export const GetDiscoveryStatusResponse: MessageFns<GetDiscoveryStatusResponse> = {
+  encode(message: GetDiscoveryStatusResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.providers) {
+      DiscoveryProviderStatus.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetDiscoveryStatusResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetDiscoveryStatusResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.providers.push(DiscoveryProviderStatus.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetDiscoveryStatusResponse {
+    return {
+      providers: globalThis.Array.isArray(object?.providers)
+        ? object.providers.map((e: any) => DiscoveryProviderStatus.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: GetDiscoveryStatusResponse): unknown {
+    const obj: any = {};
+    if (message.providers?.length) {
+      obj.providers = message.providers.map((e) => DiscoveryProviderStatus.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetDiscoveryStatusResponse>, I>>(base?: I): GetDiscoveryStatusResponse {
+    return GetDiscoveryStatusResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetDiscoveryStatusResponse>, I>>(object: I): GetDiscoveryStatusResponse {
+    const message = createBaseGetDiscoveryStatusResponse();
+    message.providers = object.providers?.map((e) => DiscoveryProviderStatus.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseDiscoveryProviderStatus(): DiscoveryProviderStatus {
+  return { name: "", status: "", lastError: "", lastRunAt: "", discoveredCount: 0 };
+}
+
+export const DiscoveryProviderStatus: MessageFns<DiscoveryProviderStatus> = {
+  encode(message: DiscoveryProviderStatus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.status !== "") {
+      writer.uint32(18).string(message.status);
+    }
+    if (message.lastError !== "") {
+      writer.uint32(26).string(message.lastError);
+    }
+    if (message.lastRunAt !== "") {
+      writer.uint32(34).string(message.lastRunAt);
+    }
+    if (message.discoveredCount !== 0) {
+      writer.uint32(40).int32(message.discoveredCount);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DiscoveryProviderStatus {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDiscoveryProviderStatus();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.status = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.lastError = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.lastRunAt = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.discoveredCount = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DiscoveryProviderStatus {
+    return {
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      status: isSet(object.status) ? globalThis.String(object.status) : "",
+      lastError: isSet(object.lastError) ? globalThis.String(object.lastError) : "",
+      lastRunAt: isSet(object.lastRunAt) ? globalThis.String(object.lastRunAt) : "",
+      discoveredCount: isSet(object.discoveredCount) ? globalThis.Number(object.discoveredCount) : 0,
+    };
+  },
+
+  toJSON(message: DiscoveryProviderStatus): unknown {
+    const obj: any = {};
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.status !== "") {
+      obj.status = message.status;
+    }
+    if (message.lastError !== "") {
+      obj.lastError = message.lastError;
+    }
+    if (message.lastRunAt !== "") {
+      obj.lastRunAt = message.lastRunAt;
+    }
+    if (message.discoveredCount !== 0) {
+      obj.discoveredCount = Math.round(message.discoveredCount);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DiscoveryProviderStatus>, I>>(base?: I): DiscoveryProviderStatus {
+    return DiscoveryProviderStatus.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DiscoveryProviderStatus>, I>>(object: I): DiscoveryProviderStatus {
+    const message = createBaseDiscoveryProviderStatus();
+    message.name = object.name ?? "";
+    message.status = object.status ?? "";
+    message.lastError = object.lastError ?? "";
+    message.lastRunAt = object.lastRunAt ?? "";
+    message.discoveredCount = object.discoveredCount ?? 0;
+    return message;
+  },
+};
+
 /** AdminService provides administrative operations for the MCP Any server. */
 export interface AdminService {
   /** ClearCache clears all cached data in the server. */
@@ -1333,6 +1579,11 @@ export interface AdminService {
   UpdateUser(request: DeepPartial<UpdateUserRequest>, metadata?: grpc.Metadata): Promise<UpdateUserResponse>;
   /** DeleteUser deletes a user by ID. */
   DeleteUser(request: DeepPartial<DeleteUserRequest>, metadata?: grpc.Metadata): Promise<DeleteUserResponse>;
+  /** GetDiscoveryStatus returns the status of auto-discovery providers. */
+  GetDiscoveryStatus(
+    request: DeepPartial<GetDiscoveryStatusRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<GetDiscoveryStatusResponse>;
 }
 
 export class AdminServiceClientImpl implements AdminService {
@@ -1350,6 +1601,7 @@ export class AdminServiceClientImpl implements AdminService {
     this.ListUsers = this.ListUsers.bind(this);
     this.UpdateUser = this.UpdateUser.bind(this);
     this.DeleteUser = this.DeleteUser.bind(this);
+    this.GetDiscoveryStatus = this.GetDiscoveryStatus.bind(this);
   }
 
   ClearCache(request: DeepPartial<ClearCacheRequest>, metadata?: grpc.Metadata): Promise<ClearCacheResponse> {
@@ -1390,6 +1642,13 @@ export class AdminServiceClientImpl implements AdminService {
 
   DeleteUser(request: DeepPartial<DeleteUserRequest>, metadata?: grpc.Metadata): Promise<DeleteUserResponse> {
     return this.rpc.unary(AdminServiceDeleteUserDesc, DeleteUserRequest.fromPartial(request), metadata);
+  }
+
+  GetDiscoveryStatus(
+    request: DeepPartial<GetDiscoveryStatusRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<GetDiscoveryStatusResponse> {
+    return this.rpc.unary(AdminServiceGetDiscoveryStatusDesc, GetDiscoveryStatusRequest.fromPartial(request), metadata);
   }
 }
 
@@ -1615,6 +1874,29 @@ export const AdminServiceDeleteUserDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       const value = DeleteUserResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceGetDiscoveryStatusDesc: UnaryMethodDefinitionish = {
+  methodName: "GetDiscoveryStatus",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetDiscoveryStatusRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = GetDiscoveryStatusResponse.decode(data);
       return {
         ...value,
         toObject() {
