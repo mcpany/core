@@ -132,6 +132,13 @@ func TestGetClientIP(t *testing.T) {
 			trustProxy: true,
 			expected:   "5.6.7.8",
 		},
+		{
+			name:       "Trust Proxy, IPv6 XFF with Brackets",
+			remoteAddr: "1.2.3.4:1234",
+			xff:        "[::1]",
+			trustProxy: true,
+			expected:   "::1",
+		},
 	}
 
 	for _, tt := range tests {

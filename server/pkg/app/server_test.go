@@ -3304,3 +3304,69 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	cancel()
 	<-errChan
 }
+
+func TestMCPUserHandler_NoAuth_IPv6Brackets_Allowed(t *testing.T) {
+	// Set TRUST PROXY to simulate forwarded IP
+	t.Setenv("MCPANY_TRUST_PROXY", "true")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	bindAddress := l.Addr().String()
+	_ = l.Close()
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	// NO API Key configured!
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+	config.GlobalSettings().SetAPIKey("")
+
+	authManager := auth.NewManager()
+	app.AuthManager = authManager
+	app.ProfileManager = profile.NewManager(nil)
+
+	serviceRegistry := serviceregistry.New(upstreamFactory, app.ToolManager, app.PromptManager, app.ResourceManager, authManager)
+	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
+	require.NoError(t, err)
+
+	// Setup a user to access
+	users := []*configv1.User{
+		{
+			Id:         proto.String("user_no_auth"),
+			ProfileIds: []string{"profileB"},
+		},
+	}
+	authManager.SetUsers(users)
+
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
+	}()
+
+	waitForServerReady(t, bindAddress)
+	baseURL := fmt.Sprintf("http://%s", bindAddress)
+
+	// Simulate a request from a PRIVATE IP but with brackets (e.g. from some proxies)
+	// Without fix, this parses as nil (public/invalid) and is BLOCKED.
+	// With fix, this parses as ::1 (private) and is ALLOWED.
+	req, _ := http.NewRequest("POST", baseURL+"/mcp/u/user_no_auth/profile/profileB", nil)
+	req.Header.Set("X-Forwarded-For", "[::1]")
+
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	// Should be allowed (not 403)
+	// Since we POST empty body to an endpoint that might expect JSON-RPC, we might get 400 or 405 or 404, but NOT 403.
+	assert.NotEqual(t, http.StatusForbidden, resp.StatusCode, "Private IPv6 with brackets should be allowed when API Key is missing")
+
+	cancel()
+	<-errChan
+}

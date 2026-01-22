@@ -58,6 +58,7 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 			// in case of multiple IPs in the header.
 			clientIP, _, _ := strings.Cut(xff, ",")
 			clientIP = strings.TrimSpace(clientIP)
+			clientIP = ExtractIP(clientIP)
 			if clientIP != "" {
 				ip = clientIP
 			}
