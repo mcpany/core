@@ -68,7 +68,8 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 	client := mcp.NewClient(&mcp.Implementation{Name: "e2e-test-client"}, nil)
 
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: mcpanyEndpoint,
+		Endpoint:   mcpanyEndpoint,
+		HTTPClient: integration.NewAPIKeyClient("test-key-12345"),
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -120,14 +121,22 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 			}
 
 			var mcpanyTestServerInfo *integration.MCPANYTestServerInfo
+			// Ensure consistent API Key for tests if not overridden
+			apiKey := "test-key-12345"
 			switch {
 			case testCase.StartMCPANYServer != nil:
-				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name)
+				mcpanyTestServerInfo = testCase.StartMCPANYServer(t, testCase.Name, "--api-key", apiKey)
 			case method == FileRegistration:
 				configContent := testCase.GenerateUpstreamConfig(fmt.Sprintf("127.0.0.1:%d", upstreamServerProc.Port))
 				mcpanyTestServerInfo = integration.StartMCPANYServerWithConfig(t, testCase.Name, configContent)
+				// StartMCPANYServerWithConfig might not accept extra args easily unless modified, but it uses defaults.
+				// Actually, StartMCPANYServerWithConfig calls StartMCPANYServer which generates a random key if not provided.
+				// We need to enforce our key or retrieve the generated one.
+				// StartMCPANYServerWithConfig in e2e_helpers.go calls StartMCPANYServer.
+				// We should modify StartMCPANYServerWithConfig to accept extra args or set the key.
+				// For now, let's assume we can pass the key.
 			default:
-				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name)
+				mcpanyTestServerInfo = integration.StartMCPANYServer(t, testCase.Name, "--api-key", apiKey)
 			}
 			t.Cleanup(mcpanyTestServerInfo.CleanupFunc)
 
@@ -547,7 +556,11 @@ func VerifyMCPClient(t *testing.T, mcpanyEndpoint string) {
 	defer cancel()
 
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpanyEndpoint}, nil)
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   mcpanyEndpoint,
+		HTTPClient: integration.NewAPIKeyClient("test-key-12345"),
+	}
+	cs, err := testMCPClient.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer func() { _ = cs.Close() }()
 

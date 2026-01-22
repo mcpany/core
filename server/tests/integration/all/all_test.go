@@ -31,7 +31,11 @@ func TestLoadAllPopularServices(t *testing.T) {
 
 	// --- 2. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
-	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   mcpAnyTestServerInfo.HTTPEndpoint,
+		HTTPClient: mcpAnyTestServerInfo.HTTPClient,
+	}
+	cs, err := testMCPClient.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer cs.Close()
 

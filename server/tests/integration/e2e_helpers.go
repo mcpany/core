@@ -743,7 +743,9 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 	require.NoError(t, err)
 	err = tmpFile.Close()
 	require.NoError(t, err)
-	return StartMCPANYServer(t, testName, "--config-path", tmpFile.Name())
+	// Pass default test key if not provided by caller (caller can't easily pass args here, so we assume default for config-based tests unless config overrides it, but server args take precedence).
+	// Actually, let's use the hardcoded key here too.
+	return StartMCPANYServer(t, testName, "--config-path", tmpFile.Name(), "--api-key", "test-key-12345")
 }
 
 // StartMCPANYServer starts the MCP Any server with default settings.
