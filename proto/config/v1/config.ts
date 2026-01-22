@@ -126,6 +126,8 @@ export interface GlobalSettings {
   readOnly: boolean;
   /** Whether to auto-discover local services (e.g. Ollama). */
   autoDiscoverLocal: boolean;
+  /** Alert configuration. */
+  alerts?: AlertConfig | undefined;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -216,6 +218,13 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface AlertConfig {
+  /** Whether alerts are enabled. */
+  enabled: boolean;
+  /** The webhook URL to send alerts to. */
+  webhookUrl: string;
 }
 
 export interface ContextOptimizerConfig {
@@ -780,6 +789,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     debugger: undefined,
     readOnly: false,
     autoDiscoverLocal: false,
+    alerts: undefined,
   };
 }
 
@@ -862,6 +872,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.autoDiscoverLocal !== false) {
       writer.uint32(208).bool(message.autoDiscoverLocal);
+    }
+    if (message.alerts !== undefined) {
+      AlertConfig.encode(message.alerts, writer.uint32(218).fork()).join();
     }
     return writer;
   },
@@ -1081,6 +1094,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.autoDiscoverLocal = reader.bool();
           continue;
         }
+        case 27: {
+          if (tag !== 218) {
+            break;
+          }
+
+          message.alerts = AlertConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1130,6 +1151,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       debugger: isSet(object.debugger) ? DebuggerConfig.fromJSON(object.debugger) : undefined,
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
       autoDiscoverLocal: isSet(object.auto_discover_local) ? globalThis.Boolean(object.auto_discover_local) : false,
+      alerts: isSet(object.alerts) ? AlertConfig.fromJSON(object.alerts) : undefined,
     };
   },
 
@@ -1213,6 +1235,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.autoDiscoverLocal !== false) {
       obj.auto_discover_local = message.autoDiscoverLocal;
     }
+    if (message.alerts !== undefined) {
+      obj.alerts = AlertConfig.toJSON(message.alerts);
+    }
     return obj;
   },
 
@@ -1263,6 +1288,85 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       : undefined;
     message.readOnly = object.readOnly ?? false;
     message.autoDiscoverLocal = object.autoDiscoverLocal ?? false;
+    message.alerts = (object.alerts !== undefined && object.alerts !== null)
+      ? AlertConfig.fromPartial(object.alerts)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAlertConfig(): AlertConfig {
+  return { enabled: false, webhookUrl: "" };
+}
+
+export const AlertConfig: MessageFns<AlertConfig> = {
+  encode(message: AlertConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.enabled !== false) {
+      writer.uint32(8).bool(message.enabled);
+    }
+    if (message.webhookUrl !== "") {
+      writer.uint32(18).string(message.webhookUrl);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AlertConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAlertConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.enabled = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.webhookUrl = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AlertConfig {
+    return {
+      enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false,
+      webhookUrl: isSet(object.webhook_url) ? globalThis.String(object.webhook_url) : "",
+    };
+  },
+
+  toJSON(message: AlertConfig): unknown {
+    const obj: any = {};
+    if (message.enabled !== false) {
+      obj.enabled = message.enabled;
+    }
+    if (message.webhookUrl !== "") {
+      obj.webhook_url = message.webhookUrl;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AlertConfig>, I>>(base?: I): AlertConfig {
+    return AlertConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AlertConfig>, I>>(object: I): AlertConfig {
+    const message = createBaseAlertConfig();
+    message.enabled = object.enabled ?? false;
+    message.webhookUrl = object.webhookUrl ?? "";
     return message;
   },
 };

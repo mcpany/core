@@ -124,6 +124,15 @@ message GlobalSettings {
   bool read_only = 25 [json_name = "read_only"];
   // Whether to auto-discover local services (e.g. Ollama).
   bool auto_discover_local = 26 [json_name = "auto_discover_local"];
+  // Alert configuration.
+  AlertConfig alerts = 27 [json_name = "alerts"];
+}
+
+message AlertConfig {
+  // Whether alerts are enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // The webhook URL to send alerts to.
+  string webhook_url = 2 [json_name = "webhook_url"];
 }
 
 message ContextOptimizerConfig {
