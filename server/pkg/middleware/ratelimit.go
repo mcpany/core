@@ -165,8 +165,10 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 		return fmt.Errorf("rate limit check failed: %w", err)
 	}
 	if !allowed {
+		// Sanitize tool name to prevent potential log injection
+		safeToolName := util.SanitizeOperationID(req.ToolName)
 		logging.GetLogger().Warn("Rate limit exceeded",
-			"service_id", req.ToolName, // Ideally we want the service ID, but tool name is available here.
+			"service_id", safeToolName, // Ideally we want the service ID, but tool name is available here.
 			"cost", cost,
 		)
 		return fmt.Errorf("limit exceeded")
