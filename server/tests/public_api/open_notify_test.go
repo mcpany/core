@@ -8,6 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -35,7 +36,14 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 
 	// --- 2. Register Open Notify Server with MCPANY ---
 	const openNotifyServiceID = "e2e_opennnotify"
-	openNotifyServiceEndpoint := "http://api.open-notify.org"
+
+	// Start Mock Server to avoid external dependency in CI
+	mockServer := integration.StartMockServer(t, map[string]http.HandlerFunc{
+		"/astros.json": integration.OpenNotifyHandler(),
+	})
+	defer mockServer.CleanupFunc()
+	openNotifyServiceEndpoint := mockServer.URL
+
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", openNotifyServiceID, openNotifyServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

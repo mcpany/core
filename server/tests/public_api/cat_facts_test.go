@@ -8,6 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -35,7 +36,14 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	// --- 2. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
+
+	// Start Mock Server to avoid external dependency in CI
+	mockServer := integration.StartMockServer(t, map[string]http.HandlerFunc{
+		"/fact": integration.CatFactsHandler(),
+	})
+	defer mockServer.CleanupFunc()
+	catFactsServiceEndpoint := mockServer.URL
+
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
