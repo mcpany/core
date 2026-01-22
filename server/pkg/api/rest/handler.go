@@ -20,9 +20,6 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Limit request body size to 5MB to prevent DoS
-	r.Body = http.MaxBytesReader(w, r.Body, 5<<20)
-
 	var req ValidateConfigRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)

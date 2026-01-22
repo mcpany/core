@@ -34,9 +34,7 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Returns an error if the operation fails.
 func (p *poolWithChecker[T]) Close() error {
-	if p.checker != nil {
-		p.checker.Stop()
-	}
+	p.checker.Stop()
 	return p.Pool.Close()
 }
 
@@ -113,12 +111,10 @@ func NewGrpcPool(
 		return client.NewGrpcClientWrapper(conn, config, checker), nil
 	}
 
-	p, err := pool.New(factory, minSize, minSize, maxSize, idleTimeout, disableHealthCheck)
+	p, err := pool.New(factory, minSize, maxSize, idleTimeout, disableHealthCheck)
 	if err != nil {
 		// Ensure checker is stopped if pool creation fails
-		if checker != nil {
-			checker.Stop()
-		}
+		checker.Stop()
 		return nil, err
 	}
 

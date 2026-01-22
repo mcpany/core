@@ -22,9 +22,7 @@ import {
     Minimize2,
     LayoutGrid,
     List as ListIcon,
-    Expand,
-    ChevronLeft,
-    SearchCode
+    Expand
 } from "lucide-react";
 
 import { apiClient, ResourceDefinition, ResourceContent } from "@/lib/client";
@@ -61,7 +59,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [viewMode, setViewMode] = useState<"list" | "grid">("list");
-    const [isDeepSearch, setIsDeepSearch] = useState(false);
     const [selectedUri, setSelectedUri] = useState<string | null>(null);
     const [resourceContent, setResourceContent] = useState<ResourceContent | null>(null);
     const [contentLoading, setContentLoading] = useState(false);
@@ -124,18 +121,11 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     };
 
     const filteredResources = useMemo(() => {
-        return resources.filter(r => {
-            const matchesBasic = r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                               r.uri.toLowerCase().includes(searchQuery.toLowerCase());
-
-            if (isDeepSearch && searchQuery.length > 2) {
-                // If we have content cached for this resource, search it too
-                // Note: This is an optimistic client-side deep search.
-                return matchesBasic || (r.uri === selectedUri && resourceContent?.text?.toLowerCase().includes(searchQuery.toLowerCase()));
-            }
-            return matchesBasic;
-        });
-    }, [resources, searchQuery, isDeepSearch, selectedUri, resourceContent]);
+        return resources.filter(r =>
+            r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.uri.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [resources, searchQuery]);
 
     const getIcon = (mimeType?: string) => {
         if (!mimeType) return File;
@@ -188,24 +178,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         toast({ title: "Copied", description: "Resource name copied to clipboard." });
     };
 
-    const handleDragStart = (e: React.DragEvent, res: ResourceDefinition) => {
-        // Sets the data to be dragged as the URI
-        // This allows dragging to apps that accept text/uri-list
-        e.dataTransfer.setData("text/plain", res.uri);
-        e.dataTransfer.setData("text/uri-list", res.uri);
-        e.dataTransfer.effectAllowed = "copy";
-    };
-
-    const navigateSibling = (direction: 'next' | 'prev') => {
-        const currentIndex = filteredResources.findIndex(r => r.uri === selectedUri);
-        if (currentIndex === -1) return;
-
-        let nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-        if (nextIndex >= 0 && nextIndex < filteredResources.length) {
-            setSelectedUri(filteredResources[nextIndex].uri);
-        }
-    };
-
     return (
         <div className={cn("flex flex-col h-full bg-background", isFullscreen ? "fixed inset-0 z-50" : "rounded-lg border shadow-sm")}>
             {/* Header Toolbar */}
@@ -220,15 +192,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                             className="pl-8 h-9 text-xs"
                         />
                     </div>
-                    <Button
-                        variant={isDeepSearch ? "secondary" : "ghost"}
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => setIsDeepSearch(!isDeepSearch)}
-                        title="Search within content (cached only)"
-                    >
-                        <SearchCode className={cn("h-4 w-4", isDeepSearch && "text-primary")} />
-                    </Button>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -283,8 +246,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                         isSelected ? "bg-accent text-accent-foreground border-l-4 border-l-primary pl-3" : "border-l-4 border-l-transparent"
                                                     )}
                                                     onClick={() => setSelectedUri(res.uri)}
-                                                    draggable
-                                                    onDragStart={(e) => handleDragStart(e, res)}
                                                 >
                                                     <Icon className={cn("h-4 w-4 text-muted-foreground group-hover:text-primary", isSelected && "text-primary")} />
                                                     <div className="flex-1 min-w-0">
@@ -385,29 +346,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                      </div>
                                      <Badge variant="outline" className="text-[10px] font-normal h-5">{resourceContent?.mimeType || "loading..."}</Badge>
                                 </div>
-                                 <div className="flex items-center gap-1">
-                                    <div className="flex items-center gap-1 mr-2 px-1 bg-muted/50 rounded-md">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-7 w-7"
-                                            onClick={() => navigateSibling('prev')}
-                                            disabled={filteredResources.length <= 1 || filteredResources[0].uri === selectedUri}
-                                            title="Previous"
-                                        >
-                                            <ChevronLeft className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-7 w-7"
-                                            onClick={() => navigateSibling('next')}
-                                            disabled={filteredResources.length <= 1 || filteredResources[filteredResources.length - 1].uri === selectedUri}
-                                            title="Next"
-                                        >
-                                            <ChevronRight className="h-4 w-4" />
-                                        </Button>
-                                    </div>
+                                <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCopyContent} disabled={!resourceContent}>
                                         <Copy className="h-3 w-3 mr-1" /> Copy
                                     </Button>

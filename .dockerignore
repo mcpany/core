@@ -22,4 +22,3 @@ ui/coverage
 ui/*.log
 
 proto/node_modules
-**/node_modules

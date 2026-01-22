@@ -29,7 +29,7 @@ func TestHTTPTool_Execute_Coverage_Secrets(t *testing.T) {
 		// No need for real backend as it should fail before request
 		p, errPool := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 			return &client.HTTPClientWrapper{}, nil
-		}, 1, 1, 1, 0, true)
+		}, 1, 1, 0, true)
 		require.NoError(t, errPool)
 		poolManager.Register("test-service", p)
 
@@ -68,7 +68,7 @@ func TestHTTPTool_Execute_Coverage_PathTraversal(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, errPool := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	require.NoError(t, errPool)
 	poolManager.Register("test-service", p)
 
@@ -103,7 +103,7 @@ func TestHTTPTool_Execute_Coverage_CallPolicy(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, errPool := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	require.NoError(t, errPool)
 	poolManager.Register("test-service", p)
 
@@ -151,7 +151,7 @@ func TestHTTPTool_Execute_Coverage_DryRun(t *testing.T) {
 	poolManager := pool.NewManager()
 	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return &client.HTTPClientWrapper{Client: server.Client()}, nil
-	}, 1, 1, 1, 0, true)
+	}, 1, 1, 0, true)
 	poolManager.Register("test-service", p)
 
 	methodAndURL := "POST " + server.URL

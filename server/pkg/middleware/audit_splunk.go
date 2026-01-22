@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package audit
+package middleware
 
 import (
 	"bytes"
@@ -19,20 +19,22 @@ import (
 const (
 	splunkBufferSize = 1000
 	splunkWorkers    = 2
-	splunkBatchSize  = 10
-	splunkBatchWait  = 1 * time.Second
 )
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
-	queue  chan Entry
+	queue  chan AuditEntry
 	wg     sync.WaitGroup
 	done   chan struct{}
 }
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
+//
+// config holds the configuration settings.
+//
+// Returns the result.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -42,7 +44,7 @@ func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
-		queue: make(chan Entry, splunkBufferSize),
+		queue: make(chan AuditEntry, splunkBufferSize),
 		done:  make(chan struct{}),
 	}
 
@@ -56,44 +58,37 @@ func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 
 func (e *SplunkAuditStore) worker() {
 	defer e.wg.Done()
-	var batch []Entry
-	ticker := time.NewTicker(splunkBatchWait)
-	defer ticker.Stop()
-
 	for {
 		select {
 		case entry, ok := <-e.queue:
 			if !ok {
-				e.sendBatch(batch)
 				return
 			}
-			batch = append(batch, entry)
-			if len(batch) >= splunkBatchSize {
-				e.sendBatch(batch)
-				batch = nil
-			}
-		case <-ticker.C:
-			if len(batch) > 0 {
-				e.sendBatch(batch)
-				batch = nil
-			}
+			e.send(entry)
 		case <-e.done:
 			// Drain queue
-			for entry := range e.queue {
-				batch = append(batch, entry)
-				if len(batch) >= splunkBatchSize {
-					e.sendBatch(batch)
-					batch = nil
+			for {
+				select {
+				case entry, ok := <-e.queue:
+					if !ok {
+						return
+					}
+					e.send(entry)
+				default:
+					return
 				}
 			}
-			e.sendBatch(batch)
-			return
 		}
 	}
 }
 
-// Write implements the Store interface.
-func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
+// Write implements the AuditStore interface.
+//
+// _ is an unused parameter.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
+func (e *SplunkAuditStore) Write(_ context.Context, entry AuditEntry) error {
 	select {
 	case e.queue <- entry:
 		return nil
@@ -103,31 +98,26 @@ func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	}
 }
 
-func (e *SplunkAuditStore) sendBatch(batch []Entry) {
-	if len(batch) == 0 {
+func (e *SplunkAuditStore) send(entry AuditEntry) {
+	// Use background context for sending
+	ctx := context.Background()
+
+	event := map[string]interface{}{
+		"time":       entry.Timestamp.Unix(),
+		"host":       "mcpany",
+		"source":     e.config.GetSource(),
+		"sourcetype": e.config.GetSourcetype(),
+		"index":      e.config.GetIndex(),
+		"event":      entry,
+	}
+
+	payload, err := json.Marshal(event)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to marshal splunk event: %v\n", err)
 		return
 	}
 
-	buf := new(bytes.Buffer)
-	for _, entry := range batch {
-		event := map[string]interface{}{
-			"time":       entry.Timestamp.Unix(),
-			"host":       "mcpany",
-			"source":     e.config.GetSource(),
-			"sourcetype": e.config.GetSourcetype(),
-			"index":      e.config.GetIndex(),
-			"event":      entry,
-		}
-		payload, err := json.Marshal(event)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to marshal splunk event: %v\n", err)
-			continue
-		}
-		buf.Write(payload)
-		buf.WriteString("\n")
-	}
-
-	req, err := http.NewRequestWithContext(context.Background(), "POST", e.config.GetHecUrl(), buf)
+	req, err := http.NewRequestWithContext(ctx, "POST", e.config.GetHecUrl(), bytes.NewReader(payload))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create splunk request: %v\n", err)
 		return
@@ -138,7 +128,7 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 
 	resp, err := e.client.Do(req)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to send batch to splunk: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to send event to splunk: %v\n", err)
 		return
 	}
 	defer func() { _ = resp.Body.Close() }()
@@ -148,20 +138,17 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-
-// Read implements the Store interface.
-func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
+// Read implements the AuditStore interface.
+func (e *SplunkAuditStore) Read(_ context.Context, _ AuditFilter) ([]AuditEntry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
 // Close closes the queue and waits for workers to finish.
+//
+// Returns an error if the operation fails.
 func (e *SplunkAuditStore) Close() error {
-	if e.done != nil {
-		close(e.done)
-	}
-	if e.queue != nil {
-		close(e.queue)
-	}
+	close(e.done)
+	close(e.queue)
 	e.wg.Wait()
 	return nil
 }

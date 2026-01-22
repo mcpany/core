@@ -59,8 +59,8 @@ test.describe('MCP Any UI E2E', () => {
     // Note: The selector might need to be specific to the metric cards if other cards exist
     // But based on the dashboard, we can check for specific content presence.
     // Let's rely on visibility for now, or check count of specific metric values
-    await expect(page.getByText('1,234').first()).toBeVisible();
-    await expect(page.getByText('99.9%').first()).toBeVisible();
+    await expect(page.getByText('1,234')).toBeVisible();
+    await expect(page.getByText('99.9%')).toBeVisible();
   });
 
   test('should navigate to analytics from sidebar', async ({ page }) => {
