@@ -98,6 +98,81 @@ func (g *Generator) promptBool(prompt string, defaultValue bool) (bool, error) {
 	}
 }
 
+// AuthData holds the data for authentication configuration.
+type AuthData struct {
+	Type              string
+	ParamName         string // For API Key
+	In                string // For API Key
+	Value             string // For API Key, Bearer Token
+	Username          string // For Basic Auth
+	Password          string // For Basic Auth
+	TokenURL          string // For OAuth2
+	ClientID          string // For OAuth2
+	ClientSecret      string // For OAuth2
+	Scopes            string // For OAuth2
+	HeaderName        string // For Trusted Header
+	HeaderValue       string // For Trusted Header
+}
+
+func (g *Generator) generateAuth() (*AuthData, error) {
+	authType, err := g.prompt("🔒 Enter authentication type (none, apikey, bearer, basic, oauth2, header) [none]: ")
+	if err != nil {
+		return nil, err
+	}
+
+	if authType == "" || strings.ToLower(authType) == "none" {
+		return nil, nil
+	}
+
+	data := &AuthData{Type: strings.ToLower(authType)}
+
+	switch data.Type {
+	case "apikey":
+		data.ParamName, err = g.prompt("🔑 Enter API key param name (e.g. X-API-Key): ")
+		if err != nil { return nil, err }
+
+		data.In, err = g.prompt("📍 Enter API key location (HEADER, QUERY, COOKIE) [HEADER]: ")
+		if err != nil { return nil, err }
+		if data.In == "" { data.In = "HEADER" }
+
+		data.Value, err = g.prompt("🤫 Enter API key value (or env var like ${API_KEY}): ")
+		if err != nil { return nil, err }
+
+	case "bearer":
+		data.Value, err = g.prompt("🤫 Enter bearer token (or env var like ${TOKEN}): ")
+		if err != nil { return nil, err }
+
+	case "basic":
+		data.Username, err = g.prompt("👤 Enter username: ")
+		if err != nil { return nil, err }
+		data.Password, err = g.prompt("🤫 Enter password (or env var like ${PASSWORD}): ")
+		if err != nil { return nil, err }
+
+	case "oauth2":
+		data.TokenURL, err = g.prompt("🌐 Enter token URL: ")
+		if err != nil { return nil, err }
+		data.ClientID, err = g.prompt("🆔 Enter client ID: ")
+		if err != nil { return nil, err }
+		data.ClientSecret, err = g.prompt("🤫 Enter client secret: ")
+		if err != nil { return nil, err }
+		data.Scopes, err = g.prompt("🔭 Enter scopes (space separated): ")
+		if err != nil { return nil, err }
+
+	case "header":
+		data.HeaderName, err = g.prompt("🏷️ Enter header name: ")
+		if err != nil { return nil, err }
+		data.HeaderValue, err = g.prompt("📝 Enter header value: ")
+		if err != nil { return nil, err }
+
+	default:
+		fmt.Printf("⚠️ Unknown auth type '%s', skipping auth config.\n", data.Type)
+		return nil, nil
+	}
+
+	return data, nil
+}
+
+
 const httpServiceTemplate = `upstreamServices:
   - name: "{{ .Name }}"
     httpService:
@@ -107,6 +182,49 @@ const httpServiceTemplate = `upstreamServices:
           description: "{{ .Description }}"
           method: "{{ .Method }}"
           endpointPath: "{{ .EndpointPath }}"
+    {{- if .Auth }}
+    upstreamAuth:
+      {{- if eq .Auth.Type "apikey" }}
+      apiKey:
+        paramName: "{{ .Auth.ParamName }}"
+        in: {{ .Auth.In }}
+        value:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "bearer" }}
+      bearerToken:
+        token:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "basic" }}
+      basicAuth:
+        username: "{{ .Auth.Username }}"
+        password:
+          {{- if contains "$" .Auth.Password }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Password) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Password }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "oauth2" }}
+      oauth2:
+        tokenUrl: "{{ .Auth.TokenURL }}"
+        clientId:
+          plainText: "{{ .Auth.ClientID }}"
+        clientSecret:
+          plainText: "{{ .Auth.ClientSecret }}"
+        scopes: "{{ .Auth.Scopes }}"
+      {{- else if eq .Auth.Type "header" }}
+      trustedHeader:
+        headerName: "{{ .Auth.HeaderName }}"
+        headerValue: "{{ .Auth.HeaderValue }}"
+      {{- end }}
+    {{- end }}
 `
 
 // HTTPServiceData holds the data required to generate an HTTP service configuration.
@@ -124,6 +242,8 @@ type HTTPServiceData struct {
 	Method string
 	// EndpointPath is the path of the endpoint (e.g., "/api/v1/users").
 	EndpointPath string
+	// Auth holds authentication configuration
+	Auth *AuthData
 }
 
 func (g *Generator) generateHTTPService() ([]byte, error) {
@@ -161,7 +281,16 @@ func (g *Generator) generateHTTPService() ([]byte, error) {
 		return nil, err
 	}
 
-	tmpl, err := template.New("httpService").Parse(httpServiceTemplate)
+	data.Auth, err = g.generateAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := template.New("httpService").Funcs(template.FuncMap{
+		"contains": strings.Contains,
+		"trimPrefix": strings.TrimPrefix,
+		"trimSuffix": strings.TrimSuffix,
+	}).Parse(httpServiceTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +309,49 @@ const grpcServiceTemplate = `upstreamServices:
       address: "{{ .Address }}"
       reflection:
         enabled: {{ .ReflectionEnabled }}
+    {{- if .Auth }}
+    upstreamAuth:
+      {{- if eq .Auth.Type "apikey" }}
+      apiKey:
+        paramName: "{{ .Auth.ParamName }}"
+        in: {{ .Auth.In }}
+        value:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "bearer" }}
+      bearerToken:
+        token:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "basic" }}
+      basicAuth:
+        username: "{{ .Auth.Username }}"
+        password:
+          {{- if contains "$" .Auth.Password }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Password) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Password }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "oauth2" }}
+      oauth2:
+        tokenUrl: "{{ .Auth.TokenURL }}"
+        clientId:
+          plainText: "{{ .Auth.ClientID }}"
+        clientSecret:
+          plainText: "{{ .Auth.ClientSecret }}"
+        scopes: "{{ .Auth.Scopes }}"
+      {{- else if eq .Auth.Type "header" }}
+      trustedHeader:
+        headerName: "{{ .Auth.HeaderName }}"
+        headerValue: "{{ .Auth.HeaderValue }}"
+      {{- end }}
+    {{- end }}
 `
 
 // GRPCServiceData holds the data required to generate a gRPC service configuration.
@@ -191,6 +363,8 @@ type GRPCServiceData struct {
 	Address string
 	// ReflectionEnabled indicates whether gRPC reflection should be enabled.
 	ReflectionEnabled bool
+	// Auth holds authentication configuration
+	Auth *AuthData
 }
 
 func (g *Generator) generateGRPCService() ([]byte, error) {
@@ -212,7 +386,16 @@ func (g *Generator) generateGRPCService() ([]byte, error) {
 		return nil, err
 	}
 
-	tmpl, err := template.New("grpcService").Parse(grpcServiceTemplate)
+	data.Auth, err = g.generateAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := template.New("grpcService").Funcs(template.FuncMap{
+		"contains": strings.Contains,
+		"trimPrefix": strings.TrimPrefix,
+		"trimSuffix": strings.TrimSuffix,
+	}).Parse(grpcServiceTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -230,6 +413,49 @@ const openapiServiceTemplate = `upstreamServices:
     openapiService:
       spec:
         path: "{{ .SpecPath }}"
+    {{- if .Auth }}
+    upstreamAuth:
+      {{- if eq .Auth.Type "apikey" }}
+      apiKey:
+        paramName: "{{ .Auth.ParamName }}"
+        in: {{ .Auth.In }}
+        value:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "bearer" }}
+      bearerToken:
+        token:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "basic" }}
+      basicAuth:
+        username: "{{ .Auth.Username }}"
+        password:
+          {{- if contains "$" .Auth.Password }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Password) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Password }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "oauth2" }}
+      oauth2:
+        tokenUrl: "{{ .Auth.TokenURL }}"
+        clientId:
+          plainText: "{{ .Auth.ClientID }}"
+        clientSecret:
+          plainText: "{{ .Auth.ClientSecret }}"
+        scopes: "{{ .Auth.Scopes }}"
+      {{- else if eq .Auth.Type "header" }}
+      trustedHeader:
+        headerName: "{{ .Auth.HeaderName }}"
+        headerValue: "{{ .Auth.HeaderValue }}"
+      {{- end }}
+    {{- end }}
 `
 
 // OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
@@ -239,6 +465,8 @@ type OpenAPIServiceData struct {
 	Name string
 	// SpecPath is the path or URL to the OpenAPI specification file.
 	SpecPath string
+	// Auth holds authentication configuration
+	Auth *AuthData
 }
 
 func (g *Generator) generateOpenAPIService() ([]byte, error) {
@@ -255,7 +483,16 @@ func (g *Generator) generateOpenAPIService() ([]byte, error) {
 		return nil, err
 	}
 
-	tmpl, err := template.New("openapiService").Parse(openapiServiceTemplate)
+	data.Auth, err = g.generateAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := template.New("openapiService").Funcs(template.FuncMap{
+		"contains": strings.Contains,
+		"trimPrefix": strings.TrimPrefix,
+		"trimSuffix": strings.TrimSuffix,
+	}).Parse(openapiServiceTemplate)
 	if err != nil {
 		return nil, err
 	}
@@ -275,6 +512,49 @@ const graphqlServiceTemplate = `upstreamServices:
       calls:
         - name: "{{ .CallName }}"
           selectionSet: "{{ .SelectionSet }}"
+    {{- if .Auth }}
+    upstreamAuth:
+      {{- if eq .Auth.Type "apikey" }}
+      apiKey:
+        paramName: "{{ .Auth.ParamName }}"
+        in: {{ .Auth.In }}
+        value:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "bearer" }}
+      bearerToken:
+        token:
+          {{- if contains "$" .Auth.Value }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Value) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Value }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "basic" }}
+      basicAuth:
+        username: "{{ .Auth.Username }}"
+        password:
+          {{- if contains "$" .Auth.Password }}
+          environmentVariable: "{{ trimPrefix "${" (trimSuffix "}" .Auth.Password) }}"
+          {{- else }}
+          plainText: "{{ .Auth.Password }}"
+          {{- end }}
+      {{- else if eq .Auth.Type "oauth2" }}
+      oauth2:
+        tokenUrl: "{{ .Auth.TokenURL }}"
+        clientId:
+          plainText: "{{ .Auth.ClientID }}"
+        clientSecret:
+          plainText: "{{ .Auth.ClientSecret }}"
+        scopes: "{{ .Auth.Scopes }}"
+      {{- else if eq .Auth.Type "header" }}
+      trustedHeader:
+        headerName: "{{ .Auth.HeaderName }}"
+        headerValue: "{{ .Auth.HeaderValue }}"
+      {{- end }}
+    {{- end }}
 `
 
 // GraphQLServiceData holds the data required to generate a GraphQL service configuration.
@@ -288,6 +568,8 @@ type GraphQLServiceData struct {
 	CallName string
 	// SelectionSet is the GraphQL selection set for the operation.
 	SelectionSet string
+	// Auth holds authentication configuration
+	Auth *AuthData
 }
 
 func (g *Generator) generateGraphQLService() ([]byte, error) {
@@ -314,7 +596,16 @@ func (g *Generator) generateGraphQLService() ([]byte, error) {
 		return nil, err
 	}
 
-	tmpl, err := template.New("graphqlService").Parse(graphqlServiceTemplate)
+	data.Auth, err = g.generateAuth()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := template.New("graphqlService").Funcs(template.FuncMap{
+		"contains": strings.Contains,
+		"trimPrefix": strings.TrimPrefix,
+		"trimSuffix": strings.TrimSuffix,
+	}).Parse(graphqlServiceTemplate)
 	if err != nil {
 		return nil, err
 	}

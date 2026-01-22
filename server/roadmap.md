@@ -14,6 +14,8 @@
   - **Description**: A curated list of popular services (like `wttr.in`, `sqlite`, etc.) that can be added via CLI or UI. Implemented via example configurations in `server/examples/popular_services`.
 - **HTTP Upstream Env Validation**
   - **Description**: Extend required environment variable validation to HTTP connections (e.g. for `http_address` or auth headers).
+- **Interactive Auth Config**
+  - **Description**: Enhanced `config generate` CLI to support configuring authentication (API Key, OAuth2, Bearer Token) interactively.
 - **Tool Poisoning Mitigation**
   - **Description**: Integrity checks for tool definitions to prevent "Rug Pull" attacks. Implemented via SHA256 hashing of tool definitions.
 - **Local LLM "One-Click" Connect**
@@ -58,6 +60,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | 29 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
 | 30 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
 | 32 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
+| 33 | **Interactive Auth Config** | **DevX**: Add authentication configuration support to the interactive generator (API Key, OAuth2, etc.). | Low |
 
 | 34 | **Configuration Diffing API** | **Observability**: An API endpoint to compare the currently active configuration with the previous version or the file on disk, helping users understand what changed during a reload. | Medium |
 | 35 | **Automatic WebSocket Reconnection Strategy** | **Resilience**: Allow users to configure retry backoff and max attempts for WS connections to handle transient network drops. | Medium |

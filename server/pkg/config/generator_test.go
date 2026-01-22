@@ -27,6 +27,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"Get user by ID",
 				"HTTP_METHOD_GET",
 				"/users/{userId}",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-http"
@@ -46,6 +47,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"test-grpc",
 				"127.0.0.1:50051",
 				"true",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-grpc"
@@ -62,6 +64,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"test-grpc-y",
 				"127.0.0.1:50051",
 				"y",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-y"
@@ -78,6 +81,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"test-grpc-n",
 				"127.0.0.1:50051",
 				"N",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-n"
@@ -97,6 +101,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"Get user by ID",
 				"HTTP_METHOD_GET",
 				"/users/{userId}",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-http-upper"
@@ -116,6 +121,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"test-grpc-disabled",
 				"127.0.0.1:50051",
 				"false",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-disabled"
@@ -133,6 +139,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"127.0.0.1:50051",
 				"invalid",
 				"true",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-grpc-invalid"
@@ -148,6 +155,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"openapi",
 				"test-openapi",
 				"./openapi.json",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-openapi"
@@ -164,6 +172,7 @@ func TestGenerator_Generate(t *testing.T) {
 				"http://127.0.0.1:8080/graphql",
 				"user",
 				"{ id name }",
+				"none", // Auth
 			},
 			expected: `upstreamServices:
   - name: "test-graphql"
@@ -178,6 +187,38 @@ func TestGenerator_Generate(t *testing.T) {
 			name:      "Unsupported Service Type",
 			inputs:    []string{"invalid"},
 			expectErr: true,
+		},
+		{
+			name: "HTTP Service with API Key",
+			inputs: []string{
+				"http",
+				"test-http-apikey",
+				"http://127.0.0.1:8080",
+				"get_user",
+				"Get user by ID",
+				"HTTP_METHOD_GET",
+				"/users/{userId}",
+				"apikey",
+				"X-API-Key",
+				"HEADER",
+				"my-secret",
+			},
+			expected: `upstreamServices:
+  - name: "test-http-apikey"
+    httpService:
+      address: "http://127.0.0.1:8080"
+      calls:
+        - operationId: "get_user"
+          description: "Get user by ID"
+          method: "HTTP_METHOD_GET"
+          endpointPath: "/users/{userId}"
+    upstreamAuth:
+      apiKey:
+        paramName: "X-API-Key"
+        in: HEADER
+        value:
+          plainText: "my-secret"
+`,
 		},
 	}
 
