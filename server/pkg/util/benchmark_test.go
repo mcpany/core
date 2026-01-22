@@ -51,6 +51,38 @@ func BenchmarkSanitizeID(b *testing.B) {
 	})
 }
 
+func BenchmarkRedactSecrets(b *testing.B) {
+	b.Run("Small", func(b *testing.B) {
+		text := "This is a secret message with password123 and pass and some other secrets like secret_key_value."
+		longText := strings.Repeat(text, 10)
+		secrets := []string{"password123", "pass", "secret_key_value"}
+
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			RedactSecrets(longText, secrets)
+		}
+	})
+
+	b.Run("Large", func(b *testing.B) {
+		text := "This is a secret message with password123 and pass and some other secrets like secret_key_value."
+		longText := strings.Repeat(text, 500) // ~50KB
+
+		secrets := make([]string, 0, 100)
+		// Use a fixed seed-like pattern for reproducibility
+		for i := 0; i < 100; i++ {
+			secrets = append(secrets, "secret_"+strings.Repeat("x", i%10))
+		}
+		secrets = append(secrets, "password123", "pass", "secret_key_value")
+
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			RedactSecrets(longText, secrets)
+		}
+	})
+}
+
 func BenchmarkReplaceURLPath(b *testing.B) {
 	path := "/api/v1/users/{{userId}}/posts/{{postId}}"
 	params := map[string]interface{}{

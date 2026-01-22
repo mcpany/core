@@ -506,8 +506,8 @@ func RedactSecrets(text string, secrets []string) string {
 	}
 
 	// Sort secrets by length descending to avoid partial replacements (e.g. replacing "pass" in "password")
-	// Although for random secrets this might be less of an issue, but good practice.
-	// Making a copy to avoid mutating the input slice.
+	// strings.Replacer prioritizes earlier arguments for overlap at the same position,
+	// so sorting longest-to-shortest ensures that "password" is replaced before "pass".
 	sortedSecrets := make([]string, len(secrets))
 	copy(sortedSecrets, secrets)
 
@@ -515,11 +515,20 @@ func RedactSecrets(text string, secrets []string) string {
 		return len(sortedSecrets[i]) > len(sortedSecrets[j])
 	})
 
+	// ⚡ Bolt Optimization: Use strings.NewReplacer instead of iterative ReplaceAll.
+	// This reduces complexity from O(S * N) to O(N) where S is number of secrets.
+	// Note: NewReplacer args are (old, new, old, new...)
+	replacements := make([]string, 0, len(secrets)*2)
 	for _, secret := range sortedSecrets {
 		if secret == "" {
 			continue
 		}
-		text = strings.ReplaceAll(text, secret, redactedPlaceholder)
+		replacements = append(replacements, secret, redactedPlaceholder)
 	}
-	return text
+
+	if len(replacements) == 0 {
+		return text
+	}
+
+	return strings.NewReplacer(replacements...).Replace(text)
 }
