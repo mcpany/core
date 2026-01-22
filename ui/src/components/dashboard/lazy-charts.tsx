@@ -21,6 +21,11 @@ const ChartSkeleton = () => (
 
 // ⚡ Bolt Optimization: Lazy load heavy chart components to reduce initial bundle size
 // and improve Time to Interactive. 'recharts' is a large dependency.
+
+/**
+ * LazyRequestVolumeChart is a dynamically loaded RequestVolumeChart component.
+ * It uses a skeleton loader while the component is being fetched to improve performance.
+ */
 export const LazyRequestVolumeChart = dynamic(
   () => import("@/components/dashboard/request-volume-chart").then((mod) => mod.RequestVolumeChart),
   {
@@ -29,6 +34,10 @@ export const LazyRequestVolumeChart = dynamic(
   }
 );
 
+/**
+ * LazyTopToolsWidget is a dynamically loaded TopToolsWidget component.
+ * It uses a skeleton loader while the component is being fetched.
+ */
 export const LazyTopToolsWidget = dynamic(
   () => import("@/components/dashboard/top-tools-widget").then((mod) => mod.TopToolsWidget),
   {

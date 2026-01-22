@@ -18,7 +18,9 @@ import (
 
 // Provider defines the interface for auto-discovering local services.
 type Provider interface {
+	// Name returns the name of the discovery provider.
 	Name() string
+	// Discover attempts to find services and return their configurations.
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 

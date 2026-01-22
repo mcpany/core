@@ -13,6 +13,10 @@ const API_BASE = '/v1/skills';
 // "body: 'skill'" option in proto means the body content is mapped TO the 'skill' field.
 // So sending the Skill object directly is correct.
 
+/**
+ * SkillService provides methods to interact with the backend Skills API.
+ * It handles listing, getting, creating, updating, and deleting skills.
+ */
 export const SkillService = {
   async list(): Promise<Skill[]> {
     const res = await fetch(API_BASE);

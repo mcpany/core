@@ -95,6 +95,11 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
 // Memoized to prevent unnecessary re-renders when parent components update.
 // This component manages its own state and data fetching, so it only needs to re-render
 // when its own state changes, not when the parent re-renders.
+/**
+ * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
+ * and the system health status. It fetches data periodically from the API.
+ * @returns The rendered MetricsOverview component.
+ */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
 

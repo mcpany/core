@@ -24,6 +24,14 @@ interface ToolPresetsProps {
   onSelect: (data: Record<string, unknown>) => void;
 }
 
+/**
+ * ToolPresets component.
+ * @param props - The component props.
+ * @param props.toolName - The name of the tool.
+ * @param props.currentData - The data to display.
+ * @param props.onSelect - The onSelect property.
+ * @returns The rendered component.
+ */
 export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProps) {
   const [presets, setPresets] = useState<Preset[]>([]);
   const [newPresetName, setNewPresetName] = useState("");

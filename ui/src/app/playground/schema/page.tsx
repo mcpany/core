@@ -13,6 +13,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 
+/**
+ * SchemaPlaygroundPage provides an interactive environment for users to test and validate
+ * configuration snippets against the MCP Any schema.
+ * @returns The Schema Playground page component.
+ */
 export default function SchemaPlaygroundPage() {
   const [content, setContent] = useState("");
   const [isValidating, setIsValidating] = useState(false);

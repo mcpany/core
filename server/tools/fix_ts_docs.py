@@ -4,7 +4,21 @@
 import os
 import re
 
+"""
+This script automatically generates or updates JSDoc comments for React components
+in TypeScript (.tsx) files. It attempts to infer prop descriptions based on names.
+"""
+
 def get_prop_desc(name):
+    """
+    Generates a description for a prop based on its name.
+
+    Args:
+        name: The name of the prop.
+
+    Returns:
+        A description string.
+    """
     name_lower = name.lower()
     if name_lower == 'id': return "The unique identifier."
     if name_lower == 'name': return "The name."
@@ -29,6 +43,12 @@ def get_prop_desc(name):
     return f"The {name} property."
 
 def process_file(filepath):
+    """
+    Scans a file for React components and adds/updates docstrings.
+
+    Args:
+        filepath: The path to the file to process.
+    """
     with open(filepath, 'r') as f:
         content = f.read()
 
@@ -184,6 +204,9 @@ def process_file(filepath):
             f.write('\n'.join(new_lines))
 
 def main():
+    """
+    Main function to walk the directory and process all .tsx files.
+    """
     root_dir = 'ui/src'
     for dirpath, dirnames, filenames in os.walk(root_dir):
         for filename in filenames:

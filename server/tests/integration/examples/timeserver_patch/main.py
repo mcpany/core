@@ -19,6 +19,9 @@ def get_local_time_json(args):
     }
 
 def main():
+    """
+    Main entry point for the time server.
+    """
     start_mcp_server(
         service_name="time-server",
         service_description="A simple service that provides the current time.",

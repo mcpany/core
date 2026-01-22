@@ -10,6 +10,9 @@ from fastmcp import mcp
 
 
 async def main():
+    """
+    Main entry point for the cowsay server.
+    """
     @mcp.tool()
     def say(message: str) -> str:
         """Says a message using cowsay."""
