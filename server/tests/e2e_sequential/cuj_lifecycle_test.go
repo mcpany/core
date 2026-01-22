@@ -59,6 +59,11 @@ func TestCUJ_Lifecycle_And_Config(t *testing.T) {
 	config1 := `
 global_settings:
   mcp_listen_address: ":50050"
+  authentication:
+    api_key:
+      in: HEADER
+      param_name: "X-API-Key"
+      verification_value: "test-key"
   profile_definitions:
     - name: "default"
       selector:
@@ -127,7 +132,17 @@ upstream_services:
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	// Use custom HTTP client to inject API key
+	httpClient := &http.Client{
+		Transport: &apiKeyTransport{
+			Base:   http.DefaultTransport,
+			APIKey: "test-key",
+		},
+	}
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -198,7 +213,14 @@ upstream_services:
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Re-connect
-	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	transport = &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
+	transport = &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -281,7 +303,10 @@ upstream_services:
 	}, 15*time.Second, 1*time.Second, "Tool 'list_directory' should disappear")
 
 	// CUJ 4: Validating Topology
-	topoResp, err := http.Get(fmt.Sprintf("%s/api/v1/topology?api_key=test-key", baseURL))
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/topology", baseURL), nil)
+	require.NoError(t, err)
+	req.Header.Set("X-API-Key", "test-key")
+	topoResp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	defer topoResp.Body.Close()
 	require.Equal(t, 200, topoResp.StatusCode)

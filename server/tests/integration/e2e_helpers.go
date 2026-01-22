@@ -838,9 +838,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	jsonrpcEndpoint := fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
 	grpcRegEndpoint := net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
-	if actualAPIKey != "" {
-		mcpRequestURL += "?api_key=" + actualAPIKey
-	}
 
 	// Verify gRPC connection
 	var grpcRegConn *grpc.ClientConn
@@ -869,11 +866,21 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 
 	registrationClient := apiv1.NewRegistrationServiceClient(grpcRegConn)
 
+	// Create an HTTP client that injects the API key if present
+	var httpClient *http.Client
+	if actualAPIKey != "" {
+		httpClient = NewAPIKeyClient(actualAPIKey)
+		// Ensure timeout is set
+		httpClient.Timeout = 2 * time.Second
+	} else {
+		httpClient = &http.Client{Timeout: 2 * time.Second}
+	}
+
 	return &MCPANYTestServerInfo{
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
-		HTTPClient:               &http.Client{Timeout: 2 * time.Second},
+		HTTPClient:               httpClient,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
 		CleanupFunc: func() {
@@ -1174,16 +1181,20 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	if jsonrpcPort != 0 {
 		jsonrpcEndpoint = fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
-		// Include API Key in URL query param for easy auth
-		mcpRequestURL = fmt.Sprintf("%s/mcp?api_key=%s", jsonrpcEndpoint, apiKey)
+		mcpRequestURL = fmt.Sprintf("%s/mcp", jsonrpcEndpoint)
 	}
 	if grpcRegPort != 0 {
 		grpcRegEndpoint = net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	}
 
-	httpClient := &http.Client{Timeout: 2 * time.Second}
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
+
+	httpClient := &http.Client{Timeout: 2 * time.Second}
+	if apiKey != "" {
+		httpClient = NewAPIKeyClient(apiKey)
+		httpClient.Timeout = 2 * time.Second
+	}
 
 	// Create a random Session ID for this server instance (client side ID)
 	sessionID := fmt.Sprintf("test-session-%d", time.Now().UnixNano())

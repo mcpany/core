@@ -265,8 +265,16 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-weather-client", Version: "1.0"}, nil)
+	// Use custom HTTP client to inject API key
+	httpClient := &http.Client{
+		Transport: &apiKeyTransport{
+			Base:   http.DefaultTransport,
+			APIKey: "demo-key",
+		},
+	}
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL + "/mcp?api_key=demo-key",
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -452,8 +460,16 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
+	// Use custom HTTP client to inject API key
+	httpClient := &http.Client{
+		Transport: &apiKeyTransport{
+			Base:   http.DefaultTransport,
+			APIKey: "demo-key",
+		},
+	}
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL + "/mcp?api_key=demo-key",
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)

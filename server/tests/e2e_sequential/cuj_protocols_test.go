@@ -55,6 +55,11 @@ func TestCUJ_Protocols(t *testing.T) {
 	upstreamConfig := `
 global_settings:
   mcp_listen_address: ":50050"
+  authentication:
+    api_key:
+      in: HEADER
+      param_name: "X-API-Key"
+      verification_value: "test-key"
 upstream_services:
   - id: "backend-fs"
     name: "Backend FS"
@@ -97,8 +102,8 @@ upstream_services:
     disable: false
     upstream_auth:
       api_key:
-        in: QUERY
-        param_name: "api_key"
+        in: HEADER
+        param_name: "X-API-Key"
         value:
           plain_text: "test-key"
     mcp_service:
@@ -167,7 +172,17 @@ upstream_services:
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	// Use custom HTTP client to inject API key
+	httpClient := &http.Client{
+		Transport: &apiKeyTransport{
+			Base:   http.DefaultTransport,
+			APIKey: "test-key",
+		},
+	}
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -215,4 +230,14 @@ upstream_services:
 		}
 	}
 	require.True(t, foundFile, "Result did not contain backend_file.txt in %v", res.Content)
+}
+
+type apiKeyTransport struct {
+	Base   http.RoundTripper
+	APIKey string
+}
+
+func (t *apiKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-API-Key", t.APIKey)
+	return t.Base.RoundTrip(req)
 }
