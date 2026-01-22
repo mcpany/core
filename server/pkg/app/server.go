@@ -1403,7 +1403,25 @@ func (a *Application) runServerMode(
 		// We create a BasePathFs to restrict access to the UI directory
 		baseFs := afero.NewBasePathFs(a.fs, uiPath)
 		uiFS = afero.NewHttpFs(baseFs)
-		mux.Handle("/ui/", http.StripPrefix("/ui", http.FileServer(uiFS)))
+
+		// File server with Cache-Control headers
+		fileServer := http.FileServer(uiFS)
+		cachingFileServer := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Add Cache-Control headers
+			// For immutable assets (usually hashed), we can cache for a long time.
+			// Next.js puts static assets in _next/static.
+			if strings.Contains(r.URL.Path, "_next/static/") || strings.Contains(r.URL.Path, "static/") {
+				w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+			} else if strings.HasSuffix(r.URL.Path, ".html") || r.URL.Path == "/" {
+				// HTML files should not be cached (or short cache) to ensure updates are seen
+				w.Header().Set("Cache-Control", "no-cache")
+			}
+			fileServer.ServeHTTP(w, r)
+		})
+
+		// Apply Gzip compression
+		handler := middleware.GzipCompressionMiddleware(cachingFileServer)
+		mux.Handle("/ui/", http.StripPrefix("/ui", handler))
 	}
 
 	// Handle root path with gRPC-Web support
