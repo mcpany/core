@@ -222,11 +222,12 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 			ipStr = ipAddress.String
 		}
 
-		if len(hash) > 3 && hash[:3] == "v2:" {
+		switch {
+		case len(hash) > 3 && hash[:3] == "v2:":
 			calculatedHash = computeHash(tsStr, toolName, userID, profileID, ipStr, argsStr, resultStr, errorMsg, durationMs, prevHash)
-		} else if len(hash) > 3 && hash[:3] == "v1:" {
+		case len(hash) > 3 && hash[:3] == "v1:":
 			calculatedHash = computeHashV1(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
-		} else {
+		default:
 			// Fallback to legacy
 			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		}
