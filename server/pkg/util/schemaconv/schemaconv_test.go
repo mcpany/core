@@ -122,6 +122,7 @@ type mockFieldDescriptor struct {
 	isMap       bool
 	mapKey      protoreflect.FieldDescriptor
 	mapValue    protoreflect.FieldDescriptor
+	enumDesc    protoreflect.EnumDescriptor
 }
 
 func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
@@ -130,6 +131,10 @@ func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
 
 func (m *mockFieldDescriptor) Message() protoreflect.MessageDescriptor {
 	return m.message
+}
+
+func (m *mockFieldDescriptor) Enum() protoreflect.EnumDescriptor {
+	return m.enumDesc
 }
 
 func (m *mockFieldDescriptor) Name() protoreflect.Name {
@@ -164,6 +169,40 @@ func (m *mockFieldDescriptor) MapKey() protoreflect.FieldDescriptor {
 
 func (m *mockFieldDescriptor) MapValue() protoreflect.FieldDescriptor {
 	return m.mapValue
+}
+
+// mockEnumDescriptor is a mock implementation of protoreflect.EnumDescriptor for testing.
+type mockEnumDescriptor struct {
+	protoreflect.EnumDescriptor
+	values protoreflect.EnumValueDescriptors
+}
+
+func (m *mockEnumDescriptor) Values() protoreflect.EnumValueDescriptors {
+	return m.values
+}
+
+// mockEnumValueDescriptors is a mock implementation of protoreflect.EnumValueDescriptors for testing.
+type mockEnumValueDescriptors struct {
+	protoreflect.EnumValueDescriptors
+	values []protoreflect.EnumValueDescriptor
+}
+
+func (m *mockEnumValueDescriptors) Len() int {
+	return len(m.values)
+}
+
+func (m *mockEnumValueDescriptors) Get(i int) protoreflect.EnumValueDescriptor {
+	return m.values[i]
+}
+
+// mockEnumValueDescriptor is a mock implementation of protoreflect.EnumValueDescriptor for testing.
+type mockEnumValueDescriptor struct {
+	protoreflect.EnumValueDescriptor
+	name string
+}
+
+func (m *mockEnumValueDescriptor) Name() protoreflect.Name {
+	return protoreflect.Name(m.name)
 }
 
 // mockFieldDescriptors is a mock implementation of protoreflect.FieldDescriptors for testing.
@@ -399,6 +438,58 @@ func TestMethodDescriptorToProtoProperties_MessageKind(t *testing.T) {
 	nestedProps := s.Fields["properties"].GetStructValue()
 	require.NotNil(t, nestedProps)
 	assert.Contains(t, nestedProps.Fields, "nested_field")
+}
+
+func TestMethodDescriptorToProtoProperties_Enum(t *testing.T) {
+	// Create an enum descriptor with values
+	enumDesc := &mockEnumDescriptor{
+		values: &mockEnumValueDescriptors{
+			values: []protoreflect.EnumValueDescriptor{
+				&mockEnumValueDescriptor{name: "VAL_A"},
+				&mockEnumValueDescriptor{name: "VAL_B"},
+				&mockEnumValueDescriptor{name: "VAL_C"},
+			},
+		},
+	}
+
+	mockMethod := &mockMethodDescriptor{
+		input: &mockMessageDescriptor{
+			fields: &mockFieldDescriptors{
+				fields: []protoreflect.FieldDescriptor{
+					&mockFieldDescriptor{
+						name:     "enum_field",
+						kind:     protoreflect.EnumKind,
+						enumDesc: enumDesc,
+					},
+				},
+			},
+		},
+	}
+
+	properties, err := MethodDescriptorToProtoProperties(mockMethod)
+	require.NoError(t, err)
+
+	field, ok := properties.Fields["enum_field"]
+	require.True(t, ok)
+	s := field.GetStructValue()
+	require.NotNil(t, s)
+
+	// Expect "string" type for Enum
+	assert.Equal(t, "string", s.Fields["type"].GetStringValue())
+
+	// Expect "enum" property to list values
+	enumVal, ok := s.Fields["enum"]
+	require.True(t, ok, "enum field missing")
+
+	enumList := enumVal.GetListValue()
+	require.NotNil(t, enumList)
+	assert.Len(t, enumList.Values, 3)
+
+	vals := []string{}
+	for _, v := range enumList.Values {
+		vals = append(vals, v.GetStringValue())
+	}
+	assert.ElementsMatch(t, []string{"VAL_A", "VAL_B", "VAL_C"}, vals)
 }
 
 func TestMethodDescriptorToProtoProperties_Repeated(t *testing.T) {
