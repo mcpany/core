@@ -15,6 +15,8 @@ func init() {
 	for _, cidr := range []string{
 		"fc00::/7",      // RFC4193 unique local address
 		"2001:db8::/32", // IPv6 documentation (RFC 3849)
+		"100::/64",      // Discard-Only Address Block (RFC 6666)
+		"2001:2::/48",   // IPv6 Benchmarking (RFC 5180)
 	} {
 		_, block, err := net.ParseCIDR(cidr)
 		if err == nil {
