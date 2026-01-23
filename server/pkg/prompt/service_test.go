@@ -75,6 +75,11 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 	return args.Get(0).([]prompt.Prompt)
 }
 
+func (m *MockPromptManager) ListMCPPrompts() []*mcp.Prompt {
+	args := m.Called()
+	return args.Get(0).([]*mcp.Prompt)
+}
+
 func (m *MockPromptManager) SetMCPServer(mcpServer prompt.MCPServerProvider) {
 	m.Called(mcpServer)
 }

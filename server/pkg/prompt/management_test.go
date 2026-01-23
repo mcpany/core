@@ -160,3 +160,33 @@ func TestPromptManager(t *testing.T) {
 		assert.Equal(t, mockPrompt2, p)
 	})
 }
+
+func TestPromptManager_ListMCPPrompts(t *testing.T) {
+	promptManager := NewManager()
+
+	mockPrompt1 := new(MockPrompt)
+	mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
+	mockPrompt1.On("Service").Return("service1")
+	promptManager.AddPrompt(mockPrompt1)
+
+	mockPrompt2 := new(MockPrompt)
+	mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "prompt2"})
+	mockPrompt2.On("Service").Return("service2")
+	promptManager.AddPrompt(mockPrompt2)
+
+	mcpPrompts := promptManager.ListMCPPrompts()
+	assert.Len(t, mcpPrompts, 2)
+
+	// Check cache
+	mcpPrompts2 := promptManager.ListMCPPrompts()
+	assert.Equal(t, mcpPrompts, mcpPrompts2)
+
+	// Add new prompt to invalidate cache
+	mockPrompt3 := new(MockPrompt)
+	mockPrompt3.On("Prompt").Return(&mcp.Prompt{Name: "prompt3"})
+	mockPrompt3.On("Service").Return("service3")
+	promptManager.AddPrompt(mockPrompt3)
+
+	mcpPrompts3 := promptManager.ListMCPPrompts()
+	assert.Len(t, mcpPrompts3, 3)
+}

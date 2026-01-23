@@ -900,10 +900,15 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodResourcesList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+			// ⚡ Bolt Optimization: Use cached MCP resources list if no profile filtering is required
+			if profileID == "" {
+				return &mcp.ListResourcesResult{Resources: s.resourceManager.ListMCPResources()}, nil
+			}
+
 			managedResources := s.resourceManager.ListResources()
 			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
 			if profileID != "" {
@@ -941,10 +946,15 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodPromptsList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+			// ⚡ Bolt Optimization: Use cached MCP prompts list if no profile filtering is required
+			if profileID == "" {
+				return &mcp.ListPromptsResult{Prompts: s.promptManager.ListMCPPrompts()}, nil
+			}
+
 			managedPrompts := s.promptManager.ListPrompts()
 			refreshedPrompts := make([]*mcp.Prompt, 0, len(managedPrompts))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
 			if profileID != "" {
