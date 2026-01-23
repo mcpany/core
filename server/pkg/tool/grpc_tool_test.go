@@ -31,9 +31,21 @@ func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoref
 	t.Helper()
 	path := "../../../build/all.protoset"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// Try resolving absolute path from current working directory
+		cwd, _ := os.Getwd()
+		t.Logf("Current working directory: %s", cwd)
 		path = "/app/build/all.protoset"
 	}
 	b, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			// Try looking in current directory (maybe test run from root?)
+			if _, err2 := os.Stat("build/all.protoset"); err2 == nil {
+				path = "build/all.protoset"
+				b, err = os.ReadFile(path)
+			}
+		}
+	}
 	require.NoError(t, err, "Failed to read protoset file at %s. Ensure 'make gen' has been run.", path)
 
 	fds := &descriptorpb.FileDescriptorSet{}
@@ -213,5 +225,29 @@ func TestGRPCTool_Execute(t *testing.T) {
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		_, err := grpcTool.Execute(context.Background(), req)
 		assert.Error(t, err)
+	})
+
+	t.Run("dry run", func(t *testing.T) {
+		pm := pool.NewManager()
+		// We need to register a pool even for dry run because Execute checks it early
+		mockPool := &mockGrpcPool{
+			getFunc: func(_ context.Context) (*client.GrpcClientWrapper, error) {
+				return nil, nil // Should not be called in DryRun ideally, or if called, we return nil
+			},
+		}
+		pm.Register("grpc-test", mockPool)
+
+		grpcTool := tool.NewGRPCTool(toolProto, pm, "grpc-test", methodDesc, nil, nil)
+		inputs := json.RawMessage(`{"location": "London"}`)
+		req := &tool.ExecutionRequest{ToolInputs: inputs, DryRun: true}
+
+		result, err := grpcTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		resMap, ok := result.(map[string]any)
+		require.True(t, ok)
+		assert.True(t, resMap["dry_run"].(bool))
+		reqMap := resMap["request"].(map[string]any)
+		assert.Equal(t, "/examples.weather.v1.WeatherService/GetWeather", reqMap["method"])
 	})
 }
