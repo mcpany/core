@@ -26,6 +26,25 @@ describe("LogStream", () => {
     }) as any;
   });
 
+  // Mock the Select component to simplify testing logic
+  vi.mock("@/components/ui/select", () => ({
+    Select: ({ value, onValueChange, children }: any) => (
+      <select
+        data-testid="mock-select"
+        value={value}
+        onChange={(e) => onValueChange(e.target.value)}
+      >
+        {children}
+      </select>
+    ),
+    SelectTrigger: ({ children }: any) => <div>{children}</div>,
+    SelectValue: ({ placeholder }: any) => <div>{placeholder}</div>,
+    SelectContent: ({ children }: any) => <>{children}</>,
+    SelectItem: ({ value, children }: any) => (
+      <option value={value}>{children}</option>
+    ),
+  }));
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -115,6 +134,111 @@ describe("LogStream", () => {
     });
 
     expect(screen.getByText("Third Log")).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it("filters logs by source", async () => {
+    vi.useFakeTimers();
+    render(<LogStream />);
+
+    // Trigger connection open
+    act(() => {
+      if (mockWebSocket.onopen) mockWebSocket.onopen();
+    });
+
+    // Send logs from different sources
+    const logA = {
+      id: "A",
+      timestamp: new Date().toISOString(),
+      level: "INFO",
+      message: "Log from Service A",
+      source: "service-a"
+    };
+
+    const logB = {
+      id: "B",
+      timestamp: new Date().toISOString(),
+      level: "INFO",
+      message: "Log from Service B",
+      source: "service-b"
+    };
+
+    act(() => {
+      if (mockWebSocket.onmessage) {
+          mockWebSocket.onmessage({ data: JSON.stringify(logA) });
+          mockWebSocket.onmessage({ data: JSON.stringify(logB) });
+      }
+    });
+
+    // Advance time to flush buffer
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    // Verify both logs are present initially
+    expect(screen.getByText("Log from Service A")).toBeInTheDocument();
+    expect(screen.getByText("Log from Service B")).toBeInTheDocument();
+
+    vi.useRealTimers();
+
+    // Find the Selects. There are two (Source and Level).
+    // We can find the one that contains the "service-a" option.
+    const selects = screen.getAllByTestId("mock-select");
+    const sourceSelect = selects.find(select =>
+      select.innerHTML.includes("service-a")
+    );
+
+    if (!sourceSelect) {
+        throw new Error("Could not find Source select");
+    }
+
+    // Change value
+    fireEvent.change(sourceSelect, { target: { value: "service-a" } });
+
+    // Verify filtering
+    expect(screen.getByText("Log from Service A")).toBeInTheDocument();
+    expect(screen.queryByText("Log from Service B")).not.toBeInTheDocument();
+  });
+
+  it("detects and renders JSON logs", async () => {
+    vi.useFakeTimers();
+    render(<LogStream />);
+
+    act(() => {
+      if (mockWebSocket.onopen) mockWebSocket.onopen();
+    });
+
+    const jsonMessage = { foo: "bar", nested: { val: 123 } };
+    const jsonLog = {
+      id: "json-1",
+      timestamp: new Date().toISOString(),
+      level: "INFO",
+      message: JSON.stringify(jsonMessage),
+      source: "json-test"
+    };
+
+    act(() => {
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(jsonLog) });
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    // Check if the expand button exists
+    const expandButton = screen.getByLabelText("Expand JSON");
+    expect(expandButton).toBeInTheDocument();
+
+    // The raw message string should be visible
+    expect(screen.getByText(JSON.stringify(jsonMessage))).toBeInTheDocument();
+
+    // Click expand
+    fireEvent.click(expandButton);
+
+    // Verify state changed to expanded (button label changes)
+    const collapseButton = screen.getByLabelText("Collapse JSON");
+    expect(collapseButton).toBeInTheDocument();
 
     vi.useRealTimers();
   });

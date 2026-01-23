@@ -68,7 +68,9 @@ export default function UsersPage() {
   async function loadUsers() {
     try {
       const resp = await apiClient.listUsers();
-      if (resp && Array.isArray(resp.users)) {
+      if (Array.isArray(resp)) {
+        setUsers(resp);
+      } else if (resp && Array.isArray(resp.users)) {
         setUsers(resp.users);
       } else {
         setUsers([]);

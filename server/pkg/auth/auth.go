@@ -382,9 +382,30 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	}
 	// If no authenticator is configured for the service:
 	// If we authenticated via Global API Key, we allow it.
+	// If not found, check global keys...
 	if am.apiKey != "" {
+		// If we authenticated via Global API Key, we allow it.
+		// NOTE: logic was: if apiKey configured, and we reached here (meaning no service authenticator), allow.
+		// But wait, if apiKey was provided, we updated ctx.
+		// If apiKey was NOT provided, we still fall through?
+		// Authenticate logic above:
+		// if am.apiKey != "" { check header }
+		// if header valid, ctx updated.
+		// If header missing, returns error "unauthorized" IF apiKey is required?
+		// Logic at 373: if receivedKey == "" return error.
+		// So if apiKey is configured, we MUST provide it?
+		// Check lines 365-378.
+		// Yes, if am.apiKey != "", we ENFORCE it.
+		// So if we are here, we passed API key check (if configured).
+		// So we can return nil (allow).
 		return ctx, nil
 	}
+
+	// Fallback: Check Global User Basic Auth
+	if ctx, err := am.checkBasicAuthWithUsers(ctx, r); err == nil {
+		return ctx, nil
+	}
+
 	// Otherwise, Fail Closed.
 	return ctx, fmt.Errorf("unauthorized: no authentication configured")
 }
@@ -539,4 +560,37 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 	default:
 		return nil
 	}
+}
+
+// checkBasicAuthWithUsers checks if the request has valid Basic Auth credentials
+// matching any of the configured users.
+//
+// ctx is the context.
+// r is the request.
+//
+// Returns the updated context or an error.
+func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
+	username, password, ok := r.BasicAuth()
+	if !ok {
+		return ctx, fmt.Errorf("no basic auth provided")
+	}
+
+	am.usersMu.RLock()
+	defer am.usersMu.RUnlock()
+
+	// Direct lookup if user ID matches username
+	if user, ok := am.users[username]; ok {
+		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
+			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
+				ctx = ContextWithUser(ctx, user.GetId())
+				if len(user.GetRoles()) > 0 {
+					ctx = ContextWithRoles(ctx, user.GetRoles())
+				}
+				return ctx, nil
+			}
+		}
+	}
+
+	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
+	return ctx, fmt.Errorf("invalid credentials")
 }

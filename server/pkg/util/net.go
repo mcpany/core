@@ -191,6 +191,10 @@ func CheckConnection(ctx context.Context, address string) error {
 			// If SplitHostPort fails, it means no port was specified.
 			// Assume it's just a hostname and default to port 80.
 			host = address
+			// If host is an IPv6 literal with brackets, strip them because JoinHostPort adds them back.
+			if len(host) > 0 && host[0] == '[' && host[len(host)-1] == ']' {
+				host = host[1 : len(host)-1]
+			}
 			port = "80"
 		}
 		target = net.JoinHostPort(host, port)

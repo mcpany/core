@@ -96,7 +96,26 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          await route.fulfill({
              status: 200,
              contentType: 'application/json',
-             body: JSON.stringify({ status: 'healthy', checks: {} })
+             body: JSON.stringify({
+                 status: 'healthy',
+                 checks: {},
+                 version: '1.0.0',
+                 uptime_seconds: 3600,
+                 active_connections: 5,
+                 bound_http_port: 8080,
+                 bound_grpc_port: 50051
+             })
+         });
+     });
+
+     // Mock Dashboard Traffic
+     await page.route('**/api/v1/dashboard/traffic', async route => {
+         await route.fulfill({
+             json: Array.from({length: 24}, (_, i) => ({
+                 timestamp: new Date(Date.now() - i * 3600000).toISOString(),
+                 requests: Math.floor(Math.random() * 500) + 100,
+                 errors: Math.floor(Math.random() * 10)
+             })).reverse()
          });
      });
 
@@ -104,11 +123,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Dashboard Screenshots', async ({ page }) => {
     await page.goto('/');
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
+    // Give widgets extra time to render after data fetch
+    await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
-    // Legacy alias
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard.png'), fullPage: true });
   });
 
   test('Services Screenshots', async ({ page }) => {
@@ -130,9 +149,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
 
     // Configure Service
+    // Ensure we are navigating to the correct URL for configuration
     await page.goto('/upstream-services/postgres-primary');
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000); // Increased wait time
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
   });
 
@@ -320,12 +340,28 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Resources Screenshots', async ({ page }) => {
       await page.goto('/resources');
-      await page.waitForTimeout(1000);
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(2000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_list.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources.png'), fullPage: true });
       // Legacy aliases
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_grid.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_split_view.png'), fullPage: true });
+
+      // Open Preview Modal
+      // Just take a screenshot of the page with the modal open if possible
+      // Using nth(0) as per plan
+      const firstResource = page.getByRole('row').nth(0);
+      if (await firstResource.isVisible()) {
+        await firstResource.click({ button: 'right' });
+        await page.waitForTimeout(1000);
+        const previewBtn = page.getByText('Preview in Modal');
+        if (await previewBtn.isVisible()) {
+             await previewBtn.click();
+             await page.waitForTimeout(2000);
+             await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_preview_modal.png') });
+        }
+      }
   });
 
   test('Alerts Screenshots', async ({ page }) => {
@@ -389,8 +425,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(1000);
 
       // Open Actions Dropdown
-      // We target the first row's actions button (MoreHorizontal)
-      const actionButton = page.locator('tbody tr').first().locator('button').last();
+      // We target the first card's actions button
+      const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
       await actionButton.click();
       await page.waitForTimeout(500);
 

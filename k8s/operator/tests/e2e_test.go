@@ -17,7 +17,7 @@ import (
 
 const (
 	clusterName = "mcp-e2e"
-	kindImage   = "kindest/node:v1.29.2"
+	kindImage   = "kindest/node:v1.27.3"
 	namespace   = "mcp-system"
 )
 

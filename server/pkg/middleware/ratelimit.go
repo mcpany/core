@@ -296,7 +296,7 @@ func (m *RateLimitMiddleware) getPartitionKey(ctx context.Context, keyBy configv
 			return hashKey("apikey:", apiKey)
 		}
 		// Fallback to extraction from HTTP request if available
-		if req, ok := ctx.Value("http.request").(*http.Request); ok {
+		if req, ok := ctx.Value(HTTPRequestContextKey).(*http.Request); ok {
 			if key := req.Header.Get("X-API-Key"); key != "" {
 				return hashKey("apikey:", key)
 			}

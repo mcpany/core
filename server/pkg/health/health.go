@@ -64,6 +64,7 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Parameters:
 //   - uc: The configuration of the upstream service to check.
+//   - enablePeriodic: Whether to run the health check periodically in the background.
 //
 // Returns:
 //   - A health.Checker instance that can be used to monitor the service's health.
@@ -155,6 +156,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig, enablePeriodic bool) health.
 
 	if enablePeriodic {
 		// Run checks periodically in the background to avoid blocking the request path.
+		// Using 1s interval and 1s timeout to ensure responsiveness for tests and production.
 		opts = append(opts, health.WithPeriodicCheck(1*time.Second, 1*time.Second, check))
 	} else {
 		// Using synchronous checks for simple usage or where Start() lifecycle is hard to manage.

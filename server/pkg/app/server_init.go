@@ -7,12 +7,15 @@ import (
 	"context"
 	"fmt"
 
+	"os"
+
 	"google.golang.org/protobuf/proto"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
 func (a *Application) initializeDatabase(ctx context.Context, store config.Store) error {
@@ -110,6 +113,64 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		log.Warn("Store/Storage does not support saving defaults.")
 	}
 
+	// Initialize Admin User
+	if err := a.initializeAdminUser(ctx, store); err != nil {
+		log.Error("Failed to initialize admin user", "error", err)
+		// We don't fail hard here to allow server to start, but auth might be broken for admin
+	}
+
 	log.Info("Database initialized successfully.")
+	return nil
+}
+
+func (a *Application) initializeAdminUser(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil // Cannot list/save users
+	}
+
+	users, err := s.ListUsers(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to list users: %w", err)
+	}
+
+	if len(users) > 0 {
+		return nil // Users already exist
+	}
+
+	logging.GetLogger().Info("No users found, creating default admin user...")
+
+	username := os.Getenv("MCPANY_ADMIN_INIT_USERNAME")
+	if username == "" {
+		username = "admin"
+	}
+	password := os.Getenv("MCPANY_ADMIN_INIT_PASSWORD")
+	if password == "" {
+		password = "password"
+	}
+
+	hash, err := passhash.Password(password)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	adminUser := &configv1.User{
+		Id: proto.String(username),
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BasicAuth{
+				BasicAuth: &configv1.BasicAuth{
+					Username:     proto.String(username),
+					PasswordHash: proto.String(hash),
+				},
+			},
+		},
+		Roles: []string{"admin"},
+	}
+
+	if err := s.CreateUser(ctx, adminUser); err != nil {
+		return fmt.Errorf("failed to create admin user: %w", err)
+	}
+
+	logging.GetLogger().Info("Default admin user created successfully.", "username", username)
 	return nil
 }

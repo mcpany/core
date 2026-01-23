@@ -438,12 +438,9 @@ func scanJSONForSensitiveKeys(input []byte) bool {
 
 // isKeyColon checks if the JSON element ending at endOffset is followed by a colon.
 func isKeyColon(input []byte, endOffset int) bool {
-	for j := endOffset; j < len(input); j++ {
-		c := input[j]
-		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-			continue
-		}
-		return c == ':'
+	j := skipWhitespaceAndComments(input, endOffset)
+	if j < len(input) {
+		return input[j] == ':'
 	}
 	return false
 }
@@ -480,6 +477,16 @@ func RedactDSN(dsn string) string {
 		// If parsed successfully AND found User but no password, we trust the parser.
 		// This handles cases like mysql://user@host correctly (don't fallback to regex).
 		return dsn
+	}
+
+	// If parsed successfully but no User info found, check for known non-DSN schemes.
+	if err == nil {
+		// Optimization: Check for common schemes that are NOT DSNs but might be mistaken for one
+		// by the fallback regex (e.g. mailto:bob@example.com).
+		// We trust url.Parse to correctly identify the scheme.
+		if strings.EqualFold(u.Scheme, "mailto") {
+			return dsn
+		}
 	}
 
 	// Fallback to regex if parsing fails (e.g. not a valid URL)
