@@ -28,6 +28,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Port Conflict Hints**
+  - **Description**: Detects "Address already in use" errors during server startup and suggests using `--json-rpc-port` or `--grpc-port` flags to resolve the conflict.
 - **Whitespace URL Validation**
   - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
 
@@ -123,6 +125,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 78 | **Strict Config Validation on Reload** | **Resilience**: Extend strict configuration validation to dynamic reloads, ensuring that invalid configurations are rejected with a detailed diff and error report before any changes are applied. | High |
+| 79 | **Conflict-Free Port Allocation** | **DevX**: Add a `--random-port` flag that automatically finds an available port if the default is taken, useful for automated testing. | Low |
 | 80 | **Secret Format Validation for Known Services** | **Security**: Heuristic validation for common secret formats (e.g. OpenAI `sk-`, GitHub `ghp_`) to catch invalid keys early. | Low |
 | 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
