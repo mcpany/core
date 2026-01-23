@@ -23,6 +23,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
@@ -587,22 +588,111 @@ func (a *Application) Run(opts RunOptions) error {
 			registrationWorker.Stop()
 			return fmt.Errorf("failed to get registration bus: %w", err)
 		}
+
+		resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](
+			busProvider,
+			bus.ServiceRegistrationResultTopic,
+		)
+		if err != nil {
+			workerCancel()
+			upstreamWorker.Stop()
+			registrationWorker.Stop()
+			return fmt.Errorf("failed to get registration result bus: %w", err)
+		}
+
+		// Track initial registration using a map for robustness against duplicates/extras
+		pendingRegistrations := make(map[string]string) // CorrelationID -> ServiceName
+		var pendingMu sync.Mutex
+		var initOnce sync.Once
+		initDone := make(chan struct{})
+
+		signalDone := func() {
+			initOnce.Do(func() {
+				close(initDone)
+			})
+		}
+
+		// Pre-populate map with expected services
+		var batch []*bus.ServiceRegistrationRequest
 		for _, serviceConfig := range cfg.GetUpstreamServices() {
 			if serviceConfig.GetDisable() {
 				log.Info("Skipping disabled service", "service", serviceConfig.GetName())
 				continue
 			}
+			cid := uuid.New().String()
+			pendingRegistrations[cid] = serviceConfig.GetName()
+			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
+			regReq.SetCorrelationID(cid)
+			batch = append(batch, regReq)
+		}
+
+		// Subscribe to results
+		subCtx, subCancel := context.WithCancel(opts.Ctx)
+		defer subCancel()
+
+		unsubscribe := resultBus.Subscribe(subCtx, "startup_tracker", func(res *bus.ServiceRegistrationResult) {
+			pendingMu.Lock()
+			defer pendingMu.Unlock()
+
+			name, ok := pendingRegistrations[res.CorrelationID()]
+			if !ok {
+				return // Not one of our startup requests
+			}
+			delete(pendingRegistrations, res.CorrelationID())
+
+			if res.Error != nil {
+				fmt.Fprintf(os.Stderr, "❌ Service registration failed: %s (%v)\n", name, res.Error)
+			}
+
+			if len(pendingRegistrations) == 0 {
+				signalDone()
+			}
+		})
+
+		// Publish requests
+		for _, req := range batch {
 			log.Info(
 				"Queueing service for registration from config",
 				"service",
-				serviceConfig.GetName(),
+				req.Config.GetName(),
 			)
-			regReq := &bus.ServiceRegistrationRequest{Config: serviceConfig}
-			// We don't need a correlation ID since we are not waiting for a response here
-			if err := registrationBus.Publish(opts.Ctx, "request", regReq); err != nil {
+			if err := registrationBus.Publish(opts.Ctx, "request", req); err != nil {
 				log.Error("Failed to publish registration request", "error", err)
+				pendingMu.Lock()
+				delete(pendingRegistrations, req.CorrelationID())
+				if len(pendingRegistrations) == 0 {
+					signalDone()
+				}
+				pendingMu.Unlock()
 			}
 		}
+
+		// Handle empty batch case (all disabled or empty config)
+		pendingMu.Lock()
+		if len(pendingRegistrations) == 0 {
+			signalDone()
+		}
+		totalExpected := len(batch)
+		pendingMu.Unlock()
+
+		// Wait for completion
+		if totalExpected > 0 {
+			fmt.Fprintf(os.Stderr, "⏳ Waiting for %d services to initialize...\n", totalExpected)
+
+			select {
+			case <-initDone:
+				fmt.Fprintf(os.Stderr, "✅ Services initialized.\n")
+			case <-time.After(15 * time.Second):
+				log.Warn("Timeout waiting for services to initialize")
+				fmt.Fprintf(os.Stderr, "⚠️  Timeout waiting for services to initialize. Some tools might be missing at startup.\n")
+			case <-opts.Ctx.Done():
+				// Context cancelled
+			}
+		}
+
+		// Unsubscribe to stop processing results in this closure
+		unsubscribe()
+
 	} else {
 		log.Info("No services found in config, skipping service registration.")
 	}

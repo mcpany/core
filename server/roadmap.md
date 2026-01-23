@@ -28,6 +28,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Synchronous Service Initialization**
+  - **Description**: Ensures the server waits for the initial batch of configured services to register (or fail) before accepting connections. This prevents "silent failures" where clients see empty tool lists immediately after startup.
 
 ## 2. Updated Roadmap
 
@@ -123,6 +125,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
+| 80 | **Startup Progress Bar** | **UX**: A visual progress bar in the CLI during synchronous service initialization, especially useful when many services are configured. | Low |
+| 81 | **Service Dependency Ordering** | **Resilience**: Allow configuring service initialization order (e.g. database before API) to handle dependencies correctly during startup. | High |
 
 ## 3. Codebase Health
 
