@@ -433,4 +433,40 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
   });
 
+  test('Audit Logs Screenshots', async ({ page }) => {
+      // Mock Audit Logs
+      await page.route('**/api/v1/audit/logs*', async route => {
+          await route.fulfill({
+              json: {
+                  entries: [
+                      {
+                          timestamp: new Date().toISOString(),
+                          toolName: 'weather_get',
+                          userId: 'alice',
+                          profileId: 'prod',
+                          arguments: '{"city": "London"}',
+                          result: '{"temperature": 20}',
+                          duration: '150ms',
+                          durationMs: 150
+                      },
+                      {
+                          timestamp: new Date(Date.now() - 60000).toISOString(),
+                          toolName: 'calculator_add',
+                          userId: 'bob',
+                          profileId: 'dev',
+                          arguments: '{"a": 5, "b": 3}',
+                          result: '8',
+                          duration: '10ms',
+                          durationMs: 10
+                      }
+                  ]
+              }
+          });
+      });
+
+      await page.goto('/audit');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
+  });
+
 });

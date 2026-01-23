@@ -1898,7 +1898,11 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager)
+	var auditMiddleware *middleware.AuditMiddleware
+	if standardMiddlewares != nil {
+		auditMiddleware = standardMiddlewares.Audit
+	}
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service
@@ -1930,6 +1934,8 @@ func (a *Application) runServerMode(
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
 				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
+				} else if err := pb_admin.RegisterAdminServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register admin gateway: %w", err)
 				} else {
 					// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
 					mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
