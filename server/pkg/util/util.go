@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -597,6 +598,15 @@ func SanitizeFilename(filename string) string {
 	// 5. Truncate
 	if len(result) > 255 {
 		result = result[:255]
+		// Ensure we don't end with an incomplete multi-byte character
+		for len(result) > 0 {
+			r, size := utf8.DecodeLastRuneInString(result)
+			if r == utf8.RuneError && size == 1 {
+				result = result[:len(result)-1]
+			} else {
+				break
+			}
+		}
 	}
 
 	return result
