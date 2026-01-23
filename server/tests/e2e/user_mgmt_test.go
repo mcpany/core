@@ -30,6 +30,10 @@ func TestUserManagement(t *testing.T) {
 	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 	defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
 
+	// Set admin password for initialization
+	os.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
+	defer os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
+
 	// Mock OIDC Server (Start FIRST so we can use URL in config)
 	mockOIDCMux := http.NewServeMux()
 	// Use TLS to satisfy OIDC requirements (or we'd need to assume insecure which is harder to inject globally without flag)

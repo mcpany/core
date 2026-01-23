@@ -23,6 +23,7 @@ import (
 func TestStartupWithFailingUpstream(t *testing.T) {
 	// Enable file config for this test
 	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 
 	// 1. Start a working upstream service
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
