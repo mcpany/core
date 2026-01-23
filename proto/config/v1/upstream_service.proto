@@ -49,6 +49,12 @@ message UpstreamServiceConfig {
   // If true, this service configuration is read-only (e.g., loaded from a file).
   // @inject_tag: yaml:"-"
   bool read_only = 35 [json_name = "read_only"];
+  // The last error message encountered by the service (e.g. health check failure).
+  // @inject_tag: yaml:"-"
+  string last_error = 36 [json_name = "last_error"];
+  // The number of tools registered for this service.
+  // @inject_tag: yaml:"-"
+  int32 tool_count = 37 [json_name = "tool_count"];
 
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 9 [json_name = "connection_pool"];
