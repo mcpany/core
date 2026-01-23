@@ -5,6 +5,7 @@ edition = "2023";
 
 package mcpany.admin.v1;
 
+import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/user.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
@@ -50,6 +51,17 @@ service AdminService {
 
   // GetDiscoveryStatus returns the status of auto-discovery providers.
   rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
+
+  // ===================================================================
+  // Audit Logs
+  // ===================================================================
+
+  // ListAuditLogs returns audit logs matching the filter.
+  rpc ListAuditLogs(ListAuditLogsRequest) returns (ListAuditLogsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/audit/logs"
+    };
+  }
 }
 
 message ClearCacheRequest {}
@@ -143,4 +155,32 @@ message DiscoveryProviderStatus {
   string last_error = 3;
   string last_run_at = 4; // ISO 8601
   int32 discovered_count = 5;
+}
+
+// Audit Log Messages
+
+message ListAuditLogsRequest {
+  string start_time = 1; // ISO 8601
+  string end_time = 2;   // ISO 8601
+  string tool_name = 3;
+  string user_id = 4;
+  string profile_id = 5;
+  int32 limit = 6;
+  int32 offset = 7;
+}
+
+message ListAuditLogsResponse {
+  repeated AuditLogEntry entries = 1;
+}
+
+message AuditLogEntry {
+  string timestamp = 1; // ISO 8601
+  string tool_name = 2;
+  string user_id = 3;
+  string profile_id = 4;
+  string arguments = 5; // JSON string
+  string result = 6;    // JSON string
+  string error = 7;
+  string duration = 8;
+  int64 duration_ms = 9;
 }

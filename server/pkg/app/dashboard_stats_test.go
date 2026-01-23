@@ -4,14 +4,25 @@
 package app
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/topology"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -62,13 +73,13 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 	err = json.Unmarshal(rr.Body.Bytes(), &stats)
 	require.NoError(t, err)
 
-    // Filter stats to include only our test tools
-    var myStats []ToolFailureStats
-    for _, s := range stats {
-        if s.Name == toolA || s.Name == toolB || s.Name == toolD {
-            myStats = append(myStats, s)
-        }
-    }
+	// Filter stats to include only our test tools
+	var myStats []ToolFailureStats
+	for _, s := range stats {
+		if s.Name == toolA || s.Name == toolB || s.Name == toolD {
+			myStats = append(myStats, s)
+		}
+	}
 
 	// Expect descending order of failure rate: D (100) > A (50) > B (10)
 	require.GreaterOrEqual(t, len(myStats), 3)

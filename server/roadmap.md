@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Interactive Doctor Resilience**
+  - **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
@@ -26,6 +28,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Whitespace URL Validation**
+  - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
 
 ## 2. Updated Roadmap
 
@@ -119,6 +123,10 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **Secret Format Validation for Known Services** | **Security**: Heuristic validation for common secret formats (e.g. OpenAI `sk-`, GitHub `ghp_`) to catch invalid keys early. | Low |
+| 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
+| 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
+| 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
 
 ## 3. Codebase Health
 

@@ -1100,5 +1100,35 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/doctor');
         if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
+    },
+
+    // Audit Logs
+
+    /**
+     * Lists audit logs.
+     * @param filters The filters for the audit logs.
+     * @returns A promise that resolves to the list of audit logs.
+     */
+    listAuditLogs: async (filters: {
+        start_time?: string;
+        end_time?: string;
+        tool_name?: string;
+        user_id?: string;
+        profile_id?: string;
+        limit?: number;
+        offset?: number;
+    }) => {
+        const query = new URLSearchParams();
+        if (filters.start_time) query.set('start_time', filters.start_time);
+        if (filters.end_time) query.set('end_time', filters.end_time);
+        if (filters.tool_name) query.set('tool_name', filters.tool_name);
+        if (filters.user_id) query.set('user_id', filters.user_id);
+        if (filters.profile_id) query.set('profile_id', filters.profile_id);
+        if (filters.limit) query.set('limit', filters.limit.toString());
+        if (filters.offset) query.set('offset', filters.offset.toString());
+
+        const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
+        if (!res.ok) throw new Error('Failed to fetch audit logs');
+        return res.json();
     }
 };
