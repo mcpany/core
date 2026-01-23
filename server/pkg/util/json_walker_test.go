@@ -139,6 +139,24 @@ func TestWalkJSONStrings(t *testing.T) {
 			},
 			expected: `{ /* "ignore" */ "key": "REPLACED" }`,
 		},
+		{
+			name:  "string in block comment after division",
+			input: `1 / 1 /* "hidden" */ "visible"`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `1 / 1 /* "hidden" */ "REPLACED"`,
+		},
+		{
+			name: "string in line comment after division",
+			input: `1 / 1 // "hidden"
+"visible"`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `1 / 1 // "hidden"
+"REPLACED"`,
+		},
 	}
 
 	for _, tt := range tests {

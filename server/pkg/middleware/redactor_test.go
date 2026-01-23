@@ -256,3 +256,28 @@ func TestRedactJSON_Empty(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, output)
 }
+
+func TestRedactJSON_Bug_CommentAfterDivision(t *testing.T) {
+	enabled := true
+	cfg := &configv1.DLPConfig{
+		Enabled:        &enabled,
+		CustomPatterns: []string{`secret-\d+`},
+	}
+	r := NewRedactor(cfg, slog.Default())
+
+	// Input: 1 / 1 /* "secret-123" */
+	// "secret-123" matches the pattern.
+	// If the bug exists, it will be redacted.
+	// Expected: NO redaction because it is in a comment.
+	input := []byte(`{"val": 1 / 1 /* "secret-123" */, "real": "secret-456"}`)
+
+	output, err := r.RedactJSON(input)
+	assert.NoError(t, err)
+
+	outputStr := string(output)
+	// "secret-123" should remain (it's in a comment)
+	assert.Contains(t, outputStr, "secret-123", "Sensitive data inside comment should NOT be redacted")
+	// "secret-456" should be redacted (it's a real value)
+	assert.Contains(t, outputStr, "***REDACTED***", "Real sensitive data SHOULD be redacted")
+	assert.NotContains(t, outputStr, "secret-456", "Real sensitive data should NOT be present")
+}
