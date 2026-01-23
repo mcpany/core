@@ -6,11 +6,15 @@ package admin
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"strings"
+	"time"
 
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
@@ -30,6 +34,7 @@ type Server struct {
 	serviceRegistry  serviceregistry.ServiceRegistryInterface
 	storage          storage.Storage
 	discoveryManager *discovery.Manager
+	auditMiddleware  *middleware.AuditMiddleware
 }
 
 // NewServer creates a new Admin Server.
@@ -39,6 +44,7 @@ type Server struct {
 // serviceRegistry is the registry of upstream services.
 // storage provides the persistence layer.
 // discoveryManager manages auto-discovery.
+// auditMiddleware provides access to audit logs.
 //
 // Returns the result.
 func NewServer(
@@ -47,6 +53,7 @@ func NewServer(
 	serviceRegistry serviceregistry.ServiceRegistryInterface,
 	storage storage.Storage,
 	discoveryManager *discovery.Manager,
+	auditMiddleware *middleware.AuditMiddleware,
 ) *Server {
 	return &Server{
 		cache:            cache,
@@ -54,6 +61,7 @@ func NewServer(
 		serviceRegistry:  serviceRegistry,
 		storage:          storage,
 		discoveryManager: discoveryManager,
+		auditMiddleware:  auditMiddleware,
 	}
 }
 
@@ -323,4 +331,70 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 	}
 
 	return &pb.GetDiscoveryStatusResponse{Providers: pbStatuses}, nil
+}
+
+// ListAuditLogs returns audit logs matching the filter.
+func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
+	if s.auditMiddleware == nil {
+		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")
+	}
+
+	var startTime, endTime *time.Time
+	if req.GetStartTime() != "" {
+		t, err := time.Parse(time.RFC3339, req.GetStartTime())
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid start_time: %v", err)
+		}
+		startTime = &t
+	}
+	if req.GetEndTime() != "" {
+		t, err := time.Parse(time.RFC3339, req.GetEndTime())
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid end_time: %v", err)
+		}
+		endTime = &t
+	}
+
+	filter := audit.Filter{
+		StartTime: startTime,
+		EndTime:   endTime,
+		ToolName:  req.GetToolName(),
+		UserID:    req.GetUserId(),
+		ProfileID: req.GetProfileId(),
+		Limit:     int(req.GetLimit()),
+		Offset:    int(req.GetOffset()),
+	}
+
+	entries, err := s.auditMiddleware.Read(ctx, filter)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to read audit logs: %v", err)
+	}
+
+	pbEntries := make([]*pb.AuditLogEntry, 0, len(entries))
+	for _, e := range entries {
+		var argsStr, resultStr string
+		if len(e.Arguments) > 0 {
+			argsStr = string(e.Arguments)
+		}
+		if e.Result != nil {
+			if b, err := json.Marshal(e.Result); err == nil {
+				resultStr = string(b)
+			} else {
+				// Fallback if marshalling fails (unlikely if it came from JSON)
+				resultStr = fmt.Sprintf("%v", e.Result)
+			}
+		}
+		pbEntries = append(pbEntries, &pb.AuditLogEntry{
+			Timestamp:  proto.String(e.Timestamp.Format(time.RFC3339)),
+			ToolName:   proto.String(e.ToolName),
+			UserId:     proto.String(e.UserID),
+			ProfileId:  proto.String(e.ProfileID),
+			Arguments:  proto.String(argsStr),
+			Result:     proto.String(resultStr),
+			Error:      proto.String(e.Error),
+			Duration:   proto.String(e.Duration),
+			DurationMs: proto.Int64(e.DurationMs),
+		})
+	}
+	return &pb.ListAuditLogsResponse{Entries: pbEntries}, nil
 }
