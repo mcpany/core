@@ -36,13 +36,6 @@ var (
 	appRunner app.Runner = app.NewApplication()
 )
 
-const (
-	iconOk      = "✅"
-	iconWarning = "⚠️ "
-	iconError   = "❌"
-	iconSkipped = "⏭️ "
-)
-
 // loadEnv loads environment variables from a .env file.
 // It checks for the --env-file flag and loads the specified file.
 // If no flag is provided, it attempts to load .env from the current directory.
