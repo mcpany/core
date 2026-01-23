@@ -2634,42 +2634,34 @@ func TestWaitForStartup_Success(t *testing.T) {
 
 func TestRun_DBInitFailure(t *testing.T) {
 	// We need to force a DB initialization failure.
-	// We can set the db driver to sqlite and provide an invalid path (e.g. a directory)
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 
-	// Set global settings to use sqlite with invalid path
-	config.GlobalSettings().SetDBPath("/invalid/path/db.sqlite")
-	// Make sure directory exists so it's not "not found" but "permission denied" or similar if we were using real FS.
-	// With MemMapFs, sqlite driver might not work as expected because it uses CGO and real OS calls usually.
-	// However, server.go uses `sqlite.NewDB` which uses `modernc.org/sqlite` (pure Go) or CGO?
-	// If it uses a real file path, it might fail if we point to a non-existent directory.
+	// Set global settings
+	// We use "postgres" driver with a local port that is likely closed to ensure fast connection refused error.
+	// Using "invalid" host might cause slow DNS lookup.
+	// Port 54321 is arbitrary high port.
+	fastFailDSN := "postgres://user:pass@127.0.0.1:54321/db?connect_timeout=1"
 
-	// Let's use "postgres" driver with invalid DSN as it is easier to fail fast.
-	// We need to inject this into config loading.
-	// Run() loads config from file store + storage store.
-	// If we provide no config, it defaults to sqlite "mcpany.db".
+	// Modify GlobalSettings singleton
+	settings := config.GlobalSettings()
+	gs := settings.ToProto()
 
-	// The `config.GlobalSettings()` singleton is used in `Run()` for default DB driver logic if `a.Storage` is nil.
-	// We can modify `config.GlobalSettings()` before calling `Run()`.
-	// But `Run` calls `config.GlobalSettings().GetDbDriver()`.
-
-	// Back up current settings
-	// (Settings struct doesn't expose easy backup/restore, but we can set values back)
-	// Actually, `config.GlobalSettings()` returns a singleton.
-	// We can update the proto inside it.
-	gs := config.GlobalSettings().ToProto()
 	origDriver := gs.GetDbDriver()
 	origDsn := gs.GetDbDsn()
+	origPath := settings.DBPath()
+
 	defer func() {
 		// Restore
 		gs.SetDbDriver(origDriver)
 		gs.SetDbDsn(origDsn)
+		settings.SetDBPath(origPath)
 	}()
 
 	gs.SetDbDriver("postgres")
-	gs.SetDbDsn("postgres://invalid:5432/db")
+	gs.SetDbDsn(fastFailDSN)
+	settings.SetDBPath("/invalid/path") // Not used for postgres but good to set for isolation
 
 	app := NewApplication()
 	// Run should fail when initializing Postgres DB
