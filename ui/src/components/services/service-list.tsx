@@ -407,7 +407,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                             }
                         />
                         <DropdownMenuItem asChild>
-                            <Link href={`/logs?source=${service.name}`}>
+                            <Link href={`/logs?source=${encodeURIComponent(service.name)}`}>
                                 <Terminal className="mr-2 h-4 w-4" />
                                 View Logs
                             </Link>
