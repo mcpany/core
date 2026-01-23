@@ -108,6 +108,8 @@ func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 
 func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
+func (m *MockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

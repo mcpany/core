@@ -748,6 +748,8 @@ func (m *mockToolManager) ClearToolsForService(serviceID string) {
 	m.addedTools = remainingTools
 }
 
+func (m *mockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false

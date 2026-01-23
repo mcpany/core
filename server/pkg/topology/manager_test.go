@@ -49,6 +49,8 @@ func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
 	return args.Get(0).([]*mcp.Tool)
 }
 
+func (m *MockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManager) AddServiceInfo(id string, info *tool.ServiceInfo) {
 	m.Called(id, info)
 }

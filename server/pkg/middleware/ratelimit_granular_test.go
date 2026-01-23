@@ -42,6 +42,8 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 func (m *MockToolManager) ListTools() []tool.Tool                           { return nil }
 func (m *MockToolManager) ListMCPTools() []*mcp.Tool                        { return nil }
 func (m *MockToolManager) AddTool(t tool.Tool) error                        { return nil }
+func (m *MockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManager) ClearToolsForService(_ string)                   {}
 func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

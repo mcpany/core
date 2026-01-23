@@ -119,6 +119,12 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
+	// UpdateServiceHealth updates the health status of a service.
+	//
+	// serviceID is the serviceID.
+	// isHealthy indicates if the service is healthy.
+	// errorMsg is the error message if the service is unhealthy.
+	UpdateServiceHealth(serviceID string, isHealthy bool, errorMsg string)
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -261,6 +267,36 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 	}
 
 	return tm.matchesSelector(t, def.GetSelector())
+}
+
+// UpdateServiceHealth updates the health status of a service.
+func (tm *Manager) UpdateServiceHealth(serviceID string, isHealthy bool, errorMsg string) {
+	info, ok := tm.serviceInfo.Load(serviceID)
+	if !ok {
+		return
+	}
+
+	newStatus := "healthy"
+	if !isHealthy {
+		newStatus = "unhealthy"
+	}
+
+	// Only update if changed
+	if info.HealthStatus == newStatus && info.HealthError == errorMsg {
+		return
+	}
+
+	// Copy and update
+	newInfo := *info
+	newInfo.HealthStatus = newStatus
+	newInfo.HealthError = errorMsg
+	tm.serviceInfo.Store(serviceID, &newInfo)
+
+	// Invalidate cache
+	tm.toolsMutex.Lock()
+	tm.cachedTools = nil
+	tm.cachedMCPTools = nil
+	tm.toolsMutex.Unlock()
 }
 
 // IsServiceAllowed checks if a service is allowed for a given profile.
@@ -459,7 +495,7 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	var preHooks []PreCallHook
 	var postHooks []PostCallHook
 	if ok {
-		if serviceInfo.HealthStatus == "unhealthy" {
+		if serviceInfo.HealthStatus == HealthStatusUnhealthy {
 			log.Warn("Service is unhealthy, denying execution", "serviceID", serviceID)
 			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
 		}
@@ -817,13 +853,9 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 	var tools []Tool
 	tm.tools.Range(func(_ string, value Tool) bool {
 		// Check service health
-		serviceID := value.Tool().GetServiceId()
+		// serviceID := value.Tool().GetServiceId()
 		// ⚡ Bolt Optimization: Use direct load to avoid expensive config cloning/stripping in GetServiceInfo
-		if info, ok := tm.serviceInfo.Load(serviceID); ok {
-			if info.HealthStatus == "unhealthy" {
-				return true // Skip unhealthy tools
-			}
-		}
+		// We used to skip unhealthy tools here, but now we include them so we can show warnings.
 		tools = append(tools, value)
 		return true
 	})
@@ -861,15 +893,25 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	mcpTools := make([]*mcp.Tool, 0, len(tools))
 	for _, t := range tools {
 		if mt := t.MCPTool(); mt != nil {
+			// Clone the tool to avoid modifying the cached source
+			mtClone := *mt
+
+			// Check service health
+			serviceID := t.Tool().GetServiceId()
+			// ⚡ Bolt Optimization: Use direct load
+			if info, ok := tm.serviceInfo.Load(serviceID); ok && info.HealthStatus == "unhealthy" {
+				mtClone.Description = fmt.Sprintf("[⚠️ UNHEALTHY: %s] %s", info.HealthError, mtClone.Description)
+			}
+
 			// Enforce namespacing for the tool list to match AddTool and mcpServer registration
 			if t.Tool().GetServiceId() != "" {
 				expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
-				if mt.Name != expectedName {
-					// Update the name in the cached MCP tool
-					mt.Name = expectedName
+				if mtClone.Name != expectedName {
+					// Update the name in the cloned MCP tool
+					mtClone.Name = expectedName
 				}
 			}
-			mcpTools = append(mcpTools, mt)
+			mcpTools = append(mcpTools, &mtClone)
 		}
 	}
 

@@ -363,3 +363,25 @@ func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID a
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)
 }
+
+// UpdateServiceHealth mocks base method.
+//
+// serviceID is the serviceID.
+// isHealthy indicates if the service is healthy.
+// errorMsg is the error message if the service is unhealthy.
+func (m *MockManagerInterface) UpdateServiceHealth(serviceID string, isHealthy bool, errorMsg string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "UpdateServiceHealth", serviceID, isHealthy, errorMsg)
+}
+
+// UpdateServiceHealth indicates an expected call of UpdateServiceHealth.
+//
+// serviceID is the serviceID.
+// isHealthy indicates if the service is healthy.
+// errorMsg is the error message if the service is unhealthy.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) UpdateServiceHealth(serviceID, isHealthy, errorMsg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateServiceHealth", reflect.TypeOf((*MockManagerInterface)(nil).UpdateServiceHealth), serviceID, isHealthy, errorMsg)
+}

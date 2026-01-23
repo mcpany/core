@@ -32,6 +32,8 @@ func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return t, ok
 }
 
+func (m *mockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *mockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.serviceInfo[serviceID] = info
 }

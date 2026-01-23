@@ -26,6 +26,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Unhealthy Tool Visibility**
+  - **Description**: Tools from unhealthy upstream services are now visible in the tool list but marked with a warning (e.g., `[⚠️ UNHEALTHY: connection refused]`). Execution is blocked until the service recovers. Prevents "silent failures" where tools would disappear without explanation.
 
 ## 2. Updated Roadmap
 
@@ -108,6 +110,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Service Dependency Alerts** | **Ops**: Alert if a service dependency (e.g. database) is down for more than X minutes. | Medium |
 | 78 | **Tool Execution Timeout Configuration** | **Resilience**: Allow configuring timeouts per-tool or per-service to prevent hanging tools. | Medium |
 | 79 | **Secret Versioning Support** | **Security**: Allow referencing specific versions of secrets in configuration (e.g. `secret:my-secret:v1`). | Medium |
+| 80 | **Tool Circuit Breaker** | **Resilience**: Automatically disable a tool after N consecutive execution failures to protect the upstream service and provide faster feedback. | High |
+| 81 | **Health Check Webhooks** | **Ops**: Notify external systems (Slack, PagerDuty) when a service health status changes (e.g., Healthy -> Unhealthy). | Medium |
 | 73 | **Docker Secret Native Support** | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping. | Medium |
 | 74 | **gRPC Health Checks** | **Observability**: Implement `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability. | Medium |
 | 75 | **Health Check Flap Damping** | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues. | Medium |

@@ -44,6 +44,8 @@ func (m *MockToolManagerForCost) GetServiceInfo(id string) (*tool.ServiceInfo, b
 func (m *MockToolManagerForCost) ListTools() []tool.Tool                           { return nil }
 func (m *MockToolManagerForCost) ListMCPTools() []*github_com_modelcontextprotocol_go_sdk_mcp.Tool { return nil }
 func (m *MockToolManagerForCost) AddTool(t tool.Tool) error                        { return nil }
+func (m *MockToolManagerForCost) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManagerForCost) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManagerForCost) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil

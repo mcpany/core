@@ -133,6 +133,8 @@ func (m *serviceInfoProviderToolManager) GetServiceInfo(id string) (*tool.Servic
 }
 
 // Stubs
+func (m *serviceInfoProviderToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *serviceInfoProviderToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *serviceInfoProviderToolManager) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
 func (m *serviceInfoProviderToolManager) ListTools() []tool.Tool                       { return nil }

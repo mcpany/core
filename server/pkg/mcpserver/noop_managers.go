@@ -118,6 +118,13 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, false
 }
 
+// UpdateServiceHealth implements tool.ManagerInterface.
+//
+// _ is an unused parameter.
+// _ is an unused parameter.
+// _ is an unused parameter.
+func (m *NoOpToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
 type NoOpPromptManager struct{}
 

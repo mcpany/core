@@ -44,6 +44,8 @@ func (m *MockToolManagerForRegistry) AddTool(t tool.Tool) error {
 	return args.Error(0)
 }
 
+func (m *MockToolManagerForRegistry) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManagerForRegistry) AddServiceInfo(serviceName string, config *tool.ServiceInfo) {
 	m.Called(serviceName, config)
 }

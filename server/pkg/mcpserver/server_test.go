@@ -539,6 +539,8 @@ type mockToolManager struct {
 	clearToolsForServiceCalled bool
 }
 
+func (m *mockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {
 	m.addServiceInfoCalled = true
 }
@@ -1011,6 +1013,8 @@ func (m *smartToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 }
 
 // Stubs to satisfy interface
+func (m *smartToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *smartToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *smartToolManager) GetTool(_ string) (tool.Tool, bool)           { return nil, false }
 func (m *smartToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

@@ -30,6 +30,8 @@ func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRe
 }
 func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
+func (m *MockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo { return nil }

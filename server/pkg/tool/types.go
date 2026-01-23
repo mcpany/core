@@ -44,6 +44,13 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+
+	// HealthStatusHealthy indicates the service is healthy.
+	HealthStatusHealthy = "healthy"
+	// HealthStatusUnhealthy indicates the service is unhealthy.
+	HealthStatusUnhealthy = "unhealthy"
+	// HealthStatusUnknown indicates the service health is unknown.
+	HealthStatusUnknown = "unknown"
 )
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -89,6 +96,8 @@ type ServiceInfo struct {
 
 	// HealthStatus indicates the health of the service ("healthy", "unhealthy", "unknown").
 	HealthStatus string
+	// HealthError contains the error message if HealthStatus is "unhealthy".
+	HealthError string
 }
 
 // ExecutionRequest represents a request to execute a specific tool, including

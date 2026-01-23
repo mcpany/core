@@ -38,6 +38,8 @@ func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }
 
+func (m *mockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}

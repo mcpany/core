@@ -200,6 +200,8 @@ type MockToolManager struct {
 	mock.Mock
 }
 
+func (m *MockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.Called(serviceID, info)
 }

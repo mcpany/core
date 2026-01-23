@@ -69,6 +69,8 @@ func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 	return nil, nil
 }
 func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
+func (m *mockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)            {}
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *mockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }

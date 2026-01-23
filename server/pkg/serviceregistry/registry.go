@@ -199,8 +199,10 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		if hErr := checker.CheckHealth(checkCtx); hErr != nil {
 			r.healthErrors[serviceID] = hErr.Error()
+			r.toolManager.UpdateServiceHealth(serviceID, false, hErr.Error())
 		} else {
 			delete(r.healthErrors, serviceID)
+			r.toolManager.UpdateServiceHealth(serviceID, true, "")
 		}
 		cancel()
 	}
@@ -378,6 +380,9 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 			delete(r.healthErrors, id)
 		}
 		r.mu.Unlock()
+
+		// Propagate health status to ToolManager
+		r.toolManager.UpdateServiceHealth(id, errStr == "", errStr)
 	}
 }
 

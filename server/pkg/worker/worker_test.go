@@ -115,6 +115,8 @@ func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {
 func (m *mockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
 }
 
+func (m *mockToolManager) UpdateServiceHealth(_ string, _ bool, _ string) {}
+
 func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {
 }
 
