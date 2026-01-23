@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FileInput } from "@/components/ui/file-input";
 
 interface SchemaFieldProps {
     path: string;
@@ -93,6 +94,20 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     }
 
     if (type === "string") {
+        if (schema.contentEncoding === "base64" || schema.format === "binary") {
+             return (
+                <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
+                    <FileInput
+                        id={path}
+                        value={(value as string) || undefined}
+                        onChange={(v) => onChange(path, v)}
+                        accept={schema.contentMediaType}
+                        className={cn(errors?.[path] && "border-red-500")}
+                    />
+                </FieldWrapper>
+            );
+        }
+
          return (
             <FieldWrapper label={label} description={description} required={isRequired} error={errors?.[path]} level={level} inputId={path}>
                 <Input
