@@ -30,6 +30,8 @@
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
 - **Whitespace URL Validation**
   - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
+- **Context-Aware Suggestions**
+  - **Description**: Refined the fuzzy matching logic for configuration errors to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an UpstreamServiceConfig block) and removing confusing suggestions from unrelated contexts.
 
 ## 2. Updated Roadmap
 
@@ -80,7 +82,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 41 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
-| 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
+| 82 | **YAML Schema Generation** | **DevX**: Generate a JSON Schema from the Protocol Buffers definition to allow users to validate their `config.yaml` using standard tools and IDEs (VS Code YAML extension). | Medium |
+| 83 | **Config Diagnostics API** | **Observability**: Expose an API endpoint that returns a list of all current configuration warnings and non-fatal errors, enabling the UI to display a "System Health" status for configuration quality. | Low |
 | 43 | **Config Schema Visualization** | **UX**: A UI view to visualize the structure of the loaded configuration, highlighting inheritance or overrides. | Low |
 | 44 | **Validator Plugin System** | **Extensibility**: Allow users to write custom validation rules (e.g. "service name must start with 'prod-'") using Rego or simple scripts. | High |
 

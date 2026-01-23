@@ -113,11 +113,41 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
-		// Attempt to find the line number in the original YAML
+		// Attempt to find the line number and path in the original YAML
 		if matches := unknownFieldRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
 			unknownField := matches[1]
-			if line := findKeyLine(b, unknownField); line > 0 {
-				err = fmt.Errorf("line %d: %w", line, err)
+			path, line := findKeyPathAndLine(b, unknownField)
+
+			// Strip the confusing "proto: (line X:Y): " prefix
+			cleanErr := err.Error()
+			if idx := strings.Index(cleanErr, ": unknown field"); idx != -1 {
+				cleanErr = cleanErr[idx+2:] // Skip ": "
+			}
+
+			// Context-aware suggestion
+			var suggestion string
+			if line > 0 && len(path) > 0 && v != nil {
+				// We found the path in YAML. Now resolve the descriptor for this context.
+				ctxDesc := getDescriptorForPath(v.ProtoReflect().Descriptor(), path)
+				if ctxDesc != nil {
+					suggestion = suggestFix(unknownField, ctxDesc)
+				} else {
+					// Fallback to root if context resolution fails
+					suggestion = suggestFix(unknownField, v.ProtoReflect().Descriptor())
+				}
+			} else if v != nil {
+				// Fallback to root
+				suggestion = suggestFix(unknownField, v.ProtoReflect().Descriptor())
+			}
+
+			if line > 0 {
+				err = fmt.Errorf("line %d: %s", line, cleanErr)
+			} else {
+				err = fmt.Errorf("%s", cleanErr)
+			}
+
+			if suggestion != "" {
+				err = fmt.Errorf("%w\n\n%s", err, suggestion)
 			}
 		}
 
@@ -142,17 +172,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)
 		}
 
-		// Check for unknown fields and suggest fuzzy matches
-		if strings.Contains(err.Error(), "unknown field") {
-			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
-			if len(matches) > 1 {
-				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
-				if suggestion != "" {
-					return fmt.Errorf("%w\n\n%s", err, suggestion)
-				}
-			}
-		}
 		return err
 	}
 	// Debug logging to inspect unmarshaled user
@@ -219,7 +238,9 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
 			if len(matches) > 1 {
 				unknownField := matches[1]
-				suggestion := suggestFix(unknownField, v)
+				// TODO: For JSON, finding path context is harder without a custom parser or AST walker.
+				// For now, we fallback to root descriptor.
+				suggestion := suggestFix(unknownField, v.ProtoReflect().Descriptor())
 				if suggestion != "" {
 					return fmt.Errorf("%w\n\n%s", err, suggestion)
 				}
@@ -1075,8 +1096,8 @@ func levenshtein(s, t string) int {
 	return d[len(s)][len(t)]
 }
 
-// suggestFix finds the closest matching field name in the proto message.
-func suggestFix(unknownField string, root proto.Message) string {
+// suggestFix finds the closest matching field name in the proto message descriptor.
+func suggestFix(unknownField string, md protoreflect.MessageDescriptor) string {
 	// Check common aliases first for immediate feedback
 	aliases := map[string]string{
 		"url":       "address",
@@ -1092,26 +1113,7 @@ func suggestFix(unknownField string, root proto.Message) string {
 	}
 
 	candidates := make(map[string]struct{})
-	collectFieldNames(root.ProtoReflect().Descriptor(), candidates)
-
-	// Explicitly add fields from common nested configuration objects to the candidates.
-	// We avoid full recursion to prevent suggesting fields from obscure/irrelevant parts of the schema
-	// (like "services" from Collection which confuses users when they mean "upstream_services").
-	commonMessages := []proto.Message{
-		&configv1.GlobalSettings{},
-		&configv1.UpstreamServiceConfig{},
-		&configv1.HttpUpstreamService{},
-		&configv1.GrpcUpstreamService{},
-		&configv1.McpUpstreamService{},
-		&configv1.OpenapiUpstreamService{},
-		&configv1.CommandLineUpstreamService{},
-		&configv1.SqlUpstreamService{},
-		&configv1.Authentication{},
-	}
-
-	for _, msg := range commonMessages {
-		collectFieldNames(msg.ProtoReflect().Descriptor(), candidates)
-	}
+	collectFieldNames(md, candidates)
 
 	bestMatch := ""
 	minDist := 100
@@ -1160,20 +1162,20 @@ func (ms *MultiStore) HasConfigSources() bool {
 	return false
 }
 
-func findKeyLine(b []byte, key string) int {
+func findKeyPathAndLine(b []byte, key string) ([]string, int) {
 	var node yaml.Node
 	if err := yaml.Unmarshal(b, &node); err != nil {
-		return 0
+		return nil, 0
 	}
-	return findKeyInNode(&node, key)
+	return findKeyPathInNode(&node, key, []string{})
 }
 
-func findKeyInNode(node *yaml.Node, key string) int {
+func findKeyPathInNode(node *yaml.Node, key string, currentPath []string) ([]string, int) {
 	switch node.Kind {
 	case yaml.DocumentNode:
 		for _, child := range node.Content {
-			if line := findKeyInNode(child, key); line > 0 {
-				return line
+			if path, line := findKeyPathInNode(child, key, currentPath); line > 0 {
+				return path, line
 			}
 		}
 	case yaml.MappingNode:
@@ -1182,19 +1184,60 @@ func findKeyInNode(node *yaml.Node, key string) int {
 			valNode := node.Content[i+1]
 
 			if keyNode.Value == key {
-				return keyNode.Line
+				return currentPath, keyNode.Line
 			}
 
-			if line := findKeyInNode(valNode, key); line > 0 {
-				return line
+			// For recursion, we need to extend the path safely.
+			// If keyNode is scalar, we append its value to path.
+			// But we only care about keys that are part of the structure (fields/indices).
+			// If it's a mapping, the key is the field name.
+
+			newPath := make([]string, 0, len(currentPath)+1)
+			newPath = append(newPath, currentPath...)
+			newPath = append(newPath, keyNode.Value)
+
+			if path, line := findKeyPathInNode(valNode, key, newPath); line > 0 {
+				return path, line
 			}
 		}
 	case yaml.SequenceNode:
-		for _, child := range node.Content {
-			if line := findKeyInNode(child, key); line > 0 {
-				return line
+		for i, child := range node.Content {
+			idx := strconv.Itoa(i)
+			newPath := make([]string, 0, len(currentPath)+1)
+			newPath = append(newPath, currentPath...)
+			newPath = append(newPath, idx)
+
+			if path, line := findKeyPathInNode(child, key, newPath); line > 0 {
+				return path, line
 			}
 		}
 	}
-	return 0
+	return nil, 0
+}
+
+func getDescriptorForPath(rootDesc protoreflect.MessageDescriptor, path []string) protoreflect.MessageDescriptor {
+	current := rootDesc
+	for _, part := range path {
+		if _, err := strconv.Atoi(part); err == nil {
+			// Index (array element). The current descriptor should be the message type of the array elements.
+			// But we arrive here after traversing the repeated field name in the previous iteration.
+			// So 'current' is already the message type of the element.
+			continue
+		}
+
+		fd := findField(current, part)
+		if fd == nil {
+			// If we can't find the field, we can't traverse deeper.
+			// This might happen if the path contains valid fields but ends with the unknown field's parent
+			// (which is what we want).
+			// But wait, path includes ALL keys up to the parent of the unknown key.
+			// So all keys in 'path' MUST be valid fields/indices.
+			return nil
+		}
+
+		if fd.Kind() == protoreflect.MessageKind {
+			current = fd.Message()
+		}
+	}
+	return current
 }
