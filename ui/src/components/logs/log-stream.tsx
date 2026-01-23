@@ -59,6 +59,31 @@ export interface LogEntry {
   formattedTime?: string
 }
 
+/**
+ * Helper component to highlight search terms within text.
+ */
+const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
+  if (!highlight || !text) return <>{text}</>;
+
+  // Escape special regex characters in the highlight string
+  const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
+
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === highlight.toLowerCase() ? (
+          <mark key={i} className="bg-yellow-500/40 text-inherit rounded-sm px-0.5 -mx-0.5">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+};
+
 // ⚡ Bolt Optimization: Reuse DateTimeFormat instance to avoid recreating it for every log message.
 // This improves performance significantly (4.5x in benchmarks) when processing high-frequency logs.
 const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
@@ -97,9 +122,10 @@ const tryParseJson = (str: string): any | null => {
  * LogRow component.
  * @param props - The component props.
  * @param props.log - The log property.
+ * @param props.searchQuery - The current search query for highlighting.
  * @returns The rendered component.
  */
-const LogRow = React.memo(({ log }: { log: LogEntry }) => {
+const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: string }) => {
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -123,14 +149,14 @@ const LogRow = React.memo(({ log }: { log: LogEntry }) => {
               </span>
               {log.source && (
                 <span className="text-cyan-600 dark:text-cyan-400 sm:hidden inline-block truncate text-[10px] flex-1 text-right" title={log.source}>
-                  [{log.source}]
+                  [<HighlightText text={log.source} highlight={searchQuery} />]
                 </span>
               )}
           </div>
 
           {log.source && (
             <span className="text-cyan-600 dark:text-cyan-400 hidden sm:inline-block w-24 truncate text-xs mt-0.5 shrink-0" title={log.source}>
-              [{log.source}]
+              [<HighlightText text={log.source} highlight={searchQuery} />]
             </span>
           )}
 
@@ -146,7 +172,7 @@ const LogRow = React.memo(({ log }: { log: LogEntry }) => {
                   </button>
                )}
                <span className="break-all whitespace-pre-wrap">
-                 {log.message}
+                 <HighlightText text={log.message} highlight={searchQuery} />
                </span>
                {duration && (
                 <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
@@ -471,7 +497,7 @@ export function LogStream() {
                         </div>
                     )}
                     {filteredLogs.map((log) => (
-                      <LogRow key={log.id} log={log} />
+                      <LogRow key={log.id} log={log} searchQuery={deferredSearchQuery} />
                     ))}
                 </div>
              </ScrollArea>
