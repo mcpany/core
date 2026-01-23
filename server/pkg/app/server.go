@@ -1564,11 +1564,11 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// No auth configured at any level
-				// Sentinel Security: Enforce private network access if no auth is configured.
+				// Sentinel Security: Enforce localhost access if no auth is configured.
 				ip := util.GetClientIP(r, trustProxy)
-				if !util.IsPrivateIP(net.ParseIP(ip)) {
-					logging.GetLogger().Warn("Blocked public internet request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+				if !util.IsLoopback(net.ParseIP(ip)) {
+					logging.GetLogger().Warn("Blocked request to /mcp/u/ because no API Key is configured and source is not loopback", "remote_addr", r.RemoteAddr, "client_ip", ip)
+					http.Error(w, "Forbidden: Public/Private network access requires an API Key to be configured. Only localhost is allowed without auth.", http.StatusForbidden)
 					return
 				}
 				isAuthenticated = true
@@ -2141,6 +2141,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
 			// This prevents accidental exposure of the server to the public internet (RCE risk).
+			// We restrict this strictly to loopback addresses, NOT private IPs (like 192.168.x.x),
+			// to prevent access from other machines on the same LAN/WiFi.
 			host, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err != nil {
 				// Fallback if RemoteAddr is weird, assume host is the string itself
@@ -2149,9 +2151,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Check if the request is from a loopback address
 			ipAddr := net.ParseIP(host)
-			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+			if !util.IsLoopback(ipAddr) {
+				logging.GetLogger().Warn("Blocked request because no API Key is configured and source is not loopback", "remote_addr", r.RemoteAddr)
+				http.Error(w, "Forbidden: Public/Private network access requires an API Key to be configured. Only localhost is allowed without auth.", http.StatusForbidden)
 				return
 			}
 
