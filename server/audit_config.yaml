@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 global_settings:
   mcp_listen_address: "0.0.0.0:50050"
   metrics_listen_address: "0.0.0.0:50051"
