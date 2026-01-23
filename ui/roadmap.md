@@ -17,6 +17,7 @@
 - [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
 - [x] **One-Click Retry/Reconnect**: Button in the Service List (or diagnostic dialog) to immediately trigger a reconnection attempt for a failed service.
 - [ ] **Copy Diagnostic Logs**: Add a button to copy all diagnostic logs to the clipboard for easy sharing/reporting.
+- [x] **Service-based Log Filtering**: Added a dropdown to filter live logs by service source in the Log Stream view.
 - [x] **Browser-Side HTTP Connectivity Check**: Add a diagnostic step to attempt fetching the service URL directly from the browser (for HTTP services) to help distinguish between server-side and client-side network issues (subject to CORS).
 - [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
 - [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
@@ -62,9 +63,13 @@
 - [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
-- [ ] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
+- [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
 - [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
 - [x] **Native File Upload Support in Playground**: Automatically detect base64 encoded fields in tool schemas and provide a native file picker.
 - [ ] **Playground File Drag-and-Drop**: Drag and drop files onto the Playground to automatically fill matching inputs.
 - [ ] **Image Preview in Playground Forms**: Display a preview of the selected image in the form before submission.
+- [ ] **Dashboard Widget Persistence**: Allow users to configure which widgets are shown and their order/size, persisting this preference to the backend (currently local storage).
+- [ ] **Refactor Metrics Testing**: Inject Prometheus Registry/Gatherer into Application struct to allow isolated testing without global state side effects.
+- [ ] **Log Persistence**: Backend support to persist logs so they can be viewed after page reload (currently transient).
+- [ ] **Structured Log Viewer**: Parse JSON logs in the message field and display them as an expandable tree object for better readability.
