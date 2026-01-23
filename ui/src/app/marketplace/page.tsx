@@ -22,6 +22,7 @@ import { CreateConfigWizard } from "@/components/marketplace/wizard/create-confi
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2 } from "lucide-react";
 import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
+import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 /**
@@ -41,6 +42,10 @@ export default function MarketplacePage() {
   // Instantiate State
   const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<UpstreamServiceConfig | undefined>(undefined);
+
+  // Collection Details State
+  const [selectedCollection, setSelectedCollection] = useState<ServiceCollection | undefined>(undefined);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // Load Data
   const loadData = async () => {
@@ -143,6 +148,11 @@ export default function MarketplacePage() {
       setIsInstantiateOpen(true);
   };
 
+  const openCollectionDetails = (col: ServiceCollection) => {
+      setSelectedCollection(col);
+      setIsDetailsOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
       <div className="flex items-center justify-between">
@@ -191,7 +201,7 @@ export default function MarketplacePage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full" variant="outline">
+                                <Button className="w-full" variant="outline" onClick={() => openCollectionDetails(col)}>
                                     View Details
                                 </Button>
                             </CardFooter>
@@ -312,6 +322,13 @@ export default function MarketplacePage() {
         onOpenChange={setIsInstantiateOpen}
         templateConfig={selectedTemplate}
         onComplete={() => {}}
+      />
+
+      <CollectionDetailsDialog
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        collection={selectedCollection}
+        onInstantiateService={openInstantiate}
       />
     </div>
   );
