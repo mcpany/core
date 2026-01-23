@@ -16,10 +16,12 @@ import (
 )
 
 var (
-	// Version is set at build time.
+	// Version is the version of the mcpctl CLI.
+	// It is set at build time via -ldflags.
 	Version = "dev"
 )
 
+// main is the entry point for the mcpctl CLI.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)

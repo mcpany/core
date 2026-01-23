@@ -28,13 +28,6 @@ export const metadata: Metadata = {
   description: 'A server management UI for the MCP Any server.',
 };
 
-/**
- * Root layout component for the application.
- * Wraps the application with necessary providers and the sidebar layout.
- * @param props.children - The child components to render.
- * @returns The root layout structure.
- */
-
 // ⚡ Bolt Optimization: Use next/font to host fonts locally.
 // This removes external requests to Google Fonts, improves privacy,
 // and eliminates Cumulative Layout Shift (CLS) with automatic fallback adjustments.
@@ -50,6 +43,12 @@ const robotoMono = Roboto_Mono({
   display: 'swap',
 });
 
+/**
+ * Root layout component for the application.
+ * Wraps the application with necessary providers and the sidebar layout.
+ * @param props.children - The child components to render.
+ * @returns The root layout structure.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
