@@ -454,7 +454,8 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		resolvedURL.RawQuery = baseURL.RawQuery
 		// ResolveReference also discards the base fragment if the reference has none (empty string).
 		// If the endpoint URL didn't specify a fragment, we should preserve the base fragment.
-		if endpointURL.Fragment == "" && baseURL.Fragment != "" {
+		// We check rawEndpointPath for presence of '#' to distinguish between "empty fragment" and "no fragment".
+		if endpointURL.Fragment == "" && !strings.Contains(rawEndpointPath, "#") && baseURL.Fragment != "" {
 			resolvedURL.Fragment = baseURL.Fragment
 		}
 		// Merge query parameters, allowing endpoint parameters to override base parameters
