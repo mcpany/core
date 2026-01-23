@@ -155,7 +155,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig, enablePeriodic bool) health.
 
 	if enablePeriodic {
 		// Run checks periodically in the background to avoid blocking the request path.
-		opts = append(opts, health.WithPeriodicCheck(15*time.Second, 5*time.Second, check))
+		opts = append(opts, health.WithPeriodicCheck(1*time.Second, 1*time.Second, check))
 	} else {
 		// Using synchronous checks for simple usage or where Start() lifecycle is hard to manage.
 		opts = append(opts, health.WithCheck(check))
