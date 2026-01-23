@@ -181,51 +181,59 @@ func validateCollection(ctx context.Context, collection *configv1.Collection) er
 }
 
 func validateStdioArgs(command string, args []string, workingDir string) error {
-	// Only check for common interpreters to avoid false positives on arbitrary flags
 	baseCmd := filepath.Base(command)
-	isInterpreter := false
-	// List of common interpreters that take a script file as an argument
-	interpreters := []string{"python", "python3", "node", "deno", "bun", "ruby", "perl", "bash", "sh", "zsh", "go"}
-	for _, i := range interpreters {
-		if baseCmd == i || strings.HasPrefix(baseCmd, i) { // e.g. python3.9
-			isInterpreter = true
-			break
-		}
-	}
+	isInterpreter := isScriptInterpreter(baseCmd)
+	isPkgRunner := isPackageRunner(baseCmd)
 
-	if !isInterpreter {
+	if !isInterpreter && !isPkgRunner {
 		return nil
 	}
 
 	isPython := strings.HasPrefix(baseCmd, "python")
+	isUv := baseCmd == "uv"
 
-	// Find the first non-flag argument
-	for _, arg := range args {
+	for i, arg := range args {
 		// Skip flags (start with -)
 		if strings.HasPrefix(arg, "-") {
-			// Special case for Python -m (module execution)
-			// If we see -m, the next argument is a module name which might look like a file (e.g. http.server)
-			// but shouldn't be validated as a file on disk.
 			if isPython && arg == "-m" {
 				return nil
 			}
-			// Special case for -c (command) or -e/--eval (eval)
-			// If we see these flags, the next argument is code, not a file.
-			if arg == "-c" || arg == "-e" || arg == "--eval" || arg == "-p" || arg == "--print" {
+			if isCommonFlag(arg) {
 				return nil
 			}
 			continue
 		}
 
+		// Handling for package runners
+		if isPkgRunner {
+			if isUv && arg == "run" {
+				// uv run <script.py>
+				// Check the NEXT argument
+				if i+1 < len(args) {
+					nextArg := args[i+1]
+					if !strings.HasPrefix(nextArg, "-") {
+						// Validate nextArg as file
+						if err := validateFileExists(nextArg, workingDir); err != nil {
+							return WrapActionableError(fmt.Sprintf("argument %q looks like a script file but does not exist", nextArg), err)
+						}
+					}
+				}
+				return nil
+			}
+
+			// If it's npx or uvx, or uv (without run), we assume it's a package or tool name.
+			// We only validate if it EXPLICITLY looks like a relative/absolute path.
+			if !isExplicitPath(arg) {
+				return nil
+			}
+		}
+
 		// Check for URLs (Deno/Bun/remote scripts)
-		// These are valid arguments for some interpreters but not local files.
-		if strings.HasPrefix(arg, "http://") || strings.HasPrefix(arg, "https://") {
+		if isURL(arg) {
 			return nil
 		}
 
 		// This is likely the script file.
-		// We only validate it if it looks like a file (has an extension).
-		// This avoids validating things like "install" or module names.
 		ext := filepath.Ext(arg)
 		if ext == "" {
 			continue
@@ -236,11 +244,42 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 			return WrapActionableError(fmt.Sprintf("argument %q looks like a script file but does not exist", arg), err)
 		}
 
-		// We only check the FIRST script argument for interpreters.
-		// Subsequent args are likely arguments to the script itself.
+		// We only check the FIRST script argument.
 		return nil
 	}
 	return nil
+}
+
+func isScriptInterpreter(baseCmd string) bool {
+	interpreters := []string{
+		"python", "node", "deno", "bun",
+		"ruby", "perl", "bash", "sh", "zsh", "go",
+	}
+	for _, i := range interpreters {
+		if baseCmd == i || strings.HasPrefix(baseCmd, i) {
+			return true
+		}
+	}
+	return false
+}
+
+func isPackageRunner(baseCmd string) bool {
+	runners := []string{"npx", "uvx", "uv"}
+	for _, r := range runners {
+		if baseCmd == r || strings.HasPrefix(baseCmd, r) {
+			return true
+		}
+	}
+	return false
+}
+
+func isCommonFlag(arg string) bool {
+	// -c, -e, --eval, -p, --print
+	return arg == "-c" || arg == "-e" || arg == "--eval" || arg == "-p" || arg == "--print"
+}
+
+func isExplicitPath(arg string) bool {
+	return strings.HasPrefix(arg, ".") || strings.HasPrefix(arg, "/") || strings.HasPrefix(arg, `\`)
 }
 
 func validateFileExists(path string, workingDir string) error {
@@ -1161,6 +1200,31 @@ func validateCommandExists(command string, workingDir string) error {
 	// If the file contains a slash, it is tried directly and the PATH is not consulted.
 	_, err := execLookPath(command)
 	if err != nil {
+		// Check if the user might have provided a full command line with arguments
+		// e.g. "npx -y package" instead of command="npx", args=["-y", "package"]
+		if strings.Contains(command, " ") {
+			parts := strings.Fields(command)
+			if len(parts) > 1 {
+				firstPart := parts[0]
+				if _, err2 := execLookPath(firstPart); err2 == nil {
+					// The first part exists! This is definitely a configuration error.
+					remainingArgs := parts[1:]
+					formattedArgs := fmt.Sprintf("%q", remainingArgs)
+					// Fix the formatting of the args string for display
+					formattedArgs = strings.ReplaceAll(formattedArgs, "\" \"", "\", \"")
+
+					return &ActionableError{
+						Err: fmt.Errorf("command %q not found, but %q exists", command, firstPart),
+						Suggestion: fmt.Sprintf(
+							"It looks like you pasted a full command line into the 'command' field.\n"+
+								"    -> Set 'command' to: %q\n"+
+								"    -> Move arguments to 'args': %s",
+							firstPart, formattedArgs),
+					}
+				}
+			}
+		}
+
 		return &ActionableError{
 			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
 			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),

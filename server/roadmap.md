@@ -4,6 +4,8 @@
 
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
+- **Smart Command Validation**
+  - **Description**: Detects common configuration mistakes like pasting full command lines into the `command` field and suggests splitting arguments. Also supports modern package runners like `npx`, `uv`, `uvx`, `bun`, and `deno` with correct argument validation logic.
 - **Actionable Configuration Errors**
   - **Description**: Improved configuration loading and validation to provide "Actionable Errors" with specific "Fix" suggestions for common issues like missing environment variables, missing files, and invalid paths.
 - **Environment Variable Fuzzy Matching**
@@ -119,6 +121,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **MCP Server Registry Integration** | **DevX**: Built-in integration with `mcp-get` or a central registry to easily discover and install known MCP servers without manual configuration. | High |
+| 81 | **Config Auto-Correction** | **DevX**: Interactive CLI mode that suggests fixes for configuration errors (e.g. typos, invalid paths) and applies them with user confirmation. | Medium |
 
 ## 3. Codebase Health
 
