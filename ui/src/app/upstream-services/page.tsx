@@ -27,7 +27,7 @@ export default function UpstreamServicesPage() {
         setLoading(true);
         try {
             const data = await apiClient.listServices();
-            setServices(data || []);
+            setServices(Array.isArray(data) ? data : []);
         } catch (e) {
             console.error(e);
             toast({ title: "Failed to load services", variant: "destructive" });

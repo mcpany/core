@@ -62,10 +62,11 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const loadPrompts = () => {
       apiClient.listPrompts()
           .then((data) => {
-              setPrompts(data.prompts || []);
+              setPrompts(data?.prompts || []);
           })
           .catch(err => {
-              console.error("Failed to list prompts", err);
+              // Suppress console.error for expected network/auth errors to avoid noise
+              console.warn("Failed to list prompts:", err.message);
               // Silent fail or toast? The list will just be empty.
               toast({
                   title: "Connection Error",
