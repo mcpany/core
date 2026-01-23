@@ -200,4 +200,46 @@ describe("LogStream", () => {
     expect(screen.getByText("Log from Service A")).toBeInTheDocument();
     expect(screen.queryByText("Log from Service B")).not.toBeInTheDocument();
   });
+
+  it("detects and renders JSON logs", async () => {
+    vi.useFakeTimers();
+    render(<LogStream />);
+
+    act(() => {
+      if (mockWebSocket.onopen) mockWebSocket.onopen();
+    });
+
+    const jsonMessage = { foo: "bar", nested: { val: 123 } };
+    const jsonLog = {
+      id: "json-1",
+      timestamp: new Date().toISOString(),
+      level: "INFO",
+      message: JSON.stringify(jsonMessage),
+      source: "json-test"
+    };
+
+    act(() => {
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(jsonLog) });
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    // Check if the expand button exists
+    const expandButton = screen.getByLabelText("Expand JSON");
+    expect(expandButton).toBeInTheDocument();
+
+    // The raw message string should be visible
+    expect(screen.getByText(JSON.stringify(jsonMessage))).toBeInTheDocument();
+
+    // Click expand
+    fireEvent.click(expandButton);
+
+    // Verify state changed to expanded (button label changes)
+    const collapseButton = screen.getByLabelText("Collapse JSON");
+    expect(collapseButton).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
 });
