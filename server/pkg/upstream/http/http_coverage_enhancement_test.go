@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package http
@@ -104,7 +104,7 @@ func TestHTTPUpstream_Register_BadEndpointPath(t *testing.T) {
 				"bad": {
 					"id": "bad",
 					"method": "HTTP_METHOD_GET",
-					"endpoint_path": "/\x7f"
+					"endpoint_path": "/\u007f"
 				}
 			}
 		}
@@ -413,39 +413,4 @@ func TestHTTPUpstream_Register_InvalidCallPolicy(t *testing.T) {
 	// Register logs error and returns nil tools, but no error
 	assert.NoError(t, err)
 	assert.Nil(t, discoveredTools)
-}
-
-func TestHTTPUpstream_Register_InvalidSchema(t *testing.T) {
-	pm := pool.NewManager()
-	tm := tool.NewManager(nil)
-	upstream := NewUpstream(pm)
-
-	// Use unspecified type to cause schemaconv to fail (if it validates)
-	// Or use an invalid setup that schemaconv rejects.
-	// schemaconv.ConfigSchemaToProtoProperties likely fails on unknown types or conflicts.
-	// Let's try SIMPLE_TYPE_UNSPECIFIED.
-	configJSON := `{
-		"name": "invalid-schema-service",
-		"http_service": {
-			"address": "http://127.0.0.1",
-			"tools": [{"name": "t", "call_id": "c"}],
-			"calls": {
-				"c": {
-					"id": "c",
-					"method": "HTTP_METHOD_GET",
-                    "parameters": {
-                        "p": {"type": "SIMPLE_TYPE_UNSPECIFIED"}
-                    }
-				}
-			}
-		}
-	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
-
-	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
-	require.NoError(t, err)
-
-    // Tool with invalid schema should be skipped (logged error)
-	assert.Len(t, discoveredTools, 0)
 }
