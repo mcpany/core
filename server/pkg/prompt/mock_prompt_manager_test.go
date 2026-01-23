@@ -19,10 +19,6 @@ func TestMockManagerInterface(t *testing.T) {
 	mock.EXPECT().AddPrompt(gomock.Any()).Times(1)
 	mock.AddPrompt(nil)
 
-	// Clear
-	mock.EXPECT().Clear().Times(1)
-	mock.Clear()
-
 	// ClearPromptsForService
 	mock.EXPECT().ClearPromptsForService("id").Times(1)
 	mock.ClearPromptsForService("id")
