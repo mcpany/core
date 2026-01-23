@@ -20,6 +20,7 @@ import {
   ChevronDown
 } from "lucide-react"
 
+import { useSearchParams } from "next/navigation"
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -221,8 +222,11 @@ export function LogStream() {
     isPausedRef.current = isPaused
   }, [isPaused])
 
+  const searchParams = useSearchParams()
+  const initialSource = searchParams.get("source") || "ALL"
+
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
-  const [filterSource, setFilterSource] = React.useState<string>("ALL")
+  const [filterSource, setFilterSource] = React.useState<string>(initialSource)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists

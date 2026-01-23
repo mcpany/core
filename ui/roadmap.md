@@ -64,8 +64,11 @@
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
 - [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
+- [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.
+- [ ] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.
+- [ ] **Dashboard Filtering**: Allow filtering the dashboard metrics and activity by Service or Time Range.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
-- [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
+- [x] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
 - [x] **Native File Upload Support in Playground**: Automatically detect base64 encoded fields in tool schemas and provide a native file picker.
 - [ ] **Playground File Drag-and-Drop**: Drag and drop files onto the Playground to automatically fill matching inputs.
 - [ ] **Image Preview in Playground Forms**: Display a preview of the selected image in the form before submission.
@@ -77,3 +80,5 @@
 - [ ] **Filter Logs by Time Range**: Add a date/time picker to filter logs (e.g. "Last 1 hour", "Custom Range").
 - [ ] **Regex Support in Log Search**: Allow advanced searching using regex patterns.
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
+- [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
+- [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.

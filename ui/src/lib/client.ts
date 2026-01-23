@@ -499,7 +499,18 @@ export const apiClient = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error('Failed to execute tool');
+            if (!res.ok) {
+                const text = await res.text();
+                let errorMsg = null;
+                try {
+                    const json = JSON.parse(text);
+                    if (json.error) errorMsg = json.error;
+                } catch (e) {
+                    // ignore
+                }
+                if (errorMsg) throw new Error(errorMsg);
+                throw new Error(`Failed to execute tool: ${text || res.statusText}`);
+            }
             return res.json();
         } catch (e) {
             console.warn("DEBUG: fetch failed:", e);
