@@ -1080,6 +1080,9 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	}
 	args = append(args, extraArgs...)
 	env := []string{"MCPANY_LOG_LEVEL=debug", "NATS_URL=" + natsURL, "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", "MCPANY_ENABLE_FILE_CONFIG=true"}
+	if os.Getenv("MCPANY_TEST_DEBUG") == "true" {
+		env = append(env, "MCPANY_DEBUG=true")
+	}
 	if sudo, ok := os.LookupEnv("USE_SUDO_FOR_DOCKER"); ok {
 		env = append(env, "USE_SUDO_FOR_DOCKER="+sudo)
 	}

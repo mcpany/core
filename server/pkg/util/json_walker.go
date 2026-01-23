@@ -33,19 +33,34 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 
 		// Check for potential comments before the quote
 		// Comments start with '/'
-		slashIdx := bytes.IndexByte(input[i:quotePos], '/')
-		if slashIdx != -1 {
-			// Found a slash. Check if it starts a comment.
+		// We scan for ALL slashes in the segment to ensure we don't miss a comment
+		// that comes after a division operator (e.g. "10 / 2 // comment").
+		segment := input[i:quotePos]
+		offset := 0
+		foundComment := false
+		for {
+			idx := bytes.IndexByte(segment[offset:], '/')
+			if idx == -1 {
+				break
+			}
+			slashIdx := offset + idx
 			slashPos := i + slashIdx
+
 			if slashPos+1 < n {
 				next := input[slashPos+1]
 				if next == '/' || next == '*' {
 					// It is a comment!
 					// Skip it and retry scanning from after comment
 					i = skipWhitespaceAndComments(input, slashPos)
-					continue
+					foundComment = true
+					break
 				}
 			}
+			// Not a comment, continue scanning this segment
+			offset = slashIdx + 1
+		}
+		if foundComment {
+			continue
 		}
 
 		// Find end of string using the shared skipString helper
