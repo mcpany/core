@@ -1948,7 +1948,17 @@ func TestRun_NoConfig(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "",
+			ConfigPaths:     nil,
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	runErr := <-errChan

@@ -138,6 +138,9 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
+	// StartupTimeout is the duration to wait for initial service registration.
+	// If 0, defaults to 15 seconds.
+	StartupTimeout time.Duration
 }
 
 // Runner defines the interface for running the application.
@@ -679,10 +682,15 @@ func (a *Application) Run(opts RunOptions) error {
 		if totalExpected > 0 {
 			fmt.Fprintf(os.Stderr, "⏳ Waiting for %d services to initialize...\n", totalExpected)
 
+			timeout := opts.StartupTimeout
+			if timeout == 0 {
+				timeout = 15 * time.Second
+			}
+
 			select {
 			case <-initDone:
 				fmt.Fprintf(os.Stderr, "✅ Services initialized.\n")
-			case <-time.After(15 * time.Second):
+			case <-time.After(timeout):
 				log.Warn("Timeout waiting for services to initialize")
 				fmt.Fprintf(os.Stderr, "⚠️  Timeout waiting for services to initialize. Some tools might be missing at startup.\n")
 			case <-opts.Ctx.Done():
@@ -692,7 +700,6 @@ func (a *Application) Run(opts RunOptions) error {
 
 		// Unsubscribe to stop processing results in this closure
 		unsubscribe()
-
 	} else {
 		log.Info("No services found in config, skipping service registration.")
 	}
