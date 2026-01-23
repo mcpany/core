@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Smart Command Validation**
+  - **Description**: Detects common mistakes in `stdio` command configuration, such as including arguments in the `command` field (e.g., `python script.py`), and provides actionable "Fix" suggestions to split them. Also adds support for validating arguments when using popular package runners like `uv`, `uvx`, and `npx`.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
@@ -43,9 +45,11 @@ These features represent the next logical steps for the product, focusing on Ent
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
 | 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
 
-| 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
-| 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
-| 16 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
+| 14 | **uv Native Integration** | **DevX**: First-class support for `uv` managed Python environments in configuration, allowing auto-detection of venvs and package installation. | Low |
+| 15 | **Config Auto-Correction** | **DevX**: An interactive CLI tool or "doctor --fix" mode that automatically applies suggestions from Actionable Errors (e.g. splitting command arguments). | Medium |
+| 16 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
+| 17 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
+| 18 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
 | 17 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
 | 18 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
 | 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |

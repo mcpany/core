@@ -358,6 +358,44 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 			args:        []string{"run", "https://deno.land/std/examples/chat/server.ts"},
 			expectError: false,
 		},
+		{
+			name:        "uv run valid script",
+			command:     "uv",
+			args:        []string{"run", scriptPath},
+			expectError: false,
+		},
+		{
+			name:        "uv run missing script",
+			command:     "uv",
+			args:        []string{"run", filepath.Join(tempDir, "missing.py")},
+			expectError: true,
+		},
+		{
+			name:        "uvx package (no extension, skipped)",
+			command:     "uvx",
+			args:        []string{"mcp-server-postgres"},
+			expectError: false,
+		},
+		{
+			name:        "npx package (no extension, skipped)",
+			command:     "npx",
+			args:        []string{"-y", "mcp-server-postgres"},
+			expectError: false,
+		},
+		{
+			name:        "npx run local script",
+			command:     "npx",
+			args:        []string{"./script.py"}, // Using script.py as a dummy local file that exists
+			workingDir:  tempDir,
+			expectError: false,
+		},
+		{
+			name:        "npx run missing local script",
+			command:     "npx",
+			args:        []string{"./missing.py"},
+			workingDir:  tempDir,
+			expectError: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -1358,5 +1396,85 @@ func TestValidateGlobalSettings_Extended(t *testing.T) {
 				assert.Empty(t, errs)
 			}
 		})
+	}
+}
+
+func TestValidation_CommandWithSpaces(t *testing.T) {
+	ctx := context.Background()
+
+	// Mock execLookPath to control the environment
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		if file == "echo" {
+			return "/bin/echo", nil
+		}
+		return "", os.ErrNotExist
+	}
+
+	// "echo hello" should fail LookPath because we only mock "echo".
+	cmd := "echo hello"
+
+	service := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+			McpService: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+					StdioConnection: &configv1.McpStdioConnection{
+						Command: proto.String(cmd),
+						Args:    []string{},
+					},
+				},
+			},
+		},
+	}
+
+	err := ValidateOrError(ctx, service)
+	assert.Error(t, err)
+
+	ae, ok := err.(*ActionableError)
+	assert.True(t, ok, "Expected ActionableError")
+	if ok {
+		assert.Contains(t, ae.Suggestion, "It looks like you included arguments in the 'command' field")
+		assert.Contains(t, ae.Suggestion, "set 'command' to \"echo\"")
+		assert.Contains(t, ae.Suggestion, "move [\"hello\"] to the 'args' list")
+	}
+}
+
+func TestValidation_CommandWithSpaces_ButCommandDoesNoteExist(t *testing.T) {
+	ctx := context.Background()
+
+	// Mock execLookPath to control the environment
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		// Nothing exists
+		return "", os.ErrNotExist
+	}
+
+	// "nonexistentcommand arg" should fail, but "nonexistentcommand" also doesn't exist.
+	cmd := "nonexistentcommand arg"
+
+	service := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+			McpService: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+					StdioConnection: &configv1.McpStdioConnection{
+						Command: proto.String(cmd),
+						Args:    []string{},
+					},
+				},
+			},
+		},
+	}
+
+	err := ValidateOrError(ctx, service)
+	assert.Error(t, err)
+
+	// Should NOT have the split suggestion
+	if ae, ok := err.(*ActionableError); ok {
+		assert.NotContains(t, ae.Suggestion, "It looks like you included arguments in the 'command' field")
+		assert.Contains(t, ae.Suggestion, "Ensure \"nonexistentcommand arg\" is installed")
 	}
 }

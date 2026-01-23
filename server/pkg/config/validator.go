@@ -185,7 +185,7 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 	baseCmd := filepath.Base(command)
 	isInterpreter := false
 	// List of common interpreters that take a script file as an argument
-	interpreters := []string{"python", "python3", "node", "deno", "bun", "ruby", "perl", "bash", "sh", "zsh", "go"}
+	interpreters := []string{"python", "python3", "node", "deno", "bun", "ruby", "perl", "bash", "sh", "zsh", "go", "uv", "uvx", "npx"}
 	for _, i := range interpreters {
 		if baseCmd == i || strings.HasPrefix(baseCmd, i) { // e.g. python3.9
 			isInterpreter = true
@@ -1161,6 +1161,23 @@ func validateCommandExists(command string, workingDir string) error {
 	// If the file contains a slash, it is tried directly and the PATH is not consulted.
 	_, err := execLookPath(command)
 	if err != nil {
+		// Check if the user accidentally included arguments in the command field
+		if strings.Contains(command, " ") {
+			parts := strings.Fields(command)
+			if len(parts) > 1 {
+				cmdCandidate := parts[0]
+				if _, errCheck := execLookPath(cmdCandidate); errCheck == nil {
+					// The first part is a valid command!
+					args := parts[1:]
+					return &ActionableError{
+						Err: fmt.Errorf("command %q not found, but %q exists", command, cmdCandidate),
+						Suggestion: fmt.Sprintf("It looks like you included arguments in the 'command' field. Please set 'command' to %q and move %q to the 'args' list.",
+							cmdCandidate, args),
+					}
+				}
+			}
+		}
+
 		return &ActionableError{
 			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
 			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),
