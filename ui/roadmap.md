@@ -72,4 +72,6 @@
 - [ ] **Dashboard Widget Persistence**: Allow users to configure which widgets are shown and their order/size, persisting this preference to the backend (currently local storage).
 - [ ] **Refactor Metrics Testing**: Inject Prometheus Registry/Gatherer into Application struct to allow isolated testing without global state side effects.
 - [ ] **Log Persistence**: Backend support to persist logs so they can be viewed after page reload (currently transient).
-- [ ] **Structured Log Viewer**: Parse JSON logs in the message field and display them as an expandable tree object for better readability.
+- [x] **Structured Log Viewer**: Parse JSON logs in the message field and display them as an expandable tree object for better readability.
+- [ ] **Log Search Highlighting**: Highlight the search term within the log message for better visibility.
+- [ ] **Filter Logs by Time Range**: Add a date/time picker to filter logs (e.g. "Last 1 hour", "Custom Range").
