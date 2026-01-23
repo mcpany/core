@@ -701,3 +701,13 @@ prepare-docker-context:
 
 clean-docker-context:
 	@rm -rf $(BUILD_CONTEXT_DIR)
+
+help:
+	@echo "Available commands:"
+	@echo "  make prepare        - Install development tools"
+	@echo "  make build          - Build server binary"
+	@echo "  make test           - Run tests"
+	@echo "  make lint           - Run linters"
+	@echo "  make gen            - Generate protobuf files"
+	@echo "  make build-docker   - Build server docker image"
+	@echo "  make run            - Run server locally"
