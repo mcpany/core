@@ -143,6 +143,8 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	// Secrets should be stripped from retrieved config
 	expectedConfig := proto.Clone(serviceConfig).(*configv1.UpstreamServiceConfig)
 	util.StripSecretsFromService(expectedConfig)
+	// Expect ToolCount to be populated (0 in this case)
+	expectedConfig.SetToolCount(0)
 	assert.Equal(t, expectedConfig, retrievedConfig)
 	assert.Empty(t, retrievedConfig.GetAuthentication().GetApiKey().GetVerificationValue())
 

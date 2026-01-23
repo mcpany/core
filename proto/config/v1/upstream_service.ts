@@ -120,6 +120,16 @@ export interface UpstreamServiceConfig {
    * @inject_tag: yaml:"-"
    */
   readOnly: boolean;
+  /**
+   * The last error message encountered by the service (e.g. health check failure).
+   * @inject_tag: yaml:"-"
+   */
+  lastError: string;
+  /**
+   * The number of tools registered for this service.
+   * @inject_tag: yaml:"-"
+   */
+  toolCount: number;
   /** Configuration for the pool of connections to the upstream service. */
   connectionPool?:
     | ConnectionPoolConfig
@@ -923,6 +933,8 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     autoDiscoverTool: false,
     configError: "",
     readOnly: false,
+    lastError: "",
+    toolCount: 0,
     connectionPool: undefined,
     upstreamAuth: undefined,
     cache: undefined,
@@ -980,6 +992,12 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.readOnly !== false) {
       writer.uint32(280).bool(message.readOnly);
+    }
+    if (message.lastError !== "") {
+      writer.uint32(290).string(message.lastError);
+    }
+    if (message.toolCount !== 0) {
+      writer.uint32(296).int32(message.toolCount);
     }
     if (message.connectionPool !== undefined) {
       ConnectionPoolConfig.encode(message.connectionPool, writer.uint32(74).fork()).join();
@@ -1139,6 +1157,22 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           }
 
           message.readOnly = reader.bool();
+          continue;
+        }
+        case 36: {
+          if (tag !== 290) {
+            break;
+          }
+
+          message.lastError = reader.string();
+          continue;
+        }
+        case 37: {
+          if (tag !== 296) {
+            break;
+          }
+
+          message.toolCount = reader.int32();
           continue;
         }
         case 9: {
@@ -1369,6 +1403,8 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       autoDiscoverTool: isSet(object.auto_discover_tool) ? globalThis.Boolean(object.auto_discover_tool) : false,
       configError: isSet(object.config_error) ? globalThis.String(object.config_error) : "",
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
+      lastError: isSet(object.last_error) ? globalThis.String(object.last_error) : "",
+      toolCount: isSet(object.tool_count) ? globalThis.Number(object.tool_count) : 0,
       connectionPool: isSet(object.connection_pool) ? ConnectionPoolConfig.fromJSON(object.connection_pool) : undefined,
       upstreamAuth: isSet(object.upstream_auth) ? Authentication.fromJSON(object.upstream_auth) : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
@@ -1452,6 +1488,12 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.readOnly !== false) {
       obj.read_only = message.readOnly;
+    }
+    if (message.lastError !== "") {
+      obj.last_error = message.lastError;
+    }
+    if (message.toolCount !== 0) {
+      obj.tool_count = Math.round(message.toolCount);
     }
     if (message.connectionPool !== undefined) {
       obj.connection_pool = ConnectionPoolConfig.toJSON(message.connectionPool);
@@ -1548,6 +1590,8 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.autoDiscoverTool = object.autoDiscoverTool ?? false;
     message.configError = object.configError ?? "";
     message.readOnly = object.readOnly ?? false;
+    message.lastError = object.lastError ?? "";
+    message.toolCount = object.toolCount ?? 0;
     message.connectionPool = (object.connectionPool !== undefined && object.connectionPool !== null)
       ? ConnectionPoolConfig.fromPartial(object.connectionPool)
       : undefined;
