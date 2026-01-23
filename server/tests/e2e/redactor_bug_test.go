@@ -76,3 +76,26 @@ func TestRedactor_Bug_StringInComment_CorruptsStructure(t *testing.T) {
 	expected := input
 	assert.Equal(t, expected, string(redacted))
 }
+
+func TestRedactor_Bug_CommentWithPrecedingSlash(t *testing.T) {
+	// Bug: parser fails to skip comment if preceded by a non-comment slash (e.g. division).
+	// Input: {"a": 1 / 1, /* "secret": "target" */ "c": "d"}
+	// "target" is inside a comment, so it should NOT be redacted or visited.
+	// But if the bug exists, the parser misses the comment, sees "target", and redactor might decide to redact it if it matches PII or custom pattern.
+
+	input := `{"a": 1 / 1, /* "secret": "SENSITIVE" */ "c": "d"}`
+
+	// Config enabling default redactors and a custom pattern
+	cfg := &configv1.DLPConfig{
+		Enabled:        proto.Bool(true),
+		CustomPatterns: []string{"SENSITIVE"},
+	}
+
+	r := middleware.NewRedactor(cfg, nil)
+
+	redacted, err := r.RedactJSON([]byte(input))
+	assert.NoError(t, err)
+
+	// Expectation: The comment content is preserved as is.
+	assert.Equal(t, input, string(redacted))
+}
