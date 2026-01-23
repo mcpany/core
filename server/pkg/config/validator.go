@@ -187,9 +187,28 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 	// List of common interpreters that take a script file as an argument
 	interpreters := []string{"python", "python3", "node", "deno", "bun", "ruby", "perl", "bash", "sh", "zsh", "go"}
 	for _, i := range interpreters {
-		if baseCmd == i || strings.HasPrefix(baseCmd, i) { // e.g. python3.9
+		if baseCmd == i {
 			isInterpreter = true
 			break
+		}
+		// Special handling for python versions (e.g. python3.9, python3.11)
+		// We only check prefix if it is python/python3
+		if strings.HasPrefix(i, "python") && strings.HasPrefix(baseCmd, i) {
+			suffix := baseCmd[len(i):]
+			if len(suffix) > 0 {
+				// Check if the entire suffix is composed of digits and dots
+				isValidVersion := true
+				for _, r := range suffix {
+					if r != '.' && (r < '0' || r > '9') {
+						isValidVersion = false
+						break
+					}
+				}
+				if isValidVersion {
+					isInterpreter = true
+					break
+				}
+			}
 		}
 	}
 
