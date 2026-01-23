@@ -78,14 +78,40 @@ const getLevelColor = (level: LogLevel) => {
 
 const tryParseJson = (str: string): any | null => {
   if (typeof str !== 'string') return null;
-  const trimmed = str.trim();
-  // Simple heuristic to avoid trying to parse obviously non-JSON strings
-  if ((!trimmed.startsWith('{') || !trimmed.endsWith('}')) &&
-      (!trimmed.startsWith('[') || !trimmed.endsWith(']'))) {
+
+  // Optimization: Avoid allocation from trim() for the heuristic check
+  // This reduces memory pressure and CPU usage for high-throughput log streams,
+  // especially when most logs are plain text (not JSON).
+  let start = 0;
+  const len = str.length;
+
+  // Skip leading whitespace
+  while (start < len && str.charCodeAt(start) <= 32) {
+    start++;
+  }
+
+  if (start >= len) return null;
+
+  const firstChar = str.charCodeAt(start);
+  // 123 is '{', 91 is '['
+  if (firstChar !== 123 && firstChar !== 91) {
     return null;
   }
+
+  // Check ending character (fail-fast)
+  let end = len - 1;
+  while (end > start && str.charCodeAt(end) <= 32) {
+    end--;
+  }
+
+  const lastChar = str.charCodeAt(end);
+  // 125 is '}', 93 is ']'
+  if (firstChar === 123 && lastChar !== 125) return null;
+  if (firstChar === 91 && lastChar !== 93) return null;
+
   try {
-    return JSON.parse(trimmed);
+    // JSON.parse handles surrounding whitespace correctly, so no need to trim.
+    return JSON.parse(str);
   } catch (e) {
     return null;
   }

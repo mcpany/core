@@ -242,4 +242,67 @@ describe("LogStream", () => {
 
     vi.useRealTimers();
   });
+
+  it("detects JSON logs with whitespace", async () => {
+    vi.useFakeTimers();
+    render(<LogStream />);
+
+    act(() => {
+      if (mockWebSocket.onopen) mockWebSocket.onopen();
+    });
+
+    const jsonMessage = { foo: "bar" };
+    const log = {
+      id: "json-whitespace",
+      timestamp: new Date().toISOString(),
+      level: "INFO",
+      message: "   " + JSON.stringify(jsonMessage) + "   ",
+      source: "test"
+    };
+
+    act(() => {
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+
+    // Check if the expand button exists
+    const expandButton = screen.getByLabelText("Expand JSON");
+    expect(expandButton).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it("handles invalid JSON gracefully", async () => {
+    vi.useFakeTimers();
+    render(<LogStream />);
+
+    act(() => {
+      if (mockWebSocket.onopen) mockWebSocket.onopen();
+    });
+
+    const log = {
+      id: "invalid-json",
+      timestamp: new Date().toISOString(),
+      level: "INFO",
+      message: "{ invalid json }",
+      source: "test"
+    };
+
+    act(() => {
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+
+    // Should NOT have expand button
+    const expandButton = screen.queryByLabelText("Expand JSON");
+    expect(expandButton).not.toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
 });
