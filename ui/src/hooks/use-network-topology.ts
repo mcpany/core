@@ -76,7 +76,7 @@ export function useNetworkTopology() {
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
     // ⚡ Bolt Optimization: Use global topology data from context to avoid redundant polling
-    const { latestTopology } = useServiceHealth();
+    const { latestTopology, refreshTopology: refreshContextTopology } = useServiceHealth();
 
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);
@@ -233,10 +233,8 @@ export function useNetworkTopology() {
     );
 
     const refreshTopology = useCallback(() => {
-        if (latestTopology) {
-             processGraph(latestTopology);
-        }
-    }, [latestTopology, processGraph]);
+        refreshContextTopology();
+    }, [refreshContextTopology]);
 
     const autoLayout = useCallback(() => {
          lastStructureHash.current = ''; // Force layout recalculation
