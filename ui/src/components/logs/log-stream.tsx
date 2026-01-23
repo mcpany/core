@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { useSearchParams } from "next/navigation"
 
 /**
  * LogLevel type definition.
@@ -185,6 +186,7 @@ LogRow.displayName = 'LogRow'
  * @returns The rendered component.
  */
 export function LogStream() {
+  const searchParams = useSearchParams()
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -195,8 +197,8 @@ export function LogStream() {
     isPausedRef.current = isPaused
   }, [isPaused])
 
-  const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
-  const [filterSource, setFilterSource] = React.useState<string>("ALL")
+  const [filterLevel, setFilterLevel] = React.useState<string>(searchParams?.get("level") || "ALL")
+  const [filterSource, setFilterSource] = React.useState<string>(searchParams?.get("source") || "ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists

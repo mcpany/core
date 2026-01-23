@@ -131,7 +131,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/upstream-services');
+    await page.goto('/services');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
@@ -140,19 +140,26 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
-    // Click Add Service (Link)
-    await page.getByRole('link', { name: 'Add Service' }).click();
+    // Click Add Service (Button)
+    await page.getByRole('button', { name: 'Add Service' }).click();
     await page.waitForTimeout(1000);
-    await expect(page).toHaveURL(/.*marketplace.*/);
+    // It opens a Sheet
+    await expect(page.locator('text=New Service')).toBeVisible();
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
 
-    // Configure Service
-    // Ensure we are navigating to the correct URL for configuration
-    await page.goto('/upstream-services/postgres-primary');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000); // Increased wait time
+    // Close the sheet
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(500);
+
+    // Configure Service (Edit)
+    // Open Actions for first item
+    const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
+    await actionButton.click();
+    await page.getByText('Edit').click();
+    await page.waitForTimeout(1000);
+
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
   });
 
@@ -420,12 +427,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Service Actions Screenshots', async ({ page }) => {
-      await page.goto('/upstream-services');
+      await page.goto('/services');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
       // Open Actions Dropdown
-      // We target the first card's actions button
+      // We target the first row's actions button
       const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
       await actionButton.click();
       await page.waitForTimeout(500);

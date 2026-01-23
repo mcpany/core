@@ -53,6 +53,16 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 - **On**: Service is active and receiving traffic.
 - **Off**: Service is disconnected; dependent tools will be unavailable.
 
+### 5. Troubleshooting & Contextual Actions
+
+The service list provides a quick action menu for each service to aid in management and debugging.
+
+![Service Actions](screenshots/service_actions_menu.png)
+
+- **Diagnose**: Runs a connection diagnostic tool to check connectivity.
+- **View Logs**: Deep links to the **Live Logs** page, automatically filtering for logs originating from this specific service.
+- **Restart**: Triggers a restart of the service connection.
+
 ## Technical Details
 
 ### Supported Service Types

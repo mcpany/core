@@ -7,10 +7,19 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
+// Mock next/navigation
+const mockSearchParams = new Map();
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => ({
+    get: (key: string) => mockSearchParams.get(key),
+  }),
+}));
+
 describe("LogStream", () => {
   let mockWebSocket: any;
 
   beforeEach(() => {
+    mockSearchParams.clear();
     // Mock WebSocket
     mockWebSocket = {
       close: vi.fn(),
@@ -31,6 +40,7 @@ describe("LogStream", () => {
     Select: ({ value, onValueChange, children }: any) => (
       <select
         data-testid="mock-select"
+        data-value={value}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
       >
@@ -241,5 +251,24 @@ describe("LogStream", () => {
     expect(collapseButton).toBeInTheDocument();
 
     vi.useRealTimers();
+  });
+
+  it("initializes filters from URL search params", () => {
+    mockSearchParams.set("source", "service-a");
+    mockSearchParams.set("level", "ERROR");
+
+    render(<LogStream />);
+
+    // Check if the Source select has the correct value
+    // In our mock, the select renders with value={value}
+    const selects = screen.getAllByTestId("mock-select") as HTMLSelectElement[];
+
+    // Check for Source select
+    const sourceSelect = selects.find(s => s.getAttribute("data-value") === "service-a");
+    expect(sourceSelect).toBeInTheDocument();
+
+    // Check for Level select
+    const levelSelect = selects.find(s => s.getAttribute("data-value") === "ERROR");
+    expect(levelSelect).toBeInTheDocument();
   });
 });

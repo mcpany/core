@@ -137,8 +137,8 @@ const devItems = [
 const configItems = [
 
   {
-    title: "Upstream Services",
-    url: "/upstream-services",
+    title: "Services",
+    url: "/services",
     icon: Server,
   },
   {
