@@ -62,7 +62,7 @@ func TestSendWebhook(t *testing.T) {
 	}.Build()
 
 	// 5. Create Checker
-	checker := NewChecker(upstreamConfig)
+	checker := NewChecker(upstreamConfig, false)
 	require.NotNil(t, checker)
 
 	// 6. Run Check - Status should be UP.
@@ -121,7 +121,7 @@ func TestSendWebhook(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(svcConfig)
+		checker := NewChecker(svcConfig, false)
 
 		// Initial Check (UP)
 		checker.Check(context.Background())
