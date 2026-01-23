@@ -235,11 +235,11 @@ func TestComputeHash_Collision(t *testing.T) {
 
 	// Entry 1: Tool="A", User="B|C"
 	// Sprintf string was: "ts|A|B|C|..."
-	hash1 := computeHash(ts, "A", "B|C", "profile", "{}", "{}", "", 100, prevHash)
+	hash1 := computeHash(ts, "A", "B|C", "profile", "", "{}", "{}", "", 100, prevHash)
 
 	// Entry 2: Tool="A|B", User="C"
 	// Sprintf string was: "ts|A|B|C|..."
-	hash2 := computeHash(ts, "A|B", "C", "profile", "{}", "{}", "", 100, prevHash)
+	hash2 := computeHash(ts, "A|B", "C", "profile", "", "{}", "{}", "", 100, prevHash)
 
 	// With JSON serialization, "A" and "B|C" becomes ["A", "B|C"]
 	// "A|B" and "C" becomes ["A|B", "C"]

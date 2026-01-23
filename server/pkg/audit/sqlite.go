@@ -51,6 +51,7 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		tool_name TEXT,
 		user_id TEXT,
 		profile_id TEXT,
+		ip_address TEXT,
 		arguments TEXT,
 		result TEXT,
 		error TEXT,
@@ -100,13 +101,16 @@ func ensureColumns(db *sql.DB) error {
 	if err := ensureColumn(db, "hash"); err != nil {
 		return err
 	}
+	if err := ensureColumn(db, "ip_address"); err != nil {
+		return err
+	}
 	return nil
 }
 
 func ensureColumn(db *sql.DB, colName string) error {
 	// Whitelist valid column names to prevent SQL injection even from internal calls
 	switch colName {
-	case "prev_hash", "hash":
+	case "prev_hash", "hash", "ip_address":
 		// Allowed
 	default:
 		return fmt.Errorf("invalid column name: %s", colName)
@@ -166,12 +170,12 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	}
 
 	// Compute hash
-	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, entry.IPAddress, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
 	INSERT INTO audit_logs (
-		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		timestamp, tool_name, user_id, profile_id, ip_address, arguments, result, error, duration_ms, prev_hash, hash
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err = s.db.ExecContext(ctx, query,
@@ -179,6 +183,7 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
+		entry.IPAddress,
 		argsJSON,
 		resultJSON,
 		entry.Error,
@@ -194,7 +199,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	query := "SELECT timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms FROM audit_logs WHERE 1=1"
+	query := "SELECT timestamp, tool_name, user_id, profile_id, ip_address, arguments, result, error, duration_ms FROM audit_logs WHERE 1=1"
 	var args []any
 
 	if filter.StartTime != nil {
@@ -239,8 +244,12 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	for rows.Next() {
 		var entry Entry
 		var tsStr, argsStr, resultStr string
-		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
+		var ipAddress sql.NullString
+		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &ipAddress, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
 			return nil, err
+		}
+		if ipAddress.Valid {
+			entry.IPAddress = ipAddress.String
 		}
 
 		entry.Timestamp, _ = time.Parse(time.RFC3339Nano, tsStr)
@@ -268,7 +277,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	rows, err := s.db.QueryContext(ctx, "SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
+	rows, err := s.db.QueryContext(ctx, "SELECT id, timestamp, tool_name, user_id, profile_id, ip_address, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
 	if err != nil {
 		return false, err
 	}
@@ -278,9 +287,10 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	for rows.Next() {
 		var id int64
 		var ts, toolName, userID, profileID, args, result, errorMsg, prevHash, hash string
+		var ipAddress sql.NullString
 		var durationMs int64
 
-		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
+		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &ipAddress, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
 			return false, fmt.Errorf("scan error at id %d: %w", id, err)
 		}
 
@@ -290,8 +300,10 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 		// Check hash version
 		var calculatedHash string
-		if len(hash) > 3 && hash[:3] == "v1:" {
-			calculatedHash = computeHash(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
+		if len(hash) > 3 && hash[:3] == "v2:" {
+			calculatedHash = computeHash(ts, toolName, userID, profileID, ipAddress.String, args, result, errorMsg, durationMs, prevHash)
+		} else if len(hash) > 3 && hash[:3] == "v1:" {
+			calculatedHash = computeHashV1(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
 			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)

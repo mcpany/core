@@ -63,6 +63,7 @@ func TestPostgresAuditStore_Write(t *testing.T) {
 			entry.ToolName,
 			entry.UserID,
 			entry.ProfileID,
+			entry.IPAddress,
 			string(entry.Arguments),
 			`{"res":"val"}`,
 			entry.Error,
@@ -93,16 +94,17 @@ func TestPostgresAuditStore_Verify_Valid(t *testing.T) {
 	toolName := "tool1"
 	userID := "u1"
 	profileID := "p1"
+	ipAddress := ""
 	args := "{}"
 	result := "{}"
 	errStr := ""
 	dur := int64(10)
 	prevHash := ""
 
-	hash := computeHash(tsStr, toolName, userID, profileID, args, result, errStr, dur, prevHash)
+	hash := computeHash(tsStr, toolName, userID, profileID, ipAddress, args, result, errStr, dur, prevHash)
 
-	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
-		AddRow(1, ts, toolName, userID, profileID, args, result, errStr, dur, prevHash, hash)
+	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "ip_address", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
+		AddRow(1, ts, toolName, userID, profileID, ipAddress, args, result, errStr, dur, prevHash, hash)
 
 	mock.ExpectQuery("SELECT .* FROM audit_logs ORDER BY id ASC").WillReturnRows(rows)
 
@@ -123,8 +125,8 @@ func TestPostgresAuditStore_Verify_Tampered(t *testing.T) {
 
 	ts := time.Now()
 	// Tampered data: tool name changed but hash matches original
-	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
-		AddRow(1, ts, "hacked_tool", "u1", "p1", "{}", "{}", "", 10, "", "some_valid_hash_for_original_data")
+	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "ip_address", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
+		AddRow(1, ts, "hacked_tool", "u1", "p1", "", "{}", "{}", "", 10, "", "some_valid_hash_for_original_data")
 
 	mock.ExpectQuery("SELECT .* FROM audit_logs ORDER BY id ASC").WillReturnRows(rows)
 
@@ -145,13 +147,13 @@ func TestPostgresAuditStore_Verify_ChainBroken(t *testing.T) {
 
 	ts := time.Now()
 	tsStr := ts.Format(time.RFC3339Nano)
-	h1 := computeHash(tsStr, "t1", "u1", "p1", "{}", "{}", "", 10, "")
+	h1 := computeHash(tsStr, "t1", "u1", "p1", "", "{}", "{}", "", 10, "")
 	// Row 2 claims prev_hash is h1, but we pass "tampered"
-	h2 := computeHash(tsStr, "t2", "u1", "p1", "{}", "{}", "", 10, "tampered")
+	h2 := computeHash(tsStr, "t2", "u1", "p1", "", "{}", "{}", "", 10, "tampered")
 
-	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
-		AddRow(1, ts, "t1", "u1", "p1", "{}", "{}", "", 10, "", h1).
-		AddRow(2, ts, "t2", "u1", "p1", "{}", "{}", "", 10, "tampered", h2)
+	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "ip_address", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
+		AddRow(1, ts, "t1", "u1", "p1", "", "{}", "{}", "", 10, "", h1).
+		AddRow(2, ts, "t2", "u1", "p1", "", "{}", "{}", "", 10, "tampered", h2)
 
 	mock.ExpectQuery("SELECT .* FROM audit_logs ORDER BY id ASC").WillReturnRows(rows)
 

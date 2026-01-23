@@ -15,6 +15,7 @@ type Entry struct {
 	ToolName   string          `json:"tool_name"`
 	UserID     string          `json:"user_id,omitempty"`
 	ProfileID  string          `json:"profile_id,omitempty"`
+	IPAddress  string          `json:"ip_address,omitempty"`
 	Arguments  json.RawMessage `json:"arguments,omitempty"`
 	Result     any             `json:"result,omitempty"`
 	Error      string          `json:"error,omitempty"`

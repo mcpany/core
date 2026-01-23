@@ -57,6 +57,7 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 		tool_name TEXT NOT NULL,
 		user_id TEXT NOT NULL DEFAULT '',
 		profile_id TEXT NOT NULL DEFAULT '',
+		ip_address TEXT,
 		arguments TEXT,
 		result TEXT,
 		error TEXT,
@@ -136,12 +137,12 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// Compute hash
 	// Use formatted timestamp string for hashing consistency (same as SQLite)
 	tsStr := entry.Timestamp.Format(time.RFC3339Nano)
-	hash := computeHash(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+	hash := computeHash(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, entry.IPAddress, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
 	INSERT INTO audit_logs (
-		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash
-	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		timestamp, tool_name, user_id, profile_id, ip_address, arguments, result, error, duration_ms, prev_hash, hash
+	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
 
 	_, err = tx.ExecContext(ctx, query,
@@ -149,6 +150,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
+		entry.IPAddress,
 		argsJSON,
 		resultJSON,
 		entry.Error,
@@ -178,7 +180,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	rows, err := s.db.QueryContext(ctx, "SELECT id, timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
+	rows, err := s.db.QueryContext(ctx, "SELECT id, timestamp, tool_name, user_id, profile_id, ip_address, arguments, result, error, duration_ms, prev_hash, hash FROM audit_logs ORDER BY id ASC")
 	if err != nil {
 		return false, err
 	}
@@ -189,10 +191,10 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		var id int64
 		var ts time.Time
 		var toolName, userID, profileID, errorMsg, prevHash, hash string
-		var args, result sql.NullString // Can be null in some schemas, though we set defaults. Use NullString for safety.
+		var ipAddress, args, result sql.NullString // Can be null in some schemas, though we set defaults. Use NullString for safety.
 		var durationMs int64
 
-		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
+		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &ipAddress, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
 			return false, fmt.Errorf("scan error at id %d: %w", id, err)
 		}
 
@@ -215,9 +217,15 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		if result.Valid {
 			resultStr = result.String
 		}
+		ipStr := ""
+		if ipAddress.Valid {
+			ipStr = ipAddress.String
+		}
 
-		if len(hash) > 3 && hash[:3] == "v1:" {
-			calculatedHash = computeHash(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
+		if len(hash) > 3 && hash[:3] == "v2:" {
+			calculatedHash = computeHash(tsStr, toolName, userID, profileID, ipStr, argsStr, resultStr, errorMsg, durationMs, prevHash)
+		} else if len(hash) > 3 && hash[:3] == "v1:" {
+			calculatedHash = computeHashV1(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
 			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
