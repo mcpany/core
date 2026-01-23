@@ -30,9 +30,10 @@ Key columns:
 
 To register a new upstream service:
 
-1. Click the **"Add Service"** button in the top-right corner.
-2. A dialog will appear. Select the **Service Type** (e.g., HTTP, gRPC).
-3. Fill in the **Name** and **Endpoint** URL.
+1. Click the **"Add Service"** link in the top-right corner.
+2. You will be redirected to the **Marketplace**.
+3. Select the desired service type (e.g., HTTP, gRPC) or a pre-configured service template.
+4. Follow the configuration wizard to register the service.
 
 ![Add Service Dialog](screenshots/services_add_dialog.png)
 

@@ -35,6 +35,18 @@ export const LazyRequestVolumeChart = dynamic(
 );
 
 /**
+ * LazyRecentActivityWidget is a dynamically loaded RecentActivityWidget component.
+ * It uses a skeleton loader while the component is being fetched.
+ */
+export const LazyRecentActivityWidget = dynamic(
+  () => import("@/components/dashboard/recent-activity-widget").then((mod) => mod.RecentActivityWidget),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  }
+);
+
+/**
  * LazyTopToolsWidget is a dynamically loaded TopToolsWidget component.
  * It uses a skeleton loader while the component is being fetched.
  */
