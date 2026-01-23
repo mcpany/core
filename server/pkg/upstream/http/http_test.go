@@ -904,6 +904,8 @@ func TestHTTPUpstream_Shutdown(t *testing.T) {
 }
 
 func TestHTTPUpstream_CheckHealth(t *testing.T) {
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	pm := pool.NewManager()
 	u := NewUpstream(pm)
 
