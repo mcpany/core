@@ -1,0 +1,50 @@
+global_settings:
+  mcp_listen_address: "0.0.0.0:50050"
+  metrics_listen_address: "0.0.0.0:50051"
+  log_level: DEBUG
+  audit:
+    enabled: true
+    output_path: "audit.log"
+    log_arguments: true
+    log_results: true
+
+upstream_services:
+  - name: "cached-service"
+    http_service:
+      address: "https://httpbin.org" # Use httpbin for testing
+      calls:
+        get-uuid:
+          endpoint_path: "/uuid"
+          method: HTTP_METHOD_GET
+      tools:
+        - name: "get_uuid"
+          call_id: "get-uuid"
+    cache:
+      is_enabled: true
+      ttl: "1m"
+
+  - name: "limited-service"
+    http_service:
+      address: "https://httpbin.org"
+      calls:
+        get-delay:
+          endpoint_path: "/delay/0"
+          method: HTTP_METHOD_GET
+      tools:
+        - name: "get_delay"
+          call_id: "get-delay"
+    rate_limit:
+      is_enabled: true
+      requests_per_second: 1.0
+      burst: 1
+
+  - name: "prompt-service"
+    http_service:
+      address: "https://httpbin.org"
+      prompts:
+        - name: "hello"
+          description: "Say hello"
+          messages:
+            - role: "USER"
+              text:
+                text: "Hello!"

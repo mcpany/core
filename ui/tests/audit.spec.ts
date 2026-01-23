@@ -1,34 +1,47 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
+import { test, expect } from '@playwright/test';
 
+test.describe('Audit Verification', () => {
 
-import { test } from '@playwright/test';
-import path from 'path';
-import fs from 'fs';
+  test('Verify Dashboard', async ({ page }) => {
+    await page.goto('/');
+    // Check for key elements from docs
+    // "Total Requests", "Active Services"
+    // Using simple locators
+    await expect(page.locator('body')).toContainText('Total Requests');
+    await expect(page.locator('body')).toContainText('Active Services');
+  });
 
-test('capture screenshots', async ({ page }) => {
-  const date = new Date().toISOString().split('T')[0];
-  const auditDir = path.join(__dirname, `../.audit/ui/stack/${date}`);
+  test('Verify Services Page', async ({ page }) => {
+    await page.goto('/services');
+    // Check "Add Service" button
+    await expect(page.getByRole('button', { name: /Add Service/i })).toBeVisible();
 
-  if (!fs.existsSync(auditDir)) {
-    fs.mkdirSync(auditDir, { recursive: true });
-  }
+    // Check list headers "Name", "Type", "Status"
+    await expect(page.locator('table')).toBeVisible();
+    await expect(page.locator('body')).toContainText('Name');
+    await expect(page.locator('body')).toContainText('Type');
+  });
 
-  await page.goto('/');
-  await page.waitForTimeout(1000); // Wait for animations
-  await page.screenshot({ path: `${auditDir}/dashboard.png`, fullPage: true });
+  test('Verify Secrets Page', async ({ page }) => {
+    // Try both paths just in case
+    const response = await page.goto('/settings/secrets');
+    if (response?.status() === 404) {
+        await page.goto('/secrets');
+    }
+    // Check "Add Secret" button
+    await expect(page.getByRole('button', { name: /Add Secret/i })).toBeVisible();
+  });
 
-  await page.goto('/upstream-services');
-  await page.waitForTimeout(1000);
-  await page.screenshot({ path: `${auditDir}/services.png`, fullPage: true });
+  test('Verify Logs Page', async ({ page }) => {
+    await page.goto('/logs');
+    // Check for search input
+    await expect(page.getByPlaceholder(/Search/i)).toBeVisible();
+  });
 
-  await page.goto('/tools');
-  await page.waitForTimeout(1000);
-  await page.screenshot({ path: `${auditDir}/tools.png`, fullPage: true });
+  test('Verify Playground Page', async ({ page }) => {
+    await page.goto('/playground');
+    // Check sidebar and main pane
+    await expect(page.locator('aside')).toBeVisible();
+  });
 
-  await page.goto('/settings');
-  await page.waitForTimeout(1000);
-  await page.screenshot({ path: `${auditDir}/settings.png`, fullPage: true });
 });
