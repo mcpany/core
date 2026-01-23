@@ -550,6 +550,14 @@ func ToString(v any) string {
 	case fmt.Stringer:
 		return val.String()
 	default:
+		// Check for pointer type
+		rVal := reflect.ValueOf(v)
+		if rVal.Kind() == reflect.Ptr {
+			if rVal.IsNil() {
+				return "<nil>"
+			}
+			return ToString(rVal.Elem().Interface())
+		}
 		return fmt.Sprintf("%v", v)
 	}
 }
