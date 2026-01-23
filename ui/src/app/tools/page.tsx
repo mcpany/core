@@ -134,6 +134,12 @@ export default function ToolsPage() {
     return acc;
   }, {} as Record<string, ToolDefinition[]>);
 
+/**
+ * ToolTable component.
+ * @param props - The component props.
+ * @param props.tools - The tools property.
+ * @returns The rendered component.
+ */
   const ToolTable = ({ tools }: { tools: ToolDefinition[] }) => (
     <Table>
       <TableHeader>
