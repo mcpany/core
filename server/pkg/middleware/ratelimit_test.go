@@ -569,7 +569,7 @@ func TestRateLimitMiddleware_Partitioning(t *testing.T) {
 			if apiKey != "" {
 				httpReq.Header.Set("X-API-Key", apiKey)
 			}
-			ctx = context.WithValue(ctx, "http.request", httpReq)
+			ctx = context.WithValue(ctx, middleware.HTTPRequestContextKey, httpReq)
 
 			ctx = tool.NewContextWithTool(ctx, mockTool)
 
