@@ -276,9 +276,9 @@ func (tm *Manager) UpdateServiceHealth(serviceID string, isHealthy bool, errorMs
 		return
 	}
 
-	newStatus := "healthy"
+	newStatus := HealthStatusHealthy
 	if !isHealthy {
-		newStatus = "unhealthy"
+		newStatus = HealthStatusUnhealthy
 	}
 
 	// Only update if changed
@@ -899,7 +899,7 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 			// Check service health
 			serviceID := t.Tool().GetServiceId()
 			// ⚡ Bolt Optimization: Use direct load
-			if info, ok := tm.serviceInfo.Load(serviceID); ok && info.HealthStatus == "unhealthy" {
+			if info, ok := tm.serviceInfo.Load(serviceID); ok && info.HealthStatus == HealthStatusUnhealthy {
 				mtClone.Description = fmt.Sprintf("[⚠️ UNHEALTHY: %s] %s", info.HealthError, mtClone.Description)
 			}
 
