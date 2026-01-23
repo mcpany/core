@@ -196,6 +196,9 @@ func CheckConnection(ctx context.Context, address string) error {
 				host = host[1 : len(host)-1]
 			}
 			port = "80"
+		} else if port == "" {
+			// If SplitHostPort succeeds but port is empty (e.g. "host:"), default to 80.
+			port = "80"
 		}
 		target = net.JoinHostPort(host, port)
 	}
@@ -222,6 +225,12 @@ func CheckConnection(ctx context.Context, address string) error {
 	return nil
 }
 
+// ListenFunc is the function used to listen.
+// It is exposed for testing purposes.
+var ListenFunc = func(ctx context.Context, network, address string) (net.Listener, error) {
+	return (&net.ListenConfig{}).Listen(ctx, network, address)
+}
+
 // ListenWithRetry attempts to listen on the given address with retries.
 // This is specifically useful for mitigating "Port 0 collision risks" in high-churn environments
 // where the OS might report a port as busy even if it was just allocated for dynamic binding.
@@ -236,7 +245,7 @@ func ListenWithRetry(ctx context.Context, network, address string) (net.Listener
 	}
 
 	for i := 0; i < maxRetries; i++ {
-		lis, err = (&net.ListenConfig{}).Listen(ctx, network, address)
+		lis, err = ListenFunc(ctx, network, address)
 		if err == nil {
 			return lis, nil
 		}
