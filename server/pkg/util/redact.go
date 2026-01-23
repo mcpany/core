@@ -438,12 +438,9 @@ func scanJSONForSensitiveKeys(input []byte) bool {
 
 // isKeyColon checks if the JSON element ending at endOffset is followed by a colon.
 func isKeyColon(input []byte, endOffset int) bool {
-	for j := endOffset; j < len(input); j++ {
-		c := input[j]
-		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
-			continue
-		}
-		return c == ':'
+	j := skipWhitespaceAndComments(input, endOffset)
+	if j < len(input) {
+		return input[j] == ':'
 	}
 	return false
 }
