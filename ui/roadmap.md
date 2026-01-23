@@ -68,7 +68,7 @@
 - [ ] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.
 - [ ] **Dashboard Filtering**: Allow filtering the dashboard metrics and activity by Service or Time Range.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
-- [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
+- [x] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
 - [x] **Native File Upload Support in Playground**: Automatically detect base64 encoded fields in tool schemas and provide a native file picker.
 - [ ] **Playground File Drag-and-Drop**: Drag and drop files onto the Playground to automatically fill matching inputs.
 - [ ] **Image Preview in Playground Forms**: Display a preview of the selected image in the form before submission.
@@ -78,3 +78,5 @@
 - [x] **Structured Log Viewer**: Parse JSON logs in the message field and display them as an expandable tree object for better readability.
 - [ ] **Log Search Highlighting**: Highlight the search term within the log message for better visibility.
 - [ ] **Filter Logs by Time Range**: Add a date/time picker to filter logs (e.g. "Last 1 hour", "Custom Range").
+- [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
+- [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
