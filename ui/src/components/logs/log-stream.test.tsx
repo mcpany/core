@@ -7,6 +7,16 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+    useSearchParams: () => ({
+        get: (key: string) => {
+            if (key === "source") return null;
+            return null;
+        }
+    })
+}));
+
 describe("LogStream", () => {
   let mockWebSocket: any;
 
