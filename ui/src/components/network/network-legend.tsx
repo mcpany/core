@@ -24,6 +24,15 @@ interface LegendItemProps {
     color: string;
 }
 
+/**
+ * LegendItem component.
+ * @param props - The component props.
+ * @param props.icon - The icon property.
+ * @param props.label - The label property.
+ * @param props.description - The description property.
+ * @param props.color - The color property.
+ * @returns The rendered component.
+ */
 const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
     <div className="flex items-start gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
         <div className={cn("p-1.5 rounded-md", color)}>
@@ -36,6 +45,12 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
     </div>
 );
 
+/**
+ * NetworkLegend component.
+ * Displays a legend for the network topology graph, explaining node types and status indicators.
+ *
+ * @returns The rendered NetworkLegend component.
+ */
 export function NetworkLegend() {
     return (
         <div className="space-y-1">

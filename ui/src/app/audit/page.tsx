@@ -5,6 +5,12 @@
 
 import { AuditLogViewer } from "@/components/audit/audit-log-viewer";
 
+/**
+ * AuditPage component.
+ * Renders the audit logs page, which includes the AuditLogViewer.
+ *
+ * @returns The rendered AuditPage component.
+ */
 export default function AuditPage() {
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">

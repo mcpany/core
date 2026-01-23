@@ -27,6 +27,13 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+var (
+	metricToolsListTotal   = []string{"tools", "list", "total"}
+	metricToolsCallTotal   = []string{"tools", "call", "total"}
+	metricToolsCallErrors  = []string{"tools", "call", "errors"}
+	metricToolsCallLatency = []string{"tools", "call", "latency"}
+)
+
 // fastJSON is a jsoniter configuration that disables map key sorting for performance.
 // The order of keys in the JSON response does not matter for the LLM.
 var fastJSON = jsoniter.Config{
@@ -516,7 +523,7 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //   - A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
-	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
+	metrics.IncrCounter(metricToolsListTotal, 1)
 	return s.toolManager.ListTools()
 }
 
@@ -551,7 +558,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
+	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
@@ -560,7 +567,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
 		// MeasureSince emits in milliseconds.
 		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
+		metrics.AddSampleWithLabels(metricToolsCallLatency, duration, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})
@@ -568,7 +575,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, []metrics.Label{
+		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})

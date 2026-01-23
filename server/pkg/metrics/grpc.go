@@ -10,6 +10,13 @@ import (
 	"google.golang.org/grpc/stats"
 )
 
+var (
+	metricGrpcRPCStartedTotal        = []string{"grpc", "rpc", "started", "total"}
+	metricGrpcRPCFinishedTotal       = []string{"grpc", "rpc", "finished", "total"}
+	metricGrpcConnectionsOpenedTotal = []string{"grpc", "connections", "opened", "total"}
+	metricGrpcConnectionsClosedTotal = []string{"grpc", "connections", "closed", "total"}
+)
+
 // GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
 // It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
 type GrpcStatsHandler struct {
@@ -42,9 +49,9 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	}
 	switch s.(type) {
 	case *stats.Begin:
-		IncrCounter([]string{"grpc", "rpc", "started", "total"}, 1)
+		IncrCounter(metricGrpcRPCStartedTotal, 1)
 	case *stats.End:
-		IncrCounter([]string{"grpc", "rpc", "finished", "total"}, 1)
+		IncrCounter(metricGrpcRPCFinishedTotal, 1)
 	}
 }
 
@@ -74,8 +81,8 @@ func (h *GrpcStatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
 	}
 	switch s.(type) {
 	case *stats.ConnBegin:
-		IncrCounter([]string{"grpc", "connections", "opened", "total"}, 1)
+		IncrCounter(metricGrpcConnectionsOpenedTotal, 1)
 	case *stats.ConnEnd:
-		IncrCounter([]string{"grpc", "connections", "closed", "total"}, 1)
+		IncrCounter(metricGrpcConnectionsClosedTotal, 1)
 	}
 }

@@ -31,7 +31,10 @@ interface ServiceHealthContextType {
 
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
 
-const MAX_HISTORY_POINTS = 30; // 30 points * 5s = 2.5 minutes history
+/** Maximum number of history points to keep (30 points * 5s = 2.5 minutes). */
+const MAX_HISTORY_POINTS = 30;
+
+/** Polling interval in milliseconds (5 seconds). */
 const POLLING_INTERVAL = 5000;
 
 /**
