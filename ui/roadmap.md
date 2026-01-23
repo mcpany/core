@@ -49,8 +49,8 @@
 - [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
 - [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
 - [x] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
-- [ ] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
-- [ ] **Playground Session Replay**: Ability to reload a previous session from a JSON file into the playground.
+- [x] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
+- [x] **Playground Session Replay**: Ability to reload a previous session from a JSON file into the playground.
 - [ ] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
 - [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).

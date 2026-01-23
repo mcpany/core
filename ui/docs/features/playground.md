@@ -48,3 +48,10 @@ The execution result is displayed in the chat stream.
 
 - **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
+
+### 5. Session History (Import/Export)
+
+You can manage your playground session history using the buttons in the top right corner.
+
+- **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
+- **Import**: Load a previously exported session file to replay tool executions and results.
