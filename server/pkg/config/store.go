@@ -238,9 +238,10 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
 			if len(matches) > 1 {
 				unknownField := matches[1]
-				// TODO: For JSON, finding path context is harder without a custom parser or AST walker.
-				// For now, we fallback to root descriptor.
-				suggestion := suggestFix(unknownField, v.ProtoReflect().Descriptor())
+				// For JSON, we don't have path context easily available yet.
+				// Fallback to global search to ensure we catch common errors (like mcp_litsen_address -> mcp_listen_address)
+				// even if they are nested deep.
+				suggestion := suggestFixGlobal(unknownField)
 				if suggestion != "" {
 					return fmt.Errorf("%w\n\n%s", err, suggestion)
 				}
@@ -1115,6 +1116,47 @@ func suggestFix(unknownField string, md protoreflect.MessageDescriptor) string {
 	candidates := make(map[string]struct{})
 	collectFieldNames(md, candidates)
 
+	return findBestMatch(unknownField, candidates)
+}
+
+// suggestFixGlobal finds the closest matching field name in a set of common proto message descriptors.
+// This is used as a fallback when context is not available (e.g. JSON without path info).
+func suggestFixGlobal(unknownField string) string {
+	// Check common aliases first for immediate feedback
+	aliases := map[string]string{
+		"url":       "address",
+		"uri":       "address",
+		"endpoint":  "address",
+		"endpoints": "address",
+		"host":      "address",
+		"cmd":       "command",
+		"args":      "arguments",
+	}
+	if correction, ok := aliases[strings.ToLower(unknownField)]; ok {
+		return fmt.Sprintf("Did you mean %q? (Common alias)", correction)
+	}
+
+	candidates := make(map[string]struct{})
+	commonMessages := []proto.Message{
+		&configv1.GlobalSettings{},
+		&configv1.UpstreamServiceConfig{},
+		&configv1.HttpUpstreamService{},
+		&configv1.GrpcUpstreamService{},
+		&configv1.McpUpstreamService{},
+		&configv1.OpenapiUpstreamService{},
+		&configv1.CommandLineUpstreamService{},
+		&configv1.SqlUpstreamService{},
+		&configv1.Authentication{},
+	}
+
+	for _, msg := range commonMessages {
+		collectFieldNames(msg.ProtoReflect().Descriptor(), candidates)
+	}
+
+	return findBestMatch(unknownField, candidates)
+}
+
+func findBestMatch(unknownField string, candidates map[string]struct{}) string {
 	bestMatch := ""
 	minDist := 100
 
