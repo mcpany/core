@@ -2585,6 +2585,156 @@ func TestRunServerMode_Auth(t *testing.T) {
 	<-errChan
 }
 
+func TestUploadFile_BodyTooLarge(t *testing.T) {
+	app := NewApplication()
+
+	// Create a dummy body larger than 10MB
+	largeBody := bytes.Repeat([]byte("a"), 10*1024*1024+1)
+	req := httptest.NewRequest(http.MethodPost, "/upload", bytes.NewReader(largeBody))
+	req.Header.Set("Content-Type", "multipart/form-data; boundary=---boundary")
+	rr := httptest.NewRecorder()
+
+	app.uploadFile(rr, req)
+
+	// Since we are mocking the request, http.MaxBytesReader behavior might depend on implementation details of the standard library.
+	// However, normally it returns an error when reading the body.
+	// In our implementation: r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+	// Then we call r.FormFile("file") which parses the form.
+	// ParseMultipartForm will try to read the body and should fail.
+
+	// Depending on Go version/implementation, it might return BadRequest or InternalServerError or specific error.
+	// Our code:
+	// file, header, err := r.FormFile("file")
+	// if err != nil { http.Error(w, "failed to get file from form", http.StatusBadRequest) ... }
+
+	assert.NotEqual(t, http.StatusOK, rr.Code)
+}
+
+func TestWaitForStartup_Timeout(t *testing.T) {
+	app := NewApplication()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+
+	err := app.WaitForStartup(ctx)
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
+}
+
+func TestWaitForStartup_Success(t *testing.T) {
+	app := NewApplication()
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	go func() {
+		close(app.startupCh)
+	}()
+
+	err := app.WaitForStartup(ctx)
+	assert.NoError(t, err)
+}
+
+func TestRun_DBInitFailure(t *testing.T) {
+	// We need to force a DB initialization failure.
+	// We can set the db driver to sqlite and provide an invalid path (e.g. a directory)
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	// Set global settings to use sqlite with invalid path
+	config.GlobalSettings().SetDBPath("/invalid/path/db.sqlite")
+	// Make sure directory exists so it's not "not found" but "permission denied" or similar if we were using real FS.
+	// With MemMapFs, sqlite driver might not work as expected because it uses CGO and real OS calls usually.
+	// However, server.go uses `sqlite.NewDB` which uses `modernc.org/sqlite` (pure Go) or CGO?
+	// If it uses a real file path, it might fail if we point to a non-existent directory.
+
+	// Let's use "postgres" driver with invalid DSN as it is easier to fail fast.
+	// We need to inject this into config loading.
+	// Run() loads config from file store + storage store.
+	// If we provide no config, it defaults to sqlite "mcpany.db".
+
+	// The `config.GlobalSettings()` singleton is used in `Run()` for default DB driver logic if `a.Storage` is nil.
+	// We can modify `config.GlobalSettings()` before calling `Run()`.
+	// But `Run` calls `config.GlobalSettings().GetDbDriver()`.
+
+	// Back up current settings
+	// (Settings struct doesn't expose easy backup/restore, but we can set values back)
+	// Actually, `config.GlobalSettings()` returns a singleton.
+	// We can update the proto inside it.
+	gs := config.GlobalSettings().ToProto()
+	origDriver := gs.GetDbDriver()
+	origDsn := gs.GetDbDsn()
+	defer func() {
+		// Restore
+		gs.SetDbDriver(origDriver)
+		gs.SetDbDsn(origDsn)
+	}()
+
+	gs.SetDbDriver("postgres")
+	gs.SetDbDsn("postgres://invalid:5432/db")
+
+	app := NewApplication()
+	// Run should fail when initializing Postgres DB
+	err := app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "0",
+		GRPCPort:        "0",
+		ConfigPaths:     nil,
+		APIKey:          "",
+		ShutdownTimeout: 1 * time.Second,
+	})
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to initialize postgres db")
+}
+
+func TestRun_UIHandler(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	// Create UI directory structure
+	err := fs.MkdirAll("ui/out", 0755)
+	require.NoError(t, err)
+	err = afero.WriteFile(fs, "ui/out/index.html", []byte("<html><body>Hello</body></html>"), 0644)
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	busProvider, _ := bus.NewProvider(nil)
+	poolManager := pool.NewManager()
+	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	toolManager := tool.NewManager(busProvider)
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(upstreamFactory, toolManager, prompt.NewManager(), resource.NewManager(), authManager)
+	mcpSrv, _ := mcpserver.NewServer(ctx, toolManager, prompt.NewManager(), resource.NewManager(), authManager, serviceRegistry, busProvider, false)
+
+	app := NewApplication()
+	app.fs = fs // Use our mock fs with UI files
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, addr, "", 5*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil, "", "", "")
+	}()
+
+	waitForServerReady(t, addr)
+
+	// Test serving UI
+	resp, err := http.Get("http://" + addr + "/ui/")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	body, _ := io.ReadAll(resp.Body)
+	assert.Contains(t, string(body), "Hello")
+
+	cancel()
+	<-errChan
+}
+
 func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	app := NewApplication()
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)

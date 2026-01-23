@@ -14,6 +14,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"syscall"
@@ -443,6 +444,60 @@ upstream_services:
 			}
 		})
 	}
+}
+
+func TestLoadEnv(t *testing.T) {
+	viper.Reset()
+	// Create .env file
+	tmpDir := t.TempDir()
+	envPath := filepath.Join(tmpDir, ".env")
+	err := os.WriteFile(envPath, []byte("MCPANY_TEST_ENV=loaded"), 0644)
+	require.NoError(t, err)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"version", "--env-file", envPath})
+
+	// Execute command to trigger env loading
+	// We check os.Getenv because loadEnv uses godotenv.Load which sets env vars
+	err = rootCmd.Execute()
+	assert.NoError(t, err)
+	assert.Equal(t, "loaded", os.Getenv("MCPANY_TEST_ENV"))
+
+	os.Unsetenv("MCPANY_TEST_ENV")
+}
+
+func TestDoctorCmd(t *testing.T) {
+	viper.Reset()
+	// No config provided
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"doctor"})
+
+	err := rootCmd.Execute()
+	assert.NoError(t, err)
+}
+
+func TestDoctorCmd_WithIssues(t *testing.T) {
+	viper.Reset()
+	tmpDir := t.TempDir()
+	cfgPath := filepath.Join(tmpDir, "config.yaml")
+	// Config with unreachable service
+	err := os.WriteFile(cfgPath, []byte(`
+upstream_services:
+  - name: "broken-service"
+    http_service:
+      address: "http://unreachable.local:12345"
+`), 0644)
+	require.NoError(t, err)
+
+	rootCmd := newRootCmd()
+	rootCmd.SetArgs([]string{"doctor", "--config-path", cfgPath})
+
+	// Doctor should fail
+	err = rootCmd.Execute()
+	assert.Error(t, err)
+	// Output is printed to stdout, not returned in error unless RunE returns error.
+	// Doctor command returns error if hasErrors is true.
+	assert.Contains(t, err.Error(), "doctor checks failed")
 }
 
 func TestConfigGenerateCmd(t *testing.T) {

@@ -290,6 +290,11 @@ func (s *Settings) DBPath() string {
 	return s.dbPath
 }
 
+// SetDBPath sets the database path. This is primarily used for testing.
+func (s *Settings) SetDBPath(path string) {
+	s.dbPath = path
+}
+
 // SetValues returns configuration values to override.
 func (s *Settings) SetValues() []string {
 	return s.setValues

@@ -376,3 +376,97 @@ func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]boo
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
 }
+
+func TestManager_GetTrafficHistory(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+
+	// Add some history
+	now := time.Now().Truncate(time.Minute).Unix()
+	m.mu.Lock()
+	m.trafficHistory[now] = &MinuteStats{
+		Requests: 10,
+		Errors:   2,
+		Latency:  500, // 500ms total -> 50ms avg
+	}
+	m.mu.Unlock()
+
+	history := m.GetTrafficHistory()
+	require.NotEmpty(t, history)
+
+	// Find the point for now
+	// The history returns last 60 minutes.
+	// Since we truncated to minute, it should match one of the points.
+	// We need to match the time string "HH:MM".
+	expectedTime := time.Unix(now, 0).Format("15:04")
+	var found *TrafficPoint
+	for _, p := range history {
+		if p.Time == expectedTime {
+			found = &p
+			break
+		}
+	}
+
+	require.NotNil(t, found)
+	assert.Equal(t, int64(10), found.Total)
+	assert.Equal(t, int64(2), found.Errors)
+	assert.Equal(t, int64(50), found.Latency)
+}
+
+func TestManager_SeedTrafficHistory(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+
+	points := []TrafficPoint{
+		{Time: "12:00", Total: 100, Errors: 5, Latency: 50},
+	}
+
+	m.SeedTrafficHistory(points)
+
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	// Check session stats update
+	session, ok := m.sessions["seed-data"]
+	require.True(t, ok)
+	assert.Equal(t, int64(100), session.RequestCount)
+	assert.Equal(t, int64(5), session.ErrorCount)
+
+	// Check history
+	// Note: SeedTrafficHistory parses "12:00" using today's date.
+	// We need to construct expected timestamp.
+	now := time.Now()
+	parsed, _ := time.Parse("15:04", "12:00")
+	target := time.Date(now.Year(), now.Month(), now.Day(), parsed.Hour(), parsed.Minute(), 0, 0, now.Location()).Unix()
+
+	stats, ok := m.trafficHistory[target]
+	require.True(t, ok)
+	assert.Equal(t, int64(100), stats.Requests)
+	assert.Equal(t, int64(5), stats.Errors)
+	assert.Equal(t, int64(5000), stats.Latency) // 50 * 100
+}
+
+func TestManager_CleanupHistory(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+
+	// Add old history
+	oldTime := time.Now().Add(-25 * time.Hour).Unix()
+	m.mu.Lock()
+	m.trafficHistory[oldTime] = &MinuteStats{Requests: 1}
+	m.sessions["cleanup-test"] = &SessionStats{RequestCount: 99} // Setup to trigger cleanup on next req
+	m.mu.Unlock()
+
+	// Trigger cleanup (RequestCount % 100 == 0)
+	// We set count to 99, next is 100.
+	m.RecordActivity("cleanup-test", nil, 0, false)
+
+	m.mu.RLock()
+	_, exists := m.trafficHistory[oldTime]
+	m.mu.RUnlock()
+
+	assert.False(t, exists, "Old history should be cleaned up")
+}
