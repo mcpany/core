@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 global_settings:
+  allowed_origins:
+    - "*"
   profile_definitions:
     - name: "default"
       selector:
