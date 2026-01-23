@@ -2076,11 +2076,17 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				}
 
 				// Check if the request is from a loopback address
-				ip := net.ParseIP(host)
-				if !util.IsPrivateIP(ip) {
-					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
-					return
+				// Explicitly allow "localhost" as net.ParseIP("localhost") returns nil
+				if host == "localhost" {
+					// Allowed
+				} else {
+					ip := net.ParseIP(host)
+					// IsPrivateIP(nil) returns false, so we are safe by default, but we should be explicit.
+					if ip == nil || !util.IsPrivateIP(ip) {
+						logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+						http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+						return
+					}
 				}
 			}
 			next.ServeHTTP(w, r)

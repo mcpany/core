@@ -136,7 +136,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// Compute hash
 	// Use formatted timestamp string for hashing consistency (same as SQLite)
 	tsStr := entry.Timestamp.Format(time.RFC3339Nano)
-	hash := computeHash(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+	hash := computeHashV1(tsStr, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
 
 	query := `
 	INSERT INTO audit_logs (
@@ -217,7 +217,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		}
 
 		if len(hash) > 3 && hash[:3] == "v1:" {
-			calculatedHash = computeHash(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
+			calculatedHash = computeHashV1(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
 			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)

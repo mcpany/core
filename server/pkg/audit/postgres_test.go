@@ -99,7 +99,7 @@ func TestPostgresAuditStore_Verify_Valid(t *testing.T) {
 	dur := int64(10)
 	prevHash := ""
 
-	hash := computeHash(tsStr, toolName, userID, profileID, args, result, errStr, dur, prevHash)
+	hash := computeHashV1(tsStr, toolName, userID, profileID, args, result, errStr, dur, prevHash)
 
 	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
 		AddRow(1, ts, toolName, userID, profileID, args, result, errStr, dur, prevHash, hash)
@@ -145,9 +145,9 @@ func TestPostgresAuditStore_Verify_ChainBroken(t *testing.T) {
 
 	ts := time.Now()
 	tsStr := ts.Format(time.RFC3339Nano)
-	h1 := computeHash(tsStr, "t1", "u1", "p1", "{}", "{}", "", 10, "")
+	h1 := computeHashV1(tsStr, "t1", "u1", "p1", "{}", "{}", "", 10, "")
 	// Row 2 claims prev_hash is h1, but we pass "tampered"
-	h2 := computeHash(tsStr, "t2", "u1", "p1", "{}", "{}", "", 10, "tampered")
+	h2 := computeHashV1(tsStr, "t2", "u1", "p1", "{}", "{}", "", 10, "tampered")
 
 	rows := sqlmock.NewRows([]string{"id", "timestamp", "tool_name", "user_id", "profile_id", "arguments", "result", "error", "duration_ms", "prev_hash", "hash"}).
 		AddRow(1, ts, "t1", "u1", "p1", "{}", "{}", "", 10, "", h1).

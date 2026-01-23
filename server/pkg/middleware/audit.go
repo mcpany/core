@@ -16,6 +16,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -167,6 +168,9 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	}
 	if profileID, ok := auth.ProfileIDFromContext(ctx); ok {
 		entry.ProfileID = profileID
+	}
+	if ip, ok := util.RemoteIPFromContext(ctx); ok {
+		entry.IPAddress = ip
 	}
 
 	if auditConfig.GetLogArguments() {

@@ -10,9 +10,18 @@ import (
 	"fmt"
 )
 
-// computeHash computes the hash for the audit entry using SHA-256.
+// computeHashV2 computes the hash for the audit entry including IP address.
+func computeHashV2(timestamp, toolName, userID, profileID, ipAddress, args, result, errorMsg string, durationMs int64, prevHash string) string {
+	// Use JSON array for unambiguous serialization
+	fields := []any{timestamp, toolName, userID, profileID, ipAddress, args, result, errorMsg, durationMs, prevHash}
+	data, _ := json.Marshal(fields) // Error ignored as primitive types/strings should always marshal
+	h := sha256.Sum256(data)
+	return "v2:" + hex.EncodeToString(h[:])
+}
+
+// computeHashV1 computes the hash for the audit entry using SHA-256.
 // It uses a JSON array structure for unambiguous serialization.
-func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
+func computeHashV1(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
 	// Use JSON array for unambiguous serialization
 	fields := []any{timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash}
 	data, _ := json.Marshal(fields) // Error ignored as primitive types/strings should always marshal
