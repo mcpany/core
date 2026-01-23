@@ -91,6 +91,9 @@ test.describe('Network Graph Quick Actions', () => {
     // Click Trace Request
     await page.getByRole('button', { name: 'Trace Request' }).click();
 
+    // Explicitly wait for navigation to complete before checking URL
+    await page.waitForURL(/\/traces\?query=weather-service/);
+
     // Verify URL
     await expect(page).toHaveURL(/\/traces\?query=weather-service/);
   });

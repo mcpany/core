@@ -13,11 +13,12 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
+import { Suspense } from "react";
+
 /**
- * TracesPage component.
- * @returns The rendered component.
+ * TracesContent component handles the search params logic.
  */
-export default function TracesPage() {
+function TracesContent() {
   const searchParams = useSearchParams();
   const [traces, setTraces] = useState<Trace[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -96,4 +97,16 @@ export default function TracesPage() {
       </ResizablePanelGroup>
     </div>
   );
+}
+
+/**
+ * TracesPage component.
+ * @returns The rendered component.
+ */
+export default function TracesPage() {
+    return (
+        <Suspense fallback={<div className="h-full flex items-center justify-center text-muted-foreground gap-2"><Loader2 className="h-6 w-6 animate-spin" /> Loading...</div>}>
+            <TracesContent />
+        </Suspense>
+    );
 }
