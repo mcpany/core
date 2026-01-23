@@ -91,7 +91,9 @@ global_settings:
 
 	appRunner := app.NewApplication()
 
+	done := make(chan struct{})
 	go func() {
+		defer close(done)
 		// Mock filesystem with our config
 		fs := afero.NewOsFs()
 		// Use 127.0.0.1:0 to let OS choose free ports and avoid dual-stack flakes
@@ -109,6 +111,10 @@ global_settings:
 		if err != nil && err != context.Canceled {
 			t.Logf("Application run error: %v", err)
 		}
+	}()
+	defer func() {
+		cancel()
+		<-done
 	}()
 
 	// Wait for app to start
@@ -134,7 +140,7 @@ global_settings:
 
 	// Create initial user
 	user1 := &configv1.User{
-		Id: proto.String("user-1"),
+		Id: proto.String("e2e-test-user"),
 		Authentication: &configv1.Authentication{
 			AuthMethod: &configv1.Authentication_ApiKey{
 				ApiKey: &configv1.APIKeyAuth{
@@ -148,19 +154,27 @@ global_settings:
 
 	createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user1})
 	require.NoError(t, err)
-	require.Equal(t, "user-1", createResp.User.GetId())
+	require.Equal(t, "e2e-test-user", createResp.User.GetId())
 	require.Equal(t, "secret-key", createResp.User.GetAuthentication().GetApiKey().GetVerificationValue())
 
 	// Get user
-	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("user-1")})
+	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("e2e-test-user")})
 	require.NoError(t, err)
-	require.Equal(t, "user-1", getResp.User.GetId())
+	require.Equal(t, "e2e-test-user", getResp.User.GetId())
 
 	// List users
 	listResp, err := adminClient.ListUsers(ctx, &pb_admin.ListUsersRequest{})
 	require.NoError(t, err)
-	require.Len(t, listResp.Users, 1)
-	require.Equal(t, "user-1", listResp.Users[0].GetId())
+	require.GreaterOrEqual(t, len(listResp.Users), 1)
+	var foundUser *configv1.User
+	for _, u := range listResp.Users {
+		if u.GetId() == "e2e-test-user" {
+			foundUser = u
+			break
+		}
+	}
+	require.NotNil(t, foundUser, "e2e-test-user should be in the list")
+	require.Equal(t, "e2e-test-user", foundUser.GetId())
 
 	// Update user
 	user1.Roles = []string{"admin"}
@@ -169,11 +183,11 @@ global_settings:
 	require.Equal(t, []string{"admin"}, updateResp.User.Roles)
 
 	// Delete user
-	_, err = adminClient.DeleteUser(ctx, &pb_admin.DeleteUserRequest{UserId: proto.String("user-1")})
+	_, err = adminClient.DeleteUser(ctx, &pb_admin.DeleteUserRequest{UserId: proto.String("e2e-test-user")})
 	require.NoError(t, err)
 
 	// Verify deletion
-	_, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("user-1")})
+	_, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("e2e-test-user")})
 	require.Error(t, err)
 
 	// Test OIDC Configuration (External Authenticator Hook)

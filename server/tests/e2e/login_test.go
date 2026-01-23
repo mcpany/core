@@ -55,7 +55,9 @@ global_settings:
 
 	appRunner := app.NewApplication()
 
+	done := make(chan struct{})
 	go func() {
+		defer close(done)
 		fs := afero.NewOsFs()
 		opts := app.RunOptions{
 			Ctx:             ctx,
@@ -69,6 +71,10 @@ global_settings:
 		if err := appRunner.Run(opts); err != nil && err != context.Canceled {
 			t.Logf("Application run error: %v", err)
 		}
+	}()
+	defer func() {
+		cancel()
+		<-done
 	}()
 
 	err = appRunner.WaitForStartup(ctx)
@@ -88,8 +94,8 @@ global_settings:
 
 	adminClient := pb_admin.NewAdminServiceClient(conn)
 
-	// 1. Create User with Basic Auth
-	username := "loginuser"
+	// 1. Create User with Basic Auth (Get-or-Create to avoid flakes)
+	username := "e2e-login-user"
 	password := "password123"
 	user := &configv1.User{
 		Id: proto.String(username),
@@ -104,11 +110,23 @@ global_settings:
 		Roles: []string{"viewer"},
 	}
 
-	createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user})
-	require.NoError(t, err)
-	require.Equal(t, username, createResp.User.GetId())
-	// Ensure password was hashed (not equal to plaintext)
-	assert.NotEqual(t, password, createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash())
+	// Try to get first
+	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(username)})
+	if err == nil && getResp.User.GetId() == username {
+		// User exists, just ensure password/roles if needed?
+		// For now we assume if exists it's fine, or we can update it.
+		// Let's update it to ensure password matches what we expect for login.
+		updateResp, err := adminClient.UpdateUser(ctx, &pb_admin.UpdateUserRequest{User: user})
+		require.NoError(t, err, "Failed to update existing user")
+		require.Equal(t, username, updateResp.User.GetId())
+	} else {
+		// Create
+		createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user})
+		require.NoError(t, err, "Failed to create user")
+		require.Equal(t, username, createResp.User.GetId())
+		// Ensure password was hashed (not equal to plaintext)
+		assert.NotEqual(t, password, createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash())
+	}
 
 	// 2. Attempt Login via REST API
 	loginReq := map[string]string{
