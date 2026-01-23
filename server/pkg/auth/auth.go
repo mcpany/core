@@ -562,6 +562,22 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 	}
 }
 
+// dummyHash is a valid bcrypt hash used to mitigate timing attacks.
+// It is initialized in init().
+var dummyHash string
+
+func init() {
+	// Generate a dummy hash for timing attack mitigation.
+	// We use a cost of 12 to match the default cost used in passhash.
+	// This is done once at startup.
+	h, err := passhash.Password("dummy_password_for_timing_mitigation")
+	if err != nil {
+		// This should never happen in practice
+		panic(fmt.Sprintf("failed to generate dummy hash: %v", err))
+	}
+	dummyHash = h
+}
+
 // checkBasicAuthWithUsers checks if the request has valid Basic Auth credentials
 // matching any of the configured users.
 //
@@ -578,19 +594,34 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
 
+	var userToUse *configv1.User
+	var hashToUse string
+	found := false
+
 	// Direct lookup if user ID matches username
 	if user, ok := am.users[username]; ok {
 		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
-			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
-				ctx = ContextWithUser(ctx, user.GetId())
-				if len(user.GetRoles()) > 0 {
-					ctx = ContextWithRoles(ctx, user.GetRoles())
-				}
-				return ctx, nil
-			}
+			userToUse = user
+			hashToUse = basicAuth.GetPasswordHash()
+			found = true
 		}
 	}
 
-	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
+	if !found {
+		// Use dummy hash to simulate work
+		hashToUse = dummyHash
+	}
+
+	// Always check password to avoid timing attacks
+	passwordMatch := passhash.CheckPassword(password, hashToUse)
+
+	if found && passwordMatch {
+		ctx = ContextWithUser(ctx, userToUse.GetId())
+		if len(userToUse.GetRoles()) > 0 {
+			ctx = ContextWithRoles(ctx, userToUse.GetRoles())
+		}
+		return ctx, nil
+	}
+
 	return ctx, fmt.Errorf("invalid credentials")
 }
