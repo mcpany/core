@@ -66,22 +66,34 @@ func redactJSONFast(input []byte) []byte {
 		quotePos := i + nextQuote
 
 		// Check for potential comments before the quote
-		// Comments start with '/'
-		// Optimization: Check if '/' exists in input[i:quotePos]
-		// We need to handle comments that might obscure keys or be misinterpreted as code.
-		slashIdx := bytes.IndexByte(input[i:quotePos], '/')
-		if slashIdx != -1 {
-			// Found a slash. Check if it starts a comment.
+		// We need to loop through all slashes in the segment to find a real comment start.
+		// A single slash (e.g. division) might precede a real comment.
+		segment := input[i:quotePos]
+		searchOffset := 0
+		foundComment := false
+		for {
+			idx := bytes.IndexByte(segment[searchOffset:], '/')
+			if idx == -1 {
+				break
+			}
+			slashIdx := searchOffset + idx
 			slashPos := i + slashIdx
+
 			if slashPos+1 < n {
 				next := input[slashPos+1]
 				if next == '/' || next == '*' {
 					// It is a comment!
 					// Skip it and retry scanning from after comment
 					i = skipWhitespaceAndComments(input, slashPos)
-					continue
+					foundComment = true
+					break
 				}
 			}
+			// Not a comment, continue searching from next char
+			searchOffset = slashIdx + 1
+		}
+		if foundComment {
+			continue
 		}
 
 		// Parse string
