@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { cn } from "@/lib/utils";
 
 interface SparklineProps {
@@ -28,7 +28,8 @@ interface SparklineProps {
  * @param props.max - The max property.
  * @returns The rendered component.
  */
-export function Sparkline({ data, width = 60, height = 24, className, color = "#22c55e", max }: SparklineProps) {
+// ⚡ Bolt Optimization: Memoized to prevent re-renders when parent updates (e.g. selection) but chart data is stable.
+export const Sparkline = memo(function Sparkline({ data, width = 60, height = 24, className, color = "#22c55e", max }: SparklineProps) {
     const { path, fillPath, gradientId } = useMemo(() => {
         if (!data || data.length === 0) return { path: "", fillPath: "", gradientId: "" };
 
@@ -82,4 +83,5 @@ export function Sparkline({ data, width = 60, height = 24, className, color = "#
             />
         </svg>
     );
-}
+});
+Sparkline.displayName = "Sparkline";

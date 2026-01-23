@@ -14,6 +14,7 @@ package v1
 import (
 	v1 "github.com/mcpany/core/proto/config/v1"
 	v11 "github.com/mcpany/core/proto/mcp_router/v1"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -1639,11 +1640,554 @@ func (b0 DiscoveryProviderStatus_builder) Build() *DiscoveryProviderStatus {
 	return m0
 }
 
+type ListAuditLogsRequest struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	StartTime     *string                `protobuf:"bytes,1,opt,name=start_time,json=startTime" json:"start_time,omitempty"` // ISO 8601
+	EndTime       *string                `protobuf:"bytes,2,opt,name=end_time,json=endTime" json:"end_time,omitempty"`       // ISO 8601
+	ToolName      *string                `protobuf:"bytes,3,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
+	UserId        *string                `protobuf:"bytes,4,opt,name=user_id,json=userId" json:"user_id,omitempty"`
+	ProfileId     *string                `protobuf:"bytes,5,opt,name=profile_id,json=profileId" json:"profile_id,omitempty"`
+	Limit         *int32                 `protobuf:"varint,6,opt,name=limit" json:"limit,omitempty"`
+	Offset        *int32                 `protobuf:"varint,7,opt,name=offset" json:"offset,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuditLogsRequest) Reset() {
+	*x = ListAuditLogsRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuditLogsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuditLogsRequest) ProtoMessage() {}
+
+func (x *ListAuditLogsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ListAuditLogsRequest) GetStartTime() string {
+	if x != nil && x.StartTime != nil {
+		return *x.StartTime
+	}
+	return ""
+}
+
+func (x *ListAuditLogsRequest) GetEndTime() string {
+	if x != nil && x.EndTime != nil {
+		return *x.EndTime
+	}
+	return ""
+}
+
+func (x *ListAuditLogsRequest) GetToolName() string {
+	if x != nil && x.ToolName != nil {
+		return *x.ToolName
+	}
+	return ""
+}
+
+func (x *ListAuditLogsRequest) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *ListAuditLogsRequest) GetProfileId() string {
+	if x != nil && x.ProfileId != nil {
+		return *x.ProfileId
+	}
+	return ""
+}
+
+func (x *ListAuditLogsRequest) GetLimit() int32 {
+	if x != nil && x.Limit != nil {
+		return *x.Limit
+	}
+	return 0
+}
+
+func (x *ListAuditLogsRequest) GetOffset() int32 {
+	if x != nil && x.Offset != nil {
+		return *x.Offset
+	}
+	return 0
+}
+
+func (x *ListAuditLogsRequest) SetStartTime(v string) {
+	x.StartTime = &v
+}
+
+func (x *ListAuditLogsRequest) SetEndTime(v string) {
+	x.EndTime = &v
+}
+
+func (x *ListAuditLogsRequest) SetToolName(v string) {
+	x.ToolName = &v
+}
+
+func (x *ListAuditLogsRequest) SetUserId(v string) {
+	x.UserId = &v
+}
+
+func (x *ListAuditLogsRequest) SetProfileId(v string) {
+	x.ProfileId = &v
+}
+
+func (x *ListAuditLogsRequest) SetLimit(v int32) {
+	x.Limit = &v
+}
+
+func (x *ListAuditLogsRequest) SetOffset(v int32) {
+	x.Offset = &v
+}
+
+func (x *ListAuditLogsRequest) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.StartTime != nil
+}
+
+func (x *ListAuditLogsRequest) HasEndTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.EndTime != nil
+}
+
+func (x *ListAuditLogsRequest) HasToolName() bool {
+	if x == nil {
+		return false
+	}
+	return x.ToolName != nil
+}
+
+func (x *ListAuditLogsRequest) HasUserId() bool {
+	if x == nil {
+		return false
+	}
+	return x.UserId != nil
+}
+
+func (x *ListAuditLogsRequest) HasProfileId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ProfileId != nil
+}
+
+func (x *ListAuditLogsRequest) HasLimit() bool {
+	if x == nil {
+		return false
+	}
+	return x.Limit != nil
+}
+
+func (x *ListAuditLogsRequest) HasOffset() bool {
+	if x == nil {
+		return false
+	}
+	return x.Offset != nil
+}
+
+func (x *ListAuditLogsRequest) ClearStartTime() {
+	x.StartTime = nil
+}
+
+func (x *ListAuditLogsRequest) ClearEndTime() {
+	x.EndTime = nil
+}
+
+func (x *ListAuditLogsRequest) ClearToolName() {
+	x.ToolName = nil
+}
+
+func (x *ListAuditLogsRequest) ClearUserId() {
+	x.UserId = nil
+}
+
+func (x *ListAuditLogsRequest) ClearProfileId() {
+	x.ProfileId = nil
+}
+
+func (x *ListAuditLogsRequest) ClearLimit() {
+	x.Limit = nil
+}
+
+func (x *ListAuditLogsRequest) ClearOffset() {
+	x.Offset = nil
+}
+
+type ListAuditLogsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	StartTime *string
+	EndTime   *string
+	ToolName  *string
+	UserId    *string
+	ProfileId *string
+	Limit     *int32
+	Offset    *int32
+}
+
+func (b0 ListAuditLogsRequest_builder) Build() *ListAuditLogsRequest {
+	m0 := &ListAuditLogsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.StartTime = b.StartTime
+	x.EndTime = b.EndTime
+	x.ToolName = b.ToolName
+	x.UserId = b.UserId
+	x.ProfileId = b.ProfileId
+	x.Limit = b.Limit
+	x.Offset = b.Offset
+	return m0
+}
+
+type ListAuditLogsResponse struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Entries       []*AuditLogEntry       `protobuf:"bytes,1,rep,name=entries" json:"entries,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuditLogsResponse) Reset() {
+	*x = ListAuditLogsResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuditLogsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuditLogsResponse) ProtoMessage() {}
+
+func (x *ListAuditLogsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ListAuditLogsResponse) GetEntries() []*AuditLogEntry {
+	if x != nil {
+		return x.Entries
+	}
+	return nil
+}
+
+func (x *ListAuditLogsResponse) SetEntries(v []*AuditLogEntry) {
+	x.Entries = v
+}
+
+type ListAuditLogsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Entries []*AuditLogEntry
+}
+
+func (b0 ListAuditLogsResponse_builder) Build() *ListAuditLogsResponse {
+	m0 := &ListAuditLogsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Entries = b.Entries
+	return m0
+}
+
+type AuditLogEntry struct {
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Timestamp     *string                `protobuf:"bytes,1,opt,name=timestamp" json:"timestamp,omitempty"` // ISO 8601
+	ToolName      *string                `protobuf:"bytes,2,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
+	UserId        *string                `protobuf:"bytes,3,opt,name=user_id,json=userId" json:"user_id,omitempty"`
+	ProfileId     *string                `protobuf:"bytes,4,opt,name=profile_id,json=profileId" json:"profile_id,omitempty"`
+	Arguments     *string                `protobuf:"bytes,5,opt,name=arguments" json:"arguments,omitempty"` // JSON string
+	Result        *string                `protobuf:"bytes,6,opt,name=result" json:"result,omitempty"`       // JSON string
+	Error         *string                `protobuf:"bytes,7,opt,name=error" json:"error,omitempty"`
+	Duration      *string                `protobuf:"bytes,8,opt,name=duration" json:"duration,omitempty"`
+	DurationMs    *int64                 `protobuf:"varint,9,opt,name=duration_ms,json=durationMs" json:"duration_ms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuditLogEntry) Reset() {
+	*x = AuditLogEntry{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuditLogEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuditLogEntry) ProtoMessage() {}
+
+func (x *AuditLogEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *AuditLogEntry) GetTimestamp() string {
+	if x != nil && x.Timestamp != nil {
+		return *x.Timestamp
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetToolName() string {
+	if x != nil && x.ToolName != nil {
+		return *x.ToolName
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetProfileId() string {
+	if x != nil && x.ProfileId != nil {
+		return *x.ProfileId
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetArguments() string {
+	if x != nil && x.Arguments != nil {
+		return *x.Arguments
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetResult() string {
+	if x != nil && x.Result != nil {
+		return *x.Result
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetError() string {
+	if x != nil && x.Error != nil {
+		return *x.Error
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetDuration() string {
+	if x != nil && x.Duration != nil {
+		return *x.Duration
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetDurationMs() int64 {
+	if x != nil && x.DurationMs != nil {
+		return *x.DurationMs
+	}
+	return 0
+}
+
+func (x *AuditLogEntry) SetTimestamp(v string) {
+	x.Timestamp = &v
+}
+
+func (x *AuditLogEntry) SetToolName(v string) {
+	x.ToolName = &v
+}
+
+func (x *AuditLogEntry) SetUserId(v string) {
+	x.UserId = &v
+}
+
+func (x *AuditLogEntry) SetProfileId(v string) {
+	x.ProfileId = &v
+}
+
+func (x *AuditLogEntry) SetArguments(v string) {
+	x.Arguments = &v
+}
+
+func (x *AuditLogEntry) SetResult(v string) {
+	x.Result = &v
+}
+
+func (x *AuditLogEntry) SetError(v string) {
+	x.Error = &v
+}
+
+func (x *AuditLogEntry) SetDuration(v string) {
+	x.Duration = &v
+}
+
+func (x *AuditLogEntry) SetDurationMs(v int64) {
+	x.DurationMs = &v
+}
+
+func (x *AuditLogEntry) HasTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.Timestamp != nil
+}
+
+func (x *AuditLogEntry) HasToolName() bool {
+	if x == nil {
+		return false
+	}
+	return x.ToolName != nil
+}
+
+func (x *AuditLogEntry) HasUserId() bool {
+	if x == nil {
+		return false
+	}
+	return x.UserId != nil
+}
+
+func (x *AuditLogEntry) HasProfileId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ProfileId != nil
+}
+
+func (x *AuditLogEntry) HasArguments() bool {
+	if x == nil {
+		return false
+	}
+	return x.Arguments != nil
+}
+
+func (x *AuditLogEntry) HasResult() bool {
+	if x == nil {
+		return false
+	}
+	return x.Result != nil
+}
+
+func (x *AuditLogEntry) HasError() bool {
+	if x == nil {
+		return false
+	}
+	return x.Error != nil
+}
+
+func (x *AuditLogEntry) HasDuration() bool {
+	if x == nil {
+		return false
+	}
+	return x.Duration != nil
+}
+
+func (x *AuditLogEntry) HasDurationMs() bool {
+	if x == nil {
+		return false
+	}
+	return x.DurationMs != nil
+}
+
+func (x *AuditLogEntry) ClearTimestamp() {
+	x.Timestamp = nil
+}
+
+func (x *AuditLogEntry) ClearToolName() {
+	x.ToolName = nil
+}
+
+func (x *AuditLogEntry) ClearUserId() {
+	x.UserId = nil
+}
+
+func (x *AuditLogEntry) ClearProfileId() {
+	x.ProfileId = nil
+}
+
+func (x *AuditLogEntry) ClearArguments() {
+	x.Arguments = nil
+}
+
+func (x *AuditLogEntry) ClearResult() {
+	x.Result = nil
+}
+
+func (x *AuditLogEntry) ClearError() {
+	x.Error = nil
+}
+
+func (x *AuditLogEntry) ClearDuration() {
+	x.Duration = nil
+}
+
+func (x *AuditLogEntry) ClearDurationMs() {
+	x.DurationMs = nil
+}
+
+type AuditLogEntry_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Timestamp  *string
+	ToolName   *string
+	UserId     *string
+	ProfileId  *string
+	Arguments  *string
+	Result     *string
+	Error      *string
+	Duration   *string
+	DurationMs *int64
+}
+
+func (b0 AuditLogEntry_builder) Build() *AuditLogEntry {
+	m0 := &AuditLogEntry{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Timestamp = b.Timestamp
+	x.ToolName = b.ToolName
+	x.UserId = b.UserId
+	x.ProfileId = b.ProfileId
+	x.Arguments = b.Arguments
+	x.Result = b.Result
+	x.Error = b.Error
+	x.Duration = b.Duration
+	x.DurationMs = b.DurationMs
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\"\x13\n" +
+	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\"\x13\n" +
 	"\x11ClearCacheRequest\"\x14\n" +
 	"\x12ClearCacheResponse\"\x15\n" +
 	"\x13ListServicesRequest\"\xa5\x01\n" +
@@ -1694,7 +2238,31 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"last_error\x18\x03 \x01(\tR\tlastError\x12\x1e\n" +
 	"\vlast_run_at\x18\x04 \x01(\tR\tlastRunAt\x12)\n" +
-	"\x10discovered_count\x18\x05 \x01(\x05R\x0fdiscoveredCount2\xd1\a\n" +
+	"\x10discovered_count\x18\x05 \x01(\x05R\x0fdiscoveredCount\"\xd3\x01\n" +
+	"\x14ListAuditLogsRequest\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\tR\tstartTime\x12\x19\n" +
+	"\bend_time\x18\x02 \x01(\tR\aendTime\x12\x1b\n" +
+	"\ttool_name\x18\x03 \x01(\tR\btoolName\x12\x17\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\x12\x1d\n" +
+	"\n" +
+	"profile_id\x18\x05 \x01(\tR\tprofileId\x12\x14\n" +
+	"\x05limit\x18\x06 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\a \x01(\x05R\x06offset\"Q\n" +
+	"\x15ListAuditLogsResponse\x128\n" +
+	"\aentries\x18\x01 \x03(\v2\x1e.mcpany.admin.v1.AuditLogEntryR\aentries\"\x8b\x02\n" +
+	"\rAuditLogEntry\x12\x1c\n" +
+	"\ttimestamp\x18\x01 \x01(\tR\ttimestamp\x12\x1b\n" +
+	"\ttool_name\x18\x02 \x01(\tR\btoolName\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x1d\n" +
+	"\n" +
+	"profile_id\x18\x04 \x01(\tR\tprofileId\x12\x1c\n" +
+	"\targuments\x18\x05 \x01(\tR\targuments\x12\x16\n" +
+	"\x06result\x18\x06 \x01(\tR\x06result\x12\x14\n" +
+	"\x05error\x18\a \x01(\tR\x05error\x12\x1a\n" +
+	"\bduration\x18\b \x01(\tR\bduration\x12\x1f\n" +
+	"\vduration_ms\x18\t \x01(\x03R\n" +
+	"durationMs2\xcd\b\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -1711,10 +2279,11 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"UpdateUser\x12\".mcpany.admin.v1.UpdateUserRequest\x1a#.mcpany.admin.v1.UpdateUserResponse\x12U\n" +
 	"\n" +
 	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
-	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponseB3B\n" +
+	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\x12z\n" +
+	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB3B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
 	(*ClearCacheRequest)(nil),          // 0: mcpany.admin.v1.ClearCacheRequest
 	(*ClearCacheResponse)(nil),         // 1: mcpany.admin.v1.ClearCacheResponse
@@ -1740,52 +2309,58 @@ var file_proto_admin_v1_admin_proto_goTypes = []any{
 	(*GetDiscoveryStatusRequest)(nil),  // 21: mcpany.admin.v1.GetDiscoveryStatusRequest
 	(*GetDiscoveryStatusResponse)(nil), // 22: mcpany.admin.v1.GetDiscoveryStatusResponse
 	(*DiscoveryProviderStatus)(nil),    // 23: mcpany.admin.v1.DiscoveryProviderStatus
-	(*v1.UpstreamServiceConfig)(nil),   // 24: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                   // 25: mcpany.mcp_router.v1.Tool
-	(*v1.User)(nil),                    // 26: mcpany.config.v1.User
+	(*ListAuditLogsRequest)(nil),       // 24: mcpany.admin.v1.ListAuditLogsRequest
+	(*ListAuditLogsResponse)(nil),      // 25: mcpany.admin.v1.ListAuditLogsResponse
+	(*AuditLogEntry)(nil),              // 26: mcpany.admin.v1.AuditLogEntry
+	(*v1.UpstreamServiceConfig)(nil),   // 27: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                   // 28: mcpany.mcp_router.v1.Tool
+	(*v1.User)(nil),                    // 29: mcpany.config.v1.User
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	24, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	27, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
-	24, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	24, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	27, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	27, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 4: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
-	25, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	25, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	26, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
-	26, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
-	26, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
-	26, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
-	26, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
-	26, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
+	28, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	28, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	29, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
+	29, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
+	29, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
+	29, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
+	29, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
+	29, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
 	23, // 13: mcpany.admin.v1.GetDiscoveryStatusResponse.providers:type_name -> mcpany.admin.v1.DiscoveryProviderStatus
-	0,  // 14: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 15: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	5,  // 16: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	7,  // 17: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	9,  // 18: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	11, // 19: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
-	13, // 20: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
-	15, // 21: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
-	17, // 22: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
-	19, // 23: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
-	21, // 24: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
-	1,  // 25: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 26: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	6,  // 27: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	8,  // 28: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	10, // 29: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	12, // 30: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
-	14, // 31: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
-	16, // 32: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
-	18, // 33: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
-	20, // 34: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
-	22, // 35: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
-	25, // [25:36] is the sub-list for method output_type
-	14, // [14:25] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	26, // 14: mcpany.admin.v1.ListAuditLogsResponse.entries:type_name -> mcpany.admin.v1.AuditLogEntry
+	0,  // 15: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	2,  // 16: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 17: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 18: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 19: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	11, // 20: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
+	13, // 21: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
+	15, // 22: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
+	17, // 23: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
+	19, // 24: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
+	21, // 25: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
+	24, // 26: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
+	1,  // 27: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	3,  // 28: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 29: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 30: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 31: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	12, // 32: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
+	14, // 33: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
+	16, // 34: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
+	18, // 35: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
+	20, // 36: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
+	22, // 37: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
+	25, // 38: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
+	27, // [27:39] is the sub-list for method output_type
+	15, // [15:27] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -1799,7 +2374,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   24,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

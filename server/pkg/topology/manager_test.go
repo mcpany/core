@@ -372,6 +372,58 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 	assert.Len(t, graph.Clients, 0)
 }
 
+func TestManager_GetTrafficHistory(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+
+	// Record some activity
+	// 1 request, 100ms latency
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false)
+
+	// Check history
+	history := m.GetTrafficHistory()
+	require.NotEmpty(t, history)
+
+	// The history returns 60 points (minutes). Most recent should have data.
+	// The loop in GetTrafficHistory goes from 59 down to 0 minutes ago.
+	// So the last element (index 59) corresponds to "now".
+	lastPoint := history[len(history)-1]
+
+	assert.Equal(t, int64(1), lastPoint.Total)
+	assert.Equal(t, int64(0), lastPoint.Errors)
+	assert.Equal(t, int64(100), lastPoint.Latency) // Average latency
+}
+
+func TestManager_SeedTrafficHistory(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+
+	points := []TrafficPoint{
+		{Time: "12:00", Total: 10, Errors: 1, Latency: 50},
+		{Time: "12:01", Total: 20, Errors: 2, Latency: 60},
+	}
+
+	m.SeedTrafficHistory(points)
+
+	// Verify internal state
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	assert.NotEmpty(t, m.trafficHistory)
+	// We can't easily predict the exact keys without knowing "today", but we can check the count
+	assert.Equal(t, 2, len(m.trafficHistory))
+
+	// Check session update
+	seedSession := m.sessions["seed-data"]
+	require.NotNil(t, seedSession)
+	assert.Equal(t, int64(30), seedSession.RequestCount)
+	assert.Equal(t, int64(3), seedSession.ErrorCount)
+	// Total latency = (10 * 50) + (20 * 60) = 500 + 1200 = 1700
+	assert.Equal(t, 1700*time.Millisecond, seedSession.TotalLatency)
+}
+
 func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)
