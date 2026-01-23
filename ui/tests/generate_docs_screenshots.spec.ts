@@ -441,6 +441,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       // Open Actions Dropdown
       // We target the first card's actions button
       const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
+      await expect(actionButton).toBeVisible({ timeout: 30000 });
       await actionButton.click();
       await page.waitForTimeout(500);
 
