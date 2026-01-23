@@ -5,7 +5,7 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -37,6 +37,30 @@ export interface Message {
 interface ChatMessageProps {
     message: Message;
     onReplay?: (toolName: string, args: Record<string, unknown>) => void;
+    onRetry?: (toolName: string, args: Record<string, unknown>) => void;
+}
+
+function analyzeError(error: string): string | null {
+    const e = error.toLowerCase();
+    if (e.includes("timeout") || e.includes("timed out") || e.includes("deadline")) {
+        return "The tool took too long to respond. Try increasing the timeout or checking if the service is overloaded.";
+    }
+    if (e.includes("json") || e.includes("parse") || e.includes("syntax")) {
+        return "It looks like there's a syntax error in your arguments. Please check the JSON format.";
+    }
+    if (e.includes("connection") || e.includes("network") || e.includes("refused")) {
+        return "Could not connect to the upstream service. Please check if the service is running and reachable.";
+    }
+    if (e.includes("unauthorized") || e.includes("authentication") || e.includes("401") || e.includes("403")) {
+        return "Authentication failed. Please check your API keys or credentials in the service configuration.";
+    }
+    if (e.includes("not found") || e.includes("404")) {
+        return "The requested tool or resource was not found. Please verify the tool name and availability.";
+    }
+    if (e.includes("argument") || e.includes("required") || e.includes("validation") || e.includes("missing")) {
+        return "Some required arguments might be missing or invalid. Please check the tool schema.";
+    }
+    return null;
 }
 
 /**
@@ -44,7 +68,7 @@ interface ChatMessageProps {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message, onReplay }: ChatMessageProps) {
+export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = (text: string) => {
@@ -200,14 +224,48 @@ export function ChatMessage({ message, onReplay }: ChatMessageProps) {
     }
 
     if (message.type === "error") {
+        const suggestion = message.content ? analyzeError(message.content) : null;
+
         return (
              <div className="flex justify-start gap-3 pl-11 w-full pr-10 my-2">
-                <div className="flex items-start gap-3 text-destructive bg-destructive/5 px-4 py-3 rounded-lg text-sm border border-destructive/20 shadow-sm w-full">
-                    <AlertCircle className="size-5 mt-0.5 shrink-0" />
-                    <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-xs uppercase tracking-wider">Execution Error</span>
-                        <span className="whitespace-pre-wrap font-mono text-xs">{message.content}</span>
+                <div className="flex flex-col gap-2 w-full">
+                    <div className="flex items-start gap-3 text-destructive bg-destructive/5 px-4 py-3 rounded-lg text-sm border border-destructive/20 shadow-sm w-full relative group">
+                        <AlertCircle className="size-5 mt-0.5 shrink-0" />
+                        <div className="flex flex-col gap-1 flex-1">
+                            <span className="font-semibold text-xs uppercase tracking-wider">Execution Error</span>
+                            <span className="whitespace-pre-wrap font-mono text-xs break-all">{message.content}</span>
+                        </div>
+                        {onRetry && message.toolName && (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 -mt-1 -mr-2 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                                            onClick={() => onRetry(message.toolName!, message.toolArgs || {})}
+                                            aria-label="Retry command"
+                                        >
+                                            <RotateCcw className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="left">
+                                        <p>Retry this command</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )}
                     </div>
+
+                    {suggestion && (
+                        <div className="flex items-start gap-3 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10 px-4 py-3 rounded-lg text-sm border border-amber-200 dark:border-amber-800/30 shadow-sm w-full">
+                            <Lightbulb className="size-5 mt-0.5 shrink-0" />
+                            <div className="flex flex-col gap-1">
+                                <span className="font-semibold text-xs uppercase tracking-wider">Suggestion</span>
+                                <span className="text-xs">{suggestion}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );

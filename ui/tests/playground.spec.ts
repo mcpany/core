@@ -77,4 +77,61 @@ test.describe('Playground Tool Configuration', () => {
     await expect(page.getByText('Mock execution result')).toBeVisible();
   });
 
+  test('should display smart error diagnostics and allow retry', async ({ page }) => {
+    // Mock the tools API response
+    await page.route('/api/v1/tools', async route => {
+      const json = {
+        tools: [
+          {
+            name: 'timeout_tool',
+            description: 'A tool that times out',
+            inputSchema: { type: 'object', properties: {} }
+          }
+        ]
+      };
+      await route.fulfill({ json });
+    });
+
+    // Mock the tool execution failure
+    await page.route('/api/v1/execute', async route => {
+        await route.fulfill({
+            status: 500,
+            json: { error: "upstream request timed out after 30s" }
+        });
+    });
+
+    await page.goto('/playground');
+
+    // Wait for tool to appear
+    await expect(page.getByText('timeout_tool')).toBeVisible();
+
+    // Click "Use"
+    await page.getByRole('button', { name: 'Use', exact: true }).click();
+
+    // Build command (empty args)
+    await page.getByRole('button', { name: /build command/i }).click();
+
+    // Send
+    await page.getByLabel('Send').click();
+
+    // Verify error message appears
+    await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible();
+
+    // Verify Retry button appears
+    const retryBtn = page.getByLabel('Retry command');
+    await expect(retryBtn).toBeVisible();
+
+    // Verify Smart Suggestion appears
+    await expect(page.getByText('Suggestion')).toBeVisible();
+
+    // Click Retry
+    await retryBtn.click();
+
+    // Verify input is populated
+    await expect(page.getByRole('textbox', { name: /enter command/i })).toHaveValue(/timeout_tool/);
+
+    // Take verification screenshot
+    await page.screenshot({ path: 'verification.png' });
+  });
+
 });

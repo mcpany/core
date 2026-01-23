@@ -233,6 +233,8 @@ export function PlaygroundClientPro() {
               id: Date.now().toString(),
               type: "error",
               content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
+              toolName: toolName,
+              toolArgs: toolArgs,
               timestamp: new Date(),
           }]);
       } finally {
@@ -357,7 +359,7 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} />
+                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
