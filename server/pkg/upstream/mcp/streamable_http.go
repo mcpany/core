@@ -27,6 +27,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -456,6 +457,11 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 			command = "sudo"
 			args = newArgs
 		}
+
+		if err := validation.IsAllowedCommand(command); err != nil {
+			return nil, err
+		}
+
 		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is validated/configured by user
 		cmd.Dir = stdio.GetWorkingDirectory()
 		cmd.Env = buildSafeEnv(resolvedEnv)
@@ -476,6 +482,10 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	// If no setup commands are provided, execute the command directly.
 	// This avoids shell injection risks and is safer.
 	if len(setupCommands) == 0 {
+		if err := validation.IsAllowedCommand(command); err != nil {
+			return nil, err
+		}
+
 		cmd := exec.CommandContext(ctx, command, args...) //nolint:gosec // Command is configured by user
 		cmd.Dir = stdio.GetWorkingDirectory()
 		cmd.Env = buildSafeEnv(resolvedEnv)
@@ -505,6 +515,10 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	scriptCommands = append(scriptCommands, strings.Join(mainCommandParts, " "))
 
 	script := strings.Join(scriptCommands, " && ")
+
+	if err := validation.IsAllowedCommand("/bin/sh"); err != nil {
+		return nil, fmt.Errorf("setup_commands require /bin/sh to be allowed: %w", err)
+	}
 
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script is configured by user
 	cmd.Dir = stdio.GetWorkingDirectory()

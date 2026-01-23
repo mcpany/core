@@ -95,6 +95,10 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 		}
 	}
 
+	if err := validation.IsAllowedCommand(command); err != nil {
+		return nil, nil, nil, err
+	}
+
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = workingDir
 	cmd.Env = env
@@ -151,6 +155,10 @@ func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, ar
 		if err := validation.IsAllowedPath(workingDir); err != nil {
 			return nil, nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
 		}
+	}
+
+	if err := validation.IsAllowedCommand(command); err != nil {
+		return nil, nil, nil, nil, err
 	}
 
 	cmd := exec.CommandContext(ctx, command, args...)

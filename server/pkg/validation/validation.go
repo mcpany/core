@@ -52,6 +52,27 @@ func IsValidBindAddress(s string) error {
 	return nil
 }
 
+// IsAllowedCommand checks if a given command is allowed to be executed.
+// It checks against the MCP_ALLOWED_COMMANDS environment variable.
+// If the environment variable is not set, all commands are allowed (default behavior).
+// If set, it must be a comma-separated list of allowed commands (exact match).
+func IsAllowedCommand(command string) error {
+	allowedCmdsStr := os.Getenv("MCP_ALLOWED_COMMANDS")
+	if allowedCmdsStr == "" {
+		return nil
+	}
+
+	command = strings.TrimSpace(command)
+	allowedCmds := strings.Split(allowedCmdsStr, ",")
+	for _, allowed := range allowedCmds {
+		if strings.TrimSpace(allowed) == command {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("command %q is not in the allowed list (MCP_ALLOWED_COMMANDS)", command)
+}
+
 // IsSecurePath checks if a given file path is secure and does not contain any
 // path traversal sequences ("../" or "..\\"). This function is crucial for
 // preventing directory traversal attacks, where a malicious actor could
