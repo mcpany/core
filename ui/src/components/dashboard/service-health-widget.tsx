@@ -5,22 +5,15 @@
 
 "use client";
 
-import { useEffect, useState, memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
-
-interface ServiceHealth {
-  id: string;
-  name: string;
-  status: "healthy" | "degraded" | "unhealthy" | "inactive";
-  latency: string;
-  uptime: string;
-  message?: string;
-}
+import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -48,14 +41,6 @@ const getStatusColor = (status: string) => {
 };
 
 // ⚡ Bolt Optimization: Extracted diagnosis logic to a memoized component.
-// This prevents running analyzeConnectionError on every parent render.
-// The logic now only runs when the service message changes.
-/**
- * ServiceDiagnosisPopover component.
- * @param props - The component props.
- * @param props.message - The message property.
- * @returns The rendered component.
- */
 const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message }: { message: string }) {
     const diagnosis = useMemo(() => analyzeConnectionError(message), [message]);
 
@@ -84,39 +69,77 @@ const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message 
     );
 });
 
+const HealthTimeline = memo(function HealthTimeline({ history }: { history: HealthHistoryPoint[] }) {
+  if (!history || history.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-[2px] h-3 ml-4">
+      {history.map((point, i) => {
+        let colorClass = "bg-muted";
+        switch (point.status) {
+          case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;
+          case "degraded": colorClass = "bg-amber-500/80 hover:bg-amber-500"; break;
+          case "unhealthy": colorClass = "bg-red-500/80 hover:bg-red-500"; break;
+          case "inactive": colorClass = "bg-slate-200 dark:bg-slate-700 opacity-50"; break;
+        }
+
+        return (
+          <TooltipProvider key={point.timestamp}>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                 <div
+                    className={cn("w-1.5 h-full rounded-[1px] transition-all cursor-crosshair", colorClass)}
+                 />
+              </TooltipTrigger>
+              <TooltipContent className="text-[10px] p-1 px-2">
+                <div className="font-semibold capitalize flex items-center gap-1">
+                    {point.status === 'healthy' && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+                    {point.status === 'unhealthy' && <XCircle className="h-3 w-3 text-red-500" />}
+                    {point.status}
+                </div>
+                <div className="text-muted-foreground">{new Date(point.timestamp).toLocaleTimeString()}</div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      })}
+    </div>
+  );
+});
+
+
 // ⚡ Bolt Optimization: Memoized individual service items.
-// This prevents re-rendering all service items when only one service's state changes (e.g., latency or uptime update).
-/**
- * ServiceHealthItem component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @returns The rendered component.
- */
-const ServiceHealthItem = memo(function ServiceHealthItem({ service }: { service: ServiceHealth }) {
+const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
     return (
         <div
             className="group flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors"
         >
-            <div className="flex items-center space-x-4">
-            <div className={cn("p-2 rounded-full bg-background shadow-sm border", getStatusColor(service.status).split(" ")[0])}>
-                {getStatusIcon(service.status)}
-            </div>
-            <div>
-                <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium leading-none mb-1">{service.name}</p>
-                    {service.message && (
-                        <ServiceDiagnosisPopover message={service.message} />
+            <div className="flex items-center space-x-4 flex-1 min-w-0">
+                <div className={cn("p-2 rounded-full bg-background shadow-sm border shrink-0", getStatusColor(service.status).split(" ")[0])}>
+                    {getStatusIcon(service.status)}
+                </div>
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium leading-none mb-1 truncate">{service.name}</p>
+                        {service.message && (
+                            <ServiceDiagnosisPopover message={service.message} />
+                        )}
+                    </div>
+                    {service.status !== 'inactive' && service.latency !== '--' && (
+                        <p className="text-xs text-muted-foreground flex items-center">
+                        <Activity className="h-3 w-3 mr-1" />
+                        Latency: <span className="font-mono ml-1">{service.latency}</span>
+                        </p>
                     )}
                 </div>
-                {service.status !== 'inactive' && service.latency !== '--' && (
-                    <p className="text-xs text-muted-foreground flex items-center">
-                    <Activity className="h-3 w-3 mr-1" />
-                    Latency: <span className="font-mono ml-1">{service.latency}</span>
-                    </p>
-                )}
+
+                {/* Timeline Visualization */}
+                <div className="hidden md:flex flex-1 justify-end px-4">
+                     <HealthTimeline history={history} />
+                </div>
             </div>
-            </div>
-            <div className="flex items-center space-x-4">
+
+            <div className="flex items-center space-x-4 shrink-0">
                 {(service.status !== 'inactive' && service.uptime !== '--') && (
                     <div className="text-right hidden sm:block">
                         <p className="text-xs text-muted-foreground">Uptime</p>
@@ -136,49 +159,14 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service }: { service
  * @returns The rendered component.
  */
 export function ServiceHealthWidget() {
-  const [services, setServices] = useState<ServiceHealth[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { services, history, isLoading } = useServiceHealthHistory();
 
-  useEffect(() => {
-    async function fetchHealth() {
-      try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data = await res.json();
-          // Sort services: unhealthy first, then active, then inactive
-          const sorted = Array.isArray(data) ? data.sort((a: ServiceHealth, b: ServiceHealth) => {
-             const score = (s: string) => s === 'unhealthy' ? 0 : s === 'degraded' ? 1 : s === 'healthy' ? 2 : 3;
-             return score(a.status) - score(b.status);
-          }) : [];
-          setServices(sorted);
-        }
-      } catch (error) {
-        console.warn("Failed to fetch health data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchHealth();
-    const interval = setInterval(() => {
-      // ⚡ Bolt Optimization: Pause polling when tab is not visible
-      if (!document.hidden) {
-        fetchHealth();
-      }
-    }, 10000); // Poll every 10s
-
-    // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
-    const onVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchHealth();
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, []);
+  const sortedServices = useMemo(() => {
+    return Array.isArray(services) ? [...services].sort((a, b) => {
+         const score = (s: string) => s === 'unhealthy' ? 0 : s === 'degraded' ? 1 : s === 'healthy' ? 2 : 3;
+         return score(a.status) - score(b.status);
+    }) : [];
+  }, [services]);
 
   if (isLoading) {
     return (
@@ -195,7 +183,7 @@ export function ServiceHealthWidget() {
     )
   }
 
-  if (services.length === 0) {
+  if (sortedServices.length === 0) {
       return (
           <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
              <CardHeader>
@@ -216,15 +204,27 @@ export function ServiceHealthWidget() {
   return (
     <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm transition-all duration-300">
       <CardHeader>
-        <CardTitle>System Health</CardTitle>
-        <CardDescription>
-          Live health checks for {services.length} connected services.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+            <div>
+                <CardTitle>System Health</CardTitle>
+                <CardDescription>
+                Live health checks for {sortedServices.length} connected services.
+                </CardDescription>
+            </div>
+             <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                <Clock className="h-3 w-3" />
+                <span>History (10m)</span>
+            </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {services.map((service) => (
-            <ServiceHealthItem key={service.id} service={service} />
+          {sortedServices.map((service) => (
+            <ServiceHealthItem
+                key={service.id}
+                service={service}
+                history={history[service.id]}
+            />
           ))}
         </div>
       </CardContent>
