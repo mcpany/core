@@ -20,6 +20,7 @@ const (
 	TypeBoolean = "boolean"
 	TypeObject  = "object"
 	TypeArray   = "array"
+	TypeString  = "string"
 )
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
@@ -98,7 +99,7 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 
 func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]interface{}, error) {
 	schema := map[string]interface{}{
-		"type": "string", // Default
+		"type": TypeString, // Default
 	}
 
 	switch field.Kind() {
@@ -110,6 +111,14 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 		schema["type"] = TypeInteger
 	case protoreflect.BoolKind:
 		schema["type"] = TypeBoolean
+	case protoreflect.EnumKind:
+		schema["type"] = TypeString
+		enumVals := field.Enum().Values()
+		var values []interface{}
+		for i := 0; i < enumVals.Len(); i++ {
+			values = append(values, string(enumVals.Get(i).Name()))
+		}
+		schema["enum"] = values
 	case protoreflect.MessageKind, protoreflect.GroupKind:
 		schema["type"] = TypeObject
 		nestedProps, err := fieldsToProperties(field.Message().Fields(), depth+1)
@@ -164,7 +173,7 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 
 		typeStr := strings.ToLower(configv1.ParameterType_name[int32(paramSchema.GetType())])
 		if typeStr == "" {
-			typeStr = "string"
+			typeStr = TypeString
 		}
 		paramStruct := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
@@ -191,7 +200,7 @@ func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Stru
 
 	for _, param := range params {
 		scalarType := strings.ToLower(strings.TrimPrefix(param.GetType(), "TYPE_"))
-		typeVal := "string" // Default
+		typeVal := TypeString // Default
 
 		switch scalarType {
 		case "double", "float":

@@ -21,6 +21,10 @@ func TestMockManagerInterface(t *testing.T) {
 	mock.EXPECT().AddResource(gomock.Any()).Times(1)
 	mock.AddResource(nil)
 
+	// Clear
+	mock.EXPECT().Clear().Times(1)
+	mock.Clear()
+
 	// ClearResourcesForService
 	mock.EXPECT().ClearResourcesForService("service1").Times(1)
 	mock.ClearResourcesForService("service1")

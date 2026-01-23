@@ -46,6 +46,10 @@ export const LazyTopToolsWidget = dynamic(
   }
 );
 
+/**
+ * LazyHealthHistoryChart is a dynamically loaded HealthHistoryChart component.
+ * It uses a skeleton loader while the component is being fetched.
+ */
 export const LazyHealthHistoryChart = dynamic(
   () => import("@/components/stats/health-history-chart").then((mod) => mod.HealthHistoryChart),
   {

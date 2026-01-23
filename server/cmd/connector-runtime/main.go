@@ -13,6 +13,7 @@ import (
 	"syscall"
 )
 
+// main is the entry point for the connector runtime.
 // This runtime is designed to host MCP connectors (stdin/stdout tools)
 // as a sidecar process, managing their lifecycle and configuration.
 func main() {

@@ -259,6 +259,10 @@ The project is organized as follows:
 - **`server/docs/`**: Detailed documentation and guides.
 - **`ui/`**: The web-based management dashboard (Next.js/React).
 
+### Documentation
+
+For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
+
 ### UI Development
 
 To work on the frontend dashboard:

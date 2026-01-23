@@ -16,6 +16,12 @@ interface TemplateConfigFormProps {
   onSubmit: (values: Record<string, string>) => void;
 }
 
+/**
+ * TemplateConfigForm renders a form based on a service template definition.
+ * It handles variable substitution inputs.
+ * @param props - Component props.
+ * @returns The TemplateConfigForm component.
+ */
 export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateConfigFormProps) {
   const [values, setValues] = useState<Record<string, string>>({});
 

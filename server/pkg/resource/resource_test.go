@@ -165,25 +165,3 @@ func TestResourceManager_ClearResourcesForService(t *testing.T) {
 	rm.ClearResourcesForService("non-existent-service")
 	assert.Equal(t, 4, changedCount, "OnListChanged should not be called when no resources are cleared")
 }
-
-func TestResourceManager_ListMCPResources(t *testing.T) {
-	t.Parallel()
-	rm := NewManager()
-	resource1 := &mockResource{uri: "resource://one", service: "service1"}
-	resource2 := &mockResource{uri: "resource://two", service: "service2"}
-
-	rm.AddResource(resource1)
-	rm.AddResource(resource2)
-
-	mcpResources := rm.ListMCPResources()
-	assert.Len(t, mcpResources, 2)
-
-	// Check caching by calling again
-	mcpResources2 := rm.ListMCPResources()
-	assert.Len(t, mcpResources2, 2)
-
-	rm.RemoveResource("resource://one")
-	mcpResources3 := rm.ListMCPResources()
-	assert.Len(t, mcpResources3, 1)
-	assert.Equal(t, "resource://two", mcpResources3[0].URI)
-}

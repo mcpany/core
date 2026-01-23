@@ -12,7 +12,7 @@ import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, Share2, Copy, Check, Info } from "lucide-react";
+import { Download, Share2, Copy, Check, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens, estimateMessageTokens } from "@/lib/tokens";
 import {
@@ -102,6 +102,7 @@ export function PlaygroundClientPro() {
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const isMobile = useIsMobile();
   const [isDryRun, setIsDryRun] = useState(false);
@@ -233,6 +234,8 @@ export function PlaygroundClientPro() {
               id: Date.now().toString(),
               type: "error",
               content: (err instanceof Error ? err.message : String(err)) || "Tool execution failed",
+              toolName: toolName,
+              toolArgs: toolArgs,
               timestamp: new Date(),
           }]);
       } finally {
@@ -256,6 +259,44 @@ export function PlaygroundClientPro() {
         title: "History Exported",
         description: "Your playground session has been saved to a JSON file."
     });
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const importedMessages = JSON.parse(content);
+
+        // Basic validation
+        if (!Array.isArray(importedMessages)) {
+            throw new Error("Invalid format: Root must be an array");
+        }
+
+        setMessages(importedMessages);
+        toast({
+            title: "History Imported",
+            description: `Successfully loaded ${importedMessages.length} messages.`
+        });
+      } catch (err) {
+        toast({
+            title: "Import Failed",
+            description: "Failed to parse the file. Ensure it is a valid JSON export.",
+            variant: "destructive"
+        });
+        console.error("Import error:", err);
+      }
+    };
+    reader.readAsText(file);
+    // Reset input so same file can be selected again if needed
+    event.target.value = '';
   };
 
   const handleShareUrl = () => {
@@ -341,6 +382,22 @@ export function PlaygroundClientPro() {
                               Export
                           </Button>
                           <Button
+                               variant="outline"
+                               size="sm"
+                               className="h-7 text-xs flex items-center gap-1"
+                               onClick={handleImportClick}
+                          >
+                              <Upload className="h-3 w-3" />
+                              Import
+                          </Button>
+                          <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept=".json"
+                                onChange={handleFileChange}
+                          />
+                          <Button
                             variant="outline"
                             size="sm"
                             className="h-7 text-xs"
@@ -357,7 +414,7 @@ export function PlaygroundClientPro() {
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
                             {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} />
+                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
                             ))}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
