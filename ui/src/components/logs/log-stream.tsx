@@ -14,7 +14,8 @@ import {
   Download,
   Filter,
   Terminal,
-  Unplug
+  Unplug,
+  Monitor
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -135,6 +136,7 @@ export function LogStream() {
   }, [isPaused])
 
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
+  const [filterSource, setFilterSource] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
@@ -247,17 +249,29 @@ export function LogStream() {
     }
   }, [logs, isPaused])
 
+  // Optimization: Extract unique sources from logs efficiently
+  const uniqueSources = React.useMemo(() => {
+    const sources = new Set<string>()
+    logs.forEach(log => {
+      if (log.source) {
+        sources.add(log.source)
+      }
+    })
+    return Array.from(sources).sort()
+  }, [logs])
+
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
     // Optimization: Fast path for when no filters are active.
-    if (filterLevel === "ALL" && !deferredSearchQuery) {
+    if (filterLevel === "ALL" && filterSource === "ALL" && !deferredSearchQuery) {
       return logs
     }
 
     const lowerSearchQuery = deferredSearchQuery.toLowerCase()
     return logs.filter((log) => {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
+      const matchesSource = filterSource === "ALL" || log.source === filterSource
 
       // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
       let matchesSearch: boolean | undefined
@@ -269,9 +283,9 @@ export function LogStream() {
           log.source?.toLowerCase().includes(lowerSearchQuery)
       }
 
-      return matchesLevel && matchesSearch
+      return matchesLevel && matchesSource && matchesSearch
     })
-  }, [logs, filterLevel, deferredSearchQuery])
+  }, [logs, filterLevel, filterSource, deferredSearchQuery])
 
   const clearLogs = () => setLogs([])
 
@@ -355,7 +369,20 @@ export function LogStream() {
                     />
                 </div>
                 <div className="flex items-center gap-2 justify-end">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
+                    <Monitor className="h-4 w-4 text-muted-foreground" />
+                    <Select value={filterSource} onValueChange={setFilterSource}>
+                        <SelectTrigger className="w-[140px] bg-background">
+                            <SelectValue placeholder="Source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ALL">All Sources</SelectItem>
+                            {uniqueSources.map(source => (
+                                <SelectItem key={source} value={source}>{source}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <Filter className="h-4 w-4 text-muted-foreground ml-2" />
                     <Select value={filterLevel} onValueChange={setFilterLevel}>
                         <SelectTrigger className="w-[120px] bg-background">
                             <SelectValue placeholder="Level" />
