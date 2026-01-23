@@ -135,3 +135,77 @@ func TestEmptyPlainTextSecretValidation(t *testing.T) {
 		assert.Contains(t, errs[0].Err.Error(), "secret value does not match validation regex")
 	}
 }
+
+func TestWhitespaceInEnvVar_WithRegex(t *testing.T) {
+	cleanup := mockExecLookPath()
+	defer cleanup()
+
+	// Set env var with whitespace
+	os.Setenv("TEST_WHITESPACE_KEY", "  valid-key  ")
+	defer os.Unsetenv("TEST_WHITESPACE_KEY")
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: proto.String("test-whitespace"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command: proto.String("ls"),
+								Env: map[string]*configv1.SecretValue{
+									"TEST_KEY": {
+										Value: &configv1.SecretValue_EnvironmentVariable{
+											EnvironmentVariable: "TEST_WHITESPACE_KEY",
+										},
+										ValidationRegex: proto.String("^valid-key$"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	errs := Validate(context.Background(), config, Server)
+
+	// Should be empty if we trim whitespace
+	assert.Empty(t, errs, "Validation errors not expected for env var with whitespace")
+}
+
+func TestWhitespaceInPlainText_WithRegex(t *testing.T) {
+	cleanup := mockExecLookPath()
+	defer cleanup()
+
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: proto.String("test-whitespace-plain"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command: proto.String("ls"),
+								Env: map[string]*configv1.SecretValue{
+									"TEST_KEY": {
+										Value: &configv1.SecretValue_PlainText{
+											PlainText: "  valid-key  ",
+										},
+										ValidationRegex: proto.String("^valid-key$"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	errs := Validate(context.Background(), config, Server)
+
+	// Should be empty if we trim whitespace
+	assert.Empty(t, errs, "Validation errors not expected for plain text with whitespace")
+}
