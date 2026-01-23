@@ -12,10 +12,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	"github.com/jellydator/ttlcache/v3"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -41,6 +43,19 @@ type Upstream struct {
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
 	toolManager     tool.ManagerInterface
 	serviceID       string
+	checker         health.Checker
+}
+
+// CheckHealth performs a health check on the upstream service.
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	if u.checker != nil {
+		res := u.checker.Check(ctx)
+		if res.Status != health.StatusUp {
+			return fmt.Errorf("health check failed: %v", res)
+		}
+		return nil
+	}
+	return nil
 }
 
 // NewUpstream creates a new instance of Upstream.
@@ -99,6 +114,8 @@ func (u *Upstream) Register(
 
 	u.serviceID = sanitizedName // for internal use
 	serviceID := u.serviceID
+
+	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	grpcService := serviceConfig.GetGrpcService()
 	if grpcService == nil {

@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -85,52 +86,33 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	return out, nil
 }
 
-func joinFunc(sep string, a []any) string {
+func joinFunc(sep string, input any) (string, error) {
+	a, err := toAnySlice(input)
+	if err != nil {
+		return "", fmt.Errorf("join: %w", err)
+	}
+
 	var sb strings.Builder
 	sepLen := len(sep)
 	var totalLen int
 
 	// First pass: try to calculate total length
-	// Optimized for strings, but handles common types
 	for i, v := range a {
+		if i > 0 {
+			totalLen += sepLen
+		}
+
 		if s, ok := v.(string); ok {
 			totalLen += len(s)
-			if i > 0 {
-				totalLen += sepLen
-			}
 		} else {
-			// Not a string, try to estimate length for other types
-			if i > 0 {
-				totalLen += sepLen
+			// For non-strings, we stop estimating and just guess.
+			// This avoids expensive iteration and type assertions for numbers.
+			remaining := len(a) - i
+			totalLen += remaining * 10
+			// Add separators estimate for remaining items
+			if remaining > 1 {
+				totalLen += (remaining - 1) * sepLen
 			}
-
-			// Handle current item
-			l := estimateLen(v)
-			if l == -1 {
-				// fallback
-				totalLen += (len(a) - i) * 10
-				break
-			}
-			totalLen += l
-
-			// Continue loop for the rest
-			stop := false
-			for j := i + 1; j < len(a); j++ {
-				if j > 0 {
-					totalLen += sepLen
-				}
-				l := estimateLen(a[j])
-				if l == -1 {
-					totalLen += (len(a) - j) * 10
-					stop = true
-					break
-				}
-				totalLen += l
-			}
-			if stop {
-				break
-			}
-			// We processed all remaining items in the inner loop
 			break
 		}
 	}
@@ -147,8 +129,6 @@ func joinFunc(sep string, a []any) string {
 		switch val := v.(type) {
 		case string:
 			sb.WriteString(val)
-		case fmt.Stringer:
-			sb.WriteString(val.String())
 		case int:
 			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
 		case int64:
@@ -176,71 +156,27 @@ func joinFunc(sep string, a []any) string {
 			sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 32))
 		case bool:
 			sb.Write(strconv.AppendBool(scratch[:0], val))
+		case fmt.Stringer:
+			sb.WriteString(val.String())
 		default:
 			fmt.Fprint(&sb, v)
 		}
 	}
-	return sb.String()
+	return sb.String(), nil
 }
 
-func estimateLen(v any) int {
-	switch val := v.(type) {
-	case string:
-		return len(val)
-	case int:
-		return intLen(int64(val))
-	case int64:
-		return intLen(val)
-	case bool:
-		if val {
-			return 4
-		}
-		return 5
-	default:
-		return -1
+func toAnySlice(input any) ([]any, error) {
+	if s, ok := input.([]any); ok {
+		return s, nil
 	}
-}
-
-func intLen(i int64) int {
-	if i >= 0 {
-		return uintLen(uint64(i))
+	val := reflect.ValueOf(input)
+	if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
+		return nil, fmt.Errorf("expected slice or array, got %T", input)
 	}
-	// For MinInt64 (-9223372036854775808), -i overflows and wraps back to MinInt64.
-	// uint64(MinInt64) is 1<<63 (9223372036854775808).
-	// uintLen handles this correctly (19 digits).
-	// Result is 1 + 19 = 20. Correct.
-	return 1 + uintLen(uint64(-i))
-}
-
-func uintLen(u uint64) int {
-	if u < 10 {
-		return 1
+	l := val.Len()
+	a := make([]any, l)
+	for i := 0; i < l; i++ {
+		a[i] = val.Index(i).Interface()
 	}
-	if u < 100 {
-		return 2
-	}
-	if u < 1000 {
-		return 3
-	}
-	if u < 10000 {
-		return 4
-	}
-
-	// For larger numbers, use a loop
-	cnt := 0
-	for u >= 10000 {
-		u /= 10000
-		cnt += 4
-	}
-	// u is now < 10000
-	if u < 10 {
-		return cnt + 1
-	}
-	if u < 100 {
-		return cnt + 2
-	}
-	if u < 1000 {
-		return cnt + 3
-	}
-	return cnt + 4
+	return a, nil
 }
