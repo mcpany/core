@@ -31,6 +31,10 @@ func TestLoginFlow(t *testing.T) {
 	os.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 	defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
 
+	// Set required admin password env var
+	os.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "password")
+	defer os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
+
 	// Setup temporary DB path
 	dbPath := t.TempDir() + "/mcpany_login_test.db"
 
