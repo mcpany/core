@@ -17,18 +17,18 @@ interface SparklineProps {
     max?: number;
 }
 
+// ⚡ Bolt Optimization: Memoized to prevent re-renders when parent updates (e.g. selection) but chart data is stable.
 /**
  * Sparkline component.
  * @param props - The component props.
  * @param props.data - The data to display.
- * @param props.width - The unique identifier for wth.
- * @param props.height - The height property.
- * @param props.className - The name of the class.
- * @param props.color - The color property.
- * @param props.max - The max property.
+ * @param props.width - The width of the chart.
+ * @param props.height - The height of the chart.
+ * @param props.className - Additional CSS classes.
+ * @param props.color - The line color.
+ * @param props.max - The maximum value for scaling.
  * @returns The rendered component.
  */
-// ⚡ Bolt Optimization: Memoized to prevent re-renders when parent updates (e.g. selection) but chart data is stable.
 export const Sparkline = memo(function Sparkline({ data, width = 60, height = 24, className, color = "#22c55e", max }: SparklineProps) {
     const { path, fillPath, gradientId } = useMemo(() => {
         if (!data || data.length === 0) return { path: "", fillPath: "", gradientId: "" };

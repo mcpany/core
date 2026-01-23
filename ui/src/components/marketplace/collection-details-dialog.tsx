@@ -17,6 +17,17 @@ interface CollectionDetailsDialogProps {
     onInstantiateService: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * CollectionDetailsDialog component.
+ * Displays details about a specific service collection in a dialog.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the dialog is open.
+ * @param props.onOpenChange - Callback function when the dialog open state changes.
+ * @param props.collection - The service collection to display details for.
+ * @param props.onInstantiateService - Callback function to instantiate a service from the collection.
+ * @returns The rendered CollectionDetailsDialog component.
+ */
 export function CollectionDetailsDialog({
     open,
     onOpenChange,

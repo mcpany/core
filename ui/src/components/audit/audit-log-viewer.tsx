@@ -39,6 +39,12 @@ interface AuditLogEntry {
     durationMs: number;
 }
 
+/**
+ * AuditLogViewer component.
+ * Displays a table of audit logs with filtering capabilities and detailed view.
+ *
+ * @returns The rendered AuditLogViewer component.
+ */
 export function AuditLogViewer() {
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
