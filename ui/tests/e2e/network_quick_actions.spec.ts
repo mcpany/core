@@ -69,6 +69,9 @@ test.describe('Network Graph Quick Actions', () => {
     // Click View Logs
     await page.getByRole('button', { name: 'View Logs' }).click();
 
+    // Explicitly wait for navigation to complete
+    await page.waitForURL(/\/logs\?source=weather-service/);
+
     // Verify URL
     await expect(page).toHaveURL(/\/logs\?source=weather-service/);
 
