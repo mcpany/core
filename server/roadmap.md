@@ -26,6 +26,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Port Conflict Friendly Error**
+  - **Description**: Detects "address already in use" errors during startup and provides a user-friendly error message with actionable suggestions (e.g., use `--port` flag).
 
 ## 2. Updated Roadmap
 
@@ -119,6 +121,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 78 | **Strict Mode Env Var** | **Ops**: Allow enabling strict mode via environment variable `MCPANY_STRICT_MODE=true` to simplify Docker deployments where passing CLI flags is cumbersome. | Low |
+| 79 | **Config Backup on Reload** | **Resilience**: Automatically backup the last known working configuration to a file (e.g., `config.yaml.bak`) before applying a new one, allowing for manual rollback. | Medium |
 
 ## 3. Codebase Health
 

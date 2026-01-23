@@ -11,6 +11,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html"
 	"io"
@@ -21,6 +22,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -1916,7 +1918,11 @@ func (a *Application) runServerMode(
 		}
 		lis, err := util.ListenWithRetry(ctx, "tcp", grpcBindAddress)
 		if err != nil {
-			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
+			if isAddressInUse(err) {
+				errChan <- fmt.Errorf("gRPC server failed to listen on %s: port is already in use.\n    💡 Fix: Identify and stop the process using this port, or start the server on a different port using the --grpc-port flag.", grpcBindAddress)
+			} else {
+				errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
+			}
 		} else {
 			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
 				a.BoundGRPCPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
@@ -1995,15 +2001,22 @@ func (a *Application) runServerMode(
 		// Use standard Listen and then wrap with TLS
 		l, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
 		if err != nil {
-			// Handle error
-			errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+			if isAddressInUse(err) {
+				errChan <- fmt.Errorf("HTTP server failed to listen on %s: port is already in use.\n    💡 Fix: Identify and stop the process using this port, or start the server on a different port using the --port flag.", httpBindAddress)
+			} else {
+				errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+			}
 		} else {
 			httpLis = tls.NewListener(l, tlsConfig)
 		}
 	} else {
 		l, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
 		if err != nil {
-			errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+			if isAddressInUse(err) {
+				errChan <- fmt.Errorf("HTTP server failed to listen on %s: port is already in use.\n    💡 Fix: Identify and stop the process using this port, or start the server on a different port using the --port flag.", httpBindAddress)
+			} else {
+				errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+			}
 		} else {
 			httpLis = l
 		}
@@ -2079,6 +2092,21 @@ func (a *Application) runServerMode(
 }
 
 // createAuthMiddleware creates the authentication middleware.
+func isAddressInUse(err error) bool {
+	var opErr *net.OpError
+	if errors.As(err, &opErr) {
+		var syscallErr *os.SyscallError
+		if errors.As(opErr.Err, &syscallErr) {
+			return syscallErr.Err == syscall.EADDRINUSE
+		}
+		if opErr.Err == syscall.EADDRINUSE {
+			return true
+		}
+	}
+	return strings.Contains(strings.ToLower(err.Error()), "address already in use") ||
+		strings.Contains(strings.ToLower(err.Error()), "eaddrinuse")
+}
+
 func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
