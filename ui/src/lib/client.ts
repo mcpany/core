@@ -133,6 +133,17 @@ export interface DoctorReport {
     checks: Record<string, CheckResult>;
 }
 
+/**
+ * Tool failure statistics.
+ */
+export interface ToolFailureStats {
+    name: string;
+    serviceId: string;
+    failureRate: number;
+    totalCalls: number;
+}
+
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
@@ -673,6 +684,17 @@ export const apiClient = {
         if (!res.ok) return [];
         return res.json();
     },
+
+    /**
+     * Gets the tools with highest failure rates.
+     * @returns A promise that resolves to the tool failure stats.
+     */
+    getToolFailures: async (): Promise<ToolFailureStats[]> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
+        if (!res.ok) return [];
+        return res.json();
+    },
+
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
