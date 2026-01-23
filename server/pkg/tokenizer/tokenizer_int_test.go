@@ -19,6 +19,14 @@ func TestSimpleTokenizeInt_EdgeCases(t *testing.T) {
 		-9999999, // 8 chars -> 2
         12345678,
         -12345678,
+		// Powers of 10 boundaries
+		9999999999, // 10 digits -> 2
+		10000000000, // 11 digits -> 2
+		-9999999999, // 11 chars -> 2
+		-10000000000, // 12 chars -> 3
+		// More large numbers (assuming 64-bit int)
+		100000000000, // 12 digits -> 3
+		-100000000000, // 13 chars -> 3
 	}
 
 	for _, n := range tests {
@@ -45,6 +53,22 @@ func TestSimpleTokenizeInt64_EdgeCases(t *testing.T) {
 		-9999999, // 8 chars -> 2
         12345678,
         -12345678,
+		// Powers of 10 boundaries (positive)
+		9999999999, // 10 digits -> 2
+		10000000000, // 11 digits -> 2 (up to 11/4=2)
+		99999999999, // 11 digits -> 2
+		100000000000, // 12 digits -> 3
+		999999999999999, // 15 digits -> 3
+		1000000000000000, // 16 digits -> 4
+		// Powers of 10 boundaries (negative)
+		-9999999999, // 11 chars -> 2
+		-10000000000, // 12 chars -> 3
+		-99999999999, // 12 chars -> 3
+		-100000000000, // 13 chars -> 3
+		-99999999999999, // 15 chars -> 3
+		-100000000000000, // 16 chars -> 4
+		-999999999999999999, // 19 chars -> 4
+		-1000000000000000000, // 20 chars -> 5
 	}
 
 	for _, n := range tests {

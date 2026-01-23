@@ -675,35 +675,7 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (i
 }
 
 func simpleTokenizeInt(n int) int {
-	// Optimization: Fast path for common integers.
-	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
-	// Positive: 0 to 9,999,999 (7 digits) -> 1 token.
-	// Negative: -1 to -999,999 (7 chars) -> 1 token.
-	if n > -1000000 && n < 10000000 {
-		return 1
-	}
-
-	// n cannot be 0 here because it's handled by the fast path.
-	l := 0
-	if n < 0 {
-		l = 1 // count the sign
-		// Handle MinInt special case where -n overflows
-		// For int64 (usually int is int64), MinInt is -9223372036854775808
-		// which has 19 digits.
-		// We can just divide by 10 once to make it safe to negate,
-		// or process negative numbers.
-	}
-
-	for n != 0 {
-		l++
-		n /= 10
-	}
-
-	count := l / 4
-	if count < 1 {
-		return 1
-	}
-	return count
+	return simpleTokenizeInt64(int64(n))
 }
 
 func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}, visited map[uintptr]bool) (int, error) {
@@ -764,20 +736,26 @@ func simpleTokenizeInt64(n int64) int {
 		return 1
 	}
 
-	// n cannot be 0 here because it's handled by the fast path.
-	l := 0
-	if n < 0 {
-		l = 1 // count the sign
+	if n > 0 {
+		if n < 100_000_000_000 { // 10^11, 12 digits -> 3 tokens. < 12 digits -> 2 tokens
+			return 2 // 8, 9, 10, 11 digits
+		}
+		if n < 1_000_000_000_000_000 { // 10^15, 16 digits -> 4 tokens. < 16 digits -> 3 tokens
+			return 3 // 12, 13, 14, 15 digits
+		}
+		return 4 // 16, 17, 18, 19 digits
 	}
 
-	for n != 0 {
-		l++
-		n /= 10
+	// Negative
+	// -1,000,000 (8 chars) -> 2 tokens
+	if n > -10_000_000_000 { // -10^10, 12 chars -> 3 tokens. > -12 chars -> 2 tokens
+		return 2 // 8, 9, 10, 11 chars
 	}
-
-	count := l / 4
-	if count < 1 {
-		return 1
+	if n > -100_000_000_000_000 { // -10^14, 16 chars -> 4 tokens. > -16 chars -> 3 tokens
+		return 3 // 12, 13, 14, 15 chars
 	}
-	return count
+	if n > -1_000_000_000_000_000_000 { // -10^18, 20 chars -> 5 tokens. > -20 chars -> 4 tokens
+		return 4 // 16, 17, 18, 19 chars
+	}
+	return 5 // 20 chars
 }
