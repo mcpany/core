@@ -27,6 +27,7 @@ export interface MetricPoint {
 interface ServiceHealthContextType {
     getServiceHistory: (serviceId: string) => MetricPoint[];
     getServiceCurrentHealth: (serviceId: string) => MetricPoint | null;
+    latestTopology: Graph | null;
 }
 
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
@@ -42,6 +43,7 @@ const POLLING_INTERVAL = 5000;
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
+    const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
 
     useEffect(() => {
         const fetchTopology = async () => {
@@ -52,6 +54,8 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 const res = await fetch(url);
                 if (!res.ok) return;
                 const graph: Graph = await res.json();
+
+                setLatestTopology(graph);
 
                 const now = Date.now();
                 const newPoints: Record<string, MetricPoint> = {};
@@ -129,7 +133,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <ServiceHealthContext.Provider value={{ getServiceHistory, getServiceCurrentHealth }}>
+        <ServiceHealthContext.Provider value={{ getServiceHistory, getServiceCurrentHealth, latestTopology }}>
             {children}
         </ServiceHealthContext.Provider>
     );
