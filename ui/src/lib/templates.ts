@@ -4,7 +4,7 @@
  */
 
 import { UpstreamServiceConfig } from "@/lib/types";
-import { Database, FileText, Github, Globe, Server } from "lucide-react";
+import { Database, FileText, Github, Globe, Server, Brain, MessageSquare, MapPin, Box } from "lucide-react";
 
 /**
  * A template for creating a new service configuration.
@@ -19,6 +19,8 @@ export interface ServiceTemplate {
   /** Icon component for the template. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any; // Lucide icon component
+  /** Category for grouping templates. */
+  category?: string;
   /** Partial configuration provided by the template. */
   config: Partial<UpstreamServiceConfig>;
   /**
@@ -52,6 +54,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "Custom Service",
     description: "Configure a service from scratch.",
     icon: Server,
+    category: "Custom",
     config: {
       name: "",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,6 +66,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "PostgreSQL",
     description: "Connect to a PostgreSQL database.",
     icon: Database,
+    category: "Database",
     config: {
       name: "postgres-db",
       commandLineService: {
@@ -86,6 +90,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "Filesystem",
     description: "Expose local files to the LLM.",
     icon: FileText,
+    category: "Filesystem",
     config: {
       name: "local-files",
       commandLineService: {
@@ -109,6 +114,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "GitHub",
     description: "Integration with GitHub API.",
     icon: Github,
+    category: "Developer Tools",
     config: {
       name: "github-integration",
       commandLineService: {
@@ -133,6 +139,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "Brave Search",
     description: "Web search capabilities using Brave.",
     icon: Globe,
+    category: "Web",
     config: {
       name: "brave-search",
       commandLineService: {
@@ -157,6 +164,7 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "SQLite",
     description: "Connect to a SQLite database.",
     icon: Database,
+    category: "Database",
     config: {
       name: "sqlite-db",
       commandLineService: {
@@ -180,10 +188,113 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
     name: "Puppeteer",
     description: "Browser automation and scraping.",
     icon: Globe,
+    category: "Web",
     config: {
       name: "puppeteer-browser",
       commandLineService: {
         command: "npx -y @modelcontextprotocol/server-puppeteer",
+        env: {},
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    },
+  },
+  {
+    id: "memory",
+    name: "Memory",
+    description: "Knowledge graph-based persistent memory system.",
+    icon: Brain,
+    category: "AI & Memory",
+    config: {
+      name: "memory-graph",
+      commandLineService: {
+        command: "npx -y @modelcontextprotocol/server-memory",
+        env: {},
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    },
+  },
+  {
+    id: "sequential-thinking",
+    name: "Sequential Thinking",
+    description: "Dynamic problem-solving through thought sequences.",
+    icon: Brain,
+    category: "AI & Memory",
+    config: {
+      name: "sequential-thinking",
+      commandLineService: {
+        command: "npx -y @modelcontextprotocol/server-sequential-thinking",
+        env: {},
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    },
+  },
+  {
+    id: "slack",
+    name: "Slack",
+    description: "Channel management and messaging.",
+    icon: MessageSquare,
+    category: "Productivity",
+    config: {
+      name: "slack-integration",
+      commandLineService: {
+        command: "npx -y @modelcontextprotocol/server-slack",
+        env: {
+            "SLACK_BOT_TOKEN": "",
+            "SLACK_TEAM_ID": ""
+        },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    },
+    fields: [
+      {
+        name: "botToken",
+        label: "Slack Bot Token",
+        placeholder: "xoxb-...",
+        key: "commandLineService.env.SLACK_BOT_TOKEN",
+      },
+      {
+        name: "teamId",
+        label: "Slack Team ID",
+        placeholder: "T...",
+        key: "commandLineService.env.SLACK_TEAM_ID",
+      }
+    ]
+  },
+  {
+    id: "google-maps",
+    name: "Google Maps",
+    description: "Location services and place details.",
+    icon: MapPin,
+    category: "Web",
+    config: {
+      name: "google-maps",
+      commandLineService: {
+        command: "npx -y @modelcontextprotocol/server-google-maps",
+        env: {
+            "GOOGLE_MAPS_API_KEY": ""
+        },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    },
+    fields: [
+      {
+        name: "apiKey",
+        label: "Google Maps API Key",
+        placeholder: "AIza...",
+        key: "commandLineService.env.GOOGLE_MAPS_API_KEY",
+      }
+    ]
+  },
+  {
+    id: "everything",
+    name: "Everything (Reference)",
+    description: "Reference server with prompts, resources, and tools.",
+    icon: Box,
+    category: "Developer Tools",
+    config: {
+      name: "everything-server",
+      commandLineService: {
+        command: "npx -y @modelcontextprotocol/server-everything",
         env: {},
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,

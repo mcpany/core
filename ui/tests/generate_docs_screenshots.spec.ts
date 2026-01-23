@@ -172,7 +172,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/upstream-services');
+    await page.goto('/services');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
@@ -181,20 +181,15 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
-    // Click Add Service (Link)
-    await page.getByRole('link', { name: 'Add Service' }).click();
+    // Click Add Service (Button)
+    await page.getByRole('button', { name: 'Add Service' }).click();
     await page.waitForTimeout(1000);
-    await expect(page).toHaveURL(/.*marketplace.*/);
+
+    // Verify sheet is open
+    await expect(page.getByText('New Service')).toBeVisible();
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
-
-    // Configure Service
-    // Ensure we are navigating to the correct URL for configuration
-    await page.goto('/upstream-services/postgres-primary');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000); // Increased wait time
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
   });
 
   test('Playground Screenshots', async ({ page }) => {
@@ -461,7 +456,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Service Actions Screenshots', async ({ page }) => {
-      await page.goto('/upstream-services');
+      await page.goto('/services');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
