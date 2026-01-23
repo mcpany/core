@@ -482,6 +482,16 @@ func RedactDSN(dsn string) string {
 		return dsn
 	}
 
+	// If parsed successfully but no User info found, check for known non-DSN schemes.
+	if err == nil {
+		// Optimization: Check for common schemes that are NOT DSNs but might be mistaken for one
+		// by the fallback regex (e.g. mailto:bob@example.com).
+		// We trust url.Parse to correctly identify the scheme.
+		if strings.EqualFold(u.Scheme, "mailto") {
+			return dsn
+		}
+	}
+
 	// Fallback to regex if parsing fails (e.g. not a valid URL)
 	// OR if url.Parse succeeded but found no user/password structure (e.g. user:pass@tcp(...) where Scheme is "user" and User is nil).
 	// But note: the regex is known to be imperfect for complex cases (e.g. colons in password).

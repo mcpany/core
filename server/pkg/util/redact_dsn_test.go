@@ -118,6 +118,16 @@ func TestRedactDSN(t *testing.T) {
 			input:    "postgres://:password@host",
 			expected: "postgres://:[REDACTED]@host",
 		},
+		{
+			name:     "mailto scheme (whitelist)",
+			input:    "mailto:bob@example.com",
+			expected: "mailto:bob@example.com",
+		},
+		{
+			name:     "mailto scheme case insensitive (whitelist)",
+			input:    "MAILTO:bob@example.com",
+			expected: "MAILTO:bob@example.com",
+		},
 	}
 
 	for _, tt := range tests {
