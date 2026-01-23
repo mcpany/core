@@ -42,7 +42,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 			sb.WriteString("\n❌ Configuration Loading Failed:\n")
 			sb.WriteString(fmt.Sprintf("    Error: %v\n", ae.Err))
 			sb.WriteString(fmt.Sprintf("    💡 Fix: %s\n", ae.Suggestion))
-			return nil, fmt.Errorf("%s", sb.String())
+			return nil, &ConfigValidationError{Msg: sb.String()}
 		}
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		// Map errors to services for logging
 		serviceErrors := make(map[string]string)
 		for _, e := range validationErrors {
-			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+			log.Debug("Config validation error", "service", e.ServiceName, "error", e.Err)
 			serviceErrors[e.ServiceName] = e.Err.Error()
 		}
 
@@ -89,7 +89,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 					sb.WriteString(fmt.Sprintf("    Error: %v\n", e.Err))
 				}
 			}
-			return nil, fmt.Errorf("%s", sb.String())
+			return nil, &ConfigValidationError{Msg: sb.String()}
 		}
 	}
 

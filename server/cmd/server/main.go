@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -253,6 +254,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				APIKey:          cfg.APIKey(),
 				ShutdownTimeout: shutdownTimeout,
 			}); err != nil {
+				// Friction Fighter: If it's a configuration validation error, we print it cleanly without the log noise.
+				var validationErr *config.ConfigValidationError
+				if errors.As(err, &validationErr) {
+					return err
+				}
 				log.Error("Application failed", "error", err)
 				return err
 			}

@@ -48,3 +48,13 @@ func WrapActionableError(context string, err error) error {
 	}
 	return fmt.Errorf("%s: %w", context, err)
 }
+
+// ConfigValidationError indicates that the configuration validation failed.
+// It is used to signal the main application to print the error cleanly without stack traces or log noise.
+type ConfigValidationError struct {
+	Msg string
+}
+
+func (e *ConfigValidationError) Error() string {
+	return e.Msg
+}
