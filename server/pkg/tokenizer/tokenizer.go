@@ -190,6 +190,14 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 // rawWordCounter implements the recursiveTokenizer interface but counts raw words instead of tokens.
 type rawWordCounter struct{}
 
+// CountTokens counts the number of words in the text.
+//
+// Parameters:
+//   - text: The input text.
+//
+// Returns:
+//   - int: The word count.
+//   - error: Always nil.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }

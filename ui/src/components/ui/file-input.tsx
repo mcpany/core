@@ -17,6 +17,12 @@ interface FileInputProps {
   id?: string
 }
 
+/**
+ * FileInput is a form component for selecting a file and converting it to a Base64 string.
+ * It displays the selected filename and allows clearing the selection.
+ * @param props - Component props.
+ * @returns The FileInput component.
+ */
 export function FileInput({ value, onChange, accept, className, disabled, id }: FileInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [fileName, setFileName] = React.useState<string | null>(null)

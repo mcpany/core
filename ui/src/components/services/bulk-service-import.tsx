@@ -20,6 +20,12 @@ interface BulkServiceImportProps {
     onCancel: () => void;
 }
 
+/**
+ * BulkServiceImport component allows users to import multiple services from a JSON config or URL.
+ * It supports OpenAPI definitions and custom JSON lists.
+ * @param props - Component props.
+ * @returns The BulkServiceImport component.
+ */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {
     const [jsonContent, setJsonContent] = useState("");
     const [importUrl, setImportUrl] = useState("");
