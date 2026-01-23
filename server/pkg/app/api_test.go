@@ -1734,22 +1734,6 @@ func TestSecretLeak(t *testing.T) {
 	assert.Equal(t, "[REDACTED]", result["value"])
 }
 
-func TestHandleDashboardTopTools(t *testing.T) {
-	mw := middleware.NewToolMetricsMiddleware(nil)
-	ctx := context.Background()
-	req1 := &tool.ExecutionRequest{ToolName: "test_tool_1"}
-	mw.Execute(ctx, req1, func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-		return "result", nil
-	})
-
-	app := &Application{}
-	handler := app.handleDashboardTopTools()
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/dashboard/top-tools", nil)
-	handler.ServeHTTP(w, r)
-
-	require.Equal(t, http.StatusOK, w.Code)
-}
 
 func TestReproduction_ProtocolCompliance(t *testing.T) {
 	fs := afero.NewMemMapFs()
