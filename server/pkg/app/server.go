@@ -365,11 +365,13 @@ func (a *Application) Run(opts RunOptions) error {
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
+	var startupError error
 	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
 	if err != nil {
-		return fmt.Errorf("failed to load services from config: %w", err)
-	}
-	if cfg == nil {
+		log.Error("Failed to load services from config, entering recovery mode", "error", err)
+		startupError = fmt.Errorf("failed to load services from config: %w", err)
+		cfg = &config_v1.McpAnyServerConfig{}
+	} else if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
 	a.lastReloadTime = time.Now()
@@ -561,6 +563,10 @@ func (a *Application) Run(opts RunOptions) error {
 		upstreamWorker.Stop()
 		registrationWorker.Stop()
 		return fmt.Errorf("failed to create mcp server: %w", err)
+	}
+
+	if startupError != nil {
+		mcpSrv.RegisterStartupError(startupError)
 	}
 
 	mcpSrv.SetReloadFunc(func(ctx context.Context) error {

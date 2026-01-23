@@ -716,6 +716,15 @@ func (s *Server) Reload(ctx context.Context) error {
 	return nil
 }
 
+// RegisterStartupError registers the startup error tool with the server.
+// This allows clients to query the server for startup issues.
+func (s *Server) RegisterStartupError(err error) {
+	logging.GetLogger().Error("Registering startup error tool", "error", err)
+	if toolErr := s.AddTool(NewStartupErrorTool(err)); toolErr != nil {
+		logging.GetLogger().Error("Failed to register startup error tool", "error", toolErr)
+	}
+}
+
 // convertMapToCallToolResult attempts to convert a map result to a CallToolResult
 // without JSON serialization overhead. It supports text, image, and resource content.
 func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {

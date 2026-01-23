@@ -26,6 +26,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Recovery Mode**
+  - **Description**: If the server configuration fails to load (e.g., missing environment variables), the server now starts in a safe "Recovery Mode" instead of crashing. It exposes a diagnostic tool (`system.get_startup_status`) that allows the MCP client (and the user) to inspect the startup error directly.
 
 ## 2. Updated Roadmap
 
@@ -119,6 +121,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 78 | **Interactive Troubleshooting Prompt** | **Support**: A built-in prompt (`troubleshoot`) that leverages `system.get_startup_status` and other diagnostic tools to interactively help the user resolve configuration or connectivity issues via the LLM. | Low |
+| 79 | **Docker Health Check Integration** | **Ops**: Integrate `mcpany doctor` or a specific health probe endpoint into the Docker image `HEALTHCHECK` instruction to automatically restart unhealthy containers or report status to the orchestrator. | Low |
 
 ## 3. Codebase Health
 

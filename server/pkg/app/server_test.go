@@ -592,13 +592,13 @@ upstream_services:
 	assert.NoError(t, err, "app.Run should return nil on graceful shutdown")
 }
 
-func TestRun_ConfigLoadError(t *testing.T) {
+func TestRun_ConfigLoadError_RecoveryMode(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create a malformed config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	app := NewApplication()
@@ -610,19 +610,33 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
-	// Should return error, as we are now strict about config errors during startup
-	err = app.Run(RunOptions{
-		Ctx:             ctx,
-		Fs:              fs,
-		Stdio:           false,
-		JSONRPCPort:     "127.0.0.1:0",
-		GRPCPort:        "127.0.0.1:0",
-		ConfigPaths:     []string{"/config.yaml"},
-		APIKey:          "",
-		ShutdownTimeout: 5 * time.Second,
-	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "malformed yaml")
+	errChan := make(chan error, 1)
+	go func() {
+		// Should NOT return error, but start in Recovery Mode
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+		})
+	}()
+
+	// Wait for startup
+	require.NoError(t, app.WaitForStartup(ctx))
+
+	// Verify that the startup error tool is present
+	// The tool name is prefixed with service ID "system"
+	tool, ok := app.ToolManager.GetTool("system.get_startup_status")
+	assert.True(t, ok, "get_startup_status tool should be available in recovery mode")
+	assert.NotNil(t, tool)
+
+	cancel()
+	err = <-errChan
+	assert.NoError(t, err)
 }
 
 func TestRun_BusProviderError(t *testing.T) {
