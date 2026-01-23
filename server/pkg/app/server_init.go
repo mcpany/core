@@ -115,8 +115,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 
 	// Initialize Admin User
 	if err := a.initializeAdminUser(ctx, store); err != nil {
-		log.Error("Failed to initialize admin user", "error", err)
-		// We don't fail hard here to allow server to start, but auth might be broken for admin
+		return fmt.Errorf("failed to initialize admin user: %w", err)
 	}
 
 	log.Info("Database initialized successfully.")
@@ -146,7 +145,7 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 	password := os.Getenv("MCPANY_ADMIN_INIT_PASSWORD")
 	if password == "" {
-		password = "password"
+		return fmt.Errorf("MCPANY_ADMIN_INIT_PASSWORD environment variable is not set. You must provide an initial admin password for security reasons")
 	}
 
 	hash, err := passhash.Password(password)

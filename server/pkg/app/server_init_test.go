@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -242,6 +243,9 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
+	os.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
+	defer os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
+
 	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
@@ -297,6 +301,27 @@ func (m *MockSimpleStore) Watch(ctx context.Context) (<-chan *configv1.McpAnySer
 
 func (m *MockSimpleStore) HasConfigSources() bool {
 	return true
+}
+
+func TestInitializeDatabase_MissingPasswordFails(t *testing.T) {
+	mockStore := new(MockStore)
+	app := &Application{}
+
+	// Ensure environment variable is unset
+	os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
+
+	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+
+	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+
+	err := app.initializeDatabase(context.Background(), mockStore)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "MCPANY_ADMIN_INIT_PASSWORD environment variable is not set")
+
+	mockStore.AssertNotCalled(t, "CreateUser")
 }
 
 func TestInitializeDatabase_Errors(t *testing.T) {
