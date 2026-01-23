@@ -52,7 +52,15 @@ func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 		}
 	}
 
-	// 3. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
+	// 3. Recursively sanitize items (for arrays)
+	if items, ok := schemaMap["items"].(map[string]interface{}); ok {
+		sanitizedItems, err := sanitizeJSONSchemaInPlace(items)
+		if err == nil && sanitizedItems != nil {
+			schemaMap["items"] = sanitizedItems.AsMap()
+		}
+	}
+
+	// 4. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
 	// The issue #10606 says: "input_schema does not support oneOf, allOf, or anyOf at the top level"
 	// If we detect this at the top level, what can we do?
 	// We could try to merge them if possible, or just pick the first one?
