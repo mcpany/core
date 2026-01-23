@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode"
 	"unsafe"
 )
 
@@ -456,6 +457,16 @@ var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)
 // This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
 var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
 
+// dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
+// This covers "redis://:password" or "scheme://user:password" (missing host).
+// It matches "://", then optional user (non-colons), then colon, then password.
+// Password is terminated by /, @, whitespace, or ".
+var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"]+)`)
+
+// dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
+// e.g. parse "...": invalid port ":password"
+var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
+
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 func RedactDSN(dsn string) string {
@@ -498,10 +509,39 @@ func RedactDSN(dsn string) string {
 	// (e.g. containing colons or @) but assumes a single DSN string.
 	if strings.Contains(dsn, "://") {
 		// Use greedy match to handle special characters in password
-		if dsnSchemeRegex.MatchString(dsn) {
-			return dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+
+		// Fallback for cases without '@' (e.g. redis://:password where url.Parse fails due to invalid port)
+		if dsnFallbackNoAtRegex.MatchString(dsn) {
+			dsn = dsnFallbackNoAtRegex.ReplaceAllStringFunc(dsn, func(m string) string {
+				submatches := dsnFallbackNoAtRegex.FindStringSubmatch(m)
+				if len(submatches) < 3 {
+					return m
+				}
+				prefix := submatches[1]
+				potentialPass := submatches[2]
+
+				// If potential password is purely numeric, assume it is a port (e.g. http://host:8080).
+				// We do not redact ports.
+				isNumeric := true
+				for _, r := range potentialPass {
+					if !unicode.IsDigit(r) {
+						isNumeric = false
+						break
+					}
+				}
+
+				if isNumeric && len(potentialPass) > 0 {
+					return m
+				}
+
+				return prefix + ":" + redactedPlaceholder
+			})
 		}
 	}
+
+	// Handle Go url.Parse error leak "invalid port"
+	dsn = dsnInvalidPortRegex.ReplaceAllString(dsn, "invalid port \":"+redactedPlaceholder+"\"")
 
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
