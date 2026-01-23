@@ -15,6 +15,7 @@ services:
     environment:
       - MCPANY_API_KEY=test-token
       - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
+      - MCPANY_ADMIN_INIT_PASSWORD=password
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
