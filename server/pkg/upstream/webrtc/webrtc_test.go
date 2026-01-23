@@ -202,6 +202,18 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return resources
 }
 
+func (m *MockResourceManager) ListMCPResources() []*mcp.Resource {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	mcpResources := make([]*mcp.Resource, 0, len(m.resources))
+	for _, r := range m.resources {
+		if mr := r.Resource(); mr != nil {
+			mcpResources = append(mcpResources, mr)
+		}
+	}
+	return mcpResources
+}
+
 func (m *MockResourceManager) OnListChanged(_ func()) {
 }
 

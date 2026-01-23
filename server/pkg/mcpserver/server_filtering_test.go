@@ -56,6 +56,14 @@ func (m *mockResourceManager) ListResources() []resource.Resource {
 	return m.resources
 }
 
+func (m *mockResourceManager) ListMCPResources() []*mcp.Resource {
+	res := make([]*mcp.Resource, len(m.resources))
+	for i, r := range m.resources {
+		res[i] = r.Resource()
+	}
+	return res
+}
+
 func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) {
 	for _, r := range m.resources {
 		if r.Resource().URI == uri {
@@ -97,6 +105,14 @@ type mockPromptManager struct {
 
 func (m *mockPromptManager) ListPrompts() []prompt.Prompt {
 	return m.prompts
+}
+
+func (m *mockPromptManager) ListMCPPrompts() []*mcp.Prompt {
+	prompts := make([]*mcp.Prompt, len(m.prompts))
+	for i, p := range m.prompts {
+		prompts[i] = p.Prompt()
+	}
+	return prompts
 }
 
 func (m *mockPromptManager) GetPrompt(name string) (prompt.Prompt, bool) {

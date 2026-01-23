@@ -144,6 +144,11 @@ func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return n
 // Returns the result.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
+// ListMCPPrompts implements prompt.ManagerInterface.
+//
+// Returns the result.
+func (m *NoOpPromptManager) ListMCPPrompts() []*mcp.Prompt { return nil }
+
 // ClearPromptsForService implements prompt.ManagerInterface.
 //
 // _ is an unused parameter.
@@ -179,6 +184,11 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 //
 // Returns the result.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
+
+// ListMCPResources implements resource.ManagerInterface.
+//
+// Returns the result.
+func (m *NoOpResourceManager) ListMCPResources() []*mcp.Resource { return nil }
 
 // OnListChanged implements resource.ManagerInterface.
 //
