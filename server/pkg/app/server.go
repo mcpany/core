@@ -34,6 +34,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
+	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -137,6 +138,7 @@ type RunOptions struct {
 	TLSCert         string
 	TLSKey          string
 	TLSClientCA     string
+	Strict          bool
 }
 
 // Runner defines the interface for running the application.
@@ -372,6 +374,33 @@ func (a *Application) Run(opts RunOptions) error {
 	if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
+
+	// Startup Diagnostics
+	// We run this after loading all configs (file + db) but before starting upstreams.
+	if len(cfg.GetUpstreamServices()) > 0 {
+		log.Info("Running startup diagnostics...")
+		results := doctor.RunChecks(opts.Ctx, cfg)
+		hasErrors := false
+
+		// Print results to stderr so they are visible to the user
+		doctor.PrintResults(os.Stderr, results)
+
+		for _, res := range results {
+			if res.Status == doctor.StatusError {
+				hasErrors = true
+			}
+		}
+
+		if hasErrors {
+			if opts.Strict {
+				return fmt.Errorf("startup diagnostics failed in strict mode")
+			}
+			log.Warn("⚠️  Startup diagnostics found issues. Some services may not be reachable.")
+		} else {
+			log.Info("✅ Startup diagnostics passed.")
+		}
+	}
+
 	a.lastReloadTime = time.Now()
 
 	// Populate initial good config for diffing

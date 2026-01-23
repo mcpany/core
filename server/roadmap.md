@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Startup Diagnostics**
+  - **Description**: Automatically run parallel connectivity checks for all upstream services on startup and print a clear summary of issues to stderr, ensuring "silent failures" are detected early. Supports strict mode to exit on failure.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
@@ -73,7 +75,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 | 47 | **Interactive Doctor** | **UX**: A TUI (Text User Interface) for the doctor command that allows users to interactively retry failed checks or inspect details. | Medium |
 | 48 | **Doctor Integration with Telemetry** | **Observability**: Send doctor check results to telemetry (if enabled) to track fleet health during startup or health checks. | Low |
-| 41 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
 | 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
@@ -119,6 +120,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 80 | **Semantic Health Checks** | **Resilience**: Execute a lightweight tool call (e.g. `ping`) to verify deep service health beyond simple TCP/HTTP connectivity. | High |
+| 81 | **Config Validation CI Action** | **DevX**: A GitHub Action (or reusable script) to run `mcpany config validate` in CI pipelines to prevent breaking changes. | Low |
 
 ## 3. Codebase Health
 

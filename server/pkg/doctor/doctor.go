@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
@@ -46,32 +47,45 @@ type CheckResult struct {
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
+// It executes checks in parallel for performance.
 //
 // ctx is the context for the request.
 // config holds the configuration settings.
 //
 // Returns the result.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
-	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
-	results := make([]CheckResult, 0, len(services))
+	results := make([]CheckResult, len(services)) // Pre-allocate with exact size
 
-	// Check upstream services
-	for _, service := range services {
-		if service.GetDisable() {
-			results = append(results, CheckResult{
-				ServiceName: service.GetName(),
-				Status:      StatusSkipped,
-				Message:     "Service is disabled",
-			})
-			continue
-		}
+	var wg sync.WaitGroup
+	// Limit concurrency to avoid FD exhaustion or excessive load.
+	// 20 concurrent checks should be sufficient for most setups while keeping startup fast.
+	sem := make(chan struct{}, 20)
 
-		res := CheckService(ctx, service)
-		res.ServiceName = service.GetName()
-		results = append(results, res)
+	// We use index to place results to maintain order matching the config.
+	for i, service := range services {
+		wg.Add(1)
+		go func(idx int, svc *configv1.UpstreamServiceConfig) {
+			defer wg.Done()
+			sem <- struct{}{}        // Acquire
+			defer func() { <-sem }() // Release
+
+			if svc.GetDisable() {
+				results[idx] = CheckResult{
+					ServiceName: svc.GetName(),
+					Status:      StatusSkipped,
+					Message:     "Service is disabled",
+				}
+				return
+			}
+
+			res := CheckService(ctx, svc)
+			res.ServiceName = svc.GetName()
+			results[idx] = res
+		}(i, service)
 	}
 
+	wg.Wait()
 	return results
 }
 

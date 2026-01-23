@@ -192,40 +192,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			// Track 1: Friction Fighter - Strict Mode
 			strict, _ := cmd.Flags().GetBool("strict")
-			if strict {
-				log.Info("Running in strict mode: validating configuration and upstream connectivity...")
-				store := config.NewFileStore(osFs, configPaths)
-				configs, err := config.LoadResolvedConfig(ctx, store)
-				if err != nil {
-					return fmt.Errorf("failed to load configuration for strict validation: %w", err)
-				}
-
-				results := doctor.RunChecks(ctx, configs)
-				hasErrors := false
-				for _, res := range results {
-					var icon string
-					switch res.Status {
-					case doctor.StatusOk:
-						icon = iconOk
-						log.Info(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
-					case doctor.StatusWarning:
-						icon = iconWarning
-						log.Warn(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
-					case doctor.StatusError:
-						icon = iconError
-						log.Error(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
-						hasErrors = true
-					case doctor.StatusSkipped:
-						icon = iconSkipped
-						log.Info(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
-					}
-				}
-
-				if hasErrors {
-					return fmt.Errorf("strict mode validation failed: one or more upstream services are unreachable or misconfigured")
-				}
-				log.Info("Strict mode validation passed.")
-			}
 
 			// Track 1: Friction Fighter - Startup Banner
 			// We defer the banner printing until the app is actually running to ensure ports are bound.
@@ -252,6 +218,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				ConfigPaths:     configPaths,
 				APIKey:          cfg.APIKey(),
 				ShutdownTimeout: shutdownTimeout,
+				Strict:          strict,
 			}); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
