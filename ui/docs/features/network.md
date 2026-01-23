@@ -25,3 +25,15 @@ Click on any node (e.g., a Service node) to open the **Details Panel**.
 - **Zoom**: Use your mouse wheel or trackpad to zoom in/out.
 - **Drag**: Pan across the canvas to view large topologies.
 - **Filter**: Use the controls to show/hide specific node types (e.g., hide offline services).
+
+### 4. Legend
+Toggle the **Legend** using the checkbox in the controls panel to see a comprehensive guide of all node types and status indicators.
+
+![Network Graph Legend](../screenshots/network_graph_legend.png)
+
+### 5. Quick Actions
+When a node is selected, you can perform quick actions directly from the details panel:
+- **View Logs**: Deep link to the Logs page filtered by the selected service or component.
+- **Trace Request**: (Coming soon) View traces for the selected component.
+
+![Node Details](../screenshots/network_node_details.png)

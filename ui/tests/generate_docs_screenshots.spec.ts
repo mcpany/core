@@ -268,6 +268,20 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(2000); // Graph rendering
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_graph.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network.png'), fullPage: true });
+
+      // Click on Show Legend
+      await page.getByLabel('Show Legend').check();
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_graph_legend.png'), fullPage: true });
+
+      // Select a node to show details and "View Logs" button
+      // We'll try to find a node by text, e.g., "mcp-core" or "MCP Any" (label)
+      const coreNode = page.locator('.react-flow__node').filter({ hasText: 'MCP Any' }).first();
+      if (await coreNode.isVisible()) {
+          await coreNode.click();
+          await page.waitForTimeout(1000); // Wait for sheet animation
+          await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_node_details.png'), fullPage: true });
+      }
   });
 
   test('Logs Screenshots', async ({ page }) => {

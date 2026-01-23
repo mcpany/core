@@ -51,6 +51,8 @@ import { NodeType, NodeStatus } from "@/types/topology";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { NetworkLegend } from "./network-legend";
 
 interface NodeData extends Record<string, unknown> {
     label: string;
@@ -111,10 +113,12 @@ function Flow() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const isMobile = useIsMobile();
   const [isControlsExpanded, setIsControlsExpanded] = useState(true);
+  const router = useRouter();
 
   // Basic filtering state
   const [showSystem, setShowSystem] = useState(true);
   const [showTools, setShowTools] = useState(true);
+  const [showLegend, setShowLegend] = useState(false);
 
   // Collapse controls by default on mobile
   React.useEffect(() => {
@@ -207,8 +211,17 @@ function Flow() {
                                 <Checkbox id="show-tools" checked={showTools} onCheckedChange={(c) => setShowTools(!!c)} />
                                 <Label htmlFor="show-tools" className="text-xs font-normal cursor-pointer">Show Capability Details (Tools)</Label>
                             </div>
+                            <div className="flex items-center space-x-2 pt-2 border-t mt-2">
+                                <Checkbox id="show-legend" checked={showLegend} onCheckedChange={(c) => setShowLegend(!!c)} />
+                                <Label htmlFor="show-legend" className="text-xs font-normal cursor-pointer">Show Legend</Label>
+                            </div>
                         </div>
                     </div>
+                    {showLegend && (
+                        <div className="px-4 pb-4 border-t pt-4 bg-muted/20">
+                            <NetworkLegend />
+                        </div>
+                    )}
                   </>
               )}
           </Card>
@@ -312,11 +325,22 @@ function Flow() {
                     </div>
                 )}
 
-                {/* Actions (Mock) */}
+                {/* Actions */}
                 <div className="pt-4">
                      <h4 className="font-medium text-sm mb-3">Quick Actions</h4>
                      <div className="flex flex-wrap gap-2">
-                         <Button variant="outline" size="sm" className="h-8">View Logs</Button>
+                         <Button variant="outline" size="sm" className="h-8" onClick={() => {
+                             if (!selectedNode) return;
+                             let source = selectedNode.id;
+                             // Heuristic to extract service name from node ID
+                             if (source.startsWith('svc-')) source = source.replace('svc-', '');
+                             else if (source.startsWith('tool-')) {
+                                 // For tools, we might not have a direct log source, but we can search for the tool name
+                                 // Or try to infer the service.
+                                 // For now, let's just pass the ID.
+                             }
+                             router.push(`/logs?source=${source}`);
+                         }}>View Logs</Button>
                          <Button variant="outline" size="sm" className="h-8">Trace Request</Button>
                          {selectedNode?.data.status === 'NODE_STATUS_ERROR' && (
                              <Button variant="destructive" size="sm" className="h-8">Restart Service</Button>
