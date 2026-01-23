@@ -107,7 +107,7 @@ func TestWebrtcTool_Coverage(t *testing.T) {
     // We pass nil for callDef, which might panic in NewWebrtcTool if it accesses fields.
     // NewWebrtcTool accesses callDefinition.GetParameters() etc.
     callDef := &configv1.WebrtcCallDefinition{}
-    wt, err := NewWebrtcTool(toolDef, nil, "svc1", nil, callDef)
+    wt, err := NewWebrtcTool(toolDef, nil, "svc1", nil, nil, callDef)
     assert.NoError(t, err)
     assert.NotNil(t, wt)
     assert.Equal(t, toolDef, wt.Tool())

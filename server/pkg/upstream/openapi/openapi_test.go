@@ -109,13 +109,16 @@ func TestOpenAPIUpstream_getHTTPClient(t *testing.T) {
 	u := NewOpenAPIUpstream()
 	ou := u.(*OpenAPIUpstream)
 
-	client1 := ou.getHTTPClient("service1")
+	client1, err := ou.getHTTPClient("service1", nil)
+	assert.NoError(t, err)
 	assert.NotNil(t, client1)
 
-	client2 := ou.getHTTPClient("service1")
+	client2, err := ou.getHTTPClient("service1", nil)
+	assert.NoError(t, err)
 	assert.Same(t, client1, client2, "Should return the same client for the same service key")
 
-	client3 := ou.getHTTPClient("service2")
+	client3, err := ou.getHTTPClient("service2", nil)
+	assert.NoError(t, err)
 	assert.NotNil(t, client3)
 	assert.NotSame(t, client1, client3, "Should return different clients for different service keys")
 }
@@ -188,6 +191,7 @@ func TestOpenAPIUpstream_Register_Errors(t *testing.T) {
 }
 
 func TestOpenAPIUpstream_Register_SpecUrl(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	ctx := context.Background()
 	mockToolManager := new(MockToolManager)
 	upstream := NewOpenAPIUpstream()
@@ -480,11 +484,12 @@ func TestOpenAPIUpstream_Shutdown(t *testing.T) {
 	ou := u.(*OpenAPIUpstream)
 
 	// Pre-populate a client with empty service ID, which matches default u.serviceID
-	client := ou.getHTTPClient("")
+	client, err := ou.getHTTPClient("", nil)
+	assert.NoError(t, err)
 	assert.NotNil(t, client)
 
 	// Shutdown
-	err := u.Shutdown(context.Background())
+	err = u.Shutdown(context.Background())
 	assert.NoError(t, err)
 
 	ou.mu.Lock()

@@ -37,6 +37,7 @@ func newTestWSServer() *httptest.Server {
 
 func TestNewPool(t *testing.T) {
 	t.Run("successful pool creation", func(t *testing.T) {
+		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 		server := newTestWSServer()
 		defer server.Close()
 		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")

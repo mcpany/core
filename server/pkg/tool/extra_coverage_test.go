@@ -136,6 +136,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			nil,
 			"service-id",
 			nil,
+			nil,
 			&configv1.WebrtcCallDefinition{},
 		)
 		assert.NoError(t, err)
@@ -255,6 +256,7 @@ func TestTool_GetCacheConfig(t *testing.T) {
 			nil,
 			"s",
 			nil,
+			nil,
 			&configv1.WebrtcCallDefinition{Cache: cacheCfg},
 		)
 		assert.NoError(t, err)
@@ -280,6 +282,7 @@ func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
 		&pb.Tool{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")},
 		nil, // No pool -> triggers executeWithoutPool
 		"s",
+		nil,
 		nil,
 		&configv1.WebrtcCallDefinition{},
 	)

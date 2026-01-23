@@ -38,7 +38,7 @@ func TestNewWebrtcTool(t *testing.T) {
 	toolDef := &v1.Tool{}
 	toolDef.SetName("test-webrtc")
 	callDef := &configv1.WebrtcCallDefinition{}
-	wt, err := NewWebrtcTool(toolDef, nil, "service-key", nil, callDef)
+	wt, err := NewWebrtcTool(toolDef, nil, "service-key", nil, nil, callDef)
 	require.NoError(t, err)
 	assert.NotNil(t, wt)
 	assert.Equal(t, toolDef, wt.Tool())
@@ -46,13 +46,14 @@ func TestNewWebrtcTool(t *testing.T) {
 }
 
 func TestWebrtcTool_Close(t *testing.T) {
-	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 	assert.NoError(t, wt.Close())
 }
 
 func TestWebrtcTool_PoolInteraction(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -93,7 +94,7 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
-	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	p, ok := pool.Get[*peerConnectionWrapper](poolManager, "webrtc-service")
@@ -114,6 +115,7 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 
 func TestWebrtcTool_Execute_Success(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -166,7 +168,7 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 
 	poolManager := pool.NewManager()
-	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	inputJSON := `{"message":"hello"}`
@@ -184,6 +186,7 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 
 func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -237,7 +240,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 		"extracted_message": "{.data.final_message}",
 	})
 
-	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, callDef)
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, nil, callDef)
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{"message":"hello"}`)}
@@ -251,6 +254,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 
 func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	authHeader := "Bearer my-secret-token"
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -299,7 +303,7 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 	authenticator := &MockAuthenticator{
 		Header: http.Header{"Authorization": {authHeader}},
 	}
-	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", authenticator, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", authenticator, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
@@ -310,6 +314,7 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 
 func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}))
@@ -318,7 +323,7 @@ func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
-	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
@@ -329,6 +334,7 @@ func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 
 func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
 		require.NoError(t, err)
@@ -356,7 +362,7 @@ func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 	tool := &v1.Tool{}
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
-	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{ToolInputs: []byte(`{}`)}
@@ -374,7 +380,7 @@ func TestWebrtcTool_GetCacheConfig(t *testing.T) {
 	cacheConfig := &configv1.CacheConfig{}
 	callDef := &configv1.WebrtcCallDefinition{}
 	callDef.SetCache(cacheConfig)
-	wt, err := NewWebrtcTool(toolDef, nil, "service-key", nil, callDef)
+	wt, err := NewWebrtcTool(toolDef, nil, "service-key", nil, nil, callDef)
 	require.NoError(t, err)
 	assert.Equal(t, cacheConfig, wt.GetCacheConfig())
 }
@@ -387,7 +393,7 @@ func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{ .invalid }}")
 	callDef.SetInputTransformer(inputTransformer)
-	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, nil, callDef)
 	require.NoError(t, err)
 
 	req := &ExecutionRequest{
@@ -400,7 +406,7 @@ func TestWebrtcTool_Execute_InvalidInputTemplate(t *testing.T) {
 }
 
 func TestWebrtcTool_CloseMethod(t *testing.T) {
-	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, &configv1.WebrtcCallDefinition{})
+	wt, err := NewWebrtcTool(&v1.Tool{}, nil, "", nil, nil, &configv1.WebrtcCallDefinition{})
 	require.NoError(t, err)
 	assert.NoError(t, wt.Close())
 }

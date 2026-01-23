@@ -67,6 +67,8 @@ type WebrtcTool struct {
 	webrtcPool        pool.Pool[*peerConnectionWrapper]
 	serviceID         string
 	authenticator     auth.UpstreamAuthenticator
+	tlsConfig         *configv1.TLSConfig
+	httpClient        *http.Client
 	parameters        []*configv1.WebrtcParameterMapping
 	inputTransformer  *configv1.InputTransformer
 	outputTransformer *configv1.OutputTransformer
@@ -86,12 +88,20 @@ func NewWebrtcTool(
 	poolManager *pool.Manager,
 	serviceID string,
 	authenticator auth.UpstreamAuthenticator,
+	tlsConfig *configv1.TLSConfig,
 	callDefinition *configv1.WebrtcCallDefinition,
 ) (*WebrtcTool, error) {
+	httpClient, err := util.NewHTTPClientWithTLS(tlsConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create http client: %w", err)
+	}
+
 	t := &WebrtcTool{
 		tool:              tool,
 		serviceID:         serviceID,
 		authenticator:     authenticator,
+		tlsConfig:         tlsConfig,
+		httpClient:        httpClient,
 		parameters:        callDefinition.GetParameters(),
 		inputTransformer:  callDefinition.GetInputTransformer(),
 		outputTransformer: callDefinition.GetOutputTransformer(),
@@ -278,7 +288,7 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 		}
 	}
 
-	resp, err := http.DefaultClient.Do(httpReq)
+	resp, err := t.httpClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send offer to signaling server: %w", err)
 	}

@@ -176,7 +176,7 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 			}.Build(),
 		}.Build()
 
-		wrtcTool, err := tool.NewWebrtcTool(newToolProto, u.poolManager, serviceID, authenticator, wrtcDef)
+		wrtcTool, err := tool.NewWebrtcTool(newToolProto, u.poolManager, serviceID, authenticator, webrtcService.GetTlsConfig(), wrtcDef)
 		if err != nil {
 			log.Error("Failed to create webrtc tool", "error", err)
 			continue

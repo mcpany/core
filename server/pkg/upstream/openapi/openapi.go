@@ -132,9 +132,9 @@ func (u *OpenAPIUpstream) Register(
 		}
 
 		if specURL != "" {
-			client := &http.Client{
-				Timeout: 30 * time.Second,
-			}
+			client := util.NewSafeHTTPClient()
+			client.Timeout = 30 * time.Second
+
 			req, err := http.NewRequestWithContext(ctx, "GET", specURL, nil)
 			if err != nil {
 				logging.GetLogger().Warn("Failed to create request for OpenAPI spec", "url", specURL, "error", err)
@@ -208,27 +208,28 @@ func (u *OpenAPIUpstream) Register(
 // getHTTPClient retrieves or creates an HTTP client for a given service. It
 // ensures that each service has its own dedicated client, which can be
 // configured with specific transports or timeouts.
-func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
+func (u *OpenAPIUpstream) getHTTPClient(serviceID string, tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
 	if client, ok := u.httpClients[serviceID]; ok {
-		return client
+		return client, nil
 	}
 
-	transport := &http.Transport{
-		MaxIdleConns:        100,
-		MaxIdleConnsPerHost: 10,
-		IdleConnTimeout:     90 * time.Second,
+	client, err := util.NewHTTPClientWithTLS(tlsConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create HTTP client with TLS config: %w", err)
 	}
-
-	client := &http.Client{
-		Transport: transport,
-		Timeout:   30 * time.Second,
+	// Set reasonable timeouts
+	client.Timeout = 30 * time.Second
+	if transport, ok := client.Transport.(*http.Transport); ok {
+		transport.MaxIdleConns = 100
+		transport.MaxIdleConnsPerHost = 10
+		transport.IdleConnTimeout = 90 * time.Second
 	}
 
 	u.httpClients[serviceID] = client
-	return client
+	return client, nil
 }
 
 // httpClientImpl is a simple wrapper around *http.Client that implements the
@@ -250,7 +251,11 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 	log := logging.GetLogger()
 	numToolsForThisService := 0
 
-	httpClient := u.getHTTPClient(serviceID)
+	httpClient, err := u.getHTTPClient(serviceID, serviceConfig.GetOpenapiService().GetTlsConfig())
+	if err != nil {
+		log.Error("Failed to create HTTP client", "serviceID", serviceID, "error", err)
+		return 0
+	}
 	httpC := &httpClientImpl{client: httpClient}
 
 	authenticator, err := auth.NewUpstreamAuthenticator(serviceConfig.GetUpstreamAuth())
