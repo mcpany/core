@@ -42,7 +42,7 @@ type GrpcClientWrapper struct {
 func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, checker health.Checker) *GrpcClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
-		checker = healthChecker.NewChecker(config)
+		checker = healthChecker.NewChecker(config, false)
 	}
 	return &GrpcClientWrapper{
 		Conn:    conn,

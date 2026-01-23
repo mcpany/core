@@ -60,7 +60,7 @@ func TestNewChecker(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("NilConfig", func(t *testing.T) {
-		assert.Nil(t, NewChecker(nil), "NewChecker with nil config should return nil")
+		assert.Nil(t, NewChecker(nil, false), "NewChecker with nil config should return nil")
 	})
 
 	t.Run("Success", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestNewChecker(t *testing.T) {
 			HttpService: configv1.HttpUpstreamService_builder{Address: &addr}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.Nil(t, checker, "NewChecker should return nil for HTTP service without health check")
 	})
 
@@ -97,7 +97,7 @@ func TestNewChecker(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -133,7 +133,7 @@ func TestNewChecker(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -163,7 +163,7 @@ func TestNewChecker(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		result := checker.Check(ctx)
 		assert.Equal(t, health.StatusUp, result.Status)
@@ -194,7 +194,7 @@ func TestNewChecker(t *testing.T) {
 				}).Build(),
 			}).Build(),
 		}).Build()
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -217,7 +217,7 @@ func TestFilesystemCheck(t *testing.T) {
 			},
 		}
 
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -235,7 +235,7 @@ func TestFilesystemCheck(t *testing.T) {
 			},
 		}
 
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -252,7 +252,7 @@ func TestFilesystemCheck(t *testing.T) {
 			},
 		}
 
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -275,7 +275,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -294,7 +294,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -310,7 +310,7 @@ func TestCheckGRPCHealth(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -478,7 +478,7 @@ func TestCheckVariousServices(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			checker := NewChecker(tc.config)
+			checker := NewChecker(tc.config, false)
 			if tc.name == "OpenAPI Service" {
 				assert.Nil(t, checker, "Expected nil checker for %s", tc.name)
 			} else {
@@ -523,7 +523,7 @@ func TestWebsocketCheck(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -551,7 +551,7 @@ func TestWebsocketCheck(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -568,7 +568,7 @@ func TestWebsocketCheck(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -589,7 +589,7 @@ func TestWebsocketCheck(t *testing.T) {
 			WebsocketService: configv1.WebsocketUpstreamService_builder{Address: &addr}.Build(),
 		}.Build()
 
-		checker := NewChecker(upstreamConfig)
+		checker := NewChecker(upstreamConfig, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -623,7 +623,7 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 				}).Build(),
 			}).Build(),
 		}).Build()
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -638,7 +638,7 @@ func TestWebSocketHealthCheckBasic(t *testing.T) {
 				}).Build(),
 			}).Build(),
 		}).Build()
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -668,7 +668,7 @@ func TestWebRTCHealthCheck(t *testing.T) {
 				}).Build(),
 			}).Build(),
 		}).Build()
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusUp, checker.Check(ctx).Status)
 	})
@@ -685,7 +685,7 @@ func TestWebRTCHealthCheck(t *testing.T) {
 				}).Build(),
 			}).Build(),
 		}).Build()
-		checker := NewChecker(config)
+		checker := NewChecker(config, false)
 		assert.NotNil(t, checker)
 		assert.Equal(t, health.StatusDown, checker.Check(ctx).Status)
 	})
@@ -746,6 +746,6 @@ func TestGRPC_NoHealthCheck(t *testing.T) {
 		}.Build(),
 	}.Build()
 
-	checker := NewChecker(upstreamConfig)
+	checker := NewChecker(upstreamConfig, false)
 	assert.Nil(t, checker)
 }

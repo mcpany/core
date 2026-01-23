@@ -70,7 +70,10 @@ func NewGrpcPool(
 	}
 
 	// Create a shared health checker for all clients in this pool
-	checker := healthChecker.NewChecker(config)
+	checker := healthChecker.NewChecker(config, true)
+	if checker != nil {
+		checker.Start()
+	}
 
 	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials

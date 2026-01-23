@@ -115,7 +115,7 @@ func (u *Upstream) Register(
 	u.serviceID = sanitizedName // for internal use
 	serviceID := u.serviceID
 
-	u.checker = mcphealth.NewChecker(serviceConfig)
+	u.checker = mcphealth.NewChecker(serviceConfig, false)
 
 	grpcService := serviceConfig.GetGrpcService()
 	if grpcService == nil {

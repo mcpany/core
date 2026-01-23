@@ -124,7 +124,7 @@ func (u *Upstream) Register(
 	if u.checker != nil {
 		u.checker.Stop()
 	}
-	u.checker = mcphealth.NewChecker(serviceConfig)
+	u.checker = mcphealth.NewChecker(serviceConfig, false)
 	if u.checker != nil {
 		u.checker.Start()
 	}

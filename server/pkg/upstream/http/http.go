@@ -125,7 +125,7 @@ func (u *Upstream) Register(
 	u.serviceID = sanitizedName
 	serviceID := u.serviceID
 
-	u.checker = mcphealth.NewChecker(serviceConfig)
+	u.checker = mcphealth.NewChecker(serviceConfig, false)
 
 	if isReload {
 		toolManager.ClearToolsForService(serviceID)

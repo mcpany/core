@@ -67,7 +67,7 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Returns:
 //   - A health.Checker instance that can be used to monitor the service's health.
-func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
+func NewChecker(uc *configv1.UpstreamServiceConfig, enablePeriodic bool) health.Checker {
 	if uc == nil {
 		return nil
 	}
@@ -148,13 +148,17 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
 			}
 		}),
-		// Using synchronous checks for now to simplify the implementation and ensure
-		// tests are reliable. Periodic checks can be re-introduced later if needed,
-		// likely controlled by a configuration option.
-		health.WithCheck(check),
 		// Cache the health check result for a short duration to avoid spamming the upstream
 		// if IsHealthy is called frequently (e.g. by the pool).
 		health.WithCacheDuration(1 * time.Second),
+	}
+
+	if enablePeriodic {
+		// Run checks periodically in the background to avoid blocking the request path.
+		opts = append(opts, health.WithPeriodicCheck(15*time.Second, 5*time.Second, check))
+	} else {
+		// Using synchronous checks for simple usage or where Start() lifecycle is hard to manage.
+		opts = append(opts, health.WithCheck(check))
 	}
 
 	return health.NewChecker(opts...)

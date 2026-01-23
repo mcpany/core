@@ -12,6 +12,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
@@ -22,12 +23,16 @@ import (
 type httpPool struct {
 	pool.Pool[*client.HTTPClientWrapper]
 	transport *http.Transport
+	checker   health.Checker
 }
 
 // Close closes the connection pool and the idle connections.
 //
 // Returns an error if the operation fails.
 func (p *httpPool) Close() error {
+	if p.checker != nil {
+		p.checker.Stop()
+	}
 	if err := p.Pool.Close(); err != nil {
 		return err
 	}
@@ -100,7 +105,10 @@ var NewHTTPPool = func(
 	}
 
 	// Create a shared health checker for all clients in this pool
-	checker := healthChecker.NewChecker(config)
+	checker := healthChecker.NewChecker(config, true)
+	if checker != nil {
+		checker.Start()
+	}
 
 	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
 		return client.NewHTTPClientWrapper(
@@ -118,5 +126,6 @@ var NewHTTPPool = func(
 	return &httpPool{
 		Pool:      basePool,
 		transport: baseTransport,
+		checker:   checker,
 	}, nil
 }
