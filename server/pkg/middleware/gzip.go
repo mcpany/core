@@ -81,6 +81,18 @@ type gzipResponseWriter struct {
 	shouldGzip  bool
 }
 
+// Write writes the data to the connection as part of an HTTP reply.
+// If WriteHeader has not yet been called, Write calls WriteHeader(http.StatusOK)
+// before writing the data. If the Header does not contain a Content-Type line,
+// Write adds a Content-Type set to the result of passing the initial 512 bytes
+// of written data to DetectContentType.
+//
+// Parameters:
+//   - b: The data to write.
+//
+// Returns:
+//   - int: The number of bytes written.
+//   - error: An error if the write fails.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -91,6 +103,10 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
+// WriteHeader sends an HTTP response header with the provided status code.
+//
+// Parameters:
+//   - code: The HTTP status code.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.wroteHeader {
 		return
@@ -113,6 +129,8 @@ func (w *gzipResponseWriter) WriteHeader(code int) {
 	w.ResponseWriter.WriteHeader(code)
 }
 
+// Close closes the gzip writer and returns it to the pool.
+// It ensures that any buffered data is flushed to the underlying writer.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
 		_ = w.writer.Close()
