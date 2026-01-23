@@ -60,10 +60,12 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899'
  */
 export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");
+    const [serviceFilter, setServiceFilter] = useState("all");
     const [activeTab, setActiveTab] = useState("overview");
 
     const [trafficData, setTrafficData] = useState<any[]>([]);
     const [toolUsageData, setToolUsageData] = useState<any[]>([]);
+    const [services, setServices] = useState<any[]>([]);
     const [contextTotal, setContextTotal] = useState<number>(0);
     const [contextByService, setContextByService] = useState<any[]>([]);
     const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
@@ -71,6 +73,8 @@ export function AnalyticsDashboard() {
 
     useEffect(() => {
         setIsMounted(true);
+        apiClient.listServices().then(setServices).catch(console.error);
+
         const fetchDashboardData = async () => {
             try {
                 const [traffic, topTools, toolsResponse] = await Promise.all([
@@ -84,6 +88,7 @@ export function AnalyticsDashboard() {
                 const formattedTools = (topTools || []).map((t: any, index: number) => ({
                     name: t.name,
                     value: t.count,
+                    serviceId: t.serviceId,
                     color: COLORS[index % COLORS.length]
                 }));
                 setToolUsageData(formattedTools);
@@ -129,14 +134,31 @@ export function AnalyticsDashboard() {
         return () => clearInterval(interval);
     }, [timeRange]);
 
-    const totalRequests = trafficData.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
-    const avgLatency = trafficData.length
-        ? Math.floor(trafficData.reduce((acc, cur) => acc + (cur.latency || 0), 0) / trafficData.length)
+    // Apply Filters
+    const filteredTraffic = trafficData.map(point => {
+        if (serviceFilter === "all") return point;
+        if (point.serviceStats && point.serviceStats[serviceFilter]) {
+            return {
+                time: point.time,
+                ...point.serviceStats[serviceFilter]
+            };
+        }
+        return { time: point.time, requests: 0, latency: 0, errors: 0 };
+    });
+
+    const filteredToolUsage = toolUsageData.filter(t => {
+        if (serviceFilter === "all") return true;
+        return t.serviceId === serviceFilter;
+    });
+
+    const totalRequests = filteredTraffic.reduce((acc, cur) => acc + (cur.requests || cur.total || 0), 0);
+    const avgLatency = filteredTraffic.length
+        ? Math.floor(filteredTraffic.reduce((acc, cur) => acc + (cur.latency || 0), 0) / filteredTraffic.length)
         : 0;
-    const errorCount = trafficData.reduce((acc, cur) => acc + (cur.errors || 0), 0);
+    const errorCount = filteredTraffic.reduce((acc, cur) => acc + (cur.errors || 0), 0);
     const errorRate = totalRequests ? ((errorCount / totalRequests) * 100).toFixed(2) : "0.00";
     // Assuming 1 minute per data point for "rps" calculation if we have enough points, otherwise just total
-    const durationMinutes = trafficData.length;
+    const durationMinutes = filteredTraffic.length;
     const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
     if (!isMounted) return null;
@@ -149,6 +171,17 @@ export function AnalyticsDashboard() {
                     <p className="text-muted-foreground">Real-time insights into your MCP infrastructure.</p>
                 </div>
                 <div className="flex items-center space-x-2">
+                    <Select value={serviceFilter} onValueChange={setServiceFilter}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="All Services" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Services</SelectItem>
+                            {services.map((svc) => (
+                                <SelectItem key={svc.name} value={svc.name}>{svc.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <Select value={timeRange} onValueChange={setTimeRange}>
                         <SelectTrigger className="w-[180px]">
                             <Calendar className="mr-2 h-4 w-4" />
@@ -223,13 +256,13 @@ export function AnalyticsDashboard() {
                             <CardHeader>
                                 <CardTitle>Request Volume</CardTitle>
                                 <CardDescription>
-                                    Traffic across all MCP services over the last period.
+                                    Traffic across {serviceFilter === 'all' ? 'all' : serviceFilter} MCP services.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="pl-2">
                                 <div className="h-[300px]">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={trafficData}>
+                                        <AreaChart data={filteredTraffic}>
                                             <defs>
                                                 <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
                                                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -280,7 +313,7 @@ export function AnalyticsDashboard() {
                                     <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
                                             <Pie
-                                                data={toolUsageData}
+                                                data={filteredToolUsage}
                                                 cx="50%"
                                                 cy="50%"
                                                 innerRadius={60}
@@ -288,7 +321,7 @@ export function AnalyticsDashboard() {
                                                 dataKey="value"
                                                 isAnimationActive={false}
                                             >
-                                                {toolUsageData.map((entry, index) => (
+                                                {filteredToolUsage.map((entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
@@ -314,7 +347,7 @@ export function AnalyticsDashboard() {
                         <CardContent className="pl-2">
                              <div className="h-[350px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={trafficData}>
+                                    <BarChart data={filteredTraffic}>
                                         <XAxis
                                             dataKey="time"
                                             stroke="hsl(var(--muted-foreground))"
@@ -352,7 +385,7 @@ export function AnalyticsDashboard() {
                             <CardContent className="pl-2">
                                  <div className="h-[300px]">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={trafficData}>
+                                        <LineChart data={filteredTraffic}>
                                             <XAxis
                                                 dataKey="time"
                                                 stroke="hsl(var(--muted-foreground))"

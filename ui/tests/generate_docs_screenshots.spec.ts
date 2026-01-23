@@ -112,9 +112,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
      await page.route('**/api/v1/dashboard/traffic', async route => {
          await route.fulfill({
              json: Array.from({length: 24}, (_, i) => ({
-                 timestamp: new Date(Date.now() - i * 3600000).toISOString(),
+                 time: new Date(Date.now() - i * 3600000).toISOString(),
                  requests: Math.floor(Math.random() * 500) + 100,
-                 errors: Math.floor(Math.random() * 10)
+                 errors: Math.floor(Math.random() * 10),
+                 serviceStats: {
+                     'Primary DB': { requests: Math.floor(Math.random() * 100), errors: 0, latency: 10 },
+                     'OpenAI Gateway': { requests: Math.floor(Math.random() * 100), errors: 0, latency: 20 }
+                 }
              })).reverse()
          });
      });
@@ -128,6 +132,25 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
+
+    // Expand Service Filter
+    // We target the SelectTrigger inside the dashboard header
+    // The dashboard header has two selects. One for Service (first), one for Time (second).
+    // We can target by placeholder "All Services"
+    const serviceFilter = page.getByText('All Services');
+    if (await serviceFilter.isVisible()) {
+        await serviceFilter.click();
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_service_filter.png') });
+
+        // Select a service
+        const option = page.getByRole('option', { name: 'Primary DB' });
+        if (await option.isVisible()) {
+            await option.click();
+            await page.waitForTimeout(1000);
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_filtered.png'), fullPage: true });
+        }
+    }
   });
 
   test('Services Screenshots', async ({ page }) => {

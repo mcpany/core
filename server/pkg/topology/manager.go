@@ -43,17 +43,33 @@ type Stats struct {
 
 // MinuteStats tracks stats for a single minute.
 type MinuteStats struct {
+	Requests     int64
+	Errors       int64
+	Latency      int64 // Total latency in ms
+	ServiceStats map[string]*ServiceStats
+}
+
+// ServiceStats tracks stats for a specific service within a minute.
+type ServiceStats struct {
 	Requests int64
 	Errors   int64
-	Latency  int64 // Total latency in ms
+	Latency  int64
 }
 
 // TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
-	Time    string `json:"time"`
-	Total   int64  `json:"requests"` // mapped to "requests" for UI
-	Errors  int64  `json:"errors"`
-	Latency int64  `json:"latency"`
+	Time         string                  `json:"time"`
+	Total        int64                   `json:"requests"` // mapped to "requests" for UI
+	Errors       int64                   `json:"errors"`
+	Latency      int64                   `json:"latency"`
+	ServiceStats map[string]ServicePoint `json:"serviceStats,omitempty"`
+}
+
+// ServicePoint represents stats for a service in the traffic chart.
+type ServicePoint struct {
+	Requests int64 `json:"requests"`
+	Errors   int64 `json:"errors"`
+	Latency  int64 `json:"latency"`
 }
 
 // NewManager creates a new Topology Manager.
@@ -74,8 +90,9 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 // RecordActivity updates the session activity.
 //
 // sessionID is the sessionID.
+// serviceID is the serviceID (optional).
 // meta is the meta.
-func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool) {
+func (m *Manager) RecordActivity(sessionID string, serviceID string, meta map[string]interface{}, latency time.Duration, isError bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -103,13 +120,31 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 	// Record traffic history
 	now := time.Now().Truncate(time.Minute).Unix()
 	if _, ok := m.trafficHistory[now]; !ok {
-		m.trafficHistory[now] = &MinuteStats{}
+		m.trafficHistory[now] = &MinuteStats{
+			ServiceStats: make(map[string]*ServiceStats),
+		}
 	}
 	stats := m.trafficHistory[now]
 	stats.Requests++
 	stats.Latency += latency.Milliseconds()
 	if isError {
 		stats.Errors++
+	}
+
+	// Record service specific stats
+	if serviceID != "" && serviceID != "unknown" {
+		if stats.ServiceStats == nil {
+			stats.ServiceStats = make(map[string]*ServiceStats)
+		}
+		if _, ok := stats.ServiceStats[serviceID]; !ok {
+			stats.ServiceStats[serviceID] = &ServiceStats{}
+		}
+		sStats := stats.ServiceStats[serviceID]
+		sStats.Requests++
+		sStats.Latency += latency.Milliseconds()
+		if isError {
+			sStats.Errors++
+		}
 	}
 
 	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
@@ -187,11 +222,28 @@ func (m *Manager) GetTrafficHistory() []TrafficPoint {
 			avgLat = lat / reqs
 		}
 
+		// Calculate service stats for this point
+		servicePoints := make(map[string]ServicePoint)
+		if stats != nil && stats.ServiceStats != nil {
+			for svcID, sStats := range stats.ServiceStats {
+				sAvgLat := int64(0)
+				if sStats.Requests > 0 {
+					sAvgLat = sStats.Latency / sStats.Requests
+				}
+				servicePoints[svcID] = ServicePoint{
+					Requests: sStats.Requests,
+					Errors:   sStats.Errors,
+					Latency:  sAvgLat,
+				}
+			}
+		}
+
 		points = append(points, TrafficPoint{
-			Time:    t.Format("15:04"),
-			Total:   reqs,
-			Errors:  errs,
-			Latency: avgLat,
+			Time:         t.Format("15:04"),
+			Total:        reqs,
+			Errors:       errs,
+			Latency:      avgLat,
+			ServiceStats: servicePoints,
 		})
 	}
 	return points
