@@ -122,6 +122,47 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
+    // Pre-populate health history for timeline visualization
+    await page.addInitScript(() => {
+        const history = {
+            'postgres-primary': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: 'healthy' })).reverse(),
+            'openai-gateway': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: Math.random() > 0.9 ? 'degraded' : 'healthy' })).reverse(),
+            'broken-service': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: 'unhealthy' })).reverse()
+        };
+        window.localStorage.setItem('mcp_service_health_history', JSON.stringify(history));
+    });
+
+    await page.route('**/api/dashboard/health', async route => {
+        await route.fulfill({
+            json: [
+               {
+                   id: 'postgres-primary',
+                   name: 'Primary DB',
+                   status: 'healthy',
+                   latency: '12ms',
+                   uptime: '2d 4h',
+                   message: ''
+               },
+               {
+                   id: 'openai-gateway',
+                   name: 'OpenAI Gateway',
+                   status: 'healthy',
+                   latency: '45ms',
+                   uptime: '5h 30m',
+                   message: ''
+               },
+               {
+                   id: 'broken-service',
+                   name: 'Legacy API',
+                   status: 'unhealthy',
+                   latency: '--',
+                   uptime: '10m',
+                   message: 'Connection refused'
+               }
+            ]
+        });
+    });
+
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     // Give widgets extra time to render after data fetch
