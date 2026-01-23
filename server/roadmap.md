@@ -26,6 +26,8 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Auto-Enable File Configuration**
+  - **Description**: Automatically enables file-based configuration when `--config-path` is provided, removing the need for `MCPANY_ENABLE_FILE_CONFIG=true`.
 
 ## 2. Updated Roadmap
 
@@ -119,6 +121,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 78 | **Smart Config Validation in CLI** | **DevX**: When running `server run`, automatically validate the config file structure before starting up, and fail fast with detailed error messages if invalid. | Low |
+| 79 | **Config file hot-reloading debounce** | **Resilience**: Implement debouncing for config file watchers to prevent multiple reloads when saving a file that triggers multiple filesystem events. | Low |
 
 ## 3. Codebase Health
 

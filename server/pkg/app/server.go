@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -353,13 +354,13 @@ func (a *Application) Run(opts RunOptions) error {
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	enableFileConfig := shouldEnableFileConfig(os.Getenv("MCPANY_ENABLE_FILE_CONFIG"), opts.ConfigPaths)
 	if len(opts.ConfigPaths) > 0 {
 		if enableFileConfig {
 			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
 			stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
 		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", opts.ConfigPaths)
+			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is disabled. Ignoring file config.", "paths", opts.ConfigPaths)
 		}
 	}
 	multiStore := config.NewMultiStore(stores...)
@@ -866,13 +867,28 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 		stores = append(stores, a.Storage)
 	}
 
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	enableFileConfig := shouldEnableFileConfig(os.Getenv("MCPANY_ENABLE_FILE_CONFIG"), configPaths)
 	if enableFileConfig && len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 
 	store := config.NewMultiStore(stores...)
 	return config.LoadServices(ctx, store, "server")
+}
+
+// shouldEnableFileConfig determines if file configuration should be enabled.
+// If the environment variable is explicitly set, it takes precedence (supporting bool parsing).
+// If the environment variable is unset (empty), it defaults to true if configPaths are provided.
+func shouldEnableFileConfig(envVal string, configPaths []string) bool {
+	if envVal != "" {
+		if b, err := strconv.ParseBool(envVal); err == nil {
+			return b
+		}
+		// If set but not a valid bool, default to false (safe/strict behavior, similar to previous == "true")
+		return false
+	}
+	// Default: Enable if paths are provided
+	return len(configPaths) > 0
 }
 
 func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
