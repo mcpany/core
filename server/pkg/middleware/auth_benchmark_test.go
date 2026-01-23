@@ -30,7 +30,7 @@ func BenchmarkAuthMiddleware_ServiceMethod(b *testing.B) {
 	handler := mw(next)
 
 	httpReq, _ := http.NewRequest("POST", "/", nil)
-	ctx := context.WithValue(context.Background(), "http.request", httpReq)
+	ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
 	method := "myservice.mymethod"
 
 	b.ResetTimer()
