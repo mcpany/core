@@ -147,6 +147,18 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 	return prompts
 }
 
+func (m *MockPromptManager) ListMCPPrompts() []*mcp.Prompt {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	mcpPrompts := make([]*mcp.Prompt, 0, len(m.prompts))
+	for _, p := range m.prompts {
+		if mp := p.Prompt(); mp != nil {
+			mcpPrompts = append(mcpPrompts, mp)
+		}
+	}
+	return mcpPrompts
+}
+
 func (m *MockPromptManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
@@ -200,6 +212,18 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 		resources = append(resources, r)
 	}
 	return resources
+}
+
+func (m *MockResourceManager) ListMCPResources() []*mcp.Resource {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	mcpResources := make([]*mcp.Resource, 0, len(m.resources))
+	for _, r := range m.resources {
+		if mr := r.Resource(); mr != nil {
+			mcpResources = append(mcpResources, mr)
+		}
+	}
+	return mcpResources
 }
 
 func (m *MockResourceManager) OnListChanged(_ func()) {

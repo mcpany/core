@@ -1002,6 +1002,16 @@ func (m *MockPromptManager) ListPrompts() []prompt.Prompt {
 	return m.prompts
 }
 
+func (m *MockPromptManager) ListMCPPrompts() []*mcp.Prompt {
+	mcpPrompts := make([]*mcp.Prompt, 0, len(m.prompts))
+	for _, p := range m.prompts {
+		if mp := p.Prompt(); mp != nil {
+			mcpPrompts = append(mcpPrompts, mp)
+		}
+	}
+	return mcpPrompts
+}
+
 func (m *MockPromptManager) ClearPromptsForService(_ string) {}
 
 func (m *MockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}

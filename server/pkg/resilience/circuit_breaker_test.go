@@ -100,7 +100,7 @@ func TestCircuitBreaker(t *testing.T) {
 		err := cb.Execute(ctx, func(_ context.Context) error { return &PermanentError{Err: errors.New("permanent error")} })
 		require.Error(t, err)
 		require.Equal(t, StateClosed, cb.state)
-		require.Equal(t, int32(0), cb.failures)
+		require.Equal(t, 0, cb.failures)
 	})
 
 	t.Run("half_open_to_closed_on_success", func(t *testing.T) {
