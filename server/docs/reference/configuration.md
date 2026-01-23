@@ -744,7 +744,7 @@ authentication:
   api_key:
     param_name: "X-Mcp-Api-Key"
     in: "HEADER"
-    key_value: "my-secret-key"
+    verification_value: "my-secret-key"
 ```
 
 ##### `APIKeyAuth`
@@ -753,7 +753,7 @@ authentication:
 | ------------ | -------- | --------------------------------------------------------------- |
 | `param_name` | `string` | The name of the parameter carrying the key (e.g., "X-API-Key"). |
 | `in`         | `enum`   | Where the API key is located (`HEADER` or `QUERY`).             |
-| `key_value`  | `string` | The actual API key value.                                       |
+| `verification_value`  | `string` | The actual API key value.                                       |
 
 ##### `OAuth2Auth`
 
