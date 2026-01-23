@@ -2077,9 +2077,7 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 				// Check if the request is from a loopback address
 				// Explicitly allow "localhost" as net.ParseIP("localhost") returns nil
-				if host == "localhost" {
-					// Allowed
-				} else {
+				if host != "localhost" {
 					ip := net.ParseIP(host)
 					// IsPrivateIP(nil) returns false, so we are safe by default, but we should be explicit.
 					if ip == nil || !util.IsPrivateIP(ip) {

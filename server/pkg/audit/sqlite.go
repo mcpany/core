@@ -295,11 +295,12 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 		// Check hash version
 		var calculatedHash string
-		if len(hash) > 3 && hash[:3] == "v2:" {
+		switch {
+		case len(hash) > 3 && hash[:3] == "v2:":
 			calculatedHash = computeHashV2(ts, toolName, userID, profileID, ipAddress, args, result, errorMsg, durationMs, prevHash)
-		} else if len(hash) > 3 && hash[:3] == "v1:" {
+		case len(hash) > 3 && hash[:3] == "v1:":
 			calculatedHash = computeHashV1(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
-		} else {
+		default:
 			// Fallback to legacy
 			calculatedHash = computeHashV0(ts, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)
 		}
