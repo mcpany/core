@@ -23,7 +23,8 @@ import {
   Layers,
   ShoppingBag,
   ShieldCheck,
-  Zap
+  Zap,
+  ClipboardCheck
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -68,6 +69,11 @@ const platformItems = [
     title: "Live Logs",
     url: "/logs",
     icon: Terminal,
+  },
+  {
+    title: "Audit Logs",
+    url: "/audit",
+    icon: ClipboardCheck,
   },
   {
     title: "Traces",

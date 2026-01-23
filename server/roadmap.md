@@ -2,6 +2,8 @@
 
 ## 1. Completed Features
 
+- **Interactive Doctor Resilience**
+  - **Description**: Enhanced `doctor` command to gracefully handle missing environment variables in configuration files, allowing it to report specific missing variables and proceed with other checks instead of aborting.
 - **Pre-flight Command Validation**
   - **Description**: Validates that the executable exists for command-based services before attempting to run it, providing a clear error message if it's missing.
 - **Actionable Configuration Errors**
@@ -123,6 +125,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
 | 78 | **Strict Config Validation on Reload** | **Resilience**: Extend strict configuration validation to dynamic reloads, ensuring that invalid configurations are rejected with a detailed diff and error report before any changes are applied. | High |
 | 79 | **Conflict-Free Port Allocation** | **DevX**: Add a `--random-port` flag that automatically finds an available port if the default is taken, useful for automated testing. | Low |
+| 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
+| 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
 
 ## 3. Codebase Health
 
