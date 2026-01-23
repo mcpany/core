@@ -47,11 +47,15 @@ func ExtractIP(addr string) string {
 }
 
 // GetClientIP extracts the client IP from the request.
-// If trustProxy is true, it respects X-Forwarded-For header.
+// If trustProxy is true, it respects X-Real-IP and X-Forwarded-For headers.
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	ip := ExtractIP(r.RemoteAddr)
 
 	if trustProxy {
+		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
+		if xri := r.Header.Get("X-Real-IP"); xri != "" {
+			return ExtractIP(xri)
+		}
 		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 			// Use the first IP in the list (client IP)
 			// Optimization: Use strings.Cut to avoid allocating a slice for all parts

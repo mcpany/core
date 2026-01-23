@@ -1337,7 +1337,7 @@ func (a *Application) runServerMode(
 	httpHandler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Enforce 10MB limit for JSON-RPC body to prevent DoS
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
-		ctx := context.WithValue(r.Context(), "http.request", r) //nolint:revive,staticcheck // matching legacy usage in auth.go
+		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
 		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
 	}), "server-request")
 
