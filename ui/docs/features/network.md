@@ -18,8 +18,11 @@ Navigate to `/network`. The graph renders automatically using a force-directed l
 Click on any node (e.g., a Service node) to open the **Details Panel**.
 - **Metrics**: Real-time uptime and active connection count.
 - **Tools**: List of tools exposed by this service.
+- **Quick Actions**:
+  - **View Logs**: Directly navigate to the logs stream filtered for this service.
+  - **Trace Request**: Open the traces view filtered for this service.
 
-![Node Details](screenshots/node_detail_panel.png)
+![Node Details](screenshots/network_node_details.png)
 
 ### 3. Filter and Zoom
 - **Zoom**: Use your mouse wheel or trackpad to zoom in/out.

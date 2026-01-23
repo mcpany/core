@@ -119,6 +119,30 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock Topology
+     await page.route('**/api/v1/topology', async route => {
+         await route.fulfill({
+             json: {
+                 core: {
+                     id: 'mcp-core',
+                     label: 'MCP Any',
+                     type: 'NODE_TYPE_CORE',
+                     status: 'NODE_STATUS_ACTIVE',
+                     children: [
+                         {
+                             id: 'openai-gateway',
+                             label: 'OpenAI Gateway',
+                             type: 'NODE_TYPE_SERVICE',
+                             status: 'NODE_STATUS_ACTIVE',
+                             children: []
+                         }
+                     ]
+                 },
+                 clients: []
+             }
+         });
+     });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -268,6 +292,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(2000); // Graph rendering
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_graph.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network.png'), fullPage: true });
+
+      // Click a node to show details
+      const node = page.getByText('OpenAI Gateway');
+      await node.waitFor({ state: 'visible', timeout: 5000 });
+      await node.click({ force: true });
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_node_details.png') });
   });
 
   test('Logs Screenshots', async ({ page }) => {

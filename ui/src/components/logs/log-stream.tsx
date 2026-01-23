@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ChevronDown
 } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -185,6 +186,7 @@ LogRow.displayName = 'LogRow'
  * @returns The rendered component.
  */
 export function LogStream() {
+  const searchParams = useSearchParams()
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -196,9 +198,15 @@ export function LogStream() {
   }, [isPaused])
 
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
-  const [filterSource, setFilterSource] = React.useState<string>("ALL")
+  const [filterSource, setFilterSource] = React.useState<string>(searchParams.get("source") || "ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
+
+  // Update filterSource if URL params change
+  React.useEffect(() => {
+    const source = searchParams.get("source")
+    setFilterSource(source || "ALL")
+  }, [searchParams])
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
   const scrollRef = React.useRef<HTMLDivElement>(null)

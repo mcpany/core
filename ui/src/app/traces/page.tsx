@@ -11,17 +11,24 @@ import { TraceDetail } from "@/components/traces/trace-detail";
 import { Trace } from "@/app/api/traces/route";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 /**
  * TracesPage component.
  * @returns The rendered component.
  */
 export default function TracesPage() {
+  const searchParams = useSearchParams();
   const [traces, setTraces] = useState<Trace[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "");
   const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    const query = searchParams.get("query");
+    setSearchQuery(query || "");
+  }, [searchParams]);
 
   // Separate load function for reuse
   const loadTraces = async (isFirstLoad = false) => {

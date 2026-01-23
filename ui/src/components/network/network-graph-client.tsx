@@ -20,6 +20,7 @@ import '@xyflow/react/dist/style.css';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import {
     Sheet,
     SheetContent,
@@ -106,6 +107,7 @@ const defaultEdgeOptions = {
 };
 
 function Flow() {
+  const router = useRouter();
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
   const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -312,14 +314,34 @@ function Flow() {
                     </div>
                 )}
 
-                {/* Actions (Mock) */}
+                {/* Actions */}
                 <div className="pt-4">
                      <h4 className="font-medium text-sm mb-3">Quick Actions</h4>
                      <div className="flex flex-wrap gap-2">
-                         <Button variant="outline" size="sm" className="h-8">View Logs</Button>
-                         <Button variant="outline" size="sm" className="h-8">Trace Request</Button>
+                         <Button
+                             variant="outline"
+                             size="sm"
+                             className="h-8"
+                             onClick={() => {
+                                 const label = selectedNode?.data.label || '';
+                                 router.push(`/logs?source=${encodeURIComponent(label)}`);
+                             }}
+                         >
+                             View Logs
+                         </Button>
+                         <Button
+                             variant="outline"
+                             size="sm"
+                             className="h-8"
+                             onClick={() => {
+                                 const label = selectedNode?.data.label || '';
+                                 router.push(`/traces?query=${encodeURIComponent(label)}`);
+                             }}
+                         >
+                             Trace Request
+                         </Button>
                          {selectedNode?.data.status === 'NODE_STATUS_ERROR' && (
-                             <Button variant="destructive" size="sm" className="h-8">Restart Service</Button>
+                             <Button variant="destructive" size="sm" className="h-8" disabled>Restart Service (Coming Soon)</Button>
                          )}
                      </div>
                 </div>
