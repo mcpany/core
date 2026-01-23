@@ -610,6 +610,36 @@ func TestSanitizeFilename(t *testing.T) {
 			input:    "测试.txt",
 			expected: "测试.txt",
 		},
+		{
+			name:     "unicode truncation",
+			input:    strings.Repeat("你", 100), // 300 bytes
+			expected: strings.Repeat("你", 85),  // 255 bytes (85 * 3)
+		},
+		{
+			name:     "unicode mixed truncation",
+			input:    "a" + strings.Repeat("你", 100), // 1 + 300 = 301 bytes
+			// 1 byte 'a' + 84 * 3 bytes '你' = 1 + 252 = 253 bytes.
+			// Next '你' is 3 bytes. 253 + 3 = 256 > 255.
+			// So it should stop at 253 bytes.
+			expected: "a" + strings.Repeat("你", 84),
+		},
+		{
+			name:     "long filename with replacement chars",
+			input:    strings.Repeat("$", 300), // Replaced by '_'
+			expected: strings.Repeat("_", 255),
+		},
+		{
+			name:     "replacement chars causing overflow",
+			// 254 'a's + '$'. '$' becomes '_'. Total 255.
+			input:    strings.Repeat("a", 254) + "$",
+			expected: strings.Repeat("a", 254) + "_",
+		},
+		{
+			name:     "replacement chars causing overflow 2",
+			// 255 'a's + '$'. '$' becomes '_'. Total 256. Truncated to 255.
+			input:    strings.Repeat("a", 255) + "$",
+			expected: strings.Repeat("a", 255),
+		},
 	}
 
 	for _, tt := range tests {

@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -582,8 +583,16 @@ func SanitizeFilename(filename string) string {
 	var sb strings.Builder
 	for _, c := range filename {
 		if unicode.IsLetter(c) || unicode.IsNumber(c) || c == '.' || c == '-' || c == '_' {
+			// Check if adding this rune would exceed 255 bytes
+			if sb.Len()+utf8.RuneLen(c) > 255 {
+				break
+			}
 			sb.WriteRune(c)
 		} else {
+			// Replacement is '_' (1 byte)
+			if sb.Len()+1 > 255 {
+				break
+			}
 			sb.WriteRune('_')
 		}
 	}
@@ -594,9 +603,21 @@ func SanitizeFilename(filename string) string {
 		return "unnamed_file"
 	}
 
-	// 5. Truncate
+	// 5. Truncate (Double check to be safe, e.g. if the logic above is bypassed)
 	if len(result) > 255 {
-		result = result[:255]
+		// Truncate safely at rune boundary
+		var truncated strings.Builder
+		truncated.Grow(255)
+		byteLen := 0
+		for _, r := range result {
+			runeLen := utf8.RuneLen(r)
+			if byteLen+runeLen > 255 {
+				break
+			}
+			truncated.WriteRune(r)
+			byteLen += runeLen
+		}
+		result = truncated.String()
 	}
 
 	return result
