@@ -349,10 +349,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 
 		switch secret.WhichValue() {
 		case configv1.SecretValue_PlainText_case:
-			valueToValidate = secret.GetPlainText()
+			valueToValidate = strings.TrimSpace(secret.GetPlainText())
 			shouldValidate = true
 		case configv1.SecretValue_EnvironmentVariable_case:
-			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
+			valueToValidate = strings.TrimSpace(os.Getenv(secret.GetEnvironmentVariable()))
 			shouldValidate = true
 		case configv1.SecretValue_FilePath_case:
 			// We already validated file existence above, so we can try to read it.
