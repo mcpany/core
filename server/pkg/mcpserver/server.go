@@ -35,6 +35,14 @@ var fastJSON = jsoniter.Config{
 	ValidateJsonRawMessage: true,
 }.Froze()
 
+// Pre-allocate metric keys to reduce allocations during tool listing and calling.
+var (
+	keyToolsListTotal   = []string{"tools", "list", "total"}
+	keyToolsCallTotal   = []string{"tools", "call", "total"}
+	keyToolsCallLatency = []string{"tools", "call", "latency"}
+	keyToolsCallErrors  = []string{"tools", "call", "errors"}
+)
+
 // AddReceivingMiddlewareHook is a hook for adding receiving middleware.
 var AddReceivingMiddlewareHook func(name string)
 
@@ -516,7 +524,7 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //   - A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
-	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
+	metrics.IncrCounter(keyToolsListTotal, 1)
 	return s.toolManager.ListTools()
 }
 
@@ -551,7 +559,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
+	metrics.IncrCounterWithLabels(keyToolsCallTotal, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
@@ -560,7 +568,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
 		// MeasureSince emits in milliseconds.
 		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
+		metrics.AddSampleWithLabels(keyToolsCallLatency, duration, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})
@@ -568,7 +576,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, []metrics.Label{
+		metrics.IncrCounterWithLabels(keyToolsCallErrors, 1, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})

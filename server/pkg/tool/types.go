@@ -48,6 +48,17 @@ const (
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
+// Pre-allocate metric keys to reduce allocations during tool execution.
+var (
+	keyGrpcRequestLatency = []string{"grpc", "request", "latency"}
+	keyGrpcRequestError   = []string{"grpc", "request", "error"}
+	keyGrpcRequestSuccess = []string{"grpc", "request", "success"}
+
+	keyHTTPRequestLatency = []string{"http", "request", "latency"}
+	keyHTTPRequestError   = []string{"http", "request", "error"}
+	keyHTTPRequestSuccess = []string{"http", "request", "success"}
+)
+
 // Tool is the fundamental interface for any executable tool in the system.
 // Each implementation represents a different type of underlying service
 // (e.g., gRPC, HTTP, command-line).
@@ -300,10 +311,10 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
-	defer metrics.MeasureSince([]string{"grpc", "request", "latency"}, time.Now())
+	defer metrics.MeasureSince(keyGrpcRequestLatency, time.Now())
 	grpcPool, ok := pool.Get[*client.GrpcClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
+		metrics.IncrCounter(keyGrpcRequestError, 1)
 		return nil, fmt.Errorf("no grpc pool found for service: %s", t.serviceID)
 	}
 
@@ -346,10 +357,10 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	if err := t.resilienceManager.Execute(ctx, work); err != nil {
-		metrics.IncrCounter([]string{"grpc", "request", "error"}, 1)
+		metrics.IncrCounter(keyGrpcRequestError, 1)
 		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
 	}
-	metrics.IncrCounter([]string{"grpc", "request", "success"}, 1)
+	metrics.IncrCounter(keyGrpcRequestSuccess, 1)
 
 	responseJSON, err := protojson.Marshal(responseMessage)
 	if err != nil {
@@ -538,7 +549,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
-	defer metrics.MeasureSince([]string{"http", "request", "latency"}, time.Now())
+	defer metrics.MeasureSince(keyHTTPRequestLatency, time.Now())
 
 	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
@@ -552,7 +563,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	httpPool, ok := pool.Get[*client.HTTPClientWrapper](t.poolManager, t.serviceID)
 	if !ok {
-		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
+		metrics.IncrCounter(keyHTTPRequestError, 1)
 		return nil, fmt.Errorf("no http pool found for service: %s", t.serviceID)
 	}
 
@@ -673,12 +684,12 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 
 	if err := t.resilienceManager.Execute(ctx, work); err != nil {
-		metrics.IncrCounter([]string{"http", "request", "error"}, 1)
+		metrics.IncrCounter(keyHTTPRequestError, 1)
 		return nil, err
 	}
 
 	defer func() { _ = resp.Body.Close() }()
-	metrics.IncrCounter([]string{"http", "request", "success"}, 1)
+	metrics.IncrCounter(keyHTTPRequestSuccess, 1)
 
 	return t.processResponse(ctx, resp)
 }
