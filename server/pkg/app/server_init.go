@@ -5,8 +5,6 @@ package app
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
 	"fmt"
 
 	"os"
@@ -117,8 +115,8 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 
 	// Initialize Admin User
 	if err := a.initializeAdminUser(ctx, store); err != nil {
-		log.Error("Failed to initialize admin user", "error", err)
-		// We don't fail hard here to allow server to start, but auth might be broken for admin
+		// Return error to fail fast if admin initialization fails (e.g. missing password)
+		return fmt.Errorf("failed to initialize admin user: %w", err)
 	}
 
 	log.Info("Database initialized successfully.")
@@ -148,15 +146,7 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 	password := os.Getenv("MCPANY_ADMIN_INIT_PASSWORD")
 	if password == "" {
-		// Generate secure random password
-		b := make([]byte, 24) // 192 bits
-		_, err := rand.Read(b)
-		if err != nil {
-			return fmt.Errorf("failed to generate random password: %w", err)
-		}
-		password = base64.StdEncoding.EncodeToString(b)
-		logging.GetLogger().Info("Generated secure admin password", "username", username, "password", password)
-		logging.GetLogger().Info("Please save this password immediately. It will not be shown again.")
+		return fmt.Errorf("MCPANY_ADMIN_INIT_PASSWORD environment variable is not set. Please set it to initialize the admin user securely")
 	}
 
 	hash, err := passhash.Password(password)
@@ -181,8 +171,6 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 		return fmt.Errorf("failed to create admin user: %w", err)
 	}
 
-	if os.Getenv("MCPANY_ADMIN_INIT_PASSWORD") != "" {
-		logging.GetLogger().Info("Default admin user created successfully with provided password.", "username", username)
-	}
+	logging.GetLogger().Info("Default admin user created successfully.", "username", username)
 	return nil
 }

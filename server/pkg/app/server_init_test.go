@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -239,6 +240,9 @@ func (m *MockStore) HasConfigSources() bool {
 }
 
 func TestInitializeDatabase_Empty(t *testing.T) {
+	os.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
+	defer os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
+
 	mockStore := new(MockStore)
 	app := &Application{}
 
@@ -300,6 +304,9 @@ func (m *MockSimpleStore) HasConfigSources() bool {
 }
 
 func TestInitializeDatabase_Errors(t *testing.T) {
+	os.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
+	defer os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
+
 	t.Run("Store Load Error", func(t *testing.T) {
 		mockSimpleStore := new(MockSimpleStore)
 		app := &Application{}

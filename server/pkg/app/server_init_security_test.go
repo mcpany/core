@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestInitializeAdminUser_GeneratesRandomPassword(t *testing.T) {
+func TestInitializeAdminUser_FailsWithoutPassword(t *testing.T) {
 	// Ensure env var is unset
 	os.Unsetenv("MCPANY_ADMIN_INIT_PASSWORD")
 	// Clean up just in case, though we unset it first
@@ -35,24 +35,9 @@ func TestInitializeAdminUser_GeneratesRandomPassword(t *testing.T) {
 	// ListUsers returns nil -> triggers admin creation
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 
-	// Capture the created user
-	var createdUser *configv1.User
-	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
-		createdUser = u
-		return true
-	})).Return(nil)
-
 	err := app.initializeDatabase(context.Background(), mockStore)
-	assert.NoError(t, err)
-
-	assert.NotNil(t, createdUser)
-	assert.Equal(t, "admin", createdUser.GetId())
-
-	hash := createdUser.Authentication.GetBasicAuth().GetPasswordHash()
-	// Verify it is NOT "password"
-	// passhash.CheckPassword returns bool
-	match := passhash.CheckPassword("password", hash)
-	assert.False(t, match, "Password should not be 'password' (default was randomized)")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "MCPANY_ADMIN_INIT_PASSWORD environment variable is not set")
 }
 
 func TestInitializeAdminUser_UsesEnvVar(t *testing.T) {
