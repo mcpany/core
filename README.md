@@ -8,6 +8,26 @@
   <img src="server/docs/images/logo.png" alt="MCP Any Logo" width="200"/>
 </p>
 
+## 📖 Table of Contents
+
+- [Philosophy: Configuration over Code](#-philosophy-configuration-over-code)
+- [Key Features](#-key-features)
+- [Management Dashboard](#-management-dashboard)
+- [Quick Start](#-quick-start-5-minutes)
+- [More Usage](#-more-usage)
+- [Development Guide](#-development-guide)
+  - [Prerequisites](#prerequisites)
+  - [Quick Setup](#quick-setup)
+  - [Common Commands](#common-commands)
+  - [Running Locally](#running-locally)
+  - [Project Structure](#project-structure)
+  - [Documentation](#documentation)
+  - [UI Development](#ui-development)
+  - [Code Standards](#code-standards)
+- [Contributing](#-contributing)
+- [Roadmap](#-roadmap)
+- [License](#-license)
+
 # MCP Any: Configuration-Driven MCP Server
 
 **One server, Infinite possibilities.**
@@ -251,9 +271,14 @@ The project is organized as follows:
   - `server/`: The main MCP Any server binary.
 - **`server/pkg/`**: Core library code.
   - **`app/`**: Application lifecycle and wiring.
+  - **`auth/`**: Authentication and authorization logic.
+  - **`bus/`**: Event bus implementation (Kafka, Redis, NATS, Memory).
   - **`config/`**: Configuration loading and validation.
   - **`mcpserver/`**: Core MCP protocol implementation.
+  - **`metrics/`**: Prometheus metrics and telemetry.
   - **`upstream/`**: Adapters for upstream services (gRPC, HTTP, OpenAPI, Filesystem, etc.).
+  - **`util/`**: Shared utilities (Docker, IP validation, Redaction).
+  - **`worker/`**: Background workers.
 - **`proto/`**: Protocol Buffer definitions for configuration and internal APIs.
 - **`server/examples/`**: Example configuration files and demo services.
 - **`server/docs/`**: Detailed documentation and guides.
