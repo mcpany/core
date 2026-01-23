@@ -81,6 +81,14 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	return nil
 }
 
+// SetStore sets the audit store.
+// This is primarily used for testing.
+func (m *AuditMiddleware) SetStore(store audit.Store) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.store = store
+}
+
 // UpdateConfig updates the audit configuration safely.
 //
 // auditConfig is the auditConfig.

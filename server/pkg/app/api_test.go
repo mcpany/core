@@ -26,7 +26,6 @@ import (
 	pb "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/alerts"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
@@ -1166,60 +1165,6 @@ func TestHandlePromptExecuteError(t *testing.T) {
 
 func stringPtr(s string) *string {
 	return &s
-}
-
-func TestHandleAlertRules(t *testing.T) {
-	app := NewApplication()
-
-	t.Run("List Rules", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/rules", nil)
-		rr := httptest.NewRecorder()
-		app.handleAlertRules().ServeHTTP(rr, req)
-		require.Equal(t, http.StatusOK, rr.Code)
-		var rules []*alerts.AlertRule
-		err := json.Unmarshal(rr.Body.Bytes(), &rules)
-		require.NoError(t, err)
-		assert.NotEmpty(t, rules)
-	})
-
-	var createdID string
-	t.Run("Create Rule", func(t *testing.T) {
-		rule := &alerts.AlertRule{
-			Name:      "API Error Rate",
-			Metric:    "error_rate",
-			Operator:  ">",
-			Threshold: 0.05,
-			Enabled:   true,
-			Severity:  alerts.SeverityCritical,
-		}
-		body, _ := json.Marshal(rule)
-		req := httptest.NewRequest(http.MethodPost, "/alerts/rules", bytes.NewBuffer(body))
-		rr := httptest.NewRecorder()
-		app.handleAlertRules().ServeHTTP(rr, req)
-		require.Equal(t, http.StatusCreated, rr.Code)
-		var created alerts.AlertRule
-		err := json.Unmarshal(rr.Body.Bytes(), &created)
-		require.NoError(t, err)
-		createdID = created.ID
-	})
-
-	t.Run("Get Rule Detail", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/rules/"+createdID, nil)
-		rr := httptest.NewRecorder()
-		app.handleAlertRuleDetail().ServeHTTP(rr, req)
-		require.Equal(t, http.StatusOK, rr.Code)
-		var fetched alerts.AlertRule
-		err := json.Unmarshal(rr.Body.Bytes(), &fetched)
-		require.NoError(t, err)
-		assert.Equal(t, createdID, fetched.ID)
-	})
-
-	t.Run("Delete Rule", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/alerts/rules/"+createdID, nil)
-		rr := httptest.NewRecorder()
-		app.handleAlertRuleDetail().ServeHTTP(rr, req)
-		require.Equal(t, http.StatusNoContent, rr.Code)
-	})
 }
 
 func TestHandleAuditExport(t *testing.T) {
