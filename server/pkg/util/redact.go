@@ -222,7 +222,6 @@ func redactSliceMaybe(s []interface{}) ([]interface{}, bool) {
 	return nil, false
 }
 
-
 // bytesContainsFold2 is a proposed optimization that we might use in the future.
 // Ideally, we want a function that can search for multiple keys at once (Aho-Corasick),
 // but for now we stick to optimizing the single key search or the calling pattern.
@@ -464,7 +463,7 @@ var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
 var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"]+)`)
 
 // dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
-// e.g. parse "...": invalid port ":password"
+// e.g. parse "...": invalid port ":password".
 var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
 // RedactDSN redacts the password from a DSN string.
