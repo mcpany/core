@@ -10,6 +10,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // ConfigErrorTool implements the Tool interface for reporting configuration errors.
@@ -24,10 +25,18 @@ func NewConfigErrorTool(errorMessage string) *ConfigErrorTool {
 
 // Tool returns the protobuf definition of the tool.
 func (t *ConfigErrorTool) Tool() *v1.Tool {
+	schema, _ := structpb.NewStruct(map[string]interface{}{
+		"type":       "object",
+		"properties": map[string]interface{}{},
+	})
+
 	return &v1.Tool{
 		Name:        proto.String("mcp_config_error"),
 		Description: proto.String("Returns the configuration errors that prevented the server from starting correctly. Use this tool to diagnose startup issues."),
 		ServiceId:   proto.String("system"),
+		Annotations: &v1.ToolAnnotations{
+			InputSchema: schema,
+		},
 	}
 }
 

@@ -598,7 +598,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 
 	app := NewApplication()
@@ -610,7 +610,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
-	// Should return error, as we are now strict about config errors during startup
+	// Should NOT return error, as we are now in Safe Mode
 	err = app.Run(RunOptions{
 		Ctx:             ctx,
 		Fs:              fs,
@@ -621,8 +621,12 @@ func TestRun_ConfigLoadError(t *testing.T) {
 		APIKey:          "",
 		ShutdownTimeout: 5 * time.Second,
 	})
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "malformed yaml")
+	require.NoError(t, err)
+
+	// Verify Config Error Tool is present
+	// Safe Mode registers "system.mcp_config_error"
+	_, ok := app.ToolManager.GetTool("system.mcp_config_error")
+	assert.True(t, ok, "Config Error Tool should be registered in Safe Mode")
 }
 
 func TestRun_BusProviderError(t *testing.T) {
