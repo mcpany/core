@@ -42,9 +42,9 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 			sb.WriteString("\n❌ Configuration Loading Failed:\n")
 			sb.WriteString(fmt.Sprintf("    Error: %v\n", ae.Err))
 			sb.WriteString(fmt.Sprintf("    💡 Fix: %s\n", ae.Suggestion))
-			return nil, fmt.Errorf("%s", sb.String())
+			return &configv1.McpAnyServerConfig{}, fmt.Errorf("%s", sb.String())
 		}
-		return nil, err
+		return &configv1.McpAnyServerConfig{}, err
 	}
 
 	var bt BinaryType
@@ -89,7 +89,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 					sb.WriteString(fmt.Sprintf("    Error: %v\n", e.Err))
 				}
 			}
-			return nil, fmt.Errorf("%s", sb.String())
+			return fileConfig, fmt.Errorf("%s", sb.String())
 		}
 	}
 

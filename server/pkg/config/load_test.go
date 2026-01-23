@@ -475,3 +475,31 @@ global_settings: {
 	// Verify the default user DOES NOT have the disabled profile
 	assert.NotContains(t, defaultUser.GetProfileIds(), "disabled_profile", "Default user should not have access to disabled profiles")
 }
+
+func TestLoadServices_SafeMode(t *testing.T) {
+	// Config with validation error (invalid cache TTL)
+	content := `
+upstream_services: {
+    name: "service-with-invalid-cache"
+    http_service: {
+        address: "http://api.example.com/v2"
+    }
+    cache: {
+        is_enabled: true
+        ttl: { seconds: -10 } # Invalid TTL
+    }
+}
+`
+	filePath := createTempConfigFile(t, content)
+	fs := afero.NewOsFs()
+	fileStore := NewFileStore(fs, []string{filePath})
+	cfg, err := LoadServices(context.Background(), fileStore, "server")
+
+	assert.Error(t, err)
+	assert.NotNil(t, cfg, "Config should not be nil even on validation error (for Safe Mode)")
+
+	// We expect the invalid service to still be present in the returned config object
+	// (because Safe Mode logic in LoadServices returns fileConfig)
+	require.Len(t, cfg.GetUpstreamServices(), 1)
+	assert.Equal(t, "service-with-invalid-cache", cfg.GetUpstreamServices()[0].GetName())
+}

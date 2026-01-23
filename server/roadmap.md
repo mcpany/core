@@ -31,6 +31,9 @@
 
 ### Status: Active Development
 
+- **Config Safe Mode**
+  - **Description**: Start the server in a restricted mode when configuration is invalid, exposing a `mcp_config_error` tool to communicate errors to the user via the client (LLM).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -42,6 +45,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
 | 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
+| 6    | **Env Var Debugger**        | **DevX**: A `mcp_debug_env` tool (available in Safe Mode) to inspect which environment variables are visible to the process, solving "token missing" mysteries. | Low |
+| 7    | **Smart Config Repair**     | **UX**: Enhance Safe Mode to suggest valid YAML/JSON snippets or automatically patch simple syntax errors (like trailing commas) when requested. | High |
 
 | 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
 | 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |

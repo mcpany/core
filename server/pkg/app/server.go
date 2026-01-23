@@ -365,11 +365,20 @@ func (a *Application) Run(opts RunOptions) error {
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
+	var configLoadError error
 	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
 	if err != nil {
-		return fmt.Errorf("failed to load services from config: %w", err)
-	}
-	if cfg == nil {
+		// Friction Fighter: Safe Mode
+		// If config loading fails, we log the error and start in "Safe Mode" with no upstreams.
+		// We will register a special tool later to report this error to the client.
+		log.Error("Configuration load failed. Starting in Safe Mode.", "error", err)
+		configLoadError = err
+		if cfg == nil {
+			cfg = &config_v1.McpAnyServerConfig{}
+		}
+		// Clear upstream services to avoid partial/broken state
+		cfg.UpstreamServices = nil
+	} else if cfg == nil {
 		cfg = &config_v1.McpAnyServerConfig{}
 	}
 	a.lastReloadTime = time.Now()
@@ -574,6 +583,15 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	a.ToolManager.SetMCPServer(mcpSrv)
+
+	// Friction Fighter: Register Config Error Tool if needed
+	if configLoadError != nil {
+		log.Info("Registering Config Error Tool due to startup failure")
+		configErrorTool := tool.NewConfigErrorTool(configLoadError.Error())
+		if err := a.ToolManager.AddTool(configErrorTool); err != nil {
+			log.Error("Failed to register config error tool", "error", err)
+		}
+	}
 
 	if cfg.GetUpstreamServices() != nil {
 		// Publish registration requests to the bus for each service
