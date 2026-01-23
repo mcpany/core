@@ -6,6 +6,7 @@
 "use client"
 
 import * as React from "react"
+import { useSearchParams } from "next/navigation"
 import {
   Pause,
   Play,
@@ -185,6 +186,7 @@ LogRow.displayName = 'LogRow'
  * @returns The rendered component.
  */
 export function LogStream() {
+  const searchParams = useSearchParams()
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -195,8 +197,8 @@ export function LogStream() {
     isPausedRef.current = isPaused
   }, [isPaused])
 
-  const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
-  const [filterSource, setFilterSource] = React.useState<string>("ALL")
+  const [filterLevel, setFilterLevel] = React.useState<string>(searchParams.get("level") || "ALL")
+  const [filterSource, setFilterSource] = React.useState<string>(searchParams.get("source") || "ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
@@ -312,13 +314,17 @@ export function LogStream() {
   // Optimization: Extract unique sources from logs efficiently
   const uniqueSources = React.useMemo(() => {
     const sources = new Set<string>()
+    // Ensure the currently selected filter is always in the list
+    if (filterSource !== "ALL") {
+      sources.add(filterSource)
+    }
     logs.forEach(log => {
       if (log.source) {
         sources.add(log.source)
       }
     })
     return Array.from(sources).sort()
-  }, [logs])
+  }, [logs, filterSource])
 
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering

@@ -6,6 +6,7 @@
 "use client";
 
 import { useMemo, useState, memo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, FileText } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -301,6 +302,8 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
         return "#22c55e"; // green-500
     }, [history]);
 
+    const router = useRouter();
+
     return (
         <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
              <TableCell>
@@ -405,6 +408,10 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                                 </DropdownMenuItem>
                             }
                         />
+                        <DropdownMenuItem onClick={() => router.push(`/logs?source=${service.name}`)}>
+                            <FileText className="mr-2 h-4 w-4" />
+                            View Logs
+                        </DropdownMenuItem>
                         {onRestart && (
                             <DropdownMenuItem onClick={() => onRestart(service.name)}>
                                 <RefreshCw className="mr-2 h-4 w-4" />
