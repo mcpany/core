@@ -6,7 +6,6 @@ package mcpserver
 import (
 	"context"
 	"fmt"
-	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -19,10 +18,9 @@ import (
 
 // StartupErrorTool is a special tool that reports startup errors.
 type StartupErrorTool struct {
-	err         error
-	mcpTool     *mcp.Tool
-	mcpToolOnce sync.Once
-	v1Tool      *v1.Tool
+	err     error
+	mcpTool *mcp.Tool
+	v1Tool  *v1.Tool
 }
 
 // NewStartupErrorTool creates a new StartupErrorTool.
@@ -73,7 +71,7 @@ func (t *StartupErrorTool) MCPTool() *mcp.Tool {
 }
 
 // Execute runs the tool with the provided context and request.
-func (t *StartupErrorTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+func (t *StartupErrorTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return map[string]any{
 		"status":  "error",
 		"error":   t.err.Error(),
