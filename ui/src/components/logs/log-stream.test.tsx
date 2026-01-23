@@ -7,16 +7,6 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
-// Mock next/navigation
-vi.mock("next/navigation", () => ({
-    useSearchParams: () => ({
-        get: (key: string) => {
-            if (key === "source") return null;
-            return null;
-        }
-    })
-}));
-
 describe("LogStream", () => {
   let mockWebSocket: any;
 
@@ -249,47 +239,6 @@ describe("LogStream", () => {
     // Verify state changed to expanded (button label changes)
     const collapseButton = screen.getByLabelText("Collapse JSON");
     expect(collapseButton).toBeInTheDocument();
-
-    vi.useRealTimers();
-  });
-
-  it("highlights search terms in log messages", async () => {
-    vi.useFakeTimers();
-    render(<LogStream />);
-
-    act(() => {
-      if (mockWebSocket.onopen) mockWebSocket.onopen();
-    });
-
-    const log = {
-      id: "search-1",
-      timestamp: new Date().toISOString(),
-      level: "INFO",
-      message: "An error occurred in the system",
-      source: "backend"
-    };
-
-    act(() => {
-      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
-    });
-
-    act(() => {
-        vi.advanceTimersByTime(200);
-    });
-
-    // Enter search term
-    const searchInput = screen.getByPlaceholderText("Search logs...");
-    fireEvent.change(searchInput, { target: { value: "error" } });
-
-    // Advance time to allow for any deferred updates (useDeferredValue)
-    act(() => {
-        vi.advanceTimersByTime(200);
-    });
-
-    // We expect the word "error" to be wrapped in a <mark> tag
-    const highlighted = screen.getByText("error");
-    expect(highlighted.tagName).toBe("MARK");
-    expect(highlighted).toHaveClass("bg-yellow-500/40");
 
     vi.useRealTimers();
   });

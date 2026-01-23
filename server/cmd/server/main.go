@@ -255,7 +255,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				ShutdownTimeout: shutdownTimeout,
 			}); err != nil {
 				// Friction Fighter: If it's a configuration validation error, we print it cleanly without the log noise.
-				var validationErr *config.ConfigValidationError
+				var validationErr *config.ValidationError
 				if errors.As(err, &validationErr) {
 					return err
 				}
@@ -376,7 +376,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("configuration load failed: %w", err)
 			}
 			store := config.NewFileStore(osFs, cfg.ConfigPaths())
-			store.SetIgnoreMissingEnv(true)
 			configs, err := config.LoadResolvedConfig(context.Background(), store)
 			if err != nil {
 				return fmt.Errorf("failed to load configurations: %w", err)

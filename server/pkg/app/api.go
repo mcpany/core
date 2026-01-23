@@ -20,7 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
@@ -49,10 +48,6 @@ func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]b
 // createAPIHandler creates a http.Handler for the config API.
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
-
-	// Apply Login Rate Limit: 1 RPS with a burst of 5.
-	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
-	loginRateLimiter := middleware.NewHTTPRateLimitMiddleware(1, 5, middleware.WithTrustProxy(trustProxy))
 
 	mux.HandleFunc("/services", a.handleServices(store))
 	mux.HandleFunc("/services/validate", a.handleServiceValidate())
@@ -134,7 +129,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	})
 
 	// Auth (OAuth)
-	mux.Handle("/auth/login", loginRateLimiter.Handler(http.HandlerFunc(a.handleLogin)))
+	mux.HandleFunc("/auth/login", a.handleLogin)
 	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 

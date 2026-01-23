@@ -42,7 +42,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 			sb.WriteString("\n❌ Configuration Loading Failed:\n")
 			sb.WriteString(fmt.Sprintf("    Error: %v\n", ae.Err))
 			sb.WriteString(fmt.Sprintf("    💡 Fix: %s\n", ae.Suggestion))
-			return nil, &ConfigValidationError{Msg: sb.String()}
+			return nil, &ValidationError{Msg: sb.String()}
 		}
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 					sb.WriteString(fmt.Sprintf("    Error: %v\n", e.Err))
 				}
 			}
-			return nil, &ConfigValidationError{Msg: sb.String()}
+			return nil, &ValidationError{Msg: sb.String()}
 		}
 	}
 

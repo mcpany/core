@@ -67,14 +67,11 @@ func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 
 		if m.trustProxy {
 			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-				// Use the last IP in the list (the IP that connected to the trusted proxy).
-				// Standard proxies append the connecting IP to the list.
-				// We trust the proxy to have appended the correct IP, but we do NOT trust the
-				// earlier IPs in the list as they can be spoofed by the client.
-				if idx := strings.LastIndex(xff, ","); idx != -1 {
-					ip = strings.TrimSpace(xff[idx+1:])
-				} else {
-					ip = strings.TrimSpace(xff)
+				// Use the first IP in the list (client IP).
+				// Optimization: Use strings.Cut to avoid allocating a slice of strings.
+				clientIP, _, _ := strings.Cut(xff, ",")
+				if clientIP = strings.TrimSpace(clientIP); clientIP != "" {
+					ip = clientIP
 				}
 			}
 		}

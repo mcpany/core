@@ -4,8 +4,6 @@
  */
 
 
-import { Suspense } from "react"
-import { Loader2 } from "lucide-react"
 import { LogStream } from "@/components/logs/log-stream"
 
 /**
@@ -15,9 +13,7 @@ import { LogStream } from "@/components/logs/log-stream"
 export default function LogsPage() {
   return (
     <div className="h-full p-4 md:p-8 pt-6">
-      <Suspense fallback={<div className="flex items-center justify-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
-        <LogStream />
-      </Suspense>
+      <LogStream />
     </div>
   )
 }

@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package config
 
 import (
@@ -35,8 +38,8 @@ func TestLoadServices_ReturnsConfigValidationError(t *testing.T) {
 	_, err := LoadServices(context.Background(), mockStore, "server")
 
 	assert.Error(t, err)
-	var validationErr *ConfigValidationError
-	assert.True(t, errors.As(err, &validationErr), "Error should be of type ConfigValidationError")
+	var validationErr *ValidationError
+	assert.True(t, errors.As(err, &validationErr), "Error should be of type ValidationError")
 	assert.Contains(t, validationErr.Error(), "Configuration Validation Failed")
 	assert.Contains(t, validationErr.Error(), "bad-service")
 	assert.Contains(t, validationErr.Error(), "invalid http address")
@@ -53,8 +56,8 @@ func TestLoadServices_ReturnsConfigValidationError_OnLoadError(t *testing.T) {
 	_, err := LoadServices(context.Background(), mockStore, "server")
 
 	assert.Error(t, err)
-	var validationErr *ConfigValidationError
-	assert.True(t, errors.As(err, &validationErr), "Error should be of type ConfigValidationError")
+	var validationErr *ValidationError
+	assert.True(t, errors.As(err, &validationErr), "Error should be of type ValidationError")
 	assert.Contains(t, validationErr.Error(), "Configuration Loading Failed")
 	assert.Contains(t, validationErr.Error(), "something went wrong")
 	assert.Contains(t, validationErr.Error(), "do something")

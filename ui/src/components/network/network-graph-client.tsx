@@ -6,7 +6,6 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { useRouter } from "next/navigation";
 import {
   ReactFlow,
 
@@ -44,11 +43,8 @@ import {
     XCircle,
     Cpu,
     Filter,
-    ChevronDown,
-    ChevronRight,
 } from "lucide-react";
 
-import { NetworkLegend } from "@/components/network/network-legend";
 import { useNetworkTopology } from "@/hooks/use-network-topology";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { NodeType, NodeStatus } from "@/types/topology";
@@ -110,7 +106,6 @@ const defaultEdgeOptions = {
 };
 
 function Flow() {
-  const router = useRouter();
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
   const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -120,7 +115,6 @@ function Flow() {
   // Basic filtering state
   const [showSystem, setShowSystem] = useState(true);
   const [showTools, setShowTools] = useState(true);
-  const [showLegend, setShowLegend] = useState(false);
 
   // Collapse controls by default on mobile
   React.useEffect(() => {
@@ -212,23 +206,6 @@ function Flow() {
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="show-tools" checked={showTools} onCheckedChange={(c) => setShowTools(!!c)} />
                                 <Label htmlFor="show-tools" className="text-xs font-normal cursor-pointer">Show Capability Details (Tools)</Label>
-                            </div>
-
-                            <div className="pt-2 mt-2 border-t">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setShowLegend(!showLegend)}
-                                    className="w-full justify-start h-6 px-0 text-xs text-muted-foreground hover:text-foreground"
-                                >
-                                    {showLegend ? <ChevronDown className="mr-2 h-3 w-3" /> : <ChevronRight className="mr-2 h-3 w-3" />}
-                                    Show Legend
-                                </Button>
-                                {showLegend && (
-                                    <div className="mt-2 pl-1">
-                                        <NetworkLegend />
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
@@ -335,28 +312,11 @@ function Flow() {
                     </div>
                 )}
 
-                {/* Actions */}
+                {/* Actions (Mock) */}
                 <div className="pt-4">
                      <h4 className="font-medium text-sm mb-3">Quick Actions</h4>
                      <div className="flex flex-wrap gap-2">
-                         <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8"
-                            onClick={() => {
-                                if (!selectedNode) return;
-                                const id = selectedNode.id;
-                                let source = "ALL";
-                                // Parse ID to determine source
-                                if (id === "mcp-core") source = "core";
-                                else if (id.startsWith("svc-")) source = id.replace("svc-", "");
-                                // For tools or others, we default to ALL or keep generic
-
-                                router.push(`/logs?source=${source}`);
-                            }}
-                         >
-                            View Logs
-                         </Button>
+                         <Button variant="outline" size="sm" className="h-8">View Logs</Button>
                          <Button variant="outline" size="sm" className="h-8">Trace Request</Button>
                          {selectedNode?.data.status === 'NODE_STATUS_ERROR' && (
                              <Button variant="destructive" size="sm" className="h-8">Restart Service</Button>

@@ -9,14 +9,13 @@ import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
+import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_WIDGETS = [
     { id: "metrics", title: "Metrics Overview", type: "wide" },
-    { id: "recent-activity", title: "Recent Activity", type: "half" },
     { id: "uptime", title: "System Uptime", type: "half" }, // 4 cols
     { id: "failure-rate", title: "Tool Failure Rates", type: "third" }, // 3 cols
     { id: "request-volume", title: "Request Volume", type: "half" },
@@ -61,7 +60,6 @@ export function DashboardGrid() {
     const renderWidget = (id: string) => {
         switch (id) {
             case "metrics": return <MetricsOverview />;
-            case "recent-activity": return <LazyRecentActivityWidget />;
             case "uptime": return <LazyHealthHistoryChart />;
             case "failure-rate": return <ToolFailureRateWidget />;
             case "request-volume": return <LazyRequestVolumeChart />;

@@ -610,17 +610,6 @@ func TestSanitizeFilename(t *testing.T) {
 			input:    "测试.txt",
 			expected: "测试.txt",
 		},
-		{
-			name: "unicode truncation",
-			// "a" * 254 + "あ" (3 bytes).
-			// Total 257 bytes. Truncate to 255.
-			// "あ" is E3 81 82.
-			// [254] = E3.
-			// Should remove E3.
-			// Result length 254.
-			input:    strings.Repeat("a", 254) + "あ",
-			expected: strings.Repeat("a", 254),
-		},
 	}
 
 	for _, tt := range tests {

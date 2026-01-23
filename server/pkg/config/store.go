@@ -339,7 +339,7 @@ func expand(b []byte) ([]byte, error) {
 	if missingCount > 0 {
 		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 		//nolint:staticcheck // This error message is user facing and needs to be descriptive
-		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())
+		return nil, fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())
 	}
 
 	return buf.Bytes(), nil
@@ -384,8 +384,7 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		*missingCount++
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
 		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
-		// Write the original string to preserve structure
-		buf.Write(b[startIdx : j+1])
+		// We continue processing to find all missing variables
 		return j + 1 - startIdx
 	}
 
@@ -432,8 +431,6 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		*missingCount++
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
 		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
-		// Write the original string to preserve structure
-		buf.Write(b[startIdx:j])
 		return j - startIdx
 	}
 
@@ -446,15 +443,9 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 // formats (JSON, YAML, and textproto) and merges the configurations into a
 // single `McpAnyServerConfig`.
 type FileStore struct {
-	fs               afero.Fs
-	paths            []string
-	skipErrors       bool
-	IgnoreMissingEnv bool
-}
-
-// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
-	s.IgnoreMissingEnv = ignore
+	fs         afero.Fs
+	paths      []string
+	skipErrors bool
 }
 
 // NewFileStore creates a new FileStore with the given filesystem and a list of
@@ -522,10 +513,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 
 		b, err = expand(b)
 		if err != nil {
-			if !s.IgnoreMissingEnv {
-				return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
-			}
-			logging.GetLogger().Warn("Missing environment variables in config, proceeding with unexpanded values", "path", path, "error", err)
+			return nil, WrapActionableError(fmt.Sprintf("failed to expand environment variables in %s", path), err)
 		}
 
 		engine, err := NewEngine(path)

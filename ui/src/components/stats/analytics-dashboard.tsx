@@ -48,8 +48,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { apiClient, ToolDefinition } from "@/lib/client";
-import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import { apiClient } from "@/lib/client";
 
 // Tool usage colors
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
@@ -64,61 +63,25 @@ export function AnalyticsDashboard() {
 
     const [trafficData, setTrafficData] = useState<any[]>([]);
     const [toolUsageData, setToolUsageData] = useState<any[]>([]);
-    const [contextTotal, setContextTotal] = useState<number>(0);
-    const [contextByService, setContextByService] = useState<any[]>([]);
-    const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
         const fetchDashboardData = async () => {
             try {
-                const [traffic, topTools, toolsResponse] = await Promise.all([
+                const [traffic, tools] = await Promise.all([
                     apiClient.getDashboardTraffic(),
-                    apiClient.getTopTools(),
-                    apiClient.listTools().catch(() => ({ tools: [] }))
+                    apiClient.getTopTools()
                 ]);
                 setTrafficData(traffic || []);
 
                 // Format tool usage data
-                const formattedTools = (topTools || []).map((t: any, index: number) => ({
+                const formattedTools = (tools || []).map((t: any, index: number) => ({
                     name: t.name,
                     value: t.count,
                     color: COLORS[index % COLORS.length]
                 }));
                 setToolUsageData(formattedTools);
-
-                // Calculate Context Usage
-                const allTools: ToolDefinition[] = toolsResponse.tools || [];
-                let totalTokens = 0;
-                const serviceMap: Record<string, number> = {};
-                const toolTokens: { name: string, tokens: number, service: string }[] = [];
-
-                allTools.forEach(tool => {
-                    // Estimate tokens for the tool definition
-                    const json = JSON.stringify(tool);
-                    const tokens = estimateTokens(json);
-                    totalTokens += tokens;
-
-                    const serviceId = tool.serviceId || "Unknown";
-                    serviceMap[serviceId] = (serviceMap[serviceId] || 0) + tokens;
-
-                    toolTokens.push({ name: tool.name, tokens, service: serviceId });
-                });
-
-                setContextTotal(totalTokens);
-
-                // Format for Pie Chart
-                const serviceUsage = Object.entries(serviceMap).map(([name, value], index) => ({
-                    name,
-                    value,
-                    color: COLORS[index % COLORS.length]
-                })).sort((a, b) => b.value - a.value);
-                setContextByService(serviceUsage);
-
-                // Top heaviest tools
-                setHeaviestTools(toolTokens.sort((a, b) => b.tokens - a.tokens).slice(0, 10));
-
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
             }
@@ -170,7 +133,6 @@ export function AnalyticsDashboard() {
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="performance">Performance</TabsTrigger>
                     <TabsTrigger value="errors">Errors</TabsTrigger>
-                    <TabsTrigger value="context">Context Usage</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
@@ -377,85 +339,6 @@ export function AnalyticsDashboard() {
                             </CardContent>
                         </Card>
                      </div>
-                 </TabsContent>
-
-                 <TabsContent value="context" className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total System Prompt</CardTitle>
-                                <Activity className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{formatTokenCount(contextTotal)} tokens</div>
-                                <p className="text-xs text-muted-foreground">
-                                    Estimated overhead for all tool definitions
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        <Card className="col-span-4">
-                            <CardHeader>
-                                <CardTitle>Context Usage by Service</CardTitle>
-                                <CardDescription>
-                                    Which services consume the most context window?
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="pl-2">
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={contextByService}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={60}
-                                                outerRadius={80}
-                                                dataKey="value"
-                                                isAnimationActive={false}
-                                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                            >
-                                                {contextByService.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip
-                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                                                itemStyle={{ color: 'hsl(var(--foreground))' }}
-                                                formatter={(value: number) => [formatTokenCount(value) + ' tokens', 'Size']}
-                                            />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="col-span-3">
-                            <CardHeader>
-                                <CardTitle>Heaviest Tools</CardTitle>
-                                <CardDescription>
-                                    Tools with largest definitions.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                 <div className="space-y-4 max-h-[300px] overflow-auto pr-2">
-                                    {heaviestTools.map((tool, index) => (
-                                        <div key={tool.name} className="flex items-center justify-between border-b pb-2 last:border-0">
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-medium leading-none">{tool.name}</p>
-                                                <p className="text-xs text-muted-foreground">{tool.service}</p>
-                                            </div>
-                                            <div className="font-mono text-sm font-bold text-muted-foreground">
-                                                {formatTokenCount(tool.tokens)}
-                                            </div>
-                                        </div>
-                                    ))}
-                                 </div>
-                            </CardContent>
-                        </Card>
-                    </div>
                  </TabsContent>
             </Tabs>
         </div>

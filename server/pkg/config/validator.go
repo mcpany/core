@@ -55,8 +55,8 @@ var (
 	execLookPath = exec.LookPath
 )
 
-// ValidationError encapsulates a validation error for a specific service.
-type ValidationError struct {
+// ServiceValidationError encapsulates a validation error for a specific service.
+type ServiceValidationError struct {
 	ServiceName string
 	Err         error
 }
@@ -64,7 +64,7 @@ type ValidationError struct {
 // Error returns the formatted error message.
 //
 // Returns the result.
-func (e *ValidationError) Error() string {
+func (e *ServiceValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
@@ -84,14 +84,14 @@ func (e *ValidationError) Error() string {
 //
 // Returns:
 //
-//	[]ValidationError: A slice of ValidationErrors, which will be empty if the configuration is valid.
-func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
-	var validationErrors []ValidationError
+//	[]ServiceValidationError: A slice of ServiceValidationErrors, which will be empty if the configuration is valid.
+func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ServiceValidationError {
+	var validationErrors []ServiceValidationError
 	serviceNames := make(map[string]bool)
 
 	if gs := config.GetGlobalSettings(); gs != nil {
 		if err := validateGlobalSettings(gs, binaryType); err != nil {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: "global_settings",
 				Err:         err,
 			})
@@ -101,14 +101,14 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	userIDs := make(map[string]bool)
 	for _, user := range config.GetUsers() {
 		if user.GetId() == "" {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: "user",
 				Err:         fmt.Errorf("user has empty id"),
 			})
 			continue
 		}
 		if userIDs[user.GetId()] {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
 				Err:         fmt.Errorf("duplicate user id"),
 			})
@@ -116,7 +116,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		userIDs[user.GetId()] = true
 
 		if err := validateUser(ctx, user); err != nil {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
 				Err:         err,
 			})
@@ -125,7 +125,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 
 	for _, service := range config.GetUpstreamServices() {
 		if _, exists := serviceNames[service.GetName()]; exists {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: service.GetName(),
 				Err:         fmt.Errorf("duplicate service name found"),
 			})
@@ -133,7 +133,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 		serviceNames[service.GetName()] = true
 
 		if err := validateUpstreamService(ctx, service); err != nil {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: service.GetName(),
 				Err:         err,
 			})
@@ -142,7 +142,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 
 	for _, collection := range config.GetCollections() {
 		if err := validateCollection(ctx, collection); err != nil {
-			validationErrors = append(validationErrors, ValidationError{
+			validationErrors = append(validationErrors, ServiceValidationError{
 				ServiceName: collection.GetName(),
 				Err:         err,
 			})
@@ -187,28 +187,9 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 	// List of common interpreters that take a script file as an argument
 	interpreters := []string{"python", "python3", "node", "deno", "bun", "ruby", "perl", "bash", "sh", "zsh", "go"}
 	for _, i := range interpreters {
-		if baseCmd == i {
+		if baseCmd == i || strings.HasPrefix(baseCmd, i) { // e.g. python3.9
 			isInterpreter = true
 			break
-		}
-		// Special handling for python versions (e.g. python3.9, python3.11)
-		// We only check prefix if it is python/python3
-		if strings.HasPrefix(i, "python") && strings.HasPrefix(baseCmd, i) {
-			suffix := baseCmd[len(i):]
-			if len(suffix) > 0 {
-				// Check if the entire suffix is composed of digits and dots
-				isValidVersion := true
-				for _, r := range suffix {
-					if r != '.' && (r < '0' || r > '9') {
-						isValidVersion = false
-						break
-					}
-				}
-				if isValidVersion {
-					isInterpreter = true
-					break
-				}
-			}
 		}
 	}
 
