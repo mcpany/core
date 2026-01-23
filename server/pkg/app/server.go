@@ -1032,7 +1032,9 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 			users = append(users, dbUsers...)
 		}
 	}
-	a.AuthManager.SetUsers(users)
+	if a.AuthManager != nil {
+		a.AuthManager.SetUsers(users)
+	}
 
 	// Update Service Registry
 	// We need to re-create services or update existing ones?
@@ -2130,7 +2132,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
 							authenticated = true
 							ctx = auth.ContextWithUser(ctx, username)
-							// Also check/set roles?
+							if len(user.GetRoles()) > 0 {
+								ctx = auth.ContextWithRoles(ctx, user.GetRoles())
+							}
 						}
 					}
 				}
