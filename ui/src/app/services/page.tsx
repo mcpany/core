@@ -36,6 +36,7 @@ import {
 import { Download } from "lucide-react";
 import { TemplateConfigForm } from "@/components/services/template-config-form";
 import { applyTemplateFields } from "@/lib/template-utils";
+import { DiscoveryStatus } from "@/components/services/discovery-status";
 
 
 /**
@@ -427,6 +428,8 @@ export default function ServicesPage() {
             </Button>
         </div>
       </div>
+
+      <DiscoveryStatus />
 
       <Card className="backdrop-blur-sm bg-background/50">
         <CardHeader>

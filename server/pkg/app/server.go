@@ -1930,6 +1930,8 @@ func (a *Application) runServerMode(
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
 				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
+				} else if err := pb_admin.RegisterAdminServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register admin gateway: %w", err)
 				} else {
 					// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
 					mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1939,6 +1941,10 @@ func (a *Application) runServerMode(
 							gwmux.ServeHTTP(w, r)
 						}
 					})))
+
+					// Explicitly route discovery status to gwmux to match proto definition /api/v1/discovery/status
+					// This overrides the general /api/v1/ handler for this specific path.
+					mux.Handle("/api/v1/discovery/status", authMiddleware(gwmux))
 				}
 			}
 			expectedReady++

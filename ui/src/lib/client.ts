@@ -148,6 +148,13 @@ export interface ToolFailureStats {
     totalCalls: number;
 }
 
+export interface DiscoveryProviderStatus {
+    name: string;
+    status: string;
+    lastError?: string;
+    lastRunAt?: string;
+    discoveredCount?: number;
+}
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -1069,6 +1076,16 @@ export const apiClient = {
     getDoctorStatus: async (): Promise<DoctorReport> => {
         const res = await fetchWithAuth('/api/v1/doctor');
         if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
+    },
+
+    /**
+     * Gets the discovery status.
+     * @returns A promise that resolves to the discovery status response.
+     */
+    getDiscoveryStatus: async (): Promise<{ providers: DiscoveryProviderStatus[] }> => {
+        const res = await fetchWithAuth('/api/v1/discovery/status');
+        if (!res.ok) throw new Error('Failed to fetch discovery status');
         return res.json();
     }
 };
