@@ -82,3 +82,70 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 	assert.Equal(t, toolB, myStats[2].Name)
 	assert.Equal(t, 10.0, myStats[2].FailureRate)
 }
+
+func TestHandleDashboardToolUsage(t *testing.T) {
+	// Define counters matching what the middleware uses
+	toolsCallTotal := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "mcpany_tools_call_total",
+			Help: "Total number of tool calls",
+		},
+		[]string{"tool", "service_id", "status", "error_type"},
+	)
+
+	// Use a local registry for isolation
+	registry := prometheus.NewRegistry()
+	require.NoError(t, registry.Register(toolsCallTotal))
+
+	toolA := "tool_A"
+	toolB := "tool_B"
+
+	// Tool A: 20 success, 5 error
+	toolsCallTotal.WithLabelValues(toolA, "svc1", "success", "").Add(20)
+	toolsCallTotal.WithLabelValues(toolA, "svc1", "error", "err1").Add(5)
+
+	// Tool B: 10 success
+	toolsCallTotal.WithLabelValues(toolB, "svc2", "success", "").Add(10)
+
+	// Create Request
+	req, err := http.NewRequest("GET", "/dashboard/tool-usage", nil)
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	app := &Application{
+		MetricsGatherer: registry,
+	}
+
+	handler := app.handleDashboardToolUsage()
+	handler.ServeHTTP(rr, req)
+
+	// Check Response
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var stats []ToolAnalytics
+	err = json.Unmarshal(rr.Body.Bytes(), &stats)
+	require.NoError(t, err)
+
+	// Filter stats to include only our test tools
+	var myStats []ToolAnalytics
+	for _, s := range stats {
+		if s.Name == toolA || s.Name == toolB {
+			myStats = append(myStats, s)
+		}
+	}
+
+	require.Equal(t, 2, len(myStats))
+
+	// toolA comes first (alphabetical)
+	assert.Equal(t, toolA, myStats[0].Name)
+	assert.Equal(t, int64(25), myStats[0].TotalCalls)
+	assert.Equal(t, int64(20), myStats[0].SuccessCount)
+	assert.Equal(t, int64(5), myStats[0].ErrorCount)
+	assert.InDelta(t, 20.0, myStats[0].FailureRate, 0.01)
+
+	assert.Equal(t, toolB, myStats[1].Name)
+	assert.Equal(t, int64(10), myStats[1].TotalCalls)
+	assert.Equal(t, int64(10), myStats[1].SuccessCount)
+	assert.Equal(t, int64(0), myStats[1].ErrorCount)
+	assert.Equal(t, 0.0, myStats[1].FailureRate)
+}

@@ -59,7 +59,9 @@
 - [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
 - [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
-- [ ] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
+- [x] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
+- [ ] **Tool Usage Trend Graph**: Visual graph of tool usage over time (last 24h) in tool details.
+- [ ] **Export Tool Usage Data**: Button to download tool usage stats as CSV/JSON.
 - [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.

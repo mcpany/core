@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ import {
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
+  const [stats, setStats] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const { isPinned, togglePin, isLoaded } = usePinnedTools();
@@ -62,8 +63,20 @@ export default function ToolsPage() {
 
   const fetchTools = async () => {
     try {
-      const res = await apiClient.listTools();
-      setTools(res?.tools || []);
+      const [toolsRes, statsRes] = await Promise.all([
+          apiClient.listTools(),
+          apiClient.getToolUsage()
+      ]);
+      setTools(toolsRes?.tools || []);
+
+      const statsMap: Record<string, ToolAnalytics> = {};
+      if (statsRes) {
+          statsRes.forEach(s => {
+            // Use name@serviceId as key, similar to backend aggregation key logic but safer to match frontend tool objects
+            statsMap[`${s.name}@${s.serviceId}`] = s;
+          });
+      }
+      setStats(statsMap);
     } catch (e) {
       console.error("Failed to fetch tools", e);
     }
@@ -143,6 +156,8 @@ export default function ToolsPage() {
           <TableHead>Description</TableHead>
           <TableHead>Service</TableHead>
           <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
+          <TableHead title="Total executions">Calls</TableHead>
+          <TableHead title="Success rate of executions">Success Rate</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -174,6 +189,23 @@ export default function ToolsPage() {
                     <Info className="w-3 h-3 mr-1 opacity-50" />
                     {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
                 </div>
+            </TableCell>
+            <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                <div className="text-xs font-mono">
+                    {stats[`${tool.name}@${tool.serviceId}`]?.totalCalls || 0}
+                </div>
+            </TableCell>
+            <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                 {(() => {
+                     const s = stats[`${tool.name}@${tool.serviceId}`];
+                     if (!s || s.totalCalls === 0) return <span className="text-muted-foreground text-xs">-</span>;
+                     const successRate = 100 - s.failureRate;
+                     let color = "text-green-500";
+                     if (successRate < 70) color = "text-red-500";
+                     else if (successRate < 90) color = "text-yellow-500";
+
+                     return <span className={cn("font-mono text-xs", color)}>{successRate.toFixed(1)}%</span>;
+                 })()}
             </TableCell>
             <TableCell className={isCompact ? "py-0 px-2" : ""}>
               <div className="flex items-center space-x-2">

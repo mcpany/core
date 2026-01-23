@@ -16,6 +16,7 @@ vi.mock('@/lib/client', () => ({
         listTools: vi.fn(),
         listServices: vi.fn(),
         setToolStatus: vi.fn(),
+        getToolUsage: vi.fn(),
     },
 }));
 
@@ -83,6 +84,7 @@ describe('ToolsPage', () => {
         vi.clearAllMocks();
         (apiClient.listTools as Mock).mockResolvedValue({ tools: mockTools });
         (apiClient.listServices as Mock).mockResolvedValue(mockServices);
+        (apiClient.getToolUsage as Mock).mockResolvedValue([]);
     });
 
     it('renders tools and services', async () => {

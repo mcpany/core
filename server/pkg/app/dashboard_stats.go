@@ -149,6 +149,108 @@ type ToolFailureStats struct {
 	TotalCalls  int64   `json:"totalCalls"`
 }
 
+// ToolAnalytics represents detailed usage statistics for a tool.
+type ToolAnalytics struct {
+	Name         string  `json:"name"`
+	ServiceID    string  `json:"serviceId"`
+	TotalCalls   int64   `json:"totalCalls"`
+	SuccessCount int64   `json:"successCount"`
+	ErrorCount   int64   `json:"errorCount"`
+	FailureRate  float64 `json:"failureRate"` // Percentage 0-100
+}
+
+// handleDashboardToolUsage returns usage statistics for all tools based on Prometheus metrics.
+func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		gatherer := a.MetricsGatherer
+		if gatherer == nil {
+			gatherer = prometheus.DefaultGatherer
+		}
+
+		mfs, err := gatherer.Gather()
+		if err != nil {
+			logging.GetLogger().Error("failed to gather metrics", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		type aggregatedStats struct {
+			Name      string
+			ServiceID string
+			Success   int64
+			Error     int64
+		}
+
+		toolStats := make(map[string]*aggregatedStats)
+
+		for _, mf := range mfs {
+			if mf.GetName() == "mcpany_tools_call_total" {
+				for _, m := range mf.GetMetric() {
+					var toolName, serviceID, status string
+					for _, label := range m.GetLabel() {
+						if label.GetName() == "tool" {
+							toolName = label.GetValue()
+						}
+						if label.GetName() == "service_id" {
+							serviceID = label.GetValue()
+						}
+						if label.GetName() == "status" {
+							status = label.GetValue()
+						}
+					}
+
+					if toolName != "" {
+						key := toolName + "@" + serviceID
+						if _, exists := toolStats[key]; !exists {
+							toolStats[key] = &aggregatedStats{
+								Name:      toolName,
+								ServiceID: serviceID,
+							}
+						}
+						count := int64(m.GetCounter().GetValue())
+						if status == "error" {
+							toolStats[key].Error += count
+						} else {
+							toolStats[key].Success += count
+						}
+					}
+				}
+			}
+		}
+
+		// Convert map to slice of ToolAnalytics
+		var stats []ToolAnalytics
+		for _, s := range toolStats {
+			total := s.Success + s.Error
+			var rate float64
+			if total > 0 {
+				rate = (float64(s.Error) / float64(total)) * 100.0
+			}
+			stats = append(stats, ToolAnalytics{
+				Name:         s.Name,
+				ServiceID:    s.ServiceID,
+				TotalCalls:   total,
+				SuccessCount: s.Success,
+				ErrorCount:   s.Error,
+				FailureRate:  rate,
+			})
+		}
+
+		// Sort by Name
+		sort.Slice(stats, func(i, j int) bool {
+			return stats[i].Name < stats[j].Name
+		})
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(stats)
+	}
+}
+
 // handleDashboardToolFailures returns the tools with highest failure rates based on Prometheus metrics.
 func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
