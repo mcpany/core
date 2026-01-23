@@ -22,6 +22,8 @@ export interface Span {
   status: SpanStatus;
   input?: Record<string, any>;
   output?: Record<string, any>;
+  requestHeaders?: Record<string, string[]>;
+  responseHeaders?: Record<string, string[]>;
   children?: Span[];
   serviceName?: string;
   errorMessage?: string;
@@ -109,6 +111,8 @@ export async function GET(request: Request) {
             status: entry.status >= 400 ? 'error' : 'success',
             input: input,
             output: output,
+            requestHeaders: entry.request_headers,
+            responseHeaders: entry.response_headers,
             children: [],
             serviceName: 'backend'
         };
