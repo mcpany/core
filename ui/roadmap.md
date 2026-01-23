@@ -64,6 +64,9 @@
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
 - [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
+- [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.
+- [ ] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.
+- [ ] **Dashboard Filtering**: Allow filtering the dashboard metrics and activity by Service or Time Range.
 - [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
 - [ ] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
 - [x] **Native File Upload Support in Playground**: Automatically detect base64 encoded fields in tool schemas and provide a native file picker.
