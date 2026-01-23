@@ -450,11 +450,12 @@ func isKeyColon(input []byte, endOffset int) bool {
 // We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
 // We use [^\s] instead of [^@] to allow @ in passwords while stopping at the last @ before a non-password part (heuristic).
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)`)
+// We also exclude /, ?, and # from the password to prevent over-redaction into path/query/fragment.
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^/?#\s]*|/[^/@\s][^/?#\s]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
-var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
+var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):([^/?#]*)@`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).
