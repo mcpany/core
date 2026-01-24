@@ -511,4 +511,60 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
   });
 
+  test('Tool Detail Screenshots', async ({ page }) => {
+      // Mock service with tools for detail view
+      await page.route('**/api/v1/services/postgres-primary', async route => {
+          await route.fulfill({
+              json: {
+                  service: {
+                      id: 'postgres-primary',
+                      name: 'Primary DB',
+                      type: 'remote',
+                      endpoint: 'grpc://postgres:5432',
+                      status: 'healthy',
+                      grpc_service: { // Assuming gRPC service for postgres-primary mock
+                          address: 'postgres:5432',
+                          tools: [
+                              {
+                                  name: 'query',
+                                  description: 'Execute SQL query',
+                                  input_schema: { type: 'object', properties: { sql: { type: 'string' } } }
+                              }
+                          ]
+                      }
+                  }
+              }
+          });
+      });
+
+       await page.route('**/api/v1/services/postgres-primary/status', async route => {
+          await route.fulfill({
+              json: {
+                  metrics: {
+                      'tool_usage:query': 1250
+                  }
+              }
+          });
+      });
+
+      // Mock logs for chart
+      await page.route('**/api/v1/audit/logs*', async route => {
+          await route.fulfill({
+              json: {
+                  entries: Array.from({length: 50}, (_, i) => ({
+                      timestamp: new Date(Date.now() - i * 1800000).toISOString(), // every 30 mins
+                      tool_name: 'query',
+                      duration_ms: Math.floor(Math.random() * 200) + 20,
+                      error: Math.random() > 0.9 ? "Query timeout" : undefined
+                  })).reverse()
+              }
+          });
+      });
+
+      // Navigate to a tool detail
+      await page.goto('/service/postgres-primary/tool/query');
+      await page.waitForTimeout(2000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tool_detail.png'), fullPage: true });
+  });
+
 });

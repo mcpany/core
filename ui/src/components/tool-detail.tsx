@@ -15,6 +15,7 @@ import { Wrench, AlertTriangle, TrendingUp, Braces } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 import { SchemaVisualizer } from "./schema-visualizer";
+import { UsageChart } from "./charts/usage-chart";
 
 /**
  * Displays details of a specific tool within a service.
@@ -147,6 +148,8 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
                  </dl>
             </CardContent>
         </Card>
+
+        <UsageChart toolName={tool.name} />
       </CardContent>
     </Card>
   );
