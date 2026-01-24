@@ -15,9 +15,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiClient } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Key } from "lucide-react";
+import { ApiKeyDialog } from "@/components/api-key-dialog";
 
 interface User {
   id: string;
@@ -36,11 +38,6 @@ const userSchema = z.object({
   role: z.string().min(1, "Role is required"),
   password: z.string().optional(),
 }).refine(() => {
-  // If editing, password is optional (unchanged). If creating, password is required if we assume Basic Auth.
-  // But maybe we want to allow creating users without password initially (e.g. only API key later)?
-  // For now, let's enforce password for creation if we are setting up Basic Auth.
-  // But the form doesn't track "isEditing" inside the schema easily without passing context.
-  // We'll handle "required for new user" in the submit handler or just checking if password is empty for new user.
   return true;
 });
 
@@ -55,6 +52,11 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // API Key Dialog State
+  const [isKeyDialogOpen, setIsKeyDialogOpen] = useState(false);
+  const [generatedKey, setGeneratedKey] = useState("");
+  const [keyDialogUser, setKeyDialogUser] = useState("");
 
   const form = useForm<UserValues>({
     resolver: zodResolver(userSchema),
@@ -93,7 +95,7 @@ export default function UsersPage() {
       if (editingUser) {
         form.reset({
           id: editingUser.id,
-          role: editingUser.roles[0] || "",
+          role: editingUser.roles[0] || "viewer",
           password: "",
         });
       } else {
@@ -123,6 +125,38 @@ export default function UsersPage() {
         loadUsers();
     } catch (e) {
         console.error("Failed to delete user", e);
+    }
+  };
+
+  const handleGenerateKey = async (user: User) => {
+    if (!confirm(`Generate a new API Key for ${user.id}? This will invalidate any existing key.`)) return;
+
+    // Generate a secure random key
+    const array = new Uint8Array(24);
+    crypto.getRandomValues(array);
+    const key = "mcp_sk_" + Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    try {
+        // Update user with new key
+        const userPayload = {
+            ...user,
+            authentication: {
+                ...user.authentication,
+                api_key: {
+                    key_value: key
+                }
+            }
+        };
+
+        await apiClient.updateUser(userPayload);
+
+        setGeneratedKey(key);
+        setKeyDialogUser(user.id);
+        setIsKeyDialogOpen(true);
+        loadUsers();
+    } catch (e) {
+        console.error("Failed to generate key", e);
+        alert("Failed to generate API key. Check console for details.");
     }
   };
 
@@ -162,12 +196,21 @@ export default function UsersPage() {
     }
   };
 
+  const getRoleBadgeVariant = (role: string) => {
+      switch (role.toLowerCase()) {
+          case 'admin': return 'destructive'; // Red
+          case 'editor': return 'default'; // Primary/Black
+          case 'viewer': return 'secondary'; // Gray
+          default: return 'outline';
+      }
+  };
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
       <div className="flex items-center justify-between">
         <div>
             <h2 className="text-3xl font-bold tracking-tight">Users</h2>
-            <p className="text-muted-foreground">Manage system access and roles.</p>
+            <p className="text-muted-foreground">Manage system access, roles, and API keys.</p>
         </div>
         <Button onClick={handleCreate}>
             <Plus className="mr-2 h-4 w-4" />
@@ -192,7 +235,7 @@ export default function UsersPage() {
                             <TableCell className="font-medium">{user.id}</TableCell>
                             <TableCell>
                                 {user.roles.map(role => (
-                                    <Badge key={role} variant="outline" className="mr-1">
+                                    <Badge key={role} variant={getRoleBadgeVariant(role)} className="mr-1 capitalize">
                                         {role}
                                     </Badge>
                                 ))}
@@ -202,10 +245,13 @@ export default function UsersPage() {
                                  user.authentication?.api_key ? "API Key" : "None"}
                             </TableCell>
                             <TableCell className="text-right">
-                                <Button variant="ghost" size="icon" onClick={() => handleEdit(user)}>
+                                <Button variant="ghost" size="icon" onClick={() => handleGenerateKey(user)} title="Generate API Key">
+                                    <Key className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => handleEdit(user)} title="Edit User">
                                     <Pencil className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(user.id)}>
+                                <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(user.id)} title="Delete User">
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </TableCell>
@@ -252,9 +298,18 @@ export default function UsersPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Role</FormLabel>
-                      <FormControl>
-                        <Input placeholder="admin, viewer, etc." {...field} />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="editor">Editor</SelectItem>
+                          <SelectItem value="viewer">Viewer</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -279,6 +334,13 @@ export default function UsersPage() {
             </Form>
         </DialogContent>
       </Dialog>
+
+      <ApiKeyDialog
+        open={isKeyDialogOpen}
+        onOpenChange={setIsKeyDialogOpen}
+        apiKey={generatedKey}
+        username={keyDialogUser}
+      />
     </div>
   );
 }

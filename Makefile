@@ -1,5 +1,5 @@
 # Shim Makefile to forward commands to server/Makefile and ui/Makefile
-.PHONY: all test lint build run clean gen prepare-proto clean-protos
+.PHONY: all test lint build run clean gen prepare-proto clean-protos update-screenshots
 
 # Variables
 GO = go
@@ -65,6 +65,10 @@ run:
 clean:
 	$(MAKE) -C server clean
 	# ui clean if needed, likely just removing node_modules or build artifacts?
+
+update-screenshots:
+	@echo "Generating screenshots..."
+	@python3 ui/scripts/generate_screenshots.py
 
 prepare-proto:
 	@echo "Preparing protobuf environment..."
