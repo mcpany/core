@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,8 +36,32 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [input, setInput] = useState("{}");
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
   const [execHistory, setExecHistory] = useState<{ time: string; latency: number; status: string }[]>([]);
+
+  useEffect(() => {
+      if (open && tool) {
+          setLoadingHistory(true);
+          apiClient.listAuditLogs({ tool_name: tool.name, limit: 50 })
+              .then((res: any) => {
+                  const entries = res.entries || [];
+                  // Sort by timestamp ascending
+                  entries.sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+                  const history = entries.map((e: any) => ({
+                      time: new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                      latency: e.durationMs || 0,
+                      status: e.error ? "error" : "success"
+                  }));
+                  setExecHistory(history);
+              })
+              .catch(err => console.error("Failed to load history", err))
+              .finally(() => setLoadingHistory(false));
+      } else if (!open) {
+          setExecHistory([]);
+      }
+  }, [open, tool]);
 
   const stats = useMemo(() => {
     const total = execHistory.length;
@@ -147,6 +171,11 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
             </TabsContent>
 
             <TabsContent value="metrics" className="space-y-6">
+                {loadingHistory && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                        <Loader2 className="h-3 w-3 animate-spin" /> Loading historical data...
+                    </div>
+                )}
                 <div className="grid grid-cols-4 gap-4">
                     <div className="space-y-1">
                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">Total Calls</p>
