@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +41,7 @@ export default function MarketplacePage() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   // Instantiate State
   const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
@@ -200,13 +201,25 @@ export default function MarketplacePage() {
       setIsDetailsOpen(true);
   };
 
+  const categories = useMemo(() => {
+      const counts: Record<string, number> = {};
+      communityServers.forEach(s => {
+          counts[s.category] = (counts[s.category] || 0) + 1;
+      });
+      return Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [communityServers]);
+
   // Filter Community Servers
-  const filteredCommunityServers = communityServers.filter(s =>
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      s.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCommunityServers = communityServers.filter(s => {
+      const matchesSearch =
+          s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const matchesCategory = selectedCategory === "All" || s.category === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
@@ -338,72 +351,112 @@ export default function MarketplacePage() {
             </section>
           </TabsContent>
 
-          <TabsContent value="community" className="mt-6">
-              <section>
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                      <div>
-                        <h2 className="text-xl font-semibold flex items-center gap-2">
-                            <Users className="h-5 w-5" />
-                            Community Servers (Awesome List)
-                        </h2>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Discover {communityServers.length} servers from the community.
-                        </p>
-                      </div>
-                      <div className="relative w-full md:w-72">
-                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input
-                              placeholder="Search community servers..."
-                              className="pl-8"
-                              value={searchQuery}
-                              onChange={(e) => setSearchQuery(e.target.value)}
-                          />
-                      </div>
-                  </div>
+          <TabsContent value="community" className="mt-6 h-full">
+              <div className="flex flex-col lg:flex-row gap-8 h-full">
+                  {/* Sidebar */}
+                  <aside className="w-full lg:w-64 flex-shrink-0 space-y-4">
+                      <div className="sticky top-0 space-y-4">
+                          <div className="relative">
+                              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                  placeholder="Search servers..."
+                                  className="pl-8"
+                                  value={searchQuery}
+                                  onChange={(e) => setSearchQuery(e.target.value)}
+                              />
+                          </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredCommunityServers.slice(0, 100).map((server, idx) => (
-                          <Card key={idx} className="flex flex-col">
-                              <CardHeader>
-                                  <div className="flex justify-between items-start gap-2">
-                                      <CardTitle className="text-lg truncate" title={server.name}>
-                                          {server.name}
-                                      </CardTitle>
-                                      <a href={server.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
-                                          <ExternalLink className="h-4 w-4" />
-                                      </a>
-                                  </div>
-                                  <CardDescription className="line-clamp-2 min-h-[40px] text-xs">
-                                      {server.description}
-                                  </CardDescription>
-                              </CardHeader>
-                              <CardContent className="flex-1">
-                                  <div className="flex flex-wrap gap-1 mb-2">
-                                      <Badge variant="outline" className="text-[10px] h-5">{server.category}</Badge>
-                                      {server.tags.map((tag, i) => (
-                                          <span key={i} className="text-sm" title="Tag">{tag}</span>
-                                      ))}
-                                  </div>
-                              </CardContent>
-                              <CardFooter>
-                                  <Button className="w-full" variant="secondary" onClick={() => openInstantiateCommunity(server)}>
-                                      Install
-                                  </Button>
-                              </CardFooter>
-                          </Card>
-                      ))}
-                      {filteredCommunityServers.length === 0 && !loading && (
-                          <div className="col-span-full text-center p-12 text-muted-foreground border rounded-lg border-dashed">
-                              No servers found matching "{searchQuery}".
+                          <div className="space-y-1">
+                              <h3 className="font-semibold mb-2 px-2">Categories</h3>
+                              <Button
+                                  variant={selectedCategory === "All" ? "secondary" : "ghost"}
+                                  className="w-full justify-start font-normal"
+                                  onClick={() => setSelectedCategory("All")}
+                              >
+                                  All Servers
+                                  <span className="ml-auto text-muted-foreground text-xs">{communityServers.length}</span>
+                              </Button>
+                              <div className="h-[60vh] overflow-y-auto pr-2 space-y-1 scrollbar-thin">
+                                  {categories.map(([cat, count]) => (
+                                      <Button
+                                          key={cat}
+                                          variant={selectedCategory === cat ? "secondary" : "ghost"}
+                                          className="w-full justify-start font-normal truncate"
+                                          onClick={() => setSelectedCategory(cat)}
+                                          title={cat}
+                                      >
+                                          <span className="truncate flex-1 text-left">{cat}</span>
+                                          <span className="ml-2 text-muted-foreground text-xs">{count}</span>
+                                      </Button>
+                                  ))}
+                              </div>
+                          </div>
+                      </div>
+                  </aside>
+
+                  {/* Main Grid */}
+                  <section className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-6">
+                          <h2 className="text-xl font-semibold flex items-center gap-2">
+                              <Users className="h-5 w-5" />
+                              {selectedCategory === "All" ? "All Community Servers" : selectedCategory}
+                          </h2>
+                          <span className="text-sm text-muted-foreground">
+                              {filteredCommunityServers.length} results
+                          </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                          {filteredCommunityServers.slice(0, 50).map((server, idx) => (
+                              <Card key={idx} className="flex flex-col h-full hover:border-primary/50 transition-colors">
+                                  <CardHeader className="pb-3">
+                                      <div className="flex justify-between items-start gap-2">
+                                          <CardTitle className="text-base font-medium truncate" title={server.name}>
+                                              {server.name}
+                                          </CardTitle>
+                                          <a href={server.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                                              <ExternalLink className="h-4 w-4" />
+                                          </a>
+                                      </div>
+                                      <CardDescription className="line-clamp-2 min-h-[40px] text-xs leading-relaxed">
+                                          {server.description}
+                                      </CardDescription>
+                                  </CardHeader>
+                                  <CardContent className="flex-1 pb-3">
+                                      <div className="flex flex-wrap gap-1">
+                                          {selectedCategory === "All" && (
+                                              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-normal opacity-80">{server.category}</Badge>
+                                          )}
+                                          {server.tags.slice(0, 3).map((tag, i) => (
+                                              <span key={i} className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground" title="Tag">{tag}</span>
+                                          ))}
+                                      </div>
+                                  </CardContent>
+                                  <CardFooter className="pt-0">
+                                      <Button className="w-full h-8 text-xs" variant="outline" onClick={() => openInstantiateCommunity(server)}>
+                                          Install
+                                      </Button>
+                                  </CardFooter>
+                              </Card>
+                          ))}
+                          {filteredCommunityServers.length === 0 && !loading && (
+                              <div className="col-span-full text-center p-12 text-muted-foreground border rounded-lg border-dashed">
+                                  No servers found matching "{searchQuery}" in {selectedCategory}.
+                              </div>
+                          )}
+                      </div>
+                      {filteredCommunityServers.length > 50 && (
+                          <div className="text-center mt-8 p-4 border-t">
+                              <p className="text-muted-foreground text-sm mb-2">
+                                  Showing first 50 of {filteredCommunityServers.length} results.
+                              </p>
+                              {selectedCategory === "All" && !searchQuery && (
+                                  <p className="text-xs text-muted-foreground">Select a category to see more specific results.</p>
+                              )}
                           </div>
                       )}
-                  </div>
-                  {filteredCommunityServers.length > 100 && (
-                      <div className="text-center mt-8 text-muted-foreground text-sm">
-                          Showing first 100 of {filteredCommunityServers.length} results. Use search to find more.
-                      </div>
-                  )}
-              </section>
+                  </section>
+              </div>
           </TabsContent>
       </Tabs>
 

@@ -58,3 +58,4 @@ server/examples/demo/stdio/my-tool-bin
 # Test binaries
 *.test
 package-lock.json
+proto/**/*.ts

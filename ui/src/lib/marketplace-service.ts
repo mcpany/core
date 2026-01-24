@@ -213,24 +213,36 @@ export const marketplaceService = {
           const servers: CommunityServer[] = [];
           const lines = markdown.split('\n');
           let currentCategory = "Uncategorized";
+          let inServerSection = false;
 
           // Regex to match: * [Name](URL) Tags - Description OR - [Name](URL) Tags - Description
           const itemRegex = /^\s*[\-\*]\s+\[([^\]]+)\]\(([^)]+)\)\s*(.*?)\s*-\s*(.*)$/;
 
-          // Regex to match category headers (e.g., "## 📂 File Systems") or "📂 File Systems" inside a list if structured differently
-          // The structure seems to be:
-          // * 📂 - [Browser Automation](#-browser-automation)
-          // ...
-          // ## 📂 Browser Automation
-
           for (const line of lines) {
               if (line.startsWith('## ') || line.startsWith('### ')) {
                   // Clean up header to get category name
-                  currentCategory = line.replace(/^#+\s*/, '').trim();
-                  // Remove links in headers if any
-                  currentCategory = currentCategory.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+                  let cat = line.replace(/^#+\s*/, '').trim();
+
+                  // Remove links/anchors in headers if any (e.g. 🔗 <a name="aggregators"></a>Aggregators)
+                  cat = cat.replace(/<[^>]+>/g, ''); // Remove HTML tags
+                  cat = cat.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Remove Markdown links
+
+                  // Section gating
+                  if (cat.includes("Server Implementations")) {
+                      inServerSection = true;
+                      continue;
+                  }
+                  if (cat.includes("Frameworks") || cat.includes("Tips and Tricks")) {
+                      inServerSection = false;
+                  }
+
+                  if (inServerSection) {
+                      currentCategory = cat;
+                  }
                   continue;
               }
+
+              if (!inServerSection) continue;
 
               const match = line.match(itemRegex);
               if (match) {
