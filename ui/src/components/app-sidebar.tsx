@@ -24,7 +24,8 @@ import {
   ShoppingBag,
   ShieldCheck,
   Zap,
-  ClipboardCheck
+  ClipboardCheck,
+  SlidersHorizontal
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -141,15 +142,18 @@ const devItems = [
 ]
 
 const configItems = [
-
   {
     title: "Upstream Services",
     url: "/upstream-services",
     icon: Server,
   },
   {
+    title: "Profiles",
+    url: "/profiles",
+    icon: SlidersHorizontal,
+  },
+  {
     title: "Users",
-
     url: "/users",
     icon: User,
   },

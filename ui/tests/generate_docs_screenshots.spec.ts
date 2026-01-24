@@ -475,6 +475,37 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       }
   });
 
+  test('Profiles Screenshots', async ({ page }) => {
+      // Mock Profiles
+      await page.route('**/api/v1/profiles', async route => {
+          await route.fulfill({
+              json: [
+                  {
+                      name: 'development',
+                      selector: { tags: ['dev'] },
+                      serviceConfig: {}
+                  },
+                  {
+                      name: 'production',
+                      selector: { tags: ['prod'] },
+                      serviceConfig: {
+                          'postgres-primary': { enabled: true }
+                      }
+                  }
+              ]
+          });
+      });
+
+      await page.goto('/profiles');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_list.png'), fullPage: true });
+
+      // Open Edit Sheet
+      await page.getByRole('button', { name: 'Edit' }).first().click();
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profile_editor.png') });
+  });
+
   test('Audit Logs Screenshots', async ({ page }) => {
       // Mock Audit Logs
       await page.route('**/api/v1/audit/logs*', async route => {
