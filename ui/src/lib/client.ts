@@ -32,6 +32,10 @@ export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * The captured stderr logs from the last connection attempt.
+     */
+    lastLogs?: string;
 }
 
 // Re-export generated types
@@ -204,6 +208,7 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
+            lastLogs: s.last_logs,
         }));
     },
 
@@ -237,6 +242,9 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
+                         lastError: s.last_error,
+                         toolCount: s.tool_count,
+                         lastLogs: s.last_logs,
                      };
                  }
                  return data;

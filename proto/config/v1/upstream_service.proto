@@ -55,6 +55,9 @@ message UpstreamServiceConfig {
   // The number of tools registered for this service.
   // @inject_tag: yaml:"-"
   int32 tool_count = 37 [json_name = "tool_count"];
+  // The captured stderr logs from the last connection attempt.
+  // @inject_tag: yaml:"-"
+  string last_logs = 38 [json_name = "last_logs"];
 
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 9 [json_name = "connection_pool"];

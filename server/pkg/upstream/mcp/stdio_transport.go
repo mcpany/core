@@ -21,6 +21,15 @@ import (
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
+	Stderr  *tailBuffer
+}
+
+// GetLogs returns the captured stderr logs.
+func (t *StdioTransport) GetLogs() string {
+	if t.Stderr == nil {
+		return ""
+	}
+	return t.Stderr.String()
 }
 
 // Connect starts the command and returns a connection.
@@ -49,6 +58,7 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 
 	// Capture stderr
 	stderrCapture := &tailBuffer{limit: 4096}
+	t.Stderr = stderrCapture
 	// We also want to log stderr to the application logs
 	// Note: slog.LevelError is imported from "log/slog"
 	logWriter := &slogWriter{log: log, level: slog.LevelError}

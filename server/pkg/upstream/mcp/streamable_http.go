@@ -590,6 +590,12 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	} else {
 		cs, err = mcpSdkClient.Connect(ctx, transport, nil)
 	}
+
+	// Capture logs from stdio transport
+	if t, ok := transport.(*StdioTransport); ok {
+		serviceConfig.LastLogs = proto.String(t.GetLogs())
+	}
+
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to MCP service: %w", err)
 	}

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Power, Trash2, Save } from "lucide-react";
+import { Loader2, ArrowLeft, Power, Trash2, Save, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -136,6 +136,7 @@ export default function UpstreamServiceDetailPage() {
                     <TabsTrigger value="config">Configuration</TabsTrigger>
                     <TabsTrigger value="auth">Authentication</TabsTrigger>
                     <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
+                    <TabsTrigger value="logs">Logs</TabsTrigger>
                 </TabsList>
 
                 {/* OVERVIEW TAB */}
@@ -229,6 +230,26 @@ export default function UpstreamServiceDetailPage() {
                                 Authentication Binding UI is under construction.
                                 <br/>
                                 <Button variant="link">Manage Credentials</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* LOGS TAB */}
+                <TabsContent value="logs" className="mt-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Connection Logs
+                            </CardTitle>
+                            <CardDescription>
+                                Recent stderr output from the service connection attempts.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="rounded-md bg-muted p-4 font-mono text-xs overflow-x-auto whitespace-pre-wrap max-h-[500px] overflow-y-auto">
+                                {service.lastLogs || "No logs available."}
                             </div>
                         </CardContent>
                     </Card>

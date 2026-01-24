@@ -273,6 +273,7 @@ type UpstreamServiceConfig struct {
 	xxx_hidden_ReadOnly              bool                                  `protobuf:"varint,35,opt,name=read_only"`
 	xxx_hidden_LastError             *string                               `protobuf:"bytes,36,opt,name=last_error"`
 	xxx_hidden_ToolCount             int32                                 `protobuf:"varint,37,opt,name=tool_count"`
+	xxx_hidden_LastLogs              *string                               `protobuf:"bytes,38,opt,name=last_logs"`
 	xxx_hidden_ConnectionPool        *ConnectionPoolConfig                 `protobuf:"bytes,9,opt,name=connection_pool"`
 	xxx_hidden_UpstreamAuth          *Authentication                       `protobuf:"bytes,10,opt,name=upstream_auth"`
 	xxx_hidden_Cache                 *CacheConfig                          `protobuf:"bytes,11,opt,name=cache"`
@@ -415,6 +416,16 @@ func (x *UpstreamServiceConfig) GetToolCount() int32 {
 	return 0
 }
 
+func (x *UpstreamServiceConfig) GetLastLogs() string {
+	if x != nil {
+		if x.xxx_hidden_LastLogs != nil {
+			return *x.xxx_hidden_LastLogs
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *UpstreamServiceConfig) GetConnectionPool() *ConnectionPoolConfig {
 	if x != nil {
 		return x.xxx_hidden_ConnectionPool
@@ -445,7 +456,7 @@ func (x *UpstreamServiceConfig) GetRateLimit() *RateLimitConfig {
 
 func (x *UpstreamServiceConfig) GetLoadBalancingStrategy() LoadBalancingStrategy {
 	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 15) {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 16) {
 			return x.xxx_hidden_LoadBalancingStrategy
 		}
 	}
@@ -631,57 +642,62 @@ func (x *UpstreamServiceConfig) GetTags() []string {
 
 func (x *UpstreamServiceConfig) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 28)
 }
 
 func (x *UpstreamServiceConfig) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 28)
 }
 
 func (x *UpstreamServiceConfig) SetSanitizedName(v string) {
 	x.xxx_hidden_SanitizedName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 28)
 }
 
 func (x *UpstreamServiceConfig) SetVersion(v string) {
 	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 28)
 }
 
 func (x *UpstreamServiceConfig) SetPriority(v int32) {
 	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 28)
 }
 
 func (x *UpstreamServiceConfig) SetDisable(v bool) {
 	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 28)
 }
 
 func (x *UpstreamServiceConfig) SetAutoDiscoverTool(v bool) {
 	x.xxx_hidden_AutoDiscoverTool = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 28)
 }
 
 func (x *UpstreamServiceConfig) SetConfigError(v string) {
 	x.xxx_hidden_ConfigError = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 28)
 }
 
 func (x *UpstreamServiceConfig) SetReadOnly(v bool) {
 	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 28)
 }
 
 func (x *UpstreamServiceConfig) SetLastError(v string) {
 	x.xxx_hidden_LastError = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 28)
 }
 
 func (x *UpstreamServiceConfig) SetToolCount(v int32) {
 	x.xxx_hidden_ToolCount = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 28)
+}
+
+func (x *UpstreamServiceConfig) SetLastLogs(v string) {
+	x.xxx_hidden_LastLogs = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 28)
 }
 
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
@@ -702,7 +718,7 @@ func (x *UpstreamServiceConfig) SetRateLimit(v *RateLimitConfig) {
 
 func (x *UpstreamServiceConfig) SetLoadBalancingStrategy(v LoadBalancingStrategy) {
 	x.xxx_hidden_LoadBalancingStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 27)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 16, 28)
 }
 
 func (x *UpstreamServiceConfig) SetResilience(v *ResilienceConfig) {
@@ -910,6 +926,13 @@ func (x *UpstreamServiceConfig) HasToolCount() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
+func (x *UpstreamServiceConfig) HasLastLogs() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
 func (x *UpstreamServiceConfig) HasConnectionPool() bool {
 	if x == nil {
 		return false
@@ -942,7 +965,7 @@ func (x *UpstreamServiceConfig) HasLoadBalancingStrategy() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 15)
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 16)
 }
 
 func (x *UpstreamServiceConfig) HasResilience() bool {
@@ -1130,6 +1153,11 @@ func (x *UpstreamServiceConfig) ClearToolCount() {
 	x.xxx_hidden_ToolCount = 0
 }
 
+func (x *UpstreamServiceConfig) ClearLastLogs() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_LastLogs = nil
+}
+
 func (x *UpstreamServiceConfig) ClearConnectionPool() {
 	x.xxx_hidden_ConnectionPool = nil
 }
@@ -1147,7 +1175,7 @@ func (x *UpstreamServiceConfig) ClearRateLimit() {
 }
 
 func (x *UpstreamServiceConfig) ClearLoadBalancingStrategy() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 15)
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 16)
 	x.xxx_hidden_LoadBalancingStrategy = LoadBalancingStrategy_ROUND_ROBIN
 }
 
@@ -1320,6 +1348,9 @@ type UpstreamServiceConfig_builder struct {
 	// The number of tools registered for this service.
 	// @inject_tag: yaml:"-"
 	ToolCount *int32
+	// The captured stderr logs from the last connection attempt.
+	// @inject_tag: yaml:"-"
+	LastLogs *string
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -1370,55 +1401,59 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 28)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 28)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.SanitizedName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 28)
 		x.xxx_hidden_SanitizedName = b.SanitizedName
 	}
 	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 28)
 		x.xxx_hidden_Version = b.Version
 	}
 	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 28)
 		x.xxx_hidden_Priority = *b.Priority
 	}
 	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 28)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	if b.AutoDiscoverTool != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 28)
 		x.xxx_hidden_AutoDiscoverTool = *b.AutoDiscoverTool
 	}
 	if b.ConfigError != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 28)
 		x.xxx_hidden_ConfigError = b.ConfigError
 	}
 	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 28)
 		x.xxx_hidden_ReadOnly = *b.ReadOnly
 	}
 	if b.LastError != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 28)
 		x.xxx_hidden_LastError = b.LastError
 	}
 	if b.ToolCount != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 28)
 		x.xxx_hidden_ToolCount = *b.ToolCount
+	}
+	if b.LastLogs != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 28)
+		x.xxx_hidden_LastLogs = b.LastLogs
 	}
 	x.xxx_hidden_ConnectionPool = b.ConnectionPool
 	x.xxx_hidden_UpstreamAuth = b.UpstreamAuth
 	x.xxx_hidden_Cache = b.Cache
 	x.xxx_hidden_RateLimit = b.RateLimit
 	if b.LoadBalancingStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 27)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 16, 28)
 		x.xxx_hidden_LoadBalancingStrategy = *b.LoadBalancingStrategy
 	}
 	x.xxx_hidden_Resilience = b.Resilience
@@ -8506,7 +8541,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb5\x12\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xd3\x12\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +
@@ -8522,7 +8557,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"last_error\x12\x1e\n" +
 	"\n" +
 	"tool_count\x18% \x01(\x05R\n" +
-	"tool_count\x12P\n" +
+	"tool_count\x12\x1c\n" +
+	"\tlast_logs\x18& \x01(\tR\tlast_logs\x12P\n" +
 	"\x0fconnection_pool\x18\t \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0fconnection_pool\x12F\n" +
 	"\rupstream_auth\x18\n" +
 	" \x01(\v2 .mcpany.config.v1.AuthenticationR\rupstream_auth\x123\n" +

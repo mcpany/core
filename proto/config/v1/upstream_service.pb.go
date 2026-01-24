@@ -293,6 +293,9 @@ type UpstreamServiceConfig struct {
 	// The number of tools registered for this service.
 	// @inject_tag: yaml:"-"
 	ToolCount *int32 `protobuf:"varint,37,opt,name=tool_count" json:"tool_count,omitempty"`
+	// The captured stderr logs from the last connection attempt.
+	// @inject_tag: yaml:"-"
+	LastLogs *string `protobuf:"bytes,38,opt,name=last_logs" json:"last_logs,omitempty"`
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig `protobuf:"bytes,9,opt,name=connection_pool" json:"connection_pool,omitempty"`
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -441,6 +444,13 @@ func (x *UpstreamServiceConfig) GetToolCount() int32 {
 		return *x.ToolCount
 	}
 	return 0
+}
+
+func (x *UpstreamServiceConfig) GetLastLogs() string {
+	if x != nil && x.LastLogs != nil {
+		return *x.LastLogs
+	}
+	return ""
 }
 
 func (x *UpstreamServiceConfig) GetConnectionPool() *ConnectionPoolConfig {
@@ -698,6 +708,10 @@ func (x *UpstreamServiceConfig) SetToolCount(v int32) {
 	x.ToolCount = &v
 }
 
+func (x *UpstreamServiceConfig) SetLastLogs(v string) {
+	x.LastLogs = &v
+}
+
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
 	x.ConnectionPool = v
 }
@@ -923,6 +937,13 @@ func (x *UpstreamServiceConfig) HasToolCount() bool {
 	return x.ToolCount != nil
 }
 
+func (x *UpstreamServiceConfig) HasLastLogs() bool {
+	if x == nil {
+		return false
+	}
+	return x.LastLogs != nil
+}
+
 func (x *UpstreamServiceConfig) HasConnectionPool() bool {
 	if x == nil {
 		return false
@@ -1132,6 +1153,10 @@ func (x *UpstreamServiceConfig) ClearToolCount() {
 	x.ToolCount = nil
 }
 
+func (x *UpstreamServiceConfig) ClearLastLogs() {
+	x.LastLogs = nil
+}
+
 func (x *UpstreamServiceConfig) ClearConnectionPool() {
 	x.ConnectionPool = nil
 }
@@ -1321,6 +1346,9 @@ type UpstreamServiceConfig_builder struct {
 	// The number of tools registered for this service.
 	// @inject_tag: yaml:"-"
 	ToolCount *int32
+	// The captured stderr logs from the last connection attempt.
+	// @inject_tag: yaml:"-"
+	LastLogs *string
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -1381,6 +1409,7 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.ReadOnly = b.ReadOnly
 	x.LastError = b.LastError
 	x.ToolCount = b.ToolCount
+	x.LastLogs = b.LastLogs
 	x.ConnectionPool = b.ConnectionPool
 	x.UpstreamAuth = b.UpstreamAuth
 	x.Cache = b.Cache
@@ -8001,7 +8030,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb5\x12\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xd3\x12\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +
@@ -8017,7 +8046,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"last_error\x12\x1e\n" +
 	"\n" +
 	"tool_count\x18% \x01(\x05R\n" +
-	"tool_count\x12P\n" +
+	"tool_count\x12\x1c\n" +
+	"\tlast_logs\x18& \x01(\tR\tlast_logs\x12P\n" +
 	"\x0fconnection_pool\x18\t \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0fconnection_pool\x12F\n" +
 	"\rupstream_auth\x18\n" +
 	" \x01(\v2 .mcpany.config.v1.AuthenticationR\rupstream_auth\x123\n" +
