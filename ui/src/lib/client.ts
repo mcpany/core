@@ -23,7 +23,7 @@ import { BrowserHeaders } from 'browser-headers';
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
     /**
      * The last error message encountered by the service, if any.
      */
@@ -192,6 +192,9 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            cache: s.cache,
+            rateLimit: s.rate_limit,
+            resilience: s.resilience,
             lastError: s.last_error,
             toolCount: s.tool_count,
         }));
@@ -227,6 +230,9 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
+                         cache: s.cache,
+                         rateLimit: s.rate_limit,
+                         resilience: s.resilience,
                      };
                  }
                  return data;
@@ -315,6 +321,15 @@ export const apiClient = {
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
         }
+        if (config.cache) {
+            payload.cache = config.cache;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -366,6 +381,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.cache) {
+            payload.cache = config.cache;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -433,6 +457,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.cache) {
+            payload.cache = config.cache;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1005,6 +1038,9 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            cache: s.cache,
+            rateLimit: s.rate_limit,
+            resilience: s.resilience,
         }));
     },
 
@@ -1047,6 +1083,15 @@ export const apiClient = {
         }
         if (template.postCallHooks) {
             payload.post_call_hooks = template.postCallHooks;
+        }
+        if (template.cache) {
+            payload.cache = template.cache;
+        }
+        if (template.rateLimit) {
+            payload.rate_limit = template.rateLimit;
+        }
+        if (template.resilience) {
+            payload.resilience = template.resilience;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {

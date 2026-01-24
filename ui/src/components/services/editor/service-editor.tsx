@@ -18,6 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
+import { RateLimitEditor } from "@/components/services/editor/rate-limit-editor";
+import { CacheConfigEditor } from "@/components/services/editor/cache-config-editor";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -87,7 +89,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (type === 'grpc') newService.grpcService = { address: "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoDefinitions: [], protoCollection: [] };
         if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
         if (type === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
-        if (type === 'openapi') newService.openapiService = { address: "", specSource: { $case: "specUrl", specUrl: "" }, tools: [], resources: [], calls: {}, prompts: [] };
+        if (type === 'openapi') newService.openapiService = { address: "", specUrl: "", tools: [], resources: [], calls: {}, prompts: [] };
 
         onChange(newService);
     };
@@ -110,7 +112,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             <TabsTrigger value="general">General</TabsTrigger>
                             <TabsTrigger value="connection">Connection</TabsTrigger>
                             <TabsTrigger value="auth">Authentication</TabsTrigger>
-                            <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                            <TabsTrigger value="policies">Policies</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -404,42 +406,53 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             </Card>
                         </TabsContent>
 
-                        <TabsContent value="advanced" className="space-y-4 mt-0">
-                            <div className="grid grid-cols-2 gap-4">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Resilience</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                         <div className="space-y-2">
-                                            <Label htmlFor="timeout">Timeout (s)</Label>
-                                            {/* Note: Duration handling is complex in proto (seconds/nanos), simplifying to string for now if client helper handles it, or assuming seconds */}
-                                            {/* In proto, it is google.protobuf.Duration. The JSON mapping usually accepts string "10s" */}
-                                            {/* But the client interface we have uses generated types. Check resilience.timeout */}
-                                            <Input
-                                                id="timeout"
-                                                placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
-                                                defaultValue="30s"
-                                            />
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                                 <Card>
-                                    <CardHeader>
-                                        <CardTitle>Export Policy</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="flex items-center space-x-2">
-                                            <Switch
-                                                id="export-auto-discover"
-                                                checked={service.autoDiscoverTool}
-                                                onCheckedChange={(checked) => updateService({ autoDiscoverTool: checked })}
-                                            />
-                                            <Label htmlFor="export-auto-discover">Auto Discover Tools</Label>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                        <TabsContent value="policies" className="space-y-4 mt-0">
+                            <div className="space-y-4">
+                                <RateLimitEditor
+                                    config={service.rateLimit}
+                                    onChange={(c) => updateService({ rateLimit: c })}
+                                />
+                                <CacheConfigEditor
+                                    config={service.cache}
+                                    onChange={(c) => updateService({ cache: c })}
+                                />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Resilience</CardTitle>
+                                            <CardDescription>Configure timeouts and retry policies.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="timeout">Timeout</Label>
+                                                {/* Note: Duration handling is complex in proto (seconds/nanos), simplifying to string for now if client helper handles it, or assuming seconds */}
+                                                <Input
+                                                    id="timeout"
+                                                    placeholder="30s"
+                                                    defaultValue={service.resilience?.timeout as any || "30s"}
+                                                    onChange={(e) => updateService({ resilience: { ...service.resilience, timeout: e.target.value as any } })}
+                                                />
+                                                <p className="text-xs text-muted-foreground">Maximum duration for a request (e.g. 30s).</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Export Policy</CardTitle>
+                                            <CardDescription>Control how tools are exposed.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="flex items-center space-x-2">
+                                                <Switch
+                                                    id="export-auto-discover"
+                                                    checked={service.autoDiscoverTool}
+                                                    onCheckedChange={(checked) => updateService({ autoDiscoverTool: checked })}
+                                                />
+                                                <Label htmlFor="export-auto-discover">Auto Discover Tools</Label>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             </div>
                         </TabsContent>
                     </div>
