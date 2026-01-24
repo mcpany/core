@@ -62,17 +62,19 @@ export interface LogEntry {
 /**
  * Helper component to highlight search terms within text.
  */
-const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
-  if (!highlight || !text) return <>{text}</>;
+// Optimization: Memoize HighlightText to avoid unnecessary re-renders.
+// Accepting a regex instead of string prevents re-compiling the RegExp for every row.
+const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
+  if (!regex || !text) return <>{text}</>;
 
-  // Escape special regex characters in the highlight string
-  const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
+  const parts = text.split(regex);
 
   return (
     <>
       {parts.map((part, i) =>
-        part.toLowerCase() === highlight.toLowerCase() ? (
+        // Since the regex has a capturing group `(...)`, split includes separators.
+        // Even indices are non-matches, odd indices are matches.
+        i % 2 === 1 ? (
           <mark key={i} className="bg-yellow-500/40 text-inherit rounded-sm px-0.5 -mx-0.5">
             {part}
           </mark>
@@ -82,7 +84,8 @@ const HighlightText = ({ text, highlight }: { text: string; highlight: string })
       )}
     </>
   );
-};
+});
+HighlightText.displayName = 'HighlightText';
 
 // ⚡ Bolt Optimization: Reuse DateTimeFormat instance to avoid recreating it for every log message.
 // This improves performance significantly (4.5x in benchmarks) when processing high-frequency logs.
@@ -130,10 +133,10 @@ const tryParseJson = (str: string): unknown | null => {
  * LogRow component.
  * @param props - The component props.
  * @param props.log - The log property.
- * @param props.searchQuery - The current search query for highlighting.
+ * @param props.highlightRegex - The regex for highlighting search terms.
  * @returns The rendered component.
  */
-const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: string }) => {
+const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRegex: RegExp | null }) => {
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -161,7 +164,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                   style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
                   title={log.source}
                 >
-                  [<HighlightText text={log.source} highlight={searchQuery} />]
+                  [<HighlightText text={log.source} regex={highlightRegex} />]
                 </span>
               )}
           </div>
@@ -172,7 +175,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
               style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
               title={log.source}
             >
-              [<HighlightText text={log.source} highlight={searchQuery} />]
+              [<HighlightText text={log.source} regex={highlightRegex} />]
             </span>
           )}
 
@@ -188,7 +191,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                   </button>
                )}
                <span className="break-all whitespace-pre-wrap">
-                 <HighlightText text={log.message} highlight={searchQuery} />
+                 <HighlightText text={log.message} regex={highlightRegex} />
                </span>
                {duration && (
                 <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
@@ -248,6 +251,14 @@ export function LogStream() {
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
+
+  // Optimization: Pre-compile regex for highlighting to avoid repeated RegExp creation in render loop
+  const highlightRegex = React.useMemo(() => {
+    if (!deferredSearchQuery) return null;
+    const escaped = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(${escaped})`, 'gi');
+  }, [deferredSearchQuery]);
+
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
@@ -514,7 +525,7 @@ export function LogStream() {
                         </div>
                     )}
                     {filteredLogs.map((log) => (
-                      <LogRow key={log.id} log={log} searchQuery={deferredSearchQuery} />
+                      <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
                     ))}
                 </div>
              </ScrollArea>
