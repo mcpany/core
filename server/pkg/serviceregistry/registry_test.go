@@ -74,6 +74,12 @@ func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 	return nil, nil
 }
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *mockToolManager) IsServiceAllowed(serviceID, profileID string) bool       { return true }
+func (m *mockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+func (m *mockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	return nil, false
+}
+func (m *mockToolManager) CountToolsForService(serviceID string) int { return 0 }
 
 func TestNew(t *testing.T) {
 	pm := pool.NewManager()
@@ -456,6 +462,18 @@ func (m *threadSafeToolManager) ListTools() []tool.Tool {
 		tools = append(tools, t)
 	}
 	return tools
+}
+
+func (m *threadSafeToolManager) CountToolsForService(serviceID string) int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	count := 0
+	for _, t := range m.tools {
+		if t.Tool().GetServiceId() == serviceID {
+			count++
+		}
+	}
+	return count
 }
 
 func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *testing.T) {

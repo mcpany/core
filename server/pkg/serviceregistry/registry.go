@@ -443,15 +443,9 @@ func (r *ServiceRegistry) injectRuntimeInfo(config *config.UpstreamServiceConfig
 	}
 
 	// Tool Count
-	// r.toolManager is thread-safe (xsync.Map based) so calling ListTools is safe.
-	// However, ListTools acquires its own locks.
-	tools := r.toolManager.ListTools()
-	count := 0
-	for _, t := range tools {
-		if t.Tool().GetServiceId() == key {
-			count++
-		}
-	}
+	// r.toolManager is thread-safe.
+	// ⚡ Bolt Optimization: Use O(1) lookup instead of O(N) iteration over all tools
+	count := r.toolManager.CountToolsForService(key)
 	//nolint:gosec // Tool count is unlikely to exceed int32 max
 	config.SetToolCount(int32(count))
 }

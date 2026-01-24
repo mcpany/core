@@ -47,6 +47,12 @@ func (m *hunterMockToolManager) ListServices() []*tool.ServiceInfo     { return 
 func (m *hunterMockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 func (m *hunterMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return nil, nil }
 func (m *hunterMockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *hunterMockToolManager) CountToolsForService(serviceID string) int { return 0 }
+func (m *hunterMockToolManager) IsServiceAllowed(serviceID, profileID string) bool       { return true }
+func (m *hunterMockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
+func (m *hunterMockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	return nil, false
+}
 
 func TestServiceRegistry_SecretsLeak(t *testing.T) {
 	f := &hunterMockFactory{}

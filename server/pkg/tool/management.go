@@ -119,6 +119,12 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
+	// CountToolsForService returns the number of tools registered for a given service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the count.
+	CountToolsForService(serviceID string) int
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -152,6 +158,7 @@ type Manager struct {
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
 	allowedServicesCache map[string]map[string]bool
+	serviceToolCounts    map[string]int
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -167,6 +174,7 @@ func NewManager(bus *bus.Provider) *Manager {
 		nameMap:              xsync.NewMap[string, string](),
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
 		allowedServicesCache: make(map[string]map[string]bool),
+		serviceToolCounts:    make(map[string]int),
 	}
 }
 
@@ -649,6 +657,13 @@ func (tm *Manager) AddTool(tool Tool) error {
 	toolID := tool.Tool().GetServiceId() + "." + sanitizedToolName
 	log := logging.GetLogger().With("toolID", toolID)
 	log.Debug("Adding tool to Manager")
+
+	// ⚡ Bolt Optimization: Maintain a count of tools per service for O(1) lookup in ListServices.
+	// tm.mu (Write Lock) is held here, ensuring exclusive access to tm.serviceToolCounts and serializing updates to tm.tools.
+	if _, exists := tm.tools.Load(toolID); !exists {
+		tm.serviceToolCounts[tool.Tool().GetServiceId()]++
+	}
+
 	tm.tools.Store(toolID, tool)
 
 	// Map client-facing name to internal ID
@@ -915,6 +930,9 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		return true
 	})
 
+	// ⚡ Bolt Optimization: Reset tool count for the service
+	delete(tm.serviceToolCounts, serviceID)
+
 	if deletedCount > 0 {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil
@@ -922,4 +940,15 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
+}
+
+// CountToolsForService returns the number of tools registered for a given service.
+//
+// serviceID is the serviceID.
+//
+// Returns the count.
+func (tm *Manager) CountToolsForService(serviceID string) int {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+	return tm.serviceToolCounts[serviceID]
 }
