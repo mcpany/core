@@ -37,6 +37,8 @@ func TestServiceRetry(t *testing.T) {
 
 	targetURL := fmt.Sprintf("http://127.0.0.2:%d/mcp", targetPort)
 
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
+
 	// 2. Start the Application with MockStorage
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
