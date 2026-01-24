@@ -173,7 +173,6 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 func TestManager_RecordActivity(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	m.RecordActivity("session-1", map[string]interface{}{
@@ -210,7 +209,6 @@ func TestManager_RecordActivity(t *testing.T) {
 func TestManager_GetStats(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	m.RecordActivity("session-1", nil, 100*time.Millisecond, false)
@@ -226,7 +224,6 @@ func TestManager_GetStats(t *testing.T) {
 func TestManager_GetGraph(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	// Add a service
@@ -290,7 +287,6 @@ func TestManager_GetGraph(t *testing.T) {
 func TestManager_Middleware(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	nextHandler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -335,7 +331,6 @@ func TestManager_GetGraph_InactiveService(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	mockTM.On("ListTools").Return([]tool.Tool{})
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	svcConfig := &configv1.UpstreamServiceConfig{
@@ -361,7 +356,6 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	mockTM.On("ListTools").Return([]tool.Tool{})
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	// Mock GetAllServices for GetGraph call
 	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{}, nil)
 
@@ -381,7 +375,6 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 func TestManager_GetTrafficHistory(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	// Record some activity
@@ -405,7 +398,6 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 func TestManager_SeedTrafficHistory(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 
 	points := []TrafficPoint{
@@ -430,31 +422,6 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	assert.Equal(t, int64(3), seedSession.ErrorCount)
 	// Total latency = (10 * 50) + (20 * 60) = 500 + 1200 = 1700
 	assert.Equal(t, 1700*time.Millisecond, seedSession.TotalLatency)
-}
-
-func TestManager_GetContextHistory(t *testing.T) {
-	mockRegistry := new(MockServiceRegistry)
-	mockTM := new(MockToolManager)
-
-	// Mock ListMCPTools
-	mockTool := &mcp.Tool{
-		Name:        "test-tool",
-		Description: "A test tool description that has some words",
-	}
-
-	mockTM.On("ListMCPTools").Return([]*mcp.Tool{mockTool})
-
-	m := NewManager(mockRegistry, mockTM)
-
-	// Manually trigger trackContextUsage as ticker might be slow
-	m.trackContextUsage()
-
-	history := m.GetContextHistory()
-	require.NotEmpty(t, history)
-
-	lastPoint := history[len(history)-1]
-	// Token count should be greater than 0
-	assert.Greater(t, lastPoint.Total, int64(0))
 }
 
 func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {

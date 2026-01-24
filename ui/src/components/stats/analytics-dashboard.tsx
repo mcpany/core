@@ -67,21 +67,18 @@ export function AnalyticsDashboard() {
     const [contextTotal, setContextTotal] = useState<number>(0);
     const [contextByService, setContextByService] = useState<any[]>([]);
     const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
-    const [contextHistory, setContextHistory] = useState<any[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
         const fetchDashboardData = async () => {
             try {
-                const [traffic, topTools, toolsResponse, contextHist] = await Promise.all([
+                const [traffic, topTools, toolsResponse] = await Promise.all([
                     apiClient.getDashboardTraffic(),
                     apiClient.getTopTools(),
-                    apiClient.listTools().catch(() => ({ tools: [] })),
-                    apiClient.getDashboardContextHistory().catch(() => [])
+                    apiClient.listTools().catch(() => ({ tools: [] }))
                 ]);
                 setTrafficData(traffic || []);
-                setContextHistory(contextHist || []);
 
                 // Format tool usage data
                 const formattedTools = (topTools || []).map((t: any, index: number) => ({
@@ -220,57 +217,6 @@ export function AnalyticsDashboard() {
                             </CardContent>
                         </Card>
                     </div>
-
-                    <Card className="col-span-4 lg:col-span-7">
-                        <CardHeader>
-                            <CardTitle>Total Tokens History</CardTitle>
-                            <CardDescription>
-                                System prompt overhead over time.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="pl-2">
-                            <div className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={contextHistory}>
-                                        <defs>
-                                            <linearGradient id="colorTokens" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <XAxis
-                                            dataKey="time"
-                                            stroke="hsl(var(--muted-foreground))"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                        />
-                                        <YAxis
-                                            stroke="hsl(var(--muted-foreground))"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                            tickFormatter={(value) => `${value}`}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
-                                            labelStyle={{ color: 'hsl(var(--foreground))' }}
-                                        />
-                                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} vertical={false} />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="requests"
-                                            name="Tokens"
-                                            stroke="hsl(var(--primary))"
-                                            fillOpacity={1}
-                                            fill="url(#colorTokens)"
-                                            isAnimationActive={false}
-                                        />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                         <Card className="col-span-4">

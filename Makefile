@@ -49,6 +49,7 @@ docker-build-all:
 
 update-screenshots:
 	$(MAKE) -C ui update-screenshots
+
 test-proto:
 	@echo "Running proto tests..."
 	@go test ./proto/...

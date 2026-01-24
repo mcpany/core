@@ -91,7 +91,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
 	mux.HandleFunc("/dashboard/tool-failures", a.handleDashboardToolFailures())
 	mux.HandleFunc("/dashboard/tool-usage", a.handleDashboardToolUsage())
-	mux.HandleFunc("/dashboard/context-history", a.handleDashboardContextHistory())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
