@@ -55,6 +55,12 @@ k8s-e2e:
 
 k8s-test: k8s-e2e
 
+update-screenshots:
+	@echo "Updating screenshots..."
+	# In a real environment, this would run a suite of Playwright tests to regenerate screenshots.
+	# For now, it's a placeholder or runs local verification scripts if present.
+	@if [ -f /home/jules/verification/verify_feature.py ]; then python /home/jules/verification/verify_feature.py; fi
+
 lint:
 	$(MAKE) -C server lint
 
