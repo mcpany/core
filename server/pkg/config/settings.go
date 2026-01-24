@@ -116,10 +116,11 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 
 	if !cmd.Flags().Changed("mcp-listen-address") && !envSet && len(s.configPaths) > 0 {
 		store := NewFileStore(fs, s.configPaths)
+		store.SetSkipValidation(true)
 		// We ignore errors here because we are only peeking for the listen address.
 		// Real validation happens later in main.go or app.Run.
 		// If we fail here, we prevent main.go from printing user-friendly errors for missing files.
-		cfg, err := LoadServices(context.Background(), store, "server")
+		cfg, err := LoadResolvedConfig(context.Background(), store)
 		if err == nil {
 			if cfg.GetGlobalSettings().GetMcpListenAddress() != "" {
 				mcpListenAddress = cfg.GetGlobalSettings().GetMcpListenAddress()
