@@ -69,6 +69,26 @@ func TestExtractIP(t *testing.T) {
 			input:    "127.0.0.1:3000",
 			expected: "127.0.0.1",
 		},
+		{
+			name:     "IPv6 with zone index",
+			input:    "fe80::1%eth0",
+			expected: "fe80::1",
+		},
+		{
+			name:     "Invalid IP string",
+			input:    "not-an-ip",
+			expected: "",
+		},
+		{
+			name:     "Empty string",
+			input:    "",
+			expected: "",
+		},
+		{
+			name:     "IP with extra spaces",
+			input:    " 192.168.1.1 ", // ParseIP handles trimming? No, ParseIP returns nil for spaces.
+			expected: "",            // net.ParseIP(" 192.168.1.1 ") returns nil
+		},
 	}
 
 	for _, tt := range tests {
@@ -87,6 +107,7 @@ func TestGetClientIP(t *testing.T) {
 		name       string
 		remoteAddr string
 		xff        string
+		xri        string
 		trustProxy bool
 		expected   string
 	}{
@@ -132,6 +153,37 @@ func TestGetClientIP(t *testing.T) {
 			trustProxy: true,
 			expected:   "5.6.7.8",
 		},
+		{
+			name:       "Trust Proxy, Invalid XFF, Fallback to RemoteAddr",
+			remoteAddr: "1.2.3.4:1234",
+			xff:        "invalid-ip",
+			trustProxy: true,
+			expected:   "1.2.3.4",
+		},
+		{
+			name:       "Trust Proxy, X-Real-IP takes precedence",
+			remoteAddr: "1.2.3.4:1234",
+			xff:        "5.6.7.8",
+			xri:        "9.9.9.9",
+			trustProxy: true,
+			expected:   "9.9.9.9",
+		},
+		{
+			name:       "Trust Proxy, Invalid X-Real-IP, Fallback to XFF",
+			remoteAddr: "1.2.3.4:1234",
+			xff:        "5.6.7.8",
+			xri:        "invalid-ip",
+			trustProxy: true,
+			expected:   "5.6.7.8",
+		},
+		{
+			name:       "Trust Proxy, Invalid X-Real-IP and XFF, Fallback to RemoteAddr",
+			remoteAddr: "1.2.3.4:1234",
+			xff:        "invalid-xff",
+			xri:        "invalid-xri",
+			trustProxy: true,
+			expected:   "1.2.3.4",
+		},
 	}
 
 	for _, tt := range tests {
@@ -140,6 +192,9 @@ func TestGetClientIP(t *testing.T) {
 			req.RemoteAddr = tt.remoteAddr
 			if tt.xff != "" {
 				req.Header.Set("X-Forwarded-For", tt.xff)
+			}
+			if tt.xri != "" {
+				req.Header.Set("X-Real-IP", tt.xri)
 			}
 
 			got := GetClientIP(req, tt.trustProxy)
