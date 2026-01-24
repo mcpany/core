@@ -91,7 +91,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: password with space",
 			input:    "postgres://user:pass word@localhost:5432/db",
-			expected: "postgres://user:[REDACTED] word@localhost:5432/db",
+			expected: "postgres://user:[REDACTED]@localhost:5432/db",
 		},
 		{
 			name:     "fallback: empty password",

@@ -46,3 +46,42 @@ func TestCheckService_Redaction_Redis_Bug(t *testing.T) {
 		t.Errorf("Expected redaction in error message, but got: %s", res.Message)
 	}
 }
+
+func TestCheckService_Redaction_Space_Bug(t *testing.T) {
+	// This test simulates the bug where RedactDSN failed to redact passwords with spaces
+	// when they cause URL parsing failures.
+
+	// Use a sensitive password with space
+	password := "pass word"
+	urlStr := "postgres://user:" + password + "@host:5432/db"
+
+	service := &configv1.UpstreamServiceConfig{
+		Name: stringPtr("test-postgres-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				// Using HttpService to trigger checkURL which calls http.NewRequest
+				// which fails (due to space) and calls RedactDSN(err.Error())
+				Address: stringPtr(urlStr),
+			},
+		},
+	}
+
+	res := CheckService(context.Background(), service)
+
+	t.Logf("Result Message: %s", res.Message)
+
+	// The message should NOT contain the password
+	if strings.Contains(res.Message, password) {
+		t.Errorf("Security leak! Error message contains full password: %s", res.Message)
+	}
+
+	// Check partial leak (old bug behavior: "user:[REDACTED] word@host")
+	if strings.Contains(res.Message, " word@") {
+		t.Errorf("Security leak! Error message contains partial password leak: %s", res.Message)
+	}
+
+	// The message SHOULD contain [REDACTED]
+	if !strings.Contains(res.Message, "[REDACTED]") {
+		t.Errorf("Expected redaction in error message, but got: %s", res.Message)
+	}
+}
