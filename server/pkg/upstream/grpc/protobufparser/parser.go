@@ -82,6 +82,13 @@ func (f *McpField) GetType() string {
 	return f.Type
 }
 
+// GetIsRepeated returns true if the McpField is a repeated field.
+//
+// Returns the result.
+func (f *McpField) GetIsRepeated() bool {
+	return f.IsRepeated
+}
+
 // ParseProtoFromDefs parses a set of protobuf definitions from a slice of
 // ProtoDefinition and a ProtoCollection. It writes the proto files to a
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
@@ -141,7 +148,11 @@ func ParseProtoFromDefs(
 	// Since tempDir is our import path, we need to get the base names of the files.
 	relativeFiles := make([]string, len(protoFiles))
 	for i, p := range protoFiles {
-		relativeFiles[i] = filepath.Base(p)
+		rel, err := filepath.Rel(tempDir, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get relative path for %s: %w", p, err)
+		}
+		relativeFiles[i] = rel
 	}
 
 	fileDescriptors, err := parser.ParseFiles(relativeFiles...)
