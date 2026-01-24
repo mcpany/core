@@ -25,6 +25,7 @@ Key columns:
 - **Type**: Protocol (HTTP, gRPC, MCP, CMD).
 - **Status**: Health indicator (Healthy, Degraded, Unhealthy).
 - **Control**: Toggle switch to quickly enable/disable traffic.
+- **Actions**: "View Logs" to jump directly to the live logs for a specific service.
 
 ### 2. Add New Service
 
