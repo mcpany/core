@@ -273,4 +273,3 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 
 	return getTools(prov, fs, fsService.GetReadOnly(), fsService.RootPaths)
 }
-

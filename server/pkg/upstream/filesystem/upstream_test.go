@@ -752,7 +752,8 @@ func TestFilesystemUpstream_UnavailablePath(t *testing.T) {
 	})
 	assert.Error(t, err, "Writing to invalid path should fail")
 
-	// 3. Verify list_allowed_directories does NOT show the invalid path
+	// 3. Verify list_allowed_directories DOES show the invalid path (but it fails on access)
+	// We want to preserve configuration even if the path is currently missing.
 	listRootsTool := findTool("list_allowed_directories")
 	require.NotNil(t, listRootsTool)
 
@@ -765,5 +766,5 @@ func TestFilesystemUpstream_UnavailablePath(t *testing.T) {
 	roots := resMap["roots"].([]string)
 
 	assert.Contains(t, roots, "/valid", "Valid path should be present")
-	assert.NotContains(t, roots, "/invalid", "Invalid path should be removed")
+	assert.Contains(t, roots, "/invalid", "Invalid path should be preserved")
 }
