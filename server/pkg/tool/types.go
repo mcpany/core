@@ -2455,13 +2455,14 @@ func cleanPathPreserveDoubleSlash(p string) string {
 	// We use a heuristic to check if we need complex processing.
 	if strings.Contains(p, "/.") || strings.HasPrefix(p, ".") {
 		needsComplex := false
-		if p == "." || p == ".." {
+		switch {
+		case p == "." || p == "..":
 			needsComplex = true
-		} else if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
+		case strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../"):
 			needsComplex = true
-		} else if strings.Contains(p, "/./") || strings.Contains(p, "/../") {
+		case strings.Contains(p, "/./") || strings.Contains(p, "/../"):
 			needsComplex = true
-		} else if strings.HasSuffix(p, "/.") || strings.HasSuffix(p, "/..") {
+		case strings.HasSuffix(p, "/.") || strings.HasSuffix(p, "/.."):
 			needsComplex = true
 		}
 
