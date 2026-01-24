@@ -53,6 +53,17 @@ export interface ExternalServer {
   config: UpstreamServiceConfig; // Mapped to our config format
 }
 
+/**
+ * A server discovered from the Community (Awesome List).
+ */
+export interface CommunityServer {
+    category: string;
+    name: string;
+    url: string;
+    description: string;
+    tags: string[];
+}
+
 // Mock Data for "Official" Collections until we have the repo up
 const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
   {
@@ -187,6 +198,68 @@ export const marketplaceService = {
         ];
     }
     return [];
+  },
+
+  /**
+   * Fetches and parses the Awesome MCP Servers list from GitHub.
+   * @returns A promise that resolves to a list of CommunityServer objects.
+   */
+  fetchCommunityServers: async (): Promise<CommunityServer[]> => {
+      try {
+          const response = await fetch('https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md');
+          if (!response.ok) throw new Error('Failed to fetch Awesome list');
+          const markdown = await response.text();
+
+          const servers: CommunityServer[] = [];
+          const lines = markdown.split('\n');
+          let currentCategory = "Uncategorized";
+
+          // Regex to match: * [Name](URL) Tags - Description OR - [Name](URL) Tags - Description
+          const itemRegex = /^\s*[\-\*]\s+\[([^\]]+)\]\(([^)]+)\)\s*(.*?)\s*-\s*(.*)$/;
+
+          // Regex to match category headers (e.g., "## 📂 File Systems") or "📂 File Systems" inside a list if structured differently
+          // The structure seems to be:
+          // * 📂 - [Browser Automation](#-browser-automation)
+          // ...
+          // ## 📂 Browser Automation
+
+          for (const line of lines) {
+              if (line.startsWith('## ') || line.startsWith('### ')) {
+                  // Clean up header to get category name
+                  currentCategory = line.replace(/^#+\s*/, '').trim();
+                  // Remove links in headers if any
+                  currentCategory = currentCategory.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+                  continue;
+              }
+
+              const match = line.match(itemRegex);
+              if (match) {
+                  const name = match[1].trim();
+                  const url = match[2].trim();
+                  const tagsRaw = match[3].trim();
+                  const description = match[4].trim();
+
+                  // Extract emojis as tags
+                  // Simple heuristic: split by space, keep if it's emoji-like or short code
+                  const tags = tagsRaw.split(/\s+/).filter(t => t.length > 0);
+
+                  // Filter out "TOC" items which might look like servers but point to anchors
+                  if (url.startsWith('#')) continue;
+
+                  servers.push({
+                      category: currentCategory,
+                      name,
+                      url,
+                      description,
+                      tags
+                  });
+              }
+          }
+          return servers;
+      } catch (error) {
+          console.error("Error fetching community servers:", error);
+          return [];
+      }
   },
 
 
