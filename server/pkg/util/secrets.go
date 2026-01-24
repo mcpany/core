@@ -77,6 +77,9 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		return strings.TrimSpace(secret.GetPlainText()), nil
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
+		if !IsEnvVarAllowed(envVar) {
+			return "", fmt.Errorf("access to environment variable %q is restricted", envVar)
+		}
 		value, ok := os.LookupEnv(envVar)
 		if !ok {
 			return "", fmt.Errorf("environment variable %q is not set", envVar)

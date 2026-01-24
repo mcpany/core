@@ -379,6 +379,15 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		defaultValue = parts[1]
 	}
 
+	if !util.IsEnvVarAllowed(varName) {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
+		// Write the original string to preserve structure
+		buf.Write(b[startIdx : j+1])
+		return j + 1 - startIdx
+	}
+
 	val, ok := os.LookupEnv(varName)
 	if !ok && !hasDefault {
 		*missingCount++
@@ -427,6 +436,15 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	}
 
 	varName := string(b[startIdx+1 : j])
+	if !util.IsEnvVarAllowed(varName) {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
+		// Write the original string to preserve structure
+		buf.Write(b[startIdx : j])
+		return j - startIdx
+	}
+
 	val, ok := os.LookupEnv(varName)
 	if !ok {
 		*missingCount++
