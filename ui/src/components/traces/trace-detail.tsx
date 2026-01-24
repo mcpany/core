@@ -247,7 +247,8 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
         // But with `requestHeaders` now available, we can do better.
 
         const method = trace.rootSpan.name.split(' ')[0] || 'POST';
-        const url = trace.rootSpan.name.split(' ')[1] || '/'; // Just path usually
+        const urlPath = trace.rootSpan.name.split(' ')[1] || '/';
+        const url = typeof window !== 'undefined' ? `${window.location.origin}${urlPath}` : urlPath;
 
         let curl = `curl -X ${method} "${url}"`;
 
