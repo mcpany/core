@@ -12,6 +12,7 @@ package prompt
 import (
 	reflect "reflect"
 
+	mcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -135,6 +136,24 @@ func (m *MockManagerInterface) ListPrompts() []Prompt {
 func (mr *MockManagerInterfaceMockRecorder) ListPrompts() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPrompts", reflect.TypeOf((*MockManagerInterface)(nil).ListPrompts))
+}
+
+// ListMCPPrompts mocks base method.
+//
+// Returns the result.
+func (m *MockManagerInterface) ListMCPPrompts() []*mcp.Prompt {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMCPPrompts")
+	ret0, _ := ret[0].([]*mcp.Prompt)
+	return ret0
+}
+
+// ListMCPPrompts indicates an expected call of ListMCPPrompts.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) ListMCPPrompts() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPPrompts", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPPrompts))
 }
 
 // SetMCPServer mocks base method.

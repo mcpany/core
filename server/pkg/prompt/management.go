@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
@@ -33,6 +34,10 @@ type ManagerInterface interface {
 	//
 	// Returns the result.
 	ListPrompts() []Prompt
+	// ListMCPPrompts returns all registered prompts in MCP format.
+	//
+	// Returns the result.
+	ListMCPPrompts() []*mcp.Prompt
 	// ClearPromptsForService removes all prompts associated with a service.
 	//
 	// serviceID is the serviceID.
@@ -45,10 +50,11 @@ type ManagerInterface interface {
 
 // Manager is a thread-safe manager for registering and retrieving prompts.
 type Manager struct {
-	prompts       *xsync.Map[string, Prompt]
-	mcpServer     MCPServerProvider
-	mu            sync.RWMutex
-	cachedPrompts []Prompt
+	prompts          *xsync.Map[string, Prompt]
+	mcpServer        MCPServerProvider
+	mu               sync.RWMutex
+	cachedPrompts    []Prompt
+	cachedMCPPrompts []*mcp.Prompt
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -82,6 +88,7 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 	}
 	pm.mu.Lock()
 	pm.cachedPrompts = nil
+	pm.cachedMCPPrompts = nil
 	pm.mu.Unlock()
 }
 
@@ -91,6 +98,7 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
 	pm.cachedPrompts = nil
+	pm.cachedMCPPrompts = nil
 	pm.mu.Unlock()
 }
 
@@ -146,6 +154,43 @@ func (pm *Manager) ListPrompts() []Prompt {
 	return result
 }
 
+// ListMCPPrompts returns a slice containing all the prompts currently registered in MCP format.
+func (pm *Manager) ListMCPPrompts() []*mcp.Prompt {
+	pm.mu.RLock()
+	if pm.cachedMCPPrompts != nil {
+		defer pm.mu.RUnlock()
+		return pm.cachedMCPPrompts
+	}
+	pm.mu.RUnlock()
+
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	if pm.cachedMCPPrompts != nil {
+		return pm.cachedMCPPrompts
+	}
+
+	// Ensure cachedPrompts is populated
+	if pm.cachedPrompts == nil {
+		prompts := make([]Prompt, 0)
+		pm.prompts.Range(func(_ string, value Prompt) bool {
+			prompts = append(prompts, value)
+			return true
+		})
+		pm.cachedPrompts = prompts
+	}
+
+	mcpPrompts := make([]*mcp.Prompt, 0, len(pm.cachedPrompts))
+	for _, p := range pm.cachedPrompts {
+		if prompt := p.Prompt(); prompt != nil {
+			mcpPrompts = append(mcpPrompts, prompt)
+		}
+	}
+	pm.cachedMCPPrompts = mcpPrompts
+
+	return mcpPrompts
+}
+
 // ClearPromptsForService removes all prompts associated with a given service.
 //
 // serviceID is the serviceID.
@@ -162,6 +207,7 @@ func (pm *Manager) ClearPromptsForService(serviceID string) {
 	if changed {
 		pm.mu.Lock()
 		pm.cachedPrompts = nil
+		pm.cachedMCPPrompts = nil
 		pm.mu.Unlock()
 	}
 }

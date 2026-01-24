@@ -74,6 +74,14 @@ func (m *mockResourceManager) OnListChanged(f func())    {}
 func (m *mockResourceManager) ClearResourcesForService(_ string) {
 }
 
+func (m *mockResourceManager) ListMCPResources() []*mcp.Resource {
+	res := make([]*mcp.Resource, len(m.resources))
+	for i, r := range m.resources {
+		res[i] = r.Resource()
+	}
+	return res
+}
+
 type mockPrompt struct {
 	p       *mcp.Prompt
 	service string
@@ -119,6 +127,14 @@ func (m *mockPromptManager) UpdatePrompt(p prompt.Prompt) {
 func (m *mockPromptManager) RemovePrompt(_ string) {}
 func (m *mockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 func (m *mockPromptManager) ClearPromptsForService(_ string) {}
+
+func (m *mockPromptManager) ListMCPPrompts() []*mcp.Prompt {
+	prompts := make([]*mcp.Prompt, len(m.prompts))
+	for i, p := range m.prompts {
+		prompts[i] = p.Prompt()
+	}
+	return prompts
+}
 
 
 // reuse smartToolManager concept for GetServiceInfo

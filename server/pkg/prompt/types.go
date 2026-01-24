@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sort"
+	"sync"
 
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
@@ -51,8 +52,10 @@ type MCPServerProvider interface {
 // TemplatedPrompt implements the Prompt interface for a prompt that is defined
 // by a template.
 type TemplatedPrompt struct {
-	definition *configv1.PromptDefinition
-	serviceID  string
+	definition    *configv1.PromptDefinition
+	serviceID     string
+	mcpPrompt     *mcp.Prompt
+	mcpPromptOnce sync.Once
 }
 
 // NewTemplatedPrompt creates a new TemplatedPrompt.
@@ -72,56 +75,59 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 //
 // Returns the result.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
-	args := make([]*mcp.PromptArgument, 0)
-	if p.definition.GetInputSchema() != nil {
-		fields := p.definition.GetInputSchema().GetFields()
-		if props, ok := fields["properties"]; ok {
-			if propsStruct := props.GetStructValue(); propsStruct != nil {
-				// Collect keys to sort them for deterministic order
-				keys := make([]string, 0, len(propsStruct.GetFields()))
-				for k := range propsStruct.GetFields() {
-					keys = append(keys, k)
-				}
-				sort.Strings(keys)
-
-				for _, name := range keys {
-					val := propsStruct.GetFields()[name]
-					desc := ""
-					if valStruct := val.GetStructValue(); valStruct != nil {
-						if d, ok := valStruct.GetFields()["description"]; ok {
-							desc = d.GetStringValue()
-						}
+	p.mcpPromptOnce.Do(func() {
+		args := make([]*mcp.PromptArgument, 0)
+		if p.definition.GetInputSchema() != nil {
+			fields := p.definition.GetInputSchema().GetFields()
+			if props, ok := fields["properties"]; ok {
+				if propsStruct := props.GetStructValue(); propsStruct != nil {
+					// Collect keys to sort them for deterministic order
+					keys := make([]string, 0, len(propsStruct.GetFields()))
+					for k := range propsStruct.GetFields() {
+						keys = append(keys, k)
 					}
+					sort.Strings(keys)
 
-					required := false
-					if req, ok := fields["required"]; ok {
-						if reqList := req.GetListValue(); reqList != nil {
-							for _, v := range reqList.GetValues() {
-								if v.GetStringValue() == name {
-									required = true
-									break
+					for _, name := range keys {
+						val := propsStruct.GetFields()[name]
+						desc := ""
+						if valStruct := val.GetStructValue(); valStruct != nil {
+							if d, ok := valStruct.GetFields()["description"]; ok {
+								desc = d.GetStringValue()
+							}
+						}
+
+						required := false
+						if req, ok := fields["required"]; ok {
+							if reqList := req.GetListValue(); reqList != nil {
+								for _, v := range reqList.GetValues() {
+									if v.GetStringValue() == name {
+										required = true
+										break
+									}
 								}
 							}
 						}
-					}
 
-					args = append(args, &mcp.PromptArgument{
-						Name:        name,
-						Description: desc,
-						Required:    required,
-					})
+						args = append(args, &mcp.PromptArgument{
+							Name:        name,
+							Description: desc,
+							Required:    required,
+						})
+					}
 				}
 			}
 		}
-	}
-	sanitizedName, _ := util.SanitizeToolName(p.definition.GetName())
+		sanitizedName, _ := util.SanitizeToolName(p.definition.GetName())
 
-	return &mcp.Prompt{
-		Name:        p.serviceID + "." + sanitizedName,
-		Title:       p.definition.GetTitle(),
-		Description: p.definition.GetDescription(),
-		Arguments:   args,
-	}
+		p.mcpPrompt = &mcp.Prompt{
+			Name:        p.serviceID + "." + sanitizedName,
+			Title:       p.definition.GetTitle(),
+			Description: p.definition.GetDescription(),
+			Arguments:   args,
+		}
+	})
+	return p.mcpPrompt
 }
 
 // Service returns the ID of the service that provides this prompt.
