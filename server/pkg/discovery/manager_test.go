@@ -68,6 +68,40 @@ func TestManager_Run(t *testing.T) {
 	assert.WithinDuration(t, time.Now(), status2.LastRunAt, time.Second)
 }
 
+func TestManager_GetStatuses(t *testing.T) {
+	manager := NewManager()
+
+	// Register providers
+	p1 := &MockProvider{name: "p1", services: []*configv1.UpstreamServiceConfig{{Name: pointer("s1")}}}
+	manager.RegisterProvider(p1)
+
+	p2 := &MockProvider{name: "p2", err: errors.New("failed")}
+	manager.RegisterProvider(p2)
+
+	// Run discovery
+	manager.Run(context.Background())
+
+	// Get statuses
+	statuses := manager.GetStatuses()
+	assert.Len(t, statuses, 2)
+
+	// Verify we have statuses for both
+	statusMap := make(map[string]*ProviderStatus)
+	for _, s := range statuses {
+		statusMap[s.Name] = s
+	}
+
+	s1, ok := statusMap["p1"]
+	assert.True(t, ok)
+	assert.Equal(t, "OK", s1.Status)
+	assert.Equal(t, 1, s1.DiscoveredCount)
+
+	s2, ok := statusMap["p2"]
+	assert.True(t, ok)
+	assert.Equal(t, "ERROR", s2.Status)
+	assert.Equal(t, "failed", s2.LastError)
+}
+
 func pointer(s string) *string {
 	return &s
 }
