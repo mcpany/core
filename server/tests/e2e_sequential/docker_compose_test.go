@@ -561,7 +561,7 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	})
 
 	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
-	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
+	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true\n      - MCPANY_ADMIN_INIT_PASSWORD=changeit", 1)
 
 	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
 	// We assume typical docker-compose indentation of services/environment.
