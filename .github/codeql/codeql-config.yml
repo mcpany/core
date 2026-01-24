@@ -1,0 +1,1 @@
+paths-ignore:\n  - proto/\n  - server/pkg/upstream/mcp/proto/
