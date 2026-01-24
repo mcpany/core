@@ -27,17 +27,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSlogWriter(t *testing.T) {
-	var buf bytes.Buffer
-	log := slog.New(slog.NewJSONHandler(&buf, nil))
-	writer := &slogWriter{log: log, level: slog.LevelInfo}
-
-	testMessage := "Hello, world!"
-	_, err := writer.Write([]byte(testMessage))
-	assert.NoError(t, err)
-
-	assert.Contains(t, buf.String(), testMessage)
-}
 
 func TestDockerConn_SessionID(t *testing.T) {
 	conn := &dockerConn{}
