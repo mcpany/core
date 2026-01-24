@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,32 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
   const [execHistory, setExecHistory] = useState<{ time: string; latency: number; status: string }[]>([]);
+
+  useEffect(() => {
+    if (tool && open) {
+      const fetchHistory = async () => {
+        try {
+          const res = await apiClient.listAuditLogs({
+            tool_name: tool.name,
+            limit: 50
+          });
+          if (res.entries) {
+            const history = res.entries.map((e: any) => ({
+              time: new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+              latency: e.durationMs ? Number(e.durationMs) : 0,
+              status: e.error ? "error" : "success"
+            })).reverse();
+            setExecHistory(history);
+          } else {
+             setExecHistory([]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch tool history:", error);
+        }
+      };
+      fetchHistory();
+    }
+  }, [tool, open]);
 
   const stats = useMemo(() => {
     const total = execHistory.length;
