@@ -456,7 +456,7 @@ var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?
 // We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
 // the path or subsequent text (e.g. multiple DSNs).
 // Matches scheme://user:password@
-var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^/?#\s]*)@`)
+var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).
@@ -510,7 +510,7 @@ func RedactDSN(dsn string) string {
 	// (e.g. containing colons or @) but assumes a single DSN string.
 	if strings.Contains(dsn, "://") {
 		// Use greedy match to handle special characters in password
-		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@$3$4")
 
 		// Fallback for cases without '@' (e.g. redis://:password where url.Parse fails due to invalid port)
 		if dsnFallbackNoAtRegex.MatchString(dsn) {
