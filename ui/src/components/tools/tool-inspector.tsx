@@ -17,7 +17,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, Y
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SchemaViewer } from "./schema-viewer";
+import { SchemaViewer, Schema } from "./schema-viewer";
 
 import { Switch } from "@/components/ui/switch";
 
@@ -25,6 +25,12 @@ interface ToolInspectorProps {
   tool: ToolDefinition | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+interface AuditLogEntry {
+  timestamp: string;
+  durationMs?: number;
+  error?: string;
 }
 
 /**
@@ -44,19 +50,20 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       if (open && tool) {
           setLoadingHistory(true);
           apiClient.listAuditLogs({ tool_name: tool.name, limit: 50 })
-              .then((res: any) => {
-                  const entries = res.entries || [];
+              .then((res: unknown) => {
+                  const data = res as { entries: AuditLogEntry[] };
+                  const entries = data.entries || [];
                   // Sort by timestamp ascending
-                  entries.sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+                  entries.sort((a: AuditLogEntry, b: AuditLogEntry) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-                  const history = entries.map((e: any) => ({
+                  const history = entries.map((e: AuditLogEntry) => ({
                       time: new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
                       latency: e.durationMs || 0,
                       status: e.error ? "error" : "success"
                   }));
                   setExecHistory(history);
               })
-              .catch(err => console.error("Failed to load history", err))
+              .catch((err: unknown) => console.error("Failed to load history", err))
               .finally(() => setLoadingHistory(false));
       } else if (!open) {
           setExecHistory([]);
@@ -138,7 +145,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                       </TabsList>
                       <TabsContent value="visual" className="mt-2">
                          <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/20">
-                            <SchemaViewer schema={tool.inputSchema as any} />
+                            <SchemaViewer schema={tool.inputSchema as unknown as Schema} />
                          </ScrollArea>
                       </TabsContent>
                       <TabsContent value="json" className="mt-2">
