@@ -18,6 +18,7 @@ import {
   Key,
   Database,
   User,
+  Users,
   ChevronsUpDown,
   LogOut,
   Layers,
@@ -148,10 +149,15 @@ const configItems = [
     icon: Server,
   },
   {
+    title: "Profiles",
+    url: "/profiles",
+    icon: User,
+  },
+  {
     title: "Users",
 
     url: "/users",
-    icon: User,
+    icon: Users,
   },
   {
     title: "Credentials",

@@ -429,6 +429,18 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'skills_create.png'), fullPage: true });
   });
 
+  test('Profiles Screenshots', async ({ page }) => {
+      await page.goto('/profiles');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_page.png'), fullPage: true });
+
+      // Open Editor (Create)
+      await page.getByRole('button', { name: 'Create Profile' }).click();
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profile_editor.png') });
+  });
+
   test('Settings Screenshots', async ({ page }) => {
       await page.goto('/settings');
       await page.waitForTimeout(1000);
