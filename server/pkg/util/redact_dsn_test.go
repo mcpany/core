@@ -138,6 +138,16 @@ func TestRedactDSN(t *testing.T) {
 			input:    "postgres://user:password@host:invalidport/db?email=foo@bar.com",
 			expected: "postgres://user:[REDACTED]@host:invalidport/db?email=foo@bar.com",
 		},
+		{
+			name:     "fallback: schemeless with slash in password",
+			input:    "user:pass/word@host",
+			expected: "user:[REDACTED]@host",
+		},
+		{
+			name:     "no match: http path with @ in fragment",
+			input:    "http://host:80/path@foo",
+			expected: "http://host:80/path@foo",
+		},
 	}
 
 	for _, tt := range tests {

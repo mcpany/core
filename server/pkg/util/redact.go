@@ -452,6 +452,11 @@ func isKeyColon(input []byte, endOffset int) bool {
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
 var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?#\s]*|)(@)`)
 
+// dsnSchemelessPasswordRegex is a relaxed version of dsnPasswordRegex for schemeless DSNs (no ://).
+// It allows / in the password body because there is no risk of confusing it with a URL path (since no scheme).
+// It still prevents starting with // to be safe.
+var dsnSchemelessPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^?#\s]*|/[^/?#@\s][^?#\s]*|)(@)`)
+
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
 // the path or subsequent text (e.g. multiple DSNs).
@@ -499,6 +504,14 @@ func RedactDSN(dsn string) string {
 		if strings.EqualFold(u.Scheme, "mailto") {
 			return dsn
 		}
+
+		// If Opaque is empty, it's a standard URL structure (scheme://host/path) without userinfo (since u.User is nil).
+		// This protects valid URLs like http://host:80/path@foo from being falsely matched by fallback regexes.
+		// However, we only do this if the DSN has "://", because schemeless DSNs like "user:/pass@host"
+		// also have empty Opaque (parsed as path) but should be redacted.
+		if u.Opaque == "" && strings.Contains(dsn, "://") {
+			return dsn
+		}
 	}
 
 	// Fallback to regex if parsing fails (e.g. not a valid URL)
@@ -508,7 +521,8 @@ func RedactDSN(dsn string) string {
 
 	// If the DSN has a scheme, use the scheme-aware regex which is more robust for complex passwords
 	// (e.g. containing colons or @) but assumes a single DSN string.
-	if strings.Contains(dsn, "://") {
+	hasScheme := strings.Contains(dsn, "://")
+	if hasScheme {
 		// Use greedy match to handle special characters in password
 		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@$3$4")
 
@@ -544,7 +558,10 @@ func RedactDSN(dsn string) string {
 	// Handle Go url.Parse error leak "invalid port"
 	dsn = dsnInvalidPortRegex.ReplaceAllString(dsn, "invalid port \":"+redactedPlaceholder+"\"")
 
-	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
+	if hasScheme {
+		return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
+	}
+	return dsnSchemelessPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
