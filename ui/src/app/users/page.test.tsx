@@ -7,7 +7,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import UsersPage from './page';
 import { apiClient } from '@/lib/client';
-import { vi } from 'vitest';
+import { vi, Mock } from 'vitest';
 
 // Mock apiClient
 vi.mock('@/lib/client', () => ({
@@ -40,7 +40,7 @@ describe('UsersPage', () => {
   });
 
   it('renders users list', async () => {
-    (apiClient.listUsers as any).mockResolvedValue([
+    (apiClient.listUsers as Mock).mockResolvedValue([
       { id: 'testuser', roles: ['admin'] }
     ]);
 
@@ -52,7 +52,7 @@ describe('UsersPage', () => {
   });
 
   it('opens add user dialog', async () => {
-    (apiClient.listUsers as any).mockResolvedValue([]);
+    (apiClient.listUsers as Mock).mockResolvedValue([]);
     render(<UsersPage />);
 
     const addButton = screen.getByText('Add User');
@@ -65,8 +65,8 @@ describe('UsersPage', () => {
 
   it('generates api key', async () => {
     const user = { id: 'testuser', roles: ['admin'], authentication: { api_key: { key_value: 'old' } } };
-    (apiClient.listUsers as any).mockResolvedValue([user]);
-    (apiClient.updateUser as any).mockResolvedValue({});
+    (apiClient.listUsers as Mock).mockResolvedValue([user]);
+    (apiClient.updateUser as Mock).mockResolvedValue({});
 
     render(<UsersPage />);
 
