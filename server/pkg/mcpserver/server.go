@@ -558,27 +558,24 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, []metrics.Label{
+	// ⚡ Bolt Optimization: Reuse metric labels to avoid multiple allocations per call.
+	metricLabels := []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
-	})
+	}
+	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, metricLabels)
+
 	startTime := time.Now()
 	defer func() {
 		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
 		// MeasureSince emits in milliseconds.
 		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels(metricToolsCallLatency, duration, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
+		metrics.AddSampleWithLabels(metricToolsCallLatency, duration, metricLabels)
 	}()
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
+		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, metricLabels)
 	}
 	if logger.Enabled(ctx, slog.LevelInfo) {
 		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
