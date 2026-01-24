@@ -35,7 +35,18 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
       setIsLoading(true);
       setError(null);
       try {
-        const { service: serviceDetails } = await apiClient.getService(serviceId);
+        // ⚡ Bolt Optimization: Fetch service details and status (metrics) in parallel
+        // This removes the waterfall where we waited for service details before fetching metrics.
+        const [serviceRes, statusRes] = await Promise.allSettled([
+          apiClient.getService(serviceId),
+          apiClient.getServiceStatus(serviceId)
+        ]);
+
+        if (serviceRes.status === 'rejected') {
+          throw serviceRes.reason;
+        }
+
+        const { service: serviceDetails } = serviceRes.value;
         setService(serviceDetails || null);
 
         if (!serviceDetails) {
@@ -50,8 +61,13 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
 
         if (foundTool) {
           setTool(foundTool);
-          const statusRes = await apiClient.getServiceStatus(serviceId);
-          setMetrics(statusRes.metrics);
+
+          // Only set metrics if the status fetch succeeded
+          if (statusRes.status === 'fulfilled') {
+             setMetrics(statusRes.value.metrics);
+          } else {
+             console.warn("Failed to fetch service metrics", statusRes.reason);
+          }
         } else {
           throw new Error(`Tool "${toolName}" not found in service "${serviceDetails.name}".`);
         }
