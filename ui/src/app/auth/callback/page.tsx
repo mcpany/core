@@ -79,6 +79,7 @@ function OAuthCallbackContent() {
                 sessionStorage.removeItem('oauth_return_path');
 
             } catch (e: any) {
+                console.error("OAuth Callback Error:", e);
                 setStatus('error');
                 setErrorMessage(e.message || 'Failed to complete authentication.');
             }
