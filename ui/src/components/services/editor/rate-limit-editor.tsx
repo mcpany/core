@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { RateLimitConfig, RateLimitConfig_Storage, RateLimitConfig_KeyBy } from "@proto/config/v1/profile";
+import Long from "long";
 
 interface RateLimitEditorProps {
     config?: RateLimitConfig;
@@ -23,7 +24,7 @@ export function RateLimitEditor({ config, onChange }: RateLimitEditorProps) {
     const safeConfig: RateLimitConfig = config || {
         isEnabled: false,
         requestsPerSecond: 0,
-        burst: 0 as any, // Cast to any to handle Long type mismatch
+        burst: Long.fromInt(0),
         storage: RateLimitConfig_Storage.STORAGE_MEMORY,
         keyBy: RateLimitConfig_KeyBy.KEY_BY_GLOBAL,
         redis: undefined,
@@ -70,7 +71,7 @@ export function RateLimitEditor({ config, onChange }: RateLimitEditorProps) {
                                 type="number"
                                 min="0"
                                 value={safeConfig.burst?.toString() || "0"}
-                                onChange={(e) => update({ burst: parseInt(e.target.value) as any })}
+                                onChange={(e) => update({ burst: Long.fromInt(parseInt(e.target.value) || 0) })}
                             />
                         </div>
                     </div>

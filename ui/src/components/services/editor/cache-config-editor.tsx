@@ -80,6 +80,9 @@ export function CacheConfigEditor({ config, onChange }: CacheConfigEditorProps) 
             };
         }
 
+        // Reset legacy provider field if needed by backend, though we focus on oneof
+        // (No action needed as oneof fields are handled above)
+
         update({ semanticConfig: newConfig });
     };
 
@@ -180,7 +183,7 @@ export function CacheConfigEditor({ config, onChange }: CacheConfigEditorProps) 
                                             <Label>API Key</Label>
                                             <Input
                                                 type="password"
-                                                value={safeConfig.semanticConfig.openai?.apiKey?.plainText || ""}
+                                                value={(safeConfig.semanticConfig.openai?.apiKey as any)?.plainText || ""}
                                                 onChange={(e) => {
                                                     const openai = safeConfig.semanticConfig!.openai || { model: "", apiKey: {} as any };
                                                     updateSemantic({ openai: { ...openai, apiKey: { plainText: e.target.value } as any } });

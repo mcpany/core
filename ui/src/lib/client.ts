@@ -21,9 +21,10 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 
 /**
+/**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount' | 'readOnly' | 'configError'> {
     /**
      * The last error message encountered by the service, if any.
      */
@@ -32,6 +33,14 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * If true, this service configuration is read-only.
+     */
+    readOnly?: boolean;
+    /**
+     * Configuration error message.
+     */
+    configError?: string;
 }
 
 // Re-export generated types
