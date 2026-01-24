@@ -571,3 +571,20 @@ func RedactSecrets(text string, secrets []string) string {
 	}
 	return text
 }
+
+// RedactURL redacts sensitive query parameters from a URL string.
+func RedactURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return rawURL
+	}
+
+	q := u.Query()
+	for k := range q {
+		if IsSensitiveKey(k) {
+			q.Set(k, redactedPlaceholder)
+		}
+	}
+	u.RawQuery = q.Encode()
+	return u.String()
+}
