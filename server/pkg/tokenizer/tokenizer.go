@@ -821,7 +821,7 @@ func tokenCountFloatInt(n int64) int {
 	}
 
 	// 4. Calculate Length
-	baseLen := 0
+	var baseLen int
 	if sigDigits == 1 {
 		baseLen = 1
 	} else {
