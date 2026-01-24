@@ -26,6 +26,8 @@ func TestIsShellCommand_ExtendedList(t *testing.T) {
 		{"xargs", true},
 		{"make", true},
 		{"npm", true},
+		{"npx", true},
+		{"bunx", true},
 		{"go", true},
 		{"cargo", true},
 		{"pip", true},
