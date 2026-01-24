@@ -2621,6 +2621,16 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	// Unquoted (or unknown quoting): strict check
+	// If the command is NOT a strict shell (e.g., it is an interpreter like python, node, etc.),
+	// and since we execute commands directly via execve (not via a shell),
+	// unquoted arguments are passed as-is to the process.
+	// Therefore, strict shell character blocking is unnecessary and harmful to usability
+	// (e.g. blocking semicolons or quotes in data arguments).
+	// We only need to enforce this strict check for actual shells.
+	if !isStrictShell(command) {
+		return nil
+	}
+
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
@@ -2637,6 +2647,33 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
 	return nil
+}
+
+func isStrictShell(cmd string) bool {
+	// Strictly actual shells where arguments are interpreted as shell code,
+	// or programs known to execute commands from arguments (editors, pagers, etc).
+	shells := []string{
+		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
+		"ssh", "scp", "su", "sudo", "env",
+		"busybox", "expect",
+		// Editors and pagers that can execute commands via arguments (e.g. vim +!cmd)
+		"vi", "vim", "nvim", "emacs", "nano",
+		"less", "more", "man",
+	}
+	base := filepath.Base(cmd)
+	for _, shell := range shells {
+		if base == shell {
+			return true
+		}
+		if strings.HasPrefix(base, shell) {
+			suffix := base[len(shell):]
+			if isVersionSuffix(suffix) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func analyzeQuoteContext(template, placeholder string) int {

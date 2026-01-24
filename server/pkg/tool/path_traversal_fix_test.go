@@ -82,10 +82,12 @@ func TestHTTPTool_PathTraversal_Blocked(t *testing.T) {
 }
 
 func TestLocalCommandTool_ShellInjection_Prevention_NewCommands(t *testing.T) {
-	// Tests that newly added commands (busybox, expect, git) are treated as shells
+	// Tests that newly added commands (busybox, expect) are treated as shells.
+	// Note: 'git' was removed because it is treated as a safe runner (arguments passed via execve),
+	// so strict shell injection checks (like blocking ;) are not applied to it.
 	t.Parallel()
 
-	commands := []string{"busybox", "expect", "git"}
+	commands := []string{"busybox", "expect"}
 
 	for _, cmd := range commands {
 		t.Run(cmd, func(t *testing.T) {
