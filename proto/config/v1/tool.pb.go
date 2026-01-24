@@ -14,6 +14,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -112,7 +113,9 @@ type ToolDefinition struct {
 	MergeStrategy *ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy" json:"merge_strategy,omitempty"`
 	Tags          []string                      `protobuf:"bytes,16,rep,name=tags" json:"tags,omitempty"`
 	// Integrity check for the tool definition.
-	Integrity     *Integrity `protobuf:"bytes,17,opt,name=integrity" json:"integrity,omitempty"`
+	Integrity *Integrity `protobuf:"bytes,17,opt,name=integrity" json:"integrity,omitempty"`
+	// The execution timeout for the tool.
+	Timeout       *durationpb.Duration `protobuf:"bytes,18,opt,name=timeout" json:"timeout,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -254,6 +257,13 @@ func (x *ToolDefinition) GetIntegrity() *Integrity {
 	return nil
 }
 
+func (x *ToolDefinition) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.Timeout
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.Name = &v
 }
@@ -316,6 +326,10 @@ func (x *ToolDefinition) SetTags(v []string) {
 
 func (x *ToolDefinition) SetIntegrity(v *Integrity) {
 	x.Integrity = v
+}
+
+func (x *ToolDefinition) SetTimeout(v *durationpb.Duration) {
+	x.Timeout = v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -416,6 +430,13 @@ func (x *ToolDefinition) HasIntegrity() bool {
 	return x.Integrity != nil
 }
 
+func (x *ToolDefinition) HasTimeout() bool {
+	if x == nil {
+		return false
+	}
+	return x.Timeout != nil
+}
+
 func (x *ToolDefinition) ClearName() {
 	x.Name = nil
 }
@@ -472,6 +493,10 @@ func (x *ToolDefinition) ClearIntegrity() {
 	x.Integrity = nil
 }
 
+func (x *ToolDefinition) ClearTimeout() {
+	x.Timeout = nil
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -515,6 +540,8 @@ type ToolDefinition_builder struct {
 	Tags          []string
 	// Integrity check for the tool definition.
 	Integrity *Integrity
+	// The execution timeout for the tool.
+	Timeout *durationpb.Duration
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -537,6 +564,7 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	x.MergeStrategy = b.MergeStrategy
 	x.Tags = b.Tags
 	x.Integrity = b.Integrity
+	x.Timeout = b.Timeout
 	return m0
 }
 
@@ -637,7 +665,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xf9\x05\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xae\x06\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -657,7 +685,8 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12V\n" +
 	"\x0emerge_strategy\x18\x0f \x01(\x0e2..mcpany.config.v1.ToolDefinition.MergeStrategyR\x0emerge_strategy\x12\x12\n" +
 	"\x04tags\x18\x10 \x03(\tR\x04tags\x129\n" +
-	"\tintegrity\x18\x11 \x01(\v2\x1b.mcpany.config.v1.IntegrityR\tintegrity\"f\n" +
+	"\tintegrity\x18\x11 \x01(\v2\x1b.mcpany.config.v1.IntegrityR\tintegrity\x123\n" +
+	"\atimeout\x18\x12 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"f\n" +
 	"\rMergeStrategy\x12\x1e\n" +
 	"\x1aMERGE_STRATEGY_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14MERGE_STRATEGY_MERGE\x10\x01\x12\x1b\n" +
@@ -674,17 +703,19 @@ var file_proto_config_v1_tool_proto_goTypes = []any{
 	(*Integrity)(nil),                 // 2: mcpany.config.v1.Integrity
 	(*structpb.Struct)(nil),           // 3: google.protobuf.Struct
 	(*Profile)(nil),                   // 4: mcpany.config.v1.Profile
+	(*durationpb.Duration)(nil),       // 5: google.protobuf.Duration
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
 	3, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
 	4, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
 	0, // 2: mcpany.config.v1.ToolDefinition.merge_strategy:type_name -> mcpany.config.v1.ToolDefinition.MergeStrategy
 	2, // 3: mcpany.config.v1.ToolDefinition.integrity:type_name -> mcpany.config.v1.Integrity
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5, // 4: mcpany.config.v1.ToolDefinition.timeout:type_name -> google.protobuf.Duration
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }

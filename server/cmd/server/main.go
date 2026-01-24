@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -92,11 +93,17 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		// Note: Cobra's OnInitialize is not used here, so this is safe.
 		// If OnInitialize were used, we would need to ensure godotenv is loaded before Viper reads env vars.
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			// Feature: Structured Logging for Config Errors
+			jsonLog, _ := cmd.Flags().GetBool("json")
+			if jsonLog {
+				os.Setenv("MCPANY_LOG_FORMAT", "json")
+			}
 			return loadEnv(cmd)
 		},
 		SilenceUsage: true,
 	}
 	rootCmd.PersistentFlags().String("env-file", "", "Path to .env file to load environment variables from")
+	rootCmd.PersistentFlags().Bool("json", false, "Output logs in JSON format")
 
 	runCmd := &cobra.Command{
 		Use:   "run",
@@ -113,6 +120,19 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				os.Exit(1)
 			}
 			log := logging.GetLogger().With("service", "mcpany")
+
+			// Feature: Conflict-Free Port Allocation
+			randomPort, _ := cmd.Flags().GetBool("random-port")
+			if randomPort {
+				l, err := net.Listen("tcp", ":0")
+				if err != nil {
+					return fmt.Errorf("failed to find random port: %w", err)
+				}
+				port := l.Addr().(*net.TCPAddr).Port
+				_ = l.Close()
+				cfg.SetMCPListenAddress(fmt.Sprintf(":%d", port))
+				log.Info("Random port allocated", "port", port)
+			}
 
 			bindAddress := cfg.MCPListenAddress()
 			grpcPort := cfg.GRPCPort()
@@ -190,10 +210,45 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				log.Warn("⚠️  Running without a global API key. This is NOT recommended for production deployment.")
 			}
 
-			// Track 1: Friction Fighter - Strict Mode
+			// Validate configuration before starting (Feature: Secret Validation Pre-flight)
+			if len(configPaths) > 0 {
+				store := config.NewFileStore(osFs, configPaths)
+				loadedConfigs, err := config.LoadResolvedConfig(ctx, store)
+				if err == nil {
+					valErrors := config.Validate(ctx, loadedConfigs, config.Server)
+					if len(valErrors) > 0 {
+						for _, e := range valErrors {
+							log.Error("Configuration error", "error", e.Error())
+						}
+						// Should we fail fast? Or let strict mode handle it?
+						// The feature "Secret Validation Pre-flight" implies validation.
+						// We'll treat validation errors as fatal.
+						return fmt.Errorf("configuration validation failed")
+					}
+
+					// Feature: Config Strict Mode
+					strictWarnings, _ := cmd.Flags().GetBool("strict-warnings")
+					if strictWarnings {
+						linter := lint.NewLinter(loadedConfigs)
+						results, _ := linter.Run(ctx)
+						hasIssues := false
+						for _, res := range results {
+							if res.Severity == lint.Warning || res.Severity == lint.Error {
+								log.Warn(res.String())
+								hasIssues = true
+							}
+						}
+						if hasIssues {
+							return fmt.Errorf("strict-warnings enabled: found configuration warnings")
+						}
+					}
+				}
+			}
+
+			// Track 1: Friction Fighter - Strict Mode (Connectivity)
 			strict, _ := cmd.Flags().GetBool("strict")
 			if strict {
-				log.Info("Running in strict mode: validating configuration and upstream connectivity...")
+				log.Info("Running in strict mode: validating upstream connectivity...")
 				store := config.NewFileStore(osFs, configPaths)
 				configs, err := config.LoadResolvedConfig(ctx, store)
 				if err != nil {
@@ -224,17 +279,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				if hasErrors {
 					return fmt.Errorf("strict mode validation failed: one or more upstream services are unreachable or misconfigured")
 				}
-				log.Info("Strict mode validation passed.")
+				log.Info("Strict mode connectivity checks passed.")
 			}
-
-			// Track 1: Friction Fighter - Startup Banner
-			// We defer the banner printing until the app is actually running to ensure ports are bound.
-			// However, appRunner.Run blocks, so we need to hook into the startup process.
-			// appRunner.Run takes a startupCallback indirectly via runServerMode logic inside app.
-			// But the Runner interface doesn't expose it.
-			// Instead, we will print "Starting..." here, and the banner logic should ideally handle the "Ready" state.
-			// Since we can't easily modify appRunner.Run signature in this scope without larger refactor,
-			// we will rely on log messages for now, or print a banner BEFORE Run saying "Initializing..."
 
 			if !stdio {
 				_, _ = fmt.Fprintf(cmd.OutOrStderr(), "\n🚀 Starting %s v%s...\n", appconsts.Name, Version)
@@ -261,6 +307,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	runCmd.Flags().Bool("strict", false, "Run in strict mode (validate upstream connectivity before starting)")
+	runCmd.Flags().Bool("random-port", false, "Allocate a random port for the server")
+	runCmd.Flags().Bool("strict-warnings", false, "Fail startup if any configuration warnings are found")
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
 
@@ -379,7 +427,13 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			fmt.Println("Running doctor checks...")
 			results := doctor.RunChecks(context.Background(), configs)
 
-			doctor.PrintResults(cmd.OutOrStdout(), results)
+			// Feature: Doctor Web Report
+			format, _ := cmd.Flags().GetString("format")
+			if format == "html" {
+				doctor.PrintHTMLResults(cmd.OutOrStdout(), results)
+			} else {
+				doctor.PrintResults(cmd.OutOrStdout(), results)
+			}
 
 			hasErrors := false
 			for _, res := range results {
@@ -392,10 +446,13 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if hasErrors {
 				return fmt.Errorf("doctor checks failed with errors")
 			}
-			fmt.Println("All checks passed!")
+			if format != "html" {
+				fmt.Println("All checks passed!")
+			}
 			return nil
 		},
 	}
+	doctorCmd.Flags().String("format", "text", "Output format (text, html)")
 	rootCmd.AddCommand(doctorCmd)
 
 	configCmd := &cobra.Command{
@@ -552,6 +609,12 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "lint",
 		Short: "Lint the configuration file for best practices and security issues",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			// Feature: Linter Git Hook
+			installHook, _ := cmd.Flags().GetBool("install-git-hook")
+			if installHook {
+				return installGitHook()
+			}
+
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, osFs); err != nil {
@@ -588,7 +651,25 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			return nil
 		},
 	}
+	lintCmd.Flags().Bool("install-git-hook", false, "Install pre-commit git hook")
 	rootCmd.AddCommand(lintCmd)
+
+	// Feature: Config Snapshot/Restore
+	snapshotCmd := &cobra.Command{
+		Use:   "snapshot",
+		Short: "Dump the current resolved configuration to JSON",
+		RunE:  runSnapshot,
+	}
+	configCmd.AddCommand(snapshotCmd)
+
+	// Feature: Interactive Env Var Fixer
+	fixEnvCmd := &cobra.Command{
+		Use:   "fix-env",
+		Short: "Interactively fix missing environment variables",
+		RunE:  runFixEnv,
+	}
+	configCmd.AddCommand(fixEnvCmd)
+
 	rootCmd.AddCommand(configCmd)
 
 	config.BindRootFlags(rootCmd)

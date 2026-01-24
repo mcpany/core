@@ -7,6 +7,7 @@ package mcpany.mcp_router.v1;
 
 option go_package = "github.com/mcpany/core/proto/mcp_router/v1";
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/struct.proto"; // For generic JSON-like data
 
 // Represents an MCP Tool exposed by the aggregator
@@ -25,6 +26,7 @@ message Tool {
      repeated string tags = 13;
      repeated string profiles = 14;
      ToolIntegrity integrity = 15;
+     google.protobuf.Duration timeout = 16;
 }
 
 message ToolIntegrity {

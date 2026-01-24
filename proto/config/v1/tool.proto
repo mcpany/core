@@ -5,6 +5,7 @@ edition = "2023";
 
 package mcpany.config.v1;
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/struct.proto";
 import "proto/config/v1/profile.proto";
 
@@ -59,6 +60,8 @@ message ToolDefinition {
   repeated string tags = 16;
   // Integrity check for the tool definition.
   Integrity integrity = 17;
+  // The execution timeout for the tool.
+  google.protobuf.Duration timeout = 18;
 }
 
 message Integrity {

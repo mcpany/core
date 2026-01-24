@@ -115,7 +115,65 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// 5. Check for Missing Cache TTL (Info)
 	results = append(results, l.checkCacheSettings()...)
 
+	// 6. Check for Duplicate Tools (Warning)
+	results = append(results, l.checkDuplicateTools()...)
+
 	return results, nil
+}
+
+func (l *Linter) checkDuplicateTools() []Result {
+	var results []Result
+	toolMap := make(map[string]string) // toolName -> serviceName
+
+	for _, s := range l.cfg.GetUpstreamServices() {
+		var tools []string
+
+		switch s.WhichServiceConfig() {
+		case configv1.UpstreamServiceConfig_HttpService_case:
+			for _, t := range s.GetHttpService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		case configv1.UpstreamServiceConfig_GrpcService_case:
+			for _, t := range s.GetGrpcService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		case configv1.UpstreamServiceConfig_OpenapiService_case:
+			for _, t := range s.GetOpenapiService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		case configv1.UpstreamServiceConfig_CommandLineService_case:
+			for _, t := range s.GetCommandLineService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		case configv1.UpstreamServiceConfig_McpService_case:
+			for _, t := range s.GetMcpService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		case configv1.UpstreamServiceConfig_FilesystemService_case:
+			for _, t := range s.GetFilesystemService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		case configv1.UpstreamServiceConfig_VectorService_case:
+			for _, t := range s.GetVectorService().GetTools() {
+				tools = append(tools, t.GetName())
+			}
+		// Add other services if they have tools list
+		}
+
+		for _, tName := range tools {
+			if existingService, exists := toolMap[tName]; exists {
+				results = append(results, Result{
+					Severity:    Warning,
+					ServiceName: s.GetName(),
+					Message:     fmt.Sprintf("Duplicate tool name %q found (also in service %q). Tool names should be unique across services to avoid conflicts unless scoped.", tName, existingService),
+					Path:        "tools",
+				})
+			} else {
+				toolMap[tName] = s.GetName()
+			}
+		}
+	}
+	return results
 }
 
 func (l *Linter) checkPlainTextSecrets() []Result {

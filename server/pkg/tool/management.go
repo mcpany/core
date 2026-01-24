@@ -471,6 +471,13 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	ctx = NewContextWithTool(ctx, t)
 	ctx = NewContextWithCacheControl(ctx, &CacheControl{Action: ActionAllow})
 
+	// Apply tool execution timeout if configured
+	if t.Tool().GetTimeout() != nil && t.Tool().GetTimeout().AsDuration() > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, t.Tool().GetTimeout().AsDuration())
+		defer cancel()
+	}
+
 	// 3. Run Pre-execution Hooks (modifies ctx/req)
 	for _, h := range preHooks {
 		action, modifiedReq, err := h.ExecutePre(ctx, req)

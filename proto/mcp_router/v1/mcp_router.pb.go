@@ -14,6 +14,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -84,6 +85,7 @@ type Tool struct {
 	Tags                []string               `protobuf:"bytes,13,rep,name=tags" json:"tags,omitempty"`
 	Profiles            []string               `protobuf:"bytes,14,rep,name=profiles" json:"profiles,omitempty"`
 	Integrity           *ToolIntegrity         `protobuf:"bytes,15,opt,name=integrity" json:"integrity,omitempty"`
+	Timeout             *durationpb.Duration   `protobuf:"bytes,16,opt,name=timeout" json:"timeout,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -211,6 +213,13 @@ func (x *Tool) GetIntegrity() *ToolIntegrity {
 	return nil
 }
 
+func (x *Tool) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.Timeout
+	}
+	return nil
+}
+
 func (x *Tool) SetName(v string) {
 	x.Name = &v
 }
@@ -265,6 +274,10 @@ func (x *Tool) SetProfiles(v []string) {
 
 func (x *Tool) SetIntegrity(v *ToolIntegrity) {
 	x.Integrity = v
+}
+
+func (x *Tool) SetTimeout(v *durationpb.Duration) {
+	x.Timeout = v
 }
 
 func (x *Tool) HasName() bool {
@@ -351,6 +364,13 @@ func (x *Tool) HasIntegrity() bool {
 	return x.Integrity != nil
 }
 
+func (x *Tool) HasTimeout() bool {
+	if x == nil {
+		return false
+	}
+	return x.Timeout != nil
+}
+
 func (x *Tool) ClearName() {
 	x.Name = nil
 }
@@ -399,6 +419,10 @@ func (x *Tool) ClearIntegrity() {
 	x.Integrity = nil
 }
 
+func (x *Tool) ClearTimeout() {
+	x.Timeout = nil
+}
+
 type Tool_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -416,6 +440,7 @@ type Tool_builder struct {
 	Tags                []string
 	Profiles            []string
 	Integrity           *ToolIntegrity
+	Timeout             *durationpb.Duration
 }
 
 func (b0 Tool_builder) Build() *Tool {
@@ -436,6 +461,7 @@ func (b0 Tool_builder) Build() *Tool {
 	x.Tags = b.Tags
 	x.Profiles = b.Profiles
 	x.Integrity = b.Integrity
+	x.Timeout = b.Timeout
 	return m0
 }
 
@@ -2669,7 +2695,7 @@ var File_proto_mcp_router_v1_mcp_router_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\n" +
-	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xdb\x04\n" +
+	"$proto/mcp_router/v1/mcp_router.proto\x12\x14mcpany.mcp_router.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x90\x05\n" +
 	"\x04Tool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12 \n" +
@@ -2685,7 +2711,8 @@ const file_proto_mcp_router_v1_mcp_router_proto_rawDesc = "" +
 	"\tis_stream\x18\f \x01(\bR\bisStream\x12\x12\n" +
 	"\x04tags\x18\r \x03(\tR\x04tags\x12\x1a\n" +
 	"\bprofiles\x18\x0e \x03(\tR\bprofiles\x12A\n" +
-	"\tintegrity\x18\x0f \x01(\v2#.mcpany.mcp_router.v1.ToolIntegrityR\tintegrity\"A\n" +
+	"\tintegrity\x18\x0f \x01(\v2#.mcpany.mcp_router.v1.ToolIntegrityR\tintegrity\x123\n" +
+	"\atimeout\x18\x10 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"A\n" +
 	"\rToolIntegrity\x12\x12\n" +
 	"\x04hash\x18\x01 \x01(\tR\x04hash\x12\x1c\n" +
 	"\talgorithm\x18\x02 \x01(\tR\talgorithm\"\xc3\x02\n" +
@@ -2792,42 +2819,44 @@ var file_proto_mcp_router_v1_mcp_router_proto_goTypes = []any{
 	(*ListResourcesRequest)(nil),  // 20: mcpany.mcp_router.v1.ListResourcesRequest
 	(*ListResourcesResponse)(nil), // 21: mcpany.mcp_router.v1.ListResourcesResponse
 	(*structpb.Struct)(nil),       // 22: google.protobuf.Struct
+	(*durationpb.Duration)(nil),   // 23: google.protobuf.Duration
 }
 var file_proto_mcp_router_v1_mcp_router_proto_depIdxs = []int32{
 	22, // 0: mcpany.mcp_router.v1.Tool.input_schema:type_name -> google.protobuf.Struct
 	22, // 1: mcpany.mcp_router.v1.Tool.output_schema:type_name -> google.protobuf.Struct
 	3,  // 2: mcpany.mcp_router.v1.Tool.annotations:type_name -> mcpany.mcp_router.v1.ToolAnnotations
 	2,  // 3: mcpany.mcp_router.v1.Tool.integrity:type_name -> mcpany.mcp_router.v1.ToolIntegrity
-	22, // 4: mcpany.mcp_router.v1.ToolAnnotations.input_schema:type_name -> google.protobuf.Struct
-	22, // 5: mcpany.mcp_router.v1.ToolAnnotations.output_schema:type_name -> google.protobuf.Struct
-	1,  // 6: mcpany.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	22, // 7: mcpany.mcp_router.v1.CallToolRequest.inputs:type_name -> google.protobuf.Struct
-	22, // 8: mcpany.mcp_router.v1.CallToolResponse.outputs:type_name -> google.protobuf.Struct
-	9,  // 9: mcpany.mcp_router.v1.Prompt.arguments:type_name -> mcpany.mcp_router.v1.PromptArgument
-	8,  // 10: mcpany.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpany.mcp_router.v1.Prompt
-	22, // 11: mcpany.mcp_router.v1.GetPromptRequest.arguments:type_name -> google.protobuf.Struct
-	14, // 12: mcpany.mcp_router.v1.GetPromptResponse.messages:type_name -> mcpany.mcp_router.v1.PromptMessage
-	0,  // 13: mcpany.mcp_router.v1.PromptMessage.role:type_name -> mcpany.mcp_router.v1.PromptMessage.Role
-	15, // 14: mcpany.mcp_router.v1.PromptMessage.text:type_name -> mcpany.mcp_router.v1.TextContent
-	16, // 15: mcpany.mcp_router.v1.PromptMessage.image:type_name -> mcpany.mcp_router.v1.ImageContent
-	17, // 16: mcpany.mcp_router.v1.PromptMessage.audio:type_name -> mcpany.mcp_router.v1.AudioContent
-	18, // 17: mcpany.mcp_router.v1.PromptMessage.resource:type_name -> mcpany.mcp_router.v1.ResourceContent
-	19, // 18: mcpany.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpany.mcp_router.v1.Resource
-	4,  // 19: mcpany.mcp_router.v1.McpRouter.ListTools:input_type -> mcpany.mcp_router.v1.ListToolsRequest
-	6,  // 20: mcpany.mcp_router.v1.McpRouter.CallTool:input_type -> mcpany.mcp_router.v1.CallToolRequest
-	10, // 21: mcpany.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpany.mcp_router.v1.ListPromptsRequest
-	12, // 22: mcpany.mcp_router.v1.McpRouter.GetPrompt:input_type -> mcpany.mcp_router.v1.GetPromptRequest
-	20, // 23: mcpany.mcp_router.v1.McpRouter.ListResources:input_type -> mcpany.mcp_router.v1.ListResourcesRequest
-	5,  // 24: mcpany.mcp_router.v1.McpRouter.ListTools:output_type -> mcpany.mcp_router.v1.ListToolsResponse
-	7,  // 25: mcpany.mcp_router.v1.McpRouter.CallTool:output_type -> mcpany.mcp_router.v1.CallToolResponse
-	11, // 26: mcpany.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpany.mcp_router.v1.ListPromptsResponse
-	13, // 27: mcpany.mcp_router.v1.McpRouter.GetPrompt:output_type -> mcpany.mcp_router.v1.GetPromptResponse
-	21, // 28: mcpany.mcp_router.v1.McpRouter.ListResources:output_type -> mcpany.mcp_router.v1.ListResourcesResponse
-	24, // [24:29] is the sub-list for method output_type
-	19, // [19:24] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	23, // 4: mcpany.mcp_router.v1.Tool.timeout:type_name -> google.protobuf.Duration
+	22, // 5: mcpany.mcp_router.v1.ToolAnnotations.input_schema:type_name -> google.protobuf.Struct
+	22, // 6: mcpany.mcp_router.v1.ToolAnnotations.output_schema:type_name -> google.protobuf.Struct
+	1,  // 7: mcpany.mcp_router.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	22, // 8: mcpany.mcp_router.v1.CallToolRequest.inputs:type_name -> google.protobuf.Struct
+	22, // 9: mcpany.mcp_router.v1.CallToolResponse.outputs:type_name -> google.protobuf.Struct
+	9,  // 10: mcpany.mcp_router.v1.Prompt.arguments:type_name -> mcpany.mcp_router.v1.PromptArgument
+	8,  // 11: mcpany.mcp_router.v1.ListPromptsResponse.prompts:type_name -> mcpany.mcp_router.v1.Prompt
+	22, // 12: mcpany.mcp_router.v1.GetPromptRequest.arguments:type_name -> google.protobuf.Struct
+	14, // 13: mcpany.mcp_router.v1.GetPromptResponse.messages:type_name -> mcpany.mcp_router.v1.PromptMessage
+	0,  // 14: mcpany.mcp_router.v1.PromptMessage.role:type_name -> mcpany.mcp_router.v1.PromptMessage.Role
+	15, // 15: mcpany.mcp_router.v1.PromptMessage.text:type_name -> mcpany.mcp_router.v1.TextContent
+	16, // 16: mcpany.mcp_router.v1.PromptMessage.image:type_name -> mcpany.mcp_router.v1.ImageContent
+	17, // 17: mcpany.mcp_router.v1.PromptMessage.audio:type_name -> mcpany.mcp_router.v1.AudioContent
+	18, // 18: mcpany.mcp_router.v1.PromptMessage.resource:type_name -> mcpany.mcp_router.v1.ResourceContent
+	19, // 19: mcpany.mcp_router.v1.ListResourcesResponse.resources:type_name -> mcpany.mcp_router.v1.Resource
+	4,  // 20: mcpany.mcp_router.v1.McpRouter.ListTools:input_type -> mcpany.mcp_router.v1.ListToolsRequest
+	6,  // 21: mcpany.mcp_router.v1.McpRouter.CallTool:input_type -> mcpany.mcp_router.v1.CallToolRequest
+	10, // 22: mcpany.mcp_router.v1.McpRouter.ListPrompts:input_type -> mcpany.mcp_router.v1.ListPromptsRequest
+	12, // 23: mcpany.mcp_router.v1.McpRouter.GetPrompt:input_type -> mcpany.mcp_router.v1.GetPromptRequest
+	20, // 24: mcpany.mcp_router.v1.McpRouter.ListResources:input_type -> mcpany.mcp_router.v1.ListResourcesRequest
+	5,  // 25: mcpany.mcp_router.v1.McpRouter.ListTools:output_type -> mcpany.mcp_router.v1.ListToolsResponse
+	7,  // 26: mcpany.mcp_router.v1.McpRouter.CallTool:output_type -> mcpany.mcp_router.v1.CallToolResponse
+	11, // 27: mcpany.mcp_router.v1.McpRouter.ListPrompts:output_type -> mcpany.mcp_router.v1.ListPromptsResponse
+	13, // 28: mcpany.mcp_router.v1.McpRouter.GetPrompt:output_type -> mcpany.mcp_router.v1.GetPromptResponse
+	21, // 29: mcpany.mcp_router.v1.McpRouter.ListResources:output_type -> mcpany.mcp_router.v1.ListResourcesResponse
+	25, // [25:30] is the sub-list for method output_type
+	20, // [20:25] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_proto_mcp_router_v1_mcp_router_proto_init() }

@@ -163,6 +163,10 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 		}
 	}
 
+	if toolDef.GetTimeout() != nil {
+		builder.Timeout = toolDef.GetTimeout()
+	}
+
 	return builder.Build(), nil
 }
 

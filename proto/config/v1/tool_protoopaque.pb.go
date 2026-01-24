@@ -14,6 +14,7 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -89,6 +90,7 @@ type ToolDefinition struct {
 	xxx_hidden_MergeStrategy   ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy"`
 	xxx_hidden_Tags            []string                     `protobuf:"bytes,16,rep,name=tags"`
 	xxx_hidden_Integrity       *Integrity                   `protobuf:"bytes,17,opt,name=integrity"`
+	xxx_hidden_Timeout         *durationpb.Duration         `protobuf:"bytes,18,opt,name=timeout"`
 	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
 	XXX_presence               [1]uint32
 	unknownFields              protoimpl.UnknownFields
@@ -251,9 +253,16 @@ func (x *ToolDefinition) GetIntegrity() *Integrity {
 	return nil
 }
 
+func (x *ToolDefinition) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.xxx_hidden_Timeout
+	}
+	return nil
+}
+
 func (x *ToolDefinition) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 17)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
@@ -262,52 +271,52 @@ func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
 
 func (x *ToolDefinition) SetServiceId(v string) {
 	x.xxx_hidden_ServiceId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 17)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 17)
 }
 
 func (x *ToolDefinition) SetIsStream(v bool) {
 	x.xxx_hidden_IsStream = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 17)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
 	x.xxx_hidden_Title = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 17)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
 	x.xxx_hidden_ReadOnlyHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 17)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
 	x.xxx_hidden_DestructiveHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 17)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
 	x.xxx_hidden_IdempotentHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 17)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
 	x.xxx_hidden_OpenWorldHint = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 17)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
 	x.xxx_hidden_CallId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 17)
 }
 
 func (x *ToolDefinition) SetDisable(v bool) {
 	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 17)
 }
 
 func (x *ToolDefinition) SetProfiles(v []*Profile) {
@@ -316,7 +325,7 @@ func (x *ToolDefinition) SetProfiles(v []*Profile) {
 
 func (x *ToolDefinition) SetMergeStrategy(v ToolDefinition_MergeStrategy) {
 	x.xxx_hidden_MergeStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 16)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 17)
 }
 
 func (x *ToolDefinition) SetTags(v []string) {
@@ -325,6 +334,10 @@ func (x *ToolDefinition) SetTags(v []string) {
 
 func (x *ToolDefinition) SetIntegrity(v *Integrity) {
 	x.xxx_hidden_Integrity = v
+}
+
+func (x *ToolDefinition) SetTimeout(v *durationpb.Duration) {
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *ToolDefinition) HasName() bool {
@@ -425,6 +438,13 @@ func (x *ToolDefinition) HasIntegrity() bool {
 	return x.xxx_hidden_Integrity != nil
 }
 
+func (x *ToolDefinition) HasTimeout() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Timeout != nil
+}
+
 func (x *ToolDefinition) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -493,6 +513,10 @@ func (x *ToolDefinition) ClearIntegrity() {
 	x.xxx_hidden_Integrity = nil
 }
 
+func (x *ToolDefinition) ClearTimeout() {
+	x.xxx_hidden_Timeout = nil
+}
+
 type ToolDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -536,6 +560,8 @@ type ToolDefinition_builder struct {
 	Tags          []string
 	// Integrity check for the tool definition.
 	Integrity *Integrity
+	// The execution timeout for the tool.
+	Timeout *durationpb.Duration
 }
 
 func (b0 ToolDefinition_builder) Build() *ToolDefinition {
@@ -543,57 +569,58 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 17)
 		x.xxx_hidden_Name = b.Name
 	}
 	x.xxx_hidden_InputSchema = b.InputSchema
 	if b.ServiceId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 17)
 		x.xxx_hidden_ServiceId = b.ServiceId
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 17)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.IsStream != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 17)
 		x.xxx_hidden_IsStream = *b.IsStream
 	}
 	if b.Title != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 17)
 		x.xxx_hidden_Title = b.Title
 	}
 	if b.ReadOnlyHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 17)
 		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
 	}
 	if b.DestructiveHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 17)
 		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
 	}
 	if b.IdempotentHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 17)
 		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
 	}
 	if b.OpenWorldHint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 17)
 		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
 	}
 	if b.CallId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 17)
 		x.xxx_hidden_CallId = b.CallId
 	}
 	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 17)
 		x.xxx_hidden_Disable = *b.Disable
 	}
 	x.xxx_hidden_Profiles = &b.Profiles
 	if b.MergeStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 16)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 17)
 		x.xxx_hidden_MergeStrategy = *b.MergeStrategy
 	}
 	x.xxx_hidden_Tags = b.Tags
 	x.xxx_hidden_Integrity = b.Integrity
+	x.xxx_hidden_Timeout = b.Timeout
 	return m0
 }
 
@@ -712,7 +739,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xf9\x05\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xae\x06\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -732,7 +759,8 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\bprofiles\x18\x0e \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofiles\x12V\n" +
 	"\x0emerge_strategy\x18\x0f \x01(\x0e2..mcpany.config.v1.ToolDefinition.MergeStrategyR\x0emerge_strategy\x12\x12\n" +
 	"\x04tags\x18\x10 \x03(\tR\x04tags\x129\n" +
-	"\tintegrity\x18\x11 \x01(\v2\x1b.mcpany.config.v1.IntegrityR\tintegrity\"f\n" +
+	"\tintegrity\x18\x11 \x01(\v2\x1b.mcpany.config.v1.IntegrityR\tintegrity\x123\n" +
+	"\atimeout\x18\x12 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"f\n" +
 	"\rMergeStrategy\x12\x1e\n" +
 	"\x1aMERGE_STRATEGY_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14MERGE_STRATEGY_MERGE\x10\x01\x12\x1b\n" +
@@ -749,17 +777,19 @@ var file_proto_config_v1_tool_proto_goTypes = []any{
 	(*Integrity)(nil),                 // 2: mcpany.config.v1.Integrity
 	(*structpb.Struct)(nil),           // 3: google.protobuf.Struct
 	(*Profile)(nil),                   // 4: mcpany.config.v1.Profile
+	(*durationpb.Duration)(nil),       // 5: google.protobuf.Duration
 }
 var file_proto_config_v1_tool_proto_depIdxs = []int32{
 	3, // 0: mcpany.config.v1.ToolDefinition.input_schema:type_name -> google.protobuf.Struct
 	4, // 1: mcpany.config.v1.ToolDefinition.profiles:type_name -> mcpany.config.v1.Profile
 	0, // 2: mcpany.config.v1.ToolDefinition.merge_strategy:type_name -> mcpany.config.v1.ToolDefinition.MergeStrategy
 	2, // 3: mcpany.config.v1.ToolDefinition.integrity:type_name -> mcpany.config.v1.Integrity
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5, // 4: mcpany.config.v1.ToolDefinition.timeout:type_name -> google.protobuf.Duration
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_tool_proto_init() }
