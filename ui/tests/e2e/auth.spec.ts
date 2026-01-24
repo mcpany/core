@@ -13,7 +13,13 @@ test.describe('Authentication and User Management', () => {
 
   test('should login successfully with real backend', async ({ page, request }) => {
       // 1. Create User via API (using Admin/API Key from config)
+      // Inject API Key header explicitly since we removed auto-injection from middleware
+      const apiKey = process.env.MCPANY_API_KEY || 'test-token';
+
       const createUserRes = await request.post('/api/v1/users', {
+          headers: {
+              'X-API-Key': apiKey
+          },
           data: {
               user: {
                   id: USER_ID,
@@ -58,9 +64,11 @@ test.describe('Authentication and User Management', () => {
       await expect(page.getByRole('cell', { name: USER_ID })).toBeVisible();
 
       // Cleanup: Delete user
-      // We can use the UI to delete to test that too?
-      // Or just API for speed/reliability.
-      const deleteRes = await request.delete(`/api/v1/users/${USER_ID}`);
+      const deleteRes = await request.delete(`/api/v1/users/${USER_ID}`, {
+          headers: {
+              'X-API-Key': apiKey
+          }
+      });
       expect(deleteRes.ok()).toBeTruthy();
   });
 });
