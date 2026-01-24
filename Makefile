@@ -183,6 +183,10 @@ gen: clean-protos prepare-proto
 		echo "Warning: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. Skipping TypeScript generation."; \
 	fi
 
+update-screenshots:
+	@echo "Updating UI screenshots..."
+	cd ui && npx playwright test -c playwright.screenshots.config.ts
+
 # Forward other targets to server by default
 %:
 	$(MAKE) -C server $@

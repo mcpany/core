@@ -405,6 +405,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "test" {
+			a.handleServiceTest(w, r, name)
+			return
+		}
+
 		if len(parts) > 1 {
 			http.NotFound(w, r)
 			return
@@ -556,6 +561,33 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("{}"))
+}
+
+func (a *Application) handleServiceTest(w http.ResponseWriter, r *http.Request, name string) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if a.ServiceRegistry == nil {
+		http.Error(w, "Service Registry not initialized", http.StatusInternalServerError)
+		return
+	}
+
+	err := a.ServiceRegistry.CheckHealth(r.Context(), name)
+	w.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"status": "ok",
+	})
 }
 
 func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {

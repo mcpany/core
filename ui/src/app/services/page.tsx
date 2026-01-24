@@ -321,6 +321,23 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
+  const handleTestConnection = useCallback(async (name: string) => {
+    try {
+        await apiClient.testService(name);
+        toast({
+            title: "Connection Successful",
+            description: `Successfully connected to service ${name}.`,
+        });
+    } catch (e: any) {
+        console.error("Failed to test service", e);
+        toast({
+            variant: "destructive",
+            title: "Connection Failed",
+            description: e.message || `Failed to connect to service ${name}.`
+        });
+    }
+  }, [toast]);
+
   const handleSave = async () => {
       if (!selectedService) return;
 
@@ -447,6 +464,7 @@ export default function ServicesPage() {
                 onBulkEdit={handleBulkEdit}
                 onLogin={handleLogin}
                 onRestart={handleRestart}
+                onTest={handleTestConnection}
              />
         </CardContent>
       </Card>

@@ -49,6 +49,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
+  onTest?: (name: string) => void;
   onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
 }
 
@@ -57,7 +58,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onTest, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -192,6 +193,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                   onExport={onExport}
                   onLogin={onLogin}
                   onRestart={onRestart}
+                  onTest={onTest}
                />
             ))}
             {filteredServices.length === 0 && (
@@ -264,7 +266,8 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     onDuplicate?: (service: UpstreamServiceConfig) => void,
     onExport?: (service: UpstreamServiceConfig) => void,
     onLogin?: (service: UpstreamServiceConfig) => void,
-    onRestart?: (name: string) => void
+    onRestart?: (name: string) => void,
+    onTest?: (name: string) => void
 }) {
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
@@ -405,6 +408,12 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                                 </DropdownMenuItem>
                             }
                         />
+                        {onTest && (
+                            <DropdownMenuItem onClick={() => onTest(service.name)}>
+                                <Activity className="mr-2 h-4 w-4" />
+                                Test Connection
+                            </DropdownMenuItem>
+                        )}
                         {onRestart && (
                             <DropdownMenuItem onClick={() => onRestart(service.name)}>
                                 <RefreshCw className="mr-2 h-4 w-4" />

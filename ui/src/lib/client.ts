@@ -286,6 +286,28 @@ export const apiClient = {
     },
 
     /**
+     * Tests a service connection (health check).
+     * @param name The name of the service to test.
+     * @returns A promise that resolves when the test completes successfully.
+     */
+    testService: async (name: string) => {
+        const response = await fetchWithAuth(`/api/v1/services/${encodeURIComponent(name)}/test`, {
+            method: 'POST'
+        });
+        if (!response.ok) {
+            let errorMsg = 'Failed to test service';
+            try {
+                const data = await response.json();
+                if (data.error) errorMsg = data.error;
+            } catch (e) {
+                // Ignore
+            }
+            throw new Error(errorMsg);
+        }
+        return response.json();
+    },
+
+    /**
      * Registers a new upstream service.
      * @param config The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.

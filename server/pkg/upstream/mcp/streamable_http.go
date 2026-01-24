@@ -128,6 +128,13 @@ type Upstream struct {
 	serviceID string
 }
 
+// CheckHealth performs a health check on the upstream service.
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	// TODO: Implement actual health check for MCP services by establishing a temporary session.
+	// For now, we return an error to indicate it's not supported, rather than failing silently (false positive).
+	return fmt.Errorf("health check not supported for MCP services yet")
+}
+
 // Shutdown cleans up any temporary resources associated with the upstream, such
 // as extracted bundle directories.
 func (u *Upstream) Shutdown(_ context.Context) error {
