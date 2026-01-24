@@ -124,7 +124,7 @@ func TestExtractIP_EdgeCases(t *testing.T) {
 		{
 			name:     "Malformed brackets (start only)",
 			input:    "[::1",
-			expected: "[::1",
+			expected: "",
 		},
 	}
 
