@@ -27,6 +27,7 @@ import (
 
 func TestMergeStrategyAndFiltering(t *testing.T) {
 	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	// Create a temporary directory for config
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "config.yaml")
