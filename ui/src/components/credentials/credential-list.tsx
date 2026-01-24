@@ -154,17 +154,17 @@ export function CredentialList() {
                             {cred.name}
                         </TableCell>
                         <TableCell>
-                            {cred.authentication?.apiKey ? "API Key" :
-                             cred.authentication?.bearerToken ? "Bearer Token" :
-                             cred.authentication?.basicAuth ? "Basic Auth" :
-                             cred.authentication?.oauth2 ? "OAuth 2.0" : "Unknown"}
+                            {(cred.authentication as any)?.apiKey || (cred.authentication as any)?.api_key ? "API Key" :
+                             (cred.authentication as any)?.bearerToken || (cred.authentication as any)?.bearer_token ? "Bearer Token" :
+                             (cred.authentication as any)?.basicAuth || (cred.authentication as any)?.basic_auth ? "Basic Auth" :
+                             (cred.authentication as any)?.oauth2 ? "OAuth 2.0" : "Unknown"}
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">
-                            {cred.authentication?.apiKey && (
-                                <span>{cred.authentication.apiKey.paramName} ({cred.authentication.apiKey.in === 0 ? "Header" : "Query"})</span>
+                            {(cred.authentication?.apiKey || (cred.authentication as any)?.api_key) && (
+                                <span>{(cred.authentication?.apiKey || (cred.authentication as any)?.api_key).paramName || (cred.authentication?.apiKey || (cred.authentication as any)?.api_key).param_name} ({(cred.authentication?.apiKey || (cred.authentication as any)?.api_key).in === 0 ? "Header" : "Query"})</span>
                             )}
-                            {cred.authentication?.bearerToken && <span>Bearer</span>}
-                            {cred.authentication?.basicAuth && <span>{cred.authentication.basicAuth.username}</span>}
+                            {(cred.authentication?.bearerToken || (cred.authentication as any)?.bearer_token) && <span>Bearer</span>}
+                            {(cred.authentication?.basicAuth || (cred.authentication as any)?.basic_auth) && <span>{(cred.authentication?.basicAuth || (cred.authentication as any)?.basic_auth).username}</span>}
                         </TableCell>
                         <TableCell className="text-right flex items-center justify-end gap-1">
                              {cred.authentication?.oauth2 && (

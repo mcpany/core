@@ -31,7 +31,7 @@ message ResourceDefinition {
     string name = 2;
     string title = 3;
     string description = 4;
-    string mime_type = 5;
+    string mime_type = 5 [json_name = "mime_type"];
     int64 size = 6;
     ResourceAnnotation annotations = 7;
     oneof resource_type {
@@ -46,7 +46,7 @@ message ResourceDefinition {
 
 message StaticResource {
     oneof content_type {
-        string text_content = 1;
+        string text_content = 1 [json_name = "text_content"];
         bytes binary_content = 2;
     }
 }

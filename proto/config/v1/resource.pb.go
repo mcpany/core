@@ -155,7 +155,7 @@ type ResourceDefinition struct {
 	Name        *string                `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
 	Title       *string                `protobuf:"bytes,3,opt,name=title" json:"title,omitempty"`
 	Description *string                `protobuf:"bytes,4,opt,name=description" json:"description,omitempty"`
-	MimeType    *string                `protobuf:"bytes,5,opt,name=mime_type,json=mimeType" json:"mime_type,omitempty"`
+	MimeType    *string                `protobuf:"bytes,5,opt,name=mime_type" json:"mime_type,omitempty"`
 	Size        *int64                 `protobuf:"varint,6,opt,name=size" json:"size,omitempty"`
 	Annotations *ResourceAnnotation    `protobuf:"bytes,7,opt,name=annotations" json:"annotations,omitempty"`
 	// Types that are valid to be assigned to ResourceType:
@@ -715,7 +715,7 @@ type isStaticResource_ContentType interface {
 }
 
 type StaticResource_TextContent struct {
-	TextContent string `protobuf:"bytes,1,opt,name=text_content,json=textContent,oneof"`
+	TextContent string `protobuf:"bytes,1,opt,name=text_content,oneof"`
 }
 
 type StaticResource_BinaryContent struct {
@@ -1096,13 +1096,13 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\x12ResourceAnnotation\x12\x1a\n" +
 	"\baudience\x18\x01 \x03(\tR\baudience\x12\x1a\n" +
 	"\bpriority\x18\x02 \x01(\x01R\bpriority\x12?\n" +
-	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\xc8\x03\n" +
+	"\rlast_modified\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\flastModified\"\xc9\x03\n" +
 	"\x12ResourceDefinition\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1b\n" +
-	"\tmime_type\x18\x05 \x01(\tR\bmimeType\x12\x12\n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1c\n" +
+	"\tmime_type\x18\x05 \x01(\tR\tmime_type\x12\x12\n" +
 	"\x04size\x18\x06 \x01(\x03R\x04size\x12F\n" +
 	"\vannotations\x18\a \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotations\x12:\n" +
 	"\x06static\x18\b \x01(\v2 .mcpany.config.v1.StaticResourceH\x00R\x06static\x12=\n" +
@@ -1110,9 +1110,9 @@ const file_proto_config_v1_resource_proto_rawDesc = "" +
 	"\adisable\x18\n" +
 	" \x01(\bR\adisable\x125\n" +
 	"\bprofiles\x18\v \x03(\v2\x19.mcpany.config.v1.ProfileR\bprofilesB\x0f\n" +
-	"\rresource_type\"n\n" +
-	"\x0eStaticResource\x12#\n" +
-	"\ftext_content\x18\x01 \x01(\tH\x00R\vtextContent\x12'\n" +
+	"\rresource_type\"o\n" +
+	"\x0eStaticResource\x12$\n" +
+	"\ftext_content\x18\x01 \x01(\tH\x00R\ftext_content\x12'\n" +
 	"\x0ebinary_content\x18\x02 \x01(\fH\x00R\rbinaryContentB\x0e\n" +
 	"\fcontent_type\"\xea\x03\n" +
 	"\x0fDynamicResource\x12C\n" +

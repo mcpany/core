@@ -1752,7 +1752,7 @@ func (a *Application) runServerMode(
 	// Note: Standard mux doesn't handle methods nicely, so we route by path and check method in handler.
 	// We route /credentials to list (GET) and create (POST)
 	// We route /credentials/ to get/update/delete (with ID)
-	mux.Handle("/credentials", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/api/v1/credentials", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			a.listCredentialsHandler(w, r)
@@ -1785,7 +1785,7 @@ func (a *Application) runServerMode(
 	// `gwmux.ServeHTTP(w, r)`!
 	// Yes, I can use `gwmux` as fallback.
 
-	mux.Handle("/credentials/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/api/v1/credentials/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// This handles /credentials/:id
 		switch r.Method {
 		case http.MethodGet:

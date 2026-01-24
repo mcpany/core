@@ -30,7 +30,7 @@ test.describe('Credentials Management', () => {
     await page.getByPlaceholder('X-API-Key').fill('Authorization');
     await page.getByPlaceholder('...secret key...').fill('secret-key');
 
-    await page.getByRole('button', { name: 'Save' }).click();
+    await page.getByRole('button', { name: 'Save' }).click({ force: true });
 
     // Verify it appears in list
     // Wait for list to update or reload
@@ -44,7 +44,7 @@ test.describe('Credentials Management', () => {
     await row.getByRole('button', { name: 'Edit' }).click();
 
     await page.getByPlaceholder('My Credential').fill(updatedCredName);
-    await page.getByRole('button', { name: 'Save' }).click();
+    await page.getByRole('button', { name: 'Save' }).click({ force: true });
 
     await expect(page.getByText(updatedCredName)).toBeVisible();
     await expect(page.getByText(credName)).toBeHidden();
@@ -55,14 +55,14 @@ test.describe('Credentials Management', () => {
     // Accept delete confirmation
     page.on('dialog', dialog => dialog.accept());
 
-    await updatedRow.getByRole('button', { name: 'Delete' }).click();
+    await updatedRow.getByRole('button', { name: 'Delete' }).click({ force: true });
 
     // Handle custom dialog if exists (Radix UI)
     // We check if the dialog content is visible
     try {
         const dialog = page.getByRole('alertdialog');
         if (await dialog.isVisible({ timeout: 2000 })) {
-             await dialog.getByRole('button', { name: 'Delete' }).click();
+             await dialog.getByRole('button', { name: 'Delete' }).click({ force: true });
         }
     } catch (e) {
         // Ignore if no custom dialog

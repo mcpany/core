@@ -1060,7 +1060,32 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/credentials');
         if (!res.ok) throw new Error('Failed to list credentials');
         const data = await res.json();
-        return Array.isArray(data) ? data : (data.credentials || []);
+        const list = Array.isArray(data) ? data : (data.credentials || []);
+        return list.map((c: any) => {
+            const auth = c.authentication || {};
+            // Map common auth types
+            if (auth.api_key && !auth.apiKey) {
+                auth.apiKey = {
+                    ...auth.api_key,
+                    paramName: auth.api_key.param_name,
+                    // in is 'in' (reserved?), but generated types use 'in' or 'location'?
+                    // Proto 'in' -> JSON 'in'. TS interface might use 'in'.
+                };
+            }
+            if (auth.bearer_token && !auth.bearerToken) {
+                auth.bearerToken = { ...auth.bearer_token }; // simple
+            }
+            if (auth.basic_auth && !auth.basicAuth) {
+                auth.basicAuth = { ...auth.basic_auth };
+            }
+            if (auth.oauth2 && !auth.oauth2) { // just in case
+                 // oauth2 is usually same
+            }
+            // Also map oneof wrapper if needed?
+            // If server returns { "authentication": { "api_key": ... } }
+            // auth is { "api_key": ... }
+            return { ...c, authentication: auth };
+        });
     },
 
     /**

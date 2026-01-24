@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -24,13 +25,11 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
+	// Handle single proto message
 	if pm, ok := data.(proto.Message); ok {
 		// Use protojson for proto messages to ensure correct field mapping
 		marshaler := protojson.MarshalOptions{
-			UseProtoNames: true, // Respect snake_case vs camelCase if needed, but standard is UseProtoNames=false -> camelCase
-			// If we want to match how standard JSON encoding would have behaved (roughly), we should check.
-			// However, our UI likely expects camelCase.
-			// protojson defaults to camelCase.
+			UseProtoNames: false, // Use camelCase for JSON compatibility with TS clients
 			EmitUnpopulated: false,
 		}
 		b, err := marshaler.Marshal(pm)
@@ -42,6 +41,51 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 			fmt.Printf("Failed to write response: %v\n", err)
 		}
 		return
+	}
+
+	// Handle slice of proto messages
+	v := reflect.ValueOf(data)
+	if v.Kind() == reflect.Slice {
+		// Check if elements are proto.Message
+		isProto := false
+		if v.Len() > 0 {
+			if _, ok := v.Index(0).Interface().(proto.Message); ok {
+				isProto = true
+			}
+		}
+
+		if isProto {
+			w.Header().Set("Content-Type", "application/json")
+			if _, err := w.Write([]byte("[")); err != nil {
+				fmt.Printf("Failed to write response: %v\n", err)
+				return
+			}
+			marshaler := protojson.MarshalOptions{
+				UseProtoNames: false, // Use camelCase
+				EmitUnpopulated: false,
+			}
+			for i := 0; i < v.Len(); i++ {
+				if i > 0 {
+					if _, err := w.Write([]byte(",")); err != nil {
+						fmt.Printf("Failed to write response: %v\n", err)
+						return
+					}
+				}
+				b, err := marshaler.Marshal(v.Index(i).Interface().(proto.Message))
+				if err != nil {
+					fmt.Printf("Failed to encode proto item %d: %v\n", i, err)
+					return
+				}
+				if _, err := w.Write(b); err != nil {
+					fmt.Printf("Failed to write response: %v\n", err)
+					return
+				}
+			}
+			if _, err := w.Write([]byte("]")); err != nil {
+				fmt.Printf("Failed to write response: %v\n", err)
+			}
+			return
+		}
 	}
 
 	if err := json.NewEncoder(w).Encode(data); err != nil {

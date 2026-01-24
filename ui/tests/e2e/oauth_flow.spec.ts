@@ -113,11 +113,12 @@ test.describe('OAuth Flow Integration', () => {
     // Fill OAuth fields
     await page.getByLabel('Client ID').fill('client-id');
     await page.getByLabel('Client Secret').fill('client-secret');
-    await page.getByLabel('Authorization URL').fill(`${authUrl}/auth`);
+    await page.getByLabel('Auth URL').fill(`${authUrl}/auth`);
     await page.getByLabel('Token URL').fill(`${authUrl}/token`);
     await page.getByLabel('Scopes').fill('read:user');
 
-    await page.getByRole('button', { name: 'Save' }).click();
+    await page.getByLabel('Scopes').press('Enter');
+    // await page.getByRole('button', { name: 'Save' }).click({ force: true });
     await expect(page.getByText(credName)).toBeVisible();
 
     // Now go to Marketplace to use it

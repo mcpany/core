@@ -30,6 +30,8 @@ upstream_services:
         - uri: "system://logs"
           name: "System Logs"
           mime_type: "text/plain"
+          static:
+            text_content: "Mock System Logs Content\n[INFO] Server started\n"
       prompts:
         - name: "summarize_text"
           description: "Summarize text"

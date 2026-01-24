@@ -27,12 +27,7 @@ type ToolUsageStats struct {
 	Count     int64  `json:"count"`
 }
 
-const (
-	labelTool      = "tool"
-	labelServiceID = "service_id"
-	labelStatus    = "status"
-	metricToolsCallTotal = "mcpany_tools_call_total"
-)
+
 
 
 // handleDashboardTopTools returns the top used tools based on Prometheus metrics.
