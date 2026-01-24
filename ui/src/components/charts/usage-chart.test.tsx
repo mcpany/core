@@ -6,11 +6,14 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock Recharts
 vi.mock('recharts', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ComposedChart: ({ children }: any) => <div data-testid="composed-chart">{children}</div>,
   Bar: () => <div>Bar</div>,
   Line: () => <div>Line</div>,
   XAxis: () => <div>XAxis</div>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   YAxis: ({ label }: any) => <div>{label && label.value}</div>,
   CartesianGrid: () => <div>Grid</div>,
   Tooltip: () => <div>Tooltip</div>,
@@ -36,6 +39,7 @@ describe('UsageChart', () => {
     });
 
     it('renders loading state initially', async () => {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
          (apiClient.listAuditLogs as any).mockReturnValue(new Promise(() => {})); // Never resolves to keep loading
          render(<UsageChart toolName="test-tool" />);
          // Skeleton check might be tricky without test-id, but we can verify API call
@@ -53,6 +57,7 @@ describe('UsageChart', () => {
                 duration_ms: 100,
             }
         ];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.listAuditLogs as any).mockResolvedValue(mockData);
 
         render(<UsageChart toolName="test-tool" />);
@@ -65,6 +70,7 @@ describe('UsageChart', () => {
     });
 
      it('renders empty state', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (apiClient.listAuditLogs as any).mockResolvedValue([]);
 
         render(<UsageChart toolName="test-tool" />);

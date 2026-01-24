@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { apiClient } from "@/lib/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format, subHours, subDays, parseISO, startOfHour, startOfMinute, startOfDay, addMinutes, differenceInMinutes } from "date-fns";
+import { format, subHours, subDays, parseISO, startOfHour, startOfMinute, startOfDay, addMinutes } from "date-fns";
 import { Activity } from "lucide-react";
 
 export interface AuditLogEntry {
@@ -64,19 +64,6 @@ export function UsageChart({ toolName }: UsageChartProps) {
           limit: 1000 // reasonable limit
         });
 
-        // logs is { entries: [...] } or just array?
-        // checking client.ts, it returns res.json().
-        // server/pkg/audit/postgres.go (example) returns []Entry.
-        // Assuming it returns an array of entries or object with entries.
-        // Let's assume array based on client.ts returning res.json() and Go returning slice.
-        // However, if it's wrapped in { entries: ... } I need to handle it.
-        // Looking at client.ts listTools returns { tools: ... }.
-        // listAuditLogs calls `/api/v1/audit/logs`.
-        // If I check `server/pkg/api/audit.go` (guessing), I could know.
-        // But let's assume array for now and fix if needed.
-        // Actually, checking client.ts for listSecrets returns array or { secrets: ... }.
-        // I'll handle both.
-
         const list = Array.isArray(logs) ? logs : (logs.entries || []);
         setData(list);
       } catch (error) {
@@ -94,12 +81,6 @@ export function UsageChart({ toolName }: UsageChartProps) {
 
     // Group by time bucket
     const buckets: Record<string, { time: string; count: number; errorCount: number; totalLatency: number, maxLatency: number }> = {};
-
-    // Determine bucket size
-    let bucketFormat = "HH:mm";
-    // if 1h -> minute buckets
-    // if 24h -> hour buckets
-    // if 7d -> day buckets or 6h buckets?
 
     data.forEach(entry => {
         const date = parseISO(entry.timestamp);

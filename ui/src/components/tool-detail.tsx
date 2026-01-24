@@ -56,6 +56,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
         } else {
           throw new Error(`Tool "${toolName}" not found in service "${serviceDetails.name}".`);
         }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         setError(e.message || "An unknown error occurred.");
         toast({
