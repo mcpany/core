@@ -251,6 +251,11 @@ export const marketplaceService = {
                   const tagsRaw = match[3].trim();
                   const description = match[4].trim();
 
+                  // Security check: Ensure URL is http/https to prevent XSS (e.g. javascript:)
+                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                      continue;
+                  }
+
                   // Extract emojis as tags
                   // Simple heuristic: split by space, keep if it's emoji-like or short code
                   const tags = tagsRaw.split(/\s+/).filter(t => t.length > 0);
