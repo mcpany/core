@@ -118,6 +118,11 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, false
 }
 
+// CountToolsForService returns 0.
+func (m *NoOpToolManager) CountToolsForService(_ string) int {
+	return 0
+}
+
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
 type NoOpPromptManager struct{}
 
