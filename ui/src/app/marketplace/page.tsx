@@ -7,14 +7,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { marketplaceService, ServiceCollection, ExternalMarketplace } from "@/lib/marketplace-service";
+import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Package, Globe, ExternalLink } from "lucide-react";
+import { Download, Package, Globe, ExternalLink, Users, Search } from "lucide-react";
 import Link from "next/link";
 
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
@@ -24,6 +24,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { Badge } from "@/components/ui/badge";
 
 /**
  * MarketplacePage component.
@@ -34,10 +35,12 @@ export default function MarketplacePage() {
   const [collections, setCollections] = useState<ServiceCollection[]>([]);
   const [backendTemplates, setBackendTemplates] = useState<ServiceCollection[]>([]);
   const [publicMarkets, setPublicMarkets] = useState<ExternalMarketplace[]>([]);
+  const [communityServers, setCommunityServers] = useState<CommunityServer[]>([]);
   const [loading, setLoading] = useState(true);
   const [importUrl, setImportUrl] = useState("");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Instantiate State
   const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
@@ -50,16 +53,21 @@ export default function MarketplacePage() {
   // Load Data
   const loadData = async () => {
     try {
-        const [cols, markets, templates] = await Promise.all([
+        const [cols, markets, templates, community] = await Promise.all([
             marketplaceService.fetchOfficialCollections(),
             marketplaceService.fetchPublicMarketplaces(),
             apiClient.listTemplates().catch(e => {
                 console.warn("Failed to list templates", e);
                 return [];
+            }),
+            marketplaceService.fetchCommunityServers().catch(e => {
+                console.warn("Failed to fetch community servers", e);
+                return [];
             })
         ]);
         setCollections(cols);
         setPublicMarkets(markets);
+        setCommunityServers(community);
 
         // Map backend templates to ServiceCollection format for consistent display
         const mappedTemplates = templates.map((t: UpstreamServiceConfig) => ({
@@ -93,23 +101,6 @@ export default function MarketplacePage() {
     if (!importUrl) return;
     try {
         const col = await marketplaceService.importCollection(importUrl);
-        // For import, maybe we should save each service as a template?
-        // Or keep local storage for imports?
-        // Let's keep local storage for Imports for now as they are "Collections"
-        // But the task said "Implement Template Persistence".
-        // Let's save imported services to backend templates?
-        // Iterating and saving might be slow.
-        // Let's stick to LocalStorage for "Imported" if they are collections.
-        // But "Wizard" created ones should be backend.
-        // Actually, let's just use backend for everything if possible.
-        // If Importer returns a collection, we can't easily save a collection object to backend unless we use the collection API.
-        // I have handleCollections in API!
-        // But I didn't add client methods for collections.
-        // Let's just save to Local for Import and Backend for Wizard for now to mix both?
-        // Or simpler: Wizard saves to Backend. Import saves to Backend (as individual templates).
-
-        // For now, let's just save Wizard output to Backend.
-        // Import implementation can remain as is (Local) or be upgraded.
         marketplaceService.saveLocalCollection(col);
         toast({ title: "Collection Imported", description: `Saved ${col.name} to Local Marketplace` });
         setIsImportDialogOpen(false);
@@ -148,10 +139,74 @@ export default function MarketplacePage() {
       setIsInstantiateOpen(true);
   };
 
+  const openInstantiateCommunity = (server: CommunityServer) => {
+      // Best-effort config generation logic
+      const isPython = server.tags.some(t => t.includes('🐍'));
+
+      // Try to extract repo name for npx
+      let command = "";
+      const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
+
+      if (repoMatch) {
+          const owner = repoMatch[1];
+          const repo = repoMatch[2];
+          if (isPython) {
+             command = `uvx ${repo}`;
+          } else {
+             if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
+                 command = `npx -y @modelcontextprotocol/${repo}`;
+             } else {
+                 command = `npx -y ${repo}`;
+             }
+          }
+      } else {
+          command = isPython ? "uvx package-name" : "npx -y package-name";
+      }
+
+      const config: UpstreamServiceConfig = {
+          id: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+          name: server.name,
+          version: "1.0.0",
+          commandLineService: {
+              command: command,
+              env: {},
+              workingDirectory: "",
+              tools: [],
+              resources: [],
+              prompts: [],
+              calls: {},
+              communicationProtocol: 0,
+              local: false
+          },
+          disable: false,
+          sanitizedName: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+          priority: 0,
+          loadBalancingStrategy: 0,
+          callPolicies: [],
+          preCallHooks: [],
+          postCallHooks: [],
+          prompts: [],
+          autoDiscoverTool: true,
+          configError: "",
+          tags: server.tags
+      };
+
+      setSelectedTemplate(config);
+      setIsInstantiateOpen(true);
+  };
+
   const openCollectionDetails = (col: ServiceCollection) => {
       setSelectedCollection(col);
       setIsDetailsOpen(true);
   };
+
+  // Filter Community Servers
+  const filteredCommunityServers = communityServers.filter(s =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      s.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
@@ -175,8 +230,9 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      <Tabs defaultValue="official" className="w-full">
+      <Tabs defaultValue="community" className="w-full">
           <TabsList>
+              <TabsTrigger value="community">Community</TabsTrigger>
               <TabsTrigger value="official">Official</TabsTrigger>
               <TabsTrigger value="public">Public</TabsTrigger>
               <TabsTrigger value="local">Local</TabsTrigger>
@@ -280,6 +336,74 @@ export default function MarketplacePage() {
                     )}
                 </div>
             </section>
+          </TabsContent>
+
+          <TabsContent value="community" className="mt-6">
+              <section>
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                      <div>
+                        <h2 className="text-xl font-semibold flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Community Servers (Awesome List)
+                        </h2>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            Discover {communityServers.length} servers from the community.
+                        </p>
+                      </div>
+                      <div className="relative w-full md:w-72">
+                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                              placeholder="Search community servers..."
+                              className="pl-8"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                          />
+                      </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredCommunityServers.slice(0, 100).map((server, idx) => (
+                          <Card key={idx} className="flex flex-col">
+                              <CardHeader>
+                                  <div className="flex justify-between items-start gap-2">
+                                      <CardTitle className="text-lg truncate" title={server.name}>
+                                          {server.name}
+                                      </CardTitle>
+                                      <a href={server.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                                          <ExternalLink className="h-4 w-4" />
+                                      </a>
+                                  </div>
+                                  <CardDescription className="line-clamp-2 min-h-[40px] text-xs">
+                                      {server.description}
+                                  </CardDescription>
+                              </CardHeader>
+                              <CardContent className="flex-1">
+                                  <div className="flex flex-wrap gap-1 mb-2">
+                                      <Badge variant="outline" className="text-[10px] h-5">{server.category}</Badge>
+                                      {server.tags.map((tag, i) => (
+                                          <span key={i} className="text-sm" title="Tag">{tag}</span>
+                                      ))}
+                                  </div>
+                              </CardContent>
+                              <CardFooter>
+                                  <Button className="w-full" variant="secondary" onClick={() => openInstantiateCommunity(server)}>
+                                      Install
+                                  </Button>
+                              </CardFooter>
+                          </Card>
+                      ))}
+                      {filteredCommunityServers.length === 0 && !loading && (
+                          <div className="col-span-full text-center p-12 text-muted-foreground border rounded-lg border-dashed">
+                              No servers found matching "{searchQuery}".
+                          </div>
+                      )}
+                  </div>
+                  {filteredCommunityServers.length > 100 && (
+                      <div className="text-center mt-8 text-muted-foreground text-sm">
+                          Showing first 100 of {filteredCommunityServers.length} results. Use search to find more.
+                      </div>
+                  )}
+              </section>
           </TabsContent>
       </Tabs>
 
