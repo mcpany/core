@@ -256,14 +256,52 @@ func countWordsInValueFast(v interface{}) (int, bool) {
 // countTokensInValueSimpleFast handles fast-path tokenization for SimpleTokenizer.
 // It returns (count, handled, error). If handled is false, the caller should fallback.
 func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool, error) {
+	if c, handled, err := countTokensInValueSimpleScalars(st, v); handled {
+		return c, true, err
+	}
+	if c, handled, err := countTokensInValueSimpleSlices(st, v); handled {
+		return c, true, err
+	}
+
+	if m, ok := v.(map[string]string); ok {
+		count := 0
+		for key, item := range m {
+			kc, _ := st.CountTokens(key)
+			count += kc
+			vc, _ := st.CountTokens(item)
+			count += vc
+		}
+		return count, true, nil
+	}
+	// Fallback to generic unhandled case
+	return 0, false, nil
+}
+
+func countTokensInValueSimpleScalars(st *SimpleTokenizer, v interface{}) (int, bool, error) {
 	switch val := v.(type) {
 	case string:
 		c, err := st.CountTokens(val)
 		return c, true, err
 	case int:
 		return simpleTokenizeInt(val), true, nil
+	case int8:
+		return simpleTokenizeInt64(int64(val)), true, nil
+	case int16:
+		return simpleTokenizeInt64(int64(val)), true, nil
+	case int32:
+		return simpleTokenizeInt64(int64(val)), true, nil
 	case int64:
 		return simpleTokenizeInt64(val), true, nil
+	case uint:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint8:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint16:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint32:
+		return simpleTokenizeUint64(uint64(val)), true, nil
+	case uint64:
+		return simpleTokenizeUint64(val), true, nil
 	case bool:
 		return 1, true, nil
 	case nil:
@@ -285,23 +323,93 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 			count = 1
 		}
 		return count, true, nil
-	case []string:
-		count := 0
-		for _, item := range val {
-			c, _ := st.CountTokens(item)
-			count += c
-		}
-		return count, true, nil
+	}
+	return 0, false, nil
+}
+
+func countTokensInValueSimpleSlices(st *SimpleTokenizer, v interface{}) (int, bool, error) {
+	if c, handled := countTokensInValueSimpleIntSlices(v); handled {
+		return c, true, nil
+	}
+	return countTokensInValueSimpleOtherSlices(st, v)
+}
+
+func countTokensInValueSimpleIntSlices(v interface{}) (int, bool) {
+	switch val := v.(type) {
 	case []int:
 		count := 0
 		for _, item := range val {
 			count += simpleTokenizeInt(item)
 		}
-		return count, true, nil
+		return count, true
+	case []int8:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt64(int64(item))
+		}
+		return count, true
+	case []int16:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt64(int64(item))
+		}
+		return count, true
+	case []int32:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeInt64(int64(item))
+		}
+		return count, true
 	case []int64:
 		count := 0
 		for _, item := range val {
 			count += simpleTokenizeInt64(item)
+		}
+		return count, true
+	case []uint:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeUint64(uint64(item))
+		}
+		return count, true
+	case []uint8:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeUint64(uint64(item))
+		}
+		return count, true
+	case []uint16:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeUint64(uint64(item))
+		}
+		return count, true
+	case []uint32:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeUint64(uint64(item))
+		}
+		return count, true
+	case []uint64:
+		count := 0
+		for _, item := range val {
+			count += simpleTokenizeUint64(item)
+		}
+		return count, true
+	}
+	return 0, false
+}
+
+func countTokensInValueSimpleOtherSlices(st *SimpleTokenizer, v interface{}) (int, bool, error) {
+	switch val := v.(type) {
+	case []string:
+		count := 0
+		for _, item := range val {
+			c, err := st.CountTokens(item)
+			if err != nil {
+				return 0, true, err
+			}
+			count += c
 		}
 		return count, true, nil
 	case []bool:
@@ -326,17 +434,7 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 			count += c
 		}
 		return count, true, nil
-	case map[string]string:
-		count := 0
-		for key, item := range val {
-			kc, _ := st.CountTokens(key)
-			count += kc
-			vc, _ := st.CountTokens(item)
-			count += vc
-		}
-		return count, true, nil
 	}
-	// Fallback to generic unhandled case
 	return 0, false, nil
 }
 
@@ -429,7 +527,7 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 		return countSliceInterface(t, s, visited)
 	}
 
-	return countTokensReflectGeneric(t, v, visited)
+	return countTokensReflectSimple(t, v, visited)
 }
 
 // recursiveTokenizer is an interface for tokenizers that support efficient recursive traversal.
@@ -586,6 +684,111 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 	return t.CountTokens(fmt.Sprintf("%v", v))
 }
 
+func countTokensReflectSimple(t *SimpleTokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
+	// Check for fmt.Stringer first to respect custom formatting
+	if s, ok := v.(fmt.Stringer); ok {
+		return t.CountTokens(s.String())
+	}
+	if e, ok := v.(error); ok {
+		return t.CountTokens(e.Error())
+	}
+
+	val := reflect.ValueOf(v)
+	switch val.Kind() {
+	case reflect.Ptr:
+		if val.IsNil() {
+			return t.CountTokens("null")
+		}
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+
+		return countTokensInValueSimple(t, val.Elem().Interface(), visited)
+	case reflect.Struct:
+		count := 0
+		fields := getExportedFields(val.Type())
+		for _, i := range fields {
+			fieldVal := val.Field(i)
+			// Optimization: Handle primitive fields directly to avoid Interface() allocation
+			switch fieldVal.Kind() {
+			case reflect.String:
+				c, _ := t.CountTokens(fieldVal.String())
+				count += c
+			case reflect.Int:
+				count += simpleTokenizeInt(int(fieldVal.Int()))
+			case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				count += simpleTokenizeInt64(fieldVal.Int())
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32:
+				count += simpleTokenizeUint64(fieldVal.Uint())
+			case reflect.Uint64:
+				count += simpleTokenizeUint64(fieldVal.Uint())
+			case reflect.Bool:
+				count++
+			default:
+				c, err := t.countRecursive(fieldVal.Interface(), visited)
+				if err != nil {
+					return 0, err
+				}
+				count += c
+			}
+		}
+		return count, nil
+	case reflect.Slice:
+		if !val.IsNil() {
+			ptr := val.Pointer()
+			if visited[ptr] {
+				return 0, fmt.Errorf("cycle detected in value")
+			}
+			visited[ptr] = true
+			defer delete(visited, ptr)
+		}
+		fallthrough
+	case reflect.Array:
+		count := 0
+		for i := 0; i < val.Len(); i++ {
+			c, err := countTokensInValueSimple(t, val.Index(i).Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+		return count, nil
+	case reflect.Map:
+		if !val.IsNil() {
+			ptr := val.Pointer()
+			if visited[ptr] {
+				return 0, fmt.Errorf("cycle detected in value")
+			}
+			visited[ptr] = true
+			defer delete(visited, ptr)
+		}
+
+		count := 0
+		iter := val.MapRange()
+		for iter.Next() {
+			// Key
+			kc, err := countTokensInValueSimple(t, iter.Key().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+			// Value
+			vc, err := countTokensInValueSimple(t, iter.Value().Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		}
+		return count, nil
+	}
+
+	// Fallback for others (channels, funcs, unhandled types)
+	return t.CountTokens(fmt.Sprintf("%v", v))
+}
+
 // countTokensReflect is the fallback for non-recursiveTokenizer implementations.
 func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Check for fmt.Stringer first to respect custom formatting
@@ -694,6 +897,26 @@ func simpleTokenizeInt(n int) int {
 		// or process negative numbers.
 	}
 
+	for n != 0 {
+		l++
+		n /= 10
+	}
+
+	count := l / 4
+	if count < 1 {
+		return 1
+	}
+	return count
+}
+
+func simpleTokenizeUint64(n uint64) int {
+	// Optimization: Fast path for common integers.
+	// 0 to 9,999,999 (7 digits) -> 1 token.
+	if n < 10000000 {
+		return 1
+	}
+
+	l := 0
 	for n != 0 {
 		l++
 		n /= 10
