@@ -224,4 +224,24 @@ func TestCheckConnection(t *testing.T) {
 			assert.NotContains(t, err.Error(), "missing port in address")
 		}
 	})
+
+	t.Run("Host with trailing colon defaults to port 80", func(t *testing.T) {
+		// "127.0.0.1:" should default to port 80, NOT port 0 or error.
+		// If bug is present, net.SplitHostPort parses "127.0.0.1:" as host="127.0.0.1", port="".
+		// Then it dials "127.0.0.1:". net.Dial interprets empty port as port 0?
+		// No, usually it fails or tries port 0.
+		// We expect the function to normalize it to "127.0.0.1:80".
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		err := util.CheckConnection(ctx, "127.0.0.1:")
+		// Should try 127.0.0.1:80. Likely connection refused or timeout.
+		assert.Error(t, err)
+		if err != nil {
+			// If it tried port 0, the error might be "dial tcp 127.0.0.1:0: ..."
+			// We want to ensure it tried port 80.
+			assert.Contains(t, err.Error(), ":80", "Expected connection attempt to port 80, but got error: %v", err)
+			assert.NotContains(t, err.Error(), ":0", "Should not attempt connection to port 0")
+		}
+	})
 }

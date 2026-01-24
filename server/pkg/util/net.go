@@ -197,6 +197,9 @@ func CheckConnection(ctx context.Context, address string) error {
 				host = host[1 : len(host)-1]
 			}
 			port = "80"
+		} else if port == "" {
+			// If SplitHostPort succeeds but port is empty (e.g. "host:"), default to 80.
+			port = "80"
 		}
 		target = net.JoinHostPort(host, port)
 	}
