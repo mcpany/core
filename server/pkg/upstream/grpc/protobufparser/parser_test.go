@@ -264,6 +264,10 @@ func TestMcpField_Getters(t *testing.T) {
 	t.Run("GetType", func(t *testing.T) {
 		assert.Equal(t, "test_type", field.GetType())
 	})
+
+	t.Run("GetIsRepeated", func(t *testing.T) {
+		assert.True(t, field.GetIsRepeated())
+	})
 }
 
 // Copyright 2025 Author(s) of MCP Any
@@ -341,6 +345,40 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 		assert.Equal(t, "root.proto", fds.File[0].GetName()) // Should only find the root proto
 	})
 
+	t.Run("recursive ProtoCollection", func(t *testing.T) {
+		tempDir, err := os.MkdirTemp("", "proto-collection-recursive-*")
+		require.NoError(t, err)
+		defer func() { _ = os.RemoveAll(tempDir) }()
+
+		// Create a file in the root
+		err = os.WriteFile(filepath.Join(tempDir, "root.proto"), []byte(`syntax = "proto3";`), 0o600)
+		require.NoError(t, err)
+
+		// Create a file in a subdirectory
+		subDir := filepath.Join(tempDir, "subdir")
+		err = os.Mkdir(subDir, 0o750)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(subDir, "sub.proto"), []byte(`syntax = "proto3";`), 0o600)
+		require.NoError(t, err)
+
+		protoCollection := configv1.ProtoCollection_builder{
+			RootPath:       &tempDir,
+			PathMatchRegex: proto.String(`\.proto$`),
+			IsRecursive:    proto.Bool(true),
+		}.Build()
+
+		fds, err := ParseProtoFromDefs(ctx, nil, []*configv1.ProtoCollection{protoCollection})
+		require.NoError(t, err)
+		require.Len(t, fds.File, 2)
+		// Order is not guaranteed, so check map or existence
+		names := make(map[string]bool)
+		for _, f := range fds.File {
+			names[f.GetName()] = true
+		}
+		assert.True(t, names["root.proto"])
+		assert.True(t, names["subdir/sub.proto"])
+	})
+
 	t.Run("error on ProtoFile with no content or path", func(t *testing.T) {
 		protoDef := configv1.ProtoDefinition_builder{
 			ProtoFile: configv1.ProtoFile_builder{
@@ -354,16 +392,20 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 }
 
 func TestParseProtoByReflection_Extended(t *testing.T) {
-	// Setup a mock server
-	server := &mockReflectionServer{streamReady: make(chan struct{})}
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
-	require.NoError(t, err)
-	s := grpc.NewServer()
-	reflectpb.RegisterServerReflectionServer(s, server)
-	go func() { _ = s.Serve(lis) }()
-	defer s.Stop()
+	setupServer := func(t *testing.T) (*mockReflectionServer, *grpc.Server, net.Listener) {
+		server := &mockReflectionServer{streamReady: make(chan struct{})}
+		lis, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		s := grpc.NewServer()
+		reflectpb.RegisterServerReflectionServer(s, server)
+		go func() { _ = s.Serve(lis) }()
+		return server, s, lis
+	}
 
 	t.Run("successful reflection", func(t *testing.T) {
+		server, s, lis := setupServer(t)
+		defer s.Stop()
+
 		go func() {
 			<-server.streamReady
 			// Simulate the server sending a response
@@ -402,6 +444,69 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 		}()
 		_, err := ParseProtoByReflection(context.Background(), lis.Addr().String())
 		require.NoError(t, err)
+	})
+
+	t.Run("ListServices failure", func(t *testing.T) {
+		server, s, lis := setupServer(t)
+		defer s.Stop()
+
+		go func() {
+			<-server.streamReady
+			// Simulate the server sending an error response or closing early
+			server.stream.SendMsg(&reflectpb.ServerReflectionResponse{})
+			// Sending an empty response (which is invalid for ListServices expectations if we check type)
+			// But MockServerReflectionStream is just a wrapper around the real stream, so we can't easily inject error unless we mock the client.
+			// However, here we are using a real gRPC client against a mock server.
+			// So we can make the server return an error or invalid response.
+
+			err := server.stream.Send(&reflectpb.ServerReflectionResponse{
+				// Missing MessageResponse
+			})
+			require.NoError(t, err)
+		}()
+		_, err := ParseProtoByReflection(context.Background(), lis.Addr().String())
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid response type")
+	})
+
+	t.Run("FileContainingSymbol failure", func(t *testing.T) {
+		server, s, lis := setupServer(t)
+		defer s.Stop()
+
+		go func() {
+			<-server.streamReady
+			// 1. ListServices success
+			req, err := server.stream.Recv()
+			require.NoError(t, err)
+			assert.NotNil(t, req.GetListServices())
+
+			err = server.stream.Send(&reflectpb.ServerReflectionResponse{
+				MessageResponse: &reflectpb.ServerReflectionResponse_ListServicesResponse{
+					ListServicesResponse: &reflectpb.ListServiceResponse{
+						Service: []*reflectpb.ServiceResponse{{Name: "test.Service"}},
+					},
+				},
+			})
+			require.NoError(t, err)
+
+			// 2. FileContainingSymbol failure
+			req, err = server.stream.Recv()
+			require.NoError(t, err)
+			assert.NotNil(t, req.GetFileContainingSymbol())
+
+			// Send error response (empty FileDescriptorProto list)
+			err = server.stream.Send(&reflectpb.ServerReflectionResponse{
+				MessageResponse: &reflectpb.ServerReflectionResponse_FileDescriptorResponse{
+					FileDescriptorResponse: &reflectpb.FileDescriptorResponse{
+						FileDescriptorProto: [][]byte{}, // Empty
+					},
+				},
+			})
+			require.NoError(t, err)
+		}()
+		_, err := ParseProtoByReflection(context.Background(), lis.Addr().String())
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid or empty response")
 	})
 }
 
