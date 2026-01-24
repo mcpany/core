@@ -64,8 +64,6 @@ Verify the timestamps and file sizes of the generated PNGs in
 ui/docs/screenshots/
 to confirm they were actually updated.
 
-ls -l ui/docs/screenshots/dashboard_overview.png
-ls -l ui/docs/screenshots/resource_preview_modal.png
 Deliverables
 Code Changes: Hardened React components.
 Updated Screenshots: Fresh PNG files in
