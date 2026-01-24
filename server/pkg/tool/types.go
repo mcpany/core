@@ -2449,6 +2449,42 @@ func cleanPathPreserveDoubleSlash(p string) string {
 		return "."
 	}
 
+	// ⚡ Bolt Optimization: Fast path for paths without dot segments.
+	// We avoid allocations (strings.Split, Join) for the common case.
+	// A dot segment is "." or ".." appearing as a complete path component.
+	// We use a heuristic to check if we need complex processing.
+	if strings.Contains(p, "/.") || strings.HasPrefix(p, ".") {
+		needsComplex := false
+		if p == "." || p == ".." {
+			needsComplex = true
+		} else if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
+			needsComplex = true
+		} else if strings.Contains(p, "/./") || strings.Contains(p, "/../") {
+			needsComplex = true
+		} else if strings.HasSuffix(p, "/.") || strings.HasSuffix(p, "/..") {
+			needsComplex = true
+		}
+
+		if needsComplex {
+			return cleanPathPreserveDoubleSlashSlow(p)
+		}
+	}
+
+	// Fast path: just handle trailing slash
+	if p == "/" {
+		return p
+	}
+	if len(p) > 0 && p[len(p)-1] == '/' {
+		return p[:len(p)-1]
+	}
+	return p
+}
+
+func cleanPathPreserveDoubleSlashSlow(p string) string {
+	if p == "" {
+		return "."
+	}
+
 	rooted := strings.HasPrefix(p, "/")
 	parts := strings.Split(p, "/")
 
