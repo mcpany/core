@@ -138,6 +138,31 @@ func TestRedactDSN(t *testing.T) {
 			input:    "postgres://user:password@host:invalidport/db?email=foo@bar.com",
 			expected: "postgres://user:[REDACTED]@host:invalidport/db?email=foo@bar.com",
 		},
+		{
+			name:     "fallback: schemeless with slash in password",
+			input:    "user:pass/word@host",
+			expected: "user:[REDACTED]@host",
+		},
+		{
+			name:     "fallback: http scheme with slash in password and invalid port",
+			input:    `parse "http://user:pass/word@host:80%": invalid port ":80%" after host`,
+			expected: `parse "http://user:[REDACTED]@host:80%": invalid port ":[REDACTED]" after host`,
+		},
+		{
+			name:     "fallback: http scheme with slash in password",
+			input:    "http://user:pass/word@host",
+			expected: "http:user:[REDACTED]@host",
+		},
+		{
+			name:     "fallback: opaque scheme with slash in password",
+			input:    "http:user:pass/word@host",
+			expected: "http:[REDACTED]@host", // Over-redaction is acceptable in fallback mode
+		},
+		{
+			name:     "fallback: doctor error message",
+			input:    `Get "http:user:pass/word@host:80%": http: no Host in request URL`,
+			expected: `Get "http:[REDACTED]@host:80%": http: no Host in request URL`,
+		},
 	}
 
 	for _, tt := range tests {

@@ -265,7 +265,7 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	if err != nil {
 		return CheckResult{
 			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect: %v", err),
+			Message: fmt.Sprintf("Failed to connect: %v", util.RedactDSN(err.Error())),
 			Error:   err,
 		}
 	}

@@ -450,7 +450,8 @@ func isKeyColon(input []byte, endOffset int) bool {
 // We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
 // We use [^/?#\s] to stop at path/query/fragment/space, avoiding swallowing the path or matching paths as passwords.
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?#\s]*|)(@)`)
+// Note: We allow / in the password body (except at the start if it looks like ://) to handle passwords with slashes.
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^?#\s]*|/[^/?#@\s][^?#\s]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
@@ -544,7 +545,34 @@ func RedactDSN(dsn string) string {
 	// Handle Go url.Parse error leak "invalid port"
 	dsn = dsnInvalidPortRegex.ReplaceAllString(dsn, "invalid port \":"+redactedPlaceholder+"\"")
 
-	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
+	// Manually replace to handle exclusions (like mailto:)
+	matches := dsnPasswordRegex.FindAllStringIndex(dsn, -1)
+	if len(matches) == 0 {
+		return dsn
+	}
+
+	var sb strings.Builder
+	sb.Grow(len(dsn) + len(matches)*len(redactedPlaceholder))
+	lastIndex := 0
+	for _, match := range matches {
+		start, end := match[0], match[1]
+		sb.WriteString(dsn[lastIndex:start])
+
+		// Check for "mailto" before the colon
+		isMailto := false
+		if start >= 6 && strings.EqualFold(dsn[start-6:start], "mailto") {
+			isMailto = true
+		}
+
+		if isMailto {
+			sb.WriteString(dsn[start:end])
+		} else {
+			sb.WriteString(":" + redactedPlaceholder + "@")
+		}
+		lastIndex = end
+	}
+	sb.WriteString(dsn[lastIndex:])
+	return sb.String()
 }
 
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
