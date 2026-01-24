@@ -148,6 +148,16 @@ export interface ToolFailureStats {
     totalCalls: number;
 }
 
+/**
+ * Tool usage analytics.
+ */
+export interface ToolAnalytics {
+    name: string;
+    serviceId: string;
+    totalCalls: number;
+    successRate: number;
+}
+
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -720,6 +730,16 @@ export const apiClient = {
      */
     getToolFailures: async (): Promise<ToolFailureStats[]> => {
         const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
+        if (!res.ok) return [];
+        return res.json();
+    },
+
+    /**
+     * Gets the tool usage analytics.
+     * @returns A promise that resolves to the tool usage stats.
+     */
+    getToolUsage: async (): Promise<ToolAnalytics[]> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/tool-usage');
         if (!res.ok) return [];
         return res.json();
     },
