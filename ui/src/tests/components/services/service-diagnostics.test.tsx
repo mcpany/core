@@ -20,6 +20,11 @@ vi.mock('@/lib/client', () => ({
 
 import { apiClient } from '@/lib/client';
 
+// Helper to cast mocked function for typing
+const mockValidateService = apiClient.validateService as unknown as ReturnType<typeof vi.fn>;
+const mockGetServiceStatus = apiClient.getServiceStatus as unknown as ReturnType<typeof vi.fn>;
+const mockListTools = apiClient.listTools as unknown as ReturnType<typeof vi.fn>;
+
 describe('ServiceDiagnostics', () => {
   const mockService: UpstreamServiceConfig = {
     id: 'test-id',
@@ -45,9 +50,9 @@ describe('ServiceDiagnostics', () => {
     const user = userEvent.setup();
 
     // Mock successful responses
-    (apiClient.validateService as any).mockResolvedValue({ valid: true });
-    (apiClient.getServiceStatus as any).mockResolvedValue({ status: 'Active' });
-    (apiClient.listTools as any).mockResolvedValue({
+    mockValidateService.mockResolvedValue({ valid: true });
+    mockGetServiceStatus.mockResolvedValue({ status: 'Active' });
+    mockListTools.mockResolvedValue({
       tools: [{ name: 'test-tool', serviceId: 'test-service' }]
     });
 
@@ -72,7 +77,7 @@ describe('ServiceDiagnostics', () => {
 
   it('handles validation failure', async () => {
     const user = userEvent.setup();
-    (apiClient.validateService as any).mockResolvedValue({ valid: false, errors: ['Invalid URL'] });
+    mockValidateService.mockResolvedValue({ valid: false, errors: ['Invalid URL'] });
 
     render(<ServiceDiagnostics service={mockService} />);
 
@@ -87,7 +92,7 @@ describe('ServiceDiagnostics', () => {
   it('skips runtime checks if service is unsaved', async () => {
      const user = userEvent.setup();
      const unsavedService = { ...mockService, id: '', name: 'new-service' };
-     (apiClient.validateService as any).mockResolvedValue({ valid: true });
+     mockValidateService.mockResolvedValue({ valid: true });
 
      render(<ServiceDiagnostics service={unsavedService} />);
      await user.click(screen.getByRole('button', { name: /run diagnostics/i }));
