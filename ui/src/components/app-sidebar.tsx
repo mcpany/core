@@ -66,6 +66,11 @@ const platformItems = [
     icon: Network,
   },
   {
+    title: "Inspector",
+    url: "/inspector",
+    icon: Search,
+  },
+  {
     title: "Live Logs",
     url: "/logs",
     icon: Terminal,
@@ -185,7 +190,7 @@ export function AppSidebar() {
   // User said: "Regular user, probably will not see... Live Logs/Traces"
   const filteredPlatformItems = platformItems.filter(item => {
     if (!isAdmin) {
-        return !['Live Logs', 'Traces'].includes(item.title);
+        return !['Live Logs', 'Traces', 'Inspector'].includes(item.title);
     }
     return true;
   });

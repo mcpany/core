@@ -511,4 +511,32 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
   });
 
+  test('Inspector Screenshots', async ({ page }) => {
+      // Mock WS for Inspector
+      await page.routeWebSocket(/\/api\/v1\/ws\/logs/, ws => {
+          ws.onConnect(connection => {
+            const trafficPayload = {
+              method: "tools/call",
+              timestamp: new Date().toISOString(),
+              duration: "120ms",
+              request: { params: { name: "weather_get", arguments: { city: "Paris" } } },
+              result: { content: [{ type: "text", text: "18C, Sunny" }] },
+              status: "success"
+            };
+            const logEntry = {
+              id: "traffic-screenshot-1",
+              timestamp: new Date().toISOString(),
+              level: "INFO",
+              message: JSON.stringify(trafficPayload),
+              source: "INSPECTOR"
+            };
+            connection.send(JSON.stringify(logEntry));
+          });
+      });
+
+      await page.goto('/inspector');
+      await page.waitForTimeout(2000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'inspector.png'), fullPage: true });
+  });
+
 });

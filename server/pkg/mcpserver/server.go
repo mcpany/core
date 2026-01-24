@@ -244,6 +244,7 @@ func NewServer(
 	s.server.AddReceivingMiddleware(s.toolListFilteringMiddleware)
 	s.server.AddReceivingMiddleware(s.resourceListFilteringMiddleware)
 	s.server.AddReceivingMiddleware(s.promptListFilteringMiddleware)
+	s.server.AddReceivingMiddleware(middleware.InspectorMiddleware)
 
 	return s, nil
 }
