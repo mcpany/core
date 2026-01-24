@@ -11,6 +11,7 @@ import (
 	"net/http"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/mcpany/core/server/pkg/logging"
 	"golang.org/x/oauth2"
 )
 
@@ -116,19 +117,22 @@ func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 
 	oauth2Token, err := p.oauth2Config.Exchange(r.Context(), r.URL.Query().Get("code"))
 	if err != nil {
-		http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
+		logging.GetLogger().Error("Failed to exchange token", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
-		http.Error(w, "No id_token field in oauth2 token", http.StatusInternalServerError)
+		logging.GetLogger().Error("No id_token field in oauth2 token")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	idToken, err := p.verifier.Verify(r.Context(), rawIDToken)
 	if err != nil {
-		http.Error(w, "Failed to verify ID Token: "+err.Error(), http.StatusInternalServerError)
+		logging.GetLogger().Error("Failed to verify ID Token", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -138,7 +142,8 @@ func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		Sub   string `json:"sub"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
-		http.Error(w, "Failed to parse claims: "+err.Error(), http.StatusInternalServerError)
+		logging.GetLogger().Error("Failed to parse claims", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

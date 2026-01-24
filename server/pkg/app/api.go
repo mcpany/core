@@ -549,7 +549,7 @@ func (a *Application) handleServiceRestart(w http.ResponseWriter, r *http.Reques
 	// Trigger reload to re-register
 	if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 		logging.GetLogger().Error("failed to reload config after restart", "error", err)
-		http.Error(w, "Failed to restart service: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -656,7 +656,7 @@ func (a *Application) handleExecute() http.HandlerFunc {
 		result, err := a.ToolManager.ExecuteTool(r.Context(), &req)
 		if err != nil {
 			logging.GetLogger().Error("failed to execute tool", "error", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")

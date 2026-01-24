@@ -111,6 +111,7 @@ database:
     size: 1Gi
   postgresDb: mcpany
   postgresUser: mcpany
+  # WARN: Default value for testing. Change this in production!
   postgresPassword: "changeit"
 
 redis:

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +44,8 @@ func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) 
 
 	entries, err := a.standardMiddlewares.Audit.Read(r.Context(), filter)
 	if err != nil {
-		http.Error(w, "Failed to read audit logs: "+err.Error(), http.StatusInternalServerError)
+		logging.GetLogger().Error("Failed to read audit logs", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
