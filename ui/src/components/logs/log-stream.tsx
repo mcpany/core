@@ -62,17 +62,15 @@ export interface LogEntry {
 /**
  * Helper component to highlight search terms within text.
  */
-const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
-  if (!highlight || !text) return <>{text}</>;
+const HighlightText = ({ text, highlightRegex, highlightLower }: { text: string; highlightRegex?: RegExp | null; highlightLower?: string }) => {
+  if (!highlightRegex || !highlightLower || !text) return <>{text}</>;
 
-  // Escape special regex characters in the highlight string
-  const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
+  const parts = text.split(highlightRegex);
 
   return (
     <>
       {parts.map((part, i) =>
-        part.toLowerCase() === highlight.toLowerCase() ? (
+        part.toLowerCase() === highlightLower ? (
           <mark key={i} className="bg-yellow-500/40 text-inherit rounded-sm px-0.5 -mx-0.5">
             {part}
           </mark>
@@ -130,10 +128,11 @@ const tryParseJson = (str: string): unknown | null => {
  * LogRow component.
  * @param props - The component props.
  * @param props.log - The log property.
- * @param props.searchQuery - The current search query for highlighting.
+ * @param props.searchRegex - The current search regex for highlighting.
+ * @param props.lowerSearchQuery - The current lowercased search query.
  * @returns The rendered component.
  */
-const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: string }) => {
+const LogRow = React.memo(({ log, searchRegex, lowerSearchQuery }: { log: LogEntry; searchRegex?: RegExp | null, lowerSearchQuery: string }) => {
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -161,7 +160,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                   style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
                   title={log.source}
                 >
-                  [<HighlightText text={log.source} highlight={searchQuery} />]
+                  [<HighlightText text={log.source} highlightRegex={searchRegex} highlightLower={lowerSearchQuery} />]
                 </span>
               )}
           </div>
@@ -172,7 +171,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
               style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
               title={log.source}
             >
-              [<HighlightText text={log.source} highlight={searchQuery} />]
+              [<HighlightText text={log.source} highlightRegex={searchRegex} highlightLower={lowerSearchQuery} />]
             </span>
           )}
 
@@ -188,7 +187,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                   </button>
                )}
                <span className="break-all whitespace-pre-wrap">
-                 <HighlightText text={log.message} highlight={searchQuery} />
+                 <HighlightText text={log.message} highlightRegex={searchRegex} highlightLower={lowerSearchQuery} />
                </span>
                {duration && (
                 <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
@@ -366,6 +365,16 @@ export function LogStream() {
     return Array.from(sources).sort()
   }, [logs])
 
+  // Optimization: Memoize the search regex and lowercase query to avoid re-creation on every render/row
+  const { searchRegex, lowerSearchQuery } = React.useMemo(() => {
+     if (!deferredSearchQuery) return { searchRegex: null, lowerSearchQuery: "" };
+     const escaped = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+     return {
+         searchRegex: new RegExp(`(${escaped})`, 'gi'),
+         lowerSearchQuery: deferredSearchQuery.toLowerCase()
+     };
+  }, [deferredSearchQuery]);
+
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
@@ -374,7 +383,6 @@ export function LogStream() {
       return logs
     }
 
-    const lowerSearchQuery = deferredSearchQuery.toLowerCase()
     return logs.filter((log) => {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
       const matchesSource = filterSource === "ALL" || log.source === filterSource
@@ -391,7 +399,7 @@ export function LogStream() {
 
       return matchesLevel && matchesSource && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery])
+  }, [logs, filterLevel, filterSource, deferredSearchQuery, lowerSearchQuery])
 
   const clearLogs = () => setLogs([])
 
@@ -513,7 +521,7 @@ export function LogStream() {
                         </div>
                     )}
                     {filteredLogs.map((log) => (
-                      <LogRow key={log.id} log={log} searchQuery={deferredSearchQuery} />
+                      <LogRow key={log.id} log={log} searchRegex={searchRegex} lowerSearchQuery={lowerSearchQuery} />
                     ))}
                 </div>
              </ScrollArea>
