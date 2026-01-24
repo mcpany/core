@@ -1,502 +1,23 @@
-# Copyright 2025 Author(s) of MCP Any
+# Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
+env:
+  GO_VERSION: "1.24"
+  NODE_VERSION: "22"
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
-
-      - name: Lint
-        run: make lint
-
-  unit-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [build-images]
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-    steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
-
-      - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
-
-      - name: Test (Short)
-        run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          files: coverage-fast.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
-
-  e2e-parallel:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [build-images]
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1/4, 2/4, 3/4, 4/4]
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-    steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
-
-      - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Download Docker Images
-        uses: actions/download-artifact@v4
-        with:
-          pattern: image-*
-          merge-multiple: true
-
-      - name: Load Docker Images
-        run: |
-          for f in *.tar; do
-            docker load -i "$f"
-          done
-
-      - name: Prepare environment
-        run: make prepare
-
-      - name: run parallel e2e
-        run: |
-          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          files: coverage-e2e-parallel.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
-
-
   build-images:
-    name: Build ${{ matrix.target }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: build-docker
-            image: mcpany/server:latest
-            filename: server.tar
-          - target: build-http-echo-docker
-            image: mcpany/http-echo-server:latest
-            filename: http-echo.tar
-          - target: build-e2e-timeserver-docker
-            image: mcpany-e2e-time-server
-            filename: time-server.tar
-          - target: build-cowsay-docker
-            image: mcpany/e2e-cowsay-server:latest
-            filename: cowsay.tar
-          - target: build-everything-docker
-            image: mcpany/everything:latest
-            filename: everything.tar
-          - target: docker-build-ui
-            image: mcpany/ui:latest
-            filename: ui.tar
-          - target: docker-build-operator
-            image: mcpany/operator:latest
-            filename: operator.tar
     steps:
       - uses: actions/checkout@v5
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build Image
-        run: |
-          make -C server ${{ matrix.target }}
-      - name: Save Image
-        run: |
-          docker save -o ${{ matrix.filename }} ${{ matrix.image }}
-      - name: Upload Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-${{ matrix.filename }}
-          path: ${{ matrix.filename }}
-          retention-days: 1
-  e2e-sequential:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    needs: [build-images]
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          docker info
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-
-      - name: Download Docker Images
-        uses: actions/download-artifact@v4
-        with:
-          pattern: image-*
-          merge-multiple: true
-
-      - name: Load Docker Images
-        run: |
-          for f in *.tar; do
-            docker load -i "$f"
-          done
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Prepare environment
-        run: make prepare
-
-      - name: run sequential e2e
-        run: |
-          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          files: coverage-e2e-sequential.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
-
-  e2e-public-api:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [build-images]
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -504,96 +25,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Build Server Image
+        uses: docker/build-push-action@v5
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          context: .
+          file: server/Dockerfile
+          push: false
+          load: true
+          tags: mcpany/server:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Prepare environment
-        run: make prepare
-
-      - name: test public api
-        run: |
-          make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          files: coverage-public-api.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
-
-  docker-smoke-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [build-images]
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          sudo systemctl restart docker
-          docker info # Verify the mirrors are listed
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Download Docker Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-server.tar
-
-      - name: Load Docker Image
-        run: |
-          docker load -i server.tar
-
-      - name: Smoke Test
-        run: |
-          chmod +x server/tests/smoke_test.sh
-          ./server/tests/smoke_test.sh mcpany/server:latest
-
-  build-ui-test-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Build UI Test Image
         uses: docker/build-push-action@v5
         with:
@@ -604,155 +46,144 @@ jobs:
           tags: mcpany-ui-e2e:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Save Docker Image
-        run: docker save mcpany-ui-e2e:latest -o ui-test-image.tar
-      - name: Upload Docker Image
+
+      - name: Save Docker Images
+        run: |
+          docker save mcpany/server:latest -o image-server.tar
+          docker save mcpany-ui-e2e:latest -o ui-test-image.tar
+
+      - name: Upload Docker Images
         uses: actions/upload-artifact@v4
         with:
-          name: ui-test-image
-          path: ui-test-image.tar
+          name: docker-images
+          path: |
+            image-server.tar
+            ui-test-image.tar
           retention-days: 1
 
-  ui-test:
+  unit-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [build-ui-test-image, build-images]
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1/2, 2/2]
-    steps:
-#      - name: Free Disk Space (Ubuntu)
-#        uses: jlumbroso/free-disk-space@main
-#        with:
-#          tool-cache: false
-#          android: true
-#          dotnet: true
-#          haskell: true
-#          large-packages: true
-#          docker-images: false
-#          swap-storage: true
-#
-      - uses: actions/checkout@v5
-      - name: Download Docker Image
-        uses: actions/download-artifact@v4
-        with:
-          name: ui-test-image
-      - name: Load Docker Image
-        run: |
-          docker load -i ui-test-image.tar
-          rm ui-test-image.tar
-
-      - name: Download Docker Images
-        uses: actions/download-artifact@v4
-        with:
-          pattern: image-*
-          merge-multiple: true
-
-      - name: Load Docker Images
-        run: |
-          for f in *.tar; do
-            docker load -i "$f"
-          done
-
-      - name: Test UI
-        run: |
-          SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
-
-  k8s-e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [build-images]
     steps:
       - uses: actions/checkout@v5
-
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
           cache: true
+      - name: Unit Tests
+        run: make test
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-
-      - name: Install UI Dependencies
-        run: |
-          cd ui
-          npm install
-          npx playwright install chromium
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: v3.14.0
-
-      - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1
-        with:
-          cluster_name: mcp-e2e
-          wait: 120s
-
+  e2e-sequential:
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    steps:
+      - uses: actions/checkout@v5
       - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
-
-      - name: Load Docker Images into Kind
-        run: |
-          # Load all tarballs into docker daemon first?
-          # kind load docker-image requires image in docker daemon or archive.
-          # kind load image-archive might be better but let's stick to docker daemon for consistency
-          for f in *.tar; do
-            docker load -i "$f"
-          done
-
-          # Now load specific images into Kind
-          kind load docker-image mcpany/server:latest --name mcp-e2e
-          # Add others if needed? k8s tests probably use server.
-
-      - name: Download Docker Images
-        uses: actions/download-artifact@v4
-        with:
-          pattern: image-*
-          merge-multiple: true
-
+          name: docker-images
       - name: Load Docker Images
         run: |
           for f in *.tar; do
             docker load -i "$f"
           done
+      - name: Run Sequential E2E
+        run: make e2e-sequential
 
-      - name: Run K8s E2E Tests
+  e2e-parallel:
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+      - name: Load Docker Images
         run: |
-          make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+      - name: Run Parallel E2E
+        run: make e2e-parallel
+
+  e2e-public-api:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+      - name: Run Public API E2E
+        run: make test-public-api
+
+  docker-smoke-test:
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+      - name: Smoke Test
+        run: |
+          chmod +x server/tests/smoke_test.sh
+          ./server/tests/smoke_test.sh mcpany/server:latest
+
+  ui-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build-images]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+      - name: Test UI
+        run: |
+          SERVER_IMAGE=mcpany/server:latest make -C ui test-ci
+
+  k8s-e2e:
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+          done
+          kind create cluster --name mcp-e2e
+          kind load docker-image mcpany/server:latest --name mcp-e2e
+      - name: Run K8s E2E
+        run: make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
     runs-on: ubuntu-latest
-    needs: [build-images, build-ui-test-image, unit-test, e2e-sequential, e2e-parallel, e2e-public-api, docker-smoke-test, ui-test, k8s-e2e]
+    needs: [build-images, unit-test, e2e-sequential, e2e-parallel, e2e-public-api, docker-smoke-test, ui-test, k8s-e2e]
     if: always()
     steps:
-      - name: Verify all jobs passed
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const results = {
-              'build-images': '${{ needs.build-images.result }}',
-              'build-ui-test-image': '${{ needs.build-ui-test-image.result }}',
-              'unit-test': '${{ needs.unit-test.result }}',
-              'e2e-sequential': '${{ needs.e2e-sequential.result }}',
-              'e2e-parallel': '${{ needs.e2e-parallel.result }}',
-              'e2e-public-api': '${{ needs.e2e-public-api.result }}',
-              'docker-smoke-test': '${{ needs.docker-smoke-test.result }}',
-              'ui-test': '${{ needs.ui-test.result }}',
-              'k8s-e2e': '${{ needs.k8s-e2e.result }}'
-            };
-            const failed = Object.entries(results).filter(([name, result]) => result !== 'success');
-            if (failed.length > 0) {
-              const msg = 'The following required jobs did not pass: ' + failed.map(([name, result]) => `${name} (${result})`).join(', ');
-              core.setFailed(msg);
-            } else {
-              console.log('All required jobs passed successfully.');
-            }
+      - name: Check Status
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
