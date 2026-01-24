@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package browser provides the upstream service implementation for browser automation.
 package browser
 
 import (
@@ -19,18 +20,21 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type BrowserUpstream struct {
+// Upstream implements the Upstream interface for browser automation.
+type Upstream struct {
 	pw      *playwright.Playwright
 	browser playwright.Browser
 	mu      sync.Mutex
 	config  *configv1.BrowserUpstreamService
 }
 
-func NewUpstream() *BrowserUpstream {
-	return &BrowserUpstream{}
+// NewUpstream creates a new Upstream instance.
+func NewUpstream() *Upstream {
+	return &Upstream{}
 }
 
-func (u *BrowserUpstream) Shutdown(ctx context.Context) error {
+// Shutdown gracefully terminates the browser and playwright instance.
+func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
@@ -47,13 +51,27 @@ func (u *BrowserUpstream) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-func (u *BrowserUpstream) Register(
-	ctx context.Context,
+type argumentDefinition struct {
+	Name        string
+	Description string
+	Type        string
+	Required    bool
+}
+
+type toolDefinition struct {
+	Name        string
+	Description string
+	Arguments   []argumentDefinition
+}
+
+// Register discovers and registers the browser tools.
+func (u *Upstream) Register(
+	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
-	promptManager prompt.ManagerInterface,
-	resourceManager resource.ManagerInterface,
-	isReload bool,
+	_ prompt.ManagerInterface,
+	_ resource.ManagerInterface,
+	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger().With("service", "browser", "upstream", serviceConfig.GetName())
 
@@ -104,42 +122,44 @@ func (u *BrowserUpstream) Register(
 	}
 	u.mu.Unlock()
 
-	tools := []*configv1.ToolDefinition{
+	tools := []toolDefinition{
 		{
 			Name:        "navigate",
 			Description: "Navigate to a URL",
-			Arguments: []*configv1.ArgumentDefinition{
+			Arguments: []argumentDefinition{
 				{Name: "url", Description: "The URL to navigate to", Type: "string", Required: true},
 			},
 		},
 		{
 			Name:        "screenshot",
 			Description: "Take a screenshot of the current page",
-			Arguments: []*configv1.ArgumentDefinition{
+			Arguments: []argumentDefinition{
 				{Name: "full_page", Description: "Capture full page", Type: "boolean"},
 			},
 		},
 		{
 			Name:        "get_content",
 			Description: "Get the content of the current page",
-			Arguments: []*configv1.ArgumentDefinition{},
+			Arguments: []argumentDefinition{},
 		},
 		{
 			Name:        "click",
 			Description: "Click an element",
-			Arguments: []*configv1.ArgumentDefinition{
+			Arguments: []argumentDefinition{
 				{Name: "selector", Description: "CSS selector or XPath", Type: "string", Required: true},
 			},
 		},
 		{
 			Name:        "fill",
 			Description: "Fill an input field",
-			Arguments: []*configv1.ArgumentDefinition{
+			Arguments: []argumentDefinition{
 				{Name: "selector", Description: "CSS selector or XPath", Type: "string", Required: true},
 				{Name: "value", Description: "Value to fill", Type: "string", Required: true},
 			},
 		},
 	}
+
+	registeredTools := make([]*configv1.ToolDefinition, 0, len(tools))
 
 	// Register tools
 	for _, t := range tools {
@@ -167,15 +187,21 @@ func (u *BrowserUpstream) Register(
 			return "", nil, nil, fmt.Errorf("failed to create input schema for tool %s: %w", t.Name, err)
 		}
 
-		t.ServiceId = serviceConfig.GetId() // Important!
+		configToolDef := &configv1.ToolDefinition{
+			Name:        &t.Name,
+			Description: &t.Description,
+			ServiceId:   serviceConfig.Id,
+			InputSchema: inputSchema,
+		}
+		registeredTools = append(registeredTools, configToolDef)
 
-		v1Tool, err := tool.ConvertToolDefinitionToProto(t, inputSchema, nil)
+		v1Tool, err := tool.ConvertToolDefinitionToProto(configToolDef, inputSchema, nil)
 		if err != nil {
 			return "", nil, nil, fmt.Errorf("failed to convert tool definition for %s: %w", t.Name, err)
 		}
 
 		handler := u.createHandler(t.Name)
-		browserTool := &BrowserTool{
+		browserTool := &Tool{
 			toolDef: v1Tool,
 			handler: handler,
 		}
@@ -186,11 +212,11 @@ func (u *BrowserUpstream) Register(
 		}
 	}
 
-	return serviceConfig.GetId(), tools, nil, nil
+	return serviceConfig.GetId(), registeredTools, nil, nil
 }
 
-func (u *BrowserUpstream) createHandler(toolName string) tool.HandlerFunc {
-	return func(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
+func (u *Upstream) createHandler(toolName string) func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	return func(_ context.Context, req *tool.ExecutionRequest) (interface{}, error) {
 		u.mu.Lock()
 		defer u.mu.Unlock()
 
@@ -247,9 +273,6 @@ func (u *BrowserUpstream) createHandler(toolName string) tool.HandlerFunc {
 			if err != nil {
 				return nil, err
 			}
-			// Returning bytes directly might be handled by the tool manager to encode.
-			// However, usually we return base64 or similar.
-			// Assuming the caller handles []byte correctly (e.g. JSON marshalling might base64 it).
 			return map[string]interface{}{"screenshot_bytes": bytes}, nil
 
 		case "get_content":
@@ -264,7 +287,8 @@ func (u *BrowserUpstream) createHandler(toolName string) tool.HandlerFunc {
 			if !ok {
 				return nil, fmt.Errorf("selector argument required")
 			}
-			err := page.Click(selector)
+			// Use Locator instead of deprecated Page.Click
+			err := page.Locator(selector).Click()
 			if err != nil {
 				return nil, err
 			}
@@ -279,7 +303,8 @@ func (u *BrowserUpstream) createHandler(toolName string) tool.HandlerFunc {
 			if !ok {
 				return nil, fmt.Errorf("value argument required")
 			}
-			err := page.Fill(selector, value)
+			// Use Locator instead of deprecated Page.Fill
+			err := page.Locator(selector).Fill(value)
 			if err != nil {
 				return nil, err
 			}
@@ -290,19 +315,21 @@ func (u *BrowserUpstream) createHandler(toolName string) tool.HandlerFunc {
 	}
 }
 
-// BrowserTool implements tool.Tool interface
-type BrowserTool struct {
+// Tool implements tool.Tool interface for browser tools.
+type Tool struct {
 	toolDef     *routerv1.Tool // proto tool definition
-	handler     tool.HandlerFunc
+	handler     func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 	mcpTool     *mcp.Tool
 	mcpToolOnce sync.Once
 }
 
-func (t *BrowserTool) Tool() *routerv1.Tool {
+// Tool returns the protobuf definition of the tool.
+func (t *Tool) Tool() *routerv1.Tool {
 	return t.toolDef
 }
 
-func (t *BrowserTool) MCPTool() *mcp.Tool {
+// MCPTool returns the MCP tool definition.
+func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
 		t.mcpTool, err = tool.ConvertProtoToMCPTool(t.toolDef)
@@ -313,10 +340,12 @@ func (t *BrowserTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-func (t *BrowserTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+// Execute runs the tool handler.
+func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return t.handler(ctx, req)
 }
 
-func (t *BrowserTool) GetCacheConfig() *configv1.CacheConfig {
+// GetCacheConfig returns the cache configuration (nil for browser tools).
+func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

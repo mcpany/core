@@ -37,7 +37,7 @@ func (m *mockToolManager) ToolMatchesProfile(t tool.Tool, profileID string) bool
 func (m *mockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) { return nil, false }
 
 
-func TestBrowserUpstream_Register(t *testing.T) {
+func TestUpstream_Register(t *testing.T) {
 	u := NewUpstream()
 
     tm := new(mockToolManager)
@@ -74,7 +74,7 @@ func toPtr[T any](v T) *T {
 	return &v
 }
 
-func TestBrowserUpstream_Execute_NotInitialized(t *testing.T) {
+func TestUpstream_Execute_NotInitialized(t *testing.T) {
 	u := NewUpstream()
 	// We don't call Register or launch browser, so u.browser is nil.
 
