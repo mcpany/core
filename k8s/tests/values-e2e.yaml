@@ -1,0 +1,28 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+config: |
+  upstream_services:
+    - id: "weather-service"
+      name: "weather-service"
+      command_line_service:
+        command: "echo"
+        tools:
+          - name: "get_weather"
+            description: "Get current weather"
+            call_id: "get_weather"
+        calls:
+          get_weather:
+            args: ['{"weather": "sunny"}']
+        resources:
+          - uri: "system://logs"
+            name: "System Logs"
+            mime_type: "text/plain"
+    - name: "k8s-http-echo"
+      http_service:
+        address: "http://http-echo-server:8080"
+        calls:
+          echo:
+            id: "echo"
+            method: "HTTP_METHOD_POST"
+            endpoint_path: "/echo"

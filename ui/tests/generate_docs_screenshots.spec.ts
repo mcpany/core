@@ -198,13 +198,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Playground Screenshots', async ({ page }) => {
-    await page.goto('/playground');
-    await page.waitForTimeout(1000);
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_blank.png'), fullPage: true });
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground.png'), fullPage: true });
-
     // Mock Tools
-    await page.route('**/api/v1/tools', async route => {
+    await page.route(/.*\/api\/v1\/tools/, async route => {
          await route.fulfill({
              json: {
                  tools: [
@@ -215,9 +210,24 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
     });
 
-    // Reload to get tools
-    await page.reload();
+    let executeCount = 0;
+    await page.route(/.*\/api\/v1\/execute/, async route => {
+         executeCount++;
+         if (executeCount === 1) {
+             await route.fulfill({
+                 json: { content: [{ type: 'text', text: 'Directory listing:\n/var/log/syslog' }] }
+             });
+         } else {
+             await route.fulfill({
+                 json: { content: [{ type: 'text', text: 'Directory listing:\n/var/log/syslog\n/var/log/auth.log' }] }
+             });
+         }
+    });
+
+    await page.goto('/playground');
     await page.waitForTimeout(1000);
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_blank.png'), fullPage: true });
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground.png'), fullPage: true });
 
     // Select Tool
     const tool = page.getByText('filesystem.list_dir');
@@ -229,7 +239,43 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         // Fill Form
         await page.getByLabel('path').fill('/var/log');
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
+
+        // Submit form (Build Command)
+        await page.getByRole('button', { name: 'Build Command' }).click();
+        // Wait for dialog to close
+        await expect(page.getByRole('dialog')).not.toBeVisible();
     }
+
+    // Execute first time
+    // The input should be populated by the form
+    const input = page.locator('input[placeholder="Enter command or select a tool..."]');
+    await expect(input).toHaveValue('filesystem.list_dir {"path":"/var/log"}');
+
+    await page.getByLabel('Send').click();
+
+    // Verify first result appears
+    await expect(page.getByText('Result: filesystem.list_dir')).toHaveCount(1);
+
+    await page.waitForTimeout(1000);
+
+    // Execute second time (same args)
+    // We can just click send again as the input is persisted?
+    // Or we type it again to be sure.
+    // The input is minimal JSON now.
+    await input.fill('filesystem.list_dir {"path":"/var/log"}');
+    await page.getByLabel('Send').click();
+
+    // Verify second result appears
+    await expect(page.getByText('Result: filesystem.list_dir')).toHaveCount(2);
+
+    await page.waitForTimeout(1000);
+
+    // Click Show Diff
+    const diffBtn = page.getByText('Show Diff');
+    await expect(diffBtn).toBeVisible();
+    await diffBtn.click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_tool_diff.png'), fullPage: true });
 
     // Tools alias
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tools.png'), fullPage: true });

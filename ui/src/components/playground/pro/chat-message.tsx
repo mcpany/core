@@ -5,7 +5,7 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,6 +15,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import { DiffEditor } from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 /**
  * MessageType type definition.
@@ -31,6 +33,7 @@ export interface Message {
   toolName?: string;
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
+  previousResult?: unknown; // Result from previous execution with same args
   timestamp: Date;
 }
 
@@ -70,6 +73,12 @@ function analyzeError(error: string): string | null {
  */
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
+    const [showDiff, setShowDiff] = useState(false);
+    const { theme, systemTheme } = useTheme();
+
+    // Calculate actual theme
+    const currentTheme = theme === "system" ? systemTheme : theme;
+    const editorTheme = currentTheme === "dark" ? "vs-dark" : "light";
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -177,6 +186,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
+         const hasDiff = message.previousResult && JSON.stringify(message.previousResult) !== JSON.stringify(message.toolResult);
+
          return (
             <div className="flex justify-start gap-3 pl-11 w-full pr-4 md:pr-10 my-2">
                  <Collapsible className="w-full group rounded-lg border shadow-sm overflow-hidden bg-card" defaultOpen>
@@ -190,32 +201,68 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
                             </span>
                         </div>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">
-                                <span className="group-data-[state=open]:hidden">Show Result</span>
-                                <span className="group-data-[state=closed]:hidden">Hide Result</span>
-                            </Button>
-                        </CollapsibleTrigger>
+                        <div className="flex items-center gap-2">
+                            {hasDiff && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={`h-6 px-2 text-[10px] hover:text-foreground flex items-center gap-1 ${showDiff ? "bg-muted text-foreground" : "text-muted-foreground"}`}
+                                    onClick={(e) => { e.stopPropagation(); setShowDiff(!showDiff); }}
+                                >
+                                    <GitCompare className="h-3 w-3" />
+                                    {showDiff ? "Hide Diff" : "Show Diff"}
+                                </Button>
+                            )}
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">
+                                    <span className="group-data-[state=open]:hidden">Show Result</span>
+                                    <span className="group-data-[state=closed]:hidden">Hide Result</span>
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
                     </div>
                     <CollapsibleContent>
                         <div className="relative group/code max-h-[400px] overflow-auto">
-                             <SyntaxHighlighter
-                                language="json"
-                                style={vscDarkPlus}
-                                customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', minHeight: '100%' }}
-                                wrapLines={true}
-                                wrapLongLines={true}
-                            >
-                                {JSON.stringify(message.toolResult, null, 2)}
-                            </SyntaxHighlighter>
-                             <Button
-                                size="icon"
-                                variant="ghost"
-                                className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover/code:opacity-100 transition-opacity bg-muted/20 hover:bg-muted/50 text-white"
-                                onClick={() => copyToClipboard(JSON.stringify(message.toolResult, null, 2))}
-                            >
-                                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
+                            {showDiff && hasDiff ? (
+                                <div className="h-[300px] w-full border-t">
+                                     <DiffEditor
+                                        height="100%"
+                                        original={JSON.stringify(message.previousResult, null, 2)}
+                                        modified={JSON.stringify(message.toolResult, null, 2)}
+                                        language="json"
+                                        theme={editorTheme}
+                                        options={{
+                                            readOnly: true,
+                                            minimap: { enabled: false },
+                                            scrollBeyondLastLine: false,
+                                            fontSize: 12,
+                                            fontFamily: "var(--font-mono), monospace",
+                                            renderSideBySide: true,
+                                            padding: { top: 8, bottom: 8 },
+                                        }}
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vscDarkPlus}
+                                        customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', minHeight: '100%' }}
+                                        wrapLines={true}
+                                        wrapLongLines={true}
+                                    >
+                                        {JSON.stringify(message.toolResult, null, 2)}
+                                    </SyntaxHighlighter>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover/code:opacity-100 transition-opacity bg-muted/20 hover:bg-muted/50 text-white"
+                                        onClick={() => copyToClipboard(JSON.stringify(message.toolResult, null, 2))}
+                                    >
+                                        {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     </CollapsibleContent>
                 </Collapsible>

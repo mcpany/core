@@ -10,14 +10,8 @@ import fs from 'fs';
 
 test('verify stats page', async ({ page }) => {
   // Mock all API calls to ensure page loads even if backend is slow/down
-  await page.route('/api/v1/**', async route => {
-    const url = route.request().url();
-    if (url.includes('dashboard/traffic') || url.includes('tools/top')) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
-    } else {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
-    }
-  });
+  // REMOVED: using real backend now
+
 
   // Go to the stats page
   await page.goto('/stats');

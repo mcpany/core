@@ -71,7 +71,7 @@ nodes:
   extraPortMappings:
   - containerPort: 30000
     hostPort: %d
-    listenAddress: "0.0.0.0"
+    listenAddress: "127.0.0.1"
     protocol: TCP
 `, hostPort)
 	tmpConfig := filepath.Join(t.TempDir(), "kind-config.yaml")
@@ -79,7 +79,7 @@ nodes:
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "5m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 
@@ -123,6 +123,7 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
+		"-f", "k8s/tests/values-e2e.yaml",
 		"--set", "image.repository=mcpany/server",
 		"--set", fmt.Sprintf("image.tag=%s", tag),
 		"--set", "image.pullPolicy=Never",

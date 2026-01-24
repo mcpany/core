@@ -216,6 +216,13 @@ export function PlaygroundClientPro() {
       }]);
 
       try {
+          // Find previous result for the same tool and args
+          const previousResult = [...messages].reverse().find(m =>
+              m.type === "tool-result" &&
+              m.toolName === toolName &&
+              JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
+          )?.toolResult;
+
           const result = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
@@ -225,7 +232,9 @@ export function PlaygroundClientPro() {
               id: Date.now().toString() + "-result",
               type: "tool-result",
               toolName: toolName,
+              toolArgs: toolArgs,
               toolResult: result,
+              previousResult: previousResult,
               timestamp: new Date(),
           }]);
 

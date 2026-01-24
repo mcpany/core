@@ -6,6 +6,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PlaygroundClientPro } from './playground-client-pro';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { apiClient } from '@/lib/client';
 
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
@@ -92,6 +93,46 @@ describe('PlaygroundClientPro', () => {
       await waitFor(() => {
           expect(screen.getByText('imported command')).toBeInTheDocument();
           expect(screen.getByText('imported response')).toBeInTheDocument();
+      });
+  });
+
+  it('detects previous results for diffing', async () => {
+      // @ts-ignore
+      apiClient.listTools.mockResolvedValue({
+          tools: [{ name: 'test.tool', description: 'Test Tool', inputSchema: {} }]
+      });
+
+      // Mock first execution
+      // @ts-ignore
+      apiClient.executeTool.mockResolvedValueOnce({ result: 'output1' });
+
+      render(<PlaygroundClientPro />);
+
+      // Wait for tools to load (implicit by waiting for input interactions)
+      const input = screen.getByPlaceholderText('Enter command or select a tool...');
+
+      // Run tool first time
+      fireEvent.change(input, { target: { value: 'test.tool {"arg": 1}' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      await waitFor(() => {
+          expect(apiClient.executeTool).toHaveBeenCalledWith({ name: 'test.tool', arguments: { arg: 1 } }, false);
+          expect(screen.getAllByText('Result: test.tool')[0]).toBeInTheDocument();
+      });
+
+      // Mock second execution with different result
+      // @ts-ignore
+      apiClient.executeTool.mockResolvedValueOnce({ result: 'output2' });
+
+      // Run tool second time
+      fireEvent.change(input, { target: { value: 'test.tool {"arg": 1}' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      await waitFor(() => {
+          expect(apiClient.executeTool).toHaveBeenCalledTimes(2);
+          // Check if "Show Diff" button appears (logic added in ChatMessage)
+          // Since ChatMessage renders based on previousResult, checking for "Show Diff" verifies previousResult was passed correctly
+          expect(screen.getByText('Show Diff')).toBeInTheDocument();
       });
   });
 });
