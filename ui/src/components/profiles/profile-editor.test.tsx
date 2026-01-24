@@ -4,7 +4,7 @@
  */
 
 import { render, screen, fireEvent } from "@testing-library/react";
-import { ProfileEditor } from "./profile-editor";
+import { ProfileEditor, ProfileDefinition } from "./profile-editor";
 import { vi, describe, it, expect } from "vitest";
 import { UpstreamServiceConfig } from "@/lib/client";
 
@@ -17,7 +17,9 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("ProfileEditor", () => {
     const mockServices: UpstreamServiceConfig[] = [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { name: "weather-service", version: "1.0", httpService: { address: "http://localhost:8080" } } as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         { name: "calculator-service", version: "2.0", mcpService: { } } as any
     ];
 
@@ -45,7 +47,7 @@ describe("ProfileEditor", () => {
     });
 
     it("renders edit mode correctly", () => {
-        const profile = {
+        const profile: ProfileDefinition = {
             name: "test-profile",
             selector: { tags: ["prod", "secure"] },
             serviceConfig: {

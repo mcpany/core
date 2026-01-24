@@ -15,10 +15,19 @@ import { Badge } from "@/components/ui/badge";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { Search } from "lucide-react";
 
+export interface ProfileDefinition {
+    name: string;
+    selector?: {
+        tags?: string[];
+    };
+    serviceConfig?: Record<string, { enabled: boolean }>;
+    services?: string[]; // Legacy/Convenience
+}
+
 export interface ProfileEditorProps {
-    profile?: any; // The existing profile (if editing)
+    profile?: ProfileDefinition; // The existing profile (if editing)
     services: UpstreamServiceConfig[];
-    onSave: (profile: any) => void;
+    onSave: (profile: ProfileDefinition) => void;
     onCancel: () => void;
 }
 
@@ -36,7 +45,7 @@ export function ProfileEditor({ profile, services, onSave, onCancel }: ProfileEd
 
             const initialEnabled = new Set<string>();
             if (profile.serviceConfig) {
-                Object.entries(profile.serviceConfig).forEach(([svcName, config]: [string, any]) => {
+                Object.entries(profile.serviceConfig).forEach(([svcName, config]) => {
                     if (config.enabled) {
                         initialEnabled.add(svcName);
                     }
@@ -73,7 +82,7 @@ export function ProfileEditor({ profile, services, onSave, onCancel }: ProfileEd
             serviceConfig[svcName] = { enabled: true };
         });
 
-        const profileData = {
+        const profileData: ProfileDefinition = {
             name,
             selector: {
                 tags: tagList
@@ -116,8 +125,8 @@ export function ProfileEditor({ profile, services, onSave, onCancel }: ProfileEd
                 <div className="flex items-center justify-between">
                     <Label>Enabled Services ({enabledServices.size})</Label>
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="xs" onClick={() => setEnabledServices(new Set(services.map(s => s.name)))} className="h-6 text-xs">All</Button>
-                        <Button variant="ghost" size="xs" onClick={() => setEnabledServices(new Set())} className="h-6 text-xs">None</Button>
+                        <Button variant="ghost" size="sm" onClick={() => setEnabledServices(new Set(services.map(s => s.name)))} className="h-6 text-xs px-2">All</Button>
+                        <Button variant="ghost" size="sm" onClick={() => setEnabledServices(new Set())} className="h-6 text-xs px-2">None</Button>
                     </div>
                 </div>
 

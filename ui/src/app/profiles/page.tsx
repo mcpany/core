@@ -19,15 +19,14 @@ import {
 } from "@/components/ui/sheet";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { toast } from "sonner";
-import { ProfileEditor } from "@/components/profiles/profile-editor";
+import { ProfileEditor, ProfileDefinition } from "@/components/profiles/profile-editor";
 
-interface ProfileUI {
+interface ProfileUI extends ProfileDefinition {
     id: string;
-    name: string;
     description: string;
     services: string[];
     type: "dev" | "prod" | "debug";
-    raw: any; // Store the full backend object
+    raw: ProfileDefinition; // Store the full backend object
 }
 
 /**
@@ -39,7 +38,7 @@ export default function ProfilesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState<any | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<ProfileDefinition | undefined>(undefined);
 
   const fetchData = async () => {
       setIsLoading(true);
@@ -50,15 +49,20 @@ export default function ProfilesPage() {
           ]);
 
           // Map backend ProfileDefinition to UI Profile
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mapped: ProfileUI[] = profilesData.map((p: any) => ({
               id: p.name, // Use name as ID
               name: p.name,
               description: "",
-              services: p.serviceConfig ? Object.keys(p.serviceConfig).filter(k => p.serviceConfig[k].enabled) : [],
+              services: p.serviceConfig ? Object.keys(p.serviceConfig).filter((k: string) => p.serviceConfig[k].enabled) : [],
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               type: (p.selector?.tags?.find((t: string) => ["dev", "prod", "debug"].includes(t)) as "dev" | "prod" | "debug") || "dev",
-              raw: p
+              raw: p,
+              selector: p.selector,
+              serviceConfig: p.serviceConfig
           }));
           setProfiles(mapped);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setServices(Array.isArray(servicesData) ? servicesData : (servicesData as any).services || []);
       } catch (error) {
           console.error("Failed to fetch data", error);
@@ -73,7 +77,7 @@ export default function ProfilesPage() {
   }, []);
 
   const handleCreateOpen = () => {
-      setSelectedProfile(null);
+      setSelectedProfile(undefined);
       setIsSheetOpen(true);
   };
 
@@ -82,7 +86,7 @@ export default function ProfilesPage() {
       setIsSheetOpen(true);
   };
 
-  const handleSave = async (profileData: any) => {
+  const handleSave = async (profileData: ProfileDefinition) => {
       try {
           if (selectedProfile) {
               // Update
