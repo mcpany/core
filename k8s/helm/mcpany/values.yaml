@@ -17,6 +17,12 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# Admin configuration
+admin:
+  # The password for the initial admin user.
+  # This MUST be set for the server to start securely.
+  password: "changeit"
+
 serviceAccount:
   # Specifies whether a service account should be created.
   create: true
