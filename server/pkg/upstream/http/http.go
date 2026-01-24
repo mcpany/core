@@ -488,10 +488,17 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				decodedKey, errKey := url.QueryUnescape(key)
 				_, errVal := url.QueryUnescape(value)
 
-				if errKey != nil || errVal != nil {
+				if errKey != nil {
 					qp.isInvalid = true
 				} else {
 					qp.key = decodedKey
+					// Even if value is invalid, we have the key, so we can use it for overriding/merging logic.
+					// We might consider tracking that the value is invalid if needed, but for now,
+					// as long as we have the key, we treat it as valid for key-based lookup.
+					if errVal != nil {
+						// Optionally log or track this, but we don't mark the whole part as invalid
+						// because that would prevent us from overriding base parameters with this key.
+					}
 				}
 				parts = append(parts, qp)
 			}
