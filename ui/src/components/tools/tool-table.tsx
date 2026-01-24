@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Wrench, Play, Star, Info } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import { ToolAnalytics } from "@/lib/client";
 
 interface ToolTableProps {
   tools: ToolDefinition[];
@@ -22,6 +23,7 @@ interface ToolTableProps {
   togglePin: (name: string) => void;
   toggleTool: (name: string, currentStatus: boolean) => void;
   openInspector: (tool: ToolDefinition) => void;
+  usageStats?: Record<string, ToolAnalytics>;
 }
 
 // ⚡ Bolt Optimization: Extracted ToolTable from page.tsx to prevent unnecessary re-renders
@@ -39,7 +41,8 @@ export const ToolTable = memo(function ToolTable({
   isPinned,
   togglePin,
   toggleTool,
-  openInspector
+  openInspector,
+  usageStats
 }: ToolTableProps) {
   return (
     <Table>
@@ -49,6 +52,8 @@ export const ToolTable = memo(function ToolTable({
           <TableHead>Name</TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Service</TableHead>
+          <TableHead className="text-right">Calls</TableHead>
+          <TableHead className="text-right">Success</TableHead>
           <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Actions</TableHead>
@@ -75,6 +80,20 @@ export const ToolTable = memo(function ToolTable({
             <TableCell className={isCompact ? "py-0 px-2" : ""}>{tool.description}</TableCell>
             <TableCell className={isCompact ? "py-0 px-2" : ""}>
                 <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
+            </TableCell>
+            <TableCell className={cn("text-right font-mono", isCompact ? "py-0 px-2" : "")}>
+                {usageStats?.[`${tool.name}@${tool.serviceId}`]?.totalCalls || "-"}
+            </TableCell>
+            <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
+                {(() => {
+                    const stats = usageStats?.[`${tool.name}@${tool.serviceId}`];
+                    if (!stats || stats.totalCalls === 0) return "-";
+                    const rate = stats.successRate;
+                    let color = "text-green-500";
+                    if (rate < 50) color = "text-red-500";
+                    else if (rate < 90) color = "text-yellow-500";
+                    return <span className={cn("font-bold", color)}>{rate.toFixed(1)}%</span>;
+                })()}
             </TableCell>
             <TableCell className={isCompact ? "py-0 px-2" : ""}>
                 <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>

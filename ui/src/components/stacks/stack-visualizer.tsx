@@ -49,24 +49,64 @@ export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
             }
 
             const rawServices = parsed.services || {};
-            const serviceList: ParsedService[] = Object.entries(rawServices).map(([key, val]: [string, any]) => {
-                const env = val.environment || val.env || {};
-                const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
-                const ports = val.ports || [];
+            let serviceList: ParsedService[] = [];
 
-                let type: ParsedService['type'] = "unknown";
-                if (val.image) type = "image";
-                else if (val.command) type = "command";
+            if (Array.isArray(rawServices)) {
+                serviceList = rawServices.map((val: any) => {
+                    const env = val.environment || val.env || {};
+                    const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
+                    const ports = val.ports || [];
 
-                return {
-                    name: key,
-                    image: val.image,
-                    command: val.command,
-                    envCount,
-                    ports,
-                    type
-                };
-            });
+                    let type: ParsedService['type'] = "unknown";
+                    if (val.mcp_service) {
+                        type = "image"; // Treat as image/container for visualizer if it has one
+                        // Extract details
+                        if (val.mcp_service.stdio_connection) {
+                            val.image = val.mcp_service.stdio_connection.container_image;
+                            val.command = val.mcp_service.stdio_connection.command;
+                        } else if (val.mcp_service.bundle_connection) {
+                            val.image = val.mcp_service.bundle_connection.container_image;
+                        }
+                    } else if (val.image) type = "image";
+                    else if (val.command) type = "command";
+
+                    return {
+                        name: val.name || "unknown",
+                        image: val.image,
+                        command: val.command,
+                        envCount,
+                        ports,
+                        type
+                    };
+                });
+            } else {
+                serviceList = Object.entries(rawServices).map(([key, val]: [string, any]) => {
+                    const env = val.environment || val.env || {};
+                    const envCount = Array.isArray(env) ? env.length : Object.keys(env).length;
+                    const ports = val.ports || [];
+
+                    let type: ParsedService['type'] = "unknown";
+                    if (val.mcp_service) {
+                        type = "image";
+                        if (val.mcp_service.stdio_connection) {
+                            val.image = val.mcp_service.stdio_connection.container_image;
+                            val.command = val.mcp_service.stdio_connection.command;
+                        } else if (val.mcp_service.bundle_connection) {
+                            val.image = val.mcp_service.bundle_connection.container_image;
+                        }
+                    } else if (val.image) type = "image";
+                    else if (val.command) type = "command";
+
+                    return {
+                        name: key,
+                        image: val.image,
+                        command: val.command,
+                        envCount,
+                        ports,
+                        type
+                    };
+                });
+            }
 
             return { services: serviceList, error: null };
         } catch (e: any) {

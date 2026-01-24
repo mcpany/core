@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -38,6 +38,7 @@ import {
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
+  const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const { isPinned, togglePin, isLoaded } = usePinnedTools();
@@ -55,7 +56,21 @@ export default function ToolsPage() {
   useEffect(() => {
     fetchTools();
     fetchServices();
+    fetchToolUsage();
   }, []);
+
+  const fetchToolUsage = async () => {
+    try {
+        const stats = await apiClient.getToolUsage();
+        const statsMap: Record<string, ToolAnalytics> = {};
+        stats.forEach(s => {
+            statsMap[`${s.name}@${s.serviceId}`] = s;
+        });
+        setToolUsage(statsMap);
+    } catch (e) {
+        console.error("Failed to fetch tool usage", e);
+    }
+  };
 
   const fetchTools = async () => {
     try {
@@ -130,6 +145,7 @@ export default function ToolsPage() {
     acc[key].push(tool);
     return acc;
   }, {} as Record<string, ToolDefinition[]>);
+
 
   if (!isLoaded) {
       return (
@@ -217,6 +233,7 @@ export default function ToolsPage() {
               togglePin={togglePin}
               toggleTool={toggleTool}
               openInspector={openInspector}
+              usageStats={toolUsage}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -238,6 +255,7 @@ export default function ToolsPage() {
                       togglePin={togglePin}
                       toggleTool={toggleTool}
                       openInspector={openInspector}
+                      usageStats={toolUsage}
                     />
                   </AccordionContent>
                 </AccordionItem>
