@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Power, Trash2, Save } from "lucide-react";
+import { Loader2, ArrowLeft, Power, Trash2, Save, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ export default function UpstreamServiceDetailPage() {
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [testing, setTesting] = useState(false);
 
     // Fetch Service
     useEffect(() => {
@@ -87,6 +88,28 @@ export default function UpstreamServiceDetailPage() {
         }
     };
 
+    const handleTestConnection = async () => {
+        if (!service) return;
+        setTesting(true);
+        try {
+            // validateService sends the current config state to the backend for validation
+            const result = await apiClient.validateService(service);
+            if (result.valid) {
+                toast({ title: "Connection Successful", description: "Service is reachable and configured correctly." });
+            } else {
+                toast({
+                    title: "Connection Failed",
+                    description: result.error ? `${result.error}${result.details ? `: ${result.details}` : ''}` : "Unknown error",
+                    variant: "destructive"
+                });
+            }
+        } catch (e) {
+            toast({ title: "Validation Error", description: String(e), variant: "destructive" });
+        } finally {
+            setTesting(false);
+        }
+    };
+
     if (loading) {
         return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
@@ -119,6 +142,10 @@ export default function UpstreamServiceDetailPage() {
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleTestConnection} disabled={testing}>
+                        {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                        Test Connection
+                    </Button>
                     <Button variant="outline" onClick={handleToggleStatus}>
                         <Power className="mr-2 h-4 w-4" />
                         {service.disable ? "Enable" : "Disable"}
