@@ -221,18 +221,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(1000);
 
     // Select Tool (Filesystem)
-    const tool = page.getByText('filesystem.list_dir');
-    // Note: In newer UI, tools are in a sheet, so we might need to open it first if not open?
-    // But PlaygroundClient code shows "Available Tools" button opens sheet.
-    // Assuming the test above relies on the sheet being open or the list being visible?
-    // Wait, the previous test didn't open the sheet.
-    // "Select Tool" logic in existing test: `page.getByText('filesystem.list_dir').click()`
-    // This implies the list is visible. But the code I read shows it in a Sheet triggered by button.
-    // Maybe checking `playground-client.tsx`...
-    // <Sheet><SheetTrigger><Button>Available Tools</Button></SheetTrigger>...
-    // The list is inside SheetContent.
-    // So we MUST open the sheet.
-
     const fsTool = page.getByText('filesystem.list_dir');
     // Note: PlaygroundClientPro has a sidebar, so tools should be visible immediately on desktop.
     if (await fsTool.isVisible()) {
