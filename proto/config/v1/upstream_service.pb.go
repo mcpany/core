@@ -287,6 +287,12 @@ type UpstreamServiceConfig struct {
 	// If true, this service configuration is read-only (e.g., loaded from a file).
 	// @inject_tag: yaml:"-"
 	ReadOnly *bool `protobuf:"varint,35,opt,name=read_only" json:"read_only,omitempty"`
+	// The last error message encountered by the service (e.g. health check failure).
+	// @inject_tag: yaml:"-"
+	LastError *string `protobuf:"bytes,36,opt,name=last_error" json:"last_error,omitempty"`
+	// The number of tools registered for this service.
+	// @inject_tag: yaml:"-"
+	ToolCount *int32 `protobuf:"varint,37,opt,name=tool_count" json:"tool_count,omitempty"`
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig `protobuf:"bytes,9,opt,name=connection_pool" json:"connection_pool,omitempty"`
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -421,6 +427,20 @@ func (x *UpstreamServiceConfig) GetReadOnly() bool {
 		return *x.ReadOnly
 	}
 	return false
+}
+
+func (x *UpstreamServiceConfig) GetLastError() string {
+	if x != nil && x.LastError != nil {
+		return *x.LastError
+	}
+	return ""
+}
+
+func (x *UpstreamServiceConfig) GetToolCount() int32 {
+	if x != nil && x.ToolCount != nil {
+		return *x.ToolCount
+	}
+	return 0
 }
 
 func (x *UpstreamServiceConfig) GetConnectionPool() *ConnectionPoolConfig {
@@ -670,6 +690,14 @@ func (x *UpstreamServiceConfig) SetReadOnly(v bool) {
 	x.ReadOnly = &v
 }
 
+func (x *UpstreamServiceConfig) SetLastError(v string) {
+	x.LastError = &v
+}
+
+func (x *UpstreamServiceConfig) SetToolCount(v int32) {
+	x.ToolCount = &v
+}
+
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
 	x.ConnectionPool = v
 }
@@ -881,6 +909,20 @@ func (x *UpstreamServiceConfig) HasReadOnly() bool {
 	return x.ReadOnly != nil
 }
 
+func (x *UpstreamServiceConfig) HasLastError() bool {
+	if x == nil {
+		return false
+	}
+	return x.LastError != nil
+}
+
+func (x *UpstreamServiceConfig) HasToolCount() bool {
+	if x == nil {
+		return false
+	}
+	return x.ToolCount != nil
+}
+
 func (x *UpstreamServiceConfig) HasConnectionPool() bool {
 	if x == nil {
 		return false
@@ -1082,6 +1124,14 @@ func (x *UpstreamServiceConfig) ClearReadOnly() {
 	x.ReadOnly = nil
 }
 
+func (x *UpstreamServiceConfig) ClearLastError() {
+	x.LastError = nil
+}
+
+func (x *UpstreamServiceConfig) ClearToolCount() {
+	x.ToolCount = nil
+}
+
 func (x *UpstreamServiceConfig) ClearConnectionPool() {
 	x.ConnectionPool = nil
 }
@@ -1265,6 +1315,12 @@ type UpstreamServiceConfig_builder struct {
 	// If true, this service configuration is read-only (e.g., loaded from a file).
 	// @inject_tag: yaml:"-"
 	ReadOnly *bool
+	// The last error message encountered by the service (e.g. health check failure).
+	// @inject_tag: yaml:"-"
+	LastError *string
+	// The number of tools registered for this service.
+	// @inject_tag: yaml:"-"
+	ToolCount *int32
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
 	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
@@ -1323,6 +1379,8 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	x.AutoDiscoverTool = b.AutoDiscoverTool
 	x.ConfigError = b.ConfigError
 	x.ReadOnly = b.ReadOnly
+	x.LastError = b.LastError
+	x.ToolCount = b.ToolCount
 	x.ConnectionPool = b.ConnectionPool
 	x.UpstreamAuth = b.UpstreamAuth
 	x.Cache = b.Cache
@@ -7943,7 +8001,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xf5\x11\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb5\x12\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +
@@ -7953,7 +8011,13 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\adisable\x18\x06 \x01(\bR\adisable\x12.\n" +
 	"\x12auto_discover_tool\x18\a \x01(\bR\x12auto_discover_tool\x12\"\n" +
 	"\fconfig_error\x18\b \x01(\tR\fconfig_error\x12\x1c\n" +
-	"\tread_only\x18# \x01(\bR\tread_only\x12P\n" +
+	"\tread_only\x18# \x01(\bR\tread_only\x12\x1e\n" +
+	"\n" +
+	"last_error\x18$ \x01(\tR\n" +
+	"last_error\x12\x1e\n" +
+	"\n" +
+	"tool_count\x18% \x01(\x05R\n" +
+	"tool_count\x12P\n" +
 	"\x0fconnection_pool\x18\t \x01(\v2&.mcpany.config.v1.ConnectionPoolConfigR\x0fconnection_pool\x12F\n" +
 	"\rupstream_auth\x18\n" +
 	" \x01(\v2 .mcpany.config.v1.AuthenticationR\rupstream_auth\x123\n" +

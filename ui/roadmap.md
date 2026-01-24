@@ -59,10 +59,12 @@
 - [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
 - [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
-- [ ] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
+- [x] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
 - [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
-- [ ] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
+- [x] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
+- [ ] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
+- [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.
 - [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.
 - [ ] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.

@@ -7,30 +7,56 @@
 
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { MetricsOverview } from "@/components/dashboard/metrics-overview";
-import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
-import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { GripVertical } from "lucide-react";
+import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+    DropdownMenuSub,
+    DropdownMenuSubTrigger,
+    DropdownMenuSubContent,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
+import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 
-const DEFAULT_WIDGETS = [
-    { id: "metrics", title: "Metrics Overview", type: "wide" },
-    { id: "recent-activity", title: "Recent Activity", type: "half" },
-    { id: "uptime", title: "System Uptime", type: "half" }, // 4 cols
-    { id: "failure-rate", title: "Tool Failure Rates", type: "third" }, // 3 cols
-    { id: "request-volume", title: "Request Volume", type: "half" },
-    { id: "top-tools", title: "Top Tools", type: "third" },
-    { id: "service-health", title: "Service Health", type: "third" },
-];
+export interface WidgetInstance {
+    instanceId: string;
+    type: string;
+    title: string;
+    size: WidgetSize;
+    hidden?: boolean;
+}
+
+// Default widgets for a fresh dashboard
+const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
+    instanceId: crypto.randomUUID(),
+    type: def.type,
+    title: def.title,
+    size: def.defaultSize,
+    hidden: false
+}));
 
 /**
  * DashboardGrid component.
- * Implements a draggable grid for dashboard widgets.
+ * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
  */
 export function DashboardGrid() {
-    const [widgets, setWidgets] = useState(DEFAULT_WIDGETS);
+    const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -38,84 +64,248 @@ export function DashboardGrid() {
         const saved = localStorage.getItem("dashboard-layout");
         if (saved) {
             try {
-                setWidgets(JSON.parse(saved));
+                const parsed = JSON.parse(saved);
+
+                // Migration Logic
+                // Case 1: Legacy format (DashboardWidget[]) where id matches type
+                if (parsed.length > 0 && !parsed[0].instanceId) {
+                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                        instanceId: crypto.randomUUID(),
+                        type: w.id, // In legacy, id was effectively the type
+                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                        hidden: w.hidden ?? false
+                    }));
+
+                    // Filter out any invalid types
+                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
+
+                    // If migration resulted in empty or too few widgets, append defaults?
+                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
+                    if (validMigrated.length === 0) {
+                        setWidgets(DEFAULT_LAYOUT);
+                    } else {
+                        setWidgets(validMigrated);
+                    }
+                } else {
+                    // Case 2: Already in new format
+                    setWidgets(parsed);
+                }
             } catch (e) {
                 console.error("Failed to load dashboard layout", e);
+                setWidgets(DEFAULT_LAYOUT);
             }
+        } else {
+            setWidgets(DEFAULT_LAYOUT);
         }
     }, []);
+
+    const saveWidgets = (newWidgets: WidgetInstance[]) => {
+        setWidgets(newWidgets);
+        localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
+    };
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
 
-        const items = Array.from(widgets);
+        const visibleWidgets = widgets.filter(w => !w.hidden);
+        const hiddenWidgets = widgets.filter(w => w.hidden);
+
+        const items = Array.from(visibleWidgets);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
-        setWidgets(items);
-        localStorage.setItem("dashboard-layout", JSON.stringify(items));
+        saveWidgets([...items, ...hiddenWidgets]);
+    };
+
+    const updateWidgetSize = (instanceId: string, newSize: WidgetSize) => {
+        const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, size: newSize } : w);
+        saveWidgets(updated);
+    };
+
+    const toggleWidgetVisibility = (instanceId: string) => {
+        const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, hidden: !w.hidden } : w);
+        saveWidgets(updated);
+    };
+
+    const removeWidget = (instanceId: string) => {
+        const updated = widgets.filter(w => w.instanceId !== instanceId);
+        saveWidgets(updated);
+    };
+
+    const addWidget = (type: string) => {
+        const def = getWidgetDefinition(type);
+        if (!def) return;
+
+        const newWidget: WidgetInstance = {
+            instanceId: crypto.randomUUID(),
+            type: def.type,
+            title: def.title,
+            size: def.defaultSize,
+            hidden: false
+        };
+
+        // Add to the top
+        saveWidgets([newWidget, ...widgets]);
     };
 
     if (!isMounted) return null;
 
-    const renderWidget = (id: string) => {
-        switch (id) {
-            case "metrics": return <MetricsOverview />;
-            case "recent-activity": return <LazyRecentActivityWidget />;
-            case "uptime": return <LazyHealthHistoryChart />;
-            case "failure-rate": return <ToolFailureRateWidget />;
-            case "request-volume": return <LazyRequestVolumeChart />;
-            case "top-tools": return <LazyTopToolsWidget />;
-            case "service-health": return <ServiceHealthWidget />;
-            default: return null;
+    const renderWidget = (widget: WidgetInstance) => {
+        const def = getWidgetDefinition(widget.type);
+        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+
+        const Component = def.component;
+        return <Component />;
+    };
+
+    const getColSpan = (size: WidgetSize) => {
+        switch (size) {
+            case "full": return "col-span-12";
+            case "two-thirds": return "col-span-12 lg:col-span-8";
+            case "half": return "col-span-12 lg:col-span-6";
+            case "third": return "col-span-12 lg:col-span-4";
+            default: return "col-span-12 lg:col-span-4";
         }
     };
 
-    return (
-        <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="dashboard-widgets" direction="vertical">
-                {(provided) => (
-                    <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="space-y-4"
-                    >
-                        {/* Metrics is always on top for now as it's full width and special */}
-                        {widgets.filter(w => w.id === "metrics").map((widget) => (
-                             <div key={widget.id} className="w-full">
-                                {renderWidget(widget.id)}
-                             </div>
-                        ))}
+    const visibleWidgets = widgets.filter(w => !w.hidden);
 
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                            {widgets.filter(w => w.id !== "metrics").map((widget, index) => (
-                                <Draggable key={widget.id} draggableId={widget.id} index={index}>
+    return (
+        <div className="space-y-4">
+            <div className="flex justify-end gap-2">
+                <AddWidgetSheet onAdd={addWidget} />
+
+                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
+                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
+                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
+                    Let's keep the popover for recovering hidden widgets.
+                */}
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 border-dashed">
+                            <Settings2 className="mr-2 h-4 w-4" />
+                            Layout
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56" align="end">
+                        <div className="space-y-2">
+                            <h4 className="font-medium leading-none mb-2">Visible Widgets</h4>
+                            {widgets.map((widget) => (
+                                <div key={widget.instanceId} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={`show-${widget.instanceId}`}
+                                        checked={!widget.hidden}
+                                        onCheckedChange={() => toggleWidgetVisibility(widget.instanceId)}
+                                    />
+                                    <Label htmlFor={`show-${widget.instanceId}`} className="text-sm font-normal cursor-pointer w-full truncate">
+                                        {widget.title}
+                                    </Label>
+                                </div>
+                            ))}
+                             {widgets.length === 0 && <p className="text-xs text-muted-foreground">No widgets added.</p>}
+                             <div className="pt-2">
+                                <Button variant="ghost" size="sm" className="w-full text-xs text-destructive" onClick={() => saveWidgets([])}>
+                                    Clear All
+                                </Button>
+                             </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            </div>
+
+            <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="dashboard-widgets" direction="horizontal">
+                    {(provided) => (
+                        <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            className="grid grid-cols-12 gap-4"
+                        >
+                            {visibleWidgets.map((widget, index) => (
+                                <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
                                     {(provided, snapshot) => (
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             className={cn(
-                                                "relative group/widget",
-                                                widget.type === "half" ? "lg:col-span-4" : "lg:col-span-3",
-                                                snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] transition-transform"
+                                                "relative group/widget rounded-lg transition-all duration-200",
+                                                getColSpan(widget.size),
+                                                snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
                                             )}
                                         >
-                                            <div
-                                                {...provided.dragHandleProps}
-                                                className="absolute top-3 right-3 opacity-0 group-hover/widget:opacity-100 transition-opacity z-10 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
-                                            >
-                                                <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                            <div className="absolute top-2 right-2 flex items-center space-x-1 opacity-0 group-hover/widget:opacity-100 transition-opacity z-20">
+                                                 <div
+                                                    {...provided.dragHandleProps}
+                                                    className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-grab active:cursor-grabbing border border-transparent hover:border-border"
+                                                >
+                                                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <div className="p-1 hover:bg-muted/80 bg-background/50 backdrop-blur-sm rounded cursor-pointer border border-transparent hover:border-border">
+                                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                                        </div>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Widget Options</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuSub>
+                                                            <DropdownMenuSubTrigger>
+                                                                <Maximize className="mr-2 h-4 w-4" />
+                                                                <span>Size</span>
+                                                            </DropdownMenuSubTrigger>
+                                                            <DropdownMenuSubContent>
+                                                                <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
+                                                                    <DropdownMenuRadioItem value="full">
+                                                                        <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
+                                                                    </DropdownMenuRadioItem>
+                                                                    <DropdownMenuRadioItem value="two-thirds">
+                                                                        <Columns className="mr-2 h-4 w-4" /> 2/3 Width
+                                                                    </DropdownMenuRadioItem>
+                                                                    <DropdownMenuRadioItem value="half">
+                                                                        <Columns className="mr-2 h-4 w-4" /> 1/2 Width
+                                                                    </DropdownMenuRadioItem>
+                                                                    <DropdownMenuRadioItem value="third">
+                                                                        <Columns className="mr-2 h-4 w-4" /> 1/3 Width
+                                                                    </DropdownMenuRadioItem>
+                                                                </DropdownMenuRadioGroup>
+                                                            </DropdownMenuSubContent>
+                                                        </DropdownMenuSub>
+                                                        <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
+                                                            <EyeOff className="mr-2 h-4 w-4" />
+                                                            Hide Widget
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Remove
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
-                                            {renderWidget(widget.id)}
+
+                                            {renderWidget(widget)}
                                         </div>
                                     )}
                                 </Draggable>
                             ))}
+                            {provided.placeholder}
                         </div>
-                        {provided.placeholder}
-                    </div>
-                )}
-            </Droppable>
-        </DragDropContext>
+                    )}
+                </Droppable>
+            </DragDropContext>
+
+            {/* Empty State / Onboarding */}
+            {visibleWidgets.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
+                    <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium">Your dashboard is empty</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
+                    <AddWidgetSheet onAdd={addWidget} />
+                </div>
+            )}
+        </div>
     );
 }

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"regexp"
+	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
@@ -124,17 +125,31 @@ func (r *Redactor) RedactString(s string) string {
 
 	// Optimization: Scan string once to check for characteristics of PII
 	// This avoids expensive regex calls for strings that are obviously safe
-	hasAt := false
-	hasDigit := false
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if c == '@' {
-			hasAt = true
-		} else if c >= '0' && c <= '9' {
-			hasDigit = true
+	var hasAt, hasDigit bool
+
+	// Hybrid approach:
+	// For short strings, a manual loop is faster (single pass, low overhead).
+	// For longer strings, multiple strings.IndexByte calls are faster (SIMD optimized).
+	// The crossover point is around 64 bytes.
+	if len(s) < 64 {
+		for i := 0; i < len(s); i++ {
+			c := s[i]
+			if c == '@' {
+				hasAt = true
+			} else if c >= '0' && c <= '9' {
+				hasDigit = true
+			}
+			if hasAt && hasDigit {
+				break
+			}
 		}
-		if hasAt && hasDigit {
-			break
+	} else {
+		hasAt = strings.IndexByte(s, '@') != -1
+		for c := byte('0'); c <= '9'; c++ {
+			if strings.IndexByte(s, c) != -1 {
+				hasDigit = true
+				break
+			}
 		}
 	}
 

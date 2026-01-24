@@ -149,6 +149,23 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
 
     > **Tip:** Need detailed logs? Add the `--debug` flag to the end of the `run` command.
 
+    **Option 3: Local Installation (from Source)**
+
+    Run the server directly on your machine without Docker.
+
+    ```bash
+    # Clone the repository
+    git clone https://github.com/mcpany/core.git
+    cd core
+
+    # Install dependencies and build
+    make prepare
+    make build
+
+    # Run the server
+    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ```
+
 2.  **Connect Gemini CLI:**
 
     ```bash
@@ -311,6 +328,14 @@ We strive for high code quality. Please ensure the following before submitting a
   ```bash
   make lint
   ```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+- **Protobuf Generation Errors**: If you encounter errors related to `protoc` or missing plugins, try running `make prepare` again to ensure all tools are correctly installed in `build/env/bin`.
+- **Docker Permission Denied**: If you cannot run Docker commands, ensure your user is in the `docker` group or try running with `sudo`.
+- **Port Conflicts**: Ensure ports `50050` (HTTP), `50051` (gRPC), and `9002` (UI) are free before starting the server.
 
 ## 🤝 Contributing
 

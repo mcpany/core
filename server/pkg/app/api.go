@@ -11,6 +11,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -90,6 +92,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/dashboard/traffic", a.handleDashboardTraffic())
 	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
 	mux.HandleFunc("/dashboard/tool-failures", a.handleDashboardToolFailures())
+	mux.HandleFunc("/dashboard/tool-usage", a.handleDashboardToolUsage())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
@@ -322,23 +325,55 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
-		// 2. Connectivity Check (Optional/Basic)
-		// We only check HTTP reachability for now as it's the most common and safe to check.
-		// For others, we just return valid for now.
-		var reachabilityErr error
+		// 2. Connectivity / Health Check
+		var checkErr error
+		var checkDetails string
+
+		// HTTP & GraphQL
 		if httpSvc := svc.GetHttpService(); httpSvc != nil {
-			reachabilityErr = checkURLReachability(r.Context(), httpSvc.GetAddress())
+			checkErr = checkURLReachability(r.Context(), httpSvc.GetAddress())
+			checkDetails = "HTTP reachability check failed"
 		} else if gqlSvc := svc.GetGraphqlService(); gqlSvc != nil {
-			reachabilityErr = checkURLReachability(r.Context(), gqlSvc.GetAddress())
+			checkErr = checkURLReachability(r.Context(), gqlSvc.GetAddress())
+			checkDetails = "GraphQL reachability check failed"
+		} else if fsSvc := svc.GetFilesystemService(); fsSvc != nil {
+			// Filesystem check
+			for _, path := range fsSvc.GetRootPaths() {
+				if err := checkFilesystemAccess(path); err != nil {
+					checkErr = err
+					checkDetails = fmt.Sprintf("Filesystem path check failed for %s", path)
+					break
+				}
+			}
+		} else if cmdSvc := svc.GetCommandLineService(); cmdSvc != nil {
+			// Command check
+			checkErr = checkCommandAvailability(cmdSvc.GetCommand(), cmdSvc.GetWorkingDirectory())
+			checkDetails = "Command availability check failed"
+		} else if mcpSvc := svc.GetMcpService(); mcpSvc != nil {
+			// MCP Remote check (if stdio, check command; if http, check url)
+			switch mcpSvc.WhichConnectionType() {
+			case configv1.McpUpstreamService_StdioConnection_case:
+				stdio := mcpSvc.GetStdioConnection()
+				if stdio != nil {
+					checkErr = checkCommandAvailability(stdio.GetCommand(), stdio.GetWorkingDirectory())
+					checkDetails = "MCP Stdio command check failed"
+				}
+			case configv1.McpUpstreamService_HttpConnection_case:
+				httpConn := mcpSvc.GetHttpConnection()
+				if httpConn != nil {
+					checkErr = checkURLReachability(r.Context(), httpConn.GetHttpAddress())
+					checkDetails = "MCP HTTP reachability check failed"
+				}
+			}
 		}
 
-		if reachabilityErr != nil {
+		if checkErr != nil {
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"valid":   false,
-				"error":   reachabilityErr.Error(),
-				"details": "Connectivity check failed",
+				"error":   checkErr.Error(),
+				"details": checkDetails,
 			})
 			return
 		}
@@ -351,9 +386,9 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 }
 
 func checkURLReachability(ctx context.Context, urlStr string) error {
-	client := &http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 5 * time.Second
+
 	// Try HEAD first
 	req, err := http.NewRequestWithContext(ctx, "HEAD", urlStr, nil)
 	if err != nil {
@@ -381,6 +416,49 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 			return fmt.Errorf("server returned error status: %s", resp.Status)
 		}
 	}
+	return nil
+}
+
+func checkFilesystemAccess(path string) error {
+	_, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("path does not exist: %s", path)
+		}
+		return fmt.Errorf("failed to access path: %w", err)
+	}
+	// We allow both files and directories, so existence is sufficient validation for now.
+	return nil
+}
+
+func checkCommandAvailability(command string, workDir string) error {
+	if command == "" {
+		return fmt.Errorf("command is empty")
+	}
+
+	// If absolute path, check existence
+	if filepath.IsAbs(command) {
+		if _, err := os.Stat(command); err != nil {
+			return fmt.Errorf("executable not found at %s", command)
+		}
+	} else {
+		// Look in PATH
+		if _, err := exec.LookPath(command); err != nil {
+			return fmt.Errorf("command %s not found in PATH", command)
+		}
+	}
+
+	// Check working directory if provided
+	if workDir != "" {
+		info, err := os.Stat(workDir)
+		if err != nil {
+			return fmt.Errorf("working directory not found: %s", workDir)
+		}
+		if !info.IsDir() {
+			return fmt.Errorf("working directory path is not a directory: %s", workDir)
+		}
+	}
+
 	return nil
 }
 

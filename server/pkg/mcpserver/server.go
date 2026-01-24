@@ -27,6 +27,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+var (
+	metricToolsListTotal   = []string{"tools", "list", "total"}
+	metricToolsCallTotal   = []string{"tools", "call", "total"}
+	metricToolsCallErrors  = []string{"tools", "call", "errors"}
+	metricToolsCallLatency = []string{"tools", "call", "latency"}
+)
+
+// fastJSON is a jsoniter configuration that disables map key sorting for performance.
+// The order of keys in the JSON response does not matter for the LLM.
+var fastJSON = jsoniter.Config{
+	EscapeHTML:             true,
+	SortMapKeys:            false,
+	ValidateJsonRawMessage: true,
+}.Froze()
+
 // AddReceivingMiddlewareHook is a hook for adding receiving middleware.
 var AddReceivingMiddlewareHook func(name string)
 
@@ -370,8 +385,7 @@ func (s *Server) GetPrompt(
 	}
 
 	// Use json-iterator for faster JSON marshaling
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
-	argsBytes, err := json.Marshal(req.Params.Arguments)
+	argsBytes, err := fastJSON.Marshal(req.Params.Arguments)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal prompt arguments: %w", err)
 	}
@@ -509,7 +523,7 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 //   - A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
-	metrics.IncrCounter([]string{"tools", "list", "total"}, 1)
+	metrics.IncrCounter(metricToolsListTotal, 1)
 	return s.toolManager.ListTools()
 }
 
@@ -544,7 +558,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounterWithLabels([]string{"tools", "call", "total"}, 1, []metrics.Label{
+	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
@@ -553,7 +567,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
 		// MeasureSince emits in milliseconds.
 		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels([]string{"tools", "call", "latency"}, duration, []metrics.Label{
+		metrics.AddSampleWithLabels(metricToolsCallLatency, duration, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})
@@ -561,7 +575,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels([]string{"tools", "call", "errors"}, 1, []metrics.Label{
+		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},
 			{Name: "service_id", Value: serviceID},
 		})
@@ -582,9 +596,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	var jsonBytes []byte
 	var marshalErr error
 
-	// Use json-iterator for faster JSON operations
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
-
 	if resultMap, ok := result.(map[string]any); ok {
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
 		// try to parse it as such.
@@ -598,13 +609,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			}
 
 			// Convert map to CallToolResult via JSON
-			jsonBytes, marshalErr = json.Marshal(resultMap)
+			jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
 			if marshalErr != nil {
 				return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
 			}
 
 			var callToolRes mcp.CallToolResult
-			if err := json.Unmarshal(jsonBytes, &callToolRes); err == nil {
+			if err := fastJSON.Unmarshal(jsonBytes, &callToolRes); err == nil {
 				return &callToolRes, nil
 			}
 			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
@@ -634,7 +645,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	// Default to JSON encoding for the result
 	if jsonBytes == nil {
-		jsonBytes, marshalErr = json.Marshal(result)
+		jsonBytes, marshalErr = fastJSON.Marshal(result)
 	}
 	// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
 	text := util.BytesToString(jsonBytes)
@@ -849,7 +860,7 @@ func (r LazyLogResult) LogValue() slog.Value {
 		}
 		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
 		// Use json-iterator for speed.
-		jsonBytes, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(v)
+		jsonBytes, _ := fastJSON.Marshal(v)
 		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
 	default:
 		// Fallback for other types

@@ -355,12 +355,14 @@ func (a *Application) Run(opts RunOptions) error {
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(opts.ConfigPaths) > 0 {
-		if enableFileConfig {
-			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
-			stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
-		} else {
-			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", opts.ConfigPaths)
-		}
+		// Always load config files if they are explicitly provided
+		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
+		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+	} else if enableFileConfig {
+		// If enabled but no paths provided, we might still want to load from default locations (if any)
+		// but currently NewFileStore requires paths. We keep this variable if it's used elsewhere,
+		// but for now, we just log that we are enabled but have no paths.
+		log.Info("File configuration enabled via env var, but no config paths provided.")
 	}
 	multiStore := config.NewMultiStore(stores...)
 
@@ -1032,7 +1034,9 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 			users = append(users, dbUsers...)
 		}
 	}
-	a.AuthManager.SetUsers(users)
+	if a.AuthManager != nil {
+		a.AuthManager.SetUsers(users)
+	}
 
 	// Update Service Registry
 	// We need to re-create services or update existing ones?
@@ -1920,7 +1924,7 @@ func (a *Application) runServerMode(
 		}
 		lis, err := util.ListenWithRetry(ctx, "tcp", grpcBindAddress)
 		if err != nil {
-			errChan <- fmt.Errorf("gRPC server failed to listen: %w", err)
+			errChan <- wrapBindError(err, "gRPC", grpcBindAddress, "--grpc-port")
 		} else {
 			if addr, ok := lis.Addr().(*net.TCPAddr); ok {
 				a.BoundGRPCPort.Store(int32(addr.Port)) //nolint:gosec // Port fits in int32
@@ -2002,14 +2006,15 @@ func (a *Application) runServerMode(
 		l, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
 		if err != nil {
 			// Handle error
-			errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+			errChan <- wrapBindError(err, "HTTP", httpBindAddress, "--json-rpc-port")
 		} else {
 			httpLis = tls.NewListener(l, tlsConfig)
 		}
 	} else {
 		l, err := util.ListenWithRetry(ctx, "tcp", httpBindAddress)
 		if err != nil {
-			errChan <- fmt.Errorf("HTTP server failed to listen: %w", err)
+			// Handle error
+			errChan <- wrapBindError(err, "HTTP", httpBindAddress, "--json-rpc-port")
 		} else {
 			httpLis = l
 		}
@@ -2129,7 +2134,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
 							authenticated = true
 							ctx = auth.ContextWithUser(ctx, username)
-							// Also check/set roles?
+							if len(user.GetRoles()) > 0 {
+								ctx = auth.ContextWithRoles(ctx, user.GetRoles())
+							}
 						}
 					}
 				}
@@ -2238,6 +2245,14 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+// wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
+func wrapBindError(err error, serverType, address, flag string) error {
+	if strings.Contains(err.Error(), "address already in use") || strings.Contains(err.Error(), "bind: permission denied") {
+		return fmt.Errorf("❌ %s server failed to listen on %s: %w\n\n💡 Tip: The port is already in use or restricted. Try using a different port:\n   mcpany run %s <new_port>", serverType, address, err, flag)
+	}
+	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }
 
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful

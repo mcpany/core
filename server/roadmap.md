@@ -28,6 +28,12 @@
   - **Description**: Configurable exponential backoff and jitter for upstream connections, integrated with circuit breakers.
 - **Service Dependency Graph**
   - **Description**: Visual topology of the MCP ecosystem, visualizing clients, services, tools, and their relationships with real-time metrics.
+- **Runtime Health Visibility**
+  - **Description**: Exposed real-time service health status (`last_error`) and tool counts in the API, enabling the UI to show error badges for failing upstreams instantly.
+- **Port Conflict Hints**
+  - **Description**: Detects "Address already in use" errors during server startup and suggests using `--json-rpc-port` or `--grpc-port` flags to resolve the conflict.
+- **Whitespace URL Validation**
+  - **Description**: Detects and warns about hidden whitespace in URL configurations (HTTP, WebSocket, OpenAPI, etc.) which often occurs when copying from external sources, providing actionable fixes.
 
 ## 2. Updated Roadmap
 
@@ -41,6 +47,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | :--- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
 | 1    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
 | 2    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
+| 3    | **Service Health History**  | **Observability**: Store historical health check results to visualize availability trends (uptime graphs).                             | Medium     |
+| 4    | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks.      | High       |
 | 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
 | 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
@@ -121,6 +129,10 @@ These features represent the next logical steps for the product, focusing on Ent
 | 77 | **Configurable Discovery Providers** | **Configuration**: Allow defining discovery providers in `config.yaml` (e.g. `discovery: { ollama: { url: "http://host:11434" } }`) instead of hardcoded defaults. | Medium |
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
+| 78 | **Strict Config Validation on Reload** | **Resilience**: Extend strict configuration validation to dynamic reloads, ensuring that invalid configurations are rejected with a detailed diff and error report before any changes are applied. | High |
+| 79 | **Conflict-Free Port Allocation** | **DevX**: Add a `--random-port` flag that automatically finds an available port if the default is taken, useful for automated testing. | Low |
+| 80 | **Secret Format Validation for Known Services** | **Security**: Heuristic validation for common secret formats (e.g. OpenAI `sk-`, GitHub `ghp_`) to catch invalid keys early. | Low |
+| 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
 

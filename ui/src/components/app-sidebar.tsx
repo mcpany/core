@@ -18,6 +18,7 @@ import {
   Key,
   Database,
   User,
+  Users,
   ChevronsUpDown,
   LogOut,
   Layers,
@@ -144,14 +145,19 @@ const configItems = [
 
   {
     title: "Upstream Services",
-    url: "/upstream-services",
+    url: "/services",
     icon: Server,
+  },
+  {
+    title: "Profiles",
+    url: "/profiles",
+    icon: User,
   },
   {
     title: "Users",
 
     url: "/users",
-    icon: User,
+    icon: Users,
   },
   {
     title: "Credentials",

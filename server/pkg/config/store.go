@@ -39,6 +39,13 @@ type Engine interface {
 	Unmarshal(b []byte, v proto.Message) error
 }
 
+// ConfigurableEngine defines an interface for engines that support configuration options.
+type ConfigurableEngine interface {
+	Engine
+	// SetSkipValidation sets whether to skip schema validation.
+	SetSkipValidation(skip bool)
+}
+
 // NewEngine returns a configuration engine capable of unmarshaling the format
 // indicated by the file extension of the given path. It supports `.json`,
 // `.yaml`, `.yml`, and `.textproto` file formats.
@@ -63,7 +70,14 @@ func NewEngine(path string) (Engine, error) {
 }
 
 // yamlEngine implements the Engine interface for YAML configuration files.
-type yamlEngine struct{}
+type yamlEngine struct {
+	skipValidation bool
+}
+
+// SetSkipValidation sets whether to skip schema validation.
+func (e *yamlEngine) SetSkipValidation(skip bool) {
+	e.skipValidation = skip
+}
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`. It achieves this
 // by first unmarshaling the YAML into a generic map, then marshaling that map
@@ -168,8 +182,10 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 		return fmt.Errorf("failed to unmarshal canonical json: %w", err)
 	}
 
-	if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
-		return fmt.Errorf("schema validation failed: %w", err)
+	if !e.skipValidation {
+		if err := ValidateConfigAgainstSchema(canonicalMap); err != nil {
+			return fmt.Errorf("schema validation failed: %w", err)
+		}
 	}
 
 	return nil
@@ -379,6 +395,15 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		defaultValue = parts[1]
 	}
 
+	if !util.IsEnvVarAllowed(varName) {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
+		// Write the original string to preserve structure
+		buf.Write(b[startIdx : j+1])
+		return j + 1 - startIdx
+	}
+
 	val, ok := os.LookupEnv(varName)
 	if !ok && !hasDefault {
 		*missingCount++
@@ -427,6 +452,15 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	}
 
 	varName := string(b[startIdx+1 : j])
+	if !util.IsEnvVarAllowed(varName) {
+		*missingCount++
+		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
+		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
+		// Write the original string to preserve structure
+		buf.Write(b[startIdx : j])
+		return j - startIdx
+	}
+
 	val, ok := os.LookupEnv(varName)
 	if !ok {
 		*missingCount++
@@ -450,6 +484,12 @@ type FileStore struct {
 	paths            []string
 	skipErrors       bool
 	IgnoreMissingEnv bool
+	skipValidation   bool
+}
+
+// SetSkipValidation configures whether to skip schema validation during loading.
+func (s *FileStore) SetSkipValidation(skip bool) {
+	s.skipValidation = skip
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
@@ -535,6 +575,10 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 				continue
 			}
 			return nil, err
+		}
+
+		if configurable, ok := engine.(ConfigurableEngine); ok {
+			configurable.SetSkipValidation(s.skipValidation)
 		}
 
 		cfg := &configv1.McpAnyServerConfig{}

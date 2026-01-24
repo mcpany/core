@@ -6,10 +6,13 @@ package admin
 import (
 	"context"
 	"testing"
+	"time"
 
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage/memory"
@@ -45,6 +48,21 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	err, ok := m.errors[serviceID]
 	return err, ok
+}
+
+// MockDiscoveryProvider is a manual mock for discovery.Provider
+type MockDiscoveryProvider struct {
+	name     string
+	services []*configv1.UpstreamServiceConfig
+	err      error
+}
+
+func (m *MockDiscoveryProvider) Name() string {
+	return m.name
+}
+
+func (m *MockDiscoveryProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	return m.services, m.err
 }
 
 func TestNewServer(t *testing.T) {
@@ -386,4 +404,165 @@ func TestServer_ServiceManagement_Errors(t *testing.T) {
 	_, err := sFallback.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc_no_config")})
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
+}
+
+func TestServer_GetDiscoveryStatus(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	sr := &MockServiceRegistry{}
+
+	// Create manager
+	dm := discovery.NewManager()
+
+	// Register provider
+	provider := &MockDiscoveryProvider{
+		name: "test-provider",
+		services: []*configv1.UpstreamServiceConfig{
+			{Name: proto.String("discovered-service")},
+		},
+	}
+	dm.RegisterProvider(provider)
+
+	// Run discovery
+	ctx := context.Background()
+	dm.Run(ctx)
+
+	s := NewServer(nil, tm, sr, store, dm, nil)
+
+	// Test GetDiscoveryStatus
+	resp, err := s.GetDiscoveryStatus(ctx, &pb.GetDiscoveryStatusRequest{})
+	require.NoError(t, err)
+	require.Len(t, resp.Providers, 1)
+	assert.Equal(t, "test-provider", resp.Providers[0].GetName())
+	assert.Equal(t, "OK", resp.Providers[0].GetStatus())
+	assert.Equal(t, int32(1), resp.Providers[0].GetDiscoveredCount())
+
+	// Test with nil manager
+	sNil := NewServer(nil, tm, sr, store, nil, nil)
+	respNil, err := sNil.GetDiscoveryStatus(ctx, &pb.GetDiscoveryStatusRequest{})
+	require.NoError(t, err)
+	assert.Empty(t, respNil.Providers)
+}
+
+// MockAuditStore is a manual mock for audit.Store
+type MockAuditStore struct {
+	entries []audit.Entry
+	readErr error
+	writeErr error
+	closeErr error
+}
+
+func (m *MockAuditStore) Write(ctx context.Context, entry audit.Entry) error {
+	if m.writeErr != nil {
+		return m.writeErr
+	}
+	m.entries = append(m.entries, entry)
+	return nil
+}
+
+func (m *MockAuditStore) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
+	if m.readErr != nil {
+		return nil, m.readErr
+	}
+	// For simplicity, just return all entries
+	return m.entries, nil
+}
+
+func (m *MockAuditStore) Close() error {
+	return m.closeErr
+}
+
+func TestServer_ListAuditLogs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+	sr := &MockServiceRegistry{}
+
+	// Create audit middleware
+	am, err := middleware.NewAuditMiddleware(&configv1.AuditConfig{Enabled: proto.Bool(true)})
+	require.NoError(t, err)
+
+	// Inject mock store
+	now := time.Now()
+	mockStore := &MockAuditStore{
+		entries: []audit.Entry{
+			{
+				Timestamp: now,
+				ToolName: "test-tool",
+				UserID: "user1",
+				Duration: "100ms",
+				DurationMs: 100,
+			},
+		},
+	}
+	am.SetStore(mockStore)
+
+	s := NewServer(nil, tm, sr, store, nil, am)
+	ctx := context.Background()
+
+	// Test ListAuditLogs - Success
+	resp, err := s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{
+		StartTime: proto.String(now.Add(-1 * time.Hour).Format(time.RFC3339)),
+		EndTime: proto.String(now.Add(1 * time.Hour).Format(time.RFC3339)),
+	})
+	require.NoError(t, err)
+	require.Len(t, resp.Entries, 1)
+	assert.Equal(t, "test-tool", resp.Entries[0].GetToolName())
+	assert.Equal(t, "user1", resp.Entries[0].GetUserId())
+
+	// Test ListAuditLogs - Audit disabled (middleware nil)
+	sNil := NewServer(nil, tm, sr, store, nil, nil)
+	_, err = sNil.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{})
+	assert.Error(t, err)
+	assert.Equal(t, codes.FailedPrecondition, status.Code(err))
+
+	// Test ListAuditLogs - Read Error
+	mockStore.readErr = assert.AnError
+	_, err = s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{})
+	assert.Error(t, err)
+	assert.Equal(t, codes.Internal, status.Code(err))
+
+	// Test ListAuditLogs - Invalid Time Format
+	_, err = s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{StartTime: proto.String("invalid")})
+	assert.Error(t, err)
+	assert.Equal(t, codes.InvalidArgument, status.Code(err))
+
+	_, err = s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{EndTime: proto.String("invalid")})
+	assert.Error(t, err)
+	assert.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
+func TestServer_ListServices_Fallback(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	tm := tool.NewMockManagerInterface(ctrl)
+	store := memory.NewStore()
+
+	s := NewServer(nil, tm, nil, store, nil, nil)
+	ctx := context.Background()
+
+	// Mock ToolManager returning services
+	tm.EXPECT().ListServices().Return([]*tool.ServiceInfo{
+		{
+			Config: &configv1.UpstreamServiceConfig{
+				Id: proto.String("svc_fallback"),
+				Name: proto.String("svc_fallback"),
+			},
+		},
+		{
+			Config: nil, // Should be ignored
+		},
+	})
+
+	resp, err := s.ListServices(ctx, &pb.ListServicesRequest{})
+	require.NoError(t, err)
+	assert.Len(t, resp.Services, 1)
+	assert.Equal(t, "svc_fallback", resp.Services[0].GetName())
+	assert.Equal(t, "OK", resp.ServiceStates[0].GetStatus())
 }

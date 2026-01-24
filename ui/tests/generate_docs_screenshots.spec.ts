@@ -122,6 +122,47 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
+    // Pre-populate health history for timeline visualization
+    await page.addInitScript(() => {
+        const history = {
+            'postgres-primary': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: 'healthy' })).reverse(),
+            'openai-gateway': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: Math.random() > 0.9 ? 'degraded' : 'healthy' })).reverse(),
+            'broken-service': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: 'unhealthy' })).reverse()
+        };
+        window.localStorage.setItem('mcp_service_health_history', JSON.stringify(history));
+    });
+
+    await page.route('**/api/dashboard/health', async route => {
+        await route.fulfill({
+            json: [
+               {
+                   id: 'postgres-primary',
+                   name: 'Primary DB',
+                   status: 'healthy',
+                   latency: '12ms',
+                   uptime: '2d 4h',
+                   message: ''
+               },
+               {
+                   id: 'openai-gateway',
+                   name: 'OpenAI Gateway',
+                   status: 'healthy',
+                   latency: '45ms',
+                   uptime: '5h 30m',
+                   message: ''
+               },
+               {
+                   id: 'broken-service',
+                   name: 'Legacy API',
+                   status: 'unhealthy',
+                   latency: '--',
+                   uptime: '10m',
+                   message: 'Connection refused'
+               }
+            ]
+        });
+    });
+
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     // Give widgets extra time to render after data fetch
@@ -388,6 +429,18 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'skills_create.png'), fullPage: true });
   });
 
+  test('Profiles Screenshots', async ({ page }) => {
+      await page.goto('/profiles');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_page.png'), fullPage: true });
+
+      // Open Editor (Create)
+      await page.getByRole('button', { name: 'Create Profile' }).click();
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profile_editor.png') });
+  });
+
   test('Settings Screenshots', async ({ page }) => {
       await page.goto('/settings');
       await page.waitForTimeout(1000);
@@ -425,12 +478,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(1000);
 
       // Open Actions Dropdown
-      // We target the first card's actions button
+      // We target the first card's actions button if available, or skip if no services rendered
       const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
-      await actionButton.click();
-      await page.waitForTimeout(500);
-
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
+      if (await actionButton.isVisible()) {
+        await actionButton.click();
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
+      }
   });
 
   test('Audit Logs Screenshots', async ({ page }) => {

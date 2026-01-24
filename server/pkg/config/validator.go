@@ -349,10 +349,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 
 		switch secret.WhichValue() {
 		case configv1.SecretValue_PlainText_case:
-			valueToValidate = secret.GetPlainText()
+			valueToValidate = strings.TrimSpace(secret.GetPlainText())
 			shouldValidate = true
 		case configv1.SecretValue_EnvironmentVariable_case:
-			valueToValidate = os.Getenv(secret.GetEnvironmentVariable())
+			valueToValidate = strings.TrimSpace(os.Getenv(secret.GetEnvironmentVariable()))
 			shouldValidate = true
 		case configv1.SecretValue_FilePath_case:
 			// We already validated file existence above, so we can try to read it.
@@ -516,6 +516,12 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 			Suggestion: "Set the 'address' field in the http_service configuration (e.g., 'http://localhost:8080').",
 		}
 	}
+	if strings.TrimSpace(httpService.GetAddress()) != httpService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("http address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
+	}
 	if !validation.IsValidURL(httpService.GetAddress()) {
 		return &ActionableError{
 			Err:        fmt.Errorf("invalid http address: %s", httpService.GetAddress()),
@@ -546,6 +552,12 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 		return &ActionableError{
 			Err:        fmt.Errorf("websocket service has empty address"),
 			Suggestion: "Set the 'address' field in the websocket_service configuration (e.g., 'ws://localhost:8080').",
+		}
+	}
+	if strings.TrimSpace(websocketService.GetAddress()) != websocketService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("websocket address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(websocketService.GetAddress()) {
@@ -599,16 +611,32 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 			Suggestion: "Provide one of 'address', 'spec_content', or 'spec_url' in the openapi_service configuration.",
 		}
 	}
-	if openapiService.GetAddress() != "" && !validation.IsValidURL(openapiService.GetAddress()) {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL.",
+	if openapiService.GetAddress() != "" {
+		if strings.TrimSpace(openapiService.GetAddress()) != openapiService.GetAddress() {
+			return &ActionableError{
+				Err:        fmt.Errorf("openapi address contains hidden whitespace"),
+				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
+		if !validation.IsValidURL(openapiService.GetAddress()) {
+			return &ActionableError{
+				Err:        fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
+				Suggestion: "Ensure the address is a valid URL.",
+			}
 		}
 	}
-	if openapiService.GetSpecUrl() != "" && !validation.IsValidURL(openapiService.GetSpecUrl()) {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
-			Suggestion: "Ensure the spec_url is a valid URL.",
+	if openapiService.GetSpecUrl() != "" {
+		if strings.TrimSpace(openapiService.GetSpecUrl()) != openapiService.GetSpecUrl() {
+			return &ActionableError{
+				Err:        fmt.Errorf("openapi spec_url contains hidden whitespace"),
+				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
+		if !validation.IsValidURL(openapiService.GetSpecUrl()) {
+			return &ActionableError{
+				Err:        fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
+				Suggestion: "Ensure the spec_url is a valid URL.",
+			}
 		}
 	}
 	return nil
@@ -668,6 +696,12 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			return &ActionableError{
 				Err:        fmt.Errorf("mcp service with http_connection has empty http_address"),
 				Suggestion: "Set the 'http_address' field (e.g., 'http://localhost:8080').",
+			}
+		}
+		if strings.TrimSpace(httpConn.GetHttpAddress()) != httpConn.GetHttpAddress() {
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp http_address contains hidden whitespace"),
+				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
@@ -769,6 +803,12 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 			Suggestion: "Set the 'address' field in the graphql_service configuration.",
 		}
 	}
+	if strings.TrimSpace(graphqlService.GetAddress()) != graphqlService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("graphql address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
+	}
 	if !validation.IsValidURL(graphqlService.GetAddress()) {
 		return &ActionableError{
 			Err:        fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress()),
@@ -790,6 +830,12 @@ func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error 
 		return &ActionableError{
 			Err:        fmt.Errorf("webrtc service has empty address"),
 			Suggestion: "Set the 'address' field in the webrtc_service configuration.",
+		}
+	}
+	if strings.TrimSpace(webrtcService.GetAddress()) != webrtcService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("webrtc address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(webrtcService.GetAddress()) {
@@ -918,13 +964,27 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 				Suggestion: "Provide 'token_url' OR 'issuer_url' to enable auto-discovery.",
 			}
 		}
+		if strings.TrimSpace(oauth.GetIssuerUrl()) != oauth.GetIssuerUrl() {
+			return &ActionableError{
+				Err:        fmt.Errorf("oauth2 issuer_url contains hidden whitespace"),
+				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
 		if !validation.IsValidURL(oauth.GetIssuerUrl()) {
 			return fmt.Errorf("invalid oauth2 issuer_url: %s", oauth.GetIssuerUrl())
 		}
 		// If IssuerURL is present and valid, we allow TokenUrl to be empty (auto-discovery)
-	} else if !validation.IsValidURL(oauth.GetTokenUrl()) {
-		// Only validate TokenUrl if it is present
-		return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
+	} else {
+		if strings.TrimSpace(oauth.GetTokenUrl()) != oauth.GetTokenUrl() {
+			return &ActionableError{
+				Err:        fmt.Errorf("oauth2 token_url contains hidden whitespace"),
+				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
+		if !validation.IsValidURL(oauth.GetTokenUrl()) {
+			// Only validate TokenUrl if it is present
+			return fmt.Errorf("invalid oauth2 token_url: %s", oauth.GetTokenUrl())
+		}
 	}
 
 	if err := validateSecretValue(oauth.GetClientId()); err != nil {
@@ -955,6 +1015,12 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 func validateOIDCAuth(_ context.Context, oidc *configv1.OIDCAuth) error {
 	if oidc.GetIssuer() == "" {
 		return fmt.Errorf("oidc issuer is empty")
+	}
+	if strings.TrimSpace(oidc.GetIssuer()) != oidc.GetIssuer() {
+		return &ActionableError{
+			Err:        fmt.Errorf("oidc issuer url contains hidden whitespace"),
+			Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
 	}
 	if !validation.IsValidURL(oidc.GetIssuer()) {
 		return fmt.Errorf("invalid oidc issuer url: %s", oidc.GetIssuer())
@@ -1080,6 +1146,12 @@ func validateAuditConfig(audit *configv1.AuditConfig) error {
 	case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
 		if audit.GetWebhookUrl() == "" {
 			return fmt.Errorf("webhook_url is required for webhook storage")
+		}
+		if strings.TrimSpace(audit.GetWebhookUrl()) != audit.GetWebhookUrl() {
+			return &ActionableError{
+				Err:        fmt.Errorf("webhook_url contains hidden whitespace"),
+				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
 		}
 		if !validation.IsValidURL(audit.GetWebhookUrl()) {
 			return fmt.Errorf("invalid webhook_url: %s", audit.GetWebhookUrl())

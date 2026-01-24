@@ -448,19 +448,21 @@ func isKeyColon(input []byte, endOffset int) bool {
 // dsnPasswordRegex handles fallback cases but we prefer net/url.
 // Matches colon, followed by password (which may start with / if followed by non-/, or be empty), followed by @.
 // We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
-// We use [^\s] instead of [^@] to allow @ in passwords while stopping at the last @ before a non-password part (heuristic).
+// We use [^/?#\s] to stop at path/query/fragment/space, avoiding swallowing the path or matching paths as passwords.
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^/@\s][^\s]*|/[^/@\s][^\s]*|)(@)`)
+var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?#\s]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
-// This regex is greedy (.*) to handle passwords containing colons or @, assuming a single DSN string.
-var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
+// We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
+// the path or subsequent text (e.g. multiple DSNs).
+// Matches scheme://user:password@
+var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).
 // It matches "://", then optional user (non-colons), then colon, then password.
 // Password is terminated by /, @, whitespace, or ".
-var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"]+)`)
+var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
 
 // dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
 // e.g. parse "...": invalid port ":password".
@@ -508,7 +510,7 @@ func RedactDSN(dsn string) string {
 	// (e.g. containing colons or @) but assumes a single DSN string.
 	if strings.Contains(dsn, "://") {
 		// Use greedy match to handle special characters in password
-		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@$3$4")
 
 		// Fallback for cases without '@' (e.g. redis://:password where url.Parse fails due to invalid port)
 		if dsnFallbackNoAtRegex.MatchString(dsn) {

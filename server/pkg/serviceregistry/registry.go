@@ -253,6 +253,7 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	if info.Config != nil {
 		clonedConfig := proto.Clone(info.Config).(*config.UpstreamServiceConfig)
 		util.StripSecretsFromService(clonedConfig)
+		r.injectRuntimeInfo(clonedConfig)
 		clonedInfo.Config = clonedConfig
 	}
 	return &clonedInfo, true
@@ -274,6 +275,7 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	}
 	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
 	util.StripSecretsFromService(cloned)
+	r.injectRuntimeInfo(cloned)
 	return cloned, true
 }
 
@@ -415,7 +417,41 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	for _, service := range r.serviceConfigs {
 		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
 		util.StripSecretsFromService(cloned)
+		r.injectRuntimeInfo(cloned)
 		services = append(services, cloned)
 	}
 	return services, nil
+}
+
+// injectRuntimeInfo populates runtime information (error status, tool count) into the config.
+// Caller MUST hold r.mu lock (Read or Write).
+func (r *ServiceRegistry) injectRuntimeInfo(config *config.UpstreamServiceConfig) {
+	if config == nil {
+		return
+	}
+	key := config.GetSanitizedName()
+	if key == "" {
+		// Fallback if sanitized name is not set (should not happen for registered services)
+		key, _ = util.SanitizeServiceName(config.GetName())
+	}
+
+	// Error: prioritize explicit service errors (registration failure), then health check errors
+	if err, ok := r.serviceErrors[key]; ok {
+		config.SetLastError(err)
+	} else if err, ok := r.healthErrors[key]; ok {
+		config.SetLastError(err)
+	}
+
+	// Tool Count
+	// r.toolManager is thread-safe (xsync.Map based) so calling ListTools is safe.
+	// However, ListTools acquires its own locks.
+	tools := r.toolManager.ListTools()
+	count := 0
+	for _, t := range tools {
+		if t.Tool().GetServiceId() == key {
+			count++
+		}
+	}
+	//nolint:gosec // Tool count is unlikely to exceed int32 max
+	config.SetToolCount(int32(count))
 }
