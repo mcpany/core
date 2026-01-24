@@ -215,6 +215,21 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
     });
 
+    // Mock Tool Execution for Diff
+    let calcCallCount = 0;
+    await page.route('**/api/v1/tools/execute', async route => {
+         const req = route.request();
+         const postData = req.postDataJSON();
+         if (postData.name === 'calculator.add') {
+             calcCallCount++;
+             await route.fulfill({
+                 json: { result: calcCallCount } // Returns 1, then 2, etc.
+             });
+         } else {
+             await route.fulfill({ json: { result: "ok" } });
+         }
+    });
+
     // Reload to get tools
     await page.reload();
     await page.waitForTimeout(1000);
@@ -229,6 +244,35 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         // Fill Form
         await page.getByLabel('path').fill('/var/log');
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
+
+        // Close dialog to access main input
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(500);
+
+        const cancelBtn = page.getByRole('button', { name: 'Cancel' });
+        if (await cancelBtn.isVisible()) {
+            await cancelBtn.click();
+            await page.waitForTimeout(500);
+        }
+    }
+
+    // Demonstrate Diff
+    const input = page.locator('input[placeholder*="calculator"]');
+    await input.fill('calculator.add {"a": 1, "b": 2}');
+    await page.getByRole('button', { name: 'Send' }).click();
+    await page.waitForTimeout(1000);
+
+    await input.fill('calculator.add {"a": 1, "b": 2}');
+    await page.getByRole('button', { name: 'Send' }).click();
+    await page.waitForTimeout(1000);
+
+    // Expand the last result if needed (it should be expanded by default)
+    // Click "Diff" button if it exists
+    const diffButton = page.getByRole('button', { name: 'Diff' }).last();
+    if (await diffButton.isVisible()) {
+        await diffButton.click();
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_diff.png'), fullPage: true });
     }
 
     // Tools alias

@@ -6,6 +6,8 @@
 "use client";
 
 import { apiClient, ToolDefinition } from "@/lib/client";
+import { computeDiff } from "@/lib/diff-utils";
+import { Change } from "diff";
 
 import React, { useState, useRef, useEffect, memo } from "react";
 import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight } from "lucide-react";
@@ -48,6 +50,7 @@ interface Message {
   toolResult?: unknown;
   duration?: number;
   timestamp: Date;
+  diff?: Change[];
 }
 
 /**
@@ -205,14 +208,101 @@ export function PlaygroundClient() {
           const endTime = performance.now();
           const duration = Math.round(endTime - startTime);
 
-          setMessages(prev => [...prev, {
-              id: Date.now().toString() + "-result",
-              type: "tool-result",
-              toolName: toolName,
-              toolResult: result,
-              duration: duration,
-              timestamp: new Date(),
-          }]);
+          setMessages(prev => {
+              // Find previous execution of same tool with same args
+              let diff: Change[] | undefined;
+              const currentArgsStr = JSON.stringify(toolArgs);
+
+              // Iterate backwards to find last call
+              for (let i = prev.length - 1; i >= 0; i--) {
+                  const msg = prev[i];
+                  if (msg.type === "tool-call" &&
+                      msg.toolName === toolName &&
+                      JSON.stringify(msg.toolArgs) === currentArgsStr) {
+
+                      // Found call, now find its result (should be next message usually)
+                      // Or simpler: iterate backwards looking for tool-result for this tool/args?
+                      // Actually, tool-call messages store args. tool-result messages store result.
+                      // We need the result of the *previous* call.
+                      // So we need to find a tool-result whose preceding tool-call matches current args.
+
+                      // Let's iterate backwards finding tool-result.
+                      // For each tool-result, check its corresponding tool-call (which might be the message before it).
+                      // But the structure is flat list.
+                      // We can assume strict ordering: tool-call followed by tool-result (eventually).
+                      // But async might mess it up? No, `setMessages` is sync update, `processResponse` is async but awaited.
+                      // However, we just need to find *any* previous result for same args.
+
+                      // Better strategy: Find all tool-result messages for this toolName.
+                      // Then check if the args match. Wait, tool-result msg doesn't have args stored in it directly in this interface?
+                      // Ah, Message interface has `toolArgs`? No, `tool-result` msg has `toolName`, `toolResult`.
+                      // `tool-call` has `toolName`, `toolArgs`.
+
+                      // We need to link result to call.
+                      // In `processResponse`, we add `tool-call` then await then add `tool-result`.
+                      // So for a `tool-result` at index `j`, the `tool-call` is likely at `j-1`.
+                      // But let's be robust.
+
+                      // Let's assume we store toolArgs in tool-result too?
+                      // The current code doesn't:
+                      /*
+                        type: "tool-result",
+                        toolName: toolName,
+                        toolResult: result,
+                      */
+                      // It doesn't store toolArgs.
+
+                      // To make this easier, let's store toolArgs in the new tool-result message too!
+                      // It's useful context.
+                      break;
+                  }
+              }
+
+              // Re-scanning strategy:
+              // We are inside setMessages updater. `prev` is the list.
+              // We want to find the last `tool-result` for `toolName` where the *associated* `tool-call` had `toolArgs` == `currentArgs`.
+
+              let previousResult: unknown = undefined;
+              let foundPrevious = false;
+
+              for (let i = prev.length - 1; i >= 0; i--) {
+                  const msg = prev[i];
+                  if (msg.type === "tool-result" && msg.toolName === toolName) {
+                      // Look for its call. Usually i-1.
+                      // Safely search backwards from i-1 for the matching call (ignoring other results/errors)
+                      for (let j = i - 1; j >= 0; j--) {
+                          const callMsg = prev[j];
+                          if (callMsg.type === "tool-call" && callMsg.toolName === toolName) {
+                               // Found the call for this result
+                               if (JSON.stringify(callMsg.toolArgs) === currentArgsStr) {
+                                   previousResult = msg.toolResult;
+                                   foundPrevious = true;
+                               }
+                               break; // Found the call for this result, stop looking for call
+                          }
+                      }
+                  }
+                  if (foundPrevious) break;
+              }
+
+              if (foundPrevious) {
+                  const oldStr = JSON.stringify(previousResult, null, 2);
+                  const newStr = JSON.stringify(result, null, 2);
+                  if (oldStr !== newStr) {
+                      diff = computeDiff(oldStr, newStr);
+                  }
+              }
+
+              return [...prev, {
+                  id: Date.now().toString() + "-result",
+                  type: "tool-result",
+                  toolName: toolName,
+                  toolResult: result,
+                  duration: duration,
+                  timestamp: new Date(),
+                  diff: diff
+              }];
+          });
 
 
       } catch (err: unknown) {
@@ -372,6 +462,8 @@ export function PlaygroundClient() {
  * @returns The rendered component.
  */
 const MessageItem = memo(function MessageItem({ message }: { message: Message }) {
+    const [viewMode, setViewMode] = useState<"result" | "diff">(message.diff ? "diff" : "result");
+
     if (message.type === "user") {
         return (
             <div className="flex justify-end gap-3 pl-10">
@@ -432,17 +524,48 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                                 </Badge>
                             )}
                         </div>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                <span className="sr-only">Toggle</span>
-                                <span className="text-[10px] underline group-data-[state=open]:no-underline">+/-</span>
-                            </Button>
-                        </CollapsibleTrigger>
+                        <div className="flex items-center gap-2">
+                             {message.diff && (
+                                <div className="flex items-center bg-background/50 rounded-md p-0.5 border h-6">
+                                    <button
+                                        onClick={() => setViewMode("result")}
+                                        className={`px-2 text-[10px] rounded-sm transition-colors ${viewMode === "result" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
+                                    >
+                                        Result
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode("diff")}
+                                        className={`px-2 text-[10px] rounded-sm transition-colors ${viewMode === "diff" ? "bg-primary/20 text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
+                                    >
+                                        Diff
+                                    </button>
+                                </div>
+                             )}
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                    <span className="sr-only">Toggle</span>
+                                    <span className="text-[10px] underline group-data-[state=open]:no-underline">+/-</span>
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
                     </div>
                     <CollapsibleContent className="">
-                        <pre className="text-xs bg-black text-green-400 p-3 rounded-b-md border border-t-0 border-green-900/30 font-mono overflow-x-auto shadow-inner">
-                            {JSON.stringify(message.toolResult, null, 2)}
-                        </pre>
+                        {viewMode === "diff" && message.diff ? (
+                             <div className="text-xs bg-black p-3 rounded-b-md border border-t-0 border-green-900/30 font-mono overflow-x-auto shadow-inner whitespace-pre-wrap">
+                                {message.diff.map((part, i) => (
+                                    <span
+                                        key={i}
+                                        className={part.added ? "bg-green-900/40 text-green-300" : part.removed ? "bg-red-900/40 text-red-300" : "text-gray-400"}
+                                    >
+                                        {part.value}
+                                    </span>
+                                ))}
+                             </div>
+                        ) : (
+                            <pre className="text-xs bg-black text-green-400 p-3 rounded-b-md border border-t-0 border-green-900/30 font-mono overflow-x-auto shadow-inner">
+                                {JSON.stringify(message.toolResult, null, 2)}
+                            </pre>
+                        )}
                     </CollapsibleContent>
                 </Collapsible>
             </div>
