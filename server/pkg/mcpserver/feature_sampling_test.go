@@ -11,6 +11,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
+	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -94,6 +95,10 @@ func TestFeatureSamplingSupport(t *testing.T) {
 	// Initialize Server
 	server, err := mcpserver.NewServer(ctx, toolManager, promptManager, resourceManager, authManager, serviceRegistry, busProvider, false)
 	require.NoError(t, err)
+
+	// Inject Debugger
+	debugger := middleware.NewDebugger(10)
+	server.SetDebugger(debugger)
 
 	tm := server.ToolManager().(*tool.Manager)
 
@@ -220,4 +225,16 @@ func TestFeatureSamplingSupport(t *testing.T) {
 
 	assert.Equal(t, "This is a sampled response from client", resString)
 	assert.True(t, samplingHandlerCalled, "CreateMessage handler was not called on client")
+
+	// Verify Debugger Entries
+	entries := debugger.Entries()
+	require.NotEmpty(t, entries, "Debugger should have captured sampling entries")
+	foundSampling := false
+	for _, e := range entries {
+		if e.Method == "SAMPLING" && e.Path == "/mcp/sampling/create_message" {
+			foundSampling = true
+			break
+		}
+	}
+	assert.True(t, foundSampling, "Debugger should contain a SAMPLING entry")
 }

@@ -626,6 +626,11 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
 
+	// Inject debugger into MCP server for sampling traces
+	if standardMiddlewares.Debugger != nil {
+		mcpSrv.SetDebugger(standardMiddlewares.Debugger)
+	}
+
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		// Register default providers

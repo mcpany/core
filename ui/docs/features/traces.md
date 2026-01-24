@@ -22,6 +22,8 @@ this view is split into tabs:
 - **Response**: The JSON output returned.
 - **Timeline**: A waterfall view of the operation (if sub-spans exist).
 
+> **New:** The Inspector now also captures **Sampling Requests** (when a tool "thinks" or asks the AI for input). These appear in the Trace List as `SAMPLING /mcp/sampling/create_message`.
+
 ![Trace Detail](screenshots/trace_detail.png)
 
 ### 3. Replay Trace

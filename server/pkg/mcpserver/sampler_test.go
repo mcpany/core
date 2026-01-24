@@ -15,7 +15,7 @@ import (
 // However, we can test the nil session checks.
 
 func TestMCPSession_NilSession(t *testing.T) {
-	s := NewMCPSession(nil)
+	s := NewMCPSession(nil, nil)
 
 	t.Run("CreateMessage with nil session", func(t *testing.T) {
 		res, err := s.CreateMessage(context.Background(), &mcp.CreateMessageParams{})

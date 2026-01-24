@@ -209,6 +209,14 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
+// AddEntry adds a manual entry to the debugger (e.g. for non-HTTP traffic like Sampling).
+func (d *Debugger) AddEntry(entry DebugEntry) {
+	d.mu.Lock()
+	d.ring.Value = entry
+	d.ring = d.ring.Next()
+	d.mu.Unlock()
+}
+
 // APIHandler returns a http.HandlerFunc to view entries.
 //
 // Returns the result.

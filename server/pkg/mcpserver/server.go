@@ -61,6 +61,12 @@ type Server struct {
 	bus             *bus.Provider
 	reloadFunc      func(context.Context) error
 	debug           bool
+	debugger        *middleware.Debugger
+}
+
+// SetDebugger sets the debugger instance for the server.
+func (s *Server) SetDebugger(d *middleware.Debugger) {
+	s.debugger = d
 }
 
 // Server returns the underlying *mcp.Server instance, which provides access to
@@ -165,7 +171,7 @@ func NewServer(
 
 				session := req.GetSession()
 				if serverSession, ok := session.(*mcp.ServerSession); ok {
-					mcpSession := NewMCPSession(serverSession)
+					mcpSession := NewMCPSession(serverSession, s.debugger)
 					ctx = tool.NewContextWithSession(ctx, mcpSession)
 				}
 

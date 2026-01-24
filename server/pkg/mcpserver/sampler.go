@@ -5,24 +5,31 @@ package mcpserver
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
 type MCPSession struct {
-	session *mcp.ServerSession
+	session  *mcp.ServerSession
+	debugger *middleware.Debugger
 }
 
 // NewMCPSession creates a new MCPSession.
 //
 // session is the session.
+// debugger is the debugger instance for tracing.
 //
 // Returns the result.
-func NewMCPSession(session *mcp.ServerSession) *MCPSession {
-	return &MCPSession{session: session}
+func NewMCPSession(session *mcp.ServerSession, debugger *middleware.Debugger) *MCPSession {
+	return &MCPSession{session: session, debugger: debugger}
 }
 
 // NewMCPSampler is a deprecated alias for NewMCPSession.
@@ -31,7 +38,7 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //
 // Returns the result.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
-	return NewMCPSession(session)
+	return NewMCPSession(session, nil)
 }
 
 // CreateMessage requests a message creation from the client (sampling).
@@ -45,7 +52,40 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
 	}
-	return s.session.CreateMessage(ctx, params)
+
+	start := time.Now()
+	res, err := s.session.CreateMessage(ctx, params)
+	duration := time.Since(start)
+
+	if s.debugger != nil {
+		reqBytes, _ := json.Marshal(params)
+		resBytes, _ := json.Marshal(res)
+		status := http.StatusOK
+		if err != nil {
+			errBytes, _ := json.Marshal(map[string]string{"error": err.Error()})
+			resBytes = errBytes
+			status = http.StatusInternalServerError
+		}
+
+		s.debugger.AddEntry(middleware.DebugEntry{
+			ID:        uuid.New().String(),
+			Timestamp: start,
+			Method:    "SAMPLING",
+			Path:      "/mcp/sampling/create_message",
+			Status:    status,
+			Duration:  duration,
+			RequestHeaders: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			ResponseHeaders: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			RequestBody:  string(reqBytes),
+			ResponseBody: string(resBytes),
+		})
+	}
+
+	return res, err
 }
 
 // ListRoots requests the list of roots from the client.
