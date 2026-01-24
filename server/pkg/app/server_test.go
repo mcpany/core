@@ -555,6 +555,7 @@ func TestSetup(t *testing.T) {
 }
 
 func TestRun_ServerMode(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -593,6 +594,7 @@ upstream_services:
 }
 
 func TestRun_ConfigLoadError(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	// Create a malformed config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
@@ -626,6 +628,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 }
 
 func TestRun_BusProviderError(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
@@ -646,6 +649,7 @@ func TestRun_BusProviderError(t *testing.T) {
 }
 
 func TestRun_EmptyConfig(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
@@ -670,6 +674,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 }
 
 func TestRun_StdioMode(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	var stdioModeCalled bool
 	mockStdioFunc := func(_ context.Context, _ *mcpserver.Server) error {
 		stdioModeCalled = true
@@ -691,6 +696,7 @@ func TestRun_StdioMode(t *testing.T) {
 }
 
 func TestRun_NoGrpcServer(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -706,6 +712,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 }
 
 func TestRun_ServerStartupErrors(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	app := NewApplication()
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
@@ -787,6 +794,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 }
 
 func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
@@ -831,6 +839,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	// Set the environment variable to use a dynamic port (127.0.0.1:0) as default
 	// This avoids "address already in use" errors when 8070 is occupied.
 	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "127.0.0.1:0")
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -891,6 +900,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 }
 
 func TestRun_GrpcPortNumber(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -930,6 +940,7 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 }
 
 func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
@@ -1041,6 +1052,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 }
 
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf)
@@ -1788,6 +1800,7 @@ func TestGRPCServer_ShutdownWithoutRace(t *testing.T) {
 }
 
 func TestRun_ServiceRegistrationPublication(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -1863,6 +1876,7 @@ upstream_services:
 }
 
 func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -1925,6 +1939,7 @@ upstream_services:
 }
 
 func TestRun_NoConfigDoesNotBlock(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -1941,6 +1956,7 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 }
 
 func TestRun_NoConfig(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -2132,6 +2148,7 @@ func TestGRPCServer_PanicInRegistration(t *testing.T) {
 }
 
 func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	// This test is designed to fail by timing out if the bug is present.
 	// Occupy a port to force a listen error.
 	l, err := net.Listen("tcp", "127.0.0.1:0")
@@ -2242,6 +2259,7 @@ func waitForServerReady(t *testing.T, addr string) {
 }
 
 func TestRun_APIKeyAuthentication(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2350,6 +2368,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 }
 
 func TestRun_IPAllowlist(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	t.Run("Allowed", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		ctx, cancel := context.WithCancel(context.Background())
@@ -2487,6 +2506,7 @@ func ptr[T any](v T) *T {
 }
 
 func TestRunServerMode_Auth(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -2603,6 +2623,7 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 }
 
 func TestAuthMiddleware_AuthDisabled(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -2662,6 +2683,7 @@ func TestReloadConfig_Directory(t *testing.T) {
 }
 
 func TestServer_CORS(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2695,6 +2717,7 @@ func TestServer_CORS(t *testing.T) {
 }
 
 func TestServer_CORS_Strict(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2733,6 +2756,7 @@ func TestHealthCheckWithContext_InvalidAddr(t *testing.T) {
 }
 
 func TestRun_WithListenAddress(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -2773,6 +2797,7 @@ func TestUploadFile_TempDirFail(t *testing.T) {
 }
 
 func TestMultiUserHandler_EdgeCases(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	afero.WriteFile(fs, "/config.yaml", []byte("users:\n  - id: \"user1\"\n    profile_ids: [\"profile1\"]"), 0644)
 
@@ -2822,6 +2847,7 @@ func TestMultiUserHandler_EdgeCases(t *testing.T) {
 }
 
 func TestMultiUserHandler_UserAuth(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	configContent := "users:\n  - id: \"user_auth\"\n    profile_ids: [\"p1\"]\n    authentication:\n      api_key:\n        param_name: \"X-Key\"\n        verification_value: \"secret\"\n        in: \"HEADER\""
 	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
@@ -2867,6 +2893,7 @@ func TestMultiUserHandler_UserAuth(t *testing.T) {
 }
 
 func TestReloadConfig_DynamicUpdates(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  allowed_ips: [\"127.0.0.1\"]"), 0644)
 
@@ -2902,6 +2929,7 @@ func TestReloadConfig_DynamicUpdates(t *testing.T) {
 }
 
 func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	configContent := "global_settings:\n  profile_definitions:\n    - name: \"admin_profile\"\n      required_roles: [\"admin\"]\nusers:\n  - id: \"user_regular\"\n    profile_ids: [\"admin_profile\"]\n    roles: [\"user\"]"
 	afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
@@ -3040,6 +3068,7 @@ func TestMiddlewareRegistry(t *testing.T) {
 }
 
 func TestConfigureUIHandler(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	busProvider, _ := bus.NewProvider(nil)
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
@@ -3140,6 +3169,7 @@ func TestFilesystemHealthCheck(t *testing.T) {
 }
 
 func TestMultiUserToolFiltering(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	configContent := `
 global_settings:
@@ -3170,6 +3200,7 @@ upstream_services:
 }
 
 func TestFix_ReloadReliability(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"openapi": "3.0.0", "info": {"title": "T", "version": "1"}, "paths": {"/t": {"get": {"operationId": "op"}}}}`))
@@ -3205,6 +3236,7 @@ func TestFix_ReloadReliability(t *testing.T) {
 }
 
 func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -3256,6 +3288,7 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 }
 
 func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "testpassword")
 	// Set TRUST PROXY to simulate forwarded IP
 	t.Setenv("MCPANY_TRUST_PROXY", "true")
 
