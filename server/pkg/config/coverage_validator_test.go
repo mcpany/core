@@ -730,7 +730,7 @@ func TestValidateBasicAuth_Coverage(t *testing.T) {
     }
      for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateBasicAuth(ctx, tt.auth)
+            err := validateBasicAuth(ctx, tt.auth, AuthValidationContextOutgoing)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
