@@ -7,11 +7,7 @@
 
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { MetricsOverview } from "@/components/dashboard/metrics-overview";
-import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
-import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Settings2 } from "lucide-react";
+import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
     DropdownMenu,
@@ -34,33 +30,33 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
+import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 
-type WidgetType = "full" | "half" | "third" | "two-thirds";
-
-interface DashboardWidget {
-    id: string;
+export interface WidgetInstance {
+    instanceId: string;
+    type: string;
     title: string;
-    type: WidgetType;
+    size: WidgetSize;
     hidden?: boolean;
 }
 
-const DEFAULT_WIDGETS: DashboardWidget[] = [
-    { id: "metrics", title: "Metrics Overview", type: "full" },
-    { id: "recent-activity", title: "Recent Activity", type: "half" },
-    { id: "uptime", title: "System Uptime", type: "half" },
-    { id: "failure-rate", title: "Tool Failure Rates", type: "third" },
-    { id: "request-volume", title: "Request Volume", type: "half" },
-    { id: "top-tools", title: "Top Tools", type: "third" },
-    { id: "service-health", title: "Service Health", type: "third" },
-];
+// Default widgets for a fresh dashboard
+const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
+    instanceId: crypto.randomUUID(),
+    type: def.type,
+    title: def.title,
+    size: def.defaultSize,
+    hidden: false
+}));
 
 /**
  * DashboardGrid component.
- * Implements a draggable grid for dashboard widgets with resizing and visibility controls.
+ * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
  */
 export function DashboardGrid() {
-    const [widgets, setWidgets] = useState<DashboardWidget[]>(DEFAULT_WIDGETS);
+    const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -69,39 +65,48 @@ export function DashboardGrid() {
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                // Migration logic: Ensure all widgets have valid types and hidden property
-                const migrated = parsed.map((w: any) => ({
-                    ...w,
-                    type: w.type === "wide" ? "full" : (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third"),
-                    hidden: w.hidden ?? false,
-                    // Fix stale titles: Find the current title from DEFAULT_WIDGETS
-                    title: DEFAULT_WIDGETS.find(d => d.id === w.id)?.title || w.title
-                }));
 
-                // Merge with default widgets to catch any new ones added to the codebase
-                const currentIds = new Set(migrated.map((w: any) => w.id));
-                const missingWidgets = DEFAULT_WIDGETS.filter(w => !currentIds.has(w.id));
+                // Migration Logic
+                // Case 1: Legacy format (DashboardWidget[]) where id matches type
+                if (parsed.length > 0 && !parsed[0].instanceId) {
+                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                        instanceId: crypto.randomUUID(),
+                        type: w.id, // In legacy, id was effectively the type
+                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                        hidden: w.hidden ?? false
+                    }));
 
-                setWidgets([...migrated, ...missingWidgets]);
+                    // Filter out any invalid types
+                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
+
+                    // If migration resulted in empty or too few widgets, append defaults?
+                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
+                    if (validMigrated.length === 0) {
+                        setWidgets(DEFAULT_LAYOUT);
+                    } else {
+                        setWidgets(validMigrated);
+                    }
+                } else {
+                    // Case 2: Already in new format
+                    setWidgets(parsed);
+                }
             } catch (e) {
                 console.error("Failed to load dashboard layout", e);
-                setWidgets(DEFAULT_WIDGETS);
+                setWidgets(DEFAULT_LAYOUT);
             }
+        } else {
+            setWidgets(DEFAULT_LAYOUT);
         }
     }, []);
 
-    const saveWidgets = (newWidgets: DashboardWidget[]) => {
+    const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
         localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
     };
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
-
-        // We are dragging within the filtered list (visible widgets only)
-        // But we need to update the full list order.
-        // Actually, reordering hidden widgets doesn't make much sense, so we effectively reorder the visible subset
-        // and reconstruct the full list.
 
         const visibleWidgets = widgets.filter(w => !w.hidden);
         const hiddenWidgets = widgets.filter(w => w.hidden);
@@ -110,38 +115,52 @@ export function DashboardGrid() {
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
-        // Ideally we keep hidden widgets at the end or intermixed?
-        // For simplicity, let's append hidden widgets at the end to avoid complex splicing
         saveWidgets([...items, ...hiddenWidgets]);
     };
 
-    const updateWidgetType = (id: string, newType: WidgetType) => {
-        const updated = widgets.map(w => w.id === id ? { ...w, type: newType } : w);
+    const updateWidgetSize = (instanceId: string, newSize: WidgetSize) => {
+        const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, size: newSize } : w);
         saveWidgets(updated);
     };
 
-    const toggleWidgetVisibility = (id: string) => {
-        const updated = widgets.map(w => w.id === id ? { ...w, hidden: !w.hidden } : w);
+    const toggleWidgetVisibility = (instanceId: string) => {
+        const updated = widgets.map(w => w.instanceId === instanceId ? { ...w, hidden: !w.hidden } : w);
         saveWidgets(updated);
+    };
+
+    const removeWidget = (instanceId: string) => {
+        const updated = widgets.filter(w => w.instanceId !== instanceId);
+        saveWidgets(updated);
+    };
+
+    const addWidget = (type: string) => {
+        const def = getWidgetDefinition(type);
+        if (!def) return;
+
+        const newWidget: WidgetInstance = {
+            instanceId: crypto.randomUUID(),
+            type: def.type,
+            title: def.title,
+            size: def.defaultSize,
+            hidden: false
+        };
+
+        // Add to the top
+        saveWidgets([newWidget, ...widgets]);
     };
 
     if (!isMounted) return null;
 
-    const renderWidget = (id: string) => {
-        switch (id) {
-            case "metrics": return <MetricsOverview />;
-            case "recent-activity": return <LazyRecentActivityWidget />;
-            case "uptime": return <LazyHealthHistoryChart />;
-            case "failure-rate": return <ToolFailureRateWidget />;
-            case "request-volume": return <LazyRequestVolumeChart />;
-            case "top-tools": return <LazyTopToolsWidget />;
-            case "service-health": return <ServiceHealthWidget />;
-            default: return null;
-        }
+    const renderWidget = (widget: WidgetInstance) => {
+        const def = getWidgetDefinition(widget.type);
+        if (!def) return <div className="p-4 border border-dashed text-muted-foreground">Unknown Widget Type: {widget.type}</div>;
+
+        const Component = def.component;
+        return <Component />;
     };
 
-    const getColSpan = (type: WidgetType) => {
-        switch (type) {
+    const getColSpan = (size: WidgetSize) => {
+        switch (size) {
             case "full": return "col-span-12";
             case "two-thirds": return "col-span-12 lg:col-span-8";
             case "half": return "col-span-12 lg:col-span-6";
@@ -154,29 +173,42 @@ export function DashboardGrid() {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+                <AddWidgetSheet onAdd={addWidget} />
+
+                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
+                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
+                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
+                    Let's keep the popover for recovering hidden widgets.
+                */}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="h-8 border-dashed">
                             <Settings2 className="mr-2 h-4 w-4" />
-                            Customize View
+                            Layout
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-56" align="end">
                         <div className="space-y-2">
-                            <h4 className="font-medium leading-none mb-2">Toggle Widgets</h4>
+                            <h4 className="font-medium leading-none mb-2">Visible Widgets</h4>
                             {widgets.map((widget) => (
-                                <div key={widget.id} className="flex items-center space-x-2">
+                                <div key={widget.instanceId} className="flex items-center space-x-2">
                                     <Checkbox
-                                        id={`show-${widget.id}`}
+                                        id={`show-${widget.instanceId}`}
                                         checked={!widget.hidden}
-                                        onCheckedChange={() => toggleWidgetVisibility(widget.id)}
+                                        onCheckedChange={() => toggleWidgetVisibility(widget.instanceId)}
                                     />
-                                    <Label htmlFor={`show-${widget.id}`} className="text-sm font-normal cursor-pointer w-full">
+                                    <Label htmlFor={`show-${widget.instanceId}`} className="text-sm font-normal cursor-pointer w-full truncate">
                                         {widget.title}
                                     </Label>
                                 </div>
                             ))}
+                             {widgets.length === 0 && <p className="text-xs text-muted-foreground">No widgets added.</p>}
+                             <div className="pt-2">
+                                <Button variant="ghost" size="sm" className="w-full text-xs text-destructive" onClick={() => saveWidgets([])}>
+                                    Clear All
+                                </Button>
+                             </div>
                         </div>
                     </PopoverContent>
                 </Popover>
@@ -191,14 +223,14 @@ export function DashboardGrid() {
                             className="grid grid-cols-12 gap-4"
                         >
                             {visibleWidgets.map((widget, index) => (
-                                <Draggable key={widget.id} draggableId={widget.id} index={index}>
+                                <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>
                                     {(provided, snapshot) => (
                                         <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             className={cn(
                                                 "relative group/widget rounded-lg transition-all duration-200",
-                                                getColSpan(widget.type),
+                                                getColSpan(widget.size),
                                                 snapshot.isDragging && "z-50 shadow-2xl scale-[1.02] opacity-90"
                                             )}
                                         >
@@ -225,7 +257,7 @@ export function DashboardGrid() {
                                                                 <span>Size</span>
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
-                                                                <DropdownMenuRadioGroup value={widget.type} onValueChange={(v) => updateWidgetType(widget.id, v as WidgetType)}>
+                                                                <DropdownMenuRadioGroup value={widget.size} onValueChange={(v) => updateWidgetSize(widget.instanceId, v as WidgetSize)}>
                                                                     <DropdownMenuRadioItem value="full">
                                                                         <LayoutGrid className="mr-2 h-4 w-4" /> Full Width
                                                                     </DropdownMenuRadioItem>
@@ -241,15 +273,20 @@ export function DashboardGrid() {
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
                                                         </DropdownMenuSub>
-                                                        <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.id)}>
+                                                        <DropdownMenuItem onClick={() => toggleWidgetVisibility(widget.instanceId)}>
                                                             <EyeOff className="mr-2 h-4 w-4" />
                                                             Hide Widget
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => removeWidget(widget.instanceId)} className="text-red-600 focus:text-red-600">
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Remove
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </div>
 
-                                            {renderWidget(widget.id)}
+                                            {renderWidget(widget)}
                                         </div>
                                     )}
                                 </Draggable>
@@ -259,6 +296,16 @@ export function DashboardGrid() {
                     )}
                 </Droppable>
             </DragDropContext>
+
+            {/* Empty State / Onboarding */}
+            {visibleWidgets.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
+                    <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium">Your dashboard is empty</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
+                    <AddWidgetSheet onAdd={addWidget} />
+                </div>
+            )}
         </div>
     );
 }

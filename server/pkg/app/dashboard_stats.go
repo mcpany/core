@@ -13,6 +13,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+const (
+	metricToolsCallTotal = "mcpany_tools_call_total"
+	labelTool            = "tool"
+	labelServiceID       = "service_id"
+	labelStatus          = "status"
+)
+
 // ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
@@ -57,7 +64,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 						if label.GetName() == labelTool {
 							toolName = label.GetValue()
 						}
-						if label.GetName() == labelService {
+						if label.GetName() == labelServiceID {
 							serviceID = label.GetValue()
 						}
 					}
@@ -193,7 +200,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 						if label.GetName() == labelTool {
 							toolName = label.GetValue()
 						}
-						if label.GetName() == labelService {
+						if label.GetName() == labelServiceID {
 							serviceID = label.GetValue()
 						}
 						if label.GetName() == labelStatus {
@@ -296,7 +303,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 						if label.GetName() == labelTool {
 							toolName = label.GetValue()
 						}
-						if label.GetName() == labelService {
+						if label.GetName() == labelServiceID {
 							serviceID = label.GetValue()
 						}
 						if label.GetName() == labelStatus {
