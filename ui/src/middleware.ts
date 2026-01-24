@@ -16,17 +16,9 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   // Intercept /api/v1 requests AND gRPC requests
-  // console.log(`[Middleware] Processing ${pathname}`);
   if (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/')) {
-    // Inject API Key from server-side environment variable
-    const apiKey = process.env.MCPANY_API_KEY;
-    if (apiKey) {
-      requestHeaders.set('X-API-Key', apiKey);
-    }
-
     // Dynamic Proxying via Middleware to avoid build-time baking of BACKEND_URL
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
-    console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
     const url = new URL(request.url);
     const newUrl = new URL(pathname + url.search, backendUrl);
@@ -51,7 +43,7 @@ export function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
     "img-src 'self' data: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://cdn.jsdelivr.net http: https:", // Added cdn.jsdelivr.net and http/https for diagnostics
+    "connect-src 'self' https://cdn.jsdelivr.net", // Removed arbitrary http/https
     "worker-src 'self' blob:", // Added for Monaco Editor workers
     "frame-ancestors 'none'",
     "object-src 'none'",
