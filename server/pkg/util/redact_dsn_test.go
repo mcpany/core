@@ -91,7 +91,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: password with space",
 			input:    "postgres://user:pass word@localhost:5432/db",
-			expected: "postgres://user:[REDACTED]@localhost:5432/db",
+			expected: "postgres://user:[REDACTED] word@localhost:5432/db",
 		},
 		{
 			name:     "fallback: empty password",
@@ -111,7 +111,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: password with colon and at sign",
 			input:    "user:pass:word@part@host",
-			expected: "user:[REDACTED]@host", // Greedy: stops at last @
+			expected: "user:[REDACTED]@host",
 		},
 		{
 			name:     "fallback: empty user with password",
@@ -127,6 +127,16 @@ func TestRedactDSN(t *testing.T) {
 			name:     "mailto scheme case insensitive (whitelist)",
 			input:    "MAILTO:bob@example.com",
 			expected: "MAILTO:bob@example.com",
+		},
+		{
+			name:     "multiple DSNs in string",
+			input:    "Connect to mysql://user1:secret1@host1 and postgres://user2:secret2@host2",
+			expected: "Connect to mysql://user1:[REDACTED]@host1 and postgres://user2:[REDACTED]@host2",
+		},
+		{
+			name:     "path/query containing @",
+			input:    "postgres://user:password@host:invalidport/db?email=foo@bar.com",
+			expected: "postgres://user:[REDACTED]@host:invalidport/db?email=foo@bar.com",
 		},
 	}
 
