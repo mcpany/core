@@ -362,6 +362,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			}
 			valueToValidate = strings.TrimSpace(string(content))
 			shouldValidate = true
+		case configv1.SecretValue_Value_not_set_case:
+			// If no value source is specified, it resolves to empty string.
+			valueToValidate = ""
+			shouldValidate = true
 		}
 
 		if shouldValidate && !re.MatchString(valueToValidate) {

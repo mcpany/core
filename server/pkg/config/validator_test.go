@@ -199,6 +199,15 @@ func TestValidateSecretValue(t *testing.T) {
 			expectErr: true,
 			errMsg:    "invalid validation regex",
 		},
+		{
+			name: "Unset value with regex",
+			secret: &configv1.SecretValue{
+				// Value is nil/unset
+				ValidationRegex: proto.String(`^.+$`),
+			},
+			expectErr: true,
+			errMsg:    "secret value does not match validation regex",
+		},
 	}
 
 	for _, tt := range tests {
