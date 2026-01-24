@@ -32,13 +32,25 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		}()
 
 		// Subscribe to logs
-		logCh := logging.GlobalBroadcaster.Subscribe()
+		logCh, history := logging.GlobalBroadcaster.SubscribeWithHistory()
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
 		// Set write deadline
 		if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
 			logging.GetLogger().Error("failed to set write deadline", "error", err)
 			return
+		}
+
+		// Send history
+		for _, msg := range history {
+			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+				logging.GetLogger().Error("failed to set write deadline for history", "error", err)
+				return
+			}
+			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+				logging.GetLogger().Error("failed to write history log message to websocket", "error", err)
+				return
+			}
 		}
 		conn.SetPongHandler(func(string) error {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
