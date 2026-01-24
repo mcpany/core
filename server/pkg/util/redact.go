@@ -460,7 +460,7 @@ var dsnSchemeRegex = regexp.MustCompile(`(://[^:]*):(.*)@`)
 // This covers "redis://:password" or "scheme://user:password" (missing host).
 // It matches "://", then optional user (non-colons), then colon, then password.
 // Password is terminated by /, @, whitespace, or ".
-var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"]+)`)
+var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
 
 // dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
 // e.g. parse "...": invalid port ":password".
