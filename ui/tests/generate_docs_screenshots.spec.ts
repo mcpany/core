@@ -39,6 +39,16 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                             status: 'healthy',
                             uptime: '5h 30m',
                             version: '2.1.0'
+                        },
+                        {
+                            id: 'broken-service',
+                            name: 'Legacy API',
+                            type: 'http',
+                            endpoint: 'http://legacy-api:3000',
+                            status: 'unhealthy',
+                            uptime: '10m',
+                            version: '0.9.0',
+                            last_error: 'Connection refused'
                         }
                     ]
                 }
@@ -472,6 +482,51 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await actionButton.click();
         await page.waitForTimeout(500);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
+      }
+  });
+
+  test('Connection Diagnostics Screenshots', async ({ page }) => {
+      // Mock the active check response
+      await page.route('**/api/v1/services/*/check', async route => {
+          await route.fulfill({
+              json: {
+                  service_name: 'broken-service',
+                  status: 'ERROR',
+                  message: 'Connection refused',
+                  error: 'dial tcp 127.0.0.1:5432: connect: connection refused'
+              }
+          });
+      });
+
+      await page.goto('/upstream-services');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+
+      // Locate the broken service row (Legacy API)
+      const row = page.getByRole('row').filter({ hasText: 'Legacy API' });
+      if (await row.count() > 0) {
+          // Click the alert triangle
+          const alertBtn = row.locator('button[title="View Error & Troubleshoot"]');
+          if (await alertBtn.isVisible()) {
+              await alertBtn.click();
+          } else {
+              // Fallback to actions menu
+              await row.getByRole('button', { name: 'Open menu' }).click();
+              await page.getByText('Diagnose').click();
+          }
+
+          await page.waitForTimeout(500); // Wait for dialog animation
+
+          // Click Start Diagnostics if it hasn't auto-started (it shouldn't auto-start usually unless configured)
+          const startBtn = page.getByRole('button', { name: /Start Diagnostics/i });
+          if (await startBtn.isVisible()) {
+              await startBtn.click();
+          }
+
+          // Wait for run to complete (mocked delay in component is 600ms per step)
+          await page.waitForTimeout(3000);
+
+          await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'connection-diagnostics.png') });
       }
   });
 

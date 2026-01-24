@@ -13,6 +13,7 @@ import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
+import { apiClient } from "@/lib/client";
 
 interface DiagnosticStep {
   id: string;
@@ -50,6 +51,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     const initialSteps: DiagnosticStep[] = [
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
+      { id: "active_check", name: "Active Connection Verification", status: "pending", logs: [] },
     ];
 
     if (service.websocketService || service.httpService) {
@@ -216,6 +218,36 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         const msg = error instanceof Error ? error.message : "Unknown error";
         addLog("backend_health", `Failed to contact backend API: ${msg}`);
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
+    }
+
+    // --- Step 3: Active Backend Verification ---
+    updateStep("active_check", { status: "running" });
+    addLog("active_check", "Triggering active health check on backend...");
+
+    try {
+        const result = await apiClient.checkService(service.name);
+        addLog("active_check", `Status: ${result.status}`);
+
+        if (result.status === "OK") {
+             addLog("active_check", `Message: ${result.message}`);
+             updateStep("active_check", { status: "success", detail: "Verified" });
+        } else {
+             addLog("active_check", `Message: ${result.message}`);
+             if (result.error) {
+                 addLog("active_check", `Error Detail: ${result.error}`);
+             }
+             updateStep("active_check", { status: "failure", detail: result.status });
+
+             // Update diagnostic result if we have a specific error (Active check usually has better details)
+             const diagnosis = analyzeConnectionError(result.error || result.message || "");
+             if (diagnosis.category !== 'unknown') {
+                 addLog("active_check", `Analysis: ${diagnosis.title}`);
+                 setDiagnosticResult(diagnosis);
+             }
+        }
+    } catch (e: any) {
+        addLog("active_check", `Failed to execute check: ${e.message}`);
+        updateStep("active_check", { status: "failure", detail: "Request Failed" });
     }
 
     setIsRunning(false);

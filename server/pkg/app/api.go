@@ -405,6 +405,11 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "check" {
+			a.handleServiceCheck(w, r, name, store)
+			return
+		}
+
 		if len(parts) > 1 {
 			http.NotFound(w, r)
 			return

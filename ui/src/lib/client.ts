@@ -116,10 +116,14 @@ export interface ReadResourceResponse {
  * Result of a single system health check.
  */
 export interface CheckResult {
-    /** The status of the check (e.g., "ok", "degraded", "error"). */
+    /** The name of the service checked. */
+    service_name?: string;
+    /** The status of the check (e.g., "ok", "degraded", "error", "OK", "ERROR"). */
     status: string;
     /** Optional message describing the status or error. */
     message?: string;
+    /** Optional detailed error message. */
+    error?: string;
     /** Optional latency measurement. */
     latency?: string;
     /** Optional diff showing configuration changes on error. */
@@ -283,6 +287,19 @@ export const apiClient = {
         });
         if (!response.ok) throw new Error('Failed to restart service');
         return {};
+    },
+
+    /**
+     * Performs an active health check on a service.
+     * @param name The name of the service to check.
+     * @returns A promise that resolves to the check result.
+     */
+    checkService: async (name: string): Promise<CheckResult> => {
+        const res = await fetchWithAuth(`/api/v1/services/${name}/check`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to check service');
+        return res.json();
     },
 
     /**
