@@ -580,75 +580,99 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			{Name: "service_id", Value: serviceID},
 		})
 	}
+
+	// Prepare response and logging artifacts.
+	// ⚡ Bolt Optimization: Identify the result type and marshal if necessary *before* logging.
+	// This allows reusing the marshalled bytes for both logging (redaction) and the actual response,
+	// avoiding a double-marshal penalty which is significant for large payloads (e.g. 1MB+).
+
+	var finalResult *mcp.CallToolResult
+	var jsonBytes []byte
+	var marshalErr error
+
+	if err == nil {
+		if ctr, ok := result.(*mcp.CallToolResult); ok {
+			finalResult = ctr
+		} else if resultMap, ok := result.(map[string]any); ok {
+			// Handle map[string]any result (e.g. from HTTP tools)
+			// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
+			// try to parse it as such.
+			_, hasContent := resultMap["content"]
+			_, hasIsError := resultMap["isError"]
+
+			if hasContent || hasIsError {
+				// ⚡ Bolt Optimization: Try fast path conversion first to avoid JSON roundtrip
+				if res, convErr := convertMapToCallToolResult(resultMap); convErr == nil {
+					finalResult = res
+				} else {
+					// Convert map to CallToolResult via JSON
+					// We need to marshal it to try Unmarshal, or to return as JSON if Unmarshal fails.
+					jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
+					if marshalErr == nil {
+						var callToolRes mcp.CallToolResult
+						if uErr := fastJSON.Unmarshal(jsonBytes, &callToolRes); uErr == nil {
+							finalResult = &callToolRes
+						} else {
+							// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
+							// and treat it as raw data.
+							logger.Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
+
+							// Heuristic: If content is a string, wrap it in a TextContent
+							if content, ok := resultMap["content"].(string); ok {
+								isError := callToolRes.IsError
+								// If IsError is false, it might be because Unmarshal failed (defaulting to false).
+								// Check the raw map to see if it was explicitly set.
+								if val, ok := resultMap["isError"].(bool); ok {
+									isError = val
+								}
+								finalResult = &mcp.CallToolResult{
+									Content: []mcp.Content{
+										&mcp.TextContent{
+											Text: content,
+										},
+									},
+									IsError: isError,
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// If we haven't determined a finalResult yet, we will need to return the result as JSON text.
+		if finalResult == nil && jsonBytes == nil {
+			jsonBytes, marshalErr = fastJSON.Marshal(result)
+		}
+	}
+
 	if logger.Enabled(ctx, slog.LevelInfo) {
-		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
+		logValue := result
+		if finalResult != nil {
+			logValue = finalResult
+		} else if jsonBytes != nil {
+			// ⚡ Bolt Optimization: Pass the pre-marshalled bytes to the logger.
+			// LazyLogResult will consume these bytes directly for redaction, avoiding re-marshalling.
+			logValue = jsonBytes
+		}
+		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: logValue})
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	if ctr, ok := result.(*mcp.CallToolResult); ok {
-		return ctr, nil
+	if finalResult != nil {
+		return finalResult, nil
 	}
 
-	// Handle map[string]any result (e.g. from HTTP tools)
-	var jsonBytes []byte
-	var marshalErr error
-
-	if resultMap, ok := result.(map[string]any); ok {
-		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
-		// try to parse it as such.
-		_, hasContent := resultMap["content"]
-		_, hasIsError := resultMap["isError"]
-
-		if hasContent || hasIsError {
-			// ⚡ Bolt Optimization: Try fast path conversion first to avoid JSON roundtrip
-			if res, err := convertMapToCallToolResult(resultMap); err == nil {
-				return res, nil
-			}
-
-			// Convert map to CallToolResult via JSON
-			jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
-			if marshalErr != nil {
-				return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
-			}
-
-			var callToolRes mcp.CallToolResult
-			if err := fastJSON.Unmarshal(jsonBytes, &callToolRes); err == nil {
-				return &callToolRes, nil
-			}
-			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
-			// and treat it as raw data.
-			logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
-
-			// Heuristic: If content is a string, wrap it in a TextContent
-			if content, ok := resultMap["content"].(string); ok {
-				isError := callToolRes.IsError
-				// If IsError is false, it might be because Unmarshal failed (defaulting to false).
-				// Check the raw map to see if it was explicitly set.
-				if val, ok := resultMap["isError"].(bool); ok {
-					isError = val
-				}
-
-				return &mcp.CallToolResult{
-					Content: []mcp.Content{
-						&mcp.TextContent{
-							Text: content,
-						},
-					},
-					IsError: isError,
-				}, nil
-			}
-		}
-	}
-
-	// Default to JSON encoding for the result
-	if jsonBytes == nil {
-		jsonBytes, marshalErr = fastJSON.Marshal(result)
-	}
+	// Default to JSON encoding for the result (reusing jsonBytes if available)
 	// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-	text := util.BytesToString(jsonBytes)
+	var text string
+	if jsonBytes != nil {
+		text = util.BytesToString(jsonBytes)
+	}
+
 	if marshalErr != nil {
 		text = util.ToString(result)
 	}
@@ -862,6 +886,9 @@ func (r LazyLogResult) LogValue() slog.Value {
 		// Use json-iterator for speed.
 		jsonBytes, _ := fastJSON.Marshal(v)
 		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+	case []byte:
+		// ⚡ Bolt Optimization: Redact existing JSON bytes without re-marshalling.
+		return slog.StringValue(util.BytesToString(util.RedactJSON(v)))
 	default:
 		// Fallback for other types
 		return slog.StringValue(util.ToString(v))
