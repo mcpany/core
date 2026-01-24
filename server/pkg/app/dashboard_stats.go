@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	mcpanyToolsCallTotal = "mcpany_tools_call_total"
+	metricToolsCallTotal = "mcpany_tools_call_total"
 	labelTool            = "tool"
 	labelServiceID       = "service_id"
 	labelStatus          = "status"
@@ -50,7 +50,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 		toolCounts := make(map[string]*ToolUsageStats)
 
 		for _, mf := range mfs {
-			if mf.GetName() == mcpanyToolsCallTotal {
+			if mf.GetName() == metricToolsCallTotal {
 				for _, m := range mf.GetMetric() {
 					var toolName, serviceID string
 					for _, label := range m.GetLabel() {
@@ -186,7 +186,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
-			if mf.GetName() == mcpanyToolsCallTotal {
+			if mf.GetName() == metricToolsCallTotal {
 				for _, m := range mf.GetMetric() {
 					var toolName, serviceID, status string
 					for _, label := range m.GetLabel() {
@@ -289,7 +289,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
-			if mf.GetName() == mcpanyToolsCallTotal {
+			if mf.GetName() == metricToolsCallTotal {
 				for _, m := range mf.GetMetric() {
 					var toolName, serviceID, status string
 					for _, label := range m.GetLabel() {
