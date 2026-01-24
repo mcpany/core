@@ -257,9 +257,9 @@ export const apiClient = {
      * @returns A promise that resolves to the service status.
      */
     getServiceStatus: async (name: string) => {
-        // Fallback or keep as TODO - REST endpoint might be /api/v1/services/{name}/status ?
-        // For E2E, we mainly check list. Let's assume list covers status.
-        return {} as any;
+        const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
+        if (!res.ok) throw new Error('Failed to fetch service status');
+        return res.json();
     },
 
     /**
@@ -754,33 +754,157 @@ export const apiClient = {
         return res.json();
     },
 
-    // Stack Management
+    // Stack Management (Collections)
 
     /**
-     * Gets the configuration for a stack.
-     * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration (as text/yaml).
+     * Lists all service collections (stacks).
+     * @returns A promise that resolves to a list of collections.
      */
-    getStackConfig: async (stackId: string) => {
-        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
-        if (!res.ok) throw new Error('Failed to fetch stack config');
-        return res.text(); // Config is likely raw YAML/JSON text
+    listCollections: async () => {
+        const res = await fetchWithAuth('/api/v1/collections');
+        if (!res.ok) throw new Error('Failed to list collections');
+        return res.json();
     },
 
     /**
-     * Saves the configuration for a stack.
+     * Gets a single service collection (stack) by its name.
+     * @param name The name of the collection.
+     * @returns A promise that resolves to the collection.
+     */
+    getCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}`);
+        if (!res.ok) throw new Error('Failed to get collection');
+        return res.json();
+    },
+
+    /**
+     * Saves a service collection (stack).
+     * @param collection The collection to save.
+     * @returns A promise that resolves when the collection is saved.
+     */
+    saveCollection: async (collection: any) => {
+        // Decide if create or update based on existence?
+        // The API might expect POST for create, PUT for update.
+        // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?
+        // But stack-editor logic handles "saving".
+        // The endpoint logic in api.go: handleCollections is POST, handleCollectionDetail is PUT.
+        // We'll use PUT if we have a name in the URL, POST otherwise?
+        // But `saveStackConfig` was replacing config.
+        // Let's assume we update an existing one usually.
+        const res = await fetchWithAuth(`/api/v1/collections/${collection.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) {
+             // If PUT fails (e.g. not found), try POST to create?
+             // But UI should know if it's new.
+             // For now just error.
+             throw new Error('Failed to save collection');
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes a service collection (stack).
+     * @param name The name of the collection to delete.
+     * @returns A promise that resolves when the collection is deleted.
+     */
+    deleteCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete collection');
+        return {};
+    },
+
+    /**
+     * Gets the configuration for a stack (Compatibility wrapper).
      * @param stackId The ID of the stack.
-     * @param config The configuration content.
+     * @returns A promise that resolves to the stack configuration.
+     */
+    getStackConfig: async (stackId: string) => {
+        // Map to getCollection
+        return apiClient.getCollection(stackId);
+    },
+
+    /**
+     * Saves the configuration for a stack (Compatibility wrapper).
+     * @param stackId The ID of the stack.
+     * @param config The configuration content (Collection object).
      * @returns A promise that resolves when the config is saved.
      */
-    saveStackConfig: async (stackId: string, config: string) => {
-        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' }, // Or application/yaml
-            body: config
-        });
-        if (!res.ok) throw new Error('Failed to save stack config');
+    saveStackConfig: async (stackId: string, config: any) => {
+        // Map to saveCollection. Ensure name is set.
+        const collection = typeof config === 'string' ? JSON.parse(config) : config;
+        if (!collection.name) collection.name = stackId;
+        return apiClient.saveCollection(collection);
+    },
+
+    // Profiles
+
+    /**
+     * Lists all profiles.
+     * @returns A promise that resolves to a list of profiles.
+     */
+    listProfiles: async () => {
+        const res = await fetchWithAuth('/api/v1/profiles');
+        if (!res.ok) throw new Error('Failed to list profiles');
         return res.json();
+    },
+
+    /**
+     * Gets a single profile by name.
+     * @param name The name of the profile.
+     * @returns A promise that resolves to the profile.
+     */
+    getProfile: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${name}`);
+        if (!res.ok) throw new Error('Failed to get profile');
+        return res.json();
+    },
+
+    /**
+     * Creates a new profile.
+     * @param profile The profile to create.
+     * @returns A promise that resolves when the profile is created.
+     */
+    createProfile: async (profile: any) => {
+        const res = await fetchWithAuth('/api/v1/profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profile)
+        });
+        if (!res.ok) throw new Error('Failed to create profile');
+        return res.json();
+    },
+
+    /**
+     * Updates an existing profile.
+     * @param profile The profile to update.
+     * @returns A promise that resolves when the profile is updated.
+     */
+    updateProfile: async (profile: any) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${profile.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profile)
+        });
+        if (!res.ok) throw new Error('Failed to update profile');
+        return res.json();
+    },
+
+    /**
+     * Deletes a profile.
+     * @param name The name of the profile to delete.
+     * @returns A promise that resolves when the profile is deleted.
+     */
+    deleteProfile: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete profile');
+        return {};
     },
 
     // User Management

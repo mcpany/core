@@ -131,6 +131,7 @@ export default function ToolsPage() {
     return acc;
   }, {} as Record<string, ToolDefinition[]>);
 
+
   if (!isLoaded) {
       return (
           <div className="flex-1 p-8 animate-pulse text-muted-foreground">
