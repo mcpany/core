@@ -62,17 +62,20 @@ export interface LogEntry {
 /**
  * Helper component to highlight search terms within text.
  */
-const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
-  if (!highlight || !text) return <>{text}</>;
+const HighlightText = ({ text, regex }: { text: string; regex: RegExp | null }) => {
+  if (!regex || !text) return <>{text}</>;
 
-  // Escape special regex characters in the highlight string
-  const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const parts = text.split(new RegExp(`(${escapedHighlight})`, 'gi'));
+  // Optimization: use the pre-computed regex to split the text.
+  // The regex must have capturing parentheses around the search term, e.g., /(term)/gi
+  // This causes split to return the separators (matches) interleaved with the non-matches.
+  // [non-match, match, non-match, match, ...]
+  // So odd indices (1, 3, 5...) are always the matches.
+  const parts = text.split(regex);
 
   return (
     <>
       {parts.map((part, i) =>
-        part.toLowerCase() === highlight.toLowerCase() ? (
+        i % 2 === 1 ? (
           <mark key={i} className="bg-yellow-500/40 text-inherit rounded-sm px-0.5 -mx-0.5">
             {part}
           </mark>
@@ -130,10 +133,10 @@ const tryParseJson = (str: string): unknown | null => {
  * LogRow component.
  * @param props - The component props.
  * @param props.log - The log property.
- * @param props.searchQuery - The current search query for highlighting.
+ * @param props.searchRegex - The current search regex for highlighting.
  * @returns The rendered component.
  */
-const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: string }) => {
+const LogRow = React.memo(({ log, searchRegex }: { log: LogEntry; searchRegex: RegExp | null }) => {
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -161,7 +164,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                   style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
                   title={log.source}
                 >
-                  [<HighlightText text={log.source} highlight={searchQuery} />]
+                  [<HighlightText text={log.source} regex={searchRegex} />]
                 </span>
               )}
           </div>
@@ -172,7 +175,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
               style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
               title={log.source}
             >
-              [<HighlightText text={log.source} highlight={searchQuery} />]
+              [<HighlightText text={log.source} regex={searchRegex} />]
             </span>
           )}
 
@@ -188,7 +191,7 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                   </button>
                )}
                <span className="break-all whitespace-pre-wrap">
-                 <HighlightText text={log.message} highlight={searchQuery} />
+                 <HighlightText text={log.message} regex={searchRegex} />
                </span>
                {duration && (
                 <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
@@ -393,6 +396,17 @@ export function LogStream() {
     })
   }, [logs, filterLevel, filterSource, deferredSearchQuery])
 
+  // Optimization: Pre-compute regex for highlighting to avoid creating new RegExp objects
+  // for every highlighted segment in every row. This is significantly faster than
+  // string splitting with new RegExp in every child component.
+  const searchRegex = React.useMemo(() => {
+    if (!deferredSearchQuery) return null
+    // Escape special regex characters in the highlight string
+    const escapedHighlight = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    // Note: We use capturing group `()` so that split() includes the separators (matches)
+    return new RegExp(`(${escapedHighlight})`, "gi")
+  }, [deferredSearchQuery])
+
   const clearLogs = () => setLogs([])
 
   const downloadLogs = () => {
@@ -513,7 +527,7 @@ export function LogStream() {
                         </div>
                     )}
                     {filteredLogs.map((log) => (
-                      <LogRow key={log.id} log={log} searchQuery={deferredSearchQuery} />
+                      <LogRow key={log.id} log={log} searchRegex={searchRegex} />
                     ))}
                 </div>
              </ScrollArea>
