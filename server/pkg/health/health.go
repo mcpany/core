@@ -165,9 +165,8 @@ func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) 
 		return nil
 	}
 
-	client := &http.Client{
-		Timeout: lo.Ternary(hc.GetTimeout() != nil, hc.GetTimeout().AsDuration(), 5*time.Second),
-	}
+	client := util.NewSafeHTTPClient()
+	client.Timeout = lo.Ternary(hc.GetTimeout() != nil, hc.GetTimeout().AsDuration(), 5*time.Second)
 
 	method := lo.Ternary(hc.GetMethod() != "", hc.GetMethod(), http.MethodGet)
 	req, err := http.NewRequestWithContext(ctx, method, hc.GetUrl(), nil)
@@ -260,7 +259,10 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	conn, resp, err := websocket.Dial(ctx, healthCheckURL, nil)
+	safeClient := util.NewSafeHTTPClient()
+	conn, resp, err := websocket.Dial(ctx, healthCheckURL, &websocket.DialOptions{
+		HTTPClient: safeClient,
+	})
 	if resp != nil {
 		defer func() {
 			if resp.Body != nil {
@@ -425,7 +427,8 @@ func sendWebhook(ctx context.Context, url, serviceName string, status health.Ava
 	req.Header.Set("Content-Type", "application/json")
 
 	// Use a short timeout for webhooks
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 5 * time.Second
 	resp, err := client.Do(req)
 	if err != nil {
 		logging.GetLogger().Error("failed to send webhook", "error", err)
