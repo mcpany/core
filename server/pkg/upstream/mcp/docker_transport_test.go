@@ -221,8 +221,9 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
 	conn, err := transport.Connect(ctx)
-	assert.NoError(t, err)
-	assert.NotNil(t, conn)
+	// We use require.NoError because if connection fails, we shouldn't proceed to Read.
+	require.NoError(t, err)
+	require.NotNil(t, conn)
 
 	msg, err := conn.Read(ctx)
 	assert.NoError(t, err)
