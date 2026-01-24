@@ -51,7 +51,7 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
  *
  * @returns The rendered NetworkLegend component.
  */
-export function NetworkLegend() {
+export const NetworkLegend = React.memo(function NetworkLegend() {
     return (
         <div className="space-y-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -130,4 +130,4 @@ export function NetworkLegend() {
             </div>
         </div>
     );
-}
+});

@@ -255,16 +255,7 @@ function Flow() {
 
         <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="currentColor" className="text-muted-foreground/20" />
 
-        <Panel position="bottom-center" className="mb-8">
-            <div className="bg-background/90 p-2 px-4 rounded-full border shadow-lg backdrop-blur text-[10px] text-muted-foreground flex gap-4 items-center">
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Core</div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Service</div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div> Client</div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Tool</div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500"></div> Middleware</div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div> Error</div>
-            </div>
-        </Panel>
+        <BottomLegendPanel />
       </ReactFlow>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -371,6 +362,24 @@ function Flow() {
 }
 
 /**
+ * BottomLegendPanel component.
+ * Static legend panel displayed at the bottom of the graph.
+ */
+const BottomLegendPanel = React.memo(() => (
+    <Panel position="bottom-center" className="mb-8">
+        <div className="bg-background/90 p-2 px-4 rounded-full border shadow-lg backdrop-blur text-[10px] text-muted-foreground flex gap-4 items-center">
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Core</div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Service</div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div> Client</div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-amber-500"></div> Tool</div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500"></div> Middleware</div>
+            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div> Error</div>
+        </div>
+    </Panel>
+));
+BottomLegendPanel.displayName = 'BottomLegendPanel';
+
+/**
  * MetricCard component.
  * @param props - The component props.
  * @param props.label - The label property.
@@ -379,7 +388,7 @@ function Flow() {
  * @param props.intent - The intent property.
  * @returns The rendered component.
  */
-function MetricCard({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) {
+const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) => {
     return (
         <Card className={`p-3 bg-card/50 ${intent === 'danger' ? 'border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-900' : ''}`}>
             <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{label}</div>
@@ -388,7 +397,8 @@ function MetricCard({ label, value, unit, intent = "neutral" }: { label: string,
             </div>
         </Card>
     )
-}
+});
+MetricCard.displayName = 'MetricCard';
 
 /**
  * NetworkGraphClient component.
