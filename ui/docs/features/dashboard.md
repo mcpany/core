@@ -9,15 +9,22 @@ Assess the overall health and performance of the MCP ecosystem. The Dashboard se
 
 ### 1. Overview
 Navigate to `/` (Home).
-The dashboard is composed of three main sections:
-- **KPI Cards**: Top-level metrics.
-- **Charts**: Historical trends.
-- **Service Status**: Breakdown of connected components.
+The dashboard is composed of configurable widgets that provide visibility into different aspects of the system.
 
-![Dashboard Overview](screenshots/dashboard_overview.png)
+![Dashboard Overview](../screenshots/dashboard_overview.png)
 
 ### 2. Live Metrics
 The dashboard updates in real-time.
 - **Total Requests**: Aggregate count of all operations processed.
 - **Active Services**: Number of services currently in "Healthy" state.
 - **Error Rate**: Percentage of requests resulting in failures.
+
+### 3. Customizable Layout (Widget Gallery)
+The dashboard features a fully customizable layout engine ("Portainer-style").
+
+- **Add Widgets**: Click the **Add Widget** button to open the gallery and choose from a library of available widgets (e.g., Metrics Overview, Recent Activity, Service Health).
+- **Drag & Drop**: Freely rearrange widgets on the grid.
+- **Resize**: Click the menu (⋮) on any widget to change its size (Full Width, 1/2, 1/3, etc.).
+- **Persisted State**: Your custom layout is automatically saved to your local browser storage.
+
+![Widget Gallery](../screenshots/dashboard_overview.png)
