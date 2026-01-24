@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { describe, it, expect, vi } from 'vitest';
 import { marketplaceService } from '../../src/lib/marketplace-service';
 
