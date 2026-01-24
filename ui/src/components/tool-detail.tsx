@@ -57,7 +57,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
         const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService || serviceDetails.openapiService || serviceDetails.websocketService || serviceDetails.webrtcService || serviceDetails.graphqlService || serviceDetails.mcpService;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const foundTool = (serviceData as any)?.tools?.find((t: any) => t.name === toolName);
+        const foundTool = (serviceData as any)?.tools?.find((t: ToolDefinition) => t.name === toolName);
 
         if (foundTool) {
           setTool(foundTool);
@@ -71,12 +71,13 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
         } else {
           throw new Error(`Tool "${toolName}" not found in service "${serviceDetails.name}".`);
         }
-      } catch (e: any) {
-        setError(e.message || "An unknown error occurred.");
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        setError(errorMessage || "An unknown error occurred.");
         toast({
           variant: "destructive",
           title: "Failed to fetch tool details",
-          description: e.message,
+          description: errorMessage,
         });
       } finally {
         setIsLoading(false);
