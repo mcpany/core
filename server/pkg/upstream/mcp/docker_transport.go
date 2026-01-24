@@ -4,7 +4,6 @@
 package mcp
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -48,6 +47,7 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 // running inside a Docker container. It manages the container lifecycle.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
+	Logger      *slog.Logger
 }
 
 // Connect establishes a connection to the service within the Docker container.
@@ -57,7 +57,11 @@ type DockerTransport struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
-	log := logging.GetLogger()
+	log := t.Logger
+	if log == nil {
+		log = logging.GetLogger()
+	}
+
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
@@ -153,7 +157,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 
 	go func() {
 		defer func() { _ = stdoutWriter.Close() }()
-		logWriter := &slogWriter{log: log, level: slog.LevelError}
+		logWriter := NewLogWriter(log)
 		// Write stderr to both capture buffer and log
 		multiStderr := io.MultiWriter(logWriter, stderrCapture)
 		_, err := stdcopy.StdCopy(stdoutWriter, multiStderr, hijackedResp.Reader)
@@ -360,23 +364,6 @@ func (c *dockerReadWriteCloser) Close() error {
 
 	_ = c.cli.Close()
 	return err
-}
-
-// slogWriter implements the io.Writer interface, allowing it to be used as a
-// destination for log output. It writes each line of the input to a slog.Logger.
-type slogWriter struct {
-	log   *slog.Logger
-	level slog.Level
-}
-
-// Write takes a byte slice, scans it for lines, and logs each line
-// individually using the configured slog.Logger and level.
-func (s *slogWriter) Write(p []byte) (n int, err error) {
-	scanner := bufio.NewScanner(strings.NewReader(string(p)))
-	for scanner.Scan() {
-		s.log.Log(context.Background(), s.level, scanner.Text())
-	}
-	return len(p), nil
 }
 
 // tailBuffer is a thread-safe buffer that keeps the last N bytes written to it.

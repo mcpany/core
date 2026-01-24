@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -824,16 +823,6 @@ func TestUpstream_Register_Coverage(t *testing.T) {
 	assert.Contains(t, err.Error(), "list tools failed")
 }
 
-func TestBundleSlogWriter(t *testing.T) {
-	logger := logging.GetLogger()
-	w := &bundleSlogWriter{
-		log:   logger,
-		level: slog.LevelInfo,
-	}
-	n, err := w.Write([]byte("test log"))
-	assert.NoError(t, err)
-	assert.Equal(t, 8, n)
-}
 
 func TestBundleDockerConn_Read_Malformed(t *testing.T) {
 	rwc := &mockRWC{}

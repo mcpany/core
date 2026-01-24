@@ -21,6 +21,7 @@ import (
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
+	Logger  *slog.Logger
 }
 
 // Connect starts the command and returns a connection.
@@ -30,7 +31,10 @@ type StdioTransport struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
-	log := logging.GetLogger()
+	log := t.Logger
+	if log == nil {
+		log = logging.GetLogger()
+	}
 
 	stdin, err := t.Command.StdinPipe()
 	if err != nil {
@@ -50,8 +54,7 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	// Capture stderr
 	stderrCapture := &tailBuffer{limit: 4096}
 	// We also want to log stderr to the application logs
-	// Note: slog.LevelError is imported from "log/slog"
-	logWriter := &slogWriter{log: log, level: slog.LevelError}
+	logWriter := NewLogWriter(log)
 
 	multiStderr := io.MultiWriter(stderrCapture, logWriter)
 

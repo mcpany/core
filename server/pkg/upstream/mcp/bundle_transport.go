@@ -53,6 +53,7 @@ type BundleDockerTransport struct {
 	Env        []string
 	Mounts     []mount.Mount
 	WorkingDir string
+	Logger     *slog.Logger
 }
 
 // Connect establishes a connection to the service within the Docker container.
@@ -62,7 +63,11 @@ type BundleDockerTransport struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
-	log := logging.GetLogger()
+	log := t.Logger
+	if log == nil {
+		log = logging.GetLogger()
+	}
+
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
@@ -137,7 +142,7 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 	// Capture Stderr for logging
 	go func() {
 		defer func() { _ = stdoutWriter.Close() }()
-		logWriterWithLevel := &bundleSlogWriter{log: log, level: slog.LevelError}
+		logWriterWithLevel := NewLogWriter(log)
 		_, err := stdcopy.StdCopy(stdoutWriter, logWriterWithLevel, hijackedResp.Reader)
 		if err != nil && err != io.EOF {
 			log.Error("Error demultiplexing docker stream", "error", err)
@@ -407,20 +412,3 @@ func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
 
-// bundleSlogWriter duplicates slogWriter from docker_transport.go.
-type bundleSlogWriter struct {
-	log   *slog.Logger
-	level slog.Level
-}
-
-// Write writes the log message to the logger.
-//
-// p is the p.
-//
-// Returns the result.
-// Returns an error if the operation fails.
-func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
-	msg := string(p)
-	s.log.Log(context.Background(), s.level, msg)
-	return len(p), nil
-}
