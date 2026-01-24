@@ -9,6 +9,7 @@
     "@modelcontextprotocol/server-everything": "^2025.12.18",
     "@modelcontextprotocol/server-filesystem": "^2025.12.18",
     "@playwright/mcp": "^0.0.55",
+    "playwright": "^1.58.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {
