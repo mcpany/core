@@ -9,7 +9,7 @@ import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { Activity, BarChart, Server, AlertTriangle, LineChart, Hash, CheckCircle2 } from "lucide-react";
+import { Activity, BarChart, Server, AlertTriangle, LineChart, Hash } from "lucide-react";
 
 export type WidgetType = "full" | "half" | "third" | "two-thirds";
 
