@@ -209,7 +209,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
              json: {
                  tools: [
                      { name: 'filesystem.list_dir', description: 'List files in directory', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
-                     { name: 'calculator.add', description: 'Add two numbers', inputSchema: { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] } }
+                     { name: 'calculator.add', description: 'Add two numbers', inputSchema: { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] } },
+                     { name: 'image_processor.process', description: 'Process an image file', inputSchema: { type: 'object', properties: { image: { type: 'string', contentEncoding: 'base64' } }, required: ['image'] } }
                  ]
              }
          });
@@ -219,16 +220,54 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.reload();
     await page.waitForTimeout(1000);
 
-    // Select Tool
+    // Select Tool (Filesystem)
     const tool = page.getByText('filesystem.list_dir');
-    if (await tool.isVisible()) {
-        await tool.click();
+    // Note: In newer UI, tools are in a sheet, so we might need to open it first if not open?
+    // But PlaygroundClient code shows "Available Tools" button opens sheet.
+    // Assuming the test above relies on the sheet being open or the list being visible?
+    // Wait, the previous test didn't open the sheet.
+    // "Select Tool" logic in existing test: `page.getByText('filesystem.list_dir').click()`
+    // This implies the list is visible. But the code I read shows it in a Sheet triggered by button.
+    // Maybe checking `playground-client.tsx`...
+    // <Sheet><SheetTrigger><Button>Available Tools</Button></SheetTrigger>...
+    // The list is inside SheetContent.
+    // So we MUST open the sheet.
+
+    const fsTool = page.getByText('filesystem.list_dir');
+    // Note: PlaygroundClientPro has a sidebar, so tools should be visible immediately on desktop.
+    if (await fsTool.isVisible()) {
+        await fsTool.click();
+
         await page.waitForTimeout(500);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_tool_selected.png'), fullPage: true });
 
         // Fill Form
         await page.getByLabel('path').fill('/var/log');
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
+
+        // Close dialog to reset (Cancel)
+        await page.getByRole('button', { name: 'Cancel' }).click();
+    }
+
+    // Capture File Upload
+    const imgTool = page.getByText('image_processor.process');
+    if (await imgTool.isVisible()) {
+         await imgTool.click();
+
+         await page.waitForTimeout(500);
+         // Upload file - Target the specific input for the 'image' argument
+         // Using ID selector as it corresponds to the schema property name
+         await page.locator('input#image').setInputFiles({
+             name: 'preview_demo.png',
+             mimeType: 'image/png',
+             buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64')
+         });
+
+         await page.waitForTimeout(1000);
+         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_file_preview.png') });
+
+         // Close dialog
+         await page.getByRole('button', { name: 'Cancel' }).click();
     }
 
     // Tools alias
