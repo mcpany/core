@@ -41,6 +41,9 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 			if info.IsDir() {
 				return nil, fmt.Errorf("path is a directory")
 			}
+			if !info.Mode().IsRegular() {
+				return nil, fmt.Errorf("path is not a regular file")
+			}
 
 			// Check file size to prevent memory exhaustion (limit to 10MB)
 			const maxFileSize = 10 * 1024 * 1024 // 10MB
