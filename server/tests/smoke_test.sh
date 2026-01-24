@@ -19,6 +19,7 @@ docker rm -f "$CONTAINER_NAME" > /dev/null 2>&1 || true
 docker run -d --name "$CONTAINER_NAME" \
   -P \
   -e MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true \
+  -e MCPANY_ADMIN_INIT_PASSWORD=testpassword \
   "$IMAGE_NAME" \
   run \
   --mcp-listen-address :50050 \
