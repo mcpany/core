@@ -27,6 +27,10 @@ func (m *SpyServiceRegistry) UnregisterService(ctx context.Context, serviceName 
 	return nil
 }
 
+func (m *SpyServiceRegistry) CheckHealth(ctx context.Context, serviceName string) error {
+	return nil
+}
+
 type MockStoreWithGet struct {
 	MockServiceStore
 	service *configv1.UpstreamServiceConfig

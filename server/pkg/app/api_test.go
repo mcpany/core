@@ -937,6 +937,11 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) CheckHealth(ctx context.Context, serviceName string) error {
+	args := m.Called(ctx, serviceName)
+	return args.Error(0)
+}
+
 func TestHandleServices_IncludesError(t *testing.T) {
 	db, err := sqlite.NewDB(":memory:")
 	require.NoError(t, err)
@@ -1552,6 +1557,9 @@ func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.
 	return nil, false
 }
 func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+func (m *TestMockServiceRegistry) CheckHealth(ctx context.Context, serviceName string) error {
+	return nil
+}
 
 func TestHandleServices_ToolCount(t *testing.T) {
 	busProvider, _ := bus.NewProvider(nil)
