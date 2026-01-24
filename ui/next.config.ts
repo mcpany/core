@@ -98,7 +98,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=()'
+            value: 'geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), accelerometer=(), gyroscope=(), autoplay=()'
           },
           {
             key: 'Content-Security-Policy',

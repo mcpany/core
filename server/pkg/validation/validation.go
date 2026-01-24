@@ -62,8 +62,14 @@ func IsValidBindAddress(s string) error {
 // IsSecurePath checks if a given file path is secure.
 // It is a variable to allow mocking in tests.
 var IsSecurePath = func(path string) error {
+	if strings.Contains(path, "\x00") {
+		return fmt.Errorf("path contains null byte")
+	}
+
 	// Check original path for traversal attempts before cleaning
-	parts := strings.Split(path, string(os.PathSeparator))
+	// Normalize separators to '/' to handle both slash and backslash regardless of OS
+	normalized := strings.ReplaceAll(path, "\\", "/")
+	parts := strings.Split(normalized, "/")
 	for _, part := range parts {
 		if part == ".." {
 			return fmt.Errorf("path contains '..', which is not allowed")
@@ -71,7 +77,9 @@ var IsSecurePath = func(path string) error {
 	}
 
 	clean := filepath.Clean(path)
-	parts = strings.Split(clean, string(os.PathSeparator))
+	// Normalize clean path as well
+	normalizedClean := strings.ReplaceAll(clean, "\\", "/")
+	parts = strings.Split(normalizedClean, "/")
 	for _, part := range parts {
 		if part == ".." {
 			return fmt.Errorf("path contains '..', which is not allowed")
