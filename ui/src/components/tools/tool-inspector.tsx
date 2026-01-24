@@ -6,13 +6,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon } from "lucide-react";
+import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, Trash2 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +38,10 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
-  const [execHistory, setExecHistory] = useState<{ time: string; latency: number; status: string }[]>([]);
+  const [execHistory, setExecHistory] = useLocalStorage<{ time: string; latency: number; status: string }[]>(
+    `tool-history-${tool?.serviceId}-${tool?.name}`,
+    []
+  );
 
   const stats = useMemo(() => {
     const total = execHistory.length;
@@ -147,6 +151,11 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
             </TabsContent>
 
             <TabsContent value="metrics" className="space-y-6">
+                <div className="flex justify-end">
+                    <Button variant="outline" size="sm" onClick={() => setExecHistory([])} disabled={execHistory.length === 0}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Clear History
+                    </Button>
+                </div>
                 <div className="grid grid-cols-4 gap-4">
                     <div className="space-y-1">
                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">Total Calls</p>
