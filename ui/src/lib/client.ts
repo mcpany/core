@@ -701,6 +701,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the dashboard context usage history.
+     * @returns A promise that resolves to the context history points.
+     */
+    getDashboardContextHistory: async () => {
+        const res = await fetchWithAuth('/api/v1/dashboard/context-history');
+        if (!res.ok) throw new Error('Failed to fetch dashboard context history');
+        return res.json();
+    },
+
+    /**
      * Gets the top used tools.
      * @returns A promise that resolves to the top tools stats.
      */

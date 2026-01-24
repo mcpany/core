@@ -12,6 +12,7 @@ import (
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
+	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
@@ -20,8 +21,10 @@ type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
 	trafficHistory  map[int64]*MinuteStats // Unix timestamp (minute) -> stats
+	contextHistory  map[int64]int64        // Unix timestamp (minute) -> total tokens
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	toolManager     tool.ManagerInterface
+	tokenizer       tokenizer.Tokenizer
 }
 
 // SessionStats contains statistics about a topology session.
@@ -63,11 +66,52 @@ type TrafficPoint struct {
 //
 // Returns the result.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
-	return &Manager{
+	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
 		trafficHistory:  make(map[int64]*MinuteStats),
+		contextHistory:  make(map[int64]int64),
 		serviceRegistry: registry,
 		toolManager:     tm,
+		tokenizer:       tokenizer.NewWordTokenizer(),
+	}
+	go m.startContextTracker()
+	return m
+}
+
+func (m *Manager) startContextTracker() {
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+
+	// Initial run
+	m.trackContextUsage()
+
+	for range ticker.C {
+		m.trackContextUsage()
+	}
+}
+
+func (m *Manager) trackContextUsage() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	totalTokens := 0
+	tools := m.toolManager.ListMCPTools()
+	for _, t := range tools {
+		c, err := tokenizer.CountTokensInValue(m.tokenizer, t)
+		if err == nil {
+			totalTokens += c
+		}
+	}
+
+	now := time.Now().Truncate(time.Minute).Unix()
+	m.contextHistory[now] = int64(totalTokens)
+
+	// Cleanup old history (>24h)
+	cutoff := time.Now().Add(-24 * time.Hour).Unix()
+	for t := range m.contextHistory {
+		if t < cutoff {
+			delete(m.contextHistory, t)
+		}
 	}
 }
 
@@ -192,6 +236,41 @@ func (m *Manager) GetTrafficHistory() []TrafficPoint {
 			Total:   reqs,
 			Errors:  errs,
 			Latency: avgLat,
+		})
+	}
+	return points
+}
+
+// GetContextHistory returns the context usage history for the last 24 hours.
+func (m *Manager) GetContextHistory() []TrafficPoint {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	points := make([]TrafficPoint, 0, 60)
+	now := time.Now()
+
+	// Generate points for the last 60 minutes
+	for i := 59; i >= 0; i-- {
+		t := now.Add(time.Duration(-i) * time.Minute).Truncate(time.Minute)
+		key := t.Unix()
+
+		totalTokens := int64(0)
+		if tokens, ok := m.contextHistory[key]; ok {
+			totalTokens = tokens
+		} else {
+			// If missing, take the previous known value (hold last value)
+			// This makes the graph look better instead of dropping to zero
+			// if the ticker didn't align perfectly or for gaps.
+			// Simple backfill: check previous minute
+			prevKey := key - 60
+			if prevTokens, ok := m.contextHistory[prevKey]; ok {
+				totalTokens = prevTokens
+			}
+		}
+
+		points = append(points, TrafficPoint{
+			Time:  t.Format("15:04"),
+			Total: totalTokens, // Map tokens to Total for UI reuse
 		})
 	}
 	return points

@@ -119,6 +119,21 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock Dashboard Context History
+     await page.route('**/api/v1/dashboard/context-history', async route => {
+         await route.fulfill({
+             json: Array.from({length: 24}, (_, i) => {
+                 const d = new Date(Date.now() - i * 3600000);
+                 const hours = d.getHours().toString().padStart(2, '0');
+                 const minutes = d.getMinutes().toString().padStart(2, '0');
+                 return {
+                     time: `${hours}:${minutes}`,
+                     requests: Math.floor(Math.random() * 5000) + 1000 // Tokens
+                 };
+             }).reverse()
+         });
+     });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -458,6 +473,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.goto('/stats');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stats.png'), fullPage: true });
+
+      // Click Context Usage tab
+      await page.getByRole('tab', { name: 'Context Usage' }).click();
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stats_context.png'), fullPage: true });
   });
 
   test('Service Actions Screenshots', async ({ page }) => {

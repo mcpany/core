@@ -340,3 +340,23 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		_ = json.NewEncoder(w).Encode(analytics)
 	}
 }
+
+// handleDashboardContextHistory returns the context usage history for the dashboard chart.
+func (a *Application) handleDashboardContextHistory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.TopologyManager == nil {
+			http.Error(w, "Topology manager not initialized", http.StatusServiceUnavailable)
+			return
+		}
+
+		points := a.TopologyManager.GetContextHistory()
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(points)
+	}
+}
