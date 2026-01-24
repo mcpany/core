@@ -68,6 +68,43 @@ func TestManager_Run(t *testing.T) {
 	assert.WithinDuration(t, time.Now(), status2.LastRunAt, time.Second)
 }
 
+func TestManager_GetStatuses(t *testing.T) {
+	manager := NewManager()
+
+	// Register multiple providers
+	p1 := &MockProvider{name: "p1"}
+	p2 := &MockProvider{name: "p2"}
+	manager.RegisterProvider(p1)
+	manager.RegisterProvider(p2)
+
+	// Initial check - should be PENDING
+	statuses := manager.GetStatuses()
+	assert.Len(t, statuses, 2)
+
+	statusMap := make(map[string]*ProviderStatus)
+	for _, s := range statuses {
+		statusMap[s.Name] = s
+	}
+
+	assert.Equal(t, "PENDING", statusMap["p1"].Status)
+	assert.Equal(t, "PENDING", statusMap["p2"].Status)
+
+	// Run discovery
+	manager.Run(context.Background())
+
+	// Check updated statuses
+	statuses = manager.GetStatuses()
+	assert.Len(t, statuses, 2)
+
+	statusMap = make(map[string]*ProviderStatus)
+	for _, s := range statuses {
+		statusMap[s.Name] = s
+	}
+
+	assert.Equal(t, "OK", statusMap["p1"].Status)
+	assert.Equal(t, "OK", statusMap["p2"].Status)
+}
+
 func pointer(s string) *string {
 	return &s
 }
