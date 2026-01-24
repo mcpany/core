@@ -89,6 +89,7 @@ message UpstreamServiceConfig {
     SqlUpstreamService sql_service = 27 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 28 [json_name = "filesystem_service"];
     VectorUpstreamService vector_service = 29 [json_name = "vector_service"];
+    BrowserUpstreamService browser_service = 38 [json_name = "browser_service"];
   }
 
   // Policy to control which calls can be made.
@@ -448,6 +449,20 @@ message MilvusVectorDB {
   string database_name = 5 [json_name = "database_name"]; // Defaults to "default"
   bool use_tls = 6 [json_name = "use_tls"];
   string api_key = 7 [json_name = "api_key"]; // For Zilliz Cloud
+}
+
+// BrowserUpstreamService defines a service that provides browser automation.
+message BrowserUpstreamService {
+  // The browser type to use (chromium, firefox, webkit).
+  string browser_type = 1 [json_name = "browser_type"];
+  // If true, runs the browser in headless mode.
+  bool headless = 2;
+  // Manually defined mappings from MCP tools to browser actions.
+  repeated ToolDefinition tools = 3;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 5;
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.

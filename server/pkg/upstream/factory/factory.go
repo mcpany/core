@@ -21,6 +21,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/vector"
 	"github.com/mcpany/core/server/pkg/upstream/webrtc"
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
+	"github.com/mcpany/core/server/pkg/upstream/browser"
 )
 
 // Factory defines the interface for a factory that creates upstream service
@@ -94,6 +95,8 @@ func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceCon
 		return filesystem.NewUpstream(), nil
 	case configv1.UpstreamServiceConfig_VectorService_case:
 		return vector.NewUpstream(), nil
+	case configv1.UpstreamServiceConfig_BrowserService_case:
+		return browser.NewUpstream(), nil
 	default:
 		return nil, fmt.Errorf("unknown service config type: %T", config.WhichServiceConfig())
 	}
