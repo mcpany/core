@@ -47,9 +47,7 @@ func (w *LogWriter) Write(p []byte) (n int, err error) {
 
 		// Log the line
 		// Trim CR if present (Windows line endings)
-		if strings.HasSuffix(line, "\r") {
-			line = strings.TrimSuffix(line, "\r")
-		}
+		line = strings.TrimSuffix(line, "\r")
 
 		level := w.detectLevel(line)
 		w.logger.Log(context.Background(), level, line)
