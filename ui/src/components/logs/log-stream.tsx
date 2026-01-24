@@ -52,7 +52,7 @@ export interface LogEntry {
   level: LogLevel
   message: string
   source?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   // Optimization: Pre-computed lowercase string for search performance
   searchStr?: string
   // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
@@ -110,7 +110,7 @@ const getSourceHue = (source: string) => {
   return Math.abs(hash % 360);
 };
 
-const tryParseJson = (str: string): any | null => {
+const tryParseJson = (str: string): unknown | null => {
   if (typeof str !== 'string') return null;
   const trimmed = str.trim();
   // Simple heuristic to avoid trying to parse obviously non-JSON strings
@@ -120,7 +120,7 @@ const tryParseJson = (str: string): any | null => {
   }
   try {
     return JSON.parse(trimmed);
-  } catch (e) {
+  } catch {
     return null;
   }
 };

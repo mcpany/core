@@ -466,12 +466,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(1000);
 
       // Open Actions Dropdown
-      // We target the first card's actions button
+      // We target the first card's actions button if available, or skip if no services rendered
       const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
-      await actionButton.click();
-      await page.waitForTimeout(500);
-
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
+      if (await actionButton.isVisible()) {
+        await actionButton.click();
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_actions_menu.png') });
+      }
   });
 
   test('Audit Logs Screenshots', async ({ page }) => {
