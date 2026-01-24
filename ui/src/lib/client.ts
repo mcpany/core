@@ -164,6 +164,21 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+/**
+ * AlertRule definition.
+ */
+export interface AlertRule {
+    id?: string;
+    name: string;
+    metric: string;
+    operator: string;
+    threshold: number;
+    duration: string;
+    severity: 'info' | 'warning' | 'critical';
+    enabled: boolean;
+    last_updated?: string;
+}
+
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -778,6 +793,44 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to update alert status');
         return res.json();
+    },
+
+    /**
+     * Lists all alert rules.
+     * @returns A promise that resolves to a list of alert rules.
+     */
+    listAlertRules: async (): Promise<AlertRule[]> => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules');
+        if (!res.ok) throw new Error('Failed to fetch alert rules');
+        return res.json();
+    },
+
+    /**
+     * Creates a new alert rule.
+     * @param rule The rule to create.
+     * @returns A promise that resolves to the created rule.
+     */
+    createAlertRule: async (rule: AlertRule) => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to create alert rule');
+        return res.json();
+    },
+
+    /**
+     * Deletes an alert rule.
+     * @param id The ID of the rule to delete.
+     * @returns A promise that resolves when the rule is deleted.
+     */
+    deleteAlertRule: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete alert rule');
+        return {};
     },
 
     // Stack Management (Collections)

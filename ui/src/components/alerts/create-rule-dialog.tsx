@@ -25,25 +25,76 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient, AlertRule } from "@/lib/client";
+
+interface CreateRuleDialogProps {
+    onRuleCreated?: () => void;
+}
 
 /**
  * CreateRuleDialog component.
  * @returns The rendered component.
  */
-export function CreateRuleDialog() {
+export function CreateRuleDialog({ onRuleCreated }: CreateRuleDialogProps) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSave = () => {
-    // In a real app, this would make an API call
-    toast({
-        title: "Rule Created",
-        description: "Alert rule has been successfully created."
-    });
-    setOpen(false);
+  const [name, setName] = useState("");
+  const [severity, setSeverity] = useState<"info" | "warning" | "critical">("warning");
+  const [metric, setMetric] = useState("");
+  const [operator, setOperator] = useState(">");
+  const [threshold, setThreshold] = useState("");
+  const [duration, setDuration] = useState("5m");
+
+  const handleSave = async () => {
+    if (!name || !metric || !threshold) {
+        toast({
+            title: "Validation Error",
+            description: "Please fill in all required fields.",
+            variant: "destructive"
+        });
+        return;
+    }
+
+    setLoading(true);
+    try {
+        const rule: AlertRule = {
+            name,
+            metric,
+            operator,
+            threshold: parseFloat(threshold),
+            duration,
+            severity,
+            enabled: true
+        };
+
+        await apiClient.createAlertRule(rule);
+
+        toast({
+            title: "Rule Created",
+            description: "Alert rule has been successfully created."
+        });
+        setOpen(false);
+        // Reset form
+        setName("");
+        setMetric("");
+        setThreshold("");
+        if (onRuleCreated) {
+            onRuleCreated();
+        }
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Error",
+            description: "Failed to create alert rule.",
+            variant: "destructive"
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -65,13 +116,19 @@ export function CreateRuleDialog() {
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input id="name" placeholder="e.g. High CPU Warning" className="col-span-3" />
+            <Input
+                id="name"
+                placeholder="e.g. High CPU Warning"
+                className="col-span-3"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="severity" className="text-right">
               Severity
             </Label>
-            <Select defaultValue="warning">
+            <Select value={severity} onValueChange={(v: any) => setSeverity(v)}>
                 <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select severity" />
                 </SelectTrigger>
@@ -82,41 +139,65 @@ export function CreateRuleDialog() {
                 </SelectContent>
             </Select>
           </div>
+
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="service" className="text-right">
-              Service
+            <Label htmlFor="metric" className="text-right">
+              Metric
             </Label>
-            <Select>
-                <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select service (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Services</SelectItem>
-                    <SelectItem value="weather-service">weather-service</SelectItem>
-                    <SelectItem value="api-gateway">api-gateway</SelectItem>
-                    <SelectItem value="database">database</SelectItem>
-                </SelectContent>
-            </Select>
+            <Input
+                id="metric"
+                placeholder="e.g. cpu_usage"
+                className="col-span-3"
+                value={metric}
+                onChange={(e) => setMetric(e.target.value)}
+            />
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="condition" className="text-right mt-2">
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="condition" className="text-right">
               Condition
             </Label>
-            <div className="col-span-3 space-y-2">
-                <Textarea
-                    id="condition"
-                    placeholder="e.g. cpu_usage > 90 AND duration > 5m"
-                    className="font-mono text-xs"
+            <div className="col-span-3 flex gap-2">
+                <Select value={operator} onValueChange={setOperator}>
+                    <SelectTrigger className="w-[80px]">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value=">">&gt;</SelectItem>
+                        <SelectItem value="<">&lt;</SelectItem>
+                        <SelectItem value="=">=</SelectItem>
+                        <SelectItem value=">=">&ge;</SelectItem>
+                        <SelectItem value="<=">&le;</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Input
+                    placeholder="Threshold (e.g. 90)"
+                    type="number"
+                    value={threshold}
+                    onChange={(e) => setThreshold(e.target.value)}
                 />
-                <p className="text-[10px] text-muted-foreground">
-                    Supports PromQL or simple expression syntax.
-                </p>
             </div>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="duration" className="text-right">
+              Duration
+            </Label>
+            <Input
+                id="duration"
+                placeholder="e.g. 5m"
+                className="col-span-3"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+            />
           </div>
         </div>
         <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Create Rule</Button>
+            <Button onClick={handleSave} disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Rule
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
