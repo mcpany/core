@@ -102,6 +102,14 @@ const getLevelColor = (level: LogLevel) => {
   }
 }
 
+const getSourceHue = (source: string) => {
+  let hash = 0;
+  for (let i = 0; i < source.length; i++) {
+    hash = source.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash % 360);
+};
+
 const tryParseJson = (str: string): any | null => {
   if (typeof str !== 'string') return null;
   const trimmed = str.trim();
@@ -148,14 +156,22 @@ const LogRow = React.memo(({ log, searchQuery }: { log: LogEntry; searchQuery: s
                 {log.level}
               </span>
               {log.source && (
-                <span className="text-cyan-600 dark:text-cyan-400 sm:hidden inline-block truncate text-[10px] flex-1 text-right" title={log.source}>
+                <span
+                  className="sm:hidden inline-block truncate text-[10px] flex-1 text-right text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)]"
+                  style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
+                  title={log.source}
+                >
                   [<HighlightText text={log.source} highlight={searchQuery} />]
                 </span>
               )}
           </div>
 
           {log.source && (
-            <span className="text-cyan-600 dark:text-cyan-400 hidden sm:inline-block w-24 truncate text-xs mt-0.5 shrink-0" title={log.source}>
+            <span
+              className="hidden sm:inline-block w-24 truncate text-xs mt-0.5 shrink-0 text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)]"
+              style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
+              title={log.source}
+            >
               [<HighlightText text={log.source} highlight={searchQuery} />]
             </span>
           )}
