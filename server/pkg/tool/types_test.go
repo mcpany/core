@@ -614,12 +614,12 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	toolProto := &v1.Tool{
 		Name: proto.String("cmd-tool"),
 	}
-	service := &configv1.CommandLineUpstreamService{
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
-	}
-	callDef := &configv1.CommandLineCallDefinition{
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"{{arg}}"},
-	}
+	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")
 
@@ -649,19 +649,19 @@ func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
 			InputSchema: inputSchema,
 		},
 	}
-	service := &configv1.CommandLineUpstreamService{
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
-	}
+	}.Build()
 
 	// Parameter mapping to env
-	schema := &configv1.ParameterSchema{Name: proto.String("env_var")}
-	mapping := &configv1.CommandLineParameterMapping{
+	schema := configv1.ParameterSchema_builder{Name: proto.String("env_var")}.Build()
+	mapping := configv1.CommandLineParameterMapping_builder{
 		Schema: schema,
-	}
+	}.Build()
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Parameters: []*configv1.CommandLineParameterMapping{mapping},
-	}
+	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")
 

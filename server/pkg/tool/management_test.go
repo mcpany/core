@@ -9,15 +9,19 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+func ptr[T any](v T) *T {
+	return &v
+}
 
 type TestMCPServerProvider struct {
 	server *mcp.Server
@@ -546,25 +550,27 @@ func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
 	serviceID := "test-service-config"
 
 	// Create a ServiceInfo with Config
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		CallPolicies: []*configv1.CallPolicy{
-			{DefaultAction: ptr(configv1.CallPolicy_ALLOW)},
+			configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_ALLOW.Enum()}.Build(),
 		},
 		PreCallHooks: []*configv1.CallHook{
-			{
-				HookConfig: &configv1.CallHook_Webhook{
-					Webhook: &configv1.WebhookConfig{Url: "http://pre.com"},
-				},
-			},
+			configv1.CallHook_builder{
+				Webhook: configv1.WebhookConfig_builder{
+					Url:           proto.String("http://pre.com"),
+					WebhookSecret: proto.String(""),
+				}.Build(),
+			}.Build(),
 		},
 		PostCallHooks: []*configv1.CallHook{
-			{
-				HookConfig: &configv1.CallHook_Webhook{
-					Webhook: &configv1.WebhookConfig{Url: "http://post.com"},
-				},
-			},
+			configv1.CallHook_builder{
+				Webhook: configv1.WebhookConfig_builder{
+					Url:           proto.String("http://post.com"),
+					WebhookSecret: proto.String(""),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	serviceInfo := &ServiceInfo{
 		Name:   "Test Service Config",
@@ -587,12 +593,12 @@ func TestToolManager_ProfileFiltering(t *testing.T) {
 	tm := NewManager(nil)
 
 	// Define a profile that selects tools with tag "secure"
-	profileDef := &configv1.ProfileDefinition{
-		Name: ptr("secure-profile"),
-		Selector: &configv1.ProfileSelector{
+	profileDef := configv1.ProfileDefinition_builder{
+		Name: proto.String("secure-profile"),
+		Selector: configv1.ProfileSelector_builder{
 			Tags: []string{"secure"},
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	tm.SetProfiles([]string{"secure-profile"}, []*configv1.ProfileDefinition{profileDef})
 
@@ -660,14 +666,14 @@ func TestToolManager_ProfileFiltering_Properties(t *testing.T) {
 	tm := NewManager(nil)
 
 	// Profile selecting read_only=true
-	profileDef := &configv1.ProfileDefinition{
-		Name: ptr("readonly-profile"),
-		Selector: &configv1.ProfileSelector{
+	profileDef := configv1.ProfileDefinition_builder{
+		Name: proto.String("readonly-profile"),
+		Selector: configv1.ProfileSelector_builder{
 			ToolProperties: map[string]string{
 				"read_only": "true",
 			},
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	tm.SetProfiles([]string{"readonly-profile"}, []*configv1.ProfileDefinition{profileDef})
 

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/consts"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -32,13 +32,14 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 		Name:        proto.String("test-tool-large"),
 		InputSchema: inputSchema,
 	}
-	service := &configv1.CommandLineUpstreamService{}
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("python3"),
+		Local:   proto.Bool(true),
+	}.Build()
 	// Use python3 to print 10MB of data
-	service.Command = proto.String("python3")
-	service.Local = proto.Bool(true)
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "print('a' * 10 * 1024 * 1024)"},
-	}
+	}.Build()
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
@@ -80,12 +81,13 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 		Name:        proto.String("test-tool-large-truncated"),
 		InputSchema: inputSchema,
 	}
-	service := &configv1.CommandLineUpstreamService{}
-	service.Command = proto.String("python3")
-	service.Local = proto.Bool(true)
-	callDef := &configv1.CommandLineCallDefinition{
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("python3"),
+		Local:   proto.Bool(true),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "print('a' * 2048)"},
-	}
+	}.Build()
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 

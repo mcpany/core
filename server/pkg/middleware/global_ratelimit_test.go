@@ -14,15 +14,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func newRateLimitConfig(enabled bool, rps float64, burst int64, storage *configv1.RateLimitConfig_Storage, keyBy *configv1.RateLimitConfig_KeyBy) *configv1.RateLimitConfig {
+	c := &configv1.RateLimitConfig{}
+	c.SetIsEnabled(enabled)
+	c.SetRequestsPerSecond(rps)
+	c.SetBurst(burst)
+	if storage != nil {
+		c.SetStorage(*storage)
+	}
+	if keyBy != nil {
+		c.SetKeyBy(*keyBy)
+	}
+	return c
+}
+
 func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 	// Setup config: 10 RPS, Burst 10
-	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         true,
-		RequestsPerSecond: 10,
-		Burst:             10,
-		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP,
-	}
+	cfg := newRateLimitConfig(true, 10, 10, configv1.RateLimitConfig_STORAGE_MEMORY.Enum(), configv1.RateLimitConfig_KEY_BY_IP.Enum())
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 
@@ -44,13 +52,7 @@ func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 
 func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 	// Setup config: 1 RPS, Burst 1
-	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         true,
-		RequestsPerSecond: 1,
-		Burst:             1,
-		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP,
-	}
+	cfg := newRateLimitConfig(true, 1, 1, configv1.RateLimitConfig_STORAGE_MEMORY.Enum(), configv1.RateLimitConfig_KEY_BY_IP.Enum())
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 
@@ -73,11 +75,7 @@ func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 }
 
 func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
-	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         false,
-		RequestsPerSecond: 1,
-		Burst:             1,
-	}
+	cfg := newRateLimitConfig(false, 1, 1, nil, nil)
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 
@@ -96,12 +94,7 @@ func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
 }
 
 func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
-	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         true,
-		RequestsPerSecond: 1,
-		Burst:             1,
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_USER_ID,
-	}
+	cfg := newRateLimitConfig(true, 1, 1, nil, configv1.RateLimitConfig_KEY_BY_USER_ID.Enum())
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -127,12 +120,7 @@ func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
 }
 
 func TestGlobalRateLimitMiddleware_KeyByGlobal(t *testing.T) {
-	cfg := &configv1.RateLimitConfig{
-		IsEnabled:         true,
-		RequestsPerSecond: 1,
-		Burst:             1,
-		KeyBy:             configv1.RateLimitConfig_KEY_BY_GLOBAL,
-	}
+	cfg := newRateLimitConfig(true, 1, 1, nil, configv1.RateLimitConfig_KEY_BY_GLOBAL.Enum())
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

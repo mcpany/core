@@ -32,9 +32,7 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 								Driver: proto.String("postgres"),
 								Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
 								Calls: map[string]*configv1.SqlCallDefinition{
-									"my-query": {
-										Query: proto.String(""), // Empty query should be invalid
-									},
+									"my-query": newSqlCallVal("", nil),
 								},
 							},
 						},
@@ -57,14 +55,11 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 								Driver: proto.String("postgres"),
 								Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
 								Calls: map[string]*configv1.SqlCallDefinition{
-									"my-query": {
-										Query: proto.String("SELECT * FROM users"),
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}}, // Invalid type
-											},
+									"my-query": newSqlCallVal("SELECT * FROM users", &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}}, // Invalid type
 										},
-									},
+									}),
 								},
 							},
 						},

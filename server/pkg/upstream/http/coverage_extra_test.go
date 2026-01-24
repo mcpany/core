@@ -1,18 +1,21 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package http
 
 import (
 	"context"
+	"errors"
 	"testing"
-    "time"
-    "errors"
+	"time"
 
 	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
-    "github.com/mcpany/core/server/pkg/tool"
-    configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
-    "google.golang.org/protobuf/proto"
-    "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestHTTPUpstream_CheckHealth_Coverage(t *testing.T) {
@@ -149,13 +152,13 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
                 HttpService: &configv1.HttpUpstreamService{
                     Address: proto.String("http://example.com"),
                     Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
+                        "call1": configv1.HttpCallDefinition_builder{
                             Method: &invalidMethod,
                             EndpointPath: proto.String("/foo"),
-                        },
+                        }.Build(),
                     },
                     Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
+                        configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
                     },
                 },
             },
@@ -173,13 +176,13 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
                 HttpService: &configv1.HttpUpstreamService{
                     Address: proto.String("http://example.com"),
                     Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
+                        "call1": configv1.HttpCallDefinition_builder{
                             Method: &validMethod,
                             EndpointPath: proto.String(":/foo\nbar"), // Invalid URL char
-                        },
+                        }.Build(),
                     },
                     Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
+                        configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
                     },
                 },
             },
@@ -205,28 +208,28 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
                 HttpService: &configv1.HttpUpstreamService{
                     Address: proto.String("http://example.com"),
                     Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
+                        "call1": configv1.HttpCallDefinition_builder{
                             Method: &validMethod,
                             EndpointPath: proto.String("/foo"),
                             InputSchema: inputSchema,
                             Parameters: []*configv1.HttpParameterMapping{
-                                {
-                                    Schema: &configv1.ParameterSchema{
+                                configv1.HttpParameterMapping_builder{
+                                    Schema: configv1.ParameterSchema_builder{
                                         Name: proto.String("new_param"),
                                         IsRequired: proto.Bool(true),
-                                    },
-                                },
-                                {
-                                    Schema: &configv1.ParameterSchema{
+                                    }.Build(),
+                                }.Build(),
+                                configv1.HttpParameterMapping_builder{
+                                    Schema: configv1.ParameterSchema_builder{
                                         Name: proto.String("existing"), // Should merge/overwrite
                                         IsRequired: proto.Bool(true),
-                                    },
-                                },
+                                    }.Build(),
+                                }.Build(),
                             },
-                        },
+                        }.Build(),
                     },
                     Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
+                        configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
                     },
                 },
             },
@@ -258,13 +261,13 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
                 HttpService: &configv1.HttpUpstreamService{
                     Address: proto.String("http://example.com"),
                     Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
+                        "call1": configv1.HttpCallDefinition_builder{
                             Method: &validMethod,
                             EndpointPath: proto.String("/foo"),
-                        },
+                        }.Build(),
                     },
                     Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1"), Disable: proto.Bool(true)},
+                        configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1"), Disable: proto.Bool(true)}.Build(),
                     },
                 },
             },
@@ -285,13 +288,13 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
                 HttpService: &configv1.HttpUpstreamService{
                     Address: proto.String("http://example.com"),
                     Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
+                        "call1": configv1.HttpCallDefinition_builder{
                             Method: &validMethod,
                             EndpointPath: proto.String("/foo"),
-                        },
+                        }.Build(),
                     },
                     Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
+                        configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
                     },
                 },
             },

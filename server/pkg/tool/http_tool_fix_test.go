@@ -30,10 +30,10 @@ func TestNewHTTPTool_SpaceInURL(t *testing.T) {
 		UnderlyingMethodFqn: proto.String(fqn),
 	}
 
-	callDef := &configv1.HttpCallDefinition{
+	callDef := configv1.HttpCallDefinition_builder{
 		Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
 		EndpointPath: proto.String(urlWithSpace),
-	}
+	}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
@@ -60,7 +60,7 @@ func TestNewHTTPTool_InvalidFormat(t *testing.T) {
 		Name:                proto.String("test-tool"),
 		UnderlyingMethodFqn: proto.String(fqn),
 	}
-	callDef := &configv1.HttpCallDefinition{}
+	callDef := configv1.HttpCallDefinition_builder{}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
@@ -83,13 +83,13 @@ func TestHTTPTool_PrepareBody_Template(t *testing.T) {
 		UnderlyingMethodFqn: proto.String(fqn),
 	}
 
-	callDef := &configv1.HttpCallDefinition{
+	callDef := configv1.HttpCallDefinition_builder{
 		Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
 		EndpointPath: proto.String(urlStr),
-		InputTransformer: &configv1.InputTransformer{
+		InputTransformer: configv1.InputTransformer_builder{
 			Template: proto.String(`{"key": "{{arg}}"}`),
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")

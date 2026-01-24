@@ -1598,12 +1598,12 @@ func TestSkillServiceServer(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("CreateSkill", func(t *testing.T) {
+		sk := &configv1.Skill{}
+		sk.SetName("test-skill")
+		sk.SetDescription("A test skill")
+		sk.SetInstructions("Do something")
 		req := &pb.CreateSkillRequest{
-			Skill: &configv1.Skill{
-				Name:         strPtr("test-skill"),
-				Description:  strPtr("A test skill"),
-				Instructions: strPtr("Do something"),
-			},
+			Skill: sk,
 		}
 		resp, err := server.CreateSkill(ctx, req)
 		require.NoError(t, err)

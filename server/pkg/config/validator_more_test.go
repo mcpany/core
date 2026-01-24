@@ -18,6 +18,27 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+func newMcpCallVal(input, output *structpb.Struct) *configv1.MCPCallDefinition {
+	c := &configv1.MCPCallDefinition{}
+	c.SetInputSchema(input)
+	c.SetOutputSchema(output)
+	return c
+}
+
+func newGrpcCallVal(input, output *structpb.Struct) *configv1.GrpcCallDefinition {
+	c := &configv1.GrpcCallDefinition{}
+	c.SetInputSchema(input)
+	c.SetOutputSchema(output)
+	return c
+}
+
+func newWsCallVal(input, output *structpb.Struct) *configv1.WebsocketCallDefinition {
+	c := &configv1.WebsocketCallDefinition{}
+	c.SetInputSchema(input)
+	c.SetOutputSchema(output)
+	return c
+}
+
 func TestValidate_MoreServices(t *testing.T) {
 	// Mock execLookPath
 	oldLookPath := execLookPath
@@ -541,13 +562,11 @@ func TestValidate_MoreServices(t *testing.T) {
 									},
 								},
 								Calls: map[string]*configv1.MCPCallDefinition{
-									"bad-call": {
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+									"bad-call": newMcpCallVal(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
-									},
+									}, nil),
 								},
 							},
 						},
@@ -628,13 +647,11 @@ func TestValidate_MoreServices(t *testing.T) {
 							GrpcService: &configv1.GrpcUpstreamService{
 								Address: proto.String("127.0.0.1:50051"),
 								Calls: map[string]*configv1.GrpcCallDefinition{
-									"bad-call": {
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+									"bad-call": newGrpcCallVal(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
-									},
+									}, nil),
 								},
 							},
 						},
@@ -654,13 +671,11 @@ func TestValidate_MoreServices(t *testing.T) {
 							WebsocketService: &configv1.WebsocketUpstreamService{
 								Address: proto.String("ws://example.com"),
 								Calls: map[string]*configv1.WebsocketCallDefinition{
-									"bad-input": {
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+									"bad-input": newWsCallVal(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
-									},
+									}, nil),
 								},
 							},
 						},
@@ -684,13 +699,11 @@ func TestValidate_MoreServices(t *testing.T) {
 									},
 								},
 								Calls: map[string]*configv1.MCPCallDefinition{
-									"bad-output": {
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+									"bad-output": newMcpCallVal(nil, &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
-									},
+									}),
 								},
 							},
 						},
@@ -710,13 +723,11 @@ func TestValidate_MoreServices(t *testing.T) {
 							WebsocketService: &configv1.WebsocketUpstreamService{
 								Address: proto.String("ws://example.com"),
 								Calls: map[string]*configv1.WebsocketCallDefinition{
-									"bad-output": {
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+									"bad-output": newWsCallVal(nil, &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
-									},
+									}),
 								},
 							},
 						},
@@ -755,13 +766,11 @@ func TestValidate_MoreServices(t *testing.T) {
 							GrpcService: &configv1.GrpcUpstreamService{
 								Address: proto.String("127.0.0.1:50051"),
 								Calls: map[string]*configv1.GrpcCallDefinition{
-									"bad-output": {
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+									"bad-output": newGrpcCallVal(nil, &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
-									},
+									}),
 								},
 							},
 						},

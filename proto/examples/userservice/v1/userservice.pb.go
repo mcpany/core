@@ -7,14 +7,13 @@
 // 	protoc        v6.33.1
 // source: proto/examples/userservice/v1/userservice.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	_ "github.com/mcpany/core/proto/mcp_options/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -28,10 +27,12 @@ const (
 
 // --- Messages ---
 type EchoRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Message     *string                `protobuf:"bytes,1,opt,name=message"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *EchoRequest) Reset() {
@@ -61,34 +62,55 @@ func (x *EchoRequest) ProtoReflect() protoreflect.Message {
 
 func (x *EchoRequest) GetMessage() string {
 	if x != nil {
-		return x.Message
+		if x.xxx_hidden_Message != nil {
+			return *x.xxx_hidden_Message
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *EchoRequest) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *EchoRequest) HasMessage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *EchoRequest) ClearMessage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Message = nil
 }
 
 type EchoRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Message string
+	Message *string
 }
 
 func (b0 EchoRequest_builder) Build() *EchoRequest {
 	m0 := &EchoRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Message = b.Message
+	if b.Message != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Message = b.Message
+	}
 	return m0
 }
 
 type EchoResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	EchoedMessage string                 `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage,proto3" json:"echoed_message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_EchoedMessage *string                `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *EchoResponse) Reset() {
@@ -118,34 +140,55 @@ func (x *EchoResponse) ProtoReflect() protoreflect.Message {
 
 func (x *EchoResponse) GetEchoedMessage() string {
 	if x != nil {
-		return x.EchoedMessage
+		if x.xxx_hidden_EchoedMessage != nil {
+			return *x.xxx_hidden_EchoedMessage
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *EchoResponse) SetEchoedMessage(v string) {
-	x.EchoedMessage = v
+	x.xxx_hidden_EchoedMessage = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *EchoResponse) HasEchoedMessage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *EchoResponse) ClearEchoedMessage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_EchoedMessage = nil
 }
 
 type EchoResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	EchoedMessage string
+	EchoedMessage *string
 }
 
 func (b0 EchoResponse_builder) Build() *EchoResponse {
 	m0 := &EchoResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.EchoedMessage = b.EchoedMessage
+	if b.EchoedMessage != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_EchoedMessage = b.EchoedMessage
+	}
 	return m0
 }
 
 type GetDetailsRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ItemId      *string                `protobuf:"bytes,1,opt,name=item_id,json=itemId"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetDetailsRequest) Reset() {
@@ -175,36 +218,57 @@ func (x *GetDetailsRequest) ProtoReflect() protoreflect.Message {
 
 func (x *GetDetailsRequest) GetItemId() string {
 	if x != nil {
-		return x.ItemId
+		if x.xxx_hidden_ItemId != nil {
+			return *x.xxx_hidden_ItemId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GetDetailsRequest) SetItemId(v string) {
-	x.ItemId = v
+	x.xxx_hidden_ItemId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *GetDetailsRequest) HasItemId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetDetailsRequest) ClearItemId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ItemId = nil
 }
 
 type GetDetailsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ItemId string
+	ItemId *string
 }
 
 func (b0 GetDetailsRequest_builder) Build() *GetDetailsRequest {
 	m0 := &GetDetailsRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ItemId = b.ItemId
+	if b.ItemId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ItemId = b.ItemId
+	}
 	return m0
 }
 
 type GetDetailsResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
-	Detail        string                 `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
-	Attributes    map[string]string      `protobuf:"bytes,3,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ItemId      *string                `protobuf:"bytes,1,opt,name=item_id,json=itemId"`
+	xxx_hidden_Detail      *string                `protobuf:"bytes,2,opt,name=detail"`
+	xxx_hidden_Attributes  map[string]string      `protobuf:"bytes,3,rep,name=attributes" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetDetailsResponse) Reset() {
@@ -234,42 +298,74 @@ func (x *GetDetailsResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetDetailsResponse) GetItemId() string {
 	if x != nil {
-		return x.ItemId
+		if x.xxx_hidden_ItemId != nil {
+			return *x.xxx_hidden_ItemId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GetDetailsResponse) GetDetail() string {
 	if x != nil {
-		return x.Detail
+		if x.xxx_hidden_Detail != nil {
+			return *x.xxx_hidden_Detail
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GetDetailsResponse) GetAttributes() map[string]string {
 	if x != nil {
-		return x.Attributes
+		return x.xxx_hidden_Attributes
 	}
 	return nil
 }
 
 func (x *GetDetailsResponse) SetItemId(v string) {
-	x.ItemId = v
+	x.xxx_hidden_ItemId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *GetDetailsResponse) SetDetail(v string) {
-	x.Detail = v
+	x.xxx_hidden_Detail = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *GetDetailsResponse) SetAttributes(v map[string]string) {
-	x.Attributes = v
+	x.xxx_hidden_Attributes = v
+}
+
+func (x *GetDetailsResponse) HasItemId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetDetailsResponse) HasDetail() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *GetDetailsResponse) ClearItemId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ItemId = nil
+}
+
+func (x *GetDetailsResponse) ClearDetail() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Detail = nil
 }
 
 type GetDetailsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ItemId     string
-	Detail     string
+	ItemId     *string
+	Detail     *string
 	Attributes map[string]string
 }
 
@@ -277,9 +373,15 @@ func (b0 GetDetailsResponse_builder) Build() *GetDetailsResponse {
 	m0 := &GetDetailsResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ItemId = b.ItemId
-	x.Detail = b.Detail
-	x.Attributes = b.Attributes
+	if b.ItemId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_ItemId = b.ItemId
+	}
+	if b.Detail != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Detail = b.Detail
+	}
+	x.xxx_hidden_Attributes = b.Attributes
 	return m0
 }
 
@@ -287,7 +389,7 @@ var File_proto_examples_userservice_v1_userservice_proto protoreflect.FileDescri
 
 const file_proto_examples_userservice_v1_userservice_proto_rawDesc = "" +
 	"\n" +
-	"/proto/examples/userservice/v1/userservice.proto\x12\x17examples.userservice.v1\x1a&proto/mcp_options/v1/mcp_options.proto\"H\n" +
+	"/proto/examples/userservice/v1/userservice.proto\x12\x17examples.userservice.v1\x1a!google/protobuf/go_features.proto\x1a&proto/mcp_options/v1/mcp_options.proto\"H\n" +
 	"\vEchoRequest\x129\n" +
 	"\amessage\x18\x01 \x01(\tB\x1f\x82\x87\xa1\xfc\b\x19The message to be echoed.R\amessage\"P\n" +
 	"\fEchoResponse\x12@\n" +
@@ -307,7 +409,7 @@ const file_proto_examples_userservice_v1_userservice_proto_rawDesc = "" +
 	"\vEchoService\x12\x9b\x01\n" +
 	"\x04Echo\x12$.examples.userservice.v1.EchoRequest\x1a%.examples.userservice.v1.EchoResponse\"Fʆ\xa1\xfc\b\bEchoTool҆\xa1\xfc\b2Echoes back the input message. Useful for testing.\x12\xa8\x01\n" +
 	"\n" +
-	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B6Z4github.com/mcpany/core/proto/examples/userservice/v1b\x06proto3"
+	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B>Z4github.com/mcpany/core/proto/examples/userservice/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_examples_userservice_v1_userservice_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_examples_userservice_v1_userservice_proto_goTypes = []any{

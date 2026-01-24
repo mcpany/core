@@ -20,6 +20,50 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func newPromptDef(name string, disabled bool) *configv1.PromptDefinition {
+	p := &configv1.PromptDefinition{}
+	p.SetName(name)
+	p.SetDisable(disabled)
+	return p
+}
+
+func newResourceDef(name string, dynamic *configv1.DynamicResource, disabled bool) *configv1.ResourceDefinition {
+	r := &configv1.ResourceDefinition{}
+	r.SetName(name)
+	if dynamic != nil {
+		r.SetDynamic(dynamic)
+	}
+	r.SetDisable(disabled)
+	return r
+}
+
+func newDynamicResource(callDef *configv1.GrpcCallDefinition) *configv1.DynamicResource {
+	d := &configv1.DynamicResource{}
+	d.SetGrpcCall(callDef)
+	return d
+}
+
+func newGrpcCall(id string) *configv1.GrpcCallDefinition {
+	c := &configv1.GrpcCallDefinition{}
+	c.SetId(id)
+	return c
+}
+
+func newGrpcCallFull(id, service, method string) *configv1.GrpcCallDefinition {
+	c := &configv1.GrpcCallDefinition{}
+	c.SetId(id)
+	c.SetService(service)
+	c.SetMethod(method)
+	return c
+}
+
+func newToolDef(name, callId string) *configv1.ToolDefinition {
+	t := &configv1.ToolDefinition{}
+	t.SetName(name)
+	t.SetCallId(callId)
+	return t
+}
+
 func TestGRPCUpstream_Shutdown(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstream := NewUpstream(poolManager)
@@ -184,13 +228,8 @@ func TestGRPCUpstream_Prompts_Coverage(t *testing.T) {
 	grpcService.SetUseReflection(true)
 
 	grpcService.Prompts = []*configv1.PromptDefinition{
-		{
-			Name: proto.String("disabled-prompt"),
-			Disable: proto.Bool(true),
-		},
-		{
-			Name: proto.String("unexported-prompt"),
-		},
+		newPromptDef("disabled-prompt", true),
+		newPromptDef("unexported-prompt", false),
 	}
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
@@ -223,29 +262,12 @@ func TestGRPCUpstream_DynamicResources_Coverage(t *testing.T) {
 
 	// Resource referencing a call ID that doesn't exist in Tools mapping
 	grpcService.Resources = []*configv1.ResourceDefinition{
-		{
-			Name: proto.String("bad-resource"),
-			ResourceType: &configv1.ResourceDefinition_Dynamic{
-				Dynamic: &configv1.DynamicResource{
-					CallDefinition: &configv1.DynamicResource_GrpcCall{
-						GrpcCall: &configv1.GrpcCallDefinition{
-							Id: proto.String("unknown-call"),
-						},
-					},
-				},
-			},
-		},
-		{
-			Name: proto.String("disabled-resource"),
-			Disable: proto.Bool(true),
-		},
+		newResourceDef("bad-resource", newDynamicResource(newGrpcCall("unknown-call")), false),
+		newResourceDef("disabled-resource", nil, true),
 	}
 	// Tools don't cover unknown-call
 	grpcService.Tools = []*configv1.ToolDefinition{
-		{
-			Name: proto.String("SomeTool"),
-			CallId: proto.String("some-call"),
-		},
+		newToolDef("SomeTool", "some-call"),
 	}
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}

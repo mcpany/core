@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/doctor"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -238,11 +238,10 @@ func (u *Upstream) Register(
 			}
 			if !exists {
 				// Create a default tool definition
-				newTool := &configv1.ToolDefinition{
-					Name:        proto.String(callID),
-					CallId:      proto.String(callID),
-					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
-				}
+				newTool := &configv1.ToolDefinition{}
+				newTool.SetName(callID)
+				newTool.SetCallId(callID)
+				newTool.SetDescription(fmt.Sprintf("Auto-discovered tool for call %s", callID))
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
 				httpService.Tools = append(httpService.Tools, newTool)
 			}

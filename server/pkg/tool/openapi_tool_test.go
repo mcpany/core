@@ -121,9 +121,6 @@ func TestOpenAPITool_Execute(t *testing.T) {
 	})
 }
 
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 func TestOpenAPITool_Execute_Extended(t *testing.T) {
 	t.Parallel()
 	t.Run("POST with Input Template", func(t *testing.T) {
@@ -141,11 +138,11 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 			doFunc: server.Client().Do,
 		}
 
-		callDef := &configv1.OpenAPICallDefinition{
-			InputTransformer: &configv1.InputTransformer{
+		callDef := configv1.OpenAPICallDefinition_builder{
+			InputTransformer: configv1.InputTransformer_builder{
 				Template: proto.String(`{"name": "{{name}}"}`),
-			},
-		}
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef)
 
@@ -170,15 +167,15 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 		}
 
 		format := configv1.OutputTransformer_JSON
-		callDef := &configv1.OpenAPICallDefinition{
-			OutputTransformer: &configv1.OutputTransformer{
+		callDef := configv1.OpenAPICallDefinition_builder{
+			OutputTransformer: configv1.OutputTransformer_builder{
 				Format:   &format,
 				Template: proto.String(`Result: {{data}}`),
 				ExtractionRules: map[string]string{
 					"data": "{.data}",
 				},
-			},
-		}
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
 
@@ -223,13 +220,13 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 			doFunc: targetServer.Client().Do,
 		}
 
-		callDef := &configv1.OpenAPICallDefinition{
-			InputTransformer: &configv1.InputTransformer{
-				Webhook: &configv1.WebhookConfig{
-					Url: webhookServer.URL,
-				},
-			},
-		}
+		callDef := configv1.OpenAPICallDefinition_builder{
+			InputTransformer: configv1.InputTransformer_builder{
+				Webhook: configv1.WebhookConfig_builder{
+					Url: proto.String(webhookServer.URL),
+				}.Build(),
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef)
 

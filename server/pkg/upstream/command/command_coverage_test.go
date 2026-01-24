@@ -7,13 +7,40 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
+
+func newToolDef(name string, disabled bool) *configv1.ToolDefinition {
+	t := &configv1.ToolDefinition{}
+	t.SetName(name)
+	t.SetDisable(disabled)
+	return t
+}
+
+func newPromptDef(name string, disabled bool) *configv1.PromptDefinition {
+	p := &configv1.PromptDefinition{}
+	p.SetName(name)
+	p.SetDisable(disabled)
+	return p
+}
+
+func newResourceDef(name string, disabled bool) *configv1.ResourceDefinition {
+	r := &configv1.ResourceDefinition{}
+	r.SetName(name)
+	r.SetDisable(disabled)
+	return r
+}
+
+func newCmdCall(id string) *configv1.CommandLineCallDefinition {
+	c := &configv1.CommandLineCallDefinition{}
+	c.SetId(id)
+	return c
+}
 
 func TestUpstream_Shutdown(t *testing.T) {
 	u := NewUpstream()
@@ -32,13 +59,13 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	}
 	cmdService := &configv1.CommandLineUpstreamService{
 		Tools: []*configv1.ToolDefinition{
-			{Name: proto.String("tool1"), Disable: proto.Bool(true)},
+			newToolDef("tool1", true),
 		},
 		Prompts: []*configv1.PromptDefinition{
-			{Name: proto.String("prompt1"), Disable: proto.Bool(true)},
+			newPromptDef("prompt1", true),
 		},
 		Resources: []*configv1.ResourceDefinition{
-			{Name: proto.String("resource1"), Disable: proto.Bool(true)},
+			newResourceDef("resource1", true),
 		},
 	}
 	config.SetCommandLineService(cmdService)
@@ -63,15 +90,15 @@ func TestUpstream_Register_DynamicResourceErrors(t *testing.T) {
 
 	cmdService := &configv1.CommandLineUpstreamService{
 		Calls: map[string]*configv1.CommandLineCallDefinition{
-			"c1": {Id: proto.String("c1")},
+			"c1": newCmdCall("c1"),
 		},
 	}
 
-	resDef := &configv1.ResourceDefinition{
-		Name: proto.String("res1"),
-	}
+	resDef := &configv1.ResourceDefinition{}
+	resDef.SetName("res1")
+
 	dynRes := &configv1.DynamicResource{}
-	dynRes.SetCommandLineCall(&configv1.CommandLineCallDefinition{Id: proto.String("c1")})
+	dynRes.SetCommandLineCall(newCmdCall("c1"))
 	resDef.SetDynamic(dynRes)
 
 	cmdService.SetResources([]*configv1.ResourceDefinition{resDef})

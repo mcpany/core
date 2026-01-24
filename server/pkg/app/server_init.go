@@ -50,14 +50,16 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	log.Info("Database appears empty, initializing with default configuration...")
 
 	// Default Configuration
+	profileSelector := &configv1.ProfileSelector{}
+	profileSelector.SetTags([]string{"dev"})
+
+	profileDef := &configv1.ProfileDefinition{}
+	profileDef.SetName("Default Dev")
+	profileDef.SetSelector(profileSelector)
+
 	defaultGS := &configv1.GlobalSettings{
 		ProfileDefinitions: []*configv1.ProfileDefinition{
-			{
-				Name: proto.String("Default Dev"),
-				Selector: &configv1.ProfileSelector{
-					Tags: []string{"dev"},
-				},
-			},
+			profileDef,
 		},
 		DbPath: proto.String("mcpany.db"),
 		Middlewares: []*configv1.Middleware{
@@ -66,6 +68,23 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	}
 
 	// Default Weather Service for demonstration
+	weatherTool := &configv1.ToolDefinition{}
+	weatherTool.SetName("get_weather")
+	weatherTool.SetDescription("Get current weather")
+	weatherTool.SetCallId("get_weather")
+
+	sysResource := &configv1.ResourceDefinition{}
+	sysResource.SetUri("system://logs")
+	sysResource.SetName("System Logs")
+	sysResource.SetMimeType("text/plain")
+
+	sumPrompt := &configv1.PromptDefinition{}
+	sumPrompt.SetName("summarize_text")
+	sumPrompt.SetDescription("Summarize text")
+
+	getWeatherCall := &configv1.CommandLineCallDefinition{}
+	getWeatherCall.SetArgs([]string{"{\"weather\": \"sunny\"}"})
+
 	weatherService := &configv1.UpstreamServiceConfig{
 		Id:   proto.String("weather-service"),
 		Name: proto.String("weather-service"),
@@ -73,29 +92,16 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			CommandLineService: &configv1.CommandLineUpstreamService{
 				Command: proto.String("echo"),
 				Tools: []*configv1.ToolDefinition{
-					{
-						Name:        proto.String("get_weather"),
-						Description: proto.String("Get current weather"),
-						CallId:      proto.String("get_weather"),
-					},
+					weatherTool,
 				},
 				Calls: map[string]*configv1.CommandLineCallDefinition{
-					"get_weather": {
-						Args: []string{"{\"weather\": \"sunny\"}"},
-					},
+					"get_weather": getWeatherCall,
 				},
 				Resources: []*configv1.ResourceDefinition{
-					{
-						Uri:      proto.String("system://logs"),
-						Name:     proto.String("System Logs"),
-						MimeType: proto.String("text/plain"),
-					},
+					sysResource,
 				},
 				Prompts: []*configv1.PromptDefinition{
-					{
-						Name:        proto.String("summarize_text"),
-						Description: proto.String("Summarize text"),
-					},
+					sumPrompt,
 				},
 			},
 		},

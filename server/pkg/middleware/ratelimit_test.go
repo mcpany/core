@@ -84,15 +84,15 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
+		toolProto := &v1.Tool{
 			ServiceId: proto.String("service"),
-		}.Build()
+		}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 10,
-			Burst:             1,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -126,15 +126,13 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
-			ServiceId: proto.String("service"),
-		}.Build()
+		toolProto := &v1.Tool{ServiceId: proto.String("service")}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 1,
-			Burst:             1,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -171,16 +169,14 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
-			ServiceId: proto.String("service"),
-		}.Build()
+		toolProto := &v1.Tool{ServiceId: proto.String("service")}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		// Initial Config: 10 RPS, Burst 10
 		rlConfig1 := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 10,
-			Burst:             10,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
 		}.Build()
 
 		serviceInfo1 := &tool.ServiceInfo{
@@ -192,9 +188,9 @@ func TestRateLimitMiddleware(t *testing.T) {
 
 		// Updated Config: 1 RPS, Burst 1
 		rlConfig2 := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 1,
-			Burst:             1,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
 		}.Build()
 
 		serviceInfo2 := &tool.ServiceInfo{
@@ -242,13 +238,13 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
+		toolProto := &v1.Tool{
 			ServiceId: proto.String("service"),
-		}.Build()
+		}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled: false,
+			IsEnabled: proto.Bool(false),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -282,9 +278,7 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
-			ServiceId: proto.String("service"),
-		}.Build()
+		toolProto := &v1.Tool{ServiceId: proto.String("service")}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		mockToolManager.On("GetTool", "service.test-tool").Return(mockTool, true)
@@ -326,17 +320,15 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
-			ServiceId: proto.String("service"),
-		}.Build()
+		toolProto := &v1.Tool{ServiceId: proto.String("service")}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		storageRedis := configv1.RateLimitConfig_STORAGE_REDIS
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 10,
-			Burst:             10,
-			Storage:           storageRedis,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           storageRedis.Enum(),
 			Redis: busproto.RedisBus_builder{
 				Address: proto.String("127.0.0.1:6379"),
 			}.Build(),
@@ -401,17 +393,15 @@ func TestRateLimitMiddleware(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
-			ServiceId: proto.String("service"),
-		}.Build()
+		toolProto := &v1.Tool{ServiceId: proto.String("service")}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		storageRedis := configv1.RateLimitConfig_STORAGE_REDIS
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 10,
-			Burst:             10,
-			Storage:           storageRedis,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(10),
+			Burst:             proto.Int64(10),
+			Storage:           storageRedis.Enum(),
 			Redis: busproto.RedisBus_builder{
 				Address: proto.String("127.0.0.1:6379"),
 			}.Build(),
@@ -458,9 +448,6 @@ func TestRateLimitMiddleware(t *testing.T) {
 	})
 }
 
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 func TestRateLimitMiddleware_Partitioning(t *testing.T) {
 	const successResult = "success"
 
@@ -468,16 +455,14 @@ func TestRateLimitMiddleware_Partitioning(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
-			ServiceId: proto.String("service"),
-		}.Build()
+		toolProto := &v1.Tool{ServiceId: proto.String("service")}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 1,
-			Burst:             1,
-			KeyBy:             keyBy,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
+			KeyBy:             keyBy.Enum(),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{

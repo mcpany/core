@@ -16,6 +16,22 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func newHttpCall(path string, method configv1.HttpCallDefinition_HttpMethod) *configv1.HttpCallDefinition {
+	c := &configv1.HttpCallDefinition{}
+	c.SetEndpointPath(path)
+	c.SetMethod(method)
+	return c
+}
+
+func newToolDef(name, callId string) *configv1.ToolDefinition {
+	t := &configv1.ToolDefinition{}
+	t.SetName(name)
+	t.SetCallId(callId)
+	return t
+}
+
+
+
 func TestHTTPUpstream_URLConstruction_FlagOverride(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -61,16 +77,10 @@ func TestHTTPUpstream_URLConstruction_FlagOverride(t *testing.T) {
 					HttpService: &configv1.HttpUpstreamService{
 						Address: proto.String(tt.baseAddr),
 						Calls: map[string]*configv1.HttpCallDefinition{
-							"test-call": {
-								EndpointPath: proto.String(tt.endpoint),
-								Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-							},
+							"test-call": newHttpCall(tt.endpoint, configv1.HttpCallDefinition_HTTP_METHOD_GET),
 						},
 						Tools: []*configv1.ToolDefinition{
-							{
-								Name:   proto.String("test-tool"),
-								CallId: proto.String("test-call"),
-							},
+							newToolDef("test-tool", "test-call"),
 						},
 					},
 				},

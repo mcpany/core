@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package tool
@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/command"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/command"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -60,13 +60,13 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 		},
 	}
 
-	service := &configv1.CommandLineUpstreamService{
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
-	}
+	}.Build()
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"{{id}}"},
-	}
+	}.Build()
 
 	// Create CommandTool manually
 	ct := &CommandTool{

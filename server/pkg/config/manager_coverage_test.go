@@ -12,6 +12,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+
+
 func TestUnmarshalServices_JSON(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
 	data := []byte(`{"services": [{"name": "s1", "http_service": {"address": "http://127.0.0.1"}}]}`)
@@ -101,10 +103,7 @@ func TestUnmarshalServices_InvalidVersion(t *testing.T) {
 func TestAddService_Overrides(t *testing.T) {
 	m := NewUpstreamServiceManager([]string{"prod"})
 	// Setup overrides manually
-	enabled := false
-	m.profileServiceOverrides["s1"] = &configv1.ProfileServiceConfig{
-		Enabled: &enabled,
-	}
+	m.profileServiceOverrides["s1"] = newProfileSvcCfg(false)
 
 	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("s1"),

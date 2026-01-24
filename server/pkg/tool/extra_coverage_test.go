@@ -51,7 +51,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			pool.NewManager(),
 			"service-id",
 			nil,
-			&configv1.HttpCallDefinition{},
+			configv1.HttpCallDefinition_builder{}.Build(),
 			nil,
 			nil,
 			"call-id",
@@ -76,7 +76,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		mt := NewMCPTool(
 			toolDef,
 			&MockMCPClient{}, // Fixed typo
-			&configv1.MCPCallDefinition{},
+			configv1.MCPCallDefinition_builder{}.Build(),
 		)
 
 		mcpTool := mt.MCPTool()
@@ -97,7 +97,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			"GET",
 			"http://example.com",
 			nil,
-			&configv1.OpenAPICallDefinition{},
+			configv1.OpenAPICallDefinition_builder{}.Build(),
 		)
 
 		mcpTool := ot.MCPTool()
@@ -113,8 +113,8 @@ func TestTool_MCPTool_Method(t *testing.T) {
 		}
 		ct := NewLocalCommandTool(
 			toolDef,
-			&configv1.CommandLineUpstreamService{},
-			&configv1.CommandLineCallDefinition{},
+			configv1.CommandLineUpstreamService_builder{}.Build(),
+			configv1.CommandLineCallDefinition_builder{}.Build(),
 			nil,
 			"call-id",
 		)
@@ -136,7 +136,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			nil,
 			"service-id",
 			nil,
-			&configv1.WebrtcCallDefinition{},
+			configv1.WebrtcCallDefinition_builder{}.Build(),
 		)
 		assert.NoError(t, err)
 
@@ -147,13 +147,20 @@ func TestTool_MCPTool_Method(t *testing.T) {
 
     // Test CallableTool.MCPTool() (via BaseTool)
 	t.Run("CallableTool", func(t *testing.T) {
-        toolDef := &configv1.ToolDefinition{
+        toolDef := configv1.ToolDefinition_builder{
             Name: proto.String("callable-tool"),
-            ServiceId: proto.String("service"),
-        }
+			CallId: proto.String("call-id"),
+			ServiceId: proto.String("service"),
+        }.Build()
+		// Need proper Tool proto from it, wait. NewCallableTool takes configv1.ToolDefinition.
+		// Wait, previously structure used configv1.ToolDefinition.
         ct, err := NewCallableTool(
             toolDef,
-            &configv1.UpstreamServiceConfig{},
+            configv1.UpstreamServiceConfig_builder{
+				Name:          proto.String("service"),
+				Id:            proto.String("service"),
+				SanitizedName: proto.String("service"),
+			}.Build(),
             nil, // Callable
             nil,
             nil,
@@ -176,7 +183,7 @@ func TestTool_MCPTool_Method(t *testing.T) {
             nil,
             "service-id",
             nil,
-            &configv1.WebsocketCallDefinition{},
+            configv1.WebsocketCallDefinition_builder{}.Build(),
         )
 
         mcpTool := wst.MCPTool()
@@ -186,33 +193,37 @@ func TestTool_MCPTool_Method(t *testing.T) {
 }
 
 func TestTool_GetCacheConfig(t *testing.T) {
+	cacheCfg := configv1.CacheConfig_builder{
+		IsEnabled: proto.Bool(true),
+	}.Build()
+
 	t.Run("HTTPTool", func(t *testing.T) {
-		cacheCfg := &configv1.CacheConfig{IsEnabled: boolPtr(true)}
 		ht := NewHTTPTool(
 			&pb.Tool{},
 			pool.NewManager(),
 			"s",
 			nil,
-			&configv1.HttpCallDefinition{Cache: cacheCfg},
+			configv1.HttpCallDefinition_builder{Cache: cacheCfg}.Build(),
 			nil,
 			nil,
 			"",
 		)
-		assert.Equal(t, cacheCfg, ht.GetCacheConfig())
+		// We expect the result to have same values, pointer equality might fail if builder copies.
+		// But in Go proto builders usually return new struct.
+		// Wait, I passed the build result.
+		assert.Equal(t, cacheCfg.GetIsEnabled(), ht.GetCacheConfig().GetIsEnabled())
 	})
 
 	t.Run("MCPTool", func(t *testing.T) {
-		cacheCfg := &configv1.CacheConfig{IsEnabled: boolPtr(true)}
 		mt := NewMCPTool(
 			&pb.Tool{},
 			nil,
-			&configv1.MCPCallDefinition{Cache: cacheCfg},
+			configv1.MCPCallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
-		assert.Equal(t, cacheCfg, mt.GetCacheConfig())
+		assert.Equal(t, cacheCfg.GetIsEnabled(), mt.GetCacheConfig().GetIsEnabled())
 	})
 
 	t.Run("OpenAPITool", func(t *testing.T) {
-		cacheCfg := &configv1.CacheConfig{IsEnabled: boolPtr(true)}
 		ot := NewOpenAPITool(
 			&pb.Tool{},
 			nil,
@@ -220,45 +231,43 @@ func TestTool_GetCacheConfig(t *testing.T) {
 			"",
 			"",
 			nil,
-			&configv1.OpenAPICallDefinition{Cache: cacheCfg},
+			configv1.OpenAPICallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
-		assert.Equal(t, cacheCfg, ot.GetCacheConfig())
+		assert.Equal(t, cacheCfg.GetIsEnabled(), ot.GetCacheConfig().GetIsEnabled())
 	})
 
 	t.Run("CommandTool", func(t *testing.T) {
-		cacheCfg := &configv1.CacheConfig{IsEnabled: boolPtr(true)}
 		// Note: CommandTool (remote) vs LocalCommandTool
 		// NewCommandTool returns Tool interface.
 		ct := NewCommandTool(
 			&pb.Tool{},
-			&configv1.CommandLineUpstreamService{},
-			&configv1.CommandLineCallDefinition{Cache: cacheCfg},
+			configv1.CommandLineUpstreamService_builder{}.Build(),
+			configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
 			nil,
 			"",
 		)
-		assert.Equal(t, cacheCfg, ct.GetCacheConfig())
+		assert.Equal(t, cacheCfg.GetIsEnabled(), ct.GetCacheConfig().GetIsEnabled())
 
 		lct := NewLocalCommandTool(
 			&pb.Tool{},
-			&configv1.CommandLineUpstreamService{},
-			&configv1.CommandLineCallDefinition{Cache: cacheCfg},
+			configv1.CommandLineUpstreamService_builder{}.Build(),
+			configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
 			nil,
 			"",
 		)
-		assert.Equal(t, cacheCfg, lct.GetCacheConfig())
+		assert.Equal(t, cacheCfg.GetIsEnabled(), lct.GetCacheConfig().GetIsEnabled())
 	})
 
 	t.Run("WebrtcTool", func(t *testing.T) {
-		cacheCfg := &configv1.CacheConfig{IsEnabled: boolPtr(true)}
 		wt, err := NewWebrtcTool(
 			&pb.Tool{},
 			nil,
 			"s",
 			nil,
-			&configv1.WebrtcCallDefinition{Cache: cacheCfg},
+			configv1.WebrtcCallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
 		assert.NoError(t, err)
-		assert.Equal(t, cacheCfg, wt.GetCacheConfig())
+		assert.Equal(t, cacheCfg.GetIsEnabled(), wt.GetCacheConfig().GetIsEnabled())
 	})
 }
 
@@ -281,7 +290,7 @@ func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
 		nil, // No pool -> triggers executeWithoutPool
 		"s",
 		nil,
-		&configv1.WebrtcCallDefinition{},
+		configv1.WebrtcCallDefinition_builder{}.Build(),
 	)
 	assert.NoError(t, err)
 

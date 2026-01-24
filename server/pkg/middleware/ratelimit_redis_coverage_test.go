@@ -10,6 +10,7 @@ import (
 	bus "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestRedisLimiter_GetConfigHash(t *testing.T) {
@@ -28,11 +29,11 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 	redisBus.SetPassword(password)
 	redisBus.SetDb(dbIdx)
 
-	config := &configv1.RateLimitConfig{
-		RequestsPerSecond: rps,
-		Burst:             burst,
+	config := configv1.RateLimitConfig_builder{
+		RequestsPerSecond: proto.Float64(rps),
+		Burst:             proto.Int64(burst),
 		Redis:             redisBus,
-	}
+	}.Build()
 
 	limiter := NewRedisLimiterWithClient(db, "service", "", "partition", config)
 
@@ -40,6 +41,6 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 	assert.Equal(t, expectedHash, limiter.GetConfigHash())
 
 	// Test with no redis config
-	limiterNoRedis := NewRedisLimiterWithClient(db, "service", "", "partition", &configv1.RateLimitConfig{})
+	limiterNoRedis := NewRedisLimiterWithClient(db, "service", "", "partition", configv1.RateLimitConfig_builder{}.Build())
 	assert.Equal(t, "", limiterNoRedis.GetConfigHash())
 }

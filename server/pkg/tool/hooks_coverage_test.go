@@ -17,14 +17,15 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestNewWebhookHook(t *testing.T) {
 	t.Parallel()
-	config := &configv1.WebhookConfig{
-		Url:           "http://example.com",
-		WebhookSecret: "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0",
-	}
+	config := configv1.WebhookConfig_builder{
+		Url:           proto.String("http://example.com"),
+		WebhookSecret: proto.String("dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0"),
+	}.Build()
 	hook := NewWebhookHook(config)
 	assert.NotNil(t, hook)
 	assert.Equal(t, "http://example.com", hook.client.url)
@@ -37,10 +38,10 @@ func TestSigningRoundTripper_RoundTrip(t *testing.T) {
 	// "test-secret-valid-base64" -> "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0"
 	validSecret := "test-secret-valid-base64"
 	encodedSecret := base64.StdEncoding.EncodeToString([]byte(validSecret))
-	config := &configv1.WebhookConfig{
-		Url:           "http://example.com",
-		WebhookSecret: encodedSecret,
-	}
+	config := configv1.WebhookConfig_builder{
+		Url:           proto.String("http://example.com"),
+		WebhookSecret: proto.String(encodedSecret),
+	}.Build()
 	hook := NewWebhookHook(config)
 
 	// Create a round tripper independently to test it
@@ -105,9 +106,9 @@ func TestWebhookHook_ExecutePre(t *testing.T) {
 	}))
 	defer server.Close()
 
-	config := &configv1.WebhookConfig{
-		Url: server.URL,
-	}
+	config := configv1.WebhookConfig_builder{
+		Url: proto.String(server.URL),
+	}.Build()
 	hook := NewWebhookHook(config)
 
 	req := &ExecutionRequest{
@@ -123,7 +124,7 @@ func TestWebhookHook_ExecutePre(t *testing.T) {
 func TestWebhookHook_ExecutePre_Errors(t *testing.T) {
 	t.Parallel()
 	// 1. Unmarshal Inputs Fail
-	hook := NewWebhookHook(&configv1.WebhookConfig{})
+	hook := NewWebhookHook(configv1.WebhookConfig_builder{}.Build())
 	req := &ExecutionRequest{
 		ToolName:   "test-tool",
 		ToolInputs: []byte(`{invalid`),
@@ -156,15 +157,15 @@ func TestPolicyHook_InvalidRegex(t *testing.T) {
 	t.Parallel()
 	// Case: Invalid Regex (Should skip and log error, not panic)
 	// We verify it falls back to default action (Deny in this case)
-	policy := &configv1.CallPolicy{
-		DefaultAction: ptr(configv1.CallPolicy_DENY),
+	policy := configv1.CallPolicy_builder{
+		DefaultAction: configv1.CallPolicy_DENY.Enum(),
 		Rules: []*configv1.CallPolicyRule{
-			{
-				NameRegex: ptr("["),
-				Action:    ptr(configv1.CallPolicy_ALLOW),
-			},
+			configv1.CallPolicyRule_builder{
+				NameRegex: proto.String("["),
+				Action:    configv1.CallPolicy_ALLOW.Enum(),
+			}.Build(),
 		},
-	}
+	}.Build()
 	hook := NewPolicyHook(policy)
 	req := &ExecutionRequest{ToolName: "any", ToolInputs: []byte(`{}`)}
 	action, _, err := hook.ExecutePre(context.Background(), req)

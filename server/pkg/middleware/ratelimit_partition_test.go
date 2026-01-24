@@ -26,16 +26,16 @@ func TestRateLimitPartitioning(t *testing.T) {
 		mockToolManager := &rateLimitMockToolManager{}
 		rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-		toolProto := v1.Tool_builder{
+		toolProto := &v1.Tool{
 			ServiceId: proto.String("service"),
-		}.Build()
+		}
 		mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 		rlConfig := configv1.RateLimitConfig_builder{
-			IsEnabled:         true,
-			RequestsPerSecond: 1,
-			Burst:             1,
-			KeyBy:             keyBy,
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
+			KeyBy:             keyBy.Enum(),
 		}.Build()
 
 		serviceInfo := &tool.ServiceInfo{
@@ -61,7 +61,7 @@ func TestRateLimitPartitioning(t *testing.T) {
 		ToolInputs: json.RawMessage(`{}`),
 	}
 
-	toolProto := v1.Tool_builder{ServiceId: proto.String("service")}.Build()
+	toolProto := &v1.Tool{ServiceId: proto.String("service")}
 	mockTool := &rateLimitMockTool{toolProto: toolProto}
 	baseCtx := tool.NewContextWithTool(context.Background(), mockTool)
 

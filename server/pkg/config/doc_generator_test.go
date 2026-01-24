@@ -7,12 +7,39 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/config"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+func newHttpDocParam(name string, typ configv1.ParameterType) *configv1.HttpParameterMapping {
+	p := &configv1.HttpParameterMapping{}
+	s := &configv1.ParameterSchema{}
+	s.SetName(name)
+	s.SetType(typ)
+	p.SetSchema(s)
+	return p
+}
+
+func newHttpDocCall(path string, method configv1.HttpCallDefinition_HttpMethod, params []*configv1.HttpParameterMapping) *configv1.HttpCallDefinition {
+	c := &configv1.HttpCallDefinition{}
+	c.SetEndpointPath(path)
+	c.SetMethod(method)
+	c.SetParameters(params)
+	return c
+}
+
+func newToolDef(name, desc, svcId, callId string, input *structpb.Struct) *configv1.ToolDefinition {
+	t := &configv1.ToolDefinition{}
+	t.SetName(name)
+	t.SetDescription(desc)
+	t.SetServiceId(svcId)
+	t.SetCallId(callId)
+	t.SetInputSchema(input)
+	return t
+}
 
 func TestGenerateDocumentation(t *testing.T) {
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
@@ -33,27 +60,16 @@ func TestGenerateDocumentation(t *testing.T) {
 					HttpService: &configv1.HttpUpstreamService{
 						Address: proto.String("http://example.com"),
 						Calls: map[string]*configv1.HttpCallDefinition{
-							"weather_call": {
-								EndpointPath: proto.String("/weather"),
-								Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-								Parameters: []*configv1.HttpParameterMapping{
-									{
-										Schema: &configv1.ParameterSchema{
-											Name: proto.String("query"),
-											Type: configv1.ParameterType_STRING.Enum(),
-										},
-									},
+							"weather_call": newHttpDocCall(
+								"/weather",
+								configv1.HttpCallDefinition_HTTP_METHOD_GET,
+								[]*configv1.HttpParameterMapping{
+									newHttpDocParam("query", configv1.ParameterType_STRING),
 								},
-							},
+							),
 						},
 						Tools: []*configv1.ToolDefinition{
-							{
-								Name:        proto.String("get_weather"),
-								Description: proto.String("Get the weather"),
-								InputSchema: inputSchema,
-								ServiceId:   proto.String("weather-id"),
-								CallId:      proto.String("weather_call"),
-							},
+							newToolDef("get_weather", "Get the weather", "weather-id", "weather_call", inputSchema),
 						},
 					},
 				},

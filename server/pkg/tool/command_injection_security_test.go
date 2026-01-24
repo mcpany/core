@@ -7,9 +7,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -118,13 +118,14 @@ func createTestCommandToolWithTemplate(command string, template string) Tool {
 	service := &configv1.CommandLineUpstreamService{
 		Command: &command,
 	}
-	callDef := &configv1.CommandLineCallDefinition{
-		Args: []string{"-c", template},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			{
-				Schema: &configv1.ParameterSchema{Name: proto.String("input")},
-			},
-		},
-	}
+	callDef := &configv1.CommandLineCallDefinition{}
+	callDef.SetArgs([]string{"-c", template})
+
+	param := &configv1.CommandLineParameterMapping{}
+	schema := &configv1.ParameterSchema{}
+	schema.SetName("input")
+	param.SetSchema(schema)
+
+	callDef.SetParameters([]*configv1.CommandLineParameterMapping{param})
 	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 }

@@ -28,6 +28,18 @@ func boolPtr(b bool) *bool {
 	return &b
 }
 
+func newTool(name string) *configv1.ToolDefinition {
+	t := &configv1.ToolDefinition{}
+	t.SetName(name)
+	return t
+}
+
+func newResource(uri string) *configv1.ResourceDefinition {
+	r := &configv1.ResourceDefinition{}
+	r.SetUri(uri)
+	return r
+}
+
 // MockServiceRegistry is a comprehensive mock for serviceregistry.ServiceRegistryInterface
 type MockServiceRegistry struct {
 	serviceregistry.ServiceRegistryInterface // Embed to satisfy interface, but override methods we use
@@ -104,7 +116,7 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 	registry := &MockServiceRegistry{
 		registerFunc: func(ctx context.Context, config *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 			assert.Equal(t, "test-service", config.GetName())
-			return "test-service-id", []*configv1.ToolDefinition{{Name: strPtr("tool1")}}, []*configv1.ResourceDefinition{{Uri: strPtr("res1")}}, nil
+			return "test-service-id", []*configv1.ToolDefinition{newTool("tool1")}, []*configv1.ResourceDefinition{newResource("res1")}, nil
 		},
 	}
 	w := worker.NewServiceRegistrationWorker(b, registry)

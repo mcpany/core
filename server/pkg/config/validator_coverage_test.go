@@ -15,6 +15,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+func newSqlCallVal(query string, input *structpb.Struct) *configv1.SqlCallDefinition {
+	c := &configv1.SqlCallDefinition{}
+	c.SetQuery(query)
+	c.SetInputSchema(input)
+	return c
+}
+
+func newHttpCallVal(input *structpb.Struct) *configv1.HttpCallDefinition {
+	c := &configv1.HttpCallDefinition{}
+	c.SetInputSchema(input)
+	return c
+}
+
 func TestValidateFileExists(t *testing.T) {
 	// Create a temporary file
 	f, err := os.CreateTemp("", "testfile")
@@ -191,7 +204,7 @@ func TestValidateSQLService_Errors(t *testing.T) {
 		Driver: proto.String("postgres"),
 		Dsn:    proto.String("postgres://"),
 		Calls: map[string]*configv1.SqlCallDefinition{
-			"call1": {Query: proto.String("")},
+			"call1": newSqlCallVal("", nil),
 		},
 	}
 	err = validateSQLService(s)
@@ -290,13 +303,11 @@ func TestValidateHTTPService_SchemaErrors(t *testing.T) {
 	s := &configv1.HttpUpstreamService{
 		Address: proto.String("http://example.com"),
 		Calls: map[string]*configv1.HttpCallDefinition{
-			"call1": {
-				InputSchema: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-					},
+			"call1": newHttpCallVal(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 				},
-			},
+			}),
 		},
 	}
 	err := validateHTTPService(s)
@@ -373,14 +384,11 @@ func TestValidateSQLService_SchemaErrors(t *testing.T) {
 		Driver: proto.String("postgres"),
 		Dsn:    proto.String("postgres://"),
 		Calls: map[string]*configv1.SqlCallDefinition{
-			"call1": {
-				Query: proto.String("SELECT 1"),
-				InputSchema: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-					},
+			"call1": newSqlCallVal("SELECT 1", &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 				},
-			},
+			}),
 		},
 	}
 	err := validateSQLService(s)

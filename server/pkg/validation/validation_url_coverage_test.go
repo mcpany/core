@@ -164,7 +164,7 @@ func TestValidateHTTPServiceDefinition_Coverage(t *testing.T) {
 
     // Maybe a path that is not empty but effectively invalid for URL?
     // /%gh
-    def.EndpointPath = lo.ToPtr("/%gh") // Invalid escape
+    def.SetEndpointPath("/%gh") // Invalid escape
     err = ValidateHTTPServiceDefinition(def)
     if err == nil {
         t.Log("url.Parse did not fail for invalid escape")

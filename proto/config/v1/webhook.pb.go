@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/webhook.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
@@ -76,11 +75,11 @@ func (x WebhookKind) Number() protoreflect.EnumNumber {
 
 // WebhookReview explains the request and response of a webhook call.
 type WebhookReview struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Request       *WebhookRequest        `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
-	Response      *WebhookResponse       `protobuf:"bytes,2,opt,name=response,proto3" json:"response,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Request  *WebhookRequest        `protobuf:"bytes,1,opt,name=request"`
+	xxx_hidden_Response *WebhookResponse       `protobuf:"bytes,2,opt,name=response"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *WebhookReview) Reset() {
@@ -110,46 +109,46 @@ func (x *WebhookReview) ProtoReflect() protoreflect.Message {
 
 func (x *WebhookReview) GetRequest() *WebhookRequest {
 	if x != nil {
-		return x.Request
+		return x.xxx_hidden_Request
 	}
 	return nil
 }
 
 func (x *WebhookReview) GetResponse() *WebhookResponse {
 	if x != nil {
-		return x.Response
+		return x.xxx_hidden_Response
 	}
 	return nil
 }
 
 func (x *WebhookReview) SetRequest(v *WebhookRequest) {
-	x.Request = v
+	x.xxx_hidden_Request = v
 }
 
 func (x *WebhookReview) SetResponse(v *WebhookResponse) {
-	x.Response = v
+	x.xxx_hidden_Response = v
 }
 
 func (x *WebhookReview) HasRequest() bool {
 	if x == nil {
 		return false
 	}
-	return x.Request != nil
+	return x.xxx_hidden_Request != nil
 }
 
 func (x *WebhookReview) HasResponse() bool {
 	if x == nil {
 		return false
 	}
-	return x.Response != nil
+	return x.xxx_hidden_Response != nil
 }
 
 func (x *WebhookReview) ClearRequest() {
-	x.Request = nil
+	x.xxx_hidden_Request = nil
 }
 
 func (x *WebhookReview) ClearResponse() {
-	x.Response = nil
+	x.xxx_hidden_Response = nil
 }
 
 type WebhookReview_builder struct {
@@ -163,23 +162,21 @@ func (b0 WebhookReview_builder) Build() *WebhookReview {
 	m0 := &WebhookReview{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Request = b.Request
-	x.Response = b.Response
+	x.xxx_hidden_Request = b.Request
+	x.xxx_hidden_Response = b.Response
 	return m0
 }
 
 type WebhookRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Unique identifier for the request.
-	Uid string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
-	// The operation type (e.g., "PreCall", "PostCall").
-	Kind WebhookKind `protobuf:"varint,2,opt,name=kind,proto3,enum=mcpany.config.v1.WebhookKind" json:"kind,omitempty"`
-	// The tool name being executed.
-	ToolName string `protobuf:"bytes,3,opt,name=tool_name,json=toolName,proto3" json:"tool_name,omitempty"`
-	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
-	Object        *structpb.Struct `protobuf:"bytes,4,opt,name=object,proto3" json:"object,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Uid         *string                `protobuf:"bytes,1,opt,name=uid"`
+	xxx_hidden_Kind        WebhookKind            `protobuf:"varint,2,opt,name=kind,enum=mcpany.config.v1.WebhookKind"`
+	xxx_hidden_ToolName    *string                `protobuf:"bytes,3,opt,name=tool_name,json=toolName"`
+	xxx_hidden_Object      *structpb.Struct       `protobuf:"bytes,4,opt,name=object"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *WebhookRequest) Reset() {
@@ -209,68 +206,115 @@ func (x *WebhookRequest) ProtoReflect() protoreflect.Message {
 
 func (x *WebhookRequest) GetUid() string {
 	if x != nil {
-		return x.Uid
+		if x.xxx_hidden_Uid != nil {
+			return *x.xxx_hidden_Uid
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebhookRequest) GetKind() WebhookKind {
 	if x != nil {
-		return x.Kind
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
+			return x.xxx_hidden_Kind
+		}
 	}
 	return WebhookKind_WEBHOOK_KIND_UNSPECIFIED
 }
 
 func (x *WebhookRequest) GetToolName() string {
 	if x != nil {
-		return x.ToolName
+		if x.xxx_hidden_ToolName != nil {
+			return *x.xxx_hidden_ToolName
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebhookRequest) GetObject() *structpb.Struct {
 	if x != nil {
-		return x.Object
+		return x.xxx_hidden_Object
 	}
 	return nil
 }
 
 func (x *WebhookRequest) SetUid(v string) {
-	x.Uid = v
+	x.xxx_hidden_Uid = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *WebhookRequest) SetKind(v WebhookKind) {
-	x.Kind = v
+	x.xxx_hidden_Kind = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *WebhookRequest) SetToolName(v string) {
-	x.ToolName = v
+	x.xxx_hidden_ToolName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *WebhookRequest) SetObject(v *structpb.Struct) {
-	x.Object = v
+	x.xxx_hidden_Object = v
+}
+
+func (x *WebhookRequest) HasUid() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *WebhookRequest) HasKind() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *WebhookRequest) HasToolName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *WebhookRequest) HasObject() bool {
 	if x == nil {
 		return false
 	}
-	return x.Object != nil
+	return x.xxx_hidden_Object != nil
+}
+
+func (x *WebhookRequest) ClearUid() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Uid = nil
+}
+
+func (x *WebhookRequest) ClearKind() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Kind = WebhookKind_WEBHOOK_KIND_UNSPECIFIED
+}
+
+func (x *WebhookRequest) ClearToolName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ToolName = nil
 }
 
 func (x *WebhookRequest) ClearObject() {
-	x.Object = nil
+	x.xxx_hidden_Object = nil
 }
 
 type WebhookRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Unique identifier for the request.
-	Uid string
+	Uid *string
 	// The operation type (e.g., "PreCall", "PostCall").
-	Kind WebhookKind
+	Kind *WebhookKind
 	// The tool name being executed.
-	ToolName string
+	ToolName *string
 	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
 	Object *structpb.Struct
 }
@@ -279,20 +323,31 @@ func (b0 WebhookRequest_builder) Build() *WebhookRequest {
 	m0 := &WebhookRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Uid = b.Uid
-	x.Kind = b.Kind
-	x.ToolName = b.ToolName
-	x.Object = b.Object
+	if b.Uid != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Uid = b.Uid
+	}
+	if b.Kind != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Kind = *b.Kind
+	}
+	if b.ToolName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_ToolName = b.ToolName
+	}
+	x.xxx_hidden_Object = b.Object
 	return m0
 }
 
 type WebhookConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-	Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret,proto3" json:"webhook_secret,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Url           *string                `protobuf:"bytes,1,opt,name=url"`
+	xxx_hidden_Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout"`
+	xxx_hidden_WebhookSecret *string                `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *WebhookConfig) Reset() {
@@ -322,74 +377,114 @@ func (x *WebhookConfig) ProtoReflect() protoreflect.Message {
 
 func (x *WebhookConfig) GetUrl() string {
 	if x != nil {
-		return x.Url
+		if x.xxx_hidden_Url != nil {
+			return *x.xxx_hidden_Url
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebhookConfig) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.Timeout
+		return x.xxx_hidden_Timeout
 	}
 	return nil
 }
 
 func (x *WebhookConfig) GetWebhookSecret() string {
 	if x != nil {
-		return x.WebhookSecret
+		if x.xxx_hidden_WebhookSecret != nil {
+			return *x.xxx_hidden_WebhookSecret
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebhookConfig) SetUrl(v string) {
-	x.Url = v
+	x.xxx_hidden_Url = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *WebhookConfig) SetTimeout(v *durationpb.Duration) {
-	x.Timeout = v
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *WebhookConfig) SetWebhookSecret(v string) {
-	x.WebhookSecret = v
+	x.xxx_hidden_WebhookSecret = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *WebhookConfig) HasUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *WebhookConfig) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.Timeout != nil
+	return x.xxx_hidden_Timeout != nil
+}
+
+func (x *WebhookConfig) HasWebhookSecret() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *WebhookConfig) ClearUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Url = nil
 }
 
 func (x *WebhookConfig) ClearTimeout() {
-	x.Timeout = nil
+	x.xxx_hidden_Timeout = nil
+}
+
+func (x *WebhookConfig) ClearWebhookSecret() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_WebhookSecret = nil
 }
 
 type WebhookConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Url           string
+	Url           *string
 	Timeout       *durationpb.Duration
-	WebhookSecret string
+	WebhookSecret *string
 }
 
 func (b0 WebhookConfig_builder) Build() *WebhookConfig {
 	m0 := &WebhookConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Url = b.Url
-	x.Timeout = b.Timeout
-	x.WebhookSecret = b.WebhookSecret
+	if b.Url != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Url = b.Url
+	}
+	x.xxx_hidden_Timeout = b.Timeout
+	if b.WebhookSecret != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_WebhookSecret = b.WebhookSecret
+	}
 	return m0
 }
 
 type SystemWebhookConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	UrlPath       string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath,proto3" json:"url_path,omitempty"`
-	Disabled      bool                   `protobuf:"varint,4,opt,name=disabled,proto3" json:"disabled,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_UrlPath     *string                `protobuf:"bytes,3,opt,name=url_path,json=urlPath"`
+	xxx_hidden_Disabled    bool                   `protobuf:"varint,4,opt,name=disabled"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *SystemWebhookConfig) Reset() {
@@ -419,80 +514,151 @@ func (x *SystemWebhookConfig) ProtoReflect() protoreflect.Message {
 
 func (x *SystemWebhookConfig) GetName() string {
 	if x != nil {
-		return x.Name
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SystemWebhookConfig) GetDescription() string {
 	if x != nil {
-		return x.Description
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SystemWebhookConfig) GetUrlPath() string {
 	if x != nil {
-		return x.UrlPath
+		if x.xxx_hidden_UrlPath != nil {
+			return *x.xxx_hidden_UrlPath
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SystemWebhookConfig) GetDisabled() bool {
 	if x != nil {
-		return x.Disabled
+		return x.xxx_hidden_Disabled
 	}
 	return false
 }
 
 func (x *SystemWebhookConfig) SetName(v string) {
-	x.Name = v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *SystemWebhookConfig) SetDescription(v string) {
-	x.Description = v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *SystemWebhookConfig) SetUrlPath(v string) {
-	x.UrlPath = v
+	x.xxx_hidden_UrlPath = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *SystemWebhookConfig) SetDisabled(v bool) {
-	x.Disabled = v
+	x.xxx_hidden_Disabled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+}
+
+func (x *SystemWebhookConfig) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *SystemWebhookConfig) HasDescription() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *SystemWebhookConfig) HasUrlPath() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *SystemWebhookConfig) HasDisabled() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *SystemWebhookConfig) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *SystemWebhookConfig) ClearDescription() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Description = nil
+}
+
+func (x *SystemWebhookConfig) ClearUrlPath() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_UrlPath = nil
+}
+
+func (x *SystemWebhookConfig) ClearDisabled() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Disabled = false
 }
 
 type SystemWebhookConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name        string
-	Description string
-	UrlPath     string
-	Disabled    bool
+	Name        *string
+	Description *string
+	UrlPath     *string
+	Disabled    *bool
 }
 
 func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
 	m0 := &SystemWebhookConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Description = b.Description
-	x.UrlPath = b.UrlPath
-	x.Disabled = b.Disabled
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.UrlPath != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_UrlPath = b.UrlPath
+	}
+	if b.Disabled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_Disabled = *b.Disabled
+	}
 	return m0
 }
 
 type WebhookResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Unique identifier for the request.
-	Uid string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
-	// allowed indicates if the request is permitted (for PreCall).
-	Allowed bool `protobuf:"varint,2,opt,name=allowed,proto3" json:"allowed,omitempty"`
-	// status contains extra details for the decision.
-	Status *WebhookStatus `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	// replacement_object is a complete replacement for the object (simple mutation).
-	ReplacementObject *structpb.Struct `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject,proto3" json:"replacement_object,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Uid               *string                `protobuf:"bytes,1,opt,name=uid"`
+	xxx_hidden_Allowed           bool                   `protobuf:"varint,2,opt,name=allowed"`
+	xxx_hidden_Status            *WebhookStatus         `protobuf:"bytes,3,opt,name=status"`
+	xxx_hidden_ReplacementObject *structpb.Struct       `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *WebhookResponse) Reset() {
@@ -522,77 +688,106 @@ func (x *WebhookResponse) ProtoReflect() protoreflect.Message {
 
 func (x *WebhookResponse) GetUid() string {
 	if x != nil {
-		return x.Uid
+		if x.xxx_hidden_Uid != nil {
+			return *x.xxx_hidden_Uid
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebhookResponse) GetAllowed() bool {
 	if x != nil {
-		return x.Allowed
+		return x.xxx_hidden_Allowed
 	}
 	return false
 }
 
 func (x *WebhookResponse) GetStatus() *WebhookStatus {
 	if x != nil {
-		return x.Status
+		return x.xxx_hidden_Status
 	}
 	return nil
 }
 
 func (x *WebhookResponse) GetReplacementObject() *structpb.Struct {
 	if x != nil {
-		return x.ReplacementObject
+		return x.xxx_hidden_ReplacementObject
 	}
 	return nil
 }
 
 func (x *WebhookResponse) SetUid(v string) {
-	x.Uid = v
+	x.xxx_hidden_Uid = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *WebhookResponse) SetAllowed(v bool) {
-	x.Allowed = v
+	x.xxx_hidden_Allowed = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
 func (x *WebhookResponse) SetStatus(v *WebhookStatus) {
-	x.Status = v
+	x.xxx_hidden_Status = v
 }
 
 func (x *WebhookResponse) SetReplacementObject(v *structpb.Struct) {
-	x.ReplacementObject = v
+	x.xxx_hidden_ReplacementObject = v
+}
+
+func (x *WebhookResponse) HasUid() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *WebhookResponse) HasAllowed() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *WebhookResponse) HasStatus() bool {
 	if x == nil {
 		return false
 	}
-	return x.Status != nil
+	return x.xxx_hidden_Status != nil
 }
 
 func (x *WebhookResponse) HasReplacementObject() bool {
 	if x == nil {
 		return false
 	}
-	return x.ReplacementObject != nil
+	return x.xxx_hidden_ReplacementObject != nil
+}
+
+func (x *WebhookResponse) ClearUid() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Uid = nil
+}
+
+func (x *WebhookResponse) ClearAllowed() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Allowed = false
 }
 
 func (x *WebhookResponse) ClearStatus() {
-	x.Status = nil
+	x.xxx_hidden_Status = nil
 }
 
 func (x *WebhookResponse) ClearReplacementObject() {
-	x.ReplacementObject = nil
+	x.xxx_hidden_ReplacementObject = nil
 }
 
 type WebhookResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Unique identifier for the request.
-	Uid string
+	Uid *string
 	// allowed indicates if the request is permitted (for PreCall).
-	Allowed bool
+	Allowed *bool
 	// status contains extra details for the decision.
 	Status *WebhookStatus
 	// replacement_object is a complete replacement for the object (simple mutation).
@@ -603,19 +798,27 @@ func (b0 WebhookResponse_builder) Build() *WebhookResponse {
 	m0 := &WebhookResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Uid = b.Uid
-	x.Allowed = b.Allowed
-	x.Status = b.Status
-	x.ReplacementObject = b.ReplacementObject
+	if b.Uid != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Uid = b.Uid
+	}
+	if b.Allowed != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Allowed = *b.Allowed
+	}
+	x.xxx_hidden_Status = b.Status
+	x.xxx_hidden_ReplacementObject = b.ReplacementObject
 	return m0
 }
 
 type WebhookStatus struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Code        int32                  `protobuf:"varint,1,opt,name=code"`
+	xxx_hidden_Message     *string                `protobuf:"bytes,2,opt,name=message"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *WebhookStatus) Reset() {
@@ -645,39 +848,74 @@ func (x *WebhookStatus) ProtoReflect() protoreflect.Message {
 
 func (x *WebhookStatus) GetCode() int32 {
 	if x != nil {
-		return x.Code
+		return x.xxx_hidden_Code
 	}
 	return 0
 }
 
 func (x *WebhookStatus) GetMessage() string {
 	if x != nil {
-		return x.Message
+		if x.xxx_hidden_Message != nil {
+			return *x.xxx_hidden_Message
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebhookStatus) SetCode(v int32) {
-	x.Code = v
+	x.xxx_hidden_Code = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *WebhookStatus) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *WebhookStatus) HasCode() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *WebhookStatus) HasMessage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *WebhookStatus) ClearCode() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Code = 0
+}
+
+func (x *WebhookStatus) ClearMessage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Message = nil
 }
 
 type WebhookStatus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Code    int32
-	Message string
+	Code    *int32
+	Message *string
 }
 
 func (b0 WebhookStatus_builder) Build() *WebhookStatus {
 	m0 := &WebhookStatus{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Code = b.Code
-	x.Message = b.Message
+	if b.Code != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Code = *b.Code
+	}
+	if b.Message != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Message = b.Message
+	}
 	return m0
 }
 
@@ -685,7 +923,7 @@ var File_proto_config_v1_webhook_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/webhook.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\"\x8a\x01\n" +
+	"\x1dproto/config/v1/webhook.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\"\x8a\x01\n" +
 	"\rWebhookReview\x12:\n" +
 	"\arequest\x18\x01 \x01(\v2 .mcpany.config.v1.WebhookRequestR\arequest\x12=\n" +
 	"\bresponse\x18\x02 \x01(\v2!.mcpany.config.v1.WebhookResponseR\bresponse\"\xa3\x01\n" +
@@ -715,7 +953,7 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
 	"\x16WEBHOOK_KIND_POST_CALL\x10\x02\x12 \n" +
-	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B0Z&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)

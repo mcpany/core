@@ -13,6 +13,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestStaticResource_Read_LimitOverflow(t *testing.T) {
@@ -31,12 +32,12 @@ func TestStaticResource_Read_LimitOverflow(t *testing.T) {
 	// This should logically allow reading everything.
 	// But due to overflow in limit+1 logic, it might fail.
 	limit := int64(math.MaxInt64)
-	def := &configv1.ResourceDefinition{
-		Uri:      strPtr(server.URL),
-		Name:     strPtr("Max Size Resource"),
-		MimeType: strPtr("text/plain"),
+	def := configv1.ResourceDefinition_builder{
+		Uri:      proto.String(server.URL),
+		Name:     proto.String("Max Size Resource"),
+		MimeType: proto.String("text/plain"),
 		Size:     &limit,
-	}
+	}.Build()
 
 	serviceID := "test-service"
 	r := NewStaticResource(def, serviceID)

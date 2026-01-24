@@ -30,7 +30,7 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 	}).Build()
 
 	properties := make(map[string]*structpb.Value)
-	for _, param := range callDef.Parameters {
+	for _, param := range callDef.GetParameters() {
 		properties[param.GetSchema().GetName()] = structpb.NewStructValue(&structpb.Struct{})
 	}
 
@@ -73,11 +73,13 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("successful execution", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
 		inputs, err := json.Marshal(inputData)
@@ -109,20 +111,16 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("execution with environment variables", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{
-					Schema: &configv1.ParameterSchema{
-						Name: proto.String("MY_VAR"),
-					},
-				},
-				{
-					Schema: &configv1.ParameterSchema{
-						Name: proto.String("args"),
-					},
-				},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("MY_VAR")}.Build(),
+				}.Build(),
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{
 			"args":   []string{"printenv", "MY_VAR"},
@@ -149,11 +147,13 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("non-zero exit code", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"false"}}
 		inputs, err := json.Marshal(inputData)
@@ -177,11 +177,13 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -224,12 +226,14 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("argument substitution", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Args: []string{"{{text}}"},
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("text")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("text")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 		inputData := map[string]interface{}{"text": "hello"}
 		inputs, err := json.Marshal(inputData)

@@ -24,6 +24,34 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func newHttpCall(id string, method configv1.HttpCallDefinition_HttpMethod, path string) *configv1.HttpCallDefinition {
+	c := &configv1.HttpCallDefinition{}
+	c.SetId(id)
+	c.SetMethod(method)
+	c.SetEndpointPath(path)
+	return c
+}
+
+func newToolDef(name, callID string) *configv1.ToolDefinition {
+	t := &configv1.ToolDefinition{}
+	t.SetName(name)
+	t.SetCallId(callID)
+	return t
+}
+
+func newPromptDef(name string) *configv1.PromptDefinition {
+	p := &configv1.PromptDefinition{}
+	p.SetName(name)
+	return p
+}
+
+func newResourceDef(name, uri string) *configv1.ResourceDefinition {
+	r := &configv1.ResourceDefinition{}
+	r.SetName(name)
+	r.SetUri(uri)
+	return r
+}
+
 // StartStdioServer starts the MCP server in Stdio mode and returns the client.
 func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	t.Helper()
@@ -221,21 +249,9 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 			HttpService: &configv1.HttpUpstreamService{
 				Address: proto.String(mockServer.URL),
 				Calls: map[string]*configv1.HttpCallDefinition{
-					call1: {
-						Id:           proto.String(call1),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/call1"),
-					},
-					call2: {
-						Id:           proto.String(call2),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/call2"),
-					},
-					call3: {
-						Id:           proto.String(call3),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/call3"),
-					},
+					call1: newHttpCall(call1, configv1.HttpCallDefinition_HTTP_METHOD_GET, "/call1"),
+					call2: newHttpCall(call2, configv1.HttpCallDefinition_HTTP_METHOD_GET, "/call2"),
+					call3: newHttpCall(call3, configv1.HttpCallDefinition_HTTP_METHOD_GET, "/call3"),
 				},
 			},
 		},
@@ -302,26 +318,12 @@ func TestCallPolicyExecution(t *testing.T) {
 			HttpService: &configv1.HttpUpstreamService{
 				Address: proto.String(mockServer.URL),
 				Calls: map[string]*configv1.HttpCallDefinition{
-					"allowed_call": {
-						Id:           proto.String("allowed_call"),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/allowed"),
-					},
-					"denied_call": {
-						Id:           proto.String("denied_call"),
-						Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						EndpointPath: proto.String("/denied"),
-					},
+					"allowed_call": newHttpCall("allowed_call", configv1.HttpCallDefinition_HTTP_METHOD_GET, "/allowed"),
+					"denied_call":  newHttpCall("denied_call", configv1.HttpCallDefinition_HTTP_METHOD_GET, "/denied"),
 				},
 				Tools: []*configv1.ToolDefinition{
-					{
-						Name:   proto.String("allowed_tool"),
-						CallId: proto.String("allowed_call"),
-					},
-					{
-						Name:   proto.String("denied_tool"),
-						CallId: proto.String("denied_call"),
-					},
+					newToolDef("allowed_tool", "allowed_call"),
+					newToolDef("denied_tool", "denied_call"),
 				},
 			},
 		},
@@ -391,12 +393,12 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 			HttpService: &configv1.HttpUpstreamService{
 				Address: proto.String(mockServer.URL),
 				Prompts: []*configv1.PromptDefinition{
-					{Name: proto.String("public_prompt")},
-					{Name: proto.String("private_prompt")},
+					newPromptDef("public_prompt"),
+					newPromptDef("private_prompt"),
 				},
 				Resources: []*configv1.ResourceDefinition{
-					{Name: proto.String("public_resource"), Uri: proto.String("http://resource/public")},
-					{Name: proto.String("private_resource"), Uri: proto.String("http://resource/private")},
+					newResourceDef("public_resource", "http://resource/public"),
+					newResourceDef("private_resource", "http://resource/private"),
 				},
 			},
 		},

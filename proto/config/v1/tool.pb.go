@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/tool.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -72,49 +71,27 @@ func (x ToolDefinition_MergeStrategy) Number() protoreflect.EnumNumber {
 
 // ToolDefinition describes a single capability or "tool" offered by a service.
 type ToolDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the tool, which will be used to invoke it.
-	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// The input schema for the tool.
-	InputSchema *structpb.Struct `protobuf:"bytes,3,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The ID of the service that provides the tool.
-	ServiceId *string `protobuf:"bytes,13,opt,name=service_id" json:"service_id,omitempty"`
-	// A human-readable description of what the tool does.
-	Description *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	// Indicates if the tool produces a continuous stream of responses.
-	IsStream *bool `protobuf:"varint,5,opt,name=is_stream" json:"is_stream,omitempty"`
-	// A human-readable title for the tool.
-	Title *string `protobuf:"bytes,6,opt,name=title" json:"title,omitempty"`
-	// If true, the tool does not modify its environment.
-	// Default: false
-	ReadOnlyHint *bool `protobuf:"varint,7,opt,name=read_only_hint" json:"read_only_hint,omitempty"`
-	// If true, the tool may perform destructive updates to its environment. If
-	// false, the tool performs only additive updates.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: true
-	DestructiveHint *bool `protobuf:"varint,8,opt,name=destructive_hint" json:"destructive_hint,omitempty"`
-	// If true, calling the tool repeatedly with the same arguments will have no
-	// additional effect on its environment.
-	// (This property is meaningful only when ReadOnlyHint == false.)
-	// Default: false
-	IdempotentHint *bool `protobuf:"varint,9,opt,name=idempotent_hint" json:"idempotent_hint,omitempty"`
-	// If true, this tool may interact with an "open world" of external entities. If
-	// false, the tool's domain of interaction is closed. For example, the world of
-	// a web search tool is open, whereas that of a memory tool is not.
-	// Default: true
-	OpenWorldHint *bool `protobuf:"varint,10,opt,name=open_world_hint" json:"open_world_hint,omitempty"`
-	// The ID of the call definition to use for this tool.
-	CallId *string `protobuf:"bytes,11,opt,name=call_id" json:"call_id,omitempty"`
-	// If true, this tool is disabled.
-	Disable *bool `protobuf:"varint,12,opt,name=disable" json:"disable,omitempty"`
-	// A list of profiles this tool belongs to.
-	Profiles      []*Profile                    `protobuf:"bytes,14,rep,name=profiles" json:"profiles,omitempty"`
-	MergeStrategy *ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy" json:"merge_strategy,omitempty"`
-	Tags          []string                      `protobuf:"bytes,16,rep,name=tags" json:"tags,omitempty"`
-	// Integrity check for the tool definition.
-	Integrity     *Integrity `protobuf:"bytes,17,opt,name=integrity" json:"integrity,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                      protoimpl.MessageState       `protogen:"opaque.v1"`
+	xxx_hidden_Name            *string                      `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_InputSchema     *structpb.Struct             `protobuf:"bytes,3,opt,name=input_schema"`
+	xxx_hidden_ServiceId       *string                      `protobuf:"bytes,13,opt,name=service_id"`
+	xxx_hidden_Description     *string                      `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_IsStream        bool                         `protobuf:"varint,5,opt,name=is_stream"`
+	xxx_hidden_Title           *string                      `protobuf:"bytes,6,opt,name=title"`
+	xxx_hidden_ReadOnlyHint    bool                         `protobuf:"varint,7,opt,name=read_only_hint"`
+	xxx_hidden_DestructiveHint bool                         `protobuf:"varint,8,opt,name=destructive_hint"`
+	xxx_hidden_IdempotentHint  bool                         `protobuf:"varint,9,opt,name=idempotent_hint"`
+	xxx_hidden_OpenWorldHint   bool                         `protobuf:"varint,10,opt,name=open_world_hint"`
+	xxx_hidden_CallId          *string                      `protobuf:"bytes,11,opt,name=call_id"`
+	xxx_hidden_Disable         bool                         `protobuf:"varint,12,opt,name=disable"`
+	xxx_hidden_Profiles        *[]*Profile                  `protobuf:"bytes,14,rep,name=profiles"`
+	xxx_hidden_MergeStrategy   ToolDefinition_MergeStrategy `protobuf:"varint,15,opt,name=merge_strategy,enum=mcpany.config.v1.ToolDefinition_MergeStrategy"`
+	xxx_hidden_Tags            []string                     `protobuf:"bytes,16,rep,name=tags"`
+	xxx_hidden_Integrity       *Integrity                   `protobuf:"bytes,17,opt,name=integrity"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *ToolDefinition) Reset() {
@@ -143,333 +120,376 @@ func (x *ToolDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ToolDefinition) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ToolDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *ToolDefinition) GetServiceId() string {
-	if x != nil && x.ServiceId != nil {
-		return *x.ServiceId
+	if x != nil {
+		if x.xxx_hidden_ServiceId != nil {
+			return *x.xxx_hidden_ServiceId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ToolDefinition) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ToolDefinition) GetIsStream() bool {
-	if x != nil && x.IsStream != nil {
-		return *x.IsStream
+	if x != nil {
+		return x.xxx_hidden_IsStream
 	}
 	return false
 }
 
 func (x *ToolDefinition) GetTitle() string {
-	if x != nil && x.Title != nil {
-		return *x.Title
+	if x != nil {
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ToolDefinition) GetReadOnlyHint() bool {
-	if x != nil && x.ReadOnlyHint != nil {
-		return *x.ReadOnlyHint
+	if x != nil {
+		return x.xxx_hidden_ReadOnlyHint
 	}
 	return false
 }
 
 func (x *ToolDefinition) GetDestructiveHint() bool {
-	if x != nil && x.DestructiveHint != nil {
-		return *x.DestructiveHint
+	if x != nil {
+		return x.xxx_hidden_DestructiveHint
 	}
 	return false
 }
 
 func (x *ToolDefinition) GetIdempotentHint() bool {
-	if x != nil && x.IdempotentHint != nil {
-		return *x.IdempotentHint
+	if x != nil {
+		return x.xxx_hidden_IdempotentHint
 	}
 	return false
 }
 
 func (x *ToolDefinition) GetOpenWorldHint() bool {
-	if x != nil && x.OpenWorldHint != nil {
-		return *x.OpenWorldHint
+	if x != nil {
+		return x.xxx_hidden_OpenWorldHint
 	}
 	return false
 }
 
 func (x *ToolDefinition) GetCallId() string {
-	if x != nil && x.CallId != nil {
-		return *x.CallId
+	if x != nil {
+		if x.xxx_hidden_CallId != nil {
+			return *x.xxx_hidden_CallId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ToolDefinition) GetDisable() bool {
-	if x != nil && x.Disable != nil {
-		return *x.Disable
+	if x != nil {
+		return x.xxx_hidden_Disable
 	}
 	return false
 }
 
 func (x *ToolDefinition) GetProfiles() []*Profile {
 	if x != nil {
-		return x.Profiles
+		if x.xxx_hidden_Profiles != nil {
+			return *x.xxx_hidden_Profiles
+		}
 	}
 	return nil
 }
 
 func (x *ToolDefinition) GetMergeStrategy() ToolDefinition_MergeStrategy {
-	if x != nil && x.MergeStrategy != nil {
-		return *x.MergeStrategy
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 13) {
+			return x.xxx_hidden_MergeStrategy
+		}
 	}
 	return ToolDefinition_MERGE_STRATEGY_UNSPECIFIED
 }
 
 func (x *ToolDefinition) GetTags() []string {
 	if x != nil {
-		return x.Tags
+		return x.xxx_hidden_Tags
 	}
 	return nil
 }
 
 func (x *ToolDefinition) GetIntegrity() *Integrity {
 	if x != nil {
-		return x.Integrity
+		return x.xxx_hidden_Integrity
 	}
 	return nil
 }
 
 func (x *ToolDefinition) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 16)
 }
 
 func (x *ToolDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *ToolDefinition) SetServiceId(v string) {
-	x.ServiceId = &v
+	x.xxx_hidden_ServiceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 16)
 }
 
 func (x *ToolDefinition) SetDescription(v string) {
-	x.Description = &v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 16)
 }
 
 func (x *ToolDefinition) SetIsStream(v bool) {
-	x.IsStream = &v
+	x.xxx_hidden_IsStream = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 16)
 }
 
 func (x *ToolDefinition) SetTitle(v string) {
-	x.Title = &v
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 16)
 }
 
 func (x *ToolDefinition) SetReadOnlyHint(v bool) {
-	x.ReadOnlyHint = &v
+	x.xxx_hidden_ReadOnlyHint = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 16)
 }
 
 func (x *ToolDefinition) SetDestructiveHint(v bool) {
-	x.DestructiveHint = &v
+	x.xxx_hidden_DestructiveHint = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 16)
 }
 
 func (x *ToolDefinition) SetIdempotentHint(v bool) {
-	x.IdempotentHint = &v
+	x.xxx_hidden_IdempotentHint = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 16)
 }
 
 func (x *ToolDefinition) SetOpenWorldHint(v bool) {
-	x.OpenWorldHint = &v
+	x.xxx_hidden_OpenWorldHint = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 16)
 }
 
 func (x *ToolDefinition) SetCallId(v string) {
-	x.CallId = &v
+	x.xxx_hidden_CallId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 16)
 }
 
 func (x *ToolDefinition) SetDisable(v bool) {
-	x.Disable = &v
+	x.xxx_hidden_Disable = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 16)
 }
 
 func (x *ToolDefinition) SetProfiles(v []*Profile) {
-	x.Profiles = v
+	x.xxx_hidden_Profiles = &v
 }
 
 func (x *ToolDefinition) SetMergeStrategy(v ToolDefinition_MergeStrategy) {
-	x.MergeStrategy = &v
+	x.xxx_hidden_MergeStrategy = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 16)
 }
 
 func (x *ToolDefinition) SetTags(v []string) {
-	x.Tags = v
+	x.xxx_hidden_Tags = v
 }
 
 func (x *ToolDefinition) SetIntegrity(v *Integrity) {
-	x.Integrity = v
+	x.xxx_hidden_Integrity = v
 }
 
 func (x *ToolDefinition) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *ToolDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *ToolDefinition) HasServiceId() bool {
 	if x == nil {
 		return false
 	}
-	return x.ServiceId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *ToolDefinition) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return x.Description != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *ToolDefinition) HasIsStream() bool {
 	if x == nil {
 		return false
 	}
-	return x.IsStream != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *ToolDefinition) HasTitle() bool {
 	if x == nil {
 		return false
 	}
-	return x.Title != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *ToolDefinition) HasReadOnlyHint() bool {
 	if x == nil {
 		return false
 	}
-	return x.ReadOnlyHint != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
 }
 
 func (x *ToolDefinition) HasDestructiveHint() bool {
 	if x == nil {
 		return false
 	}
-	return x.DestructiveHint != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
 }
 
 func (x *ToolDefinition) HasIdempotentHint() bool {
 	if x == nil {
 		return false
 	}
-	return x.IdempotentHint != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
 }
 
 func (x *ToolDefinition) HasOpenWorldHint() bool {
 	if x == nil {
 		return false
 	}
-	return x.OpenWorldHint != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
 }
 
 func (x *ToolDefinition) HasCallId() bool {
 	if x == nil {
 		return false
 	}
-	return x.CallId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
 }
 
 func (x *ToolDefinition) HasDisable() bool {
 	if x == nil {
 		return false
 	}
-	return x.Disable != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
 }
 
 func (x *ToolDefinition) HasMergeStrategy() bool {
 	if x == nil {
 		return false
 	}
-	return x.MergeStrategy != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
 }
 
 func (x *ToolDefinition) HasIntegrity() bool {
 	if x == nil {
 		return false
 	}
-	return x.Integrity != nil
+	return x.xxx_hidden_Integrity != nil
 }
 
 func (x *ToolDefinition) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
 }
 
 func (x *ToolDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *ToolDefinition) ClearServiceId() {
-	x.ServiceId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ServiceId = nil
 }
 
 func (x *ToolDefinition) ClearDescription() {
-	x.Description = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Description = nil
 }
 
 func (x *ToolDefinition) ClearIsStream() {
-	x.IsStream = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_IsStream = false
 }
 
 func (x *ToolDefinition) ClearTitle() {
-	x.Title = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Title = nil
 }
 
 func (x *ToolDefinition) ClearReadOnlyHint() {
-	x.ReadOnlyHint = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_ReadOnlyHint = false
 }
 
 func (x *ToolDefinition) ClearDestructiveHint() {
-	x.DestructiveHint = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_DestructiveHint = false
 }
 
 func (x *ToolDefinition) ClearIdempotentHint() {
-	x.IdempotentHint = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_IdempotentHint = false
 }
 
 func (x *ToolDefinition) ClearOpenWorldHint() {
-	x.OpenWorldHint = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_OpenWorldHint = false
 }
 
 func (x *ToolDefinition) ClearCallId() {
-	x.CallId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_CallId = nil
 }
 
 func (x *ToolDefinition) ClearDisable() {
-	x.Disable = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Disable = false
 }
 
 func (x *ToolDefinition) ClearMergeStrategy() {
-	x.MergeStrategy = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 13)
+	x.xxx_hidden_MergeStrategy = ToolDefinition_MERGE_STRATEGY_UNSPECIFIED
 }
 
 func (x *ToolDefinition) ClearIntegrity() {
-	x.Integrity = nil
+	x.xxx_hidden_Integrity = nil
 }
 
 type ToolDefinition_builder struct {
@@ -521,31 +541,69 @@ func (b0 ToolDefinition_builder) Build() *ToolDefinition {
 	m0 := &ToolDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.InputSchema = b.InputSchema
-	x.ServiceId = b.ServiceId
-	x.Description = b.Description
-	x.IsStream = b.IsStream
-	x.Title = b.Title
-	x.ReadOnlyHint = b.ReadOnlyHint
-	x.DestructiveHint = b.DestructiveHint
-	x.IdempotentHint = b.IdempotentHint
-	x.OpenWorldHint = b.OpenWorldHint
-	x.CallId = b.CallId
-	x.Disable = b.Disable
-	x.Profiles = b.Profiles
-	x.MergeStrategy = b.MergeStrategy
-	x.Tags = b.Tags
-	x.Integrity = b.Integrity
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 16)
+		x.xxx_hidden_Name = b.Name
+	}
+	x.xxx_hidden_InputSchema = b.InputSchema
+	if b.ServiceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 16)
+		x.xxx_hidden_ServiceId = b.ServiceId
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 16)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.IsStream != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 16)
+		x.xxx_hidden_IsStream = *b.IsStream
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 16)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.ReadOnlyHint != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 16)
+		x.xxx_hidden_ReadOnlyHint = *b.ReadOnlyHint
+	}
+	if b.DestructiveHint != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 16)
+		x.xxx_hidden_DestructiveHint = *b.DestructiveHint
+	}
+	if b.IdempotentHint != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 16)
+		x.xxx_hidden_IdempotentHint = *b.IdempotentHint
+	}
+	if b.OpenWorldHint != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 16)
+		x.xxx_hidden_OpenWorldHint = *b.OpenWorldHint
+	}
+	if b.CallId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 16)
+		x.xxx_hidden_CallId = b.CallId
+	}
+	if b.Disable != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 16)
+		x.xxx_hidden_Disable = *b.Disable
+	}
+	x.xxx_hidden_Profiles = &b.Profiles
+	if b.MergeStrategy != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 16)
+		x.xxx_hidden_MergeStrategy = *b.MergeStrategy
+	}
+	x.xxx_hidden_Tags = b.Tags
+	x.xxx_hidden_Integrity = b.Integrity
 	return m0
 }
 
 type Integrity struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Hash          *string                `protobuf:"bytes,1,opt,name=hash" json:"hash,omitempty"`
-	Algorithm     *string                `protobuf:"bytes,2,opt,name=algorithm" json:"algorithm,omitempty"` // e.g. "sha256"
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Hash        *string                `protobuf:"bytes,1,opt,name=hash"`
+	xxx_hidden_Algorithm   *string                `protobuf:"bytes,2,opt,name=algorithm"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Integrity) Reset() {
@@ -574,47 +632,57 @@ func (x *Integrity) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Integrity) GetHash() string {
-	if x != nil && x.Hash != nil {
-		return *x.Hash
+	if x != nil {
+		if x.xxx_hidden_Hash != nil {
+			return *x.xxx_hidden_Hash
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Integrity) GetAlgorithm() string {
-	if x != nil && x.Algorithm != nil {
-		return *x.Algorithm
+	if x != nil {
+		if x.xxx_hidden_Algorithm != nil {
+			return *x.xxx_hidden_Algorithm
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Integrity) SetHash(v string) {
-	x.Hash = &v
+	x.xxx_hidden_Hash = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *Integrity) SetAlgorithm(v string) {
-	x.Algorithm = &v
+	x.xxx_hidden_Algorithm = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
 func (x *Integrity) HasHash() bool {
 	if x == nil {
 		return false
 	}
-	return x.Hash != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *Integrity) HasAlgorithm() bool {
 	if x == nil {
 		return false
 	}
-	return x.Algorithm != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *Integrity) ClearHash() {
-	x.Hash = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Hash = nil
 }
 
 func (x *Integrity) ClearAlgorithm() {
-	x.Algorithm = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Algorithm = nil
 }
 
 type Integrity_builder struct {
@@ -628,8 +696,14 @@ func (b0 Integrity_builder) Build() *Integrity {
 	m0 := &Integrity{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Hash = b.Hash
-	x.Algorithm = b.Algorithm
+	if b.Hash != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Hash = b.Hash
+	}
+	if b.Algorithm != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Algorithm = b.Algorithm
+	}
 	return m0
 }
 
@@ -637,7 +711,7 @@ var File_proto_config_v1_tool_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xf9\x05\n" +
+	"\x1aproto/config/v1/tool.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\"\xf9\x05\n" +
 	"\x0eToolDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x17.google.protobuf.StructR\finput_schema\x12\x1e\n" +
@@ -664,7 +738,7 @@ const file_proto_config_v1_tool_proto_rawDesc = "" +
 	"\x17MERGE_STRATEGY_OVERRIDE\x10\x02\"=\n" +
 	"\tIntegrity\x12\x12\n" +
 	"\x04hash\x18\x01 \x01(\tR\x04hash\x12\x1c\n" +
-	"\talgorithm\x18\x02 \x01(\tR\talgorithmB3B\tToolProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\talgorithm\x18\x02 \x01(\tR\talgorithmB;B\tToolProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 2)

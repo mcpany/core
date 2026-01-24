@@ -21,16 +21,19 @@ func TestLocalCommandTool_SSHInjection_Prevention(t *testing.T) {
 	tool := &v1.Tool{
 		Name:        proto.String("test-tool-ssh"),
 	}
-	service := &configv1.CommandLineUpstreamService{
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("ssh"), // Now considered a shell command
 		Local:   proto.Bool(true),
-	}
-	callDef := &configv1.CommandLineCallDefinition{
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{Schema: &configv1.ParameterSchema{Name: proto.String("cmd")}},
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("cmd")}.Build(),
+			}.Build(),
 		},
 		Args: []string{"user@host", "echo {{cmd}}"},
-	}
+	}.Build()
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 

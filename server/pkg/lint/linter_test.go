@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -18,30 +19,24 @@ func ptr(s string) *string {
 }
 
 func TestLinter_Run_PlainTextSecrets(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("test-service"),
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_ApiKey{
-						ApiKey: &configv1.APIKeyAuth{
-							ParamName: ptr("key"),
-							Value: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "123456",
-								},
-							},
-						},
-					},
-				},
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: ptr("https://example.com"),
-					},
-				},
-			},
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("test-service"),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						ParamName: proto.String("key"),
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("123456"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("https://example.com"),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())
@@ -58,18 +53,16 @@ func TestLinter_Run_PlainTextSecrets(t *testing.T) {
 }
 
 func TestLinter_Run_ShellInjection(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("risky-service"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-					CommandLineService: &configv1.CommandLineUpstreamService{
-						Command: ptr("sh -c 'echo hello'"),
-					},
-				},
-			},
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("risky-service"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("sh -c 'echo hello'"),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())
@@ -86,18 +79,16 @@ func TestLinter_Run_ShellInjection(t *testing.T) {
 }
 
 func TestLinter_Run_InsecureHTTP(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("insecure-service"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: ptr("http://api.example.com"),
-					},
-				},
-			},
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("insecure-service"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("http://api.example.com"),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())
@@ -114,21 +105,19 @@ func TestLinter_Run_InsecureHTTP(t *testing.T) {
 }
 
 func TestLinter_Run_CacheTTL(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("cache-service"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: ptr("https://api.example.com"),
-					},
-				},
-				Cache: &configv1.CacheConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("cache-service"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("https://api.example.com"),
+				}.Build(),
+				Cache: configv1.CacheConfig_builder{
 					Ttl: &durationpb.Duration{Seconds: 0},
-				},
-			},
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())

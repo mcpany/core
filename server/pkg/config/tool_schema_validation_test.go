@@ -38,9 +38,7 @@ func TestValidate_InvalidJsonSchema(t *testing.T) {
 					HttpService: &configv1.HttpUpstreamService{
 						Address: &address,
 						Calls: map[string]*configv1.HttpCallDefinition{
-							"test-call": {
-								InputSchema: invalidSchema,
-							},
+							"test-call": newHttpCallVal(invalidSchema),
 						},
 					},
 				},

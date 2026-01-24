@@ -1,13 +1,18 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-syntax = "proto3";
+edition = "2023";
 
 package mcpany.mcp_options.v1;
+
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+option features.field_presence = EXPLICIT;
 
 option go_package = "github.com/mcpany/core/proto/mcp_options/v1";
 
 message Content {
-  optional string content = 1;
-  optional string role = 2;
+  string content = 1;
+  string role = 2;
 }

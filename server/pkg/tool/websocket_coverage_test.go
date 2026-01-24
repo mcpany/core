@@ -13,10 +13,10 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -81,7 +81,7 @@ func TestWebsocketTool_Execute_Success(t *testing.T) {
 		pm,
 		"s1",
 		nil, // Authenticator
-		&configv1.WebsocketCallDefinition{},
+		configv1.WebsocketCallDefinition_builder{}.Build(),
 	)
 
 	req := &ExecutionRequest{
@@ -102,7 +102,7 @@ func TestWebsocketTool_Execute_NoPool(t *testing.T) {
 		pm,
 		"missing-service",
 		nil,
-		&configv1.WebsocketCallDefinition{},
+		configv1.WebsocketCallDefinition_builder{}.Build(),
 	)
 	_, err := wt.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
@@ -125,7 +125,7 @@ func TestWebsocketTool_Execute_PoolGetError(t *testing.T) {
 		pm,
 		"s2",
 		nil,
-		&configv1.WebsocketCallDefinition{},
+		configv1.WebsocketCallDefinition_builder{}.Build(),
 	)
 
 	_, err = wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage("{}")})
@@ -168,7 +168,7 @@ func TestWebsocketTool_Execute_WriteError(t *testing.T) {
 		pm,
 		"s3",
 		nil,
-		&configv1.WebsocketCallDefinition{},
+		configv1.WebsocketCallDefinition_builder{}.Build(),
 	)
 
 	_, err = wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage("{}")})
@@ -211,14 +211,14 @@ func TestWebsocketTool_Execute_Transformer(t *testing.T) {
 		pm,
 		"s4",
 		nil,
-		&configv1.WebsocketCallDefinition{
-			OutputTransformer: &configv1.OutputTransformer{
+		configv1.WebsocketCallDefinition_builder{
+			OutputTransformer: configv1.OutputTransformer_builder{
 				Format: &format,
 				ExtractionRules: map[string]string{
 					"content": "(.*)",
 				},
-			},
-		},
+			}.Build(),
+		}.Build(),
 	)
 
 	res, err := wt.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage("{}")})
@@ -237,7 +237,7 @@ func TestWebsocketTool_Execute_MalformedInputs(t *testing.T) {
 		pm,
 		"s1",
 		nil,
-		&configv1.WebsocketCallDefinition{},
+		configv1.WebsocketCallDefinition_builder{}.Build(),
 	)
 
 	upgrader := websocket.Upgrader{}
@@ -280,10 +280,11 @@ func TestWebsocketTool_Execute_TemplateError(t *testing.T) {
 	p, _ := pool.New(factory, 0, 0, 1, 0, true)
 	pm.Register("s", p)
 
-	callDef := &configv1.WebsocketCallDefinition{
-		InputTransformer: &configv1.InputTransformer{},
-	}
-	callDef.InputTransformer.SetTemplate("{{.invalid") // Bad template syntax
+	callDef := configv1.WebsocketCallDefinition_builder{
+		InputTransformer: configv1.InputTransformer_builder{
+			Template: proto.String("{{.invalid"),
+		}.Build(),
+	}.Build()
 
 	wt := NewWebsocketTool(&pb.Tool{Name: proto.String("t")}, pm, "s", nil, callDef)
 

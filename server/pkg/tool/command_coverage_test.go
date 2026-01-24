@@ -17,6 +17,21 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+func newCmdParam(name string) *configv1.CommandLineParameterMapping {
+	p := &configv1.CommandLineParameterMapping{}
+	s := &configv1.ParameterSchema{}
+	s.SetName(name)
+	p.SetSchema(s)
+	return p
+}
+
+func newCmdCall(args []string, params ...*configv1.CommandLineParameterMapping) *configv1.CommandLineCallDefinition {
+	c := &configv1.CommandLineCallDefinition{}
+	c.SetArgs(args)
+	c.SetParameters(params)
+	return c
+}
+
 // --- LocalCommandTool Tests ---
 
 func TestLocalCommandTool_Execute_Echo(t *testing.T) {
@@ -25,12 +40,7 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 		Command: proto.String("echo"),
 		Timeout: durationpb.New(2 * time.Second),
 	}
-	callDef := &configv1.CommandLineCallDefinition{
-		Args: []string{"-n"},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
-		},
-	}
+	callDef := newCmdCall([]string{"-n"}, newCmdParam("args"))
 
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -72,7 +82,7 @@ func TestLocalCommandTool_Execute_JSON(t *testing.T) {
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
 		Timeout:               durationpb.New(2 * time.Second),
 	}
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := newCmdCall(nil)
 
 	tool := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("json-tool")},
@@ -102,7 +112,7 @@ func TestLocalCommandTool_Execute_Error(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("false"),
 	}
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := newCmdCall(nil)
 
 	tool := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("fail-tool")},
@@ -129,7 +139,7 @@ func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("nonexistentcommand_xyz"),
 	}
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := newCmdCall(nil)
 
 	tool := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("bad-tool")},
@@ -151,9 +161,7 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 		Command: proto.String("sleep"),
 		Timeout: durationpb.New(100 * time.Millisecond),
 	}
-	callDef := &configv1.CommandLineCallDefinition{
-		Args: []string{"1"}, // Sleep 1 second
-	}
+	callDef := newCmdCall([]string{"1"})
 
 	tool := NewLocalCommandTool(
 		&pb.Tool{Name: proto.String("timeout-tool")},
@@ -179,7 +187,7 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
+	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, newCmdCall(nil), nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
@@ -199,12 +207,7 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 		Timeout: durationpb.New(2 * time.Second),
 		// ContainerEnvironment nil -> uses LocalExecutor
 	}
-	callDef := &configv1.CommandLineCallDefinition{
-		Args: []string{"-n"},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
-		},
-	}
+	callDef := newCmdCall([]string{"-n"}, newCmdParam("args"))
 
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -244,7 +247,7 @@ func TestCommandTool_Execute_JSON(t *testing.T) {
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
 		Timeout:               durationpb.New(2 * time.Second),
 	}
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := newCmdCall(nil)
 
 	tool := NewCommandTool(
 		&pb.Tool{Name: proto.String("json-command-tool")},
@@ -272,7 +275,7 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("false"),
 	}
-	callDef := &configv1.CommandLineCallDefinition{}
+	callDef := newCmdCall(nil)
 
 	tool := NewCommandTool(
 		&pb.Tool{Name: proto.String("fail-command-tool")},
@@ -294,7 +297,7 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
 	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
-	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
+	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, newCmdCall(nil), nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})

@@ -16,6 +16,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func newProfileSvcCfg(enabled bool) *configv1.ProfileServiceConfig {
+	c := &configv1.ProfileServiceConfig{}
+	c.SetEnabled(enabled)
+	return c
+}
+
 func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 	// Local service definitions
 	localService1 := &configv1.UpstreamServiceConfig{}
@@ -310,15 +316,15 @@ func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 				{
 					Name: proto.String("dev"),
 					ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-						"dev-service": {Enabled: proto.Bool(true)},
-						"prod-service": {Enabled: proto.Bool(false)},
+						"dev-service": newProfileSvcCfg(true),
+						"prod-service": newProfileSvcCfg(false),
 					},
 				},
 				{
 					Name: proto.String("prod"),
 					ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-						"dev-service": {Enabled: proto.Bool(false)},
-						"prod-service": {Enabled: proto.Bool(true)},
+						"dev-service": newProfileSvcCfg(false),
+						"prod-service": newProfileSvcCfg(true),
 					},
 				},
 			},

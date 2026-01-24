@@ -11,11 +11,26 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
 )
+
+func newHttpParam(name string, secret *configv1.SecretValue) *configv1.HttpParameterMapping {
+	p := &configv1.HttpParameterMapping{}
+	s := &configv1.ParameterSchema{}
+	s.SetName(name)
+	p.SetSchema(s)
+	p.SetSecret(secret)
+	return p
+}
+
+func newHttpCallWithParams(params []*configv1.HttpParameterMapping) *configv1.HttpCallDefinition {
+	c := &configv1.HttpCallDefinition{}
+	c.SetParameters(params)
+	return c
+}
 
 func TestSecretsCoverage(t *testing.T) {
 	// Test StripSecretsFromService for GRPC
@@ -260,22 +275,17 @@ func TestSecretsHydration(t *testing.T) {
         ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
             HttpService: &configv1.HttpUpstreamService{
                 Calls: map[string]*configv1.HttpCallDefinition{
-                    "call1": {
-                        Parameters: []*configv1.HttpParameterMapping{
-                            {
-                                Schema: &configv1.ParameterSchema{Name: proto.String("p1")},
-                                Secret: &configv1.SecretValue{
-                                    Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MY_SECRET"},
-                                },
-                            },
-                        },
-                    },
+                    "call1": newHttpCallWithParams([]*configv1.HttpParameterMapping{
+                        newHttpParam("p1", &configv1.SecretValue{
+                            Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MY_SECRET"},
+                        }),
+                    }),
                 },
             },
         },
     }
     config.HydrateSecretsInService(httpSvc, secrets)
-    assert.Equal(t, "real_secret", httpSvc.GetHttpService().Calls["call1"].Parameters[0].Secret.GetPlainText())
+    assert.Equal(t, "real_secret", httpSvc.GetHttpService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText())
 }
 
 func TestResolveEnvValueFallback(t *testing.T) {

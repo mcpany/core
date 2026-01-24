@@ -13,7 +13,6 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
@@ -34,17 +33,10 @@ func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
 
 	// Explicitly define tool and call
 	grpcService.Tools = []*configv1.ToolDefinition{
-		{
-			Name:   proto.String("GetWeatherConfig"),
-			CallId: proto.String("weather_call"),
-		},
+		newToolDef("GetWeatherConfig", "weather_call"),
 	}
 	grpcService.Calls = map[string]*configv1.GrpcCallDefinition{
-		"weather_call": {
-			Id:      proto.String("weather_call"),
-			Service: proto.String("examples.weather.v1.WeatherService"),
-			Method:  proto.String("GetWeather"),
-		},
+		"weather_call": newGrpcCallFull("weather_call", "examples.weather.v1.WeatherService", "GetWeather"),
 	}
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}

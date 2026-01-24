@@ -17,12 +17,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MockToolManager for testing
-type MockToolManager struct {
+// GranularMockToolManager for testing
+type GranularMockToolManager struct {
 	mock.Mock
 }
 
-func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
+func (m *GranularMockToolManager) GetTool(name string) (tool.Tool, bool) {
 	args := m.Called(name)
 	if t := args.Get(0); t != nil {
 		return t.(tool.Tool), args.Bool(1)
@@ -30,7 +30,7 @@ func (m *MockToolManager) GetTool(name string) (tool.Tool, bool) {
 	return nil, args.Bool(1)
 }
 
-func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
+func (m *GranularMockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 	args := m.Called(id)
 	if s := args.Get(0); s != nil {
 		return s.(*tool.ServiceInfo), args.Bool(1)
@@ -39,37 +39,42 @@ func (m *MockToolManager) GetServiceInfo(id string) (*tool.ServiceInfo, bool) {
 }
 
 // Implement other interface methods as no-ops or panics if needed
-func (m *MockToolManager) ListTools() []tool.Tool                           { return nil }
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool                        { return nil }
-func (m *MockToolManager) AddTool(t tool.Tool) error                        { return nil }
-func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *MockToolManager) ClearToolsForService(_ string)                   {}
-func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+func (m *GranularMockToolManager) ListTools() []tool.Tool                           { return nil }
+func (m *GranularMockToolManager) ListMCPTools() []*mcp.Tool                        { return nil }
+func (m *GranularMockToolManager) AddTool(t tool.Tool) error                        { return nil }
+func (m *GranularMockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
+func (m *GranularMockToolManager) ClearToolsForService(_ string)                   {}
+func (m *GranularMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider)                                   {}
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)               {}
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool      { return true }
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo                      { return nil }
+func (m *GranularMockToolManager) SetMCPServer(_ tool.MCPServerProvider)                                   {}
+func (m *GranularMockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *GranularMockToolManager) IsServiceAllowed(serviceID, profileID string) bool      { return true }
+func (m *GranularMockToolManager) AddMiddleware(_ tool.ExecutionMiddleware)               {}
+func (m *GranularMockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool      { return true }
+func (m *GranularMockToolManager) ListServices() []*tool.ServiceInfo                      { return nil }
+func (m *GranularMockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
+	args := m.Called(profileID)
+	return args.Get(0).(map[string]bool), args.Bool(1)
+}
 
-type MockTool struct {
+type GranularMockTool struct {
 	name      string
 	serviceID string
 }
 
-func (t *MockTool) Tool() *v1.Tool {
+func (t *GranularMockTool) Tool() *v1.Tool {
 	return &v1.Tool{Name: &t.name, ServiceId: &t.serviceID}
 }
-func (t *MockTool) MCPTool() *mcp.Tool { return &mcp.Tool{Name: t.name} }
-func (t *MockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+func (t *GranularMockTool) MCPTool() *mcp.Tool { return &mcp.Tool{Name: t.name} }
+func (t *GranularMockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (t *MockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
+func (t *GranularMockTool) GetCacheConfig() *configv1.CacheConfig { return nil }
+func (t *GranularMockTool) Service() string { return t.serviceID }
 
 func TestRateLimitMiddleware_Granular(t *testing.T) {
-	tm := &MockToolManager{}
+	tm := &GranularMockToolManager{}
 	mw := middleware.NewRateLimitMiddleware(tm)
 
 	serviceID := "test-service"
@@ -79,24 +84,24 @@ func TestRateLimitMiddleware_Granular(t *testing.T) {
 	// Setup Config
 	// Service Limit: 100 RPS
 	// Tool Limit: 1 RPS (Burst 1)
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String(serviceID),
-		RateLimit: &configv1.RateLimitConfig{
-			IsEnabled:         true,
-			RequestsPerSecond: 100,
-			Burst:             100,
+		RateLimit: configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(100),
+			Burst:             proto.Int64(100),
 			ToolLimits: map[string]*configv1.RateLimitConfig{
-				toolName: {
-					IsEnabled:         true,
-					RequestsPerSecond: 1,
-					Burst:             1,
-				},
+				toolName: configv1.RateLimitConfig_builder{
+					IsEnabled:         proto.Bool(true),
+					RequestsPerSecond: proto.Float64(1),
+					Burst:             proto.Int64(1),
+				}.Build(),
 			},
-		},
-	}
+		}.Build(),
+	}.Build()
 
-	tm.On("GetTool", toolName).Return(&MockTool{name: toolName, serviceID: serviceID}, true)
-	tm.On("GetTool", otherToolName).Return(&MockTool{name: otherToolName, serviceID: serviceID}, true)
+	tm.On("GetTool", toolName).Return(&GranularMockTool{name: toolName, serviceID: serviceID}, true)
+	tm.On("GetTool", otherToolName).Return(&GranularMockTool{name: otherToolName, serviceID: serviceID}, true)
 	tm.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{Name: serviceID, Config: config}, true)
 
 	ctx := context.Background()
@@ -125,23 +130,23 @@ func TestRateLimitMiddleware_Granular(t *testing.T) {
 }
 
 func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
-	tm := &MockToolManager{}
+	tm := &GranularMockToolManager{}
 	mw := middleware.NewRateLimitMiddleware(tm)
 
 	serviceID := "test-service-fallback"
 	toolName := "normal-tool"
 
 	// Service Limit: 1 RPS
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String(serviceID),
-		RateLimit: &configv1.RateLimitConfig{
-			IsEnabled:         true,
-			RequestsPerSecond: 1,
-			Burst:             1,
-		},
-	}
+		RateLimit: configv1.RateLimitConfig_builder{
+			IsEnabled:         proto.Bool(true),
+			RequestsPerSecond: proto.Float64(1),
+			Burst:             proto.Int64(1),
+		}.Build(),
+	}.Build()
 
-	tm.On("GetTool", toolName).Return(&MockTool{name: toolName, serviceID: serviceID}, true)
+	tm.On("GetTool", toolName).Return(&GranularMockTool{name: toolName, serviceID: serviceID}, true)
 	tm.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{Name: serviceID, Config: config}, true)
 
 	ctx := context.Background()
@@ -159,9 +164,4 @@ func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
 	_, err = mw.Execute(ctx, req, next)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "rate limit exceeded for service")
-}
-
-func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
-	args := m.Called(profileID)
-	return args.Get(0).(map[string]bool), args.Bool(1)
 }

@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestStaticResource_SSRFProtection(t *testing.T) {
@@ -23,10 +24,10 @@ func TestStaticResource_SSRFProtection(t *testing.T) {
 	}))
 	defer server.Close()
 
-	def := &configv1.ResourceDefinition{
-		Uri:  strPtr(server.URL),
-		Name: strPtr("Secret Resource"),
-	}
+	def := configv1.ResourceDefinition_builder{
+		Uri:  proto.String(server.URL),
+		Name: proto.String("Secret Resource"),
+	}.Build()
 
 	r := NewStaticResource(def, "test-service")
 

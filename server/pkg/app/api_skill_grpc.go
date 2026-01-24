@@ -147,20 +147,18 @@ func (s *SkillServiceServer) DeleteSkill(_ context.Context, req *pb.DeleteSkillR
 
 // Helper functions
 
-func strPtr(s string) *string {
-	return &s
-}
+
 
 func toProtoSkill(sk *skill.Skill) *config_v1.Skill {
-	return &config_v1.Skill{
-		Name:         strPtr(sk.Name),
-		Description:  strPtr(sk.Description),
-		License:      strPtr(sk.License),
-		Instructions: strPtr(sk.Instructions),
-		AllowedTools: sk.AllowedTools,
-		Assets:       sk.Assets,
-		Metadata:     sk.Metadata,
-	}
+	p := &config_v1.Skill{}
+	p.SetName(sk.Name)
+	p.SetDescription(sk.Description)
+	p.SetLicense(sk.License)
+	p.SetInstructions(sk.Instructions)
+	p.SetAllowedTools(sk.AllowedTools)
+	p.SetAssets(sk.Assets)
+	p.SetMetadata(sk.Metadata)
+	return p
 }
 
 func fromProtoSkill(pbSkill *config_v1.Skill) *skill.Skill {

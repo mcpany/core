@@ -7,14 +7,13 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/profile.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	bus "github.com/mcpany/core/proto/bus"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -162,15 +161,14 @@ func (x RateLimitConfig_CostMetric) Number() protoreflect.EnumNumber {
 }
 
 type Profile struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the profile (e.g., "dev", "prod").
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The unique ID of the profile (UUID).
-	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	// The authentication configuration for the profile.
-	Authentication *Authentication `protobuf:"bytes,3,opt,name=authentication,proto3" json:"authentication,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name           *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,2,opt,name=id"`
+	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,3,opt,name=authentication"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Profile) Reset() {
@@ -200,55 +198,87 @@ func (x *Profile) ProtoReflect() protoreflect.Message {
 
 func (x *Profile) GetName() string {
 	if x != nil {
-		return x.Name
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Profile) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Profile) GetAuthentication() *Authentication {
 	if x != nil {
-		return x.Authentication
+		return x.xxx_hidden_Authentication
 	}
 	return nil
 }
 
 func (x *Profile) SetName(v string) {
-	x.Name = v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *Profile) SetId(v string) {
-	x.Id = v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *Profile) SetAuthentication(v *Authentication) {
-	x.Authentication = v
+	x.xxx_hidden_Authentication = v
+}
+
+func (x *Profile) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Profile) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *Profile) HasAuthentication() bool {
 	if x == nil {
 		return false
 	}
-	return x.Authentication != nil
+	return x.xxx_hidden_Authentication != nil
+}
+
+func (x *Profile) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *Profile) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *Profile) ClearAuthentication() {
-	x.Authentication = nil
+	x.xxx_hidden_Authentication = nil
 }
 
 type Profile_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The name of the profile (e.g., "dev", "prod").
-	Name string
+	Name *string
 	// The unique ID of the profile (UUID).
-	Id string
+	Id *string
 	// The authentication configuration for the profile.
 	Authentication *Authentication
 }
@@ -257,18 +287,25 @@ func (b0 Profile_builder) Build() *Profile {
 	m0 := &Profile{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Id = b.Id
-	x.Authentication = b.Authentication
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Authentication = b.Authentication
 	return m0
 }
 
 type ProfileServiceConfig struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Whether the service is enabled in this profile.
-	Enabled       *bool `protobuf:"varint,1,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ProfileServiceConfig) Reset() {
@@ -297,25 +334,27 @@ func (x *ProfileServiceConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProfileServiceConfig) GetEnabled() bool {
-	if x != nil && x.Enabled != nil {
-		return *x.Enabled
+	if x != nil {
+		return x.xxx_hidden_Enabled
 	}
 	return false
 }
 
 func (x *ProfileServiceConfig) SetEnabled(v bool) {
-	x.Enabled = &v
+	x.xxx_hidden_Enabled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
 func (x *ProfileServiceConfig) HasEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return x.Enabled != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *ProfileServiceConfig) ClearEnabled() {
-	x.Enabled = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Enabled = false
 }
 
 type ProfileServiceConfig_builder struct {
@@ -329,27 +368,27 @@ func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
 	m0 := &ProfileServiceConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Enabled = b.Enabled
+	if b.Enabled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Enabled = *b.Enabled
+	}
 	return m0
 }
 
 type RateLimitConfig struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Whether rate limiting is enabled.
-	IsEnabled bool `protobuf:"varint,1,opt,name=is_enabled,proto3" json:"is_enabled,omitempty"`
-	// The maximum number of requests allowed per second.
-	RequestsPerSecond float64 `protobuf:"fixed64,2,opt,name=requests_per_second,proto3" json:"requests_per_second,omitempty"`
-	// The number of requests that can be allowed in a short burst.
-	Burst   int64                   `protobuf:"varint,3,opt,name=burst,proto3" json:"burst,omitempty"`
-	Storage RateLimitConfig_Storage `protobuf:"varint,4,opt,name=storage,proto3,enum=mcpany.config.v1.RateLimitConfig_Storage" json:"storage,omitempty"`
-	// Redis configuration if storage is set to STORAGE_REDIS.
-	Redis      *bus.RedisBus              `protobuf:"bytes,5,opt,name=redis,proto3" json:"redis,omitempty"`
-	KeyBy      RateLimitConfig_KeyBy      `protobuf:"varint,6,opt,name=key_by,proto3,enum=mcpany.config.v1.RateLimitConfig_KeyBy" json:"key_by,omitempty"`
-	CostMetric RateLimitConfig_CostMetric `protobuf:"varint,7,opt,name=cost_metric,proto3,enum=mcpany.config.v1.RateLimitConfig_CostMetric" json:"cost_metric,omitempty"`
-	// Tool-specific rate limits. Key is the tool name.
-	ToolLimits    map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits,proto3" json:"tool_limits,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                        protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_IsEnabled         bool                        `protobuf:"varint,1,opt,name=is_enabled"`
+	xxx_hidden_RequestsPerSecond float64                     `protobuf:"fixed64,2,opt,name=requests_per_second"`
+	xxx_hidden_Burst             int64                       `protobuf:"varint,3,opt,name=burst"`
+	xxx_hidden_Storage           RateLimitConfig_Storage     `protobuf:"varint,4,opt,name=storage,enum=mcpany.config.v1.RateLimitConfig_Storage"`
+	xxx_hidden_Redis             *bus.RedisBus               `protobuf:"bytes,5,opt,name=redis"`
+	xxx_hidden_KeyBy             RateLimitConfig_KeyBy       `protobuf:"varint,6,opt,name=key_by,enum=mcpany.config.v1.RateLimitConfig_KeyBy"`
+	xxx_hidden_CostMetric        RateLimitConfig_CostMetric  `protobuf:"varint,7,opt,name=cost_metric,enum=mcpany.config.v1.RateLimitConfig_CostMetric"`
+	xxx_hidden_ToolLimits        map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *RateLimitConfig) Reset() {
@@ -379,117 +418,201 @@ func (x *RateLimitConfig) ProtoReflect() protoreflect.Message {
 
 func (x *RateLimitConfig) GetIsEnabled() bool {
 	if x != nil {
-		return x.IsEnabled
+		return x.xxx_hidden_IsEnabled
 	}
 	return false
 }
 
 func (x *RateLimitConfig) GetRequestsPerSecond() float64 {
 	if x != nil {
-		return x.RequestsPerSecond
+		return x.xxx_hidden_RequestsPerSecond
 	}
 	return 0
 }
 
 func (x *RateLimitConfig) GetBurst() int64 {
 	if x != nil {
-		return x.Burst
+		return x.xxx_hidden_Burst
 	}
 	return 0
 }
 
 func (x *RateLimitConfig) GetStorage() RateLimitConfig_Storage {
 	if x != nil {
-		return x.Storage
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
+			return x.xxx_hidden_Storage
+		}
 	}
 	return RateLimitConfig_STORAGE_UNSPECIFIED
 }
 
 func (x *RateLimitConfig) GetRedis() *bus.RedisBus {
 	if x != nil {
-		return x.Redis
+		return x.xxx_hidden_Redis
 	}
 	return nil
 }
 
 func (x *RateLimitConfig) GetKeyBy() RateLimitConfig_KeyBy {
 	if x != nil {
-		return x.KeyBy
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 5) {
+			return x.xxx_hidden_KeyBy
+		}
 	}
 	return RateLimitConfig_KEY_BY_UNSPECIFIED
 }
 
 func (x *RateLimitConfig) GetCostMetric() RateLimitConfig_CostMetric {
 	if x != nil {
-		return x.CostMetric
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 6) {
+			return x.xxx_hidden_CostMetric
+		}
 	}
 	return RateLimitConfig_COST_METRIC_REQUESTS
 }
 
 func (x *RateLimitConfig) GetToolLimits() map[string]*RateLimitConfig {
 	if x != nil {
-		return x.ToolLimits
+		return x.xxx_hidden_ToolLimits
 	}
 	return nil
 }
 
 func (x *RateLimitConfig) SetIsEnabled(v bool) {
-	x.IsEnabled = v
+	x.xxx_hidden_IsEnabled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *RateLimitConfig) SetRequestsPerSecond(v float64) {
-	x.RequestsPerSecond = v
+	x.xxx_hidden_RequestsPerSecond = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *RateLimitConfig) SetBurst(v int64) {
-	x.Burst = v
+	x.xxx_hidden_Burst = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *RateLimitConfig) SetStorage(v RateLimitConfig_Storage) {
-	x.Storage = v
+	x.xxx_hidden_Storage = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
 }
 
 func (x *RateLimitConfig) SetRedis(v *bus.RedisBus) {
-	x.Redis = v
+	x.xxx_hidden_Redis = v
 }
 
 func (x *RateLimitConfig) SetKeyBy(v RateLimitConfig_KeyBy) {
-	x.KeyBy = v
+	x.xxx_hidden_KeyBy = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
 }
 
 func (x *RateLimitConfig) SetCostMetric(v RateLimitConfig_CostMetric) {
-	x.CostMetric = v
+	x.xxx_hidden_CostMetric = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 8)
 }
 
 func (x *RateLimitConfig) SetToolLimits(v map[string]*RateLimitConfig) {
-	x.ToolLimits = v
+	x.xxx_hidden_ToolLimits = v
+}
+
+func (x *RateLimitConfig) HasIsEnabled() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RateLimitConfig) HasRequestsPerSecond() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *RateLimitConfig) HasBurst() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *RateLimitConfig) HasStorage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *RateLimitConfig) HasRedis() bool {
 	if x == nil {
 		return false
 	}
-	return x.Redis != nil
+	return x.xxx_hidden_Redis != nil
+}
+
+func (x *RateLimitConfig) HasKeyBy() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *RateLimitConfig) HasCostMetric() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *RateLimitConfig) ClearIsEnabled() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_IsEnabled = false
+}
+
+func (x *RateLimitConfig) ClearRequestsPerSecond() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_RequestsPerSecond = 0
+}
+
+func (x *RateLimitConfig) ClearBurst() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Burst = 0
+}
+
+func (x *RateLimitConfig) ClearStorage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Storage = RateLimitConfig_STORAGE_UNSPECIFIED
 }
 
 func (x *RateLimitConfig) ClearRedis() {
-	x.Redis = nil
+	x.xxx_hidden_Redis = nil
+}
+
+func (x *RateLimitConfig) ClearKeyBy() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_KeyBy = RateLimitConfig_KEY_BY_UNSPECIFIED
+}
+
+func (x *RateLimitConfig) ClearCostMetric() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_CostMetric = RateLimitConfig_COST_METRIC_REQUESTS
 }
 
 type RateLimitConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Whether rate limiting is enabled.
-	IsEnabled bool
+	IsEnabled *bool
 	// The maximum number of requests allowed per second.
-	RequestsPerSecond float64
+	RequestsPerSecond *float64
 	// The number of requests that can be allowed in a short burst.
-	Burst   int64
-	Storage RateLimitConfig_Storage
+	Burst   *int64
+	Storage *RateLimitConfig_Storage
 	// Redis configuration if storage is set to STORAGE_REDIS.
 	Redis      *bus.RedisBus
-	KeyBy      RateLimitConfig_KeyBy
-	CostMetric RateLimitConfig_CostMetric
+	KeyBy      *RateLimitConfig_KeyBy
+	CostMetric *RateLimitConfig_CostMetric
 	// Tool-specific rate limits. Key is the tool name.
 	ToolLimits map[string]*RateLimitConfig
 }
@@ -498,14 +621,32 @@ func (b0 RateLimitConfig_builder) Build() *RateLimitConfig {
 	m0 := &RateLimitConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.IsEnabled = b.IsEnabled
-	x.RequestsPerSecond = b.RequestsPerSecond
-	x.Burst = b.Burst
-	x.Storage = b.Storage
-	x.Redis = b.Redis
-	x.KeyBy = b.KeyBy
-	x.CostMetric = b.CostMetric
-	x.ToolLimits = b.ToolLimits
+	if b.IsEnabled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_IsEnabled = *b.IsEnabled
+	}
+	if b.RequestsPerSecond != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		x.xxx_hidden_RequestsPerSecond = *b.RequestsPerSecond
+	}
+	if b.Burst != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		x.xxx_hidden_Burst = *b.Burst
+	}
+	if b.Storage != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		x.xxx_hidden_Storage = *b.Storage
+	}
+	x.xxx_hidden_Redis = b.Redis
+	if b.KeyBy != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		x.xxx_hidden_KeyBy = *b.KeyBy
+	}
+	if b.CostMetric != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 8)
+		x.xxx_hidden_CostMetric = *b.CostMetric
+	}
+	x.xxx_hidden_ToolLimits = b.ToolLimits
 	return m0
 }
 
@@ -513,15 +654,13 @@ var File_proto_config_v1_profile_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\x1a\x13proto/bus/bus.proto\"w\n" +
+	"\x1dproto/config/v1/profile.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\x1a\x13proto/bus/bus.proto\x1a!google/protobuf/go_features.proto\"w\n" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12H\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"A\n" +
-	"\x14ProfileServiceConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01B\n" +
-	"\n" +
-	"\b_enabled\"\xa1\x06\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"0\n" +
+	"\x14ProfileServiceConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"\xa1\x06\n" +
 	"\x0fRateLimitConfig\x12\x1e\n" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\n" +
@@ -549,7 +688,7 @@ const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
 	"CostMetric\x12\x18\n" +
 	"\x14COST_METRIC_REQUESTS\x10\x00\x12\x16\n" +
-	"\x12COST_METRIC_TOKENS\x10\x01B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x12COST_METRIC_TOKENS\x10\x01B2Z&github.com/mcpany/core/proto/config/v1\x92\x03\a\xd2>\x02\x10\x03\b\x01b\beditionsp\xe8\a"
 
 var file_proto_config_v1_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
@@ -585,7 +724,6 @@ func file_proto_config_v1_profile_proto_init() {
 		return
 	}
 	file_proto_config_v1_auth_proto_init()
-	file_proto_config_v1_profile_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

@@ -26,6 +26,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+func newProfileSvcCfg(enabled bool) *configv1.ProfileServiceConfig {
+	c := &configv1.ProfileServiceConfig{}
+	c.SetEnabled(enabled)
+	return c
+}
+
 type mockBypassTool struct {
 	tool *v1.Tool
 }
@@ -99,7 +105,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	profileDef := &configv1.ProfileDefinition{
 		Name: proto.String(restrictedProfileID),
 		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-			restrictedServiceID: {Enabled: proto.Bool(true)},
+			restrictedServiceID: newProfileSvcCfg(true),
 		},
 	}
 	tm.SetProfiles([]string{restrictedProfileID}, []*configv1.ProfileDefinition{profileDef})

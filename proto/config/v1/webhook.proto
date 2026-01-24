@@ -1,9 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-syntax = "proto3";
+edition = "2023";
 
 package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";

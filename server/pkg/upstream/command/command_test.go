@@ -9,11 +9,11 @@ import (
 	"errors"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -611,9 +611,9 @@ func TestStdioUpstream_Register_Coverage(t *testing.T) {
 	resourceDefDisabled := &configv1.ResourceDefinition{}
 	resourceDefDisabled.SetName("disabled-resource")
 	resourceDefDisabled.SetDisable(true)
-	resourceDefDisabled.SetStatic(&configv1.StaticResource{
-		ContentType: &configv1.StaticResource_TextContent{TextContent: "content"},
-	})
+	staticRes := &configv1.StaticResource{}
+	staticRes.SetTextContent("content")
+	resourceDefDisabled.SetStatic(staticRes)
 
 	cmdService.SetResources([]*configv1.ResourceDefinition{resourceDefDisabled})
 

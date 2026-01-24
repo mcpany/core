@@ -1,9 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-syntax = "proto3";
+edition = "2023";
 
 package examples.userservice.v1;
+
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
 
 // Import the MCP options. The path must be findable by protoc.
 // When protoc is run for this file, an include path to the main project's 'proto' dir will be needed.

@@ -15,6 +15,26 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+func newMcpCall(input *structpb.Struct) *configv1.MCPCallDefinition {
+	c := &configv1.MCPCallDefinition{}
+	c.SetInputSchema(input)
+	return c
+}
+
+func newHttpCall(input, output *structpb.Struct) *configv1.HttpCallDefinition {
+	c := &configv1.HttpCallDefinition{}
+	c.SetInputSchema(input)
+	c.SetOutputSchema(output)
+	return c
+}
+
+func newWebsocketCallVal(input, output *structpb.Struct) *configv1.WebsocketCallDefinition {
+	c := &configv1.WebsocketCallDefinition{}
+	c.SetInputSchema(input)
+	c.SetOutputSchema(output)
+	return c
+}
+
 func TestValidateSchema_Coverage(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -329,15 +349,13 @@ func TestValidateMcpService_Coverage(t *testing.T) {
                         HttpAddress: proto.String("http://example.com"),
                     },
                 },
-                Calls: map[string]*configv1.MCPCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.MCPCallDefinition{
+					"test": newMcpCall(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+						},
+					}),
+				},
             },
             expectErr: "input_schema error",
         },
@@ -386,15 +404,13 @@ func TestValidateHTTPService_Coverage(t *testing.T) {
             name: "input_schema_error",
             service: &configv1.HttpUpstreamService{
                 Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"test": newHttpCall(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+						},
+					}, nil),
+				},
             },
             expectErr: "input_schema error",
         },
@@ -402,15 +418,13 @@ func TestValidateHTTPService_Coverage(t *testing.T) {
             name: "output_schema_error",
             service: &configv1.HttpUpstreamService{
                 Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "test": {
-                        OutputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"test": newHttpCall(nil, &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+						},
+					}),
+				},
             },
             expectErr: "output_schema error",
         },
@@ -418,15 +432,13 @@ func TestValidateHTTPService_Coverage(t *testing.T) {
             name: "valid_service",
             service: &configv1.HttpUpstreamService{
                 Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"test": newHttpCall(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+						},
+					}, nil),
+				},
             },
             expectErr: "",
         },
@@ -468,15 +480,13 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
             name: "input_schema_error",
             service: &configv1.WebsocketUpstreamService{
                 Address: proto.String("ws://example.com"),
-                Calls: map[string]*configv1.WebsocketCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"test": newWebsocketCallVal(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+						},
+					}, nil),
+				},
             },
             expectErr: "input_schema error",
         },
@@ -484,15 +494,13 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
             name: "output_schema_error",
             service: &configv1.WebsocketUpstreamService{
                 Address: proto.String("ws://example.com"),
-                Calls: map[string]*configv1.WebsocketCallDefinition{
-                    "test": {
-                        OutputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"test": newWebsocketCallVal(nil, &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+						},
+					}),
+				},
             },
             expectErr: "output_schema error",
         },
@@ -500,15 +508,13 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
             name: "valid_service",
             service: &configv1.WebsocketUpstreamService{
                 Address: proto.String("ws://example.com"),
-                Calls: map[string]*configv1.WebsocketCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
-                            },
-                        },
-                    },
-                },
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"test": newWebsocketCallVal(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+						},
+					}, nil),
+				},
             },
             expectErr: "",
         },

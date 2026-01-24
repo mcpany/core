@@ -11,6 +11,42 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func newCmdCall(args []string, params []*configv1.CommandLineParameterMapping) *configv1.CommandLineCallDefinition {
+	c := &configv1.CommandLineCallDefinition{}
+	c.SetArgs(args)
+	c.SetParameters(params)
+	return c
+}
+
+func newCmdParam(secret *configv1.SecretValue) *configv1.CommandLineParameterMapping {
+	p := &configv1.CommandLineParameterMapping{}
+	p.SetSecret(secret)
+	return p
+}
+
+func newWebhook(url, secret string) *configv1.WebhookConfig {
+	w := &configv1.WebhookConfig{}
+	w.SetUrl(url)
+	w.SetWebhookSecret(secret)
+	return w
+}
+
+func newSemantic(apiKey, openaiKey *configv1.SecretValue) *configv1.SemanticCacheConfig {
+	s := &configv1.SemanticCacheConfig{}
+	s.SetApiKey(apiKey)
+
+	prov := &configv1.OpenAIEmbeddingProviderConfig{}
+	prov.SetApiKey(openaiKey)
+	s.SetOpenai(prov)
+	return s
+}
+
+func newCacheConfig(semantic *configv1.SemanticCacheConfig) *configv1.CacheConfig {
+	c := &configv1.CacheConfig{}
+	c.SetSemanticConfig(semantic)
+	return c
+}
+
 func TestStripSecretsFromService_Comprehensive(t *testing.T) {
 	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service-comprehensive"),
@@ -33,15 +69,11 @@ func TestStripSecretsFromService_Comprehensive(t *testing.T) {
 				},
 				// 3. Calls with secrets
 				Calls: map[string]*configv1.CommandLineCallDefinition{
-					"call1": {
-						Parameters: []*configv1.CommandLineParameterMapping{
-							{
-								Secret: &configv1.SecretValue{
-									Value: &configv1.SecretValue_PlainText{PlainText: "param-secret"},
-								},
-							},
-						},
-					},
+					"call1": newCmdCall(nil, []*configv1.CommandLineParameterMapping{
+						newCmdParam(&configv1.SecretValue{
+							Value: &configv1.SecretValue_PlainText{PlainText: "param-secret"},
+						}),
+					}),
 				},
 			},
 		},
@@ -49,28 +81,15 @@ func TestStripSecretsFromService_Comprehensive(t *testing.T) {
 		PreCallHooks: []*configv1.CallHook{
 			{
 				HookConfig: &configv1.CallHook_Webhook{
-					Webhook: &configv1.WebhookConfig{
-						Url:           "http://hook.com",
-						WebhookSecret: "webhook-secret-string",
-					},
+					Webhook: newWebhook("http://hook.com", "webhook-secret-string"),
 				},
 			},
 		},
 		// 5. Cache
-		Cache: &configv1.CacheConfig{
-			SemanticConfig: &configv1.SemanticCacheConfig{
-				ApiKey: &configv1.SecretValue{
-					Value: &configv1.SecretValue_PlainText{PlainText: "cache-api-key"},
-				},
-				ProviderConfig: &configv1.SemanticCacheConfig_Openai{
-					Openai: &configv1.OpenAIEmbeddingProviderConfig{
-						ApiKey: &configv1.SecretValue{
-							Value: &configv1.SecretValue_PlainText{PlainText: "openai-api-key"},
-						},
-					},
-				},
-			},
-		},
+		Cache: newCacheConfig(newSemantic(
+			&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "cache-api-key"}},
+			&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "openai-api-key"}},
+		)),
 	}
 
 	// Create another service for Vector DB checking
@@ -104,28 +123,28 @@ func TestStripSecretsFromService_Comprehensive(t *testing.T) {
     StripSecretsFromService(fsSvc)
 
 	// Verify 1. Incoming Auth
-	assert.Nil(t, svc.Authentication.GetBasicAuth().Password.Value, "Incoming auth password should be stripped")
+	assert.Nil(t, svc.GetAuthentication().GetBasicAuth().GetPassword().GetValue(), "Incoming auth password should be stripped")
 
 	// Verify 2. Env vars
 	cmdSvc := svc.GetServiceConfig().(*configv1.UpstreamServiceConfig_CommandLineService).CommandLineService
-	assert.Nil(t, cmdSvc.Env["API_KEY"].Value, "Command line env secret should be stripped")
+	assert.Nil(t, cmdSvc.GetEnv()["API_KEY"].GetValue(), "Command line env secret should be stripped")
 
 	// Verify 3. Calls
-	assert.Nil(t, cmdSvc.Calls["call1"].Parameters[0].Secret.Value, "Call parameter secret should be stripped")
+	assert.Nil(t, cmdSvc.GetCalls()["call1"].GetParameters()[0].GetSecret().GetValue(), "Call parameter secret should be stripped")
 
 	// Verify 4. Hooks
-	webhook := svc.PreCallHooks[0].GetWebhook()
-	assert.Equal(t, "", webhook.WebhookSecret, "Webhook secret string should be empty")
+	webhook := svc.GetPreCallHooks()[0].GetWebhook()
+	assert.Equal(t, "", webhook.GetWebhookSecret(), "Webhook secret string should be empty")
 
 	// Verify 5. Cache
-	assert.Nil(t, svc.Cache.SemanticConfig.ApiKey.Value, "Cache API key should be stripped")
-	assert.Nil(t, svc.Cache.SemanticConfig.GetOpenai().ApiKey.Value, "OpenAI provider API key should be stripped")
+	assert.Nil(t, svc.GetCache().GetSemanticConfig().GetApiKey().GetValue(), "Cache API key should be stripped")
+	assert.Nil(t, svc.GetCache().GetSemanticConfig().GetOpenai().GetApiKey().GetValue(), "OpenAI provider API key should be stripped")
 
 	// Verify Vector DB
 	pinecone := vectorSvc.GetServiceConfig().(*configv1.UpstreamServiceConfig_VectorService).VectorService.GetPinecone()
-	assert.Equal(t, "", *pinecone.ApiKey, "Pinecone API key should be empty")
+	assert.Equal(t, "", pinecone.GetApiKey(), "Pinecone API key should be empty")
 
     // Verify Filesystem
     s3 := fsSvc.GetServiceConfig().(*configv1.UpstreamServiceConfig_FilesystemService).FilesystemService.GetS3()
-    assert.Equal(t, "", *s3.SecretAccessKey, "S3 Secret Access Key should be empty")
+    assert.Equal(t, "", s3.GetSecretAccessKey(), "S3 Secret Access Key should be empty")
 }

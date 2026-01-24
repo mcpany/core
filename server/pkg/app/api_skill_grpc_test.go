@@ -31,8 +31,12 @@ func setupTestManager(t *testing.T) (*skill.Manager, string) {
 	return manager, tmpDir
 }
 
-func strPtrTest(s string) *string {
-	return &s
+func newSkill(name, desc, instr string) *config_v1.Skill {
+	s := &config_v1.Skill{}
+	s.SetName(name)
+	s.SetDescription(desc)
+	s.SetInstructions(instr)
+	return s
 }
 
 func TestSkillServiceServer_CreateSkill(t *testing.T) {
@@ -44,11 +48,7 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 
 	t.Run("Create valid skill", func(t *testing.T) {
 		req := &pb.CreateSkillRequest{
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("test-skill"),
-				Description:  strPtrTest("A test skill"),
-				Instructions: strPtrTest("Do the test"),
-			},
+			Skill: newSkill("test-skill", "A test skill", "Do the test"),
 		}
 
 		resp, err := server.CreateSkill(ctx, req)
@@ -70,11 +70,7 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 
 	t.Run("Create skill with invalid name", func(t *testing.T) {
 		req := &pb.CreateSkillRequest{
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("Invalid Name"), // Uppercase and space not allowed
-				Description:  strPtrTest("Invalid"),
-				Instructions: strPtrTest("Invalid"),
-			},
+			Skill: newSkill("Invalid Name", "Invalid", "Invalid"),
 		}
 		_, err := server.CreateSkill(ctx, req)
 		assert.Error(t, err)
@@ -85,11 +81,7 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 
 	t.Run("Create duplicate skill", func(t *testing.T) {
 		req := &pb.CreateSkillRequest{
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("duplicate-skill"),
-				Description:  strPtrTest("First"),
-				Instructions: strPtrTest("First"),
-			},
+			Skill: newSkill("duplicate-skill", "First", "First"),
 		}
 		_, err := server.CreateSkill(ctx, req)
 		require.NoError(t, err)
@@ -180,11 +172,7 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	t.Run("Update existing skill", func(t *testing.T) {
 		req := &pb.UpdateSkillRequest{
 			Name: "update-me",
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("update-me"),
-				Description:  strPtrTest("New Desc"),
-				Instructions: strPtrTest("New Inst"),
-			},
+			Skill: newSkill("update-me", "New Desc", "New Inst"),
 		}
 		resp, err := server.UpdateSkill(ctx, req)
 		require.NoError(t, err)
@@ -199,11 +187,7 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	t.Run("Rename skill", func(t *testing.T) {
 		req := &pb.UpdateSkillRequest{
 			Name: "update-me",
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("renamed-skill"),
-				Description:  strPtrTest("Renamed"),
-				Instructions: strPtrTest("Renamed Inst"),
-			},
+			Skill: newSkill("renamed-skill", "Renamed", "Renamed Inst"),
 		}
 		resp, err := server.UpdateSkill(ctx, req)
 		require.NoError(t, err)
@@ -222,10 +206,7 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	t.Run("Update non-existent skill", func(t *testing.T) {
 		req := &pb.UpdateSkillRequest{
 			Name: "missing",
-			Skill: &config_v1.Skill{
-				Name: strPtrTest("missing"),
-				Instructions: strPtrTest("Foo"),
-			},
+			Skill: newSkill("missing", "", "Foo"),
 		}
 		_, err := server.UpdateSkill(ctx, req)
 		assert.Error(t, err)

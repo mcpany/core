@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	v1 "github.com/mcpany/core/proto/examples/weather/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 type mockWeatherServer struct {
@@ -21,7 +22,7 @@ type mockWeatherServer struct {
 }
 
 func (s *mockWeatherServer) GetWeather(_ context.Context, _ *v1.GetWeatherRequest) (*v1.GetWeatherResponse, error) {
-	return v1.GetWeatherResponse_builder{Weather: "sunny"}.Build(), nil
+	return v1.GetWeatherResponse_builder{Weather: proto.String("sunny")}.Build(), nil
 }
 
 func setupMockGRPCServer(t *testing.T) (string, func()) {

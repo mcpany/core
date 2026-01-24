@@ -20,16 +20,16 @@ func TestRateLimitMiddleware_ArgumentsPopulated(t *testing.T) {
 	mockToolManager := &rateLimitMockToolManager{}
 	rlMiddleware := middleware.NewRateLimitMiddleware(mockToolManager)
 
-	toolProto := v1.Tool_builder{
+	toolProto := &v1.Tool{
 		ServiceId: proto.String("service"),
-	}.Build()
+	}
 	mockTool := &rateLimitMockTool{toolProto: toolProto}
 
 	rlConfig := configv1.RateLimitConfig_builder{
-		IsEnabled:         true,
-		RequestsPerSecond: 10,
-		Burst:             10,
-		CostMetric:        configv1.RateLimitConfig_COST_METRIC_TOKENS, // Force parsing
+		IsEnabled:         proto.Bool(true),
+		RequestsPerSecond: proto.Float64(10),
+		Burst:             proto.Int64(10),
+		CostMetric:        configv1.RateLimitConfig_COST_METRIC_TOKENS.Enum(), // Force parsing
 	}.Build()
 
 	serviceInfo := &tool.ServiceInfo{

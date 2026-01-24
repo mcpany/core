@@ -14,11 +14,11 @@ import (
 )
 
 func TestToolIntegrityConfig(t *testing.T) {
-	toolDef := &configv1.ToolDefinition{
+	toolDef := configv1.ToolDefinition_builder{
 		Name:        proto.String("test-tool"),
 		Description: proto.String("A test tool"),
 		ServiceId:   proto.String("test-service"),
-	}
+	}.Build()
 
 	// 1. Convert without integrity - should pass VerifyIntegrity
 	pbTool, err := ConvertToolDefinitionToProto(toolDef, nil, nil)
@@ -33,10 +33,16 @@ func TestToolIntegrityConfig(t *testing.T) {
 	hash := sha256.Sum256(data)
 	hashStr := hex.EncodeToString(hash[:])
 
-	toolDef.Integrity = &configv1.Integrity{
-		Hash:      proto.String(hashStr),
-		Algorithm: proto.String("sha256"),
-	}
+	// Re-build toolDef with Integrity
+	toolDef = configv1.ToolDefinition_builder{
+		Name:        proto.String("test-tool"),
+		Description: proto.String("A test tool"),
+		ServiceId:   proto.String("test-service"),
+		Integrity: configv1.Integrity_builder{
+			Hash:      proto.String(hashStr),
+			Algorithm: proto.String("sha256"),
+		}.Build(),
+	}.Build()
 
 	pbToolWithIntegrity, err := ConvertToolDefinitionToProto(toolDef, nil, nil)
 	require.NoError(t, err)
@@ -44,7 +50,18 @@ func TestToolIntegrityConfig(t *testing.T) {
 	require.NoError(t, VerifyIntegrity(pbToolWithIntegrity))
 
 	// 3. Add incorrect integrity
-	toolDef.Integrity.Hash = proto.String("incorrect-hash")
+	// We can't modify builder result easily if fields are private.
+	// So we build a new one.
+	toolDef = configv1.ToolDefinition_builder{
+		Name:        proto.String("test-tool"),
+		Description: proto.String("A test tool"),
+		ServiceId:   proto.String("test-service"),
+		Integrity: configv1.Integrity_builder{
+			Hash:      proto.String("incorrect-hash"),
+			Algorithm: proto.String("sha256"),
+		}.Build(),
+	}.Build()
+
 	pbToolBadIntegrity, err := ConvertToolDefinitionToProto(toolDef, nil, nil)
 	require.NoError(t, err)
 	err = VerifyIntegrity(pbToolBadIntegrity)

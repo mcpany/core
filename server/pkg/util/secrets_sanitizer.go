@@ -68,7 +68,7 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
 	}
-	for _, secret := range profile.Secrets {
+	for _, secret := range profile.GetSecrets() {
 		scrubSecretValue(secret)
 	}
 }
@@ -219,20 +219,20 @@ func stripSecretsFromHook(h *configv1.CallHook) {
 	}
 	if wh := h.GetWebhook(); wh != nil {
 		// WebhookSecret is a string, clear it.
-		wh.WebhookSecret = ""
+		wh.SetWebhookSecret("")
 	}
 }
 
 func stripSecretsFromCacheConfig(c *configv1.CacheConfig) {
-	if c == nil || c.SemanticConfig == nil {
+	if c == nil || c.GetSemanticConfig() == nil {
 		return
 	}
 	// Deprecated ApiKey
-	scrubSecretValue(c.SemanticConfig.ApiKey)
+	scrubSecretValue(c.GetSemanticConfig().GetApiKey())
 
 	// Provider specific configs
-	if openai := c.SemanticConfig.GetOpenai(); openai != nil {
-		scrubSecretValue(openai.ApiKey)
+	if openai := c.GetSemanticConfig().GetOpenai(); openai != nil {
+		scrubSecretValue(openai.GetApiKey())
 	}
 	// Add other providers if they have secrets
 }
@@ -241,8 +241,8 @@ func stripSecretsFromCommandLineCall(c *configv1.CommandLineCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.Parameters {
-		scrubSecretValue(param.Secret)
+	for _, param := range c.GetParameters() {
+		scrubSecretValue(param.GetSecret())
 	}
 }
 
@@ -250,8 +250,8 @@ func stripSecretsFromHTTPCall(c *configv1.HttpCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.Parameters {
-		scrubSecretValue(param.Secret)
+	for _, param := range c.GetParameters() {
+		scrubSecretValue(param.GetSecret())
 	}
 }
 
@@ -259,8 +259,8 @@ func stripSecretsFromWebsocketCall(c *configv1.WebsocketCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.Parameters {
-		scrubSecretValue(param.Secret)
+	for _, param := range c.GetParameters() {
+		scrubSecretValue(param.GetSecret())
 	}
 }
 
@@ -268,8 +268,8 @@ func stripSecretsFromWebrtcCall(c *configv1.WebrtcCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.Parameters {
-		scrubSecretValue(param.Secret)
+	for _, param := range c.GetParameters() {
+		scrubSecretValue(param.GetSecret())
 	}
 }
 
@@ -346,8 +346,8 @@ func hydrateSecretsInHTTPService(s *configv1.HttpUpstreamService, secrets map[st
 		if call == nil {
 			continue
 		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
+		for _, param := range call.GetParameters() {
+			hydrateSecretValue(param.GetSecret(), secrets)
 		}
 	}
 }
@@ -360,8 +360,8 @@ func hydrateSecretsInWebsocketService(s *configv1.WebsocketUpstreamService, secr
 		if call == nil {
 			continue
 		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
+		for _, param := range call.GetParameters() {
+			hydrateSecretValue(param.GetSecret(), secrets)
 		}
 	}
 }
@@ -374,8 +374,8 @@ func hydrateSecretsInWebrtcService(s *configv1.WebrtcUpstreamService, secrets ma
 		if call == nil {
 			continue
 		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
+		for _, param := range call.GetParameters() {
+			hydrateSecretValue(param.GetSecret(), secrets)
 		}
 	}
 }

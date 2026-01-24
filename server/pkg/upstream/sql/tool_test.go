@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -24,10 +24,10 @@ func TestTool_Execute(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	callDef := &configv1.SqlCallDefinition{
+	callDef := configv1.SqlCallDefinition_builder{
 		Query:          proto.String("SELECT id, name FROM users WHERE age > ?"),
 		ParameterOrder: []string{"age"},
-	}
+	}.Build()
 
 	toolInstance := NewTool(&v1.Tool{Name: proto.String("get_users")}, db, callDef, nil, "get_users_call")
 
@@ -99,25 +99,25 @@ func TestTool_Execute(t *testing.T) {
 		assert.Nil(t, toolInstance.GetCacheConfig())
 
 		// Test with cache config
-		cachedCallDef := &configv1.SqlCallDefinition{
-			Cache: &configv1.CacheConfig{
+		cachedCallDef := configv1.SqlCallDefinition_builder{
+			Cache: configv1.CacheConfig_builder{
 				Ttl: durationpb.New(60 * time.Second),
-			},
-		}
+			}.Build(),
+		}.Build()
 		cachedTool := NewTool(&v1.Tool{Name: proto.String("cached_tool")}, db, cachedCallDef, nil, "cached_tool_call")
 		assert.NotNil(t, cachedTool.GetCacheConfig())
 		assert.Equal(t, int64(60), cachedTool.GetCacheConfig().GetTtl().GetSeconds())
 	})
 
 	t.Run("policy blocked", func(t *testing.T) {
-		policy := &configv1.CallPolicy{
+		policy := configv1.CallPolicy_builder{
 			Rules: []*configv1.CallPolicyRule{
-				{
+				configv1.CallPolicyRule_builder{
 					Action: configv1.CallPolicy_DENY.Enum(),
-				},
+				}.Build(),
 			},
 			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
-		}
+		}.Build()
 
 		blockedTool := NewTool(&v1.Tool{Name: proto.String("blocked_tool")}, db, callDef, []*configv1.CallPolicy{policy}, "blocked_tool_call")
 
