@@ -151,7 +151,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: http scheme with slash in password",
 			input:    "http://user:pass/word@host",
-			expected: "http:user:[REDACTED]@host",
+			expected: "http://user:[REDACTED]@host",
 		},
 		{
 			name:     "fallback: opaque scheme with slash in password",
