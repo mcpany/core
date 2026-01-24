@@ -22,6 +22,7 @@ services:
     environment:
       # Allows overriding Redis address if needed (defaults to redis:6379 in config.production.yaml)
       - REDIS_ADDRESS=redis:6379
+      - MCPANY_ADMIN_INIT_PASSWORD=changeit
     entrypoint:
       # Tells the server to load the configuration from the mounted path.
       - "/app/server"
