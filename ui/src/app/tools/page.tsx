@@ -7,13 +7,11 @@
 
 import { useState, useEffect } from "react";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -21,12 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wrench, Play, Star, Search, List, LayoutList, Layers } from "lucide-react";
+import { Search, List, LayoutList, Layers } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
-import { estimateTokens, formatTokenCount } from "@/lib/tokens";
-import { Info } from "lucide-react";
+import { ToolTable } from "@/components/tools/tool-table";
 import {
   Accordion,
   AccordionContent,
@@ -134,76 +131,6 @@ export default function ToolsPage() {
     return acc;
   }, {} as Record<string, ToolDefinition[]>);
 
-/**
- * ToolTable component.
- * @param props - The component props.
- * @param props.tools - The tools property.
- * @returns The rendered component.
- */
-  const ToolTable = ({ tools }: { tools: ToolDefinition[] }) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[30px]"></TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead>Service</TableHead>
-          <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tools.map((tool) => (
-          <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => togglePin(tool.name)}
-                  aria-label={`Pin ${tool.name}`}
-                >
-                    <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
-                </Button>
-            </TableCell>
-            <TableCell className={cn("font-medium flex items-center", isCompact ? "py-0 px-2 h-8" : "")}>
-              <Wrench className={cn("mr-2 text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-              {tool.name}
-            </TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>{tool.description}</TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
-            </TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
-                    <Info className="w-3 h-3 mr-1 opacity-50" />
-                    {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
-                </div>
-            </TableCell>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-              <div className="flex items-center space-x-2">
-                  <Switch
-                      checked={!tool.disable}
-                      onCheckedChange={() => toggleTool(tool.name, !tool.disable)}
-                      className={isCompact ? "scale-75" : ""}
-                  />
-                  <span className={cn("text-muted-foreground", isCompact ? "text-[10px] w-12" : "text-sm w-16")}>
-                      {!tool.disable ? "Enabled" : "Disabled"}
-                  </span>
-              </div>
-            </TableCell>
-            <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
-                <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
-                    <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
-                </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
   if (!isLoaded) {
       return (
           <div className="flex-1 p-8 animate-pulse text-muted-foreground">
@@ -283,7 +210,14 @@ export default function ToolsPage() {
         </CardHeader>
         <CardContent>
           {groupBy === "none" ? (
-            <ToolTable tools={filteredTools} />
+            <ToolTable
+              tools={filteredTools}
+              isCompact={isCompact}
+              isPinned={isPinned}
+              togglePin={togglePin}
+              toggleTool={toggleTool}
+              openInspector={openInspector}
+            />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
               {Object.entries(groupedTools).map(([groupName, groupTools]) => (
@@ -297,7 +231,14 @@ export default function ToolsPage() {
                     </span>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <ToolTable tools={groupTools} />
+                    <ToolTable
+                      tools={groupTools}
+                      isCompact={isCompact}
+                      isPinned={isPinned}
+                      togglePin={togglePin}
+                      toggleTool={toggleTool}
+                      openInspector={openInspector}
+                    />
                   </AccordionContent>
                 </AccordionItem>
               ))}
