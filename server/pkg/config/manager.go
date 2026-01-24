@@ -245,7 +245,8 @@ func (m *UpstreamServiceManager) unmarshalServices(data []byte, services *[]*con
 		if err != nil {
 			return fmt.Errorf("failed to convert yaml to json: %w", err)
 		}
-		m.log.Info("Unmarshalled YAML to JSON", "json", string(util.RedactJSON(jsonData)))
+		m.log.Info("Unmarshalled YAML to JSON", "size", len(jsonData))
+		m.log.Debug("Unmarshalled YAML to JSON details", "json", string(util.RedactJSON(jsonData)))
 	}
 
 	return m.unmarshalProtoJSON(jsonData, services)
