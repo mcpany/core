@@ -29,32 +29,38 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 
 // ExtractIP extracts the IP address from a host:port string or just an IP string.
 // It also handles IPv6 brackets and strips IPv6 zone indices (e.g., %eth0).
+// It returns an empty string if the extracted IP is invalid.
 func ExtractIP(addr string) string {
-	ip, _, err := net.SplitHostPort(addr)
+	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
-		ip = addr
+		ipStr = addr
 	}
-	if len(ip) > 0 && ip[0] == '[' && ip[len(ip)-1] == ']' {
-		ip = ip[1 : len(ip)-1]
+	if len(ipStr) > 0 && ipStr[0] == '[' && ipStr[len(ipStr)-1] == ']' {
+		ipStr = ipStr[1 : len(ipStr)-1]
 	}
 	// Strip zone index if present (e.g. fe80::1%eth0 -> fe80::1)
-	for i := 0; i < len(ip); i++ {
-		if ip[i] == '%' {
-			return ip[:i]
-		}
+	if idx := strings.IndexByte(ipStr, '%'); idx != -1 {
+		ipStr = ipStr[:idx]
 	}
-	return ip
+
+	// Validate IP
+	parsedIP := net.ParseIP(ipStr)
+	if parsedIP == nil {
+		return ""
+	}
+	return parsedIP.String()
 }
 
 // GetClientIP extracts the client IP from the request.
 // If trustProxy is true, it respects X-Real-IP and X-Forwarded-For headers.
+// It validates that the extracted IP is a valid IP address.
 func GetClientIP(r *http.Request, trustProxy bool) string {
-	ip := ExtractIP(r.RemoteAddr)
-
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
 		if xri := r.Header.Get("X-Real-IP"); xri != "" {
-			return ExtractIP(xri)
+			if ip := ExtractIP(xri); ip != "" {
+				return ip
+			}
 		}
 		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 			// Use the first IP in the list (client IP)
@@ -63,11 +69,15 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 			clientIP, _, _ := strings.Cut(xff, ",")
 			clientIP = strings.TrimSpace(clientIP)
 			if clientIP != "" {
-				ip = ExtractIP(clientIP)
+				if ip := ExtractIP(clientIP); ip != "" {
+					return ip
+				}
 			}
 		}
 	}
-	return ip
+
+	// Fallback to RemoteAddr
+	return ExtractIP(r.RemoteAddr)
 }
 
 // RemoteIPFromContext retrieves the remote IP from the context.
