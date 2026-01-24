@@ -240,6 +240,9 @@ func NewServer(
 	// Note: config.GlobalSettings() returns *configv1.GlobalSettings
 	s.server.AddReceivingMiddleware(middleware.DLPMiddleware(config.GlobalSettings().GetDlp(), logging.GetLogger()))
 
+	// Inspector Middleware
+	s.server.AddReceivingMiddleware(middleware.InspectorMiddleware)
+
 	s.server.AddReceivingMiddleware(s.routerMiddleware)
 	s.server.AddReceivingMiddleware(s.toolListFilteringMiddleware)
 	s.server.AddReceivingMiddleware(s.resourceListFilteringMiddleware)

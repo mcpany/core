@@ -523,4 +523,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
   });
 
+  test('Inspector Screenshots', async ({ page }) => {
+      await page.goto('/inspector');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'inspector.png'), fullPage: true });
+  });
+
 });
