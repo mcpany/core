@@ -1884,9 +1884,18 @@ func (a *Application) runServerMode(
 		}
 		return handler(srv, ss)
 	}
+	authInterceptor := auth.NewUnaryServerInterceptor(a.AuthManager, trustProxy)
+	streamAuthInterceptor := auth.NewStreamServerInterceptor(a.AuthManager, trustProxy)
+
 	grpcOpts := []gogrpc.ServerOption{
-		gogrpc.UnaryInterceptor(grpcUnaryInterceptor),
-		gogrpc.StreamInterceptor(grpcStreamInterceptor),
+		gogrpc.ChainUnaryInterceptor(
+			grpcUnaryInterceptor,
+			authInterceptor,
+		),
+		gogrpc.ChainStreamInterceptor(
+			grpcStreamInterceptor,
+			streamAuthInterceptor,
+		),
 		gogrpc.StatsHandler(&metrics.GrpcStatsHandler{Wrapped: otelgrpc.NewServerHandler()}),
 	}
 

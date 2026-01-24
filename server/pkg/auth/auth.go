@@ -347,6 +347,16 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 	return nil
 }
 
+// HasGlobalAuth checks if global authentication (API key or users) is configured.
+//
+// Returns true if global authentication is configured.
+func (am *Manager) HasGlobalAuth() bool {
+	am.usersMu.RLock()
+	hasUsers := len(am.users) > 0
+	am.usersMu.RUnlock()
+	return am.apiKey != "" || hasUsers
+}
+
 // Authenticate authenticates a request for a specific service. It looks up the
 // authenticator registered for the given service ID and, if found, uses it to
 // validate the request.
