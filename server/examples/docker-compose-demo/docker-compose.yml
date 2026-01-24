@@ -26,6 +26,7 @@ services:
       - "/etc/mcpany/config.yaml"
     environment:
       - MCPANY_MCP_LISTEN_ADDRESS=0.0.0.0:50050
+      - MCPANY_ADMIN_INIT_PASSWORD=changeit
     healthcheck:
       test:
         ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]

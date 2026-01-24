@@ -291,6 +291,7 @@ func TestK8sFullStack(t *testing.T) {
 		"--set", "database.persistence.enabled=false", // Use ephemeral storage for test reliability
 		"--set", "database.image.pullPolicy=IfNotPresent", // These come from registry
 		"--set", "redis.image.pullPolicy=IfNotPresent",
+		"--set", "secret.adminInitPassword=changeit", // Required for startup
 		"--wait", // Wait for pods to be ready
 		"--timeout", "5m")
 	if out, err := installCmd.CombinedOutput(); err != nil {
