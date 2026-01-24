@@ -89,6 +89,7 @@ message UpstreamServiceConfig {
     SqlUpstreamService sql_service = 27 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 28 [json_name = "filesystem_service"];
     VectorUpstreamService vector_service = 29 [json_name = "vector_service"];
+    BrowserUpstreamService browser_service = 38 [json_name = "browser_service"];
   }
 
   // Policy to control which calls can be made.
@@ -514,6 +515,16 @@ message McpBundleConnection {
   string container_image = 2 [json_name = "container_image"];
   // Optional: Environment variables to pass to the container.
   map<string, SecretValue> env = 3 [json_name = "env"];
+}
+
+// BrowserUpstreamService defines an upstream service that uses a headless browser.
+message BrowserUpstreamService {
+  // Headless mode
+  bool headless = 1;
+  // Browser type (chromium, firefox, webkit)
+  string browser_type = 2 [json_name = "browser_type"];
+  // Manually defined mappings from MCP tools to browser actions.
+  repeated ToolDefinition tools = 3;
 }
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
