@@ -5,6 +5,8 @@ package app
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 
 	"os"
@@ -146,7 +148,15 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 	password := os.Getenv("MCPANY_ADMIN_INIT_PASSWORD")
 	if password == "" {
-		password = "password"
+		// Generate random password
+		b := make([]byte, 16)
+		_, err := rand.Read(b)
+		if err != nil {
+			return fmt.Errorf("failed to generate random password: %w", err)
+		}
+		password = base64.RawURLEncoding.EncodeToString(b)
+		logging.GetLogger().Warn("⚠️  Admin password not set. Generated temporary password:", "username", username, "password", password)
+		logging.GetLogger().Warn("Please set MCPANY_ADMIN_INIT_PASSWORD environment variable for a fixed password.")
 	}
 
 	hash, err := passhash.Password(password)

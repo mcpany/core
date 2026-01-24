@@ -61,6 +61,8 @@ const registrationClient = new RegistrationServiceClientImpl(rpc);
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
+    // TODO/SECURITY: Storing tokens in localStorage is susceptible to XSS.
+    // Consider moving to httpOnly cookies or a BFF (Backend for Frontend) pattern for better security.
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('mcp_auth_token');
         if (token) {

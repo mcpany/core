@@ -52,9 +52,9 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 			// API/Default headers (Strict)
 			// - object-src 'none': Blocks plugins like Flash/Java.
 			// - base-uri 'self': Prevents base tag hijacking.
-			// - img-src 'self' data: https: : Allows images from self, data URIs, and HTTPS sources.
+			// - img-src 'self' data: : Allows images from self and data URIs only. External HTTPS images are blocked in API context.
 			// - frame-ancestors 'self': Prevents clickjacking by only allowing framing from the same origin.
-			w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests")
+			w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests")
 			w.Header().Set("X-Frame-Options", "SAMEORIGIN")
 
 			// Prevent caching of sensitive data
