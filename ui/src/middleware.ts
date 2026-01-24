@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
     }
 
     // Dynamic Proxying via Middleware to avoid build-time baking of BACKEND_URL
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
     const url = new URL(request.url);

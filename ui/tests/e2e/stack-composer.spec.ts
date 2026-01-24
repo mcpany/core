@@ -24,17 +24,24 @@ test.describe('Stack Composer', () => {
     });
 
     // Mock services for the stack
-    await page.route('**/api/v1/stacks/*/config', async route => {
+    await page.route('**/api/v1/collections/*', async route => {
         await route.fulfill({
             status: 200,
-            contentType: 'text/yaml',
-            body: `version: "1.0"
-services:
-  weather-service:
-    image: mcp/weather:latest
-    environment:
-      - API_KEY=\${WEATHER_API_KEY}
-`
+            contentType: 'application/json',
+            body: JSON.stringify({
+                name: 'e2e-test-stack',
+                services: [
+                    {
+                        name: 'weather-service',
+                        mcp_service: {
+                            stdio_connection: {
+                                container_image: 'mcp/weather:latest',
+                                env: { API_KEY: { plain_text: 'test' } }
+                            }
+                        }
+                    }
+                ]
+            })
         });
     });
   });

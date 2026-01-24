@@ -37,7 +37,7 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const [showPalette, setShowPalette] = useState(true);
     const [showVisualizer, setShowVisualizer] = useState(true);
 
-    // Mock initial load
+    // Initial load
     useEffect(() => {
         loadConfig();
     }, [stackId]);
@@ -45,25 +45,28 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const loadConfig = async () => {
         setIsLoading(true);
         try {
-            // Attempt to fetch from API, if fail use mock
-            try {
-                const config = await apiClient.getStackConfig(stackId);
-                setContent(config);
-            } catch (_e) {
-                // Fallback / Mock
-                const mockConfig = `# Stack Configuration for ${stackId}
-version: "1.0"
-services:
-  weather-service:
-    image: mcp/weather:latest
-    environment:
-      - API_KEY=\${WEATHER_API_KEY}
-  local-files:
-    command: npx -y @modelcontextprotocol/server-filesystem /Users/me/Documents
-`;
-                setContent(mockConfig);
+            const collection = await apiClient.getCollection(stackId);
+            console.log("DEBUG: collection:", JSON.stringify(collection));
+            // Transform services array to map for YAML Editor
+            const servicesMap: Record<string, any> = {};
+            if (collection.services && Array.isArray(collection.services)) {
+                collection.services.forEach((s: any) => {
+                    servicesMap[s.name] = s;
+                });
+            } else if (collection.services) {
+                // Already a map?
+                Object.assign(servicesMap, collection.services);
             }
-        } catch (_error) {
+
+            const configObj = {
+                ...collection,
+                services: servicesMap
+            };
+
+            const yaml = jsyaml.dump(configObj);
+            setContent(yaml);
+        } catch (error) {
+            console.error("DEBUG: loadConfig failed:", error);
             toast.error("Failed to load stack configuration");
         } finally {
             setIsLoading(false);
@@ -99,14 +102,31 @@ services:
 
         setIsSaving(true);
         try {
-            await apiClient.saveStackConfig(stackId, content);
+            const configObj = jsyaml.load(content) as any;
+
+            // Transform services map to array for Backend
+            let servicesArray: any[] = [];
+            if (configObj.services) {
+                if (Array.isArray(configObj.services)) {
+                     servicesArray = configObj.services;
+                } else {
+                    Object.entries(configObj.services).forEach(([key, val]: [string, any]) => {
+                        servicesArray.push({ ...val, name: key });
+                    });
+                }
+            }
+
+            const collection = {
+                ...configObj,
+                name: stackId, // Ensure ID matches
+                services: servicesArray
+            };
+
+            await apiClient.saveCollection(collection);
             toast.success("Configuration saved successfully");
         } catch (error) {
-            // If API not implemented yet, simulate success for UI demo
-            console.warn("API save failed, simulating success for demo", error);
-             setTimeout(() => {
-                toast.success("Configuration saved (Simulated)");
-            }, 500);
+            console.error(error);
+            toast.error("Failed to save configuration");
         } finally {
             setIsSaving(false);
         }
