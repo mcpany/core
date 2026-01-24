@@ -270,11 +270,11 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		return 1, true, nil
 	case float64:
 		// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-		// Only apply this optimization for values where the integer representation
-		// produces the same token count as the string representation (no scientific notation).
-		// Typically |val| < 1000000 avoids scientific notation in default formatting.
-		if i := int64(val); float64(i) == val && i > -1000000 && i < 1000000 {
-			return simpleTokenizeInt64(i), true, nil
+		if i := int64(val); float64(i) == val {
+			if i > -1000000 && i < 1000000 {
+				return simpleTokenizeInt64(i), true, nil
+			}
+			return tokenCountFloatInt(i), true, nil
 		}
 		// OPTIMIZATION: Use stack buffer to avoid string allocation.
 		// Logic must match SimpleTokenizer.CountTokens: len(text) / 4.
@@ -313,9 +313,12 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		var buf [64]byte
 		for _, item := range val {
 			// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-			// Same range restriction as for scalar float64.
-			if i := int64(item); float64(i) == item && i > -1000000 && i < 1000000 {
-				count += simpleTokenizeInt64(i)
+			if i := int64(item); float64(i) == item {
+				if i > -1000000 && i < 1000000 {
+					count += simpleTokenizeInt64(i)
+				} else {
+					count += tokenCountFloatInt(i)
+				}
 				continue
 			}
 			b := strconv.AppendFloat(buf[:0], item, 'g', -1, 64)
@@ -675,35 +678,7 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (i
 }
 
 func simpleTokenizeInt(n int) int {
-	// Optimization: Fast path for common integers.
-	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
-	// Positive: 0 to 9,999,999 (7 digits) -> 1 token.
-	// Negative: -1 to -999,999 (7 chars) -> 1 token.
-	if n > -1000000 && n < 10000000 {
-		return 1
-	}
-
-	// n cannot be 0 here because it's handled by the fast path.
-	l := 0
-	if n < 0 {
-		l = 1 // count the sign
-		// Handle MinInt special case where -n overflows
-		// For int64 (usually int is int64), MinInt is -9223372036854775808
-		// which has 19 digits.
-		// We can just divide by 10 once to make it safe to negate,
-		// or process negative numbers.
-	}
-
-	for n != 0 {
-		l++
-		n /= 10
-	}
-
-	count := l / 4
-	if count < 1 {
-		return 1
-	}
-	return count
+	return simpleTokenizeInt64(int64(n))
 }
 
 func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}, visited map[uintptr]bool) (int, error) {
@@ -760,22 +735,103 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.
+	// Positive: 0 to 9,999,999 (7 digits) -> 1 token.
+	// Negative: -1 to -999,999 (7 chars) -> 1 token.
 	if n > -1000000 && n < 10000000 {
 		return 1
 	}
 
-	// n cannot be 0 here because it's handled by the fast path.
-	l := 0
+	// Handle negative numbers
 	if n < 0 {
-		l = 1 // count the sign
+		// n <= -1,000,000.
+		// 8 chars (-1,000,000) to 11 chars (-9,999,999,999) -> 2 tokens.
+		// -10^10 is -10,000,000,000 (11 chars + sign? No, 11 digits -> 12 chars).
+		// Wait: 10^10 is 11 digits (1 followed by 10 zeros).
+		// So -10^10 is 12 chars.
+		// So if n > -10^10, it is < 12 chars.
+		if n > -10000000000 {
+			return 2
+		}
+		// 12 chars to 15 chars -> 3 tokens.
+		// -10^14 is 15 digits -> 16 chars.
+		if n > -100000000000000 {
+			return 3
+		}
+		// 16 chars to 19 chars -> 4 tokens.
+		// -10^18 is 19 digits -> 20 chars.
+		// So if n > -10^18, max 19 chars.
+		if n > -1000000000000000000 {
+			return 4
+		}
+		// 20 chars (MinInt64) -> 5 tokens.
+		return 5
 	}
 
-	for n != 0 {
-		l++
-		n /= 10
+	// Positive numbers (n >= 10,000,000)
+	// 8 digits to 11 digits -> 2 tokens.
+	// 10^11 is 12 digits.
+	if n < 100000000000 {
+		return 2
+	}
+	// 12 digits to 15 digits -> 3 tokens.
+	// 10^15 is 16 digits.
+	if n < 1000000000000000 {
+		return 3
+	}
+	// 16 digits to 19 digits (MaxInt64) -> 4 tokens.
+	return 4
+}
+
+func tokenCountFloatInt(n int64) int {
+	// This function is only called for |n| >= 1000000, where scientific notation is used by default formatting.
+
+	// 1. Handle Sign and Abs
+	length := 0
+	var u uint64
+	if n < 0 {
+		length = 1
+		if n == -9223372036854775808 { // MinInt64
+			u = 9223372036854775808 // 1 << 63
+		} else {
+			u = uint64(-n)
+		}
+	} else {
+		u = uint64(n)
 	}
 
-	count := l / 4
+	// 2. Count trailing zeros
+	trailingZeros := 0
+	temp := u
+	for temp > 0 && temp%10 == 0 {
+		trailingZeros++
+		temp /= 10
+	}
+
+	// 3. Count total digits
+	totalDigits := 0
+	t := u
+	for t > 0 {
+		totalDigits++
+		t /= 10
+	}
+
+	sigDigits := totalDigits - trailingZeros
+	if sigDigits > 17 {
+		sigDigits = 17
+	}
+
+	// 4. Calculate Length
+	baseLen := 0
+	if sigDigits == 1 {
+		baseLen = 1
+	} else {
+		baseLen = sigDigits + 1
+	}
+
+	// Exponent Length is always 4 for int64 range
+	length += baseLen + 4
+
+	count := length / 4
 	if count < 1 {
 		return 1
 	}
