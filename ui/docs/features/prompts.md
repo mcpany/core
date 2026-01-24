@@ -7,13 +7,19 @@ Discover and use pre-defined prompt templates. Servers can expose standardized p
 
 ## Usage Guide
 
-### 1. Browse Prompts
-Navigate to `/prompts`.
-- **List**: Shows prompt names and descriptions.
-- **Arguments**: detailed list of required input parameters.
+### 1. Browse Prompts (Workbench)
+Navigate to `/prompts`. The interface is divided into two panes:
+- **Left Sidebar**: A searchable list of available prompts from all connected services.
+- **Right Pane**: The Prompt Workbench for the selected prompt.
 
-![Prompts List](screenshots/prompts_list.png)
+![Prompts Workbench](screenshots/prompts_list.png)
 
-### 2. Use Prompt
-Click **"Use Prompt"** on any item.
-This will redirect you to the **Playground**, pre-loading the selected prompt template and generating a form for its arguments.
+### 2. Configure & Generate
+Select a prompt from the list to view its details.
+- **Configuration**: Enter values for the required arguments in the form.
+- **Generate**: Click **"Generate Preview"** to execute the prompt template and produce the messages.
+
+### 3. Output & Usage
+The generated messages are displayed in the **Output Preview** section.
+- **Copy**: Use the copy button to copy the result to your clipboard.
+- **Playground**: Click **"Open in Playground"** to navigate to the Playground, where you can paste the result or start a new session.
