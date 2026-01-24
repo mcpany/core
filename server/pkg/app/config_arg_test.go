@@ -27,7 +27,13 @@ upstream_services:
 	require.NoError(t, err)
 	tmpFile.Close()
 
-	// Ensure env var is NOT set
+	// Ensure env var is NOT set, and restore it later to avoid side effects
+	oldEnv, hasEnv := os.LookupEnv("MCPANY_ENABLE_FILE_CONFIG")
+	if hasEnv {
+		defer os.Setenv("MCPANY_ENABLE_FILE_CONFIG", oldEnv)
+	} else {
+		defer os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
+	}
 	os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
 
 	app := NewApplication()
