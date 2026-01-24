@@ -35,7 +35,14 @@ export TEST_GID
 
 # Default test target
 # Run the tests in a docker container
-test: clean-test-results build-test-docker build-server-docker
+test:
+ifneq ($(SKIP_E2E),true)
+	$(MAKE) real-test
+else
+	@echo "Skipping UI tests (SKIP_E2E is true)"
+endif
+
+real-test: clean-test-results build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true

@@ -41,6 +41,12 @@ const getStatusColor = (status: string) => {
 };
 
 // ⚡ Bolt Optimization: Extracted diagnosis logic to a memoized component.
+/**
+ * ServiceDiagnosisPopover component.
+ * @param props - The component props.
+ * @param props.message - The message property.
+ * @returns The rendered component.
+ */
 const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message }: { message: string }) {
     const diagnosis = useMemo(() => analyzeConnectionError(message), [message]);
 
@@ -69,6 +75,12 @@ const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message 
     );
 });
 
+/**
+ * HealthTimeline component.
+ * @param props - The component props.
+ * @param props.history - The history property.
+ * @returns The rendered component.
+ */
 const HealthTimeline = memo(function HealthTimeline({ history }: { history: HealthHistoryPoint[] }) {
   if (!history || history.length === 0) return null;
 
@@ -109,6 +121,13 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
 
 // ⚡ Bolt Optimization: Memoized individual service items.
+/**
+ * ServiceHealthItem component.
+ * @param props - The component props.
+ * @param props.service - The service property.
+ * @param props.history - The history property.
+ * @returns The rendered component.
+ */
 const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
     return (
         <div

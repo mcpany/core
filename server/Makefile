@@ -379,7 +379,10 @@ ifdef SHOULD_PROXY_TO_DOCKER
 test-server:
 	@$(DOCKER_PROXY_CMD) test
 else
-test-server: test-fast e2e-local test-public-api
+test-server: test-fast
+ifneq ($(SKIP_E2E),true)
+	$(MAKE) e2e-local test-public-api
+endif
 endif
 
 test: test-server

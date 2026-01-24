@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/docker/docker/api/types"
@@ -199,6 +200,9 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_Integration(t *testing.T) {
+	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		t.Skip("Skipping Docker tests via SKIP_DOCKER_TESTS env var")
+	}
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
@@ -238,6 +242,9 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
+	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		t.Skip("Skipping Docker tests via SKIP_DOCKER_TESTS env var")
+	}
 	if !util.IsDockerSocketAccessible() {
 		t.Skip("Docker socket not accessible, skipping integration test.")
 	}
