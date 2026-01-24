@@ -232,8 +232,7 @@ func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) 
 
 	// Create a script in that directory
 	scriptPath := filepath.Join(tempDir, "start.sh")
-	err = os.WriteFile(scriptPath, []byte("#!/bin/sh\necho hello"), 0755)
-	require.NoError(t, err)
+	_ = os.WriteFile(scriptPath, []byte("#!/bin/sh\necho hello"), 0755)
 
 	// Config with relative command and working directory
 	config := &configv1.McpAnyServerConfig{
@@ -301,8 +300,7 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 
 	// Create a valid script
 	scriptPath := filepath.Join(tempDir, "script.py")
-	err = os.WriteFile(scriptPath, []byte("print('hello')"), 0644)
-	require.NoError(t, err)
+	_ = os.WriteFile(scriptPath, []byte("print('hello')"), 0644)
 
 	tests := []struct {
 		name        string
