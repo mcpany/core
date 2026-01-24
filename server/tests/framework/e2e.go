@@ -71,6 +71,44 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 		Endpoint: mcpanyEndpoint,
 	}
 
+	// Add authentication headers if needed (assuming global API Key is set in test setup)
+	// The integration tests usually set GEMINI_API_KEY, but for MCPANY itself,
+	// we need to check if the test setup configured an API Key.
+	// However, most tests rely on the default behavior.
+	// If the test setup provided an API Key, we should use it.
+	// Since we don't have easy access to the API key here without passing it down,
+	// and we know we just enforced auth...
+	// BUT: Localhost access is allowed by default if no global auth is configured.
+	// E2E tests often run in Docker, so "localhost" might be tricky if not on host net.
+	// But `mcpanyEndpoint` is usually http://localhost:port.
+	// Let's adding a header map to Connect if we can.
+	// mcp-go-sdk Connect signature: Connect(ctx, transport, options...)
+	// It doesn't seemingly take headers easily unless transport supports it.
+	// StreamableClientTransport has no headers field?
+	// Checking SDK... StreamableClientTransport structure:
+	// type StreamableClientTransport struct { Endpoint string ... }
+	// It uses SSE/POST.
+	// If we need headers, we might need a custom transport or checking if SDK supports it.
+	// Wait, `StartMCPANYServer` sets up the server.
+	// If `MCPANY_API_KEY` is not set, then `HasGlobalAuth` is false, and `IsPrivateIP` check applies.
+	// If running in Docker, `mcpanyEndpoint` accessed from test runner (host) is localhost.
+	// So it should pass `IsPrivateIP`.
+	// UNLESS the test runner is in a container and accessing another container by name?
+	// In `RunE2ETest`, `StartMCPANYServer` uses `integration.StartMCPANYServer`.
+	// If `E2E_DOCKER` is true, it runs in Docker.
+	// The test code runs on the host (or in a container?).
+	// If test code runs on host, it hits localhost:port.
+	// If test code runs in container, it hits mcpany:port.
+	// `IsPrivateIP` checks the REMOTE ADDR seen by MCPANY.
+	// If MCPANY is in Docker, and test runner is in Docker (or host), the source IP might be the Docker gateway (e.g. 172.17.0.1).
+	// `IsPrivateIP` *should* include 172.16.0.0/12.
+	// Let's verify `server/pkg/util/ip.go` logic if possible, or just add the header to be safe.
+	// But `StreamableClientTransport` in `go-sdk` v1.1.0 doesn't seem to expose Headers.
+	// We might need to rely on the fallback.
+
+	// If the test fails, it might be because `trustProxy` is not working or XFF is missing/ignored.
+	// For now, let's look at `VerifyMCPClient` as well.
+
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer func() { _ = session.Close() }()

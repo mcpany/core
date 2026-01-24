@@ -848,7 +848,13 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 		var errDial error
-		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		opts := []grpc.DialOption{
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		}
+		if actualAPIKey != "" {
+			opts = append(opts, grpc.WithPerRPCCredentials(&testAPIKeyCreds{Key: actualAPIKey}))
+		}
+		grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, opts...)
 		if errDial != nil {
 			t.Logf("MCPANY gRPC registration endpoint at %s not ready, error creating client: %v", grpcRegEndpoint, errDial)
 			return false
@@ -1196,7 +1202,13 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 			defer cancel()
 			var errDial error
-			grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			opts := []grpc.DialOption{
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+			}
+			if apiKey != "" {
+				opts = append(opts, grpc.WithPerRPCCredentials(&testAPIKeyCreds{Key: apiKey}))
+			}
+			grpcRegConn, errDial = grpc.NewClient(grpcRegEndpoint, opts...)
 			if errDial != nil {
 				return false
 			}
@@ -1994,3 +2006,13 @@ type MCPJSONRPCError struct {
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }
+
+type testAPIKeyCreds struct {
+	Key string
+}
+
+func (c *testAPIKeyCreds) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	return map[string]string{"x-api-key": c.Key}, nil
+}
+
+func (c *testAPIKeyCreds) RequireTransportSecurity() bool { return false }
