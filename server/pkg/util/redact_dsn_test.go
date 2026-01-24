@@ -89,7 +89,7 @@ func TestRedactDSN(t *testing.T) {
 			expected: "user:[REDACTED]@host",
 		},
 		{
-			name:     "fallback: password with space (partial redaction due to safety)",
+			name:     "fallback: password with space",
 			input:    "postgres://user:pass word@localhost:5432/db",
 			expected: "postgres://user:[REDACTED] word@localhost:5432/db",
 		},
@@ -111,7 +111,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: password with colon and at sign",
 			input:    "user:pass:word@part@host",
-			expected: "user:[REDACTED]@host", // Greedy: stops at last @
+			expected: "user:[REDACTED]@host",
 		},
 		{
 			name:     "fallback: empty user with password",
