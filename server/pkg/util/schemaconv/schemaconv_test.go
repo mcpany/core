@@ -28,6 +28,7 @@ type mockMcpFieldParameter struct {
 	name        string
 	description string
 	typ         string
+	isRepeated  bool
 }
 
 func (m *mockMcpFieldParameter) GetName() string {
@@ -40,6 +41,38 @@ func (m *mockMcpFieldParameter) GetDescription() string {
 
 func (m *mockMcpFieldParameter) GetType() string {
 	return m.typ
+}
+
+func (m *mockMcpFieldParameter) GetIsRepeated() bool {
+	return m.isRepeated
+}
+
+func TestMcpFieldsToProtoProperties_Repeated(t *testing.T) {
+	params := []*mockMcpFieldParameter{
+		{
+			name:        "repeated_string",
+			description: "list of strings",
+			typ:         "TYPE_STRING",
+			isRepeated:  true,
+		},
+	}
+
+	properties, err := McpFieldsToProtoProperties(params)
+	require.NoError(t, err)
+	assert.Len(t, properties.Fields, 1)
+
+	field, ok := properties.Fields["repeated_string"]
+	require.True(t, ok)
+	s := field.GetStructValue()
+	require.NotNil(t, s)
+
+	// Expect type "array"
+	assert.Equal(t, "array", s.Fields["type"].GetStringValue())
+
+	// Expect items to be "string"
+	items := s.Fields["items"].GetStructValue()
+	require.NotNil(t, items)
+	assert.Equal(t, "string", items.Fields["type"].GetStringValue())
 }
 
 func TestConfigSchemaToProtoProperties(t *testing.T) {

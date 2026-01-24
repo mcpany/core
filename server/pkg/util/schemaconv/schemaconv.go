@@ -152,6 +152,10 @@ type McpFieldParameter interface {
 	//
 	// Returns the result.
 	GetType() string
+	// GetIsRepeated returns true if the parameter is a repeated field (array).
+	//
+	// Returns the result.
+	GetIsRepeated() bool
 }
 
 // ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
@@ -211,13 +215,26 @@ func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Stru
 			typeVal = TypeBoolean
 		}
 
-		structValue := &structpb.Struct{
+		scalarSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
 				"type":        structpb.NewStringValue(typeVal),
 				"description": structpb.NewStringValue(param.GetDescription()),
 			},
 		}
-		properties.Fields[param.GetName()] = structpb.NewStructValue(structValue)
+
+		var finalSchema *structpb.Struct
+		if param.GetIsRepeated() {
+			finalSchema = &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type":  structpb.NewStringValue(TypeArray),
+					"items": structpb.NewStructValue(scalarSchema),
+				},
+			}
+		} else {
+			finalSchema = scalarSchema
+		}
+
+		properties.Fields[param.GetName()] = structpb.NewStructValue(finalSchema)
 	}
 
 	return properties, nil
