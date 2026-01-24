@@ -885,9 +885,17 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 
 			if param.GetDisableEscape() {
 				if t.paramInPath[i] {
+					// Even if escaping is disabled, we must prevent injecting query parameters or fragments
+					if strings.ContainsAny(valStr, "?#") {
+						return nil, nil, false, fmt.Errorf("path injection detected in parameter %q: value contains '?' or '#'", name)
+					}
 					pathReplacements[name] = valStr
 				}
 				if t.paramInQuery[i] {
+					// Even if escaping is disabled, we must prevent injecting other parameters or fragments
+					if strings.ContainsAny(valStr, "&#") {
+						return nil, nil, false, fmt.Errorf("parameter pollution detected in parameter %q: value contains '&' or '#'", name)
+					}
 					queryReplacements[name] = valStr
 				}
 			} else {
