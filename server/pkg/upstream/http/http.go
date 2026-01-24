@@ -488,10 +488,12 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				decodedKey, errKey := url.QueryUnescape(key)
 				_, errVal := url.QueryUnescape(value)
 
+				if errKey == nil {
+					qp.key = decodedKey
+				}
+
 				if errKey != nil || errVal != nil {
 					qp.isInvalid = true
-				} else {
-					qp.key = decodedKey
 				}
 				parts = append(parts, qp)
 			}
@@ -506,7 +508,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Index endpoint parts by key
 			endPartsByKey := make(map[string][]string)
 			for _, p := range endParts {
-				if !p.isInvalid {
+				if !p.isInvalid || p.key != "" {
 					endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
 				}
 			}
@@ -534,6 +536,11 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Append remaining endpoint parts
 			for _, ep := range endParts {
+				// If key was already added via override mechanism, skip it.
+				if ep.key != "" && keysOverridden[ep.key] {
+					continue
+				}
+
 				if ep.isInvalid {
 					finalParts = append(finalParts, ep.raw)
 					continue
