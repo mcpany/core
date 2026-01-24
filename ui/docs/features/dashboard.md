@@ -21,3 +21,12 @@ The dashboard updates in real-time.
 - **Total Requests**: Aggregate count of all operations processed.
 - **Active Services**: Number of services currently in "Healthy" state.
 - **Error Rate**: Percentage of requests resulting in failures.
+
+### 3. Customizable Layout
+You can personalize your dashboard by adding, removing, and rearranging widgets.
+
+- **Add Widget**: Click the **Add Widget** button to open the gallery and select new widgets.
+- **Rearrange**: Drag and drop widgets to organize them.
+- **Resize**: Use the "Customize View" menu on each widget to change its size (Full, 1/2, 1/3).
+
+![Widget Gallery](screenshots/dashboard_widget_gallery.png)

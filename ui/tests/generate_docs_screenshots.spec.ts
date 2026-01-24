@@ -169,6 +169,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
+
+    // Open Add Widget Gallery
+    await page.getByRole('button', { name: 'Add Widget' }).click();
+    await page.waitForTimeout(1000); // Wait for animation
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_widget_gallery.png') });
   });
 
   test('Services Screenshots', async ({ page }) => {
