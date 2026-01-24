@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/playwright:v1.57.0-jammy
 WORKDIR /work/ui
 
 # Copy package files first for caching
-COPY ui/package.json ui/package-lock.json ./
+COPY ui/package.json ui/package-lock.json* ./
 
 # Install dependencies
 RUN npm install
