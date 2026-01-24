@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
@@ -112,7 +113,10 @@ func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
 	secret := &configv1.SecretValue{}
 	secret.SetRemoteContent(remoteContent)
 
-	_, err := util.ResolveSecret(context.Background(), secret)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	_, err := util.ResolveSecret(ctx, secret)
 	assert.Error(t, err)
 
 	// It should NOT be "blocked private IP"
