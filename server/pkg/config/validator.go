@@ -822,6 +822,15 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 			Suggestion: "Use 'http' or 'https' as the scheme.",
 		}
 	}
+
+	for name, call := range graphqlService.GetCalls() {
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("graphql call %q input_schema error", name), err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("graphql call %q output_schema error", name), err)
+		}
+	}
 	return nil
 }
 
