@@ -145,6 +145,30 @@ export interface DoctorReport {
 }
 
 /**
+ * Selector criteria for profiles.
+ */
+export interface ProfileSelector {
+    /** Tags to match. */
+    tags?: string[];
+    /** Tool properties to match. */
+    toolProperties?: Record<string, string>;
+}
+
+/**
+ * Definition of an execution profile.
+ */
+export interface ProfileDefinition {
+    /** Unique name of the profile. */
+    name: string;
+    /** Selector criteria for auto-inclusion of tools. */
+    selector?: ProfileSelector;
+    /** Roles required to use this profile. */
+    requiredRoles?: string[];
+    /** Parent profiles to inherit from. */
+    parentProfileIds?: string[];
+}
+
+/**
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
@@ -873,10 +897,21 @@ export const apiClient = {
      * Lists all profiles.
      * @returns A promise that resolves to a list of profiles.
      */
-    listProfiles: async () => {
+    listProfiles: async (): Promise<ProfileDefinition[]> => {
         const res = await fetchWithAuth('/api/v1/profiles');
         if (!res.ok) throw new Error('Failed to list profiles');
-        return res.json();
+        const data = await res.json();
+        // Map snake_case to camelCase
+        const list = Array.isArray(data) ? data : (data.profiles || []);
+        return list.map((p: any) => ({
+            name: p.name,
+            selector: p.selector ? {
+                tags: p.selector.tags,
+                toolProperties: p.selector.tool_properties,
+            } : undefined,
+            requiredRoles: p.required_roles,
+            parentProfileIds: p.parent_profile_ids,
+        }));
     },
 
     /**
@@ -884,10 +919,19 @@ export const apiClient = {
      * @param name The name of the profile.
      * @returns A promise that resolves to the profile.
      */
-    getProfile: async (name: string) => {
+    getProfile: async (name: string): Promise<ProfileDefinition> => {
         const res = await fetchWithAuth(`/api/v1/profiles/${name}`);
         if (!res.ok) throw new Error('Failed to get profile');
-        return res.json();
+        const p = await res.json();
+        return {
+            name: p.name,
+            selector: p.selector ? {
+                tags: p.selector.tags,
+                toolProperties: p.selector.tool_properties,
+            } : undefined,
+            requiredRoles: p.required_roles,
+            parentProfileIds: p.parent_profile_ids,
+        };
     },
 
     /**
@@ -895,11 +939,22 @@ export const apiClient = {
      * @param profile The profile to create.
      * @returns A promise that resolves when the profile is created.
      */
-    createProfile: async (profile: any) => {
+    createProfile: async (profile: ProfileDefinition) => {
+        // Map camelCase to snake_case
+        const payload: any = {
+            name: profile.name,
+            selector: profile.selector ? {
+                tags: profile.selector.tags,
+                tool_properties: profile.selector.toolProperties,
+            } : undefined,
+            required_roles: profile.requiredRoles,
+            parent_profile_ids: profile.parentProfileIds,
+        };
+
         const res = await fetchWithAuth('/api/v1/profiles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(profile)
+            body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error('Failed to create profile');
         return res.json();
@@ -910,11 +965,22 @@ export const apiClient = {
      * @param profile The profile to update.
      * @returns A promise that resolves when the profile is updated.
      */
-    updateProfile: async (profile: any) => {
+    updateProfile: async (profile: ProfileDefinition) => {
+        // Map camelCase to snake_case
+        const payload: any = {
+            name: profile.name,
+            selector: profile.selector ? {
+                tags: profile.selector.tags,
+                tool_properties: profile.selector.toolProperties,
+            } : undefined,
+            required_roles: profile.requiredRoles,
+            parent_profile_ids: profile.parentProfileIds,
+        };
+
         const res = await fetchWithAuth(`/api/v1/profiles/${profile.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(profile)
+            body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error('Failed to update profile');
         return res.json();
