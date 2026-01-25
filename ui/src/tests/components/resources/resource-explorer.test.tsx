@@ -27,11 +27,11 @@ describe('ResourceExplorer', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        (apiClient.listResources as any).mockResolvedValue({ resources: mockResources });
+        (apiClient.listResources as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ resources: mockResources });
     });
 
     it('sets DownloadURL on drag start when content is loaded', async () => {
-        (apiClient.readResource as any).mockResolvedValue({
+        (apiClient.readResource as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
             contents: [{ uri: 'file:///test.txt', mimeType: 'text/plain', text: 'hello' }],
         });
 
@@ -59,7 +59,7 @@ describe('ResourceExplorer', () => {
     });
 
     it('handleDownload fetches content if missing', async () => {
-        (apiClient.readResource as any).mockResolvedValue({
+        (apiClient.readResource as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
             contents: [{ uri: 'file:///test.txt', mimeType: 'text/plain', text: 'hello' }],
         });
 

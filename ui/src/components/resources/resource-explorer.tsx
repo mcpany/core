@@ -168,14 +168,12 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         if (!targetUri) return;
 
         let content = resourceContent;
-        let mimeType = "application/octet-stream";
         let name = "resource";
 
         // Find resource definition
         const resDef = resources.find(r => r.uri === targetUri);
         if (resDef) {
             name = resDef.name;
-            mimeType = resDef.mimeType || mimeType;
         }
 
         // If we don't have content or it's for a different URI, fetch it
