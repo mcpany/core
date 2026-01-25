@@ -850,6 +850,21 @@ export const apiClient = {
     },
 
     /**
+     * Creates a new service collection (stack).
+     * @param collection The collection to create.
+     * @returns A promise that resolves to the created collection.
+     */
+    createCollection: async (collection: any) => {
+        const res = await fetchWithAuth('/api/v1/collections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) throw new Error('Failed to create collection');
+        return res.json();
+    },
+
+    /**
      * Saves a service collection (stack).
      * @param collection The collection to save.
      * @returns A promise that resolves when the collection is saved.

@@ -248,14 +248,29 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Stack Composer Screenshots', async ({ page }) => {
+    // Mock Stacks List
+    await page.route('**/api/v1/collections', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({
+                json: [
+                    { name: 'production-stack', services: Array(3).fill({}) },
+                    { name: 'dev-stack', services: Array(1).fill({}) }
+                ]
+            });
+        } else {
+            await route.continue();
+        }
+    });
+
     await page.goto('/stacks');
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stack_composer_overview.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stacks.png'), fullPage: true });
 
-    if (await page.getByText('Service Palette').isVisible()) {
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stack_composer_palette.png'), fullPage: true });
-    }
+    // Open Create Dialog
+    await page.getByRole('button', { name: 'Create Stack' }).click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'stack_create_dialog.png') });
   });
 
   test('Traces Screenshots', async ({ page }) => {
