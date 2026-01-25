@@ -119,11 +119,25 @@ ${colorConfig
     const allowedCharsRegex = /[^a-zA-Z0-9\-_#%.(),\s]/g
     const value = color ? color.replace(allowedCharsRegex, "") : null
     const safeKey = key.replace(allowedCharsRegex, "")
-    // Block url() to prevent external requests or javascript:
-    // Also block expression() for old IE XSS vectors.
-    if (value && (/url\(/i.test(value) || /expression\(/i.test(value))) {
-      return null
+
+    if (value) {
+      // Block url() to prevent external requests or javascript:
+      // Also block expression() for old IE XSS vectors.
+      if (/url\(/i.test(value) || /expression\(/i.test(value)) {
+        return null
+      }
+
+      // Whitelist allowed CSS functions to prevent usage of potentially dangerous ones (e.g., image-set, element).
+      const allowedFunctions = ["rgb", "rgba", "hsl", "hsla", "var", "calc", "min", "max", "clamp"]
+      const functionRegex = /([a-zA-Z0-9\-_]+)\(/g
+      let match
+      while ((match = functionRegex.exec(value)) !== null) {
+        if (!allowedFunctions.includes(match[1].toLowerCase())) {
+          return null
+        }
+      }
     }
+
     return value ? `  --color-${safeKey}: ${value};` : null
   })
   .join("\n")}

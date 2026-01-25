@@ -550,9 +550,24 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 				return nil, fmt.Errorf("failed to read config from URL %s: %w", path, err)
 			}
 		} else {
-			b, err = afero.ReadFile(s.fs, path)
+			f, err := s.fs.Open(path)
+			if err != nil {
+				return nil, fmt.Errorf("failed to open config file %s: %w", path, err)
+			}
+			// We can't use defer in the loop, so we close explicitly.
+			// However, since we return on error, we need a way to close.
+			// Best to use a closure or helper, but for now:
+
+			// Limit the size of the file read to 10MB to prevent DoS attacks.
+			const maxConfigSize = 10 * 1024 * 1024
+			b, err = io.ReadAll(io.LimitReader(f, maxConfigSize+1))
+			_ = f.Close() // Close immediately after reading
+
 			if err != nil {
 				return nil, fmt.Errorf("failed to read config file %s: %w", path, err)
+			}
+			if len(b) > maxConfigSize {
+				return nil, fmt.Errorf("config file %s is too large (max 10MB)", path)
 			}
 		}
 
