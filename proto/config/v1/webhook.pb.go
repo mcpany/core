@@ -77,8 +77,8 @@ func (x WebhookKind) Number() protoreflect.EnumNumber {
 // WebhookReview explains the request and response of a webhook call.
 type WebhookReview struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Request       *WebhookRequest        `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
-	Response      *WebhookResponse       `protobuf:"bytes,2,opt,name=response,proto3" json:"response,omitempty"`
+	Request       *WebhookRequest        `protobuf:"bytes,1,opt,name=request" json:"request,omitempty"`
+	Response      *WebhookResponse       `protobuf:"bytes,2,opt,name=response" json:"response,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -171,13 +171,13 @@ func (b0 WebhookReview_builder) Build() *WebhookReview {
 type WebhookRequest struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Unique identifier for the request.
-	Uid string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	Uid string `protobuf:"bytes,1,opt,name=uid" json:"uid,omitempty"`
 	// The operation type (e.g., "PreCall", "PostCall").
-	Kind WebhookKind `protobuf:"varint,2,opt,name=kind,proto3,enum=mcpany.config.v1.WebhookKind" json:"kind,omitempty"`
+	Kind WebhookKind `protobuf:"varint,2,opt,name=kind,enum=mcpany.config.v1.WebhookKind" json:"kind,omitempty"`
 	// The tool name being executed.
-	ToolName string `protobuf:"bytes,3,opt,name=tool_name,json=toolName,proto3" json:"tool_name,omitempty"`
+	ToolName string `protobuf:"bytes,3,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
 	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
-	Object        *structpb.Struct `protobuf:"bytes,4,opt,name=object,proto3" json:"object,omitempty"`
+	Object        *structpb.Struct `protobuf:"bytes,4,opt,name=object" json:"object,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -288,9 +288,9 @@ func (b0 WebhookRequest_builder) Build() *WebhookRequest {
 
 type WebhookConfig struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-	Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret,proto3" json:"webhook_secret,omitempty"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
+	Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout" json:"timeout,omitempty"`
+	WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret" json:"webhook_secret,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -384,10 +384,10 @@ func (b0 WebhookConfig_builder) Build() *WebhookConfig {
 
 type SystemWebhookConfig struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	UrlPath       string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath,proto3" json:"url_path,omitempty"`
-	Disabled      bool                   `protobuf:"varint,4,opt,name=disabled,proto3" json:"disabled,omitempty"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
+	UrlPath       string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath" json:"url_path,omitempty"`
+	Disabled      bool                   `protobuf:"varint,4,opt,name=disabled" json:"disabled,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -484,13 +484,13 @@ func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
 type WebhookResponse struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Unique identifier for the request.
-	Uid string `protobuf:"bytes,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	Uid string `protobuf:"bytes,1,opt,name=uid" json:"uid,omitempty"`
 	// allowed indicates if the request is permitted (for PreCall).
-	Allowed bool `protobuf:"varint,2,opt,name=allowed,proto3" json:"allowed,omitempty"`
+	Allowed bool `protobuf:"varint,2,opt,name=allowed" json:"allowed,omitempty"`
 	// status contains extra details for the decision.
-	Status *WebhookStatus `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	Status *WebhookStatus `protobuf:"bytes,3,opt,name=status" json:"status,omitempty"`
 	// replacement_object is a complete replacement for the object (simple mutation).
-	ReplacementObject *structpb.Struct `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject,proto3" json:"replacement_object,omitempty"`
+	ReplacementObject *structpb.Struct `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject" json:"replacement_object,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -612,8 +612,8 @@ func (b0 WebhookResponse_builder) Build() *WebhookResponse {
 
 type WebhookStatus struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Code          int32                  `protobuf:"varint,1,opt,name=code" json:"code,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -715,7 +715,7 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
 	"\x16WEBHOOK_KIND_POST_CALL\x10\x02\x12 \n" +
-	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B-Z&github.com/mcpany/core/proto/config/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)

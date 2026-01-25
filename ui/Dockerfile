@@ -8,8 +8,8 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY ui/package.json ui/package-lock.json* ./
-RUN npm install -g npm@latest && npm install --no-audit
+COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
+RUN npm install -g npm@latest && npm install --no-audit --package-lock=false --registry=https://registry.npmjs.org/
 
 # Rebuild the source code only when needed
 FROM base AS builder

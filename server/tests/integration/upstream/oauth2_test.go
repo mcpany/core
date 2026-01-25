@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -130,8 +131,18 @@ auth:
 }
 
 func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
-	oauth2Server := newMockOAuth2Server(t)
-	defer oauth2Server.Close()
+	var tokenURL, clientIDVal, clientSecretVal string
+	if os.Getenv("TEST_OAUTH_SERVER_URL") != "" {
+		tokenURL = os.Getenv("TEST_OAUTH_TOKEN_URL")
+		clientIDVal = os.Getenv("TEST_OAUTH_CLIENT_ID")
+		clientSecretVal = os.Getenv("TEST_OAUTH_CLIENT_SECRET")
+	} else {
+		oauth2Server := newMockOAuth2Server(t)
+		defer oauth2Server.Close()
+		tokenURL = oauth2Server.URL + oauth2TestTokenPath
+		clientIDVal = oauth2TestClientID
+		clientSecretVal = oauth2TestClientSecret
+	}
 
 	testCase := &framework.E2ETestCase{
 		Name:                "Authenticated HTTP Echo Server with OAuth2",
@@ -139,12 +150,12 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 		BuildUpstream:       framework.BuildHTTPAuthedEchoServer,
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 			const serviceID = "e2e_http_oauth2_echo"
-			tokenURL := oauth2Server.URL + oauth2TestTokenPath
+			// tokenURL is already set above
 			clientID := configv1.SecretValue_builder{
-				PlainText: proto.String(oauth2TestClientID),
+				PlainText: proto.String(clientIDVal),
 			}.Build()
 			clientSecret := configv1.SecretValue_builder{
-				PlainText: proto.String(oauth2TestClientSecret),
+				PlainText: proto.String(clientSecretVal),
 			}.Build()
 			oauth2AuthConfig := &configv1.OAuth2Auth{
 				TokenUrl:     &tokenURL,
@@ -239,8 +250,22 @@ func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
 }
 
 func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
-	oauth2Server := newMockOAuth2Server(t)
-	defer oauth2Server.Close()
+	var issuer, audience, tokenURL, clientIDVal, clientSecretVal string
+	if os.Getenv("TEST_OAUTH_SERVER_URL") != "" {
+		issuer = os.Getenv("TEST_OAUTH_SERVER_URL") + "/" // Hydra issuer usually ends with /
+		tokenURL = os.Getenv("TEST_OAUTH_TOKEN_URL")
+		clientIDVal = os.Getenv("TEST_OAUTH_CLIENT_ID")
+		clientSecretVal = os.Getenv("TEST_OAUTH_CLIENT_SECRET")
+		audience = "test-client" // Hydra uses client ID as audience for some setups, or we can might need to adjust scope/audience
+	} else {
+		oauth2Server := newMockOAuth2Server(t)
+		defer oauth2Server.Close()
+		issuer = oauth2Server.issuer
+		tokenURL = oauth2Server.URL + oauth2TestTokenPath
+		clientIDVal = oauth2TestClientID
+		clientSecretVal = oauth2TestClientSecret
+		audience = "test-audience"
+	}
 
 	testCase := &framework.E2ETestCase{
 		Name:                "MCPANY with OAuth2 Authentication",
@@ -248,16 +273,17 @@ func TestUpstreamService_MCPANY_WithOAuth2(t *testing.T) {
 		BuildUpstream:       framework.BuildHTTPEchoServer,
 		RegisterUpstream:    framework.RegisterHTTPEchoService,
 		StartMCPANYServer: func(t *testing.T, _ string, _ ...string) *integration.MCPANYTestServerInfo {
-			return buildMCPANYAuthedServer(t, oauth2Server.issuer, "test-audience")
+			return buildMCPANYAuthedServer(t, issuer, audience)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
 			ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 			defer cancel()
 
 			conf := &clientcredentials.Config{
-				ClientID:     oauth2TestClientID,
-				ClientSecret: oauth2TestClientSecret,
-				TokenURL:     oauth2Server.URL + oauth2TestTokenPath,
+				ClientID:     clientIDVal,
+				ClientSecret: clientSecretVal,
+				TokenURL:     tokenURL,
+				Scopes:       []string{"openid", "offline"},
 			}
 			tokenSource := conf.TokenSource(ctx)
 
