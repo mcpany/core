@@ -280,6 +280,49 @@ func TestRegister(t *testing.T) {
 	_, _, _, err = uRefactored.Register(context.Background(), validCfg, mockToolManager, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "creation failed")
+
+	t.Run("Sanitize Error", func(t *testing.T) {
+		u := NewUpstream()
+		cfg := &configv1.UpstreamServiceConfig{
+			Name: proto.String(""), // Empty name fails sanitize
+		}
+		_, _, _, err := u.Register(context.Background(), cfg, &MockToolManager{}, nil, nil, false)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "id cannot be empty")
+	})
+
+	t.Run("AddTool Error", func(t *testing.T) {
+		uRefactored := &Upstream{}
+		mockClient := new(MockVectorClient)
+
+		uRefactored.clientFactory = func(config *configv1.VectorUpstreamService) (Client, error) {
+			return mockClient, nil
+		}
+
+		mockToolManager := new(MockToolManager)
+		mockToolManager.On("AddServiceInfo", mock.Anything, mock.Anything).Return()
+		// Return error for AddTool
+		mockToolManager.On("AddTool", mock.Anything).Return(errors.New("add tool error"))
+
+		validName := "valid-vector-service-error"
+		validCfg := &configv1.UpstreamServiceConfig{
+			Name: &validName,
+			ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
+				VectorService: &configv1.VectorUpstreamService{
+					VectorDbType: &configv1.VectorUpstreamService_Pinecone{
+						Pinecone: &configv1.PineconeVectorDB{
+							ApiKey:      proto.String("key"),
+						},
+					},
+				},
+			},
+		}
+
+		serviceID, tools, _, err := uRefactored.Register(context.Background(), validCfg, mockToolManager, nil, nil, false)
+		assert.NoError(t, err) // It continues and logs error
+		assert.NotEmpty(t, serviceID)
+		assert.Empty(t, tools) // No tools registered because AddTool failed
+	})
 }
 
 func TestVectorCallable(t *testing.T) {

@@ -5,6 +5,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"net"
 	"os"
 	"testing"
@@ -257,4 +258,154 @@ func TestGRPCUpstream_DynamicResources_Coverage(t *testing.T) {
 
 	resources := resourceManager.ListResources()
 	assert.Empty(t, resources)
+}
+
+func TestGRPCUpstream_Register_Config_AddToolError(t *testing.T) {
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
+
+	server, addr := startMockServer(t)
+	defer server.Stop()
+
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+	tm := NewMockToolManager()
+	tm.SetError(errors.New("add tool error"))
+
+	grpcService := &configv1.GrpcUpstreamService{}
+	grpcService.SetAddress(addr)
+	grpcService.SetUseReflection(false)
+	grpcService.ProtoDefinitions = []*configv1.ProtoDefinition{
+		{
+			ProtoRef: &configv1.ProtoDefinition_ProtoFile{
+				ProtoFile: &configv1.ProtoFile{
+					FileName: proto.String("weather.proto"),
+					FileRef: &configv1.ProtoFile_FilePath{
+						FilePath: "../../../../proto/examples/weather/v1/weather.proto",
+					},
+				},
+			},
+		},
+	}
+	grpcService.Tools = []*configv1.ToolDefinition{
+		{
+			Name:   proto.String("GetWeather"),
+			CallId: proto.String("weather_call"),
+		},
+	}
+	grpcService.Calls = map[string]*configv1.GrpcCallDefinition{
+		"weather_call": {
+			Id:     proto.String("weather_call"),
+			Method: proto.String("examples.weather.v1.WeatherService/GetWeather"),
+		},
+	}
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("weather-service-config-error")
+	serviceConfig.SetGrpcService(grpcService)
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	require.NoError(t, err)
+	assert.Empty(t, discoveredTools)
+}
+
+func TestGRPCUpstream_Register_DynamicResource_SanitizeError(t *testing.T) {
+	var promptManager prompt.ManagerInterface
+	resourceManager := resource.NewManager()
+
+	server, addr := startMockServer(t)
+	defer server.Stop()
+
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+	tm := NewMockToolManager()
+
+	grpcService := &configv1.GrpcUpstreamService{}
+	grpcService.SetAddress(addr)
+	grpcService.SetUseReflection(true)
+
+	// Tool with name that will be sanitized to something, but we want to fail SanitizeToolName?
+	// SanitizeToolName uses regex `[^a-zA-Z0-9_-]`. It replaces them with `_`. It rarely fails.
+	// `util.SanitizeToolName` implementation:
+	// if name == "" return error.
+
+	// We need the CALL to refer to a tool name that is EMPTY string?
+	// But tool definitions must have name.
+	// If tool definition has empty name, Register likely skips it or fails earlier.
+
+	// Let's try to trigger "tool not found for dynamic resource" by having call ID mismatch.
+	// Covered in `TestGRPCUpstream_Register_DynamicResources_Coverage` in `grpc_coverage_test.go`?
+	// No, that one tested "CallDefinition" with "unknown-call".
+
+	// Let's test `tm.GetTool` failure.
+	// If tool exists in config, but failed to register (e.g. AddTool error), then tm.GetTool fails.
+
+	grpcService.Tools = []*configv1.ToolDefinition{
+		{
+			Name: proto.String("GetWeather"), // This will fail to register due to AddTool error
+			CallId: proto.String("weather_call"),
+		},
+	}
+	grpcService.Calls = map[string]*configv1.GrpcCallDefinition{
+		"weather_call": {Id: proto.String("weather_call"), Method: proto.String("GetWeather")}, // Dummy method
+	}
+
+	grpcService.Resources = []*configv1.ResourceDefinition{
+		{
+			Name: proto.String("weather_resource"),
+			ResourceType: &configv1.ResourceDefinition_Dynamic{
+				Dynamic: &configv1.DynamicResource{
+					CallDefinition: &configv1.DynamicResource_GrpcCall{
+						GrpcCall: &configv1.GrpcCallDefinition{
+							Id: proto.String("weather_call"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	tm.SetError(errors.New("add tool error")) // Force tools to fail registration
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("weather-service-dynamic-tool-fail")
+	serviceConfig.SetGrpcService(grpcService)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	// Resource should not be registered because tool wasn't found (because it failed to register)
+	resources := resourceManager.ListResources()
+	assert.Empty(t, resources)
+}
+
+func TestGRPCUpstream_Register_Prompts_EmptyName(t *testing.T) {
+	var resourceManager resource.ManagerInterface
+	promptManager := &MockPromptManager{}
+
+	server, addr := startMockServer(t)
+	defer server.Stop()
+
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+	tm := NewMockToolManager()
+
+	grpcService := &configv1.GrpcUpstreamService{}
+	grpcService.SetAddress(addr)
+	grpcService.SetUseReflection(true)
+	grpcService.Prompts = []*configv1.PromptDefinition{
+		{
+			Name: proto.String(""), // Empty Name
+			Description: proto.String("Empty name prompt"),
+		},
+	}
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("weather-service-empty-prompt")
+	serviceConfig.SetGrpcService(grpcService)
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, promptManager.prompts)
 }
