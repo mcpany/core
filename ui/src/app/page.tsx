@@ -5,6 +5,8 @@
 
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { Button } from "@/components/ui/button";
+import { DashboardProvider } from "@/components/dashboard/dashboard-context";
+import { ServiceFilter } from "@/components/dashboard/service-filter";
 
 /**
  * The main dashboard page component.
@@ -13,16 +15,19 @@ import { Button } from "@/components/ui/button";
  */
 export default function DashboardPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <div className="flex items-center space-x-2">
-          <Button>Download Report</Button>
+    <DashboardProvider>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <div className="flex items-center space-x-2">
+            <ServiceFilter />
+            <Button>Download Report</Button>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <DashboardGrid />
         </div>
       </div>
-      <div className="space-y-4">
-        <DashboardGrid />
-      </div>
-    </div>
+    </DashboardProvider>
   );
 }
