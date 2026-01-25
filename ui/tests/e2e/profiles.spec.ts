@@ -4,35 +4,33 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './test-data';
 
 // CUJ 18-19: Profile & Collection Management
 test.describe('MCP Any Profile & Collection Tests', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // Mock profiles API
-    await page.route('**/api/v1/profiles', async (route) => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({
-            json: {
-                profiles: [
-                    { id: "default", name: "Default Profile", description: "Default access" },
-                    { id: "dev", name: "Developer", description: "Full access" }
-                ]
-            }
-        });
-      } else if (route.request().method() === 'POST') {
-        // Create profile
-        const body = route.request().postDataJSON();
-        await route.fulfill({
-            json: { ...body, id: "new-profile-id" }
-        });
-      }
-    });
+  test.beforeEach(async ({ page, request }) => {
+    // Seed user to avoid race conditions with other tests cleanup
+    await seedUser(request, 'profile-admin');
 
-    // Mock Collections API
-    await page.route('**/api/v1/collections', async (route) => {
-         await route.fulfill({ json: { collections: [] } });
-    });
+    // Login first (mocked or real, but we need to bypass middleware if present)
+    // Actually, if we mock the API, we might still get redirected by middleware if we don't have a session.
+    // For now, let's just log in via UI to get the cookie.
+    // But wait, if we mock API, login might fail if we don't allow it.
+    // Let's assume we can login or stub the session.
+    // Simplest: Mock middleware? No can't easily.
+    // Let's perform login similar to e2e.spec.ts.
+    // But we need a user. If we rely on seedUser from e2e.spec.ts?
+    // tests/e2e/profiles.spec.ts doesn't import seedUser.
+    // And e2e_test.go runs tests in parallel or seq?
+    // Playwright runs parallel.
+    // We should try to use a valid user. "admin"/"password" is created if we fix api key.
+
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'profile-admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL('/');
   });
 
   test('Create new Profile', async ({ page }) => {
@@ -46,12 +44,12 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     await page.waitForResponse(resp => resp.url().includes('/api/v1/profiles') && resp.status() === 200);
 
     // Click Create
-    const createBtn = page.getByRole('button', { name: 'Create Profile' });
+    const createBtn = page.getByRole('button', { name: /Create|Plus/i });
     await expect(createBtn).toBeVisible();
     await createBtn.click({ force: true });
 
     // Wait for dialog
-    await expect(page.getByRole('heading', { name: 'Create New Profile' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Create (New )?Profile/i })).toBeVisible();
 
     // Fill form
     await page.getByLabel(/name/i).fill('QA Profile');
