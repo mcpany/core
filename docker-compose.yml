@@ -28,6 +28,8 @@ services:
       - "run"
       - "--config-path"
       - "/etc/mcpany/config.yaml"
+      - "--metrics-listen-address"
+      - ":9090"
     healthcheck:
       test:
         ["CMD", "curl", "--fail", "--silent", "http://localhost:50050/healthz"]
