@@ -61,6 +61,7 @@ describe('ChartContainer CSS Injection Security', () => {
     // We check that the content words are present but the injection syntax is gone
     expect(content).toContain('red');
     expect(content).toContain('body');
-    expect(content).toContain('display: none');
+    // Colon is stripped by sanitization
+    expect(content).toContain('display none');
   });
 });
