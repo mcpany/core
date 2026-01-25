@@ -1841,13 +1841,15 @@ func (a *Application) runServerMode(
 		}
 	}
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
+	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			middleware.JSONRPCComplianceMiddleware(
-				ipMiddleware.Handler(
-					rateLimiter.Handler(finalHandler),
+				middleware.RecoveryMiddleware(
+					ipMiddleware.Handler(
+						rateLimiter.Handler(finalHandler),
+					),
 				),
 			),
 		),
