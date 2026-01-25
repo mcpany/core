@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -209,4 +210,78 @@ func TestTrustedHeaderAuthenticator_NoValue(t *testing.T) {
 	// Missing header
 	_, err = auth.Authenticate(context.Background(), req)
 	assert.Error(t, err)
+}
+
+func TestManager_CheckBasicAuthWithUsers(t *testing.T) {
+	manager := NewManager()
+
+	password := "secret123"
+	hashed, _ := passhash.Password(password)
+
+	user1 := &configv1.User{
+		Id:    proto.String("user1"),
+		Roles: []string{"admin"},
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BasicAuth{
+				BasicAuth: &configv1.BasicAuth{
+					PasswordHash: proto.String(hashed),
+				},
+			},
+		},
+	}
+
+	userNoAuth := &configv1.User{
+		Id:    proto.String("userNoAuth"),
+		Roles: []string{"guest"},
+	}
+
+	manager.SetUsers([]*configv1.User{user1, userNoAuth})
+
+	t.Run("success", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("user1", password)
+
+		ctx, err := manager.Authenticate(context.Background(), "some-service", req)
+		assert.NoError(t, err)
+
+		userID, ok := UserFromContext(ctx)
+		assert.True(t, ok)
+		assert.Equal(t, "user1", userID)
+
+		roles, ok := RolesFromContext(ctx)
+		assert.True(t, ok)
+		assert.Equal(t, []string{"admin"}, roles)
+	})
+
+	t.Run("invalid_password", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("user1", "wrong")
+
+		_, err := manager.Authenticate(context.Background(), "some-service", req)
+		assert.Error(t, err)
+	})
+
+	t.Run("unknown_user", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("unknown", password)
+
+		_, err := manager.Authenticate(context.Background(), "some-service", req)
+		assert.Error(t, err)
+	})
+
+	t.Run("user_without_basic_auth", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("userNoAuth", password)
+
+		_, err := manager.Authenticate(context.Background(), "some-service", req)
+		assert.Error(t, err)
+	})
+
+	t.Run("no_basic_auth_header", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		// No header set
+
+		_, err := manager.Authenticate(context.Background(), "some-service", req)
+		assert.Error(t, err)
+	})
 }
