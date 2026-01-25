@@ -49,9 +49,14 @@ func TestCheckForAbsolutePath(t *testing.T) {
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {
-    assert.Error(t, checkForArgumentInjection("-flag"))
-    assert.NoError(t, checkForArgumentInjection("-123")) // Number allowed
-    assert.NoError(t, checkForArgumentInjection("safe"))
+	assert.Error(t, checkForArgumentInjection("-flag", "cmd"))
+	assert.NoError(t, checkForArgumentInjection("-123", "cmd")) // Number allowed
+	assert.NoError(t, checkForArgumentInjection("safe", "cmd"))
+
+	// Windows checks
+	assert.Error(t, checkForArgumentInjection("/flag", "cmd"))
+	assert.Error(t, checkForArgumentInjection("/flag", "cmd.exe"))
+	assert.NoError(t, checkForArgumentInjection("/flag", "sh"))
 }
 
 func TestCheckForShellInjection(t *testing.T) {

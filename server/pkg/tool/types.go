@@ -1709,7 +1709,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					if err := checkForArgumentInjection(val); err != nil {
+					if err := checkForArgumentInjection(val, t.service.GetCommand()); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
@@ -1751,7 +1751,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := checkForArgumentInjection(argStr, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, args passed dynamically should also be checked
@@ -2018,7 +2018,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					if err := checkForArgumentInjection(val); err != nil {
+					if err := checkForArgumentInjection(val, t.service.GetCommand()); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
@@ -2060,7 +2060,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := checkForArgumentInjection(argStr, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, args passed dynamically should also be checked
@@ -2527,7 +2527,7 @@ func checkForAbsolutePath(val string) error {
 	return nil
 }
 
-func checkForArgumentInjection(val string) error {
+func checkForArgumentInjection(val string, command string) error {
 	if strings.HasPrefix(val, "-") {
 		// Allow negative numbers
 		if _, err := strconv.ParseFloat(val, 64); err == nil {
@@ -2535,6 +2535,14 @@ func checkForArgumentInjection(val string) error {
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
+
+	// On Windows, / is used for flags.
+	// We block arguments starting with / if the command is a known Windows shell/tool.
+	base := filepath.Base(command)
+	if (strings.EqualFold(base, "cmd") || strings.EqualFold(base, "cmd.exe")) && strings.HasPrefix(val, "/") {
+		return fmt.Errorf("argument injection detected: value starts with '/' (Windows flag)")
+	}
+
 	return nil
 }
 
