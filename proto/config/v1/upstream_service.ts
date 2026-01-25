@@ -170,8 +170,9 @@ export interface UpstreamServiceConfig {
   graphqlService?: GraphQLUpstreamService | undefined;
   sqlService?: SqlUpstreamService | undefined;
   filesystemService?: FilesystemUpstreamService | undefined;
-  vectorService?:
-    | VectorUpstreamService
+  vectorService?: VectorUpstreamService | undefined;
+  browserService?:
+    | BrowserUpstreamService
     | undefined;
   /** Policy to control which calls can be made. */
   callPolicies: CallPolicy[];
@@ -922,6 +923,20 @@ export interface TLSConfig {
   insecureSkipVerify: boolean;
 }
 
+/** BrowserUpstreamService defines a service that provides browser automation capabilities. */
+export interface BrowserUpstreamService {
+  /** The browser engine to use (e.g., "chromium", "firefox", "webkit"). */
+  browser: string;
+  /** If true, the browser runs in headless mode. */
+  headless: boolean;
+  /** Manually defined mappings from MCP tools to browser actions. */
+  tools: ToolDefinition[];
+  /** A list of resources served by this service. */
+  resources: ResourceDefinition[];
+  /** A list of prompts served by this service. */
+  prompts: PromptDefinition[];
+}
+
 function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
   return {
     name: "",
@@ -956,6 +971,7 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     sqlService: undefined,
     filesystemService: undefined,
     vectorService: undefined,
+    browserService: undefined,
     callPolicies: [],
     preCallHooks: [],
     postCallHooks: [],
@@ -1061,6 +1077,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.vectorService !== undefined) {
       VectorUpstreamService.encode(message.vectorService, writer.uint32(234).fork()).join();
+    }
+    if (message.browserService !== undefined) {
+      BrowserUpstreamService.encode(message.browserService, writer.uint32(306).fork()).join();
     }
     for (const v of message.callPolicies) {
       CallPolicy.encode(v!, writer.uint32(242).fork()).join();
@@ -1343,6 +1362,14 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           message.vectorService = VectorUpstreamService.decode(reader, reader.uint32());
           continue;
         }
+        case 38: {
+          if (tag !== 306) {
+            break;
+          }
+
+          message.browserService = BrowserUpstreamService.decode(reader, reader.uint32());
+          continue;
+        }
         case 30: {
           if (tag !== 242) {
             break;
@@ -1442,6 +1469,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
         ? FilesystemUpstreamService.fromJSON(object.filesystem_service)
         : undefined,
       vectorService: isSet(object.vector_service) ? VectorUpstreamService.fromJSON(object.vector_service) : undefined,
+      browserService: isSet(object.browser_service)
+        ? BrowserUpstreamService.fromJSON(object.browser_service)
+        : undefined,
       callPolicies: globalThis.Array.isArray(object?.call_policies)
         ? object.call_policies.map((e: any) => CallPolicy.fromJSON(e))
         : [],
@@ -1454,9 +1484,7 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
-      tags: globalThis.Array.isArray(object?.tags)
-        ? object.tags.map((e: any) => globalThis.String(e))
-        : [],
+      tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => globalThis.String(e)) : [],
     };
   },
 
@@ -1558,6 +1586,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.vectorService !== undefined) {
       obj.vector_service = VectorUpstreamService.toJSON(message.vectorService);
     }
+    if (message.browserService !== undefined) {
+      obj.browser_service = BrowserUpstreamService.toJSON(message.browserService);
+    }
     if (message.callPolicies?.length) {
       obj.call_policies = message.callPolicies.map((e) => CallPolicy.toJSON(e));
     }
@@ -1652,6 +1683,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       : undefined;
     message.vectorService = (object.vectorService !== undefined && object.vectorService !== null)
       ? VectorUpstreamService.fromPartial(object.vectorService)
+      : undefined;
+    message.browserService = (object.browserService !== undefined && object.browserService !== null)
+      ? BrowserUpstreamService.fromPartial(object.browserService)
       : undefined;
     message.callPolicies = object.callPolicies?.map((e) => CallPolicy.fromPartial(e)) || [];
     message.preCallHooks = object.preCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
@@ -7959,6 +7993,134 @@ export const TLSConfig: MessageFns<TLSConfig> = {
     message.clientCertPath = object.clientCertPath ?? "";
     message.clientKeyPath = object.clientKeyPath ?? "";
     message.insecureSkipVerify = object.insecureSkipVerify ?? false;
+    return message;
+  },
+};
+
+function createBaseBrowserUpstreamService(): BrowserUpstreamService {
+  return { browser: "", headless: false, tools: [], resources: [], prompts: [] };
+}
+
+export const BrowserUpstreamService: MessageFns<BrowserUpstreamService> = {
+  encode(message: BrowserUpstreamService, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.browser !== "") {
+      writer.uint32(10).string(message.browser);
+    }
+    if (message.headless !== false) {
+      writer.uint32(16).bool(message.headless);
+    }
+    for (const v of message.tools) {
+      ToolDefinition.encode(v!, writer.uint32(26).fork()).join();
+    }
+    for (const v of message.resources) {
+      ResourceDefinition.encode(v!, writer.uint32(34).fork()).join();
+    }
+    for (const v of message.prompts) {
+      PromptDefinition.encode(v!, writer.uint32(42).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BrowserUpstreamService {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBrowserUpstreamService();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.browser = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.headless = reader.bool();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.tools.push(ToolDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.resources.push(ResourceDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BrowserUpstreamService {
+    return {
+      browser: isSet(object.browser) ? globalThis.String(object.browser) : "",
+      headless: isSet(object.headless) ? globalThis.Boolean(object.headless) : false,
+      tools: globalThis.Array.isArray(object?.tools) ? object.tools.map((e: any) => ToolDefinition.fromJSON(e)) : [],
+      resources: globalThis.Array.isArray(object?.resources)
+        ? object.resources.map((e: any) => ResourceDefinition.fromJSON(e))
+        : [],
+      prompts: globalThis.Array.isArray(object?.prompts)
+        ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: BrowserUpstreamService): unknown {
+    const obj: any = {};
+    if (message.browser !== "") {
+      obj.browser = message.browser;
+    }
+    if (message.headless !== false) {
+      obj.headless = message.headless;
+    }
+    if (message.tools?.length) {
+      obj.tools = message.tools.map((e) => ToolDefinition.toJSON(e));
+    }
+    if (message.resources?.length) {
+      obj.resources = message.resources.map((e) => ResourceDefinition.toJSON(e));
+    }
+    if (message.prompts?.length) {
+      obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BrowserUpstreamService>, I>>(base?: I): BrowserUpstreamService {
+    return BrowserUpstreamService.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BrowserUpstreamService>, I>>(object: I): BrowserUpstreamService {
+    const message = createBaseBrowserUpstreamService();
+    message.browser = object.browser ?? "";
+    message.headless = object.headless ?? false;
+    message.tools = object.tools?.map((e) => ToolDefinition.fromPartial(e)) || [];
+    message.resources = object.resources?.map((e) => ResourceDefinition.fromPartial(e)) || [];
+    message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
     return message;
   },
 };

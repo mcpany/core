@@ -89,6 +89,7 @@ message UpstreamServiceConfig {
     SqlUpstreamService sql_service = 27 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 28 [json_name = "filesystem_service"];
     VectorUpstreamService vector_service = 29 [json_name = "vector_service"];
+    BrowserUpstreamService browser_service = 38 [json_name = "browser_service"];
   }
 
   // Policy to control which calls can be made.
@@ -595,4 +596,18 @@ message TLSConfig {
   string client_key_path = 4 [json_name = "client_key_path"];
   // If true, the client will not verify the server's certificate chain. Use with caution.
   bool insecure_skip_verify = 5 [json_name = "insecure_skip_verify"];
+}
+
+// BrowserUpstreamService defines a service that provides browser automation capabilities.
+message BrowserUpstreamService {
+  // The browser engine to use (e.g., "chromium", "firefox", "webkit").
+  string browser = 1;
+  // If true, the browser runs in headless mode.
+  bool headless = 2;
+  // Manually defined mappings from MCP tools to browser actions.
+  repeated ToolDefinition tools = 3;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 5;
 }
