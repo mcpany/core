@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -348,4 +349,35 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to save default weather service")
 	})
+}
+
+func TestInitializeAdminUser_RandomPassword(t *testing.T) {
+	mockStore := new(MockStore)
+	app := &Application{}
+
+	// Mocking empty users list
+	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+
+	// Capture the user passed to CreateUser
+	var capturedUser *configv1.User
+	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+		capturedUser = u
+		return true
+	})).Return(nil)
+
+	// Ensure environment variables are unset for this test
+	t.Setenv("MCPANY_ADMIN_INIT_PASSWORD", "")
+
+	err := app.initializeAdminUser(context.Background(), mockStore)
+	assert.NoError(t, err)
+
+	assert.NotNil(t, capturedUser)
+	assert.Equal(t, "admin", capturedUser.GetId())
+
+	hash := capturedUser.Authentication.GetBasicAuth().GetPasswordHash()
+	assert.NotEmpty(t, hash)
+
+	// Check that the password is NOT "password"
+	// passhash.CheckPassword returns true if match
+	assert.False(t, passhash.CheckPassword("password", hash), "Randomly generated password should not be 'password'")
 }
