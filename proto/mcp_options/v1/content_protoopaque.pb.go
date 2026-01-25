@@ -27,8 +27,8 @@ const (
 
 type Content struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Content     *string                `protobuf:"bytes,1,opt,name=content,proto3,oneof"`
-	xxx_hidden_Role        *string                `protobuf:"bytes,2,opt,name=role,proto3,oneof"`
+	xxx_hidden_Content     *string                `protobuf:"bytes,1,opt,name=content"`
+	xxx_hidden_Role        *string                `protobuf:"bytes,2,opt,name=role"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -140,13 +140,10 @@ var File_proto_mcp_options_v1_content_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_options_v1_content_proto_rawDesc = "" +
 	"\n" +
-	"\"proto/mcp_options/v1/content.proto\x12\x15mcpany.mcp_options.v1\"V\n" +
-	"\aContent\x12\x1d\n" +
-	"\acontent\x18\x01 \x01(\tH\x00R\acontent\x88\x01\x01\x12\x17\n" +
-	"\x04role\x18\x02 \x01(\tH\x01R\x04role\x88\x01\x01B\n" +
-	"\n" +
-	"\b_contentB\a\n" +
-	"\x05_roleB-Z+github.com/mcpany/core/proto/mcp_options/v1b\x06proto3"
+	"\"proto/mcp_options/v1/content.proto\x12\x15mcpany.mcp_options.v1\"E\n" +
+	"\aContent\x12\x1f\n" +
+	"\acontent\x18\x01 \x01(\tB\x05\xaa\x01\x02\b\x01R\acontent\x12\x19\n" +
+	"\x04role\x18\x02 \x01(\tB\x05\xaa\x01\x02\b\x01R\x04roleB2Z+github.com/mcpany/core/proto/mcp_options/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_mcp_options_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_mcp_options_v1_content_proto_goTypes = []any{
@@ -165,7 +162,6 @@ func file_proto_mcp_options_v1_content_proto_init() {
 	if File_proto_mcp_options_v1_content_proto != nil {
 		return
 	}
-	file_proto_mcp_options_v1_content_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
