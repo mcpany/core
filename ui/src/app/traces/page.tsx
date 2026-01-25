@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
@@ -14,10 +14,10 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { Loader2 } from "lucide-react";
 
 /**
- * TracesPage component.
- * @returns The rendered component.
+ * TracesPageContent component.
+ * Inner component that uses search params.
  */
-export default function TracesPage() {
+function TracesPageContent() {
   const searchParams = useSearchParams();
   const [traces, setTraces] = useState<Trace[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -103,5 +103,22 @@ export default function TracesPage() {
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
+  );
+}
+
+/**
+ * TracesPage component.
+ * Wrapper with Suspense boundary.
+ * @returns The rendered component.
+ */
+export default function TracesPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-full flex items-center justify-center text-muted-foreground gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" /> Loading...
+      </div>
+    }>
+      <TracesPageContent />
+    </Suspense>
   );
 }
