@@ -522,7 +522,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Process base parts
 			for _, bp := range baseParts {
-				if bp.isInvalid {
+				if bp.isInvalid && !bp.keyDecoded {
 					finalParts = append(finalParts, bp.raw)
 					continue
 				}
