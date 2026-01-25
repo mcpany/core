@@ -558,7 +558,7 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
 	default:
-		return nil
+		return fmt.Errorf("unsupported or missing authentication method")
 	}
 }
 
