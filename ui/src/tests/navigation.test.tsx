@@ -8,6 +8,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AppSidebar } from '../components/app-sidebar';
 import { SidebarProvider } from '../components/ui/sidebar';
+import { UserProvider } from '../components/user-context';
+import { KeyboardShortcutsProvider } from '../contexts/keyboard-shortcuts-context';
 
 // Mock ResizeObserver
 class ResizeObserver {
@@ -35,9 +37,13 @@ Object.defineProperty(window, 'matchMedia', {
 describe('AppSidebar Navigation', () => {
   it('renders all navigation groups', () => {
     render(
-      <SidebarProvider>
-        <AppSidebar />
-      </SidebarProvider>
+      <UserProvider>
+        <KeyboardShortcutsProvider>
+          <SidebarProvider>
+            <AppSidebar />
+          </SidebarProvider>
+        </KeyboardShortcutsProvider>
+      </UserProvider>
     );
 
     expect(screen.getByText('Platform')).toBeDefined();
@@ -47,18 +53,24 @@ describe('AppSidebar Navigation', () => {
 
   it('renders key navigation links', () => {
     render(
-      <SidebarProvider>
-         <AppSidebar />
-      </SidebarProvider>
+      <UserProvider>
+        <KeyboardShortcutsProvider>
+          <SidebarProvider>
+             <AppSidebar />
+          </SidebarProvider>
+        </KeyboardShortcutsProvider>
+      </UserProvider>
     );
 
     const links = [
       'Dashboard',
       'Network Graph',
+      'Diagnostics',
       'Live Logs',
       'Playground',
       'Tools',
-      'Services',
+      'Upstream Services',
+      'Diagnostics',
       'Secrets Vault'
     ];
 
