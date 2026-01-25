@@ -4,10 +4,11 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection } from './e2e/test-data';
+import { seedCollection, cleanupCollection, seedTemplates, cleanupTemplates } from './e2e/test-data';
 
 test.describe('Stack Editor', () => {
   test.beforeEach(async ({ request }) => {
+      await seedTemplates(request);
       await seedCollection('default-stack', request);
       const res = await request.get('/api/v1/collections/default-stack', { headers: { 'X-API-Key': 'test-token' } });
       console.log(`VERIFY COLLECTION: ${res.status()} ${await res.text()}`);
@@ -15,6 +16,7 @@ test.describe('Stack Editor', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupCollection('default-stack', request);
+      await cleanupTemplates(request);
   });
 
   test('should load the editor and show initial config', async ({ page }) => {

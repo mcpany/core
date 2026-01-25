@@ -130,6 +130,12 @@ export interface UpstreamServiceConfig {
    * @inject_tag: yaml:"-"
    */
   toolCount: number;
+  /** A description of the service (useful for templates). */
+  description: string;
+  /** The category of the service (useful for templates). */
+  category: string;
+  /** A YAML snippet for the service (useful for templates). */
+  yamlSnippet: string;
   /** Configuration for the pool of connections to the upstream service. */
   connectionPool?:
     | ConnectionPoolConfig
@@ -935,6 +941,9 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     readOnly: false,
     lastError: "",
     toolCount: 0,
+    description: "",
+    category: "",
+    yamlSnippet: "",
     connectionPool: undefined,
     upstreamAuth: undefined,
     cache: undefined,
@@ -998,6 +1007,15 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.toolCount !== 0) {
       writer.uint32(296).int32(message.toolCount);
+    }
+    if (message.description !== "") {
+      writer.uint32(306).string(message.description);
+    }
+    if (message.category !== "") {
+      writer.uint32(314).string(message.category);
+    }
+    if (message.yamlSnippet !== "") {
+      writer.uint32(322).string(message.yamlSnippet);
     }
     if (message.connectionPool !== undefined) {
       ConnectionPoolConfig.encode(message.connectionPool, writer.uint32(74).fork()).join();
@@ -1173,6 +1191,30 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           }
 
           message.toolCount = reader.int32();
+          continue;
+        }
+        case 38: {
+          if (tag !== 306) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        }
+        case 39: {
+          if (tag !== 314) {
+            break;
+          }
+
+          message.category = reader.string();
+          continue;
+        }
+        case 40: {
+          if (tag !== 322) {
+            break;
+          }
+
+          message.yamlSnippet = reader.string();
           continue;
         }
         case 9: {
@@ -1405,6 +1447,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
       lastError: isSet(object.last_error) ? globalThis.String(object.last_error) : "",
       toolCount: isSet(object.tool_count) ? globalThis.Number(object.tool_count) : 0,
+      description: isSet(object.description) ? globalThis.String(object.description) : "",
+      category: isSet(object.category) ? globalThis.String(object.category) : "",
+      yamlSnippet: isSet(object.yaml_snippet) ? globalThis.String(object.yaml_snippet) : "",
       connectionPool: isSet(object.connection_pool) ? ConnectionPoolConfig.fromJSON(object.connection_pool) : undefined,
       upstreamAuth: isSet(object.upstream_auth) ? Authentication.fromJSON(object.upstream_auth) : undefined,
       cache: isSet(object.cache) ? CacheConfig.fromJSON(object.cache) : undefined,
@@ -1494,6 +1539,15 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     if (message.toolCount !== 0) {
       obj.tool_count = Math.round(message.toolCount);
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
+    if (message.category !== "") {
+      obj.category = message.category;
+    }
+    if (message.yamlSnippet !== "") {
+      obj.yaml_snippet = message.yamlSnippet;
     }
     if (message.connectionPool !== undefined) {
       obj.connection_pool = ConnectionPoolConfig.toJSON(message.connectionPool);
@@ -1592,6 +1646,9 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.readOnly = object.readOnly ?? false;
     message.lastError = object.lastError ?? "";
     message.toolCount = object.toolCount ?? 0;
+    message.description = object.description ?? "";
+    message.category = object.category ?? "";
+    message.yamlSnippet = object.yamlSnippet ?? "";
     message.connectionPool = (object.connectionPool !== undefined && object.connectionPool !== null)
       ? ConnectionPoolConfig.fromPartial(object.connectionPool)
       : undefined;

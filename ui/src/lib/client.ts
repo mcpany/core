@@ -1155,6 +1155,7 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            yamlSnippet: s.yaml_snippet,
         }));
     },
 
@@ -1174,6 +1175,9 @@ export const apiClient = {
             priority: template.priority,
             load_balancing_strategy: template.loadBalancingStrategy,
             tags: template.tags,
+            description: template.description,
+            category: template.category,
+            yaml_snippet: template.yamlSnippet,
         };
 
         if (template.httpService) {

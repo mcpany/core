@@ -55,6 +55,12 @@ message UpstreamServiceConfig {
   // The number of tools registered for this service.
   // @inject_tag: yaml:"-"
   int32 tool_count = 37 [json_name = "tool_count"];
+  // A description of the service (useful for templates).
+  string description = 38;
+  // The category of the service (useful for templates).
+  string category = 39;
+  // A YAML snippet for the service (useful for templates).
+  string yaml_snippet = 40 [json_name = "yaml_snippet"];
 
   // Configuration for the pool of connections to the upstream service.
   ConnectionPoolConfig connection_pool = 9 [json_name = "connection_pool"];

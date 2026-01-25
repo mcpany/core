@@ -98,6 +98,49 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedTemplates = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const templates = [
+        {
+            id: "postgres",
+            name: "PostgreSQL",
+            description: "Standard SQL Database",
+            category: "Database",
+            yaml_snippet: `  postgres-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: \${POSTGRES_PASSWORD}
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+`
+        },
+        {
+            id: "redis",
+            name: "Redis",
+            description: "In-memory key-value store",
+            category: "Database",
+            yaml_snippet: `  redis-cache:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+`
+        }
+    ];
+
+    for (const tmpl of templates) {
+        try {
+            const res = await context.post('/api/v1/templates', { data: tmpl, headers: HEADERS });
+            if (!res.ok()) {
+                console.log(`Failed to seed template ${tmpl.name}: ${res.status()} ${await res.text()}`);
+            }
+        } catch (e) {
+            console.log(`Failed to seed template ${tmpl.name}: ${e}`);
+        }
+    }
+};
+
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
@@ -115,5 +158,17 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup collection ${name}: ${e}`);
+    }
+};
+
+export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const templateIds = ["postgres", "redis"];
+    for (const id of templateIds) {
+        try {
+            await context.delete(`/api/v1/templates/${id}`, { headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to cleanup template ${id}: ${e}`);
+        }
     }
 };
