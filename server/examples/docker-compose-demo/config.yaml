@@ -20,4 +20,4 @@ upstream_services:
       #   timeout: "2s"
 
 global_settings:
-  api_key: "demo-key"
+  api_key: "${MCPANY_API_KEY}"

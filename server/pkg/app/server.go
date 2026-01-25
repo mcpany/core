@@ -1432,9 +1432,18 @@ func (a *Application) runServerMode(
 	} else if _, err := a.fs.Stat("./ui/dist"); err == nil {
 		uiPath = "./ui/dist"
 	} else if _, err := a.fs.Stat("./ui"); err == nil {
-		// Check for package.json to detect source code
-		if _, err := a.fs.Stat("./ui/package.json"); err == nil {
-			logging.GetLogger().Warn("UI directory ./ui contains package.json. Refusing to serve source code for security.", "path", "./ui")
+		// Check for source code indicators to prevent accidental exposure of source files
+		isSource := false
+		indicators := []string{"package.json", "src", "tsconfig.json", "next.config.ts", "next.config.js", ".env"}
+		for _, indicator := range indicators {
+			if _, err := a.fs.Stat(filepath.Join("./ui", indicator)); err == nil {
+				isSource = true
+				break
+			}
+		}
+
+		if isSource {
+			logging.GetLogger().Warn("UI directory ./ui appears to contain source code. Refusing to serve for security.", "path", "./ui")
 		} else {
 			uiPath = "./ui"
 		}
@@ -1451,6 +1460,16 @@ func (a *Application) runServerMode(
 		// File server with Cache-Control headers
 		fileServer := http.FileServer(uiFS)
 		cachingFileServer := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Security: Block access to dotfiles (hidden files)
+			// Check if any path segment starts with "."
+			pathParts := strings.Split(r.URL.Path, "/")
+			for _, part := range pathParts {
+				if strings.HasPrefix(part, ".") && part != "." && part != ".." {
+					http.Error(w, "Forbidden", http.StatusForbidden)
+					return
+				}
+			}
+
 			// Add Cache-Control headers
 			// For immutable assets (usually hashed), we can cache for a long time.
 			// Next.js puts static assets in _next/static.
