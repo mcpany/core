@@ -168,3 +168,39 @@ func TestAuthorizationBypass(t *testing.T) {
 		}
 	})
 }
+
+func TestMiddlewareOrder(t *testing.T) {
+	poolManager := pool.NewManager()
+	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
+	messageBus := bus_pb.MessageBus_builder{}.Build()
+	messageBus.SetInMemory(bus_pb.InMemoryBus_builder{}.Build())
+	busProvider, err := bus.NewProvider(messageBus)
+	require.NoError(t, err)
+
+	tm := &mockSecurityToolManager{}
+	pm := prompt.NewManager()
+	rm := resource.NewManager()
+	authManager := auth.NewManager()
+	serviceRegistry := serviceregistry.New(factory, tm, pm, rm, authManager)
+	ctx := context.Background()
+
+	var middlewareOrder []string
+	mcpserver.AddReceivingMiddlewareHook = func(name string) {
+		middlewareOrder = append(middlewareOrder, name)
+	}
+	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
+
+	_, err = mcpserver.NewServer(ctx, tm, pm, rm, authManager, serviceRegistry, busProvider, false)
+	require.NoError(t, err)
+
+	expectedOrder := []string{
+		"CachingMiddleware",
+		"DLPMiddleware",
+		"toolListFilteringMiddleware",
+		"resourceListFilteringMiddleware",
+		"promptListFilteringMiddleware",
+		"routerMiddleware",
+	}
+
+	assert.Equal(t, expectedOrder, middlewareOrder, "Middleware order is incorrect")
+}

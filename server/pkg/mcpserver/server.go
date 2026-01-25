@@ -236,14 +236,22 @@ func NewServer(
 		}
 	})
 
+	// Helper to add middleware and invoke test hook
+	addMiddleware := func(name string, m mcp.Middleware) {
+		if AddReceivingMiddlewareHook != nil {
+			AddReceivingMiddlewareHook(name)
+		}
+		s.server.AddReceivingMiddleware(m)
+	}
+
 	// Register DLP middleware
 	// Note: config.GlobalSettings() returns *configv1.GlobalSettings
-	s.server.AddReceivingMiddleware(middleware.DLPMiddleware(config.GlobalSettings().GetDlp(), logging.GetLogger()))
+	addMiddleware("DLPMiddleware", middleware.DLPMiddleware(config.GlobalSettings().GetDlp(), logging.GetLogger()))
 
-	s.server.AddReceivingMiddleware(s.routerMiddleware)
-	s.server.AddReceivingMiddleware(s.toolListFilteringMiddleware)
-	s.server.AddReceivingMiddleware(s.resourceListFilteringMiddleware)
-	s.server.AddReceivingMiddleware(s.promptListFilteringMiddleware)
+	addMiddleware("toolListFilteringMiddleware", s.toolListFilteringMiddleware)
+	addMiddleware("resourceListFilteringMiddleware", s.resourceListFilteringMiddleware)
+	addMiddleware("promptListFilteringMiddleware", s.promptListFilteringMiddleware)
+	addMiddleware("routerMiddleware", s.routerMiddleware)
 
 	return s, nil
 }
