@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sort"
 
 	"github.com/mcpany/core/server/pkg/transformer"
@@ -114,7 +115,10 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 			}
 		}
 	}
-	sanitizedName, _ := util.SanitizeToolName(p.definition.GetName())
+	sanitizedName, err := util.SanitizeToolName(p.definition.GetName())
+	if err != nil {
+		sanitizedName = "unnamed"
+	}
 
 	return &mcp.Prompt{
 		Name:        p.serviceID + "." + sanitizedName,
@@ -159,6 +163,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 				Role:    mcp.Role(msg.GetRole()),
 				Content: &mcp.TextContent{Text: renderedText},
 			}
+		} else {
+			return nil, fmt.Errorf("prompt message %d missing text content", i)
 		}
 	}
 
@@ -176,5 +182,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // Returns the result.
 // Returns an error if the operation fails.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
+	if _, err := util.SanitizeToolName(definition.GetName()); err != nil {
+		return nil, fmt.Errorf("invalid prompt name: %w", err)
+	}
 	return NewTemplatedPrompt(definition, serviceID), nil
 }
