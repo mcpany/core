@@ -21,3 +21,7 @@ Click on a resource row (e.g., `file:///etc/hosts`).
 - **Images**: Displayed in a preview modal.
 
 ![Resource Preview](screenshots/resource_preview.png)
+
+### 3. Drag and Drop Export
+You can drag a loaded resource directly from the preview header to your desktop to save it as a file.
+See [Drag-and-Drop Export](drag_and_drop_export.md) for details.

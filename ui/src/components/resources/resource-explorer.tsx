@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
     FileText,
     Database,
@@ -67,6 +67,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const [contentLoading, setContentLoading] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [previewResource, setPreviewResource] = useState<ResourceDefinition | null>(null);
+    const lastDragBlobUrl = useRef<string | null>(null);
 
     const { toast } = useToast();
 
@@ -74,6 +75,15 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         if (initialResources.length === 0) {
             loadResources();
         }
+    }, []);
+
+    // Cleanup blob URL on unmount
+    useEffect(() => {
+        return () => {
+            if (lastDragBlobUrl.current) {
+                URL.revokeObjectURL(lastDragBlobUrl.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -153,28 +163,59 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     };
 
-    const handleDownload = (uri?: string) => {
-        // If called from context menu with URI, we might not have content loaded yet.
-        // For this demo, we only support download if content is already loaded (selected)
-        // or we could fetch it. Ideally we should fetch.
-        // For now, let's fallback to current selection if match.
-
-        // If uri is provided and matches selectedUri, use resourceContent.
-        // Otherwise we can't easily download without fetching first.
+    const handleDownload = async (uri?: string) => {
         const targetUri = uri || selectedUri;
         if (!targetUri) return;
 
-        if (targetUri === selectedUri && resourceContent) {
-             const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
-             const url = URL.createObjectURL(blob);
-             const a = document.createElement("a");
-             a.href = url;
-             const selectedRes = resources.find(r => r.uri === targetUri);
-             a.download = selectedRes?.name || "resource";
-             a.click();
-        } else {
-             // TODO: Fetch and download
-             toast({ title: "Info", description: "Select the resource first to download." });
+        let content = resourceContent;
+        let mimeType = "application/octet-stream";
+        let name = "resource";
+
+        // Find resource definition
+        const resDef = resources.find(r => r.uri === targetUri);
+        if (resDef) {
+            name = resDef.name;
+            mimeType = resDef.mimeType || mimeType;
+        }
+
+        // If we don't have content or it's for a different URI, fetch it
+        if (!content || targetUri !== selectedUri) {
+            try {
+                const res = await apiClient.readResource(targetUri);
+                if (res.contents && res.contents.length > 0) {
+                    content = res.contents[0];
+                }
+            } catch (e) {
+                console.error("Failed to fetch resource for download", e);
+                toast({ title: "Error", description: "Failed to download resource.", variant: "destructive" });
+                return;
+            }
+        }
+
+        if (content) {
+            // Prefer blob if available (binary), else text
+            let blob: Blob;
+            if (content.blob) {
+                // Convert base64 to blob
+                const byteCharacters = atob(content.blob);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                blob = new Blob([byteArray], { type: content.mimeType });
+            } else {
+                blob = new Blob([content.text || ""], { type: content.mimeType });
+            }
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     };
 
@@ -194,6 +235,37 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         e.dataTransfer.setData("text/plain", res.uri);
         e.dataTransfer.setData("text/uri-list", res.uri);
         e.dataTransfer.effectAllowed = "copy";
+
+        // Enhance with DownloadURL if content is available (currently selected)
+        if (selectedUri === res.uri && resourceContent) {
+            // Revoke previous if exists
+            if (lastDragBlobUrl.current) {
+                URL.revokeObjectURL(lastDragBlobUrl.current);
+            }
+
+            let blobUrl = "";
+            if (resourceContent.blob) {
+                // Convert base64 to blob
+                const byteCharacters = atob(resourceContent.blob);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: resourceContent.mimeType });
+                blobUrl = URL.createObjectURL(blob);
+            } else {
+                const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
+                blobUrl = URL.createObjectURL(blob);
+            }
+
+            lastDragBlobUrl.current = blobUrl;
+
+            // Chrome/Edge "DownloadURL" format: mime:filename:url
+            // Note: This relies on the blob URL being valid.
+            const downloadUrl = `${resourceContent.mimeType}:${res.name}:${blobUrl}`;
+            e.dataTransfer.setData("DownloadURL", downloadUrl);
+        }
     };
 
     const navigateSibling = (direction: 'next' | 'prev') => {
@@ -309,7 +381,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                     <FileText className="mr-2 h-4 w-4" /> Copy Name
                                                 </ContextMenuItem>
                                                 <ContextMenuSeparator />
-                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)}>
                                                     <Download className="mr-2 h-4 w-4" /> Download
                                                 </ContextMenuItem>
                                             </ContextMenuContent>
@@ -358,7 +430,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                     <FileText className="mr-2 h-4 w-4" /> Copy Name
                                                 </ContextMenuItem>
                                                 <ContextMenuSeparator />
-                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)}>
                                                     <Download className="mr-2 h-4 w-4" /> Download
                                                 </ContextMenuItem>
                                             </ContextMenuContent>
@@ -386,6 +458,20 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                      <Badge variant="outline" className="text-[10px] font-normal h-5">{resourceContent?.mimeType || "loading..."}</Badge>
                                 </div>
                                  <div className="flex items-center gap-1">
+                                    {/* Drag Handle for File Export */}
+                                    {resourceContent && (
+                                        <div
+                                            className="flex items-center justify-center h-7 w-7 rounded hover:bg-muted cursor-grab active:cursor-grabbing mr-1 text-muted-foreground hover:text-primary transition-colors"
+                                            draggable
+                                            onDragStart={(e) => {
+                                                const res = resources.find(r => r.uri === selectedUri);
+                                                if (res) handleDragStart(e, res);
+                                            }}
+                                            title="Drag to desktop to save"
+                                        >
+                                            <File className="h-4 w-4" />
+                                        </div>
+                                    )}
                                     <div className="flex items-center gap-1 mr-2 px-1 bg-muted/50 rounded-md">
                                         <Button
                                             variant="ghost"

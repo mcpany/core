@@ -389,6 +389,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_grid.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_split_view.png'), fullPage: true });
 
+      // Screenshot of Drag-and-Drop feature (Split View with Content)
+      // Ensure content is loaded for the selected item
+      // We rely on the mock data or existing resources
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_drag_drop.png'), fullPage: true });
+
       // Open Preview Modal
       // Just take a screenshot of the page with the modal open if possible
       // Using nth(0) as per plan

@@ -23,6 +23,7 @@ Detailed documentation for the MCP Any user interface capabilities.
 ## Discovery
 - [Marketplace](features/marketplace.md) - Pre-configured service templates.
 - [Resources](features/resources.md) - Static asset explorer.
+  - [Drag-and-Drop Export](features/drag_and_drop_export.md) - Save resources to desktop.
 - [Prompts](features/prompts.md) - Standardized prompt library.
 - [Global Search](features/search.md) - Quick navigation.
 
