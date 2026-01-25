@@ -5,13 +5,33 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
+
+// LazyLogPayload lazily marshals and redacts a payload for logging.
+type LazyLogPayload struct {
+	Value any
+}
+
+func (l LazyLogPayload) LogValue() slog.Value {
+	if l.Value == nil {
+		return slog.StringValue("<nil>")
+	}
+	b, err := json.Marshal(l.Value)
+	if err != nil {
+		return slog.StringValue("failed to marshal payload")
+	}
+	// Redact sensitive info
+	redacted := util.RedactJSON(b)
+	return slog.StringValue(string(redacted))
+}
 
 // LoggingMiddleware creates an MCP middleware that logs information about each
 // incoming request. It records the start and completion of each request,
@@ -47,10 +67,20 @@ func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 			result, err := next(ctx, method, req)
 			if err != nil {
 				metrics.IncrCounter(metricRequestError, 1)
-				log.Error("Request failed", "method", method, "duration", time.Since(start), "error", err)
+				log.Error("Request failed",
+					"method", method,
+					"duration", time.Since(start),
+					"error", err,
+					"request_payload", LazyLogPayload{Value: req},
+				)
 			} else {
 				metrics.IncrCounter(metricRequestSuccess, 1)
-				log.Info("Request completed", "method", method, "duration", time.Since(start))
+				log.Info("Request completed",
+					"method", method,
+					"duration", time.Since(start),
+					"request_payload", LazyLogPayload{Value: req},
+					"response_payload", LazyLogPayload{Value: result},
+				)
 			}
 			return result, err
 		}
