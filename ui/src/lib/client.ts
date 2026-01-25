@@ -211,6 +211,9 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -244,6 +247,9 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
+                         toolExportPolicy: s.tool_export_policy,
+                         promptExportPolicy: s.prompt_export_policy,
+                         resourceExportPolicy: s.resource_export_policy,
                      };
                  }
                  return data;
@@ -332,6 +338,15 @@ export const apiClient = {
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
         }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -383,6 +398,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -450,6 +474,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1146,6 +1179,9 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -1188,6 +1224,15 @@ export const apiClient = {
         }
         if (template.postCallHooks) {
             payload.post_call_hooks = template.postCallHooks;
+        }
+        if (template.toolExportPolicy) {
+            payload.tool_export_policy = template.toolExportPolicy;
+        }
+        if (template.promptExportPolicy) {
+            payload.prompt_export_policy = template.promptExportPolicy;
+        }
+        if (template.resourceExportPolicy) {
+            payload.resource_export_policy = template.resourceExportPolicy;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {
