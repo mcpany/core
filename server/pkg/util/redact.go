@@ -499,6 +499,15 @@ func RedactDSN(dsn string) string {
 		if strings.EqualFold(u.Scheme, "mailto") {
 			return dsn
 		}
+
+		// If it's a standard hierarchical URL (not Opaque) and Host is clean (no @),
+		// and we didn't find User info (checked above),
+		// then we assume it's safe and doesn't contain credentials.
+		// We also require Host to be non-empty, because an empty Host might imply
+		// the credentials are hiding in the path (e.g. "scheme:/pass@host").
+		if u.Opaque == "" && u.Host != "" && !strings.Contains(u.Host, "@") {
+			return dsn
+		}
 	}
 
 	// Fallback to regex if parsing fails (e.g. not a valid URL)
