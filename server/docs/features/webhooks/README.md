@@ -55,6 +55,8 @@ This example demonstrates a **Pre-Call Hook** that inspects arguments for a comm
 
     ```bash
     # Runs on localhost:8081
+    # Ensure dependencies are tidy
+    go mod tidy
     go run main.go
     ```
 
