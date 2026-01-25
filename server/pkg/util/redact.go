@@ -457,13 +457,13 @@ var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?
 // We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
 // the path or subsequent text (e.g. multiple DSNs).
 // Matches scheme://user:password@
-var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
+var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^/?#\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).
 // It matches "://", then optional user (non-colons), then colon, then password.
 // Password is terminated by /, @, whitespace, or ".
-var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
+var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/?#@\s"]+)`)
 
 // dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
 // e.g. parse "...": invalid port ":password".
