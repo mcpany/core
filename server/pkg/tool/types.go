@@ -651,7 +651,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			bodyBytes = util.RedactJSON(bodyBytes)
 			bodyStr := string(bodyBytes)
 
-			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", httpReq.URL.String())
+			logging.GetLogger().DebugContext(ctx, "Upstream HTTP error", "status", attemptResp.StatusCode, "body", bodyStr, "url", util.RedactURL(httpReq.URL.String()))
 
 			// Truncate body for the returned error message to prevent leaking large stack traces or extensive details to the user/LLM.
 			// We keep enough to likely identify the issue (e.g. "invalid argument").

@@ -581,3 +581,68 @@ func RedactSecrets(text string, secrets []string) string {
 	}
 	return text
 }
+
+// RedactURL redacts sensitive query parameters from a URL string.
+func RedactURL(urlStr string) string {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		// If we can't parse it, fallback to regex-based replacement for known patterns
+		// or just return as is (to avoid breaking things, although logging raw might leak).
+		// Best effort: treat it as text and RedactSecrets if we knew the secrets,
+		// but here we just want to redact keys.
+		return urlStr
+	}
+
+	// Redact User info if present
+	if u.User != nil {
+		if _, hasPassword := u.User.Password(); hasPassword {
+			u.User = url.UserPassword(u.User.Username(), redactedPlaceholder)
+		}
+	}
+
+	// Redact Query Parameters
+	q := u.Query()
+	redacted := false
+	for k := range q {
+		if IsSensitiveKey(k) {
+			q.Set(k, redactedPlaceholder)
+			redacted = true
+		}
+	}
+
+	if redacted {
+		u.RawQuery = q.Encode()
+		// Re-encoding might change the order or encoding of other parameters.
+		// Ideally we should preserve the original string as much as possible,
+		// but URL query parameter order shouldn't matter for most cases.
+		// However, to keep it "clean", we can reconstruct it.
+	}
+
+	// Also Redact Fragment if it looks like a query string (e.g. hash routing)
+	if u.Fragment != "" && strings.Contains(u.Fragment, "=") {
+		// Try to parse fragment as query
+		vals, err := url.ParseQuery(u.Fragment)
+		if err == nil {
+			fragRedacted := false
+			for k := range vals {
+				if IsSensitiveKey(k) {
+					vals.Set(k, redactedPlaceholder)
+					fragRedacted = true
+				}
+			}
+			if fragRedacted {
+				// vals.Encode() returns url-encoded string (e.g. %5BREDACTED%5D).
+				// u.Fragment expects unescaped string (it will be escaped by u.String()).
+				// So we unescape it back.
+				encoded := vals.Encode()
+				if decoded, err := url.QueryUnescape(encoded); err == nil {
+					u.Fragment = decoded
+				} else {
+					u.Fragment = encoded
+				}
+			}
+		}
+	}
+
+	return u.String()
+}
