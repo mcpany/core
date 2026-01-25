@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package config
 
 import (
@@ -119,126 +122,126 @@ func TestResolveEnvValue_Extra(t *testing.T) {
 	val = resolveEnvValue(cfg, []string{"tags", "0", "invalid_subfield"}, "val")
 	assert.Equal(t, "val", val)
 
-    // 4. Message list traversal
-    // upstream_services is repeated message
-    // path: upstream_services.0.name
-    val = resolveEnvValue(cfg, []string{"upstream_services", "0", "name"}, "my-service")
-    assert.Equal(t, "my-service", val)
+	// 4. Message list traversal
+	// upstream_services is repeated message
+	// path: upstream_services.0.name
+	val = resolveEnvValue(cfg, []string{"upstream_services", "0", "name"}, "my-service")
+	assert.Equal(t, "my-service", val)
 }
 
 func TestYamlUnmarshal_TabError(t *testing.T) {
-    e := &yamlEngine{}
-    b := []byte("key:\n\tvalue: 1")
-    err := e.Unmarshal(b, &configv1.McpAnyServerConfig{})
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "cannot contain tabs")
+	e := &yamlEngine{}
+	b := []byte("key:\n\tvalue: 1")
+	err := e.Unmarshal(b, &configv1.McpAnyServerConfig{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "cannot contain tabs")
 }
 
 func TestAuth_SecretValidationErrors(t *testing.T) {
-    ctx := context.Background()
+	ctx := context.Background()
 
-    // API Key with invalid secret (non-existent file)
-    auth := &configv1.Authentication{
-        AuthMethod: &configv1.Authentication_ApiKey{
-            ApiKey: &configv1.APIKeyAuth{
-                ParamName: strPtrLocal("key"),
-                Value: &configv1.SecretValue{
-                    Value: &configv1.SecretValue_FilePath{FilePath: "nonexistent_secret_file"},
-                },
-            },
-        },
-    }
-    err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "secret file \"nonexistent_secret_file\" does not exist")
+	// API Key with invalid secret (non-existent file)
+	auth := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_ApiKey{
+			ApiKey: &configv1.APIKeyAuth{
+				ParamName: strPtrLocal("key"),
+				Value: &configv1.SecretValue{
+					Value: &configv1.SecretValue_FilePath{FilePath: "nonexistent_secret_file"},
+				},
+			},
+		},
+	}
+	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "secret file \"nonexistent_secret_file\" does not exist")
 
-    // Bearer Token with invalid secret (missing env)
-    auth = &configv1.Authentication{
-        AuthMethod: &configv1.Authentication_BearerToken{
-            BearerToken: &configv1.BearerTokenAuth{
-                Token: &configv1.SecretValue{
-                    Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_BEARER_ENV"},
-                },
-            },
-        },
-    }
-    os.Unsetenv("MISSING_BEARER_ENV")
-    err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "environment variable \"MISSING_BEARER_ENV\" is not set")
+	// Bearer Token with invalid secret (missing env)
+	auth = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_BearerToken{
+			BearerToken: &configv1.BearerTokenAuth{
+				Token: &configv1.SecretValue{
+					Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_BEARER_ENV"},
+				},
+			},
+		},
+	}
+	os.Unsetenv("MISSING_BEARER_ENV")
+	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "environment variable \"MISSING_BEARER_ENV\" is not set")
 
-    // Basic Auth with invalid password secret (bad remote url)
-    auth = &configv1.Authentication{
-        AuthMethod: &configv1.Authentication_BasicAuth{
-            BasicAuth: &configv1.BasicAuth{
-                Username: strPtrLocal("user"),
-                Password: &configv1.SecretValue{
-                    Value: &configv1.SecretValue_RemoteContent{
-                        RemoteContent: &configv1.RemoteContent{HttpUrl: strPtrLocal("not-a-url")},
-                    },
-                },
-            },
-        },
-    }
-    err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "basic auth password validation failed")
+	// Basic Auth with invalid password secret (bad remote url)
+	auth = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_BasicAuth{
+			BasicAuth: &configv1.BasicAuth{
+				Username: strPtrLocal("user"),
+				Password: &configv1.SecretValue{
+					Value: &configv1.SecretValue_RemoteContent{
+						RemoteContent: &configv1.RemoteContent{HttpUrl: strPtrLocal("not-a-url")},
+					},
+				},
+			},
+		},
+	}
+	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "basic auth password validation failed")
 }
 
 func TestOAuth2_SecretValidationErrors(t *testing.T) {
-    ctx := context.Background()
-    // Invalid Client ID secret
-    auth := &configv1.OAuth2Auth{
-        TokenUrl: strPtrLocal("https://token.url"),
-        ClientId: &configv1.SecretValue{
-             Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_CLIENT_ID"},
-        },
-    }
-    os.Unsetenv("MISSING_CLIENT_ID")
-    err := validateOAuth2Auth(ctx, auth)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "oauth2 client_id validation failed")
+	ctx := context.Background()
+	// Invalid Client ID secret
+	auth := &configv1.OAuth2Auth{
+		TokenUrl: strPtrLocal("https://token.url"),
+		ClientId: &configv1.SecretValue{
+			Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_CLIENT_ID"},
+		},
+	}
+	os.Unsetenv("MISSING_CLIENT_ID")
+	err := validateOAuth2Auth(ctx, auth)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "oauth2 client_id validation failed")
 
-    // Invalid Client Secret secret
-    auth = &configv1.OAuth2Auth{
-        TokenUrl: strPtrLocal("https://token.url"),
-        ClientId: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "id"}},
-        ClientSecret: &configv1.SecretValue{
-             Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_CLIENT_SECRET"},
-        },
-    }
-    os.Unsetenv("MISSING_CLIENT_SECRET")
-    err = validateOAuth2Auth(ctx, auth)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "oauth2 client_secret validation failed")
+	// Invalid Client Secret secret
+	auth = &configv1.OAuth2Auth{
+		TokenUrl: strPtrLocal("https://token.url"),
+		ClientId: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "id"}},
+		ClientSecret: &configv1.SecretValue{
+			Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_CLIENT_SECRET"},
+		},
+	}
+	os.Unsetenv("MISSING_CLIENT_SECRET")
+	err = validateOAuth2Auth(ctx, auth)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "oauth2 client_secret validation failed")
 }
 
 func TestValidateCommand_Directory(t *testing.T) {
-    tmpDir := t.TempDir()
-    // 1. Abs path is dir
-    err := validateCommandExists(tmpDir, "")
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "is a directory")
+	tmpDir := t.TempDir()
+	// 1. Abs path is dir
+	err := validateCommandExists(tmpDir, "")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "is a directory")
 
-    // 2. Relative path is dir
-    err = validateCommandExists("./.", tmpDir)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "is a directory")
+	// 2. Relative path is dir
+	err = validateCommandExists("./.", tmpDir)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "is a directory")
 }
 
 func TestValidateDirectory_File(t *testing.T) {
-    tmpFile, err := os.CreateTemp("", "file")
-    assert.NoError(t, err)
-    defer os.Remove(tmpFile.Name())
+	tmpFile, err := os.CreateTemp("", "file")
+	assert.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
 
-    err = validateDirectoryExists(tmpFile.Name())
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "is not a directory")
+	err = validateDirectoryExists(tmpFile.Name())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "is not a directory")
 }
 
 func TestFindKeyLine_Error(t *testing.T) {
-    line := findKeyLine([]byte(": invalid yaml"), "key")
-    assert.Equal(t, 0, line)
+	line := findKeyLine([]byte(": invalid yaml"), "key")
+	assert.Equal(t, 0, line)
 }
 
 func TestMcpService_NoConnectionType(t *testing.T) {
@@ -251,22 +254,22 @@ func TestMcpService_NoConnectionType(t *testing.T) {
 }
 
 func TestValidateOAuth2Auth_IssuerUrl_Error(t *testing.T) {
-    ctx := context.Background()
-    // Empty token url AND empty issuer url
-    auth := &configv1.OAuth2Auth{
-        IssuerUrl: strPtrLocal(""),
-    }
-    err := validateOAuth2Auth(ctx, auth)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "oauth2 token_url is empty and no issuer_url provided")
+	ctx := context.Background()
+	// Empty token url AND empty issuer url
+	auth := &configv1.OAuth2Auth{
+		IssuerUrl: strPtrLocal(""),
+	}
+	err := validateOAuth2Auth(ctx, auth)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "oauth2 token_url is empty and no issuer_url provided")
 
-    // Invalid issuer url
-    auth = &configv1.OAuth2Auth{
-        IssuerUrl: strPtrLocal("not-url"),
-    }
-    err = validateOAuth2Auth(ctx, auth)
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "invalid oauth2 issuer_url")
+	// Invalid issuer url
+	auth = &configv1.OAuth2Auth{
+		IssuerUrl: strPtrLocal("not-url"),
+	}
+	err = validateOAuth2Auth(ctx, auth)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid oauth2 issuer_url")
 }
 
 // Tests from validator_graphql_test.go merged here
