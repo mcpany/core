@@ -159,8 +159,7 @@ func TestTemplatedPrompt_Get_NoText(t *testing.T) {
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 
 	args, _ := json.Marshal(map[string]string{})
-	result, err := templatedPrompt.Get(context.Background(), args)
-	assert.NoError(t, err)
-	assert.Len(t, result.Messages, 1)
-	assert.Nil(t, result.Messages[0]) // It should be nil if we didn't populate it
+	_, err := templatedPrompt.Get(context.Background(), args)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "missing text content")
 }
