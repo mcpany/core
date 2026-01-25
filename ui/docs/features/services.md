@@ -68,3 +68,16 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 
 - **Environment Variables**: Define key-value pairs injected into the process (for CMD) or sent as metadata. Supports `secrets.*` references.
 - **Health Checks**: The system periodically pings the `health_check_endpoint` (default `/health`) to update the status.
+
+### 5. Diagnose Connection Issues
+
+If a service is reporting issues, you can run an **Active Diagnostics Probe**:
+
+1. Click the **Actions** (three dots) menu for the service.
+2. Select **Diagnose**.
+3. A dialog will open running automated checks:
+   - **Configuration Validation**: Checks for valid URL formats and required fields.
+   - **Backend Status**: Checks the current status reported by the server registry.
+   - **Active Connectivity Probe**: Triggers an immediate ping from the server to the upstream service to verify reachability.
+
+![Diagnostics](../screenshots/service_diagnostics_running.png)

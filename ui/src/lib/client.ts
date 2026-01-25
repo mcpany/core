@@ -279,6 +279,19 @@ export const apiClient = {
     },
 
     /**
+     * Pings a service to check connectivity.
+     * @param name The name of the service to ping.
+     * @returns A promise that resolves to the ping result.
+     */
+    pingService: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/services/${name}/ping`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to ping service');
+        return res.json();
+    },
+
+    /**
      * Restarts a service.
      * @param name The name of the service to restart.
      * @returns A promise that resolves when the service is restarted.

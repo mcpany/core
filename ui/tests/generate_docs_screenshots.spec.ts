@@ -119,6 +119,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock Service Ping
+     await page.route('**/api/v1/services/*/ping', async route => {
+         await route.fulfill({
+             json: { status: 'ok', latency: '15ms', details: 'Connectivity check passed' }
+         });
+     });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -521,6 +528,34 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.goto('/audit');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
+  });
+
+  test('Service Diagnostics Screenshots', async ({ page }) => {
+      await page.goto('/upstream-services');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+
+      // Open Actions Dropdown
+      const actionButton = page.getByRole('button', { name: 'Open menu' }).first();
+      if (await actionButton.isVisible()) {
+        await actionButton.click();
+        await page.waitForTimeout(500);
+
+        // Click Diagnose
+        const diagnoseButton = page.getByText('Diagnose');
+        if (await diagnoseButton.isVisible()) {
+            await diagnoseButton.click();
+            await page.waitForTimeout(1000);
+
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_diagnostics_dialog.png') });
+
+            // Start Diagnostics
+            await page.getByRole('button', { name: 'Start Diagnostics' }).click();
+            await page.waitForTimeout(2000); // Wait for steps to run
+
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_diagnostics_running.png') });
+        }
+      }
   });
 
 });

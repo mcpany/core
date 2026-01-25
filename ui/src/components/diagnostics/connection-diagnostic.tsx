@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { UpstreamServiceConfig } from "@/lib/types";
+import { UpstreamServiceConfig, apiClient } from "@/lib/client";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
 
 interface DiagnosticStep {
@@ -50,6 +50,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     const initialSteps: DiagnosticStep[] = [
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
+      { id: "ping_check", name: "Active Connectivity Probe", status: "pending", logs: [] },
     ];
 
     if (service.websocketService || service.httpService) {
@@ -216,6 +217,28 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         const msg = error instanceof Error ? error.message : "Unknown error";
         addLog("backend_health", `Failed to contact backend API: ${msg}`);
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
+    }
+
+    // --- Step 3: Active Connectivity Probe ---
+    updateStep("ping_check", { status: "running" });
+    addLog("ping_check", "Triggering active ping from backend...");
+
+    try {
+        const pingRes = await apiClient.pingService(service.name);
+
+        if (pingRes.status === 'ok') {
+             addLog("ping_check", "Ping successful.");
+             addLog("ping_check", `Details: ${pingRes.details}`);
+             updateStep("ping_check", { status: "success", detail: "Reachable" });
+        } else {
+             addLog("ping_check", `Ping failed: ${pingRes.error || pingRes.details}`);
+             updateStep("ping_check", { status: "failure", detail: "Unreachable" });
+        }
+
+    } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        addLog("ping_check", `Failed to execute ping: ${msg}`);
+        updateStep("ping_check", { status: "failure", detail: "Probe Error" });
     }
 
     setIsRunning(false);
