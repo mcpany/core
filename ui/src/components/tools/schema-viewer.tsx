@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronRight, ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
  * Schema represents a JSON Schema object used for defining tool input parameters.
@@ -107,7 +107,6 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
                <TypeBadge type={schema.type} format={schema.format} />
                {schema.description && (
-                  <TooltipProvider>
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
                         <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
@@ -116,7 +115,6 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                         <p>{schema.description}</p>
                       </TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
                )}
              </div>
 
@@ -157,7 +155,6 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                 </span>
              )}
               {schema.description && (
-                  <TooltipProvider>
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
                         <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
@@ -166,7 +163,6 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                         <p>{schema.description}</p>
                       </TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
                )}
           </div>
         )}
