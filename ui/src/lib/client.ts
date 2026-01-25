@@ -204,6 +204,7 @@ export const apiClient = {
             httpService: s.http_service,
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
+            filesystemService: s.filesystem_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
@@ -239,6 +240,7 @@ export const apiClient = {
                          httpService: s.http_service,
                          grpcService: s.grpc_service,
                          commandLineService: s.command_line_service,
+                         filesystemService: s.filesystem_service,
                          mcpService: s.mcp_service,
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
@@ -322,6 +324,23 @@ export const apiClient = {
                 env: config.commandLineService.env
             };
         }
+        if (config.filesystemService) {
+            payload.filesystem_service = {
+                root_paths: config.filesystemService.rootPaths,
+                read_only: config.filesystemService.readOnly,
+                // Default to OsFs if not specified (though oneof logic should handle it)
+                os: config.filesystemService.filesystemType?.$case === 'os' ? config.filesystemService.filesystemType.os : {},
+                // Include specific type if needed, but for now assuming OS default or explicit setting
+            };
+            // Handle oneof properly if client side sets filesystemType wrapper
+            if (config.filesystemService.filesystemType) {
+                 // @ts-expect-error: proto oneof mapping manual for now
+                 if (config.filesystemService.filesystemType.os) payload.filesystem_service.os = config.filesystemService.filesystemType.os;
+            } else {
+                 // Default
+                 payload.filesystem_service.os = {};
+            }
+        }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
@@ -373,6 +392,17 @@ export const apiClient = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
             };
+        }
+        if (config.filesystemService) {
+            payload.filesystem_service = {
+                root_paths: config.filesystemService.rootPaths,
+                read_only: config.filesystemService.readOnly,
+                os: {}, // Default to OS
+            };
+             if (config.filesystemService.filesystemType) {
+                 // @ts-expect-error: proto oneof mapping
+                 if (config.filesystemService.filesystemType.os) payload.filesystem_service.os = config.filesystemService.filesystemType.os;
+            }
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
@@ -439,6 +469,13 @@ export const apiClient = {
                 working_directory: config.commandLineService.workingDirectory,
                 env: config.commandLineService.env,
                 container_environment: config.commandLineService.containerEnvironment, // Include this if needed
+            };
+        }
+        if (config.filesystemService) {
+            payload.filesystem_service = {
+                root_paths: config.filesystemService.rootPaths,
+                read_only: config.filesystemService.readOnly,
+                os: {},
             };
         }
         if (config.mcpService) {
@@ -1151,6 +1188,7 @@ export const apiClient = {
             httpService: s.http_service,
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
+            filesystemService: s.filesystem_service,
             mcpService: s.mcp_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
@@ -1187,6 +1225,13 @@ export const apiClient = {
                 command: template.commandLineService.command,
                 working_directory: template.commandLineService.workingDirectory,
                 env: template.commandLineService.env
+            };
+        }
+        if (template.filesystemService) {
+            payload.filesystem_service = {
+                root_paths: template.filesystemService.rootPaths,
+                read_only: template.filesystemService.readOnly,
+                os: {},
             };
         }
         if (template.mcpService) {

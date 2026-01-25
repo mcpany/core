@@ -84,25 +84,20 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
   {
     id: "filesystem",
     name: "Filesystem",
-    description: "Expose local files to the LLM.",
+    description: "Expose local files to the LLM (Native).",
     icon: FileText,
     config: {
       name: "local-files",
-      commandLineService: {
-        command: "npx -y @modelcontextprotocol/server-filesystem {{ALLOWED_DIRECTORIES}}",
-        env: {},
+      filesystemService: {
+        rootPaths: {
+            "/workspace": "/home/user/workspace"
+        },
+        readOnly: false,
+        filesystemType: { $case: 'os', os: {} }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
-    fields: [
-      {
-        name: "directories",
-        label: "Allowed Directories",
-        placeholder: "/path/to/folder1 /path/to/folder2",
-        key: "commandLineService.command",
-        replaceToken: "{{ALLOWED_DIRECTORIES}}",
-      }
-    ]
+    // No fields needed for simple start, user can edit map in UI
   },
   {
     id: "github",

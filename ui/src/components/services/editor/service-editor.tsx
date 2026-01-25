@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
+import { SimpleMapEditor } from "@/components/services/simple-map-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -82,6 +83,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         delete newService.commandLineService;
         delete newService.mcpService;
         delete newService.openapiService;
+        delete newService.filesystemService;
 
         // Initialize new config with defaults
         if (type === 'http') newService.httpService = { address: "", tools: [], calls: {}, resources: [], prompts: [] };
@@ -89,6 +91,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
         if (type === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
         if (type === 'openapi') newService.openapiService = { address: "", specSource: { $case: "specUrl", specUrl: "" }, tools: [], resources: [], calls: {}, prompts: [] };
+        if (type === 'filesystem') newService.filesystemService = { rootPaths: {}, readOnly: false, tools: [], resources: [], prompts: [], filesystemType: { $case: 'os', os: {} } };
 
         onChange(newService);
     };
@@ -99,6 +102,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (service.commandLineService) return 'cmd';
         if (service.mcpService) return 'mcp';
         if (service.openapiService) return 'openapi';
+        if (service.filesystemService) return 'filesystem';
         return 'http'; // Default
     };
 
@@ -175,6 +179,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <SelectItem value="cmd">Command Line (Stdio)</SelectItem>
                                         <SelectItem value="mcp">MCP Proxy</SelectItem>
                                         <SelectItem value="openapi">OpenAPI / Swagger</SelectItem>
+                                        <SelectItem value="filesystem">Filesystem</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -191,6 +196,32 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             onChange={(e) => onChange({ ...service, httpService: { ...service.httpService!, address: e.target.value } })}
                                             placeholder="https://api.example.com"
                                         />
+                                    </div>
+                                </div>
+                            )}
+
+                            {service.filesystemService && (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label>Root Paths</Label>
+                                        <SimpleMapEditor
+                                            label="Root Paths (Virtual Path -> Local Path)"
+                                            keyPlaceholder="/virtual/path"
+                                            valuePlaceholder="/local/absolute/path"
+                                            initialData={service.filesystemService.rootPaths}
+                                            onChange={(data) => onChange({ ...service, filesystemService: { ...service.filesystemService!, rootPaths: data } })}
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            Map virtual paths exposed to the AI (keys) to absolute local paths on the server (values).
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Switch
+                                            id="fs-readonly"
+                                            checked={service.filesystemService.readOnly}
+                                            onCheckedChange={(checked) => onChange({ ...service, filesystemService: { ...service.filesystemService!, readOnly: checked } })}
+                                        />
+                                        <Label htmlFor="fs-readonly">Read Only</Label>
                                     </div>
                                 </div>
                             )}
