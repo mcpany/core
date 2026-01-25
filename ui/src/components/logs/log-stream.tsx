@@ -17,7 +17,8 @@ import {
   Unplug,
   Monitor,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  ArrowDown
 } from "lucide-react"
 
 import { useSearchParams } from "next/navigation"
@@ -233,6 +234,8 @@ LogRow.displayName = 'LogRow'
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
+  const [unreadCount, setUnreadCount] = React.useState(0)
+  const [isAtBottom, setIsAtBottom] = React.useState(true)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
   // without triggering a reconnection or having a stale closure.
   const isPausedRef = React.useRef(isPaused)
@@ -268,6 +271,13 @@ export function LogStream() {
     // Optimization: Flush buffer periodically to limit re-renders
     const flushInterval = setInterval(() => {
       if (logBufferRef.current.length > 0) {
+        // If paused, we do not flush to logs state, allowing buffer to grow.
+        // We update unreadCount so UI can show something happened.
+        if (isPausedRef.current) {
+          setUnreadCount(logBufferRef.current.length)
+          return
+        }
+
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
@@ -307,8 +317,8 @@ export function LogStream() {
       }
 
       ws.onmessage = (event) => {
-        // Optimization: check against the ref to ensure we respect the current pause state
-        if (isPausedRef.current) return
+        // Note: We no longer check isPausedRef.current here. We ALWAYS buffer logs.
+        // The flushing logic decides whether to show them or not.
         if (document.hidden) return
 
         try {
@@ -349,23 +359,49 @@ export function LogStream() {
     }
   }, []) // Empty dependency array -> run once
 
-  // Auto-scroll
+  // Auto-scroll & Sticky Scroll Logic
   // Optimization: Cache the viewport element to avoid frequent DOM queries (querySelector).
   const viewportRef = React.useRef<HTMLElement | null>(null)
 
+  // Attach scroll listener to track if user is at bottom
   React.useEffect(() => {
-    if (!isPaused && scrollRef.current) {
+    if (scrollRef.current) {
       // Lazy init or validate viewport ref
       if (!viewportRef.current || !viewportRef.current.isConnected) {
         viewportRef.current = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
       }
 
       const scrollContainer = viewportRef.current
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight
+      if (!scrollContainer) return
+
+      const handleScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+        // If within 50px of bottom, consider it "at bottom"
+        const atBottom = scrollHeight - scrollTop - clientHeight < 50
+        setIsAtBottom(atBottom)
       }
+
+      scrollContainer.addEventListener('scroll', handleScroll)
+      return () => scrollContainer.removeEventListener('scroll', handleScroll)
     }
-  }, [logs, isPaused])
+  }, [scrollRef.current])
+
+  // Effect to perform the auto-scroll
+  React.useEffect(() => {
+    // Only auto-scroll if:
+    // 1. Not paused
+    // 2. We were ALREADY at the bottom (Sticky Scroll)
+    if (!isPaused && isAtBottom && viewportRef.current) {
+      viewportRef.current.scrollTop = viewportRef.current.scrollHeight
+    }
+  }, [logs, isPaused, isAtBottom])
+
+  const scrollToBottom = () => {
+    if (viewportRef.current) {
+        viewportRef.current.scrollTop = viewportRef.current.scrollHeight
+        setIsAtBottom(true)
+    }
+  }
 
   // Optimization: Extract unique sources from logs efficiently
   const uniqueSources = React.useMemo(() => {
@@ -460,7 +496,12 @@ export function LogStream() {
            <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsPaused(!isPaused)}
+            onClick={() => {
+              if (isPaused) {
+                setUnreadCount(0)
+              }
+              setIsPaused(!isPaused)
+            }}
             className="w-24 hidden md:flex"
           >
             {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
@@ -529,6 +570,21 @@ export function LogStream() {
                     ))}
                 </div>
              </ScrollArea>
+
+             {/* Sticky Scroll / Unread Badge */}
+             {(!isAtBottom || (isPaused && unreadCount > 0)) && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 rounded-full h-8 px-4 text-xs font-medium animate-in fade-in slide-in-from-bottom-2"
+                    onClick={scrollToBottom}
+                  >
+                    <ArrowDown className="mr-2 h-3 w-3" />
+                    {isPaused && unreadCount > 0 ? `${unreadCount} New Logs` : "Jump to Bottom"}
+                  </Button>
+                </div>
+             )}
         </CardContent>
       </Card>
     </div>

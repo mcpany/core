@@ -312,10 +312,31 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Logs Screenshots', async ({ page }) => {
+      // Mock WS to send logs for screenshot
+      await page.routeWebSocket(/\/api\/v1\/ws\/logs/, ws => {
+          ws.onMessage(() => {}); // ignore
+          // Send a bunch of logs to ensure scrolling is possible
+          for (let i = 0; i < 30; i++) {
+              ws.send(JSON.stringify({
+                  id: `log-${i}`,
+                  timestamp: new Date().toISOString(),
+                  level: i % 4 === 0 ? "ERROR" : (i % 3 === 0 ? "WARN" : "INFO"),
+                  message: `Log entry #${i} - This is a sample log message to demonstrate the scrolling behavior and the content density of the logs view.`,
+                  source: i % 2 === 0 ? "system" : "application"
+              }));
+          }
+      });
+
       await page.goto('/logs');
       await page.waitForTimeout(1000);
-       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_stream.png'), fullPage: true });
-       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs.png'), fullPage: true });
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_stream.png'), fullPage: true });
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs.png'), fullPage: true });
+
+      // Simulate sticky scroll (scroll up)
+      await page.mouse.wheel(0, -1000);
+      await page.waitForTimeout(500);
+      // Capture the "Jump to Bottom" button
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_sticky_scroll.png'), fullPage: true });
   });
 
    test('Marketplace Screenshots', async ({ page }) => {

@@ -97,4 +97,51 @@ test.describe('Logs Page', () => {
     // Verify it expanded (Collapse button visible)
     await expect(page.getByLabel("Collapse JSON")).toBeVisible();
   });
+
+  test('should buffer logs while paused', async ({ page }) => {
+    let serverWs: any;
+    await page.routeWebSocket(/\/api\/v1\/ws\/logs/, ws => {
+        serverWs = ws;
+    });
+
+    // Reload to ensure route takes effect (since beforeEach already navigated)
+    await page.reload();
+
+    // Wait for connection
+    await expect(page.getByText("Live Logs")).toBeVisible();
+    await page.waitForTimeout(500);
+
+    // Pause
+    const pauseButton = page.getByRole('button', { name: 'Pause' });
+    await pauseButton.click();
+    await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
+
+    // Wait for serverWs to be captured
+    await expect(async () => {
+        expect(serverWs).toBeDefined();
+    }).toPass();
+
+    // Send log
+    const testLog = {
+        id: "buffered-log-1",
+        timestamp: new Date().toISOString(),
+        level: "INFO",
+        message: "This log should be buffered",
+        source: "test-buffer"
+    };
+
+    serverWs.send(JSON.stringify(testLog));
+
+    // Verify log is NOT visible yet (because it's buffered and UI is frozen)
+    await expect(page.getByText("This log should be buffered")).not.toBeVisible({ timeout: 1000 });
+
+    // Verify "New Logs" badge appears
+    await expect(page.getByText("1 New Logs")).toBeVisible();
+
+    // Resume
+    await page.getByRole('button', { name: 'Resume' }).click();
+
+    // Verify log IS visible
+    await expect(page.getByText("This log should be buffered")).toBeVisible();
+  });
 });
