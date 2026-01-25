@@ -38,6 +38,7 @@ const mockServiceOriginal: UpstreamServiceConfig = {
     prompts: [],
     autoDiscoverTool: false,
     configError: "",
+    readOnly: false,
     httpService: {
         address: "http://localhost:8080",
         tools: [],

@@ -117,3 +117,32 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
         console.log(`Failed to cleanup collection ${name}: ${e}`);
     }
 };
+
+export const seedUser = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const user = {
+        id: "admin",
+        authentication: {
+            basic_auth: {
+                // hash for "password" (bcrypt cost 12)
+                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
+            }
+        },
+        roles: ["admin"]
+    };
+    try {
+        // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
+        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed user: ${e}`);
+    }
+};
+
+export const cleanupUser = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/users/admin', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup user: ${e}`);
+    }
+};
