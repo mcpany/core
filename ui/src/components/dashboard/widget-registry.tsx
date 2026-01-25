@@ -10,17 +10,32 @@ import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, Laz
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse } from "lucide-react";
 
+/**
+ * Defines the possible sizes for a widget on the dashboard.
+ */
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
+/**
+ * Defines the configuration for a dashboard widget.
+ */
 export interface WidgetDefinition {
+    /** The unique type identifier for the widget. */
     type: string;
+    /** The display title of the widget. */
     title: string;
+    /** A brief description of what the widget displays. */
     description: string;
+    /** The default size of the widget when added to the dashboard. */
     defaultSize: WidgetSize;
+    /** The React component used to render the widget. */
     component: React.ComponentType<any>;
+    /** The icon associated with the widget. */
     icon: React.ElementType;
 }
 
+/**
+ * A registry of all available widget definitions.
+ */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     {
         type: "metrics",
@@ -80,6 +95,11 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     },
 ];
 
+/**
+ * Retrieves a widget definition by its type.
+ * @param type - The widget type identifier.
+ * @returns The matching WidgetDefinition, or undefined if not found.
+ */
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
     return WIDGET_DEFINITIONS.find(w => w.type === type);
 };
