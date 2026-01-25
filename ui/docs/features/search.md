@@ -17,3 +17,6 @@ The search modal appears.
 - **Type**: Enter a query (e.g., "Postgres").
 - **Select**: Use Up/Down arrows to highlight a result.
 - **Enter**: Navigate to the selected item.
+
+### 3. Recent Tools
+Quickly access your recently used tools (from both Playground and Global Search) directly from the "Recent Tools" section at the top of the search results.

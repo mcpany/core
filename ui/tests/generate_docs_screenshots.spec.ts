@@ -372,9 +372,30 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Search Screenshots', async ({ page }) => {
+       // Mock Tools for search
+       await page.route('**/api/v1/tools', async route => {
+           await route.fulfill({
+               json: {
+                   tools: [
+                       { name: 'filesystem.list_dir', description: 'List files in directory' },
+                       { name: 'calculator.add', description: 'Add two numbers' }
+                   ]
+               }
+           });
+       });
+
        await page.goto('/');
+       // Seed recent tools to show the "Recent Tools" section
+       await page.evaluate(() => {
+           localStorage.setItem('mcpany-recent-tools', JSON.stringify(['calculator.add']));
+       });
+       await page.reload();
+
        await page.waitForTimeout(1000);
        await page.keyboard.press('Control+k');
+       await page.waitForTimeout(500);
+       // Scroll to see Recent Tools
+       await page.locator('[cmdk-list]').evaluate((e) => { e.scrollTop = e.scrollHeight; });
        await page.waitForTimeout(500);
        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'global_search.png') });
   });

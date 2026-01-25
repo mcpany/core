@@ -42,6 +42,7 @@ import { apiClient, ToolDefinition, ResourceDefinition, PromptDefinition, Upstre
 import { useToast } from "@/hooks/use-toast"
 import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts-context"
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
+import { useRecentTools } from "@/hooks/use-recent-tools"
 
 /**
  * Global search component that provides quick access to navigation, tools, services, and actions.
@@ -55,12 +56,12 @@ export function GlobalSearch() {
   const { setTheme } = useTheme()
   const { toast } = useToast()
   const { getKeys } = useKeyboardShortcuts()
+  const { recentTools, addRecent } = useRecentTools()
 
   const [services, setServices] = React.useState<UpstreamServiceConfig[]>([])
   const [tools, setTools] = React.useState<ToolDefinition[]>([])
   const [resources, setResources] = React.useState<ResourceDefinition[]>([])
   const [prompts, setPrompts] = React.useState<PromptDefinition[]>([])
-  const [recentTools, setRecentTools] = React.useState<ToolDefinition[]>([])
   const [loading, setLoading] = React.useState(false)
   const lastFetched = React.useRef(0)
 
@@ -90,10 +91,6 @@ export function GlobalSearch() {
 
   React.useEffect(() => {
     if (open) {
-      // Load recent tools from localStorage
-      const saved = JSON.parse(localStorage.getItem("recent_tools") || "[]") as ToolDefinition[]
-      setRecentTools(saved)
-
       // ⚡ Bolt Optimization: Prevent redundant API calls if data was fetched recently (< 1 min)
       // This reduces 4 concurrent requests every time the search dialog is opened.
       const now = Date.now()
@@ -104,6 +101,13 @@ export function GlobalSearch() {
     }
   }, [open, fetchData])
 
+  // Compute recent tool definitions by resolving names from the hook to loaded tools
+  const recentToolDefs = React.useMemo(() => {
+    return recentTools
+      .map((name) => tools.find((t) => t.name === name))
+      .filter((t): t is ToolDefinition => !!t)
+  }, [recentTools, tools])
+
   const runCommand = React.useCallback((command: () => unknown) => {
     setOpen(false)
     command()
@@ -111,17 +115,10 @@ export function GlobalSearch() {
 
   const selectTool = React.useCallback((tool: ToolDefinition) => {
     runCommand(() => {
-        // Save to recent tools
-        const updated = [
-            tool,
-            ...recentTools.filter(t => t.name !== tool.name)
-        ].slice(0, 5)
-        localStorage.setItem("recent_tools", JSON.stringify(updated))
-        setRecentTools(updated)
-
+        addRecent(tool.name)
         router.push(`/tools?name=${tool.name}`)
     })
-  }, [runCommand, router, recentTools])
+  }, [runCommand, router, addRecent])
 
   const copyToClipboard = React.useCallback((text: string, label: string) => {
       runCommand(() => {
@@ -255,9 +252,9 @@ export function GlobalSearch() {
            </CommandGroup>
            <CommandSeparator />
 
-           {recentTools.length > 0 && query.length === 0 && (
+           {recentToolDefs.length > 0 && query.length === 0 && (
              <CommandGroup heading="Recent Tools">
-               {recentTools.map((tool) => (
+               {recentToolDefs.map((tool) => (
                  <CommandItem key={`recent-${tool.name}`} value={`recent tool ${tool.name}`} onSelect={() => selectTool(tool)}>
                    <RotateCcw className="mr-2 h-4 w-4 text-muted-foreground" />
                    <span>{tool.name}</span>

@@ -47,6 +47,17 @@ vi.mock('@/hooks/use-toast', () => ({
   }),
 }));
 
+const { addRecentMock } = vi.hoisted(() => {
+  return { addRecentMock: vi.fn() }
+})
+
+vi.mock('@/hooks/use-recent-tools', () => ({
+  useRecentTools: () => ({
+    recentTools: ['tool-1'],
+    addRecent: addRecentMock,
+  }),
+}));
+
 // Mock window location and clipboard
 const originalLocation = window.location;
 const mockReload = vi.fn();
@@ -76,6 +87,7 @@ Element.prototype.releasePointerCapture = () => {};
 describe('GlobalSearch', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        addRecentMock.mockClear();
     });
 
     it('renders the search button', () => {
@@ -101,7 +113,8 @@ describe('GlobalSearch', () => {
         // Wait for data to load
         await waitFor(() => {
             expect(screen.getByText('service-1')).toBeInTheDocument();
-            expect(screen.getByText('tool-1')).toBeInTheDocument();
+            // tool-1 appears in both Recent Tools and Tools, so we use getAllByText
+            expect(screen.getAllByText('tool-1').length).toBeGreaterThan(0);
             expect(screen.getByText('res-1')).toBeInTheDocument();
         });
     });
@@ -210,5 +223,53 @@ describe('GlobalSearch', () => {
         fireEvent.click(screen.getByText('Reload Window'));
 
         expect(mockReload).toHaveBeenCalled();
+    });
+
+    it('shows recent tools from hook', async () => {
+        render(
+            <KeyboardShortcutsProvider>
+                <GlobalSearch />
+            </KeyboardShortcutsProvider>
+        );
+
+        await act(async () => {
+            fireEvent.click(screen.getByText(/Search or type >/i));
+        });
+
+        // Wait for data to load
+        await waitFor(() => {
+            // Recent tools are grouped under "Recent Tools"
+            expect(screen.getByText('Recent Tools')).toBeInTheDocument();
+        });
+
+        // Since tool-1 is both in recent and all tools, it appears twice.
+        // The mock hook returns 'tool-1'. The API mock returns 'tool-1'.
+        // So we should see it.
+        const tools = screen.getAllByText('tool-1');
+        expect(tools.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('adds recent tool on selection', async () => {
+        render(
+            <KeyboardShortcutsProvider>
+                <GlobalSearch />
+            </KeyboardShortcutsProvider>
+        );
+
+        await act(async () => {
+            fireEvent.click(screen.getByText(/Search or type >/i));
+        });
+
+        await waitFor(() => {
+            expect(screen.getAllByText('tool-1').length).toBeGreaterThan(0);
+        });
+
+        // Click on the tool
+        const tools = screen.getAllByText('tool-1');
+        // Pick the first one
+        fireEvent.click(tools[0]);
+
+        expect(addRecentMock).toHaveBeenCalledWith('tool-1');
+        expect(mockPush).toHaveBeenCalledWith('/tools?name=tool-1');
     });
 });
