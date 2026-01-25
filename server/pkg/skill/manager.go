@@ -162,6 +162,10 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
+	if err := validateName(skillName); err != nil {
+		return err
+	}
+
 	// validate path to prevent traversal
 	// filepath.Clean removes ..
 	cleanPath := filepath.Clean(relPath)

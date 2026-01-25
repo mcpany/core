@@ -4,7 +4,6 @@
 package app
 
 import (
-	"io"
 	"net/http"
 	"strings"
 
@@ -36,9 +35,8 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
-		body, err := io.ReadAll(r.Body)
+		body, err := readBodyWithLimit(w, r, 10<<20)
 		if err != nil {
-			http.Error(w, "Failed to read body", http.StatusBadRequest)
 			return
 		}
 
