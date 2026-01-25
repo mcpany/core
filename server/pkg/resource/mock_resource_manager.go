@@ -12,6 +12,7 @@ package resource
 import (
 	reflect "reflect"
 
+	mcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -117,6 +118,24 @@ func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResource", reflect.TypeOf((*MockManagerInterface)(nil).GetResource), uri)
+}
+
+// ListMCPResources mocks base method.
+//
+// Returns the result.
+func (m *MockManagerInterface) ListMCPResources() []*mcp.Resource {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMCPResources")
+	ret0, _ := ret[0].([]*mcp.Resource)
+	return ret0
+}
+
+// ListMCPResources indicates an expected call of ListMCPResources.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) ListMCPResources() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPResources", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPResources))
 }
 
 // ListResources mocks base method.

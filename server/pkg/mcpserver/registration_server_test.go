@@ -403,8 +403,6 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 		assert.Equal(t, codes.Unimplemented, st.Code())
 	})
 
-
-
 	t.Run("RegisterTools", func(t *testing.T) {
 		_, err := registrationServer.RegisterTools(ctx, &v1.RegisterToolsRequest{})
 		require.Error(t, err)

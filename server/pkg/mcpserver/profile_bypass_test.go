@@ -71,7 +71,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	restrictedProfileID := "admin-profile"
 
 	serviceInfo := &tool.ServiceInfo{
-		Name: restrictedServiceID,
+		Name:   restrictedServiceID,
 		Config: &configv1.UpstreamServiceConfig{
 			// Profiles removed
 		},
@@ -121,7 +121,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	userCtx := auth.ContextWithProfileID(ctx, userProfileID)
 
 	execReq := &tool.ExecutionRequest{
-		ToolName: restrictedServiceID + "." + "restricted-tool",
+		ToolName:   restrictedServiceID + "." + "restricted-tool",
 		ToolInputs: []byte("{}"),
 	}
 

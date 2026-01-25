@@ -56,6 +56,14 @@ func (m *mockResourceManager) ListResources() []resource.Resource {
 	return m.resources
 }
 
+func (m *mockResourceManager) ListMCPResources() []*mcp.Resource {
+	var res []*mcp.Resource
+	for _, r := range m.resources {
+		res = append(res, r.Resource())
+	}
+	return res
+}
+
 func (m *mockResourceManager) GetResource(uri string) (resource.Resource, bool) {
 	for _, r := range m.resources {
 		if r.Resource().URI == uri {
@@ -70,7 +78,7 @@ func (m *mockResourceManager) AddResource(r resource.Resource) {
 }
 
 func (m *mockResourceManager) RemoveResource(_ string) {}
-func (m *mockResourceManager) OnListChanged(f func())    {}
+func (m *mockResourceManager) OnListChanged(f func())  {}
 func (m *mockResourceManager) ClearResourcesForService(_ string) {
 }
 
@@ -116,10 +124,9 @@ func (m *mockPromptManager) UpdatePrompt(p prompt.Prompt) {
 	m.prompts = append(m.prompts, p)
 }
 
-func (m *mockPromptManager) RemovePrompt(_ string) {}
+func (m *mockPromptManager) RemovePrompt(_ string)                   {}
 func (m *mockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
-func (m *mockPromptManager) ClearPromptsForService(_ string) {}
-
+func (m *mockPromptManager) ClearPromptsForService(_ string)         {}
 
 // reuse smartToolManager concept for GetServiceInfo
 type serviceInfoProviderToolManager struct {
@@ -139,10 +146,10 @@ func (m *serviceInfoProviderToolManager) ListTools() []tool.Tool                
 func (m *serviceInfoProviderToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
-func (m *serviceInfoProviderToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *serviceInfoProviderToolManager) SetMCPServer(_ tool.MCPServerProvider)    {}
-func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error                { return nil }
-func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)            {}
+func (m *serviceInfoProviderToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                {}
+func (m *serviceInfoProviderToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
+func (m *serviceInfoProviderToolManager) AddTool(_ tool.Tool) error                               { return nil }
+func (m *serviceInfoProviderToolManager) ClearToolsForService(_ string)                           {}
 func (m *serviceInfoProviderToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *serviceInfoProviderToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
@@ -166,10 +173,8 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 
 	// Services config
 	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-	}}
-	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-	}}
+	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
 
 	tm := &serviceInfoProviderToolManager{
 		services: map[string]*tool.ServiceInfo{
@@ -236,7 +241,6 @@ func TestResourceListFilteringMiddleware(t *testing.T) {
 	require.True(t, ok)
 }
 
-
 func TestPromptListFilteringMiddleware(t *testing.T) {
 	// Setup dependencies
 	poolManager := pool.NewManager()
@@ -248,10 +252,8 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 
 	// Services config
 	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-	}}
-	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{
-	}}
+	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
 
 	tm := &serviceInfoProviderToolManager{
 		services: map[string]*tool.ServiceInfo{

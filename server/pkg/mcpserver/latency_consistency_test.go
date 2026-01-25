@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -21,8 +23,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/worker"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -102,29 +102,29 @@ func TestMetricLatencyConsistency(t *testing.T) {
 
 	data := sink.Data()
 
-    // Debug print
-    fmt.Println("Available samples:")
-    for k := range data[0].Samples {
-        fmt.Println(k)
-    }
+	// Debug print
+	fmt.Println("Available samples:")
+	for k := range data[0].Samples {
+		fmt.Println(k)
+	}
 
 	// We expect consistent naming with counters: mcpany.tools.call.latency (plural)
-    // and properly labeled for tool specific metrics.
+	// and properly labeled for tool specific metrics.
 
-    // Check global latency metric
-    assert.NotContains(t, data[0].Samples, "mcpany.tools.call.latency")
+	// Check global latency metric
+	assert.NotContains(t, data[0].Samples, "mcpany.tools.call.latency")
 
-    // Check tool-specific latency metric
-    // Ideally it should be mcpany.tools.call.latency;tool=...
-    // But currently it is mcpany.tool.<toolname>.call.latency (which causes high cardinality)
+	// Check tool-specific latency metric
+	// Ideally it should be mcpany.tools.call.latency;tool=...
+	// But currently it is mcpany.tool.<toolname>.call.latency (which causes high cardinality)
 
-    // We expect tool AND service_id labels
-    expectedIdealKey := "mcpany.tools.call.latency;tool=" + successID + ";service_id=test-service"
+	// We expect tool AND service_id labels
+	expectedIdealKey := "mcpany.tools.call.latency;tool=" + successID + ";service_id=test-service"
 
-    // This assertion fails with current implementation
-    assert.Contains(t, data[0].Samples, expectedIdealKey, "Should have labeled latency metric")
+	// This assertion fails with current implementation
+	assert.Contains(t, data[0].Samples, expectedIdealKey, "Should have labeled latency metric")
 
-    // This assertion would pass with current implementation (proving the bug/inconsistency)
-    currentBadKey := "mcpany.tool." + successID + ".call.latency"
-    assert.NotContains(t, data[0].Samples, currentBadKey, "Should NOT have embedded tool name in metric key")
+	// This assertion would pass with current implementation (proving the bug/inconsistency)
+	currentBadKey := "mcpany.tool." + successID + ".call.latency"
+	assert.NotContains(t, data[0].Samples, currentBadKey, "Should NOT have embedded tool name in metric key")
 }

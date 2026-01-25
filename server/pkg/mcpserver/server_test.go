@@ -1016,10 +1016,10 @@ func (m *smartToolManager) GetTool(_ string) (tool.Tool, bool)           { retur
 func (m *smartToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil // Not used here
 }
-func (m *smartToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *smartToolManager) SetMCPServer(_ tool.MCPServerProvider)    {}
-func (m *smartToolManager) AddTool(_ tool.Tool) error                { return nil }
-func (m *smartToolManager) ClearToolsForService(_ string)            {}
+func (m *smartToolManager) AddMiddleware(_ tool.ExecutionMiddleware)                {}
+func (m *smartToolManager) SetMCPServer(_ tool.MCPServerProvider)                   {}
+func (m *smartToolManager) AddTool(_ tool.Tool) error                               { return nil }
+func (m *smartToolManager) ClearToolsForService(_ string)                           {}
 func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
 
@@ -1040,34 +1040,34 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	busProvider, err := bus.NewProvider(messageBus)
 	require.NoError(t, err)
 
-    // Setup smart manager with data covering all branches
+	// Setup smart manager with data covering all branches
 
-    // Tools:
-    // 1. global-service.tool (no profiles)
-    // 2. profile-service.tool (profile "p1")
-    // 3. multi-profile.tool (profile "p1", "p2")
+	// Tools:
+	// 1. global-service.tool (no profiles)
+	// 2. profile-service.tool (profile "p1")
+	// 3. multi-profile.tool (profile "p1", "p2")
 
-    // Services:
-    // "global-service": {} (Empty config or no profiles)
-    // "profile-service": { Profiles: [ {Id: "p1"} ] }
-    // "multi-profile": { Profiles: [ {Id: "p1"}, {Id: "p2"} ] }
-    // "other-service": { Profiles: [ {Id: "p2"} ] }
+	// Services:
+	// "global-service": {} (Empty config or no profiles)
+	// "profile-service": { Profiles: [ {Id: "p1"} ] }
+	// "multi-profile": { Profiles: [ {Id: "p1"}, {Id: "p2"} ] }
+	// "other-service": { Profiles: [ {Id: "p2"} ] }
 
-    srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-    srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
-    srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+	srvGlobal := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+	srvProfile := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
+	srvOther := &tool.ServiceInfo{Config: &configv1.UpstreamServiceConfig{}}
 
-    toolGlobal := &mockTool{tool: &v1.Tool{Name: proto.String("global.tool"), ServiceId: proto.String("global-service")}}
-    toolProfile := &mockTool{tool: &v1.Tool{Name: proto.String("profile.tool"), ServiceId: proto.String("profile-service")}}
-    toolOther := &mockTool{tool: &v1.Tool{Name: proto.String("other.tool"), ServiceId: proto.String("other-service")}}
+	toolGlobal := &mockTool{tool: &v1.Tool{Name: proto.String("global.tool"), ServiceId: proto.String("global-service")}}
+	toolProfile := &mockTool{tool: &v1.Tool{Name: proto.String("profile.tool"), ServiceId: proto.String("profile-service")}}
+	toolOther := &mockTool{tool: &v1.Tool{Name: proto.String("other.tool"), ServiceId: proto.String("other-service")}}
 
 	smartM := &smartToolManager{
-	    services: map[string]*tool.ServiceInfo{
-	        "global-service": srvGlobal,
-	        "profile-service": srvProfile,
-	        "other-service": srvOther,
-	    },
-	    tools: []tool.Tool{toolGlobal, toolProfile, toolOther},
+		services: map[string]*tool.ServiceInfo{
+			"global-service":  srvGlobal,
+			"profile-service": srvProfile,
+			"other-service":   srvOther,
+		},
+		tools: []tool.Tool{toolGlobal, toolProfile, toolOther},
 	}
 
 	promptManager := prompt.NewManager()
@@ -1121,21 +1121,21 @@ func TestServer_MiddlewareChain(t *testing.T) {
 	// Verify contents - Expect ALL 3 tools now
 	foundNames := make(map[string]bool)
 	for _, t := range lRes.Tools {
-	    foundNames[t.Name] = true
+		foundNames[t.Name] = true
 	}
 	assert.Contains(t, foundNames, "global-service.global.tool")
 	assert.Contains(t, foundNames, "profile-service.profile.tool")
 	assert.Contains(t, foundNames, "other-service.other.tool")
 	assert.Len(t, lRes.Tools, 3)
 
-    // Case C: Profile "p2"
-    // Should see ALL 3 tools now
-    ctxP2 := auth.ContextWithProfileID(ctx, "p2")
-    res, err = server.ToolListFilteringMiddleware(next)(ctxP2, consts.MethodToolsList, &mcp.ListToolsRequest{})
-    require.NoError(t, err)
-    lRes, ok = res.(*mcp.ListToolsResult)
-    require.True(t, ok)
-    assert.Len(t, lRes.Tools, 3)
+	// Case C: Profile "p2"
+	// Should see ALL 3 tools now
+	ctxP2 := auth.ContextWithProfileID(ctx, "p2")
+	res, err = server.ToolListFilteringMiddleware(next)(ctxP2, consts.MethodToolsList, &mcp.ListToolsRequest{})
+	require.NoError(t, err)
+	lRes, ok = res.(*mcp.ListToolsResult)
+	require.True(t, ok)
+	assert.Len(t, lRes.Tools, 3)
 
 	// Case D: other method -> should call next
 	res, err = server.ToolListFilteringMiddleware(next)(ctx, "other/method", nil)

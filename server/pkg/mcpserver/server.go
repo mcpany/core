@@ -406,15 +406,8 @@ func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
 ) (*mcp.ListResourcesResult, error) {
-	resources := s.resourceManager.ListResources()
-	mcpResources := make([]*mcp.Resource, 0, len(resources))
-	for _, r := range resources {
-		if resource := r.Resource(); resource != nil {
-			mcpResources = append(mcpResources, resource)
-		}
-	}
 	return &mcp.ListResourcesResult{
-		Resources: mcpResources,
+		Resources: s.resourceManager.ListMCPResources(),
 	}, nil
 }
 
@@ -915,10 +908,15 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 		req mcp.Request,
 	) (mcp.Result, error) {
 		if method == consts.MethodResourcesList {
+			profileID, _ := auth.ProfileIDFromContext(ctx)
+			// ⚡ Bolt Optimization: Use cached MCP resources list if no profile filtering is required
+			if profileID == "" {
+				return &mcp.ListResourcesResult{Resources: s.resourceManager.ListMCPResources()}, nil
+			}
+
 			managedResources := s.resourceManager.ListResources()
 			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
 
-			profileID, _ := auth.ProfileIDFromContext(ctx)
 			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
 			var allowedServices map[string]bool
 			if profileID != "" {

@@ -60,6 +60,10 @@ type ManagerInterface interface {
 	//
 	// Returns the result.
 	ListResources() []Resource
+	// ListMCPResources returns a slice of all resources currently in the manager in MCP format.
+	//
+	// Returns the result.
+	ListMCPResources() []*mcp.Resource
 	// OnListChanged registers a callback function to be called when the list of
 	// resources changes.
 	OnListChanged(func())
@@ -73,10 +77,11 @@ type ManagerInterface interface {
 // ManagerInterface. It uses a map to store resources and a mutex to
 // protect concurrent access.
 type Manager struct {
-	mu                sync.RWMutex
-	resources         map[string]Resource
-	onListChangedFunc func()
-	cachedResources   []Resource
+	mu                 sync.RWMutex
+	resources          map[string]Resource
+	onListChangedFunc  func()
+	cachedResources    []Resource
+	cachedMCPResources []*mcp.Resource
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -110,6 +115,7 @@ func (rm *Manager) AddResource(resource Resource) {
 	rm.mu.Lock()
 	rm.resources[resource.Resource().URI] = resource
 	rm.cachedResources = nil
+	rm.cachedMCPResources = nil
 	callback = rm.onListChangedFunc
 	rm.mu.Unlock()
 
@@ -129,6 +135,7 @@ func (rm *Manager) RemoveResource(uri string) {
 	if _, ok := rm.resources[uri]; ok {
 		delete(rm.resources, uri)
 		rm.cachedResources = nil
+		rm.cachedMCPResources = nil
 		callback = rm.onListChangedFunc
 	}
 	rm.mu.Unlock()
@@ -177,6 +184,34 @@ func (rm *Manager) ListResources() []Resource {
 	return result
 }
 
+// ListMCPResources returns a slice containing all the resources currently
+// registered in the manager in MCP format.
+func (rm *Manager) ListMCPResources() []*mcp.Resource {
+	rm.mu.RLock()
+	if rm.cachedMCPResources != nil {
+		rm.mu.RUnlock()
+		return rm.cachedMCPResources
+	}
+	rm.mu.RUnlock()
+
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+
+	if rm.cachedMCPResources != nil {
+		return rm.cachedMCPResources
+	}
+
+	mcpResources := make([]*mcp.Resource, 0, len(rm.resources))
+	for _, r := range rm.resources {
+		if resource := r.Resource(); resource != nil {
+			mcpResources = append(mcpResources, resource)
+		}
+	}
+	rm.cachedMCPResources = mcpResources
+
+	return mcpResources
+}
+
 // OnListChanged sets a callback function that will be invoked whenever the list
 // of resources is modified by adding or removing a resource.
 //
@@ -215,6 +250,7 @@ func (rm *Manager) ClearResourcesForService(serviceID string) {
 	}
 	if changed {
 		rm.cachedResources = nil
+		rm.cachedMCPResources = nil
 		callback = rm.onListChangedFunc
 	}
 	rm.mu.Unlock()

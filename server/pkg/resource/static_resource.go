@@ -10,8 +10,8 @@ import (
 	"math"
 	"net/http"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

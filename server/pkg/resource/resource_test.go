@@ -82,6 +82,47 @@ func TestResourceManager_AddGetListRemoveResource(t *testing.T) {
 	assert.Len(t, rm.ListResources(), 1)
 }
 
+func TestResourceManager_ListMCPResources(t *testing.T) {
+	t.Parallel()
+	rm := NewManager()
+	resource1 := &mockResource{uri: "resource://one", service: "service1"}
+	resource2 := &mockResource{uri: "resource://two", service: "service2"}
+
+	// Add
+	rm.AddResource(resource1)
+	rm.AddResource(resource2)
+
+	// ListMCPResources
+	mcpResources := rm.ListMCPResources()
+	assert.Len(t, mcpResources, 2)
+
+	// Verify content
+	uris := make(map[string]bool)
+	for _, r := range mcpResources {
+		uris[r.URI] = true
+	}
+	assert.True(t, uris["resource://one"])
+	assert.True(t, uris["resource://two"])
+
+	// List again (cache hit verification)
+	mcpResources2 := rm.ListMCPResources()
+	assert.Len(t, mcpResources2, 2)
+
+	// Since we are using a cache, the pointers to *mcp.Resource should be identical
+	// Note: We need to match them up since map iteration order is random when cache is rebuilt,
+	// but here we expect cache HIT, so order should be identical too if we returned the slice directly.
+	// But let's be robust and match by URI.
+	for i, r := range mcpResources {
+		assert.Same(t, r, mcpResources2[i], "Expected same pointer due to caching")
+	}
+
+	// Remove should invalidate cache
+	rm.RemoveResource("resource://one")
+	mcpResources3 := rm.ListMCPResources()
+	assert.Len(t, mcpResources3, 1)
+	assert.Equal(t, "resource://two", mcpResources3[0].URI)
+}
+
 func TestResourceManager_OnListChanged(t *testing.T) {
 	t.Parallel()
 	rm := NewManager()
