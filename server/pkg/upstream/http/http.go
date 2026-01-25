@@ -460,9 +460,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		// We use a manual parsing strategy to preserve invalid percent encodings.
 		type queryPart struct {
-			raw       string
-			key       string
-			isInvalid bool
+			raw        string
+			key        string
+			isInvalid  bool
+			keyDecoded bool
 		}
 
 		parseQueryManual := func(rawQuery string) []queryPart {
@@ -488,6 +489,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				decodedKey, errKey := url.QueryUnescape(key)
 				if errKey == nil {
 					qp.key = decodedKey
+					qp.keyDecoded = true
 				}
 
 				_, errVal := url.QueryUnescape(value)
@@ -510,7 +512,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			for _, p := range endParts {
 				// We include invalid parts if we managed to extract the key,
 				// so they can participate in override logic.
-				if p.key != "" {
+				if p.keyDecoded {
 					endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
 				}
 			}
@@ -539,7 +541,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Append remaining endpoint parts
 			for _, ep := range endParts {
 				// If we couldn't decode the key, we just append it (no override logic possible)
-				if ep.key == "" {
+				if !ep.keyDecoded {
 					finalParts = append(finalParts, ep.raw)
 					continue
 				}
