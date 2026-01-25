@@ -564,6 +564,11 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Clone the input schema to avoid modifying the configuration object
 			inputSchema = proto.Clone(httpDef.GetInputSchema()).(*structpb.Struct)
 
+			// Ensure 'type' field is set to 'object' if not present
+			if _, ok := inputSchema.Fields["type"]; !ok {
+				inputSchema.Fields["type"] = structpb.NewStringValue("object")
+			}
+
 			// Ensure properties from 'parameters' are in 'inputSchema.properties'
 			if properties != nil {
 				var existingProps map[string]*structpb.Value
