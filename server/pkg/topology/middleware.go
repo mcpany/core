@@ -58,7 +58,17 @@ func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 		// We could check specific result types for application-level errors (e.g. CallToolResult.IsError)
 		// but standardizing on error return is safer without knowing the exact SDK interface.
 
-		m.RecordActivity(sessionID, meta, duration, isError)
+		serviceID := ""
+		if method == "tools/call" {
+			if callReq, ok := req.(*mcp.CallToolRequest); ok {
+				toolName := callReq.Params.Name
+				if t, found := m.toolManager.GetTool(toolName); found {
+					serviceID = t.Tool().GetServiceId()
+				}
+			}
+		}
+
+		m.RecordActivity(sessionID, meta, duration, isError, serviceID)
 
 		return res, err
 	}

@@ -732,20 +732,26 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the traffic history points.
      */
-    getDashboardTraffic: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/traffic');
+    getDashboardTraffic: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/traffic';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
         return res.json();
     },
 
     /**
      * Gets the top used tools.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the top tools stats.
      */
-    getTopTools: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/top-tools');
+    getTopTools: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/top-tools';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
         return res.json();
@@ -766,20 +772,26 @@ export const apiClient = {
     /**
     /**
      * Gets the tools with highest failure rates.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool failure stats.
      */
-    getToolFailures: async (): Promise<ToolFailureStats[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
+    getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
+        let url = '/api/v1/dashboard/tool-failures';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
 
     /**
      * Gets the tool usage analytics.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool usage stats.
      */
-    getToolUsage: async (): Promise<ToolAnalytics[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-usage');
+    getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
+        let url = '/api/v1/dashboard/tool-usage';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
