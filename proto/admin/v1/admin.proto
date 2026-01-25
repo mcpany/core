@@ -50,7 +50,11 @@ service AdminService {
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 
   // GetDiscoveryStatus returns the status of auto-discovery providers.
-  rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
+  rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/discovery/status"
+    };
+  }
 
   // ===================================================================
   // Audit Logs

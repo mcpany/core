@@ -215,6 +215,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the status of auto-discovery providers.
+     * @returns A promise that resolves to the discovery status.
+     */
+    getDiscoveryStatus: async () => {
+        const res = await fetchWithAuth('/api/v1/discovery/status');
+        if (!res.ok) throw new Error('Failed to fetch discovery status');
+        return res.json();
+    },
+
+    /**
      * Gets a single service by its ID.
      * @param id The ID of the service to retrieve.
      * @returns A promise that resolves to the service configuration.

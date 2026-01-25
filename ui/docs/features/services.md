@@ -68,3 +68,16 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 
 - **Environment Variables**: Define key-value pairs injected into the process (for CMD) or sent as metadata. Supports `secrets.*` references.
 - **Health Checks**: The system periodically pings the `health_check_endpoint` (default `/health`) to update the status.
+
+### 5. Auto-Discovery Status
+
+The **Auto-Discovery** tab provides visibility into the status of automated service discovery providers (e.g., Kubernetes, Docker, Local network).
+
+![Auto-Discovery Status](../screenshots/services_discovery.png)
+
+This view shows:
+- **Provider Name**: The source of auto-discovery (e.g., `ollama`, `k8s`).
+- **Status**: Whether the provider is healthy or encountering errors.
+- **Last Run**: When the discovery process last executed.
+- **Discovered Count**: The number of services found by this provider.
+- **Errors**: Detailed error messages if the provider is failing.

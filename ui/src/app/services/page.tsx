@@ -36,6 +36,8 @@ import {
 import { Download } from "lucide-react";
 import { TemplateConfigForm } from "@/components/services/template-config-form";
 import { applyTemplateFields } from "@/lib/template-utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DiscoveryStatus } from "@/components/services/discovery-status";
 
 
 /**
@@ -428,13 +430,19 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
-        <CardHeader>
-          <CardTitle>Upstream Services</CardTitle>
-          <CardDescription>Manage your connected upstream services.</CardDescription>
-        </CardHeader>
-        <CardContent>
-             <ServiceList
+      <Tabs defaultValue="list" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="list">Configured Services</TabsTrigger>
+          <TabsTrigger value="discovery">Auto-Discovery</TabsTrigger>
+        </TabsList>
+        <TabsContent value="list" className="space-y-4">
+          <Card className="backdrop-blur-sm bg-background/50">
+            <CardHeader>
+              <CardTitle>Upstream Services</CardTitle>
+              <CardDescription>Manage your connected upstream services.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ServiceList
                 services={services}
                 isLoading={loading}
                 onToggle={toggleService}
@@ -447,9 +455,14 @@ export default function ServicesPage() {
                 onBulkEdit={handleBulkEdit}
                 onLogin={handleLogin}
                 onRestart={handleRestart}
-             />
-        </CardContent>
-      </Card>
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="discovery" className="space-y-4">
+          <DiscoveryStatus />
+        </TabsContent>
+      </Tabs>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-2xl w-full">
