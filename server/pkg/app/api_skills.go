@@ -4,6 +4,7 @@
 package app
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -36,9 +37,18 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
+		// Limit the request body size to 10MB to prevent DoS attacks
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "Failed to read body", http.StatusBadRequest)
+			// Check specifically for MaxBytesReader error using errors.As
+			var maxBytesErr *http.MaxBytesError
+			if errors.As(err, &maxBytesErr) {
+				http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+			} else {
+				http.Error(w, "Failed to read body", http.StatusBadRequest)
+			}
 			return
 		}
 
