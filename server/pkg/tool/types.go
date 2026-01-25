@@ -237,14 +237,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -2421,18 +2421,35 @@ func checkForPathTraversal(val string) error {
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
+	// %2e. is ..
+	// .%2e is ..
 	// ⚡ Bolt Optimization: Manual scan to avoid strings.ToLower allocation
 	for i := 0; i < len(val); {
-		idx := strings.IndexByte(val[i:], '%')
-		if idx == -1 {
-			break
-		}
-		i += idx
-		if i+5 < len(val) {
-			if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
-				val[i+3] == '%' &&
-				val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
-				return fmt.Errorf("path traversal attempt detected (encoded)")
+		// Manually iterate to check for dangerous sequences starting with '%' or '.'
+		c := val[i]
+
+		switch c {
+		case '%':
+			// Check for %2e%2e (.. encoded)
+			if i+5 < len(val) {
+				if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
+					val[i+3] == '%' &&
+					val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
+					return fmt.Errorf("path traversal attempt detected (encoded)")
+				}
+			}
+			// Check for %2e. (.. mixed)
+			if i+3 < len(val) {
+				if val[i+1] == '2' && (val[i+2]|0x20 == 'e') && val[i+3] == '.' {
+					return fmt.Errorf("path traversal attempt detected (encoded)")
+				}
+			}
+		case '.':
+			// Check for .%2e (.. mixed)
+			if i+3 < len(val) {
+				if val[i+1] == '%' && val[i+2] == '2' && (val[i+3]|0x20 == 'e') {
+					return fmt.Errorf("path traversal attempt detected (encoded)")
+				}
 			}
 		}
 		i++

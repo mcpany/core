@@ -91,10 +91,26 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		}
 		// File reading is blocking and generally fast, but technically could verify context.
 		// For simplicity and standard library limits, we just read.
-		content, err := os.ReadFile(secret.GetFilePath())
+		// Sentinel Security Update: Use bounded read to prevent DoS.
+		f, err := os.Open(secret.GetFilePath())
+		if err != nil {
+			return "", fmt.Errorf("failed to open secret file %q: %w", secret.GetFilePath(), err)
+		}
+		defer func() { _ = f.Close() }()
+
+		// Limit to 1MB
+		const maxSecretFileSize = 1024 * 1024 // 1MB
+
+		// We read maxSecretFileSize + 1 to detect if it's too large.
+		content, err := io.ReadAll(io.LimitReader(f, maxSecretFileSize+1))
 		if err != nil {
 			return "", fmt.Errorf("failed to read secret from file %q: %w", secret.GetFilePath(), err)
 		}
+
+		if len(content) > maxSecretFileSize {
+			return "", fmt.Errorf("secret file %q is too large (max %d bytes)", secret.GetFilePath(), maxSecretFileSize)
+		}
+
 		return strings.TrimSpace(string(content)), nil
 	case configv1.SecretValue_RemoteContent_case:
 		remote := secret.GetRemoteContent()

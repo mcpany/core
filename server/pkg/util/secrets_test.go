@@ -295,6 +295,34 @@ func TestResolveSecret(t *testing.T) {
 		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
 	})
+
+	t.Run("FilePath too large", func(t *testing.T) {
+		tmpfile, err := os.CreateTemp("", "secret_too_large")
+		assert.NoError(t, err)
+		defer func() { _ = os.Remove(tmpfile.Name()) }()
+
+		// Create a file slightly larger than 1MB
+		// 1MB + 1 byte
+		size := 1024*1024 + 1
+		f, err := os.OpenFile(tmpfile.Name(), os.O_WRONLY|os.O_TRUNC, 0600)
+		assert.NoError(t, err)
+
+		// Write in chunks to avoid large allocation
+		chunk := make([]byte, 1024)
+		for i := 0; i < size/1024; i++ {
+			_, err = f.Write(chunk)
+			assert.NoError(t, err)
+		}
+		_, err = f.Write(make([]byte, size%1024))
+		assert.NoError(t, err)
+		_ = f.Close()
+
+		secret := &configv1.SecretValue{}
+		secret.SetFilePath(tmpfile.Name())
+		_, err = util.ResolveSecret(context.Background(), secret)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "too large")
+	})
 }
 
 func TestResolveSecret_Vault(t *testing.T) {
