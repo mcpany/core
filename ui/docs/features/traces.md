@@ -15,7 +15,17 @@ Navigate to `/traces`. This view shows a chronological log of all system activit
 - **Status Icons**: Green check for success, Red X for failure.
 - **Duration**: Time taken for the request to complete.
 
-### 2. Inspect Detail
+### 2. Filtering
+You can filter traces to isolate specific issues:
+- **Search**: Filter by tool name or trace ID using the search bar.
+- **Status Filter**: Toggle between "All", "Success", and "Error" tabs to focus on failed requests.
+
+![Trace Filtered](screenshots/traces_filtered.png)
+
+### 3. Drill-Down from Dashboard
+Identify failing tools on the **Dashboard** and click on them in the "Tool Failure Rates" widget. This will automatically navigate to the Trace Inspector, filtered by that tool and "Error" status, allowing for immediate root cause analysis.
+
+### 4. Inspect Detail
 Click on any row in the trace list to open the **Detail View**.
 this view is split into tabs:
 - **Request**: The JSON arguments sent to the tool.
@@ -24,7 +34,7 @@ this view is split into tabs:
 
 ![Trace Detail](screenshots/trace_detail.png)
 
-### 3. Replay Trace
+### 5. Replay Trace
 To quickly reproduce a bug or test a tool:
 1. Open a trace detail.
 2. Click the **"Replay in Playground"** button.

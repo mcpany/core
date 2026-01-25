@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -58,11 +59,16 @@ export function ToolFailureRateWidget() {
             <CardContent>
                 <div className="space-y-4">
                     {tools.map((tool) => (
-                        <div key={tool.name} className="space-y-1">
+                        <Link
+                            key={tool.name}
+                            href={`/traces?tool=${encodeURIComponent(tool.name)}&status=error`}
+                            className="block space-y-1 group hover:bg-muted/50 p-1 rounded -mx-1 transition-colors cursor-pointer"
+                        >
                             <div className="flex items-center justify-between text-xs">
                                 <div className="flex items-center gap-2">
-                                    <span className="font-medium truncate max-w-[120px]">{tool.name}</span>
+                                    <span className="font-medium truncate max-w-[120px] group-hover:text-primary transition-colors">{tool.name}</span>
                                     <Badge variant="outline" className="text-[10px] px-1 h-4">{tool.service}</Badge>
+                                    <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
                                 </div>
                                 <span className={tool.failureRate > 15 ? "text-destructive font-bold" : "text-muted-foreground"}>
                                     {tool.failureRate.toFixed(1)}%
@@ -73,7 +79,7 @@ export function ToolFailureRateWidget() {
                                 className="h-1"
                                 // progress-color depending on rate? (Custom CSS or shadcn logic)
                             />
-                        </div>
+                        </Link>
                     ))}
                     {tools.length === 0 && !loading && (
                         <div className="text-center py-4 text-xs text-muted-foreground">

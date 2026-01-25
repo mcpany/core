@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
 import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
@@ -22,6 +23,8 @@ interface TraceListProps {
   onSelect: (id: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  statusFilter: 'all' | 'success' | 'error';
+  onStatusFilterChange: (status: 'all' | 'success' | 'error') => void;
   isLive: boolean;
   onToggleLive: (live: boolean) => void;
 }
@@ -76,39 +79,50 @@ TraceListItem.displayName = "TraceListItem";
  *
  * @param onToggleLive - The onToggleLive.
  */
-export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
+export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, statusFilter, onStatusFilterChange, isLive, onToggleLive }: TraceListProps) {
 
   // Optimization: Memoize filtered traces to avoid re-calculating on every render,
   // especially when only selectedId changes.
   const filteredTraces = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
-    return traces.filter(t =>
-      t.rootSpan.name.toLowerCase().includes(lowerQuery) ||
-      t.id.toLowerCase().includes(lowerQuery)
-    );
-  }, [traces, searchQuery]);
+    return traces.filter(t => {
+      const matchesSearch = t.rootSpan.name.toLowerCase().includes(lowerQuery) ||
+                            t.id.toLowerCase().includes(lowerQuery);
+      const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [traces, searchQuery, statusFilter]);
 
   return (
     <div className="flex flex-col h-full border-r bg-background/50 backdrop-blur-sm">
-      <div className="p-4 border-b flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search traces..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
+      <div className="p-4 border-b flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search traces..."
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          </div>
+          <Button
+              variant={isLive ? "default" : "outline"}
+              size="icon"
+              onClick={() => onToggleLive(!isLive)}
+              title={isLive ? "Pause Live Updates" : "Start Live Updates"}
+              className={cn("shrink-0", isLive && "bg-green-600 hover:bg-green-700")}
+          >
+              {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </Button>
         </div>
-        <Button
-            variant={isLive ? "default" : "outline"}
-            size="icon"
-            onClick={() => onToggleLive(!isLive)}
-            title={isLive ? "Pause Live Updates" : "Start Live Updates"}
-            className={cn("shrink-0", isLive && "bg-green-600 hover:bg-green-700")}
-        >
-             {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </Button>
+        <Tabs value={statusFilter} onValueChange={(v) => onStatusFilterChange(v as any)} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="success">Success</TabsTrigger>
+              <TabsTrigger value="error">Error</TabsTrigger>
+            </TabsList>
+        </Tabs>
       </div>
       <ScrollArea className="flex-1">
         <div className="flex flex-col">

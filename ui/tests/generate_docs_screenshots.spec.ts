@@ -284,6 +284,30 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
   });
 
+  test('Traces Filtered Screenshots', async ({ page }) => {
+      // Mock Traces
+      await page.route('**/api/traces*', async route => {
+          await route.fulfill({
+              json: [
+                   {
+                       id: 't2',
+                       timestamp: Date.now() - 5000,
+                       rootSpan: { name: 'calculator.add' },
+                       status: 'error',
+                       error: 'Division by zero',
+                       totalDuration: 10,
+                       trigger: 'user'
+                   }
+              ]
+          });
+      });
+
+      await page.goto('/traces?tool=calculator.add&status=error');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_filtered.png'), fullPage: true });
+  });
+
   test('Middleware Screenshots', async ({ page }) => {
       await page.goto('/middleware');
       await page.waitForTimeout(1000);

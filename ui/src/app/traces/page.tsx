@@ -6,6 +6,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
 import { Trace } from "@/app/api/traces/route";
@@ -17,11 +18,23 @@ import { Loader2 } from "lucide-react";
  * @returns The rendered component.
  */
 export default function TracesPage() {
+  const searchParams = useSearchParams();
   const [traces, setTraces] = useState<Trace[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<'all' | 'success' | 'error'>("all");
   const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    const tool = searchParams.get("tool");
+    if (tool) setSearchQuery(tool);
+
+    const status = searchParams.get("status");
+    if (status === "success" || status === "error" || status === "all") {
+      setStatusFilter(status);
+    }
+  }, [searchParams]);
 
   // Separate load function for reuse
   const loadTraces = async (isFirstLoad = false) => {
@@ -78,6 +91,8 @@ export default function TracesPage() {
                 onSelect={setSelectedId}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
                 isLive={isLive}
                 onToggleLive={setIsLive}
             />
