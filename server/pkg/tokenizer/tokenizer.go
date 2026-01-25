@@ -525,16 +525,7 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 
 		return t.countRecursive(val.Elem().Interface(), visited)
 	case reflect.Struct:
-		count := 0
-		fields := getExportedFields(val.Type())
-		for _, i := range fields {
-			c, err := t.countRecursive(val.Field(i).Interface(), visited)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
+		return countTokensReflectStruct(t, val, visited)
 	case reflect.Slice:
 		if !val.IsNil() {
 			ptr := val.Pointer()
@@ -546,46 +537,132 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 		}
 		fallthrough
 	case reflect.Array:
-		count := 0
-		for i := 0; i < val.Len(); i++ {
-			c, err := t.countRecursive(val.Index(i).Interface(), visited)
+		return countTokensReflectSlice(t, val, visited)
+	case reflect.Map:
+		return countTokensReflectMap(t, val, visited)
+	}
+
+	// Fallback for others (channels, funcs, unhandled types)
+	return t.CountTokens(fmt.Sprintf("%v", v))
+}
+
+func countTokensReflectStruct[T recursiveTokenizer](t T, val reflect.Value, visited map[uintptr]bool) (int, error) {
+	count := 0
+	fields := getExportedFields(val.Type())
+	for _, i := range fields {
+		field := val.Field(i)
+		// Optimization: Avoid Interface() allocation for string fields.
+		if field.Kind() == reflect.String {
+			c, err := t.CountTokens(field.String())
 			if err != nil {
 				return 0, err
 			}
 			count += c
+			continue
 		}
-		return count, nil
-	case reflect.Map:
-		if !val.IsNil() {
-			ptr := val.Pointer()
-			if visited[ptr] {
-				return 0, fmt.Errorf("cycle detected in value")
+		// Optimization: Avoid Interface() allocation for bool fields.
+		if field.Kind() == reflect.Bool {
+			s := "false"
+			if field.Bool() {
+				s = "true"
 			}
-			visited[ptr] = true
-			defer delete(visited, ptr)
+			c, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
 		}
 
-		count := 0
-		iter := val.MapRange()
-		for iter.Next() {
-			// Key
-			kc, err := t.countRecursive(iter.Key().Interface(), visited)
+		c, err := t.countRecursive(field.Interface(), visited)
+		if err != nil {
+			return 0, err
+		}
+		count += c
+	}
+	return count, nil
+}
+
+func countTokensReflectSlice[T recursiveTokenizer](t T, val reflect.Value, visited map[uintptr]bool) (int, error) {
+	count := 0
+	for i := 0; i < val.Len(); i++ {
+		elem := val.Index(i)
+		// Optimization: Avoid Interface() allocation for string elements.
+		if elem.Kind() == reflect.String {
+			c, err := t.CountTokens(elem.String())
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		}
+
+		c, err := t.countRecursive(elem.Interface(), visited)
+		if err != nil {
+			return 0, err
+		}
+		count += c
+	}
+	return count, nil
+}
+
+func countTokensReflectMap[T recursiveTokenizer](t T, val reflect.Value, visited map[uintptr]bool) (int, error) {
+	if !val.IsNil() {
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+	}
+
+	count := 0
+	iter := val.MapRange()
+	for iter.Next() {
+		// Key
+		key := iter.Key()
+		if key.Kind() == reflect.String {
+			kc, err := t.CountTokens(key.String())
 			if err != nil {
 				return 0, err
 			}
 			count += kc
-			// Value
-			vc, err := t.countRecursive(iter.Value().Interface(), visited)
+		} else {
+			kc, err := t.countRecursive(key.Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+		}
+
+		// Value
+		entryVal := iter.Value()
+		switch entryVal.Kind() {
+		case reflect.String:
+			vc, err := t.CountTokens(entryVal.String())
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		case reflect.Bool:
+			s := "false"
+			if entryVal.Bool() {
+				s = "true"
+			}
+			vc, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		default:
+			vc, err := t.countRecursive(entryVal.Interface(), visited)
 			if err != nil {
 				return 0, err
 			}
 			count += vc
 		}
-		return count, nil
 	}
-
-	// Fallback for others (channels, funcs, unhandled types)
-	return t.CountTokens(fmt.Sprintf("%v", v))
+	return count, nil
 }
 
 // countTokensReflect is the fallback for non-recursiveTokenizer implementations.
