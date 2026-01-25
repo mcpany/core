@@ -138,3 +138,13 @@ func TestFileAuditStore_Close_Stdout(t *testing.T) {
 	err = store.Close()
 	require.NoError(t, err)
 }
+
+func TestFileAuditStore_Read_Error(t *testing.T) {
+	store, err := NewFileAuditStore("")
+	require.NoError(t, err)
+	defer store.Close()
+
+	_, err = store.Read(context.Background(), Filter{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "read not implemented")
+}
