@@ -375,6 +375,13 @@ func (s *Server) GetPrompt(
 		return nil, prompt.ErrPromptNotFound
 	}
 
+	serviceID := p.Service()
+	if serviceID != "" {
+		if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
+		}
+	}
+
 	profileID, _ := auth.ProfileIDFromContext(ctx)
 	if profileID != "" {
 		serviceID := p.Service()
@@ -437,6 +444,13 @@ func (s *Server) ReadResource(
 	r, ok := s.resourceManager.GetResource(req.Params.URI)
 	if !ok {
 		return nil, resource.ErrResourceNotFound
+	}
+
+	serviceID := r.Service()
+	if serviceID != "" {
+		if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
+		}
 	}
 
 	profileID, _ := auth.ProfileIDFromContext(ctx)
@@ -922,9 +936,16 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 			}
 
 			for _, resourceInstance := range managedResources {
+				serviceID := resourceInstance.Service()
+				// Health filtering
+				if serviceID != "" {
+					if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+						continue
+					}
+				}
+
 				// Profile filtering
 				if profileID != "" {
-					serviceID := resourceInstance.Service()
 					// Optimized O(1) map lookup
 					if allowedServices != nil {
 						if !allowedServices[serviceID] {
@@ -963,9 +984,16 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 			}
 
 			for _, promptInstance := range managedPrompts {
+				serviceID := promptInstance.Service()
+				// Health filtering
+				if serviceID != "" {
+					if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+						continue
+					}
+				}
+
 				// Profile filtering
 				if profileID != "" {
-					serviceID := promptInstance.Service()
 					// Optimized O(1) map lookup
 					if allowedServices != nil {
 						if !allowedServices[serviceID] {
