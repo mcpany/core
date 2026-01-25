@@ -26,7 +26,8 @@ export function RecentActivityWidget() {
 
   const fetchTraces = async () => {
     try {
-      const res = await fetch('/api/traces');
+      // ⚡ Bolt Optimization: Only fetch the top 5 traces to reduce payload size and processing
+      const res = await fetch('/api/traces?limit=5');
       if (!res.ok) {
           throw new Error(`Failed to fetch traces: ${res.status}`);
       }

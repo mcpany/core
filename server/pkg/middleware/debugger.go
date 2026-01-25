@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -209,12 +210,48 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
+// LatestEntries returns the last n captured entries in reverse order (newest first).
+//
+// n is the number of entries to return.
+//
+// Returns the result.
+func (d *Debugger) LatestEntries(n int) []DebugEntry {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	if n <= 0 || n > d.limit {
+		n = d.limit
+	}
+
+	entries := make([]DebugEntry, 0, n)
+	// Start from the most recent (Prev of current write position)
+	r := d.ring.Prev()
+	for i := 0; i < n; i++ {
+		if r.Value == nil {
+			break
+		}
+		entries = append(entries, r.Value.(DebugEntry))
+		r = r.Prev()
+	}
+	return entries
+}
+
 // APIHandler returns a http.HandlerFunc to view entries.
 //
 // Returns the result.
 func (d *Debugger) APIHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+
+		limitStr := r.URL.Query().Get("limit")
+		if limitStr != "" {
+			limit, err := strconv.Atoi(limitStr)
+			if err == nil && limit > 0 {
+				_ = json.NewEncoder(w).Encode(d.LatestEntries(limit))
+				return
+			}
+		}
+
 		_ = json.NewEncoder(w).Encode(d.Entries())
 	}
 }

@@ -59,6 +59,8 @@ describe("RecentActivityWidget", () => {
         expect(screen.getByText("list_users")).toBeInTheDocument();
     });
 
+    expect(mockFetch).toHaveBeenCalledWith('/api/traces?limit=5');
+
     // Check for success/error indicators (indirectly via text content or class presence if we query by role, but simple text check is good for now)
     expect(screen.getByText("Failed")).toBeInTheDocument(); // Trace 2 has failed badge
     expect(screen.getByText("150ms")).toBeInTheDocument();

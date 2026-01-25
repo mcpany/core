@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -98,4 +99,35 @@ func TestDebuggerLargeBodyTruncation(t *testing.T) {
 	assert.Contains(t, entries[0].RequestBody, "... [truncated]")
 	assert.Contains(t, entries[0].ResponseBody, "This is a ")
 	assert.Contains(t, entries[0].ResponseBody, "... [truncated]")
+}
+
+func TestDebuggerLatestEntries(t *testing.T) {
+	debugger := NewDebugger(10)
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	// Generate 15 requests
+	for i := 0; i < 15; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/test/"+strconv.Itoa(i), nil)
+		handler.ServeHTTP(w, req)
+	}
+
+	// LatestEntries(5) should return 14, 13, 12, 11, 10
+	latest := debugger.LatestEntries(5)
+	assert.Len(t, latest, 5)
+	assert.Equal(t, "/test/14", latest[0].Path)
+	assert.Equal(t, "/test/13", latest[1].Path)
+
+	// API Handler Limit
+	apiHandler := debugger.APIHandler()
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/api?limit=3", nil)
+	apiHandler.ServeHTTP(w, req)
+
+	var apiEntries []DebugEntry
+	_ = json.Unmarshal(w.Body.Bytes(), &apiEntries)
+	assert.Len(t, apiEntries, 3)
+	assert.Equal(t, "/test/14", apiEntries[0].Path)
 }
