@@ -21,6 +21,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// headerInjectingTransport injects headers into the request.
+type headerInjectingTransport struct {
+	Transport http.RoundTripper
+	Headers   map[string]string
+}
+
+// RoundTrip executes the request.
+func (t *headerInjectingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	for k, v := range t.Headers {
+		req.Header.Set(k, v)
+	}
+	transport := t.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	return transport.RoundTrip(req)
+}
+
 // TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
 func TestCUJ_Protocols(t *testing.T) {
 	t.Skip("Skipping E2E test as requested by user to unblock merge")
@@ -97,8 +115,8 @@ upstream_services:
     disable: false
     upstream_auth:
       api_key:
-        in: QUERY
-        param_name: "api_key"
+        in: HEADER
+        param_name: "X-API-Key"
         value:
           plain_text: "test-key"
     mcp_service:
@@ -167,7 +185,16 @@ upstream_services:
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	httpClient := &http.Client{
+		Transport: &headerInjectingTransport{
+			Transport: http.DefaultTransport,
+			Headers:   map[string]string{"X-API-Key": "test-key"},
+		},
+	}
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()

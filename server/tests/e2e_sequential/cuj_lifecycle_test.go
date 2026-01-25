@@ -21,6 +21,42 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// headerInjectingTransport injects headers into the request.
+type headerInjectingTransport struct {
+	Transport http.RoundTripper
+	Headers   map[string]string
+}
+
+// RoundTrip executes the request.
+func (t *headerInjectingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	for k, v := range t.Headers {
+		req.Header.Set(k, v)
+	}
+	transport := t.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	return transport.RoundTrip(req)
+}
+
+// verifyEndpoint checks if an endpoint returns the expected status code.
+// Copied from docker_compose_test.go to avoid shared helper issues in package main/test
+func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		//nolint:gosec // G107: Url is constructed internally in test
+		resp, err := http.Get(url)
+		if err == nil {
+			_ = resp.Body.Close()
+			if resp.StatusCode == expectedStatus {
+				return
+			}
+		}
+		time.Sleep(1 * time.Second)
+	}
+	t.Fatalf("Failed to verify endpoint %s within %v", url, timeout)
+}
+
 // TestCUJ_Lifecycle_And_Config tests lifecycle events and config changes.
 // Using Filesystem upstream to avoid dependency on external binaries or containers.
 func TestCUJ_Lifecycle_And_Config(t *testing.T) {
@@ -127,7 +163,16 @@ upstream_services:
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	httpClient := &http.Client{
+		Transport: &headerInjectingTransport{
+			Transport: http.DefaultTransport,
+			Headers:   map[string]string{"X-API-Key": "test-key"},
+		},
+	}
+	transport := &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -198,7 +243,10 @@ upstream_services:
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Re-connect
-	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	transport = &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -262,7 +310,10 @@ upstream_services:
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Re-connect
-	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	transport = &mcp.StreamableClientTransport{
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
+	}
 	session, err = client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
@@ -281,7 +332,10 @@ upstream_services:
 	}, 15*time.Second, 1*time.Second, "Tool 'list_directory' should disappear")
 
 	// CUJ 4: Validating Topology
-	topoResp, err := http.Get(fmt.Sprintf("%s/api/v1/topology?api_key=test-key", baseURL))
+	topoReq, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/topology", baseURL), nil)
+	require.NoError(t, err)
+	topoReq.Header.Set("X-API-Key", "test-key")
+	topoResp, err := http.DefaultClient.Do(topoReq)
 	require.NoError(t, err)
 	defer topoResp.Body.Close()
 	require.Equal(t, 200, topoResp.StatusCode)

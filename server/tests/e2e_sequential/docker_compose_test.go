@@ -24,6 +24,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// headerInjectingTransport injects headers into the request.
+type headerInjectingTransport struct {
+	Transport http.RoundTripper
+	Headers   map[string]string
+}
+
+// RoundTrip executes the request.
+func (t *headerInjectingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	for k, v := range t.Headers {
+		req.Header.Set(k, v)
+	}
+	transport := t.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	return transport.RoundTrip(req)
+}
+
 func TestDockerComposeE2E(t *testing.T) {
 	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
@@ -265,8 +283,15 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-weather-client", Version: "1.0"}, nil)
+	httpClient := &http.Client{
+		Transport: &headerInjectingTransport{
+			Transport: http.DefaultTransport,
+			Headers:   map[string]string{"X-API-Key": "demo-key"},
+		},
+	}
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL + "/mcp?api_key=demo-key",
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -452,8 +477,15 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
+	httpClient := &http.Client{
+		Transport: &headerInjectingTransport{
+			Transport: http.DefaultTransport,
+			Headers:   map[string]string{"X-API-Key": "demo-key"},
+		},
+	}
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL + "/mcp?api_key=demo-key",
+		Endpoint:   baseURL + "/mcp",
+		HTTPClient: httpClient,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)

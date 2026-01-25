@@ -243,6 +243,34 @@ func GetProjectRoot() (string, error) {
 	return filepath.Abs(projectRoot)
 }
 
+// HeaderInjectingTransport injects headers into the request.
+type HeaderInjectingTransport struct {
+	Transport http.RoundTripper
+	Headers   map[string]string
+}
+
+// RoundTrip executes the request.
+func (t *HeaderInjectingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	for k, v := range t.Headers {
+		req.Header.Set(k, v)
+	}
+	transport := t.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	return transport.RoundTrip(req)
+}
+
+// NewAuthenticatedClient returns an http.Client that injects the API key.
+func NewAuthenticatedClient(apiKey string) *http.Client {
+	return &http.Client{
+		Transport: &HeaderInjectingTransport{
+			Headers: map[string]string{"X-API-Key": apiKey},
+		},
+		Timeout: 2 * time.Second,
+	}
+}
+
 // --- Helper: Find Free Port ---.
 var portMutex sync.Mutex
 
@@ -838,9 +866,6 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	jsonrpcEndpoint := fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
 	grpcRegEndpoint := net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	mcpRequestURL := jsonrpcEndpoint + "/mcp"
-	if actualAPIKey != "" {
-		mcpRequestURL += "?api_key=" + actualAPIKey
-	}
 
 	// Verify gRPC connection
 	var grpcRegConn *grpc.ClientConn
@@ -873,7 +898,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		JSONRPCEndpoint:          jsonrpcEndpoint,
 		HTTPEndpoint:             mcpRequestURL,
 		GrpcRegistrationEndpoint: grpcRegEndpoint,
-		HTTPClient:               &http.Client{Timeout: 2 * time.Second},
+		HTTPClient:               NewAuthenticatedClient(actualAPIKey),
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
 		CleanupFunc: func() {
@@ -1174,14 +1199,13 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	if jsonrpcPort != 0 {
 		jsonrpcEndpoint = fmt.Sprintf("http://%s:%d", loopbackIP, jsonrpcPort)
-		// Include API Key in URL query param for easy auth
-		mcpRequestURL = fmt.Sprintf("%s/mcp?api_key=%s", jsonrpcEndpoint, apiKey)
+		mcpRequestURL = fmt.Sprintf("%s/mcp", jsonrpcEndpoint)
 	}
 	if grpcRegPort != 0 {
 		grpcRegEndpoint = net.JoinHostPort(loopbackIP, strconv.Itoa(grpcRegPort))
 	}
 
-	httpClient := &http.Client{Timeout: 2 * time.Second}
+	httpClient := NewAuthenticatedClient(apiKey)
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
 
