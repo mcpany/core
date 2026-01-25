@@ -17,6 +17,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -459,7 +460,7 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	var preHooks []PreCallHook
 	var postHooks []PostCallHook
 	if ok {
-		if serviceInfo.HealthStatus == "unhealthy" {
+		if serviceInfo.HealthStatus == consts.HealthStatusUnhealthy {
 			log.Warn("Service is unhealthy, denying execution", "serviceID", serviceID)
 			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
 		}
@@ -820,7 +821,7 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 		serviceID := value.Tool().GetServiceId()
 		// ⚡ Bolt Optimization: Use direct load to avoid expensive config cloning/stripping in GetServiceInfo
 		if info, ok := tm.serviceInfo.Load(serviceID); ok {
-			if info.HealthStatus == "unhealthy" {
+			if info.HealthStatus == consts.HealthStatusUnhealthy {
 				return true // Skip unhealthy tools
 			}
 		}

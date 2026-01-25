@@ -377,7 +377,7 @@ func (s *Server) GetPrompt(
 
 	serviceID := p.Service()
 	if serviceID != "" {
-		if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+		if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == consts.HealthStatusUnhealthy {
 			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
 		}
 	}
@@ -939,7 +939,7 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 				serviceID := resourceInstance.Service()
 				// Health filtering
 				if serviceID != "" {
-					if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+					if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == consts.HealthStatusUnhealthy {
 						continue
 					}
 				}
@@ -987,7 +987,7 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 				serviceID := promptInstance.Service()
 				// Health filtering
 				if serviceID != "" {
-					if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == "unhealthy" {
+					if info, ok := s.toolManager.GetServiceInfo(serviceID); ok && info.HealthStatus == consts.HealthStatusUnhealthy {
 						continue
 					}
 				}

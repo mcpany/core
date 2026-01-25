@@ -165,11 +165,11 @@ func TestUnhealthyServiceResourceAccess(t *testing.T) {
 	// Services config
 	srvHealthy := &tool.ServiceInfo{
 		Config:       &configv1.UpstreamServiceConfig{},
-		HealthStatus: "healthy",
+		HealthStatus: consts.HealthStatusHealthy,
 	}
 	srvUnhealthy := &tool.ServiceInfo{
 		Config:       &configv1.UpstreamServiceConfig{},
-		HealthStatus: "unhealthy",
+		HealthStatus: consts.HealthStatusUnhealthy,
 	}
 
 	tm := &serviceInfoProviderToolManagerForRepro{
@@ -220,7 +220,7 @@ func TestUnhealthyServiceResourceAccess(t *testing.T) {
 	}})
 	// Expectation: Should fail
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "unhealthy")
+	assert.Contains(t, err.Error(), consts.HealthStatusUnhealthy)
 
 	// Try reading healthy resource
 	resRead, err := server.ReadResource(ctx, &mcp.ReadResourceRequest{Params: &mcp.ReadResourceParams{
@@ -249,11 +249,11 @@ func TestUnhealthyServicePromptAccess(t *testing.T) {
 
 	srvHealthy := &tool.ServiceInfo{
 		Config:       &configv1.UpstreamServiceConfig{},
-		HealthStatus: "healthy",
+		HealthStatus: consts.HealthStatusHealthy,
 	}
 	srvUnhealthy := &tool.ServiceInfo{
 		Config:       &configv1.UpstreamServiceConfig{},
-		HealthStatus: "unhealthy",
+		HealthStatus: consts.HealthStatusUnhealthy,
 	}
 
 	tm := &serviceInfoProviderToolManagerForRepro{
@@ -302,7 +302,7 @@ func TestUnhealthyServicePromptAccess(t *testing.T) {
 	}})
 	// Expectation: Should fail
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "unhealthy")
+	assert.Contains(t, err.Error(), consts.HealthStatusUnhealthy)
 
 	// Try getting healthy prompt
 	resPrompt, err := server.GetPrompt(ctx, &mcp.GetPromptRequest{Params: &mcp.GetPromptParams{
