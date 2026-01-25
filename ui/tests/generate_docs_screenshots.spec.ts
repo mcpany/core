@@ -273,6 +273,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await tool.click();
         // Wait for dialog
         await expect(page.getByRole('dialog')).toBeVisible();
+
+        // Fill Form again (state is reset)
+        await page.getByLabel('path').fill('/var/log');
+
         await page.getByRole('button', { name: /Build Command/i }).click();
         // Wait for dialog to close
         await expect(page.getByRole('dialog')).not.toBeVisible();
