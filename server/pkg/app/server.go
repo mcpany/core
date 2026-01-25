@@ -2110,9 +2110,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			if apiKey != "" {
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
-				}
-				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
 					if strings.HasPrefix(authHeader, "Bearer ") {
 						requestKey = strings.TrimPrefix(authHeader, "Bearer ")
@@ -2154,16 +2151,11 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
 			// This prevents accidental exposure of the server to the public internet (RCE risk).
-			host, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				// Fallback if RemoteAddr is weird, assume host is the string itself
-				host = r.RemoteAddr
-			}
-
-			// Check if the request is from a loopback address
-			ipAddr := net.ParseIP(host)
+			// We use the resolved client IP (which respects X-Forwarded-For if trustProxy is enabled)
+			// to ensure we don't accidentally allow public traffic coming through a local proxy.
+			ipAddr := net.ParseIP(ip)
 			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
 				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 				return
 			}
