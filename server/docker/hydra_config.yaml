@@ -1,0 +1,23 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+serve:
+  cookies:
+    same_site_mode: Lax
+urls:
+  self:
+    public: http://localhost:5444/
+    issuer: http://localhost:5444/
+  consent: http://localhost:3000/content
+  login: http://localhost:3000/login
+  logout: http://localhost:3000/logout
+secrets:
+  system:
+    - youReallyNeedToChangeThis
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: youReallyNeedToChangeThis

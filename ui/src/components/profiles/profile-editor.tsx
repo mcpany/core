@@ -25,21 +25,13 @@ import { Search, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-/**
- * Represents a user profile configuration in the UI.
- */
+// Define the shape of Profile used in UI
 export interface Profile {
-    /** The unique identifier for the profile (often same as name). */
-    id: string;
-    /** The display name of the profile. */
+    id: string; // name
     name: string;
-    /** An optional description of the profile's purpose. */
     description?: string;
-    /** A list of service names enabled for this profile. */
-    services: string[];
-    /** The environment type associated with this profile. */
+    services: string[]; // List of enabled service names
     type: "dev" | "prod" | "debug";
-    /** Optional key-value pairs of secrets associated with the profile. */
     secrets?: Record<string, string>;
 }
 
@@ -57,15 +49,6 @@ interface ProfileEditorProps {
     onSave: (profileData: ProfileData) => Promise<void>;
 }
 
-/**
- * ProfileEditor component.
- * @param props - The component props.
- * @param props.profile - The profile property.
- * @param props.open - Whether the component is open.
- * @param props.onOpenChange - Whether the component is open.
- * @param props.onSave - The onSave property.
- * @returns The rendered component.
- */
 export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEditorProps) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

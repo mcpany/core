@@ -25,12 +25,6 @@ interface DiagnosticResult {
     details?: string;
 }
 
-/**
- * ServiceDiagnostics component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @returns The rendered component.
- */
 export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
     const [running, setRunning] = useState(false);
     const [results, setResults] = useState<DiagnosticResult[]>([]);
