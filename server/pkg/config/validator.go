@@ -287,16 +287,16 @@ func validateFileExists(path string, workingDir string) error {
 	return nil
 }
 
-func validateSecretMap(secrets map[string]*configv1.SecretValue) error {
+func validateSecretMap(ctx context.Context, secrets map[string]*configv1.SecretValue) error {
 	for key, secret := range secrets {
-		if err := validateSecretValue(secret); err != nil {
+		if err := validateSecretValue(ctx, secret); err != nil {
 			return fmt.Errorf("%q: %w", key, err)
 		}
 	}
 	return nil
 }
 
-func validateSecretValue(secret *configv1.SecretValue) error {
+func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) error {
 	if secret == nil {
 		return nil
 	}
@@ -339,33 +339,10 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	}
 
 	if secret.GetValidationRegex() != "" {
-		re, err := regexp.Compile(secret.GetValidationRegex())
-		if err != nil {
-			return fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
-		}
-
-		var valueToValidate string
-		var shouldValidate bool
-
-		switch secret.WhichValue() {
-		case configv1.SecretValue_PlainText_case:
-			valueToValidate = strings.TrimSpace(secret.GetPlainText())
-			shouldValidate = true
-		case configv1.SecretValue_EnvironmentVariable_case:
-			valueToValidate = strings.TrimSpace(os.Getenv(secret.GetEnvironmentVariable()))
-			shouldValidate = true
-		case configv1.SecretValue_FilePath_case:
-			// We already validated file existence above, so we can try to read it.
-			content, err := os.ReadFile(secret.GetFilePath())
-			if err != nil {
-				return fmt.Errorf("failed to read secret file %q for validation: %w", secret.GetFilePath(), err)
-			}
-			valueToValidate = strings.TrimSpace(string(content))
-			shouldValidate = true
-		}
-
-		if shouldValidate && !re.MatchString(valueToValidate) {
-			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
+		// Use ResolveSecret to handle all secret types and perform regex validation.
+		// This ensures that RemoteContent, Vault, etc., are also validated against the regex.
+		if _, err := util.ResolveSecret(ctx, secret); err != nil {
+			return err
 		}
 	}
 
@@ -446,7 +423,7 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 		return fmt.Errorf("service type not specified")
 	}
 
-	if err := validateServiceConfig(service); err != nil {
+	if err := validateServiceConfig(ctx, service); err != nil {
 		return err
 	}
 
@@ -486,7 +463,7 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 	return nil
 }
 
-func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
+func validateServiceConfig(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if httpService := service.GetHttpService(); httpService != nil {
 		return validateHTTPService(httpService)
 	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
@@ -496,9 +473,9 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
 		return validateOpenAPIService(openapiService)
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
-		return validateCommandLineService(commandLineService)
+		return validateCommandLineService(ctx, commandLineService)
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
-		return validateMcpService(mcpService)
+		return validateMcpService(ctx, mcpService)
 	} else if sqlService := service.GetSqlService(); sqlService != nil {
 		return validateSQLService(sqlService)
 	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
@@ -642,7 +619,7 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 	return nil
 }
 
-func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
+func validateCommandLineService(ctx context.Context, commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return &ActionableError{
 			Err:        fmt.Errorf("command_line_service has empty command"),
@@ -657,13 +634,13 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 		}
 	}
 
-	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
+	if err := validateContainerEnvironment(ctx, commandLineService.GetContainerEnvironment()); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
+func validateContainerEnvironment(ctx context.Context, env *configv1.ContainerEnvironment) error {
 	if env == nil {
 		return nil
 	}
@@ -688,7 +665,7 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 	return nil
 }
 
-func validateMcpService(mcpService *configv1.McpUpstreamService) error {
+func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamService) error {
 	switch mcpService.WhichConnectionType() {
 	case configv1.McpUpstreamService_HttpConnection_case:
 		httpConn := mcpService.GetHttpConnection()
@@ -739,7 +716,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			}
 		}
 
-		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {
+		if err := validateSecretMap(ctx, stdioConn.GetEnv()); err != nil {
 			return fmt.Errorf("mcp service with stdio_connection has invalid secret environment variable: %w", err)
 		}
 	case configv1.McpUpstreamService_BundleConnection_case:
@@ -750,7 +727,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
 		}
-		if err := validateSecretMap(bundleConn.GetEnv()); err != nil {
+		if err := validateSecretMap(ctx, bundleConn.GetEnv()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
 		}
 	default:
@@ -899,7 +876,7 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 	}
 
 	if apiKey.GetValue() != nil {
-		if err := validateSecretValue(apiKey.GetValue()); err != nil {
+		if err := validateSecretValue(ctx, apiKey.GetValue()); err != nil {
 			return WrapActionableError("api key secret validation failed", err)
 		}
 		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
@@ -917,7 +894,7 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 }
 
 func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTokenAuth) error {
-	if err := validateSecretValue(bearerToken.GetToken()); err != nil {
+	if err := validateSecretValue(ctx, bearerToken.GetToken()); err != nil {
 		return WrapActionableError("bearer token validation failed", err)
 	}
 	tokenValue, err := util.ResolveSecret(ctx, bearerToken.GetToken())
@@ -940,7 +917,7 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error
 			Suggestion: "Set the 'username' field.",
 		}
 	}
-	if err := validateSecretValue(basicAuth.GetPassword()); err != nil {
+	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
 		return WrapActionableError("basic auth password validation failed", err)
 	}
 	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
@@ -987,7 +964,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		}
 	}
 
-	if err := validateSecretValue(oauth.GetClientId()); err != nil {
+	if err := validateSecretValue(ctx, oauth.GetClientId()); err != nil {
 		return WrapActionableError("oauth2 client_id validation failed", err)
 	}
 	clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
@@ -998,7 +975,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return fmt.Errorf("oauth2 client_id is missing or empty")
 	}
 
-	if err := validateSecretValue(oauth.GetClientSecret()); err != nil {
+	if err := validateSecretValue(ctx, oauth.GetClientSecret()); err != nil {
 		return WrapActionableError("oauth2 client_secret validation failed", err)
 	}
 	clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())

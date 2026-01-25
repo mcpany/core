@@ -100,7 +100,7 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 			},
 		},
 	}
-	err := validateSecretValue(sv)
+	err := validateSecretValue(context.Background(), sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty http_url")
 
@@ -110,7 +110,7 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 			HttpUrl: proto.String("ftp://example.com/secret"),
 		},
 	}
-	err = validateSecretValue(sv)
+	err = validateSecretValue(context.Background(), sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid http_url scheme")
 }
@@ -123,7 +123,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 			"": "/container/path",
 		},
 	}
-	err := validateContainerEnvironment(env)
+	err := validateContainerEnvironment(context.Background(), env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "host path is empty")
 
@@ -131,7 +131,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 	env.Volumes = map[string]string{
 		"/host/path": "",
 	}
-	err = validateContainerEnvironment(env)
+	err = validateContainerEnvironment(context.Background(), env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container path is empty")
 }
@@ -362,7 +362,7 @@ func TestValidateMcpService_BundleErrors(t *testing.T) {
 			BundleConnection: &configv1.McpBundleConnection{BundlePath: proto.String("")},
 		},
 	}
-	err := validateMcpService(s)
+	err := validateMcpService(context.Background(), s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty bundle_path")
 }

@@ -55,7 +55,7 @@ func TestValidationWhitespaceChecks(t *testing.T) {
 		{
 			name: "MCP Service HTTP Address",
 			validate: func() error {
-				return validateMcpService(&configv1.McpUpstreamService{
+				return validateMcpService(ctx, &configv1.McpUpstreamService{
 					ConnectionType: &configv1.McpUpstreamService_HttpConnection{
 						HttpConnection: &configv1.McpStreamableHttpConnection{HttpAddress: &badURL},
 					},
