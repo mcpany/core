@@ -911,6 +911,8 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 }
 
 // reconcileServices reconciles the service registry with the new configuration.
+//
+//nolint:gocyclo // Complex logic required for reconciliation
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
@@ -966,6 +968,10 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 		needsUpdate := false
 
 		if !exists {
+			if err := config.ValidateOrError(ctx, newSvc); err != nil {
+				log.Error("Skipping new service due to validation error", "service", name, "error", err)
+				continue
+			}
 			log.Info("Adding new service", "service", name)
 			needsUpdate = true
 		} else {
@@ -979,6 +985,11 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 			}
 
 			if !proto.Equal(oldConfig, newSvcCopy) {
+				if err := config.ValidateOrError(ctx, newSvcCopy); err != nil {
+					log.Error("Skipping update for service due to validation error", "service", name, "error", err)
+					continue
+				}
+
 				log.Info("Updating service", "service", name)
 				needsUpdate = true
 				if a.ServiceRegistry != nil {

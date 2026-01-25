@@ -71,6 +71,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/system/status", a.handleSystemStatus)
 	mux.HandleFunc("/audit/export", a.handleAuditExport)
 	mux.HandleFunc("/validate", a.handleValidate())
+	mux.HandleFunc("/config/reload/status", a.handleConfigReloadStatus())
 
 	mux.HandleFunc("/settings", a.handleSettings(store))
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
@@ -1219,4 +1220,16 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		return true
 	}
 	return false
+}
+
+func (a *Application) handleConfigReloadStatus() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		status := a.configHealthCheck(r.Context())
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(status)
+	}
 }

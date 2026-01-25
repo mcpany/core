@@ -47,26 +47,19 @@ These features represent the next logical steps for the product, focusing on Ent
 | :--- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
 | 1    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
 | 2    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
-| 3    | **Service Health History**  | **Observability**: Store historical health check results to visualize availability trends (uptime graphs).                             | Medium     |
 | 4    | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks.      | High       |
 | 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
 | 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
 
-| 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
-| 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
-| 16 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
 | 17 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
 | 18 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
-| 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
 | 22 | **Dynamic Tool Pruning** | **Performance/Cost**: Feature to filter visible tools based on the current user's role or context to reduce LLM context window usage and costs. | High |
 | 23 | **Config Schema Migration** | **Maintenance**: Automated tool to upgrade configuration files when the schema evolves (e.g. `v1alpha` to `v1`). | Medium |
 
-| 26 | **Linter Git Hook** | **DevX**: Provide a pre-commit hook script that automatically runs `mcpany lint` on staged configuration files to prevent committing insecure configs. | Low |
 | 27 | **Secret Rotation Helper** | **Ops**: A CLI tool to help rotate secrets by identifying which services are using a specific secret key/path and validating the new secret against the upstream. | Medium |
 | 28 | **Structured Logging for Config Errors** | **DevX**: Output configuration errors in a structured JSON format to allow the UI or IDEs to pinpoint the exact location of the error. | Low |
 | 33 | **Interactive Config Validator** | **DevX**: A CLI mode that walks through validation errors one by one and asks the user for the correct value interactively. | Medium |
-| 34 | **Secret Validation Pre-flight** | **Security**: Validate all secrets (files, env vars, remote) before starting the server to ensure all credentials are accessible. | Low |
 | 29 | **Automatic Config Fixer** | **DevX**: An interactive CLI tool that detects common configuration errors (like legacy formats) and offers to fix them automatically. | Medium |
 | 30 | **Windows Filesystem Locking Fix** | **Compatibility**: Handle EPERM errors gracefully on Windows when renaming files, ensuring cross-platform stability. | Medium |
 | 32 | **Interactive Config Generator** | **DevX**: `mcpany init` wizard that asks questions and generates a valid `config.yaml` with best practices (secure defaults, comments). | Low |
@@ -83,9 +76,6 @@ These features represent the next logical steps for the product, focusing on Ent
 
 | 47 | **Interactive Doctor** | **UX**: A TUI (Text User Interface) for the doctor command that allows users to interactively retry failed checks or inspect details. | Medium |
 | 48 | **Doctor Integration with Telemetry** | **Observability**: Send doctor check results to telemetry (if enabled) to track fleet health during startup or health checks. | Low |
-| 41 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
-| 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
-| 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
 | 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
 | 43 | **Config Schema Visualization** | **UX**: A UI view to visualize the structure of the loaded configuration, highlighting inheritance or overrides. | Low |
 | 44 | **Validator Plugin System** | **Extensibility**: Allow users to write custom validation rules (e.g. "service name must start with 'prod-'") using Rego or simple scripts. | High |
@@ -99,11 +89,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 47 | **Config Validation Dry Run** | **DevX**: Allow users to upload a config to a "dry run" endpoint to see if it would pass validation without applying it. | Medium |
 | 47 | **Metrics Persistence** | **Observability**: Store historical metrics (latency, error rates) in SQLite/Postgres for long-term trending and analysis. | High |
 
-| 50 | **Duplicate Tool Detection** | **Safety**: Detect if two services expose tools with the same name (before sanitization) and warn about potential conflicts or shadowing. | Low |
 | 51 | **Tool Execution Simulation** | **DevX**: A UI feature to "mock" tool execution with predefined outputs for testing client integrations without calling real upstreams. | Medium |
 | 62 | **Config Validation Diff** | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration. | High |
 | 64 | **Service Retry Policy** | **Resilience**: Automatically retry connecting to failed services with exponential backoff. | Medium |
-| 65 | **Config Reload Status API** | **DevX**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures. | Low |
 | 66 | **Dynamic Profile Switching** | **UX**: Allow users to switch active profiles dynamically via API without restarting the server. | Medium |
 | 67 | **Config Schema Versioning** | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully. | High |
 | 68 | **Connection Draining** | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting. | Medium |
@@ -130,8 +118,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 76 | **Config Schema Validation with Line Numbers**| **DevX**: Extend line number reporting to schema validation errors (e.g., missing required fields, type mismatches) by mapping schema errors back to YAML AST nodes. | Medium |
 | 77 | **YAML AST Caching** | **Performance**: Cache parsed YAML ASTs to avoid re-parsing for multiple error lookups during configuration loading. | Low |
 | 78 | **Strict Config Validation on Reload** | **Resilience**: Extend strict configuration validation to dynamic reloads, ensuring that invalid configurations are rejected with a detailed diff and error report before any changes are applied. | High |
-| 79 | **Conflict-Free Port Allocation** | **DevX**: Add a `--random-port` flag that automatically finds an available port if the default is taken, useful for automated testing. | Low |
-| 80 | **Secret Format Validation for Known Services** | **Security**: Heuristic validation for common secret formats (e.g. OpenAI `sk-`, GitHub `ghp_`) to catch invalid keys early. | Low |
 | 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |

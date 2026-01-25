@@ -303,7 +303,8 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	switch secret.WhichValue() {
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
-		if _, exists := os.LookupEnv(envVar); !exists {
+		val, exists := os.LookupEnv(envVar)
+		if !exists {
 			suggestion := fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar)
 			if similar := findSimilarEnvVar(envVar); similar != "" {
 				suggestion = fmt.Sprintf("Did you mean %q? %s", similar, suggestion)
@@ -311,6 +312,16 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			return &ActionableError{
 				Err:        fmt.Errorf("environment variable %q is not set", envVar),
 				Suggestion: suggestion,
+			}
+		} else if strings.TrimSpace(val) == "" {
+			return &ActionableError{
+				Err:        fmt.Errorf("environment variable %q is empty", envVar),
+				Suggestion: fmt.Sprintf("Set a value for %q.", envVar),
+			}
+		} else if err := validateSecretHeuristics(val); err != nil {
+			return &ActionableError{
+				Err:        fmt.Errorf("environment variable %q has invalid format: %w", envVar, err),
+				Suggestion: "Check if the API key is correct.",
 			}
 		}
 	case configv1.SecretValue_FilePath_case:
@@ -322,6 +333,22 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			return &ActionableError{
 				Err:        fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err),
 				Suggestion: fmt.Sprintf("Ensure the file exists at %q and the server process has read permissions.", secret.GetFilePath()),
+			}
+		}
+		// Check for empty file
+		if info, err := osStat(secret.GetFilePath()); err == nil && info.Size() == 0 {
+			return &ActionableError{
+				Err:        fmt.Errorf("secret file %q is empty", secret.GetFilePath()),
+				Suggestion: fmt.Sprintf("The file %q is empty. Please add the secret content.", secret.GetFilePath()),
+			}
+		}
+		// Heuristic Check
+		if content, err := os.ReadFile(secret.GetFilePath()); err == nil {
+			if err := validateSecretHeuristics(string(content)); err != nil {
+				return &ActionableError{
+					Err:        fmt.Errorf("secret file %q has invalid format: %w", secret.GetFilePath(), err),
+					Suggestion: "Check if the secret content is correct.",
+				}
 			}
 		}
 	case configv1.SecretValue_RemoteContent_case:
@@ -1308,4 +1335,27 @@ func findSimilarEnvVar(target string) string {
 	}
 
 	return bestMatch
+}
+
+func validateSecretHeuristics(value string) error {
+	value = strings.TrimSpace(value)
+	// OpenAI API Key
+	if strings.HasPrefix(value, "sk-") {
+		if len(value) < 20 {
+			return fmt.Errorf("looks like OpenAI key but is too short")
+		}
+	}
+	// GitHub Token
+	if strings.HasPrefix(value, "ghp_") {
+		if len(value) < 30 {
+			return fmt.Errorf("looks like GitHub token but is too short")
+		}
+	}
+	// Stripe
+	if strings.HasPrefix(value, "sk_live_") || strings.HasPrefix(value, "sk_test_") {
+		if len(value) < 20 {
+			return fmt.Errorf("looks like Stripe key but is too short")
+		}
+	}
+	return nil
 }

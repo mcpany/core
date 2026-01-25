@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -115,6 +116,13 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			log := logging.GetLogger().With("service", "mcpany")
 
 			bindAddress := cfg.MCPListenAddress()
+			if random, _ := cmd.Flags().GetBool("random-port"); random {
+				if host, _, err := net.SplitHostPort(bindAddress); err == nil {
+					bindAddress = net.JoinHostPort(host, "0")
+				} else {
+					bindAddress = ":0"
+				}
+			}
 			grpcPort := cfg.GRPCPort()
 			stdio := cfg.Stdio()
 			configPaths := cfg.ConfigPaths()
@@ -211,6 +219,8 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 					case doctor.StatusWarning:
 						icon = iconWarning
 						log.Warn(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
+						// In strict mode, warnings are treated as errors
+						hasErrors = true
 					case doctor.StatusError:
 						icon = iconError
 						log.Error(fmt.Sprintf("%s [%s] %s: %s", icon, res.Status, res.ServiceName, res.Message))
@@ -261,6 +271,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	runCmd.Flags().Bool("strict", false, "Run in strict mode (validate upstream connectivity before starting)")
+	runCmd.Flags().Bool("random-port", false, "Automatically find an available port if the default is taken")
 	config.BindServerFlags(runCmd)
 	rootCmd.AddCommand(runCmd)
 
@@ -547,6 +558,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	}
 	validateCmd.Flags().Bool("check-connection", false, "Run connectivity checks for upstream services")
 	configCmd.AddCommand(validateCmd)
+	configCmd.AddCommand(newMigrateCmd())
 
 	lintCmd := &cobra.Command{
 		Use:   "lint",

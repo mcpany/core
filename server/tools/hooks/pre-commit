@@ -1,0 +1,12 @@
+#!/bin/bash
+# Pre-commit hook to run lint
+
+echo "Running mcpany lint..."
+# Determine repo root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Run make lint from repo root
+if ! (cd "$REPO_ROOT" && make lint); then
+    echo "Lint failed. Please fix the errors before committing."
+    exit 1
+fi

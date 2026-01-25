@@ -133,6 +133,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 				return
 			}
 
+			// Record in history
+			GetHistory().Add(serviceName, string(state.Status))
+
 			status := float32(0.0)
 			if state.Status == health.StatusUp {
 				status = 1.0

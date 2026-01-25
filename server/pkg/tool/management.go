@@ -647,6 +647,12 @@ func (tm *Manager) AddTool(tool Tool) error {
 		return fmt.Errorf("failed to sanitize tool name: %w", err)
 	}
 	toolID := tool.Tool().GetServiceId() + "." + sanitizedToolName
+
+	// Duplicate Tool Detection
+	if _, exists := tm.tools.Load(toolID); exists {
+		return fmt.Errorf("duplicate tool detected: %s", toolID)
+	}
+
 	log := logging.GetLogger().With("toolID", toolID)
 	log.Debug("Adding tool to Manager")
 	tm.tools.Store(toolID, tool)
