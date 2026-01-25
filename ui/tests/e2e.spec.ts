@@ -5,24 +5,32 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, seedTraffic, cleanupServices } from './e2e/test-data';
+import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 
 test.describe('MCP Any UI E2E Tests', () => {
 
-  test.beforeEach(async ({ request }) => {
+  test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
       await seedTraffic(request);
+      await seedUser(request);
+
+      // Login before each test
+      await page.goto('/login');
+      await page.fill('input[name="username"]', 'admin');
+      await page.fill('input[name="password"]', 'password');
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL('/');
   });
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
+      await cleanupUser(request);
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
-    await page.goto('/');
     // Check for metrics
     await expect(page.locator('text=Total Requests')).toBeVisible();
     await expect(page.locator('text=Active Services')).toBeVisible();
