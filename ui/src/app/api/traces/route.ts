@@ -59,9 +59,16 @@ interface DebugEntry {
  */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:50059';
+  const { searchParams } = new URL(request.url);
+  const limit = searchParams.get('limit');
 
   try {
-    const res = await fetch(`${backendUrl}/debug/entries`, {
+    let url = `${backendUrl}/debug/entries`;
+    if (limit) {
+        url += `?limit=${limit}`;
+    }
+
+    const res = await fetch(url, {
         headers: {
             'Authorization': request.headers.get('Authorization') || '',
             'X-API-Key': request.headers.get('X-API-Key') || process.env.MCPANY_API_KEY || ''

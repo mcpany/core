@@ -26,12 +26,12 @@ export function RecentActivityWidget() {
 
   const fetchTraces = async () => {
     try {
-      const res = await fetch('/api/traces');
+      const res = await fetch('/api/traces?limit=5');
       if (!res.ok) {
           throw new Error(`Failed to fetch traces: ${res.status}`);
       }
       const data = await res.json();
-      // Take top 5
+      // Backend now handles limiting, but slice guarantees UI safety just in case
       setTraces(data.slice(0, 5));
       setError(null);
     } catch (err) {
