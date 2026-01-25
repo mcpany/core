@@ -338,7 +338,7 @@ func (u *Upstream) screenshot(_ context.Context, args map[string]interface{}) (m
 	// Prepare path if directory is set
 	var path *string
 	if u.screenshotDir != "" {
-		if err := os.MkdirAll(u.screenshotDir, 0755); err != nil {
+		if err := os.MkdirAll(u.screenshotDir, 0750); err != nil {
 			return nil, fmt.Errorf("failed to create screenshot directory: %w", err)
 		}
 		filename := fmt.Sprintf("screenshot-%d.png", time.Now().UnixNano())
