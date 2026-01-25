@@ -13,6 +13,7 @@
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
@@ -35,7 +36,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -867,7 +868,8 @@ export const apiClient = {
         return apiClient.saveCollection(collection);
     },
 
-    // Profiles
+
+    // User Management
 
     /**
      * Lists all profiles.
@@ -875,27 +877,16 @@ export const apiClient = {
      */
     listProfiles: async () => {
         const res = await fetchWithAuth('/api/v1/profiles');
-        if (!res.ok) throw new Error('Failed to list profiles');
-        return res.json();
-    },
-
-    /**
-     * Gets a single profile by name.
-     * @param name The name of the profile.
-     * @returns A promise that resolves to the profile.
-     */
-    getProfile: async (name: string) => {
-        const res = await fetchWithAuth(`/api/v1/profiles/${name}`);
-        if (!res.ok) throw new Error('Failed to get profile');
+        if (!res.ok) throw new Error('Failed to fetch profiles');
         return res.json();
     },
 
     /**
      * Creates a new profile.
-     * @param profile The profile to create.
-     * @returns A promise that resolves when the profile is created.
+     * @param profile The profile definition.
+     * @returns A promise that resolves to the created profile.
      */
-    createProfile: async (profile: any) => {
+    createProfile: async (profile: ProfileDefinition) => {
         const res = await fetchWithAuth('/api/v1/profiles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -907,10 +898,10 @@ export const apiClient = {
 
     /**
      * Updates an existing profile.
-     * @param profile The profile to update.
-     * @returns A promise that resolves when the profile is updated.
+     * @param profile The profile definition.
+     * @returns A promise that resolves to the updated profile.
      */
-    updateProfile: async (profile: any) => {
+    updateProfile: async (profile: ProfileDefinition) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${profile.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

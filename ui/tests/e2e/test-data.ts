@@ -118,10 +118,10 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
     }
 };
 
-export const seedUser = async (requestContext?: APIRequestContext) => {
+export const seedUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
-        id: "admin",
+        id: username,
         authentication: {
             basic_auth: {
                 // hash for "password" (bcrypt cost 12)
@@ -138,10 +138,10 @@ export const seedUser = async (requestContext?: APIRequestContext) => {
     }
 };
 
-export const cleanupUser = async (requestContext?: APIRequestContext) => {
+export const cleanupUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/users/admin', { headers: HEADERS });
+        await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup user: ${e}`);
     }
