@@ -39,6 +39,8 @@ vi.mock('../../lib/client', () => ({
         getDashboardTraffic: vi.fn(),
         getTopTools: vi.fn(),
         listTools: vi.fn(),
+        getToolUsage: vi.fn(),
+        setToolStatus: vi.fn(),
     },
 }));
 
@@ -70,6 +72,7 @@ describe('AnalyticsDashboard', () => {
                 { name: "light_tool", description: "Light", serviceId: "service_b", inputSchema: { type: "object" } }
             ]
         });
+        (apiClient.getToolUsage as any).mockResolvedValue([]);
 
         render(<AnalyticsDashboard />);
 
@@ -101,5 +104,58 @@ describe('AnalyticsDashboard', () => {
 
         // Verify API was called
         expect(apiClient.listTools).toHaveBeenCalled();
+    });
+
+    it('should render Optimization tab and identify ghost tools', async () => {
+        const user = userEvent.setup();
+
+        // Mock API responses
+        (apiClient.getDashboardTraffic as any).mockResolvedValue([]);
+        (apiClient.getTopTools as any).mockResolvedValue([]);
+        (apiClient.listTools as any).mockResolvedValue({
+            tools: [
+                {
+                    name: "ghost_tool",
+                    description: "Heavy and unused",
+                    serviceId: "service_a",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            huge: { type: "string", description: "x".repeat(3000) }
+                        }
+                    }
+                },
+                { name: "used_tool", description: "Used", serviceId: "service_b", inputSchema: { type: "object" } }
+            ]
+        });
+        (apiClient.getToolUsage as any).mockResolvedValue([
+            { name: "used_tool", serviceId: "service_b", totalCalls: 100, successRate: 100 },
+            { name: "ghost_tool", serviceId: "service_a", totalCalls: 0, successRate: 0 }
+        ]);
+
+        render(<AnalyticsDashboard />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Analytics & Stats')).toBeInTheDocument();
+        });
+
+        const optTab = screen.getByText('Optimization');
+        await user.click(optTab);
+
+        await waitFor(() => {
+             expect(screen.getByText('Context Efficiency')).toBeInTheDocument();
+        });
+
+        // Should find ghost_tool in the list
+        expect(screen.getByText('ghost_tool')).toBeInTheDocument();
+
+        // Check for Disable button
+        const disableButtons = screen.getAllByText('Disable');
+        expect(disableButtons.length).toBeGreaterThan(0);
+
+        // Click disable
+        await user.click(disableButtons[0]);
+
+        expect(apiClient.setToolStatus).toHaveBeenCalledWith("ghost_tool", true);
     });
 });

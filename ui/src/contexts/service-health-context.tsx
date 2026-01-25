@@ -31,7 +31,13 @@ interface ServiceHealthContextType {
     refreshTopology: () => Promise<void>;
 }
 
+interface TopologyContextType {
+    latestTopology: Graph | null;
+    refreshTopology: () => Promise<void>;
+}
+
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
+const TopologyContext = createContext<TopologyContextType | undefined>(undefined);
 
 /** Maximum number of history points to keep (30 points * 5s = 2.5 minutes). */
 const MAX_HISTORY_POINTS = 30;
@@ -150,9 +156,17 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         refreshTopology: fetchTopology
     }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
 
+    // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
+    const topologyValue = useMemo(() => ({
+        latestTopology,
+        refreshTopology: fetchTopology
+    }), [latestTopology, fetchTopology]);
+
     return (
         <ServiceHealthContext.Provider value={value}>
-            {children}
+            <TopologyContext.Provider value={topologyValue}>
+                {children}
+            </TopologyContext.Provider>
         </ServiceHealthContext.Provider>
     );
 }
@@ -166,6 +180,20 @@ export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
     if (!context) {
         throw new Error("useServiceHealth must be used within a ServiceHealthProvider");
+    }
+    return context;
+}
+
+/**
+ * useTopology is a hook to access network topology.
+ * It is optimized to not re-render when health metrics update.
+ * @returns The topology context.
+ * @throws Error if used outside of a ServiceHealthProvider.
+ */
+export function useTopology() {
+    const context = useContext(TopologyContext);
+    if (!context) {
+        throw new Error("useTopology must be used within a ServiceHealthProvider");
     }
     return context;
 }

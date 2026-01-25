@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
+import { apiClient } from "@/lib/client";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
 
 interface DiagnosticStep {
@@ -50,6 +51,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     const initialSteps: DiagnosticStep[] = [
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
+      { id: "operational", name: "Operational Verification", status: "pending", logs: [] },
     ];
 
     if (service.websocketService || service.httpService) {
@@ -216,6 +218,58 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         const msg = error instanceof Error ? error.message : "Unknown error";
         addLog("backend_health", `Failed to contact backend API: ${msg}`);
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
+    }
+
+    // --- Step 3: Operational Verification ---
+    // Only proceed if backend check was successful or skipped (disabled)
+    const backendStep = steps.find(s => s.id === "backend_health");
+    // We access current state via a fresh look or logic flow, but here 'steps' state is stale closure.
+    // However, we can infer success if we reached here without returning early?
+    // Actually, I didn't return early in backend_health block. I should probably check if previous steps failed.
+
+    // Let's perform operational check regardless, as it fetches specific service details which might reveal more.
+    updateStep("operational", { status: "running" });
+    addLog("operational", "Verifying service operations...");
+
+    try {
+        const fullServiceRes = await apiClient.getService(service.name);
+
+        // API might return { service: ... } or just the service object depending on impl
+        const s = fullServiceRes.service || fullServiceRes;
+
+        if (s) {
+            addLog("operational", `Tools Discovered: ${s.toolCount ?? 0}`);
+
+            if (s.lastError) {
+                addLog("operational", `Service reported error: ${s.lastError}`);
+                const diagnosis = analyzeConnectionError(s.lastError);
+                // Only override diagnosis if it's more specific/severe or if we didn't have one
+                setDiagnosticResult(prev => {
+                    if (!prev || diagnosis.category !== 'unknown') return diagnosis;
+                    return prev;
+                });
+                updateStep("operational", { status: "failure", detail: "Operational Error" });
+            } else if ((s.toolCount ?? 0) === 0) {
+                addLog("operational", "Warning: Service is healthy but exposed 0 tools.");
+                addLog("operational", "Check if the service requires specific configuration to expose tools (e.g., allowed paths, exposed schemas).");
+                setDiagnosticResult({
+                    category: "configuration",
+                    title: "No Tools Discovered",
+                    description: "The service connected successfully but did not register any tools.",
+                    suggestion: "1. Check upstream service configuration (e.g. allowed paths for filesystem).\n2. Verify the upstream service actually exposes tools (some might only expose resources).\n3. Check logs for silent failures.",
+                    severity: "warning"
+                });
+                updateStep("operational", { status: "success", detail: "No Tools (Warning)" }); // Green but warned in logs
+            } else {
+                updateStep("operational", { status: "success", detail: "Fully Operational" });
+            }
+        } else {
+            throw new Error("Failed to retrieve service details");
+        }
+
+    } catch (e: any) {
+        addLog("operational", `Failed to verify operations: ${e.message}`);
+        updateStep("operational", { status: "failure", detail: "Verification Failed" });
     }
 
     setIsRunning(false);

@@ -890,6 +890,10 @@ func summarizeCallToolResult(ctr *mcp.CallToolResult) slog.Value {
 			contentSummaries = append(contentSummaries, fmt.Sprintf("Image(mime=%s, size=%d bytes)", c.MIMEType, len(c.Data)))
 		case *mcp.EmbeddedResource:
 			res := c.Resource
+			if res == nil {
+				contentSummaries = append(contentSummaries, "Resource(<nil>)")
+				continue
+			}
 			desc := fmt.Sprintf("Resource(uri=%s)", res.URI)
 			if len(res.Blob) > 0 {
 				desc += fmt.Sprintf(" blob=%d bytes", len(res.Blob))
