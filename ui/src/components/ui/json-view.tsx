@@ -7,7 +7,7 @@
 
 import { cn } from "@/lib/utils";
 import { Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,14 +23,19 @@ interface JsonViewProps {
  * @param props.className - The className.
  * @returns The rendered component.
  */
-export function JsonView({ data, className }: JsonViewProps) {
+export const JsonView = memo(function JsonView({ data, className }: JsonViewProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
+  const jsonString = useMemo(() => {
+    if (data === undefined || data === null) return null;
+    return JSON.stringify(data, null, 2);
+  }, [data]);
+
   const handleCopy = () => {
-    const text = JSON.stringify(data, null, 2);
+    if (!jsonString) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(e => console.error("Clipboard error", e));
+        navigator.clipboard.writeText(jsonString).catch(e => console.error("Clipboard error", e));
     }
     setCopied(true);
     toast({
@@ -56,8 +61,10 @@ export function JsonView({ data, className }: JsonViewProps) {
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </Button>
         <pre className="text-[10px] md:text-xs font-mono bg-muted/50 p-3 rounded-md overflow-x-auto text-foreground/90 border">
-            {JSON.stringify(data, null, 2)}
+            {jsonString}
         </pre>
     </div>
   );
-}
+});
+
+JsonView.displayName = "JsonView";
