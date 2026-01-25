@@ -13,7 +13,7 @@ import { UpstreamServiceConfig, ToolDefinition, PromptDefinition, ResourceDefini
 import { apiClient } from "@/lib/client";
 import { OAuthStatusBanner } from './oauth-status-banner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp } from "lucide-react";
+import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp, Activity } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 import { Switch } from "@/components/ui/switch";

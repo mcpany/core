@@ -21,8 +21,8 @@ test.describe('Service Inspector', () => {
        await route.abort();
     });
 
-    // Mock Service Detail
-    await page.route('**/api/v1/services/test-service', async route => {
+    // Mock Service Detail with tools inside http_service as expected by client mapper
+    await page.route('**/api/v1/services/test-service*', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -31,9 +31,11 @@ test.describe('Service Inspector', () => {
             id: 'test-service',
             name: 'Test Service',
             version: '1.0.0',
-            tools: [{ name: 'test_tool' }],
-            disable: false,
-            httpService: { address: 'http://localhost:8080' }
+            http_service: {
+                address: 'http://localhost:8080',
+                tools: [{ name: 'test_tool' }]
+            },
+            disable: false
           }
         })
       });
@@ -86,11 +88,15 @@ test.describe('Service Inspector', () => {
     // Click Inspector
     await page.getByRole('tab', { name: 'Inspector' }).click();
 
-    // Verify trace list item
-    await expect(page.locator('button', { hasText: 'tools/call' })).toBeVisible();
+    // Verify "No traces found." disappears.
+    // Use a loop to retry if it fails initially due to polling lag
+    await expect(async () => {
+        await expect(page.locator('text=No traces found.')).not.toBeVisible();
+        await expect(page.locator('text=tools/call').first()).toBeVisible();
+    }).toPass({ timeout: 15000 });
 
     // Click trace
-    await page.locator('button', { hasText: 'tools/call' }).click();
+    await page.locator('text=tools/call').first().click();
 
     // Verify details
     await expect(page.getByText('test_tool')).toBeVisible();
