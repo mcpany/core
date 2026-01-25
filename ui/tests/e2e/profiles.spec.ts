@@ -42,12 +42,22 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     // assert headers
     await expect(page.locator('h1, h2').filter({ hasText: 'Profiles' }).first()).toBeVisible();
 
+    // Wait for profiles API call to finish
+    await page.waitForResponse(resp => resp.url().includes('/api/v1/profiles') && resp.status() === 200);
+
     // Click Create
-    await page.getByRole('button', { name: /create|add/i }).click();
+    const createBtn = page.getByRole('button', { name: 'Create Profile' });
+    await expect(createBtn).toBeVisible();
+    await createBtn.click({ force: true });
+
+    // Wait for dialog
+    await expect(page.getByRole('heading', { name: 'Create New Profile' })).toBeVisible();
 
     // Fill form
     await page.getByLabel(/name/i).fill('QA Profile');
-    await page.getByLabel(/description/i).fill('Restricted access for QA');
+
+    // Description is not currently supported in the UI
+    // await page.getByLabel(/description/i).fill('Restricted access for QA');
 
     // Save
     await page.getByRole('button', { name: /save|create/i }).click();

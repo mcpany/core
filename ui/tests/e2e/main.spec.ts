@@ -38,6 +38,17 @@ test.describe('MCP Any UI E2E', () => {
             body: JSON.stringify({ status: 'healthy', checks: {} })
         });
     });
+
+    // Mock stats/tools APIs for Analytics page
+    await page.route('**/api/v1/dashboard/traffic*', async route => {
+        await route.fulfill({ json: [] });
+    });
+    await page.route('**/api/v1/dashboard/top-tools*', async route => {
+        await route.fulfill({ json: [] });
+    });
+    await page.route('**/api/v1/tools*', async route => {
+        await route.fulfill({ json: { tools: [] } });
+    });
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
