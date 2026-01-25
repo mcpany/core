@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
 
@@ -50,6 +51,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     const initialSteps: DiagnosticStep[] = [
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
+      { id: "capability_verification", name: "Capability Verification", status: "pending", logs: [] },
     ];
 
     if (service.websocketService || service.httpService) {
@@ -174,6 +176,8 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     updateStep("backend_health", { status: "running" });
     addLog("backend_health", "Querying backend service status...");
 
+    let healthSuccess = false;
+
     try {
         const res = await fetch("/api/dashboard/health", { cache: 'no-store' });
         if (!res.ok) {
@@ -194,6 +198,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
              if (serviceStatus.status === 'healthy') {
                  addLog("backend_health", "Service is connected and responding.");
                  updateStep("backend_health", { status: "success", detail: "Connected" });
+                 healthSuccess = true;
              } else if (serviceStatus.status === 'inactive') {
                  addLog("backend_health", "Service is explicitly disabled.");
                  updateStep("backend_health", { status: "skipped", detail: "Disabled" });
@@ -216,6 +221,63 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         const msg = error instanceof Error ? error.message : "Unknown error";
         addLog("backend_health", `Failed to contact backend API: ${msg}`);
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
+    }
+
+    // --- Step 3: Capability Verification (Only if healthy) ---
+    if (healthSuccess) {
+        updateStep("capability_verification", { status: "running" });
+        addLog("capability_verification", "Scanning for registered capabilities...");
+
+        try {
+            // Helper to safe list
+            const safeList = async <T,>(p: Promise<{ [key: string]: T[] } | T[]>, key: string): Promise<T[]> => {
+                try {
+                    const res = await p;
+                    // @ts-ignore
+                    return Array.isArray(res) ? res : (res[key] || []);
+                } catch (e) {
+                    return [];
+                }
+            };
+
+            const [tools, resources, prompts] = await Promise.all([
+                safeList(apiClient.listTools(), 'tools'),
+                safeList(apiClient.listResources(), 'resources'),
+                safeList(apiClient.listPrompts(), 'prompts')
+            ]);
+
+            // Filter for this service
+            const myTools = tools.filter((t: any) => t.serviceId === service.name || t.serviceId === service.id);
+            // Check for snake_case service_id or serviceId
+            const myResources = resources.filter((r: any) => r.serviceId === service.name || r.serviceId === service.id || r.service_id === service.name);
+            const myPrompts = prompts.filter((p: any) => p.serviceId === service.name || p.serviceId === service.id || p.service_id === service.name);
+
+            addLog("capability_verification", `Found: ${myTools.length} Tools, ${myResources.length} Resources, ${myPrompts.length} Prompts`);
+
+            if (myTools.length === 0 && myResources.length === 0 && myPrompts.length === 0) {
+                 updateStep("capability_verification", { status: "failure", detail: "No Capabilities" });
+                 addLog("capability_verification", "Warning: Service is connected but exposes no capabilities.");
+                 addLog("capability_verification", "Please check if the upstream server is exporting tools/resources correctly.");
+                 if (!diagnosticResult) {
+                     setDiagnosticResult({
+                         category: "configuration",
+                         title: "Empty Service",
+                         description: "Service connected but returned no tools, resources, or prompts.",
+                         suggestion: "Check the service configuration and ensure it is exporting capabilities. For stdio services, check if the command outputs the MCP list on startup.",
+                         severity: "warning"
+                     });
+                 }
+            } else {
+                 updateStep("capability_verification", { status: "success", detail: `${myTools.length} Tools Found` });
+            }
+
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            addLog("capability_verification", `Failed to list capabilities: ${msg}`);
+            updateStep("capability_verification", { status: "failure", detail: "Scan Failed" });
+        }
+    } else {
+        updateStep("capability_verification", { status: "skipped", detail: "Skipped" });
     }
 
     setIsRunning(false);
