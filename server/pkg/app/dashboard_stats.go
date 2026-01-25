@@ -47,6 +47,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			return
 		}
 
+		filterServiceID := r.URL.Query().Get("serviceId")
 		toolCounts := make(map[string]*ToolUsageStats)
 
 		for _, mf := range mfs {
@@ -60,6 +61,10 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 						if label.GetName() == labelServiceID {
 							serviceID = label.GetValue()
 						}
+					}
+
+					if filterServiceID != "" && serviceID != filterServiceID {
+						continue
 					}
 
 					if toolName != "" {
@@ -111,7 +116,8 @@ func (a *Application) handleDashboardTraffic() http.HandlerFunc {
 			return
 		}
 
-		points := a.TopologyManager.GetTrafficHistory()
+		serviceID := r.URL.Query().Get("serviceId")
+		points := a.TopologyManager.GetTrafficHistory(serviceID)
 
 		// Transform to simple JSON if needed, or just return as is.
 		// UI expects [{time: "00:00", total: 123}, ...]
@@ -183,6 +189,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			Error     int64
 		}
 
+		filterServiceID := r.URL.Query().Get("serviceId")
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
@@ -199,6 +206,10 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 						if label.GetName() == labelStatus {
 							status = label.GetValue()
 						}
+					}
+
+					if filterServiceID != "" && serviceID != filterServiceID {
+						continue
 					}
 
 					if toolName != "" {
@@ -286,6 +297,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 			Error     int64
 		}
 
+		filterServiceID := r.URL.Query().Get("serviceId")
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
@@ -302,6 +314,10 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 						if label.GetName() == labelStatus {
 							status = label.GetValue()
 						}
+					}
+
+					if filterServiceID != "" && serviceID != filterServiceID {
+						continue
 					}
 
 					if toolName != "" {

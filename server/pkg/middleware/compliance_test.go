@@ -100,7 +100,9 @@ func TestJSONRPCComplianceMiddleware(t *testing.T) {
 				assert.Nil(t, resp.ID)
 				require.NotNil(t, resp.Error)
 				assert.Equal(t, -32603, resp.Error.Code)
-				assert.Contains(t, resp.Error.Message, "Something went wrong")
+				// Sentinel Security: Expect generic message for 500 errors to avoid leaking details
+				assert.Equal(t, "Internal error", resp.Error.Message)
+				assert.Nil(t, resp.Error.Data)
 			},
 		},
 		{

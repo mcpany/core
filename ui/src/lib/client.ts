@@ -211,6 +211,9 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -244,6 +247,9 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
+                         toolExportPolicy: s.tool_export_policy,
+                         promptExportPolicy: s.prompt_export_policy,
+                         resourceExportPolicy: s.resource_export_policy,
                      };
                  }
                  return data;
@@ -332,6 +338,15 @@ export const apiClient = {
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
         }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -383,6 +398,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -450,6 +474,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -699,20 +732,26 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the traffic history points.
      */
-    getDashboardTraffic: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/traffic');
+    getDashboardTraffic: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/traffic';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
         return res.json();
     },
 
     /**
      * Gets the top used tools.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the top tools stats.
      */
-    getTopTools: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/top-tools');
+    getTopTools: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/top-tools';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
         return res.json();
@@ -733,20 +772,26 @@ export const apiClient = {
     /**
     /**
      * Gets the tools with highest failure rates.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool failure stats.
      */
-    getToolFailures: async (): Promise<ToolFailureStats[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
+    getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
+        let url = '/api/v1/dashboard/tool-failures';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
 
     /**
      * Gets the tool usage analytics.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool usage stats.
      */
-    getToolUsage: async (): Promise<ToolAnalytics[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-usage');
+    getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
+        let url = '/api/v1/dashboard/tool-usage';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
@@ -1146,6 +1191,9 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -1188,6 +1236,15 @@ export const apiClient = {
         }
         if (template.postCallHooks) {
             payload.post_call_hooks = template.postCallHooks;
+        }
+        if (template.toolExportPolicy) {
+            payload.tool_export_policy = template.toolExportPolicy;
+        }
+        if (template.promptExportPolicy) {
+            payload.prompt_export_policy = template.promptExportPolicy;
+        }
+        if (template.resourceExportPolicy) {
+            payload.resource_export_policy = template.resourceExportPolicy;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {

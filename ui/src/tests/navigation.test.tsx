@@ -8,8 +8,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AppSidebar } from '../components/app-sidebar';
 import { SidebarProvider } from '../components/ui/sidebar';
-import { UserProvider } from '../components/user-context';
 import { KeyboardShortcutsProvider } from '../contexts/keyboard-shortcuts-context';
+import { UserProvider } from '../components/user-context';
 
 // Mock ResizeObserver
 class ResizeObserver {
@@ -56,7 +56,7 @@ describe('AppSidebar Navigation', () => {
       <UserProvider>
         <KeyboardShortcutsProvider>
           <SidebarProvider>
-             <AppSidebar />
+            <AppSidebar />
           </SidebarProvider>
         </KeyboardShortcutsProvider>
       </UserProvider>
