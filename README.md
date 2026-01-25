@@ -218,6 +218,8 @@ We welcome contributions to MCP Any! This section provides a brief overview of h
 - **Go**: Version 1.23+
 - **Docker**: For running tests and building images.
 - **Make**: For running build automation scripts.
+- **Python 3**: For running documentation tools and pre-commit hooks.
+- **Node.js**: For UI development and integration tests.
 
 ### Quick Setup
 
