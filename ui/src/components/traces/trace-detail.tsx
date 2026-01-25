@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -35,6 +35,7 @@ function SpanIcon({ type }: { type: Span['type'] }) {
     }
 }
 
+// Optimization: Memoize WaterfallItem to prevent recursive re-renders when parent re-renders but span data hasn't changed.
 /**
  * WaterfallItem component.
  * @param props - The component props.
@@ -44,7 +45,7 @@ function SpanIcon({ type }: { type: Span['type'] }) {
  * @param props.traceDuration - The traceDuration property.
  * @returns The rendered component.
  */
-function WaterfallItem({
+const WaterfallItem = memo(function WaterfallItemImpl({
     span,
     depth = 0,
     traceStart,
@@ -133,7 +134,8 @@ function WaterfallItem({
             )}
         </div>
     );
-}
+});
+WaterfallItem.displayName = "WaterfallItem";
 
 
 /**
