@@ -139,6 +139,11 @@ const devItems = [
     url: "/config-validator",
     icon: ShieldCheck,
   },
+  {
+    title: "Inspector",
+    url: "/inspector",
+    icon: Activity,
+  },
 ]
 
 const configItems = [
