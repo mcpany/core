@@ -834,43 +834,44 @@ func simpleTokenizeInt64(n int64) int {
 	}
 
 	// Unrolled loop for digit counting
-	if n < 10 {
-		l += 1
-	} else if n < 100 {
+	switch {
+	case n < 10:
+		l++
+	case n < 100:
 		l += 2
-	} else if n < 1000 {
+	case n < 1000:
 		l += 3
-	} else if n < 10000 {
+	case n < 10000:
 		l += 4
-	} else if n < 100000 {
+	case n < 100000:
 		l += 5
-	} else if n < 1000000 {
+	case n < 1000000:
 		l += 6
-	} else if n < 10000000 {
+	case n < 10000000:
 		l += 7
-	} else if n < 100000000 {
+	case n < 100000000:
 		l += 8
-	} else if n < 1000000000 {
+	case n < 1000000000:
 		l += 9
-	} else if n < 10000000000 {
+	case n < 10000000000:
 		l += 10
-	} else if n < 100000000000 {
+	case n < 100000000000:
 		l += 11
-	} else if n < 1000000000000 {
+	case n < 1000000000000:
 		l += 12
-	} else if n < 10000000000000 {
+	case n < 10000000000000:
 		l += 13
-	} else if n < 100000000000000 {
+	case n < 100000000000000:
 		l += 14
-	} else if n < 1000000000000000 {
+	case n < 1000000000000000:
 		l += 15
-	} else if n < 10000000000000000 {
+	case n < 10000000000000000:
 		l += 16
-	} else if n < 100000000000000000 {
+	case n < 100000000000000000:
 		l += 17
-	} else if n < 1000000000000000000 {
+	case n < 1000000000000000000:
 		l += 18
-	} else {
+	default:
 		l += 19
 	}
 
