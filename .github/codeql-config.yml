@@ -1,9 +1,0 @@
-name: "CodeQL Config"
-
-paths-ignore:
-  - 'proto/**'
-  - '**/proto/**'
-  - 'server/pkg/upstream/mcp/proto/**'
-  - '**/*.pb.go'
-  - '**/*.ts'
-  - 'ui/src/components/ui/chart.tsx'
