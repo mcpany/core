@@ -8,34 +8,20 @@ import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse } from "lucide-react";
+import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
 
-/**
- * Defines the possible sizes for a widget on the dashboard.
- */
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
-/**
- * Defines the configuration for a dashboard widget.
- */
 export interface WidgetDefinition {
-    /** The unique type identifier for the widget. */
     type: string;
-    /** The display title of the widget. */
     title: string;
-    /** A brief description of what the widget displays. */
     description: string;
-    /** The default size of the widget when added to the dashboard. */
     defaultSize: WidgetSize;
-    /** The React component used to render the widget. */
     component: React.ComponentType<any>;
-    /** The icon associated with the widget. */
     icon: React.ElementType;
 }
 
-/**
- * A registry of all available widget definitions.
- */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     {
         type: "metrics",
@@ -44,6 +30,30 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "full",
         component: MetricsOverview,
         icon: Activity
+    },
+    {
+        type: "quick-actions",
+        title: "Quick Actions",
+        description: "Shortcuts to common management tasks.",
+        defaultSize: "third",
+        component: QuickActionsWidget,
+        icon: Zap
+    },
+    {
+        type: "service-health",
+        title: "Service Health",
+        description: "Status and health checks for connected services.",
+        defaultSize: "third",
+        component: ServiceHealthWidget,
+        icon: HeartPulse
+    },
+    {
+        type: "failure-rate",
+        title: "Tool Failure Rates",
+        description: "Top failing tools with error counts.",
+        defaultSize: "third",
+        component: ToolFailureRateWidget,
+        icon: AlertTriangle
     },
     {
         type: "recent-activity",
@@ -62,14 +72,6 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         icon: Server
     },
     {
-        type: "failure-rate",
-        title: "Tool Failure Rates",
-        description: "Top failing tools with error counts.",
-        defaultSize: "third",
-        component: ToolFailureRateWidget,
-        icon: AlertTriangle
-    },
-    {
         type: "request-volume",
         title: "Request Volume",
         description: "Request volume trends over time.",
@@ -85,21 +87,8 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         component: LazyTopToolsWidget,
         icon: Hash
     },
-    {
-        type: "service-health",
-        title: "Service Health",
-        description: "Status and health checks for connected services.",
-        defaultSize: "third",
-        component: ServiceHealthWidget,
-        icon: HeartPulse
-    },
 ];
 
-/**
- * Retrieves a widget definition by its type.
- * @param type - The widget type identifier.
- * @returns The matching WidgetDefinition, or undefined if not found.
- */
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
     return WIDGET_DEFINITIONS.find(w => w.type === type);
 };

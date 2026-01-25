@@ -8,6 +8,8 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { apiClient } from "@/lib/client";
+import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 interface ToolUsageStats {
   name: string;
@@ -22,15 +24,13 @@ interface ToolUsageStats {
 export function TopToolsWidget() {
   const [data, setData] = useState<ToolUsageStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const { serviceId } = useDashboard();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/v1/dashboard/top-tools");
-        if (res.ok) {
-          const json = await res.json();
-          setData(json || []);
-        }
+        const json = await apiClient.getTopTools(serviceId);
+        setData(json || []);
       } catch (error) {
         console.error("Failed to fetch top tools", error);
       } finally {
@@ -42,7 +42,7 @@ export function TopToolsWidget() {
     // Refresh every 30s
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [serviceId]);
 
   if (loading && data.length === 0) {
       return (

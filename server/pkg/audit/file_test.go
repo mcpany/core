@@ -144,7 +144,8 @@ func TestFileAuditStore_Read_Error(t *testing.T) {
 	require.NoError(t, err)
 	defer store.Close()
 
-	_, err = store.Read(context.Background(), Filter{})
+	entries, err := store.Read(context.Background(), Filter{})
 	assert.Error(t, err)
+	assert.Nil(t, entries)
 	assert.Contains(t, err.Error(), "read not implemented")
 }

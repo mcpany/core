@@ -17,22 +17,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
-
-// For Syntax Highlighting (simple version)
-/**
- * JsonView component.
- * @param props - The component props.
- * @param props.data - The data to display.
- * @returns The rendered component.
- */
-function JsonView({ data }: { data: any }) {
-    if (!data) return <span className="text-muted-foreground italic">null</span>;
-    return (
-        <pre className="text-[10px] md:text-xs font-mono bg-muted/50 p-3 rounded-md overflow-x-auto text-foreground/90 border">
-            {JSON.stringify(data, null, 2)}
-        </pre>
-    );
-}
+import { JsonView } from "@/components/ui/json-view";
 
 /**
  * SpanIcon component.

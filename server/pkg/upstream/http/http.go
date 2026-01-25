@@ -385,39 +385,16 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				// Restore it to be just Path by prepending "//" + [User@] + Host.
 				// Note: url.Parse treats //user:pass@host/path as scheme-relative too.
 				// We need to preserve User info if present.
-
-				// User.String() returns the encoded user info.
-				// We need both encoded (for RawPath) and decoded (for Path) versions of the prefix.
-				prefixEncoded := "//"
-				prefixDecoded := "//"
+				prefix := "//"
 				if endpointURL.User != nil {
-					userEncoded := endpointURL.User.String()
-					prefixEncoded += userEncoded + "@"
-
-					// Decode user info for Path
-					userDecoded, err := url.PathUnescape(userEncoded)
-					if err != nil {
-						// Fallback to encoded if decoding fails (unlikely for user info)
-						log.Warn("Failed to unescape user info in path fix", "error", err)
-						userDecoded = userEncoded
-					}
-					prefixDecoded += userDecoded + "@"
+					prefix += endpointURL.User.String() + "@"
 				}
-				prefixEncoded += endpointURL.Host
-				prefixDecoded += endpointURL.Host
+				prefix += endpointURL.Host
 
-				// Determine original RawPath part.
-				// If RawPath is empty, it means Path does not contain any special characters that need encoding.
-				// However, since we are prepending a prefix that might have encoded characters,
-				// we MUST construct a valid RawPath that includes the encoded prefix.
-				pathPartEncoded := endpointURL.RawPath
-				if pathPartEncoded == "" {
-					pathPartEncoded = endpointURL.Path
+				endpointURL.Path = prefix + endpointURL.Path
+				if endpointURL.RawPath != "" {
+					endpointURL.RawPath = prefix + endpointURL.RawPath
 				}
-
-				endpointURL.Path = prefixDecoded + endpointURL.Path
-				endpointURL.RawPath = prefixEncoded + pathPartEncoded
-
 				endpointURL.Host = ""
 				endpointURL.User = nil
 			} else if endpointURL.Path == "" {

@@ -163,9 +163,9 @@ func (x RateLimitConfig_CostMetric) Number() protoreflect.EnumNumber {
 
 type Profile struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name           string                 `protobuf:"bytes,1,opt,name=name,proto3"`
-	xxx_hidden_Id             string                 `protobuf:"bytes,2,opt,name=id,proto3"`
-	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,3,opt,name=authentication,proto3"`
+	xxx_hidden_Name           string                 `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Id             string                 `protobuf:"bytes,2,opt,name=id"`
+	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,3,opt,name=authentication"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
 }
@@ -262,7 +262,7 @@ func (b0 Profile_builder) Build() *Profile {
 
 type ProfileServiceConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled,proto3,oneof"`
+	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -338,14 +338,14 @@ func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
 
 type RateLimitConfig struct {
 	state                        protoimpl.MessageState      `protogen:"opaque.v1"`
-	xxx_hidden_IsEnabled         bool                        `protobuf:"varint,1,opt,name=is_enabled,proto3"`
-	xxx_hidden_RequestsPerSecond float64                     `protobuf:"fixed64,2,opt,name=requests_per_second,proto3"`
-	xxx_hidden_Burst             int64                       `protobuf:"varint,3,opt,name=burst,proto3"`
-	xxx_hidden_Storage           RateLimitConfig_Storage     `protobuf:"varint,4,opt,name=storage,proto3,enum=mcpany.config.v1.RateLimitConfig_Storage"`
-	xxx_hidden_Redis             *bus.RedisBus               `protobuf:"bytes,5,opt,name=redis,proto3"`
-	xxx_hidden_KeyBy             RateLimitConfig_KeyBy       `protobuf:"varint,6,opt,name=key_by,proto3,enum=mcpany.config.v1.RateLimitConfig_KeyBy"`
-	xxx_hidden_CostMetric        RateLimitConfig_CostMetric  `protobuf:"varint,7,opt,name=cost_metric,proto3,enum=mcpany.config.v1.RateLimitConfig_CostMetric"`
-	xxx_hidden_ToolLimits        map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_IsEnabled         bool                        `protobuf:"varint,1,opt,name=is_enabled"`
+	xxx_hidden_RequestsPerSecond float64                     `protobuf:"fixed64,2,opt,name=requests_per_second"`
+	xxx_hidden_Burst             int64                       `protobuf:"varint,3,opt,name=burst"`
+	xxx_hidden_Storage           RateLimitConfig_Storage     `protobuf:"varint,4,opt,name=storage,enum=mcpany.config.v1.RateLimitConfig_Storage"`
+	xxx_hidden_Redis             *bus.RedisBus               `protobuf:"bytes,5,opt,name=redis"`
+	xxx_hidden_KeyBy             RateLimitConfig_KeyBy       `protobuf:"varint,6,opt,name=key_by,enum=mcpany.config.v1.RateLimitConfig_KeyBy"`
+	xxx_hidden_CostMetric        RateLimitConfig_CostMetric  `protobuf:"varint,7,opt,name=cost_metric,enum=mcpany.config.v1.RateLimitConfig_CostMetric"`
+	xxx_hidden_ToolLimits        map[string]*RateLimitConfig `protobuf:"bytes,8,rep,name=tool_limits" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -515,11 +515,9 @@ const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12H\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"A\n" +
-	"\x14ProfileServiceConfig\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01B\n" +
-	"\n" +
-	"\b_enabled\"\xa1\x06\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"7\n" +
+	"\x14ProfileServiceConfig\x12\x1f\n" +
+	"\aenabled\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x01R\aenabled\"\xa1\x06\n" +
 	"\x0fRateLimitConfig\x12\x1e\n" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\n" +
@@ -547,7 +545,7 @@ const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\n" +
 	"CostMetric\x12\x18\n" +
 	"\x14COST_METRIC_REQUESTS\x10\x00\x12\x16\n" +
-	"\x12COST_METRIC_TOKENS\x10\x01B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x12COST_METRIC_TOKENS\x10\x01B-Z&github.com/mcpany/core/proto/config/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_config_v1_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
@@ -583,7 +581,6 @@ func file_proto_config_v1_profile_proto_init() {
 		return
 	}
 	file_proto_config_v1_auth_proto_init()
-	file_proto_config_v1_profile_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

@@ -33,19 +33,11 @@ import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 
-/**
- * Represents an instance of a widget on the dashboard.
- */
 export interface WidgetInstance {
-    /** The unique identifier for this specific instance of the widget. */
     instanceId: string;
-    /** The type of widget (references a WidgetDefinition). */
     type: string;
-    /** The title displayed for this widget instance. */
     title: string;
-    /** The current display size of the widget. */
     size: WidgetSize;
-    /** Whether the widget is currently hidden from the view. */
     hidden?: boolean;
 }
 
