@@ -581,3 +581,40 @@ func RedactSecrets(text string, secrets []string) string {
 	}
 	return text
 }
+
+// RedactURL redacts sensitive query parameters from a URL string.
+// It also redacts credentials in the user info part of the URL.
+func RedactURL(urlStr string) string {
+	if urlStr == "" {
+		return ""
+	}
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		// If parsing fails, try RedactDSN as a fallback, which has some regex logic.
+		return RedactDSN(urlStr)
+	}
+
+	q := u.Query()
+	modified := false
+	for k := range q {
+		if IsSensitiveKey(k) {
+			q.Set(k, redactedPlaceholder)
+			modified = true
+		}
+	}
+
+	if modified {
+		u.RawQuery = q.Encode()
+	}
+
+	if u.User != nil {
+		if _, hasPassword := u.User.Password(); hasPassword {
+			u.User = url.UserPassword(u.User.Username(), redactedPlaceholder)
+		}
+	}
+
+	s := u.String()
+	// Replace URL encoded placeholder with readable one.
+	encodedPlaceholder := "%5BREDACTED%5D"
+	return strings.ReplaceAll(s, encodedPlaceholder, redactedPlaceholder)
+}
