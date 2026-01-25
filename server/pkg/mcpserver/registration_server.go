@@ -99,8 +99,8 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 		_ = u.Shutdown(ctx)
 	}()
 
-	// Use NoOp managers
-	toolManager := &NoOpToolManager{}
+	// Use NoOp managers (except toolManager which needs to store ServiceInfo temporarily)
+	toolManager := NewTemporaryToolManager()
 	promptManager := &NoOpPromptManager{}
 	resourceManager := &NoOpResourceManager{}
 
