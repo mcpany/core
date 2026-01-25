@@ -6,9 +6,10 @@
 import React from "react";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
+import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse } from "lucide-react";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
 
 /**
  * Defines the possible sizes for a widget on the dashboard.
@@ -44,6 +45,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "full",
         component: MetricsOverview,
         icon: Activity
+    },
+    {
+        type: "quick-actions",
+        title: "Quick Actions",
+        description: "One-click access to common tasks and navigation.",
+        defaultSize: "half",
+        component: QuickActionsWidget,
+        icon: Zap
     },
     {
         type: "recent-activity",
