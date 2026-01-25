@@ -8,7 +8,8 @@ import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse } from "lucide-react";
+import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
 
 /**
  * Defines the possible sizes for a widget on the dashboard.
@@ -46,6 +47,30 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         icon: Activity
     },
     {
+        type: "quick-actions",
+        title: "Quick Actions",
+        description: "Shortcuts to common management tasks.",
+        defaultSize: "third",
+        component: QuickActionsWidget,
+        icon: Zap
+    },
+    {
+        type: "service-health",
+        title: "Service Health",
+        description: "Status and health checks for connected services.",
+        defaultSize: "third",
+        component: ServiceHealthWidget,
+        icon: HeartPulse
+    },
+    {
+        type: "failure-rate",
+        title: "Tool Failure Rates",
+        description: "Top failing tools with error counts.",
+        defaultSize: "third",
+        component: ToolFailureRateWidget,
+        icon: AlertTriangle
+    },
+    {
         type: "recent-activity",
         title: "Recent Activity",
         description: "Real-time log of tool executions and their status.",
@@ -62,14 +87,6 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         icon: Server
     },
     {
-        type: "failure-rate",
-        title: "Tool Failure Rates",
-        description: "Top failing tools with error counts.",
-        defaultSize: "third",
-        component: ToolFailureRateWidget,
-        icon: AlertTriangle
-    },
-    {
         type: "request-volume",
         title: "Request Volume",
         description: "Request volume trends over time.",
@@ -84,14 +101,6 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "third",
         component: LazyTopToolsWidget,
         icon: Hash
-    },
-    {
-        type: "service-health",
-        title: "Service Health",
-        description: "Status and health checks for connected services.",
-        defaultSize: "third",
-        component: ServiceHealthWidget,
-        icon: HeartPulse
     },
 ];
 
