@@ -188,7 +188,8 @@ export default function MarketplacePage() {
           prompts: [],
           autoDiscoverTool: true,
           configError: "",
-          tags: server.tags
+          tags: server.tags,
+          readOnly: false
       };
 
       setSelectedTemplate(config);

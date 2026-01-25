@@ -23,7 +23,7 @@ import { BrowserHeaders } from 'browser-headers';
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
     /**
      * The last error message encountered by the service, if any.
      */
