@@ -65,10 +65,12 @@ describe('AppSidebar Navigation', () => {
     const links = [
       'Dashboard',
       'Network Graph',
+      'Diagnostics',
       'Live Logs',
       'Playground',
       'Tools',
       'Upstream Services',
+      'Diagnostics',
       'Secrets Vault'
     ];
 
