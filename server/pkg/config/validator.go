@@ -339,10 +339,19 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 	}
 
 	if secret.GetValidationRegex() != "" {
-		// Use ResolveSecret to handle all secret types and perform regex validation.
-		// This ensures that RemoteContent, Vault, etc., are also validated against the regex.
-		if _, err := util.ResolveSecret(ctx, secret); err != nil {
-			return err
+		re, err := regexp.Compile(secret.GetValidationRegex())
+		if err != nil {
+			return fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+		}
+
+		// Resolve the secret value to check against the regex
+		val, err := util.ResolveSecret(ctx, secret)
+		if err != nil {
+			return fmt.Errorf("failed to resolve secret for validation: %w", err)
+		}
+
+		if !re.MatchString(val) {
+			return fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
 		}
 	}
 
@@ -640,7 +649,7 @@ func validateCommandLineService(ctx context.Context, commandLineService *configv
 	return nil
 }
 
-func validateContainerEnvironment(ctx context.Context, env *configv1.ContainerEnvironment) error {
+func validateContainerEnvironment(_ context.Context, env *configv1.ContainerEnvironment) error {
 	if env == nil {
 		return nil
 	}
