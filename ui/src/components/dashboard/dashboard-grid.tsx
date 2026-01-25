@@ -32,7 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
-import { useDashboardDensity } from "@/contexts/dashboard-density-context";
+import { useDashboardDensity, DashboardDensity } from "@/contexts/dashboard-density-context";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 
@@ -73,6 +73,7 @@ export function DashboardGrid() {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
                 if (parsed.length > 0 && !parsed[0].instanceId) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const migrated: WidgetInstance[] = parsed.map((w: any) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
@@ -195,7 +196,7 @@ export function DashboardGrid() {
                     <PopoverContent className="w-56" align="end">
                         <div className="space-y-2">
                             <h4 className="font-medium leading-none mb-2">Density</h4>
-                            <RadioGroup value={density} onValueChange={(v) => setDensity(v as any)} className="gap-2">
+                            <RadioGroup value={density} onValueChange={(v) => setDensity(v as DashboardDensity)} className="gap-2">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="comfortable" id="r-comfortable" />
                                     <Label htmlFor="r-comfortable" className="cursor-pointer">Comfortable</Label>
