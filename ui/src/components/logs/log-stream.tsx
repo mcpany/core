@@ -57,6 +57,8 @@ export interface LogEntry {
   searchStr?: string
   // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
   formattedTime?: string
+  // Optimization: Pre-computed parsed JSON content to avoid parsing during render
+  jsonContent?: unknown | null
 }
 
 /**
@@ -140,8 +142,8 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  // Check if message is JSON
-  const jsonContent = React.useMemo(() => tryParseJson(log.message), [log.message]);
+  // Optimization: Use pre-computed jsonContent to avoid parsing during render
+  const jsonContent = log.jsonContent;
 
   return (
     <div
@@ -181,7 +183,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 
           <div className="flex-1 min-w-0 flex flex-col">
             <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start">
-               {jsonContent && (
+               {!!jsonContent && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground"
@@ -200,7 +202,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
               )}
             </span>
 
-            {isExpanded && jsonContent && (
+            {isExpanded && !!jsonContent && (
               <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
                 <SyntaxHighlighter
                   language="json"
@@ -320,6 +322,9 @@ export function LogStream() {
           newLog.formattedTime = timeFormatter
             ? timeFormatter.format(new Date(newLog.timestamp))
             : new Date(newLog.timestamp).toLocaleTimeString()
+
+          // Optimization: Parse JSON once on ingestion to avoid repeated parsing during render/filtering
+          newLog.jsonContent = tryParseJson(newLog.message);
 
           // Optimization: Add to buffer instead of calling setLogs directly
           logBufferRef.current.push(newLog)
