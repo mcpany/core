@@ -581,3 +581,31 @@ func RedactSecrets(text string, secrets []string) string {
 	}
 	return text
 }
+
+// RedactURL returns a string representation of the URL with sensitive query parameters redacted.
+// It uses IsSensitiveKey to determine which parameters to redact.
+func RedactURL(u *url.URL) string {
+	if u == nil {
+		return ""
+	}
+	// Make a copy to avoid mutating the input URL if we were modifying it in place,
+	// but here we just want the string.
+	// However, modifying u.RawQuery directly on the input object would be bad if it's used elsewhere.
+	// So we clone the URL logic by values.
+	nu := *u
+	q := nu.Query()
+
+	changed := false
+	for k := range q {
+		if IsSensitiveKey(k) {
+			q.Set(k, redactedPlaceholder)
+			changed = true
+		}
+	}
+
+	if changed {
+		nu.RawQuery = q.Encode()
+	}
+
+	return nu.String()
+}
