@@ -256,10 +256,12 @@ func ListenWithRetry(ctx context.Context, network, address string) (net.Listener
 		// We start slightly higher than before (100ms) to give more room.
 		backoff := time.Duration(100*math.Pow(2, float64(i))) * time.Millisecond
 		// Add jitter (up to 50ms)
-		jitter, _ := rand.Int(rand.Reader, big.NewInt(50))
-		if jitter != nil {
-			backoff += time.Duration(jitter.Int64()) * time.Millisecond
+		jitterBig, err := rand.Int(rand.Reader, big.NewInt(50))
+		var jitter int64
+		if err == nil {
+			jitter = jitterBig.Int64()
 		}
+		backoff += time.Duration(jitter) * time.Millisecond
 
 		select {
 		case <-ctx.Done():
