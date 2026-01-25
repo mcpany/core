@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
-import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
+import { Trace, SpanStatus } from "@/lib/trace-types";
 import { formatDistanceToNow } from "date-fns";
 import React, { memo, useMemo } from "react";
 

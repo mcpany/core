@@ -24,6 +24,7 @@ import { FileConfigCard } from "./file-config-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegisterServiceDialog } from "./register-service-dialog";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
+import { ServiceInspector } from "@/components/services/service-inspector";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -279,6 +280,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const prompts = (serviceData as any)?.prompts;
   const resources = (serviceData as any)?.resources;
 
+  const toolNames = tools?.map((t: any) => t.name) || [];
 
   return (
     <Card className="w-full max-w-6xl shadow-2xl shadow-primary/5">
@@ -329,10 +331,11 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="configuration"><Settings className="mr-2" />Configuration</TabsTrigger>
                 <TabsTrigger value="metrics"><TrendingUp className="mr-2"/>Metrics</TabsTrigger>
+                <TabsTrigger value="inspector"><Activity className="mr-2"/>Inspector</TabsTrigger>
             </TabsList>
              <TabsContent value="general" className="mt-4 grid gap-6">
                 <ServicePropertyCard title="General" data={{
@@ -392,6 +395,9 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">
                 <MetricsCard serviceId={serviceId} />
+            </TabsContent>
+            <TabsContent value="inspector" className="mt-4">
+                <ServiceInspector serviceId={serviceId} toolNames={toolNames} />
             </TabsContent>
         </Tabs>
       </CardContent>
