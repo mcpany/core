@@ -5,8 +5,8 @@
 
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
-import { Graph, NodeType, NodeStatus } from '@/types/topology';
+import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
+import { Graph, NodeStatus } from '@/types/topology';
 
 /**
  * MetricPoint represents a single data point for service health metrics at a specific time.
@@ -48,8 +48,9 @@ const POLLING_INTERVAL = 5000;
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
+    const lastTopologyHash = useRef<string>('');
 
-    const fetchTopology = async () => {
+    const fetchTopology = useCallback(async () => {
         try {
             // Handle relative URL for fetch in jsdom/test env
             const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
@@ -57,7 +58,13 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             if (!res.ok) return;
             const graph: Graph = await res.json();
 
-            setLatestTopology(graph);
+            // ⚡ Bolt Optimization: Check if graph content has actually changed before updating state.
+            // This prevents unnecessary re-renders of the entire app context.
+            const graphContentHash = JSON.stringify(graph);
+            if (graphContentHash !== lastTopologyHash.current) {
+                lastTopologyHash.current = graphContentHash;
+                setLatestTopology(graph);
+            }
 
             const now = Date.now();
             const newPoints: Record<string, MetricPoint> = {};
@@ -106,7 +113,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         } catch (e) {
             console.error("Failed to fetch topology for health history", e);
         }
-    };
+    }, []);
 
     useEffect(() => {
         void fetchTopology();
@@ -125,19 +132,26 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             clearInterval(interval);
             document.removeEventListener("visibilitychange", onVisibilityChange);
         };
-    }, []);
+    }, [fetchTopology]);
 
-    const getServiceHistory = (serviceId: string) => {
+    const getServiceHistory = useCallback((serviceId: string) => {
         return history[serviceId] || [];
-    };
+    }, [history]);
 
-    const getServiceCurrentHealth = (serviceId: string) => {
+    const getServiceCurrentHealth = useCallback((serviceId: string) => {
         const points = history[serviceId];
         return points && points.length > 0 ? points[points.length - 1] : null;
-    };
+    }, [history]);
+
+    const value = useMemo(() => ({
+        getServiceHistory,
+        getServiceCurrentHealth,
+        latestTopology,
+        refreshTopology: fetchTopology
+    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
 
     return (
-        <ServiceHealthContext.Provider value={{ getServiceHistory, getServiceCurrentHealth, latestTopology, refreshTopology: fetchTopology }}>
+        <ServiceHealthContext.Provider value={value}>
             {children}
         </ServiceHealthContext.Provider>
     );
