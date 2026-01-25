@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateMermaidSequence } from '../../src/components/traces/trace-sequence';
-import { Trace, Span } from '../../src/app/api/traces/route';
+import type { Trace } from '../../src/app/api/traces/route';
 
 describe('generateMermaidSequence', () => {
     it('should generate a simple sequence for a single span', () => {
