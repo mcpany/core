@@ -26,12 +26,21 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Define the shape of Profile used in UI
+/**
+ * Represents a user profile configuration in the UI.
+ */
 export interface Profile {
+    /** The unique identifier for the profile (usually the name). */
     id: string; // name
+    /** The display name of the profile. */
     name: string;
+    /** An optional description of the profile's purpose. */
     description?: string;
+    /** A list of service names that are enabled for this profile. */
     services: string[]; // List of enabled service names
+    /** The environment type associated with this profile. */
     type: "dev" | "prod" | "debug";
+    /** Optional secrets associated with this profile (key-value pairs). */
     secrets?: Record<string, string>;
 }
 
@@ -49,6 +58,15 @@ interface ProfileEditorProps {
     onSave: (profileData: ProfileData) => Promise<void>;
 }
 
+/**
+ * ProfileEditor component.
+ * @param props - The component props.
+ * @param props.profile - The profile property.
+ * @param props.open - Whether the component is open.
+ * @param props.onOpenChange - Whether the component is open.
+ * @param props.onSave - The onSave property.
+ * @returns The rendered component.
+ */
 export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEditorProps) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

@@ -11,17 +11,37 @@ import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
 
+/**
+ * Defines the available sizes for a dashboard widget.
+ * - full: Spans the entire width (12 columns).
+ * - two-thirds: Spans two-thirds of the width (8 columns).
+ * - half: Spans half the width (6 columns).
+ * - third: Spans one-third of the width (4 columns).
+ */
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
+/**
+ * Defines the structure and metadata for a dashboard widget type.
+ */
 export interface WidgetDefinition {
+    /** The unique type identifier for the widget. */
     type: string;
+    /** The display title of the widget. */
     title: string;
+    /** A brief description of what the widget displays. */
     description: string;
+    /** The default size of the widget when added to the dashboard. */
     defaultSize: WidgetSize;
+    /** The React component responsible for rendering the widget. */
     component: React.ComponentType<any>;
+    /** The icon associated with the widget. */
     icon: React.ElementType;
 }
 
+/**
+ * A registry of all available dashboard widgets.
+ * This list is used to populate the "Add Widget" menu and to look up widget definitions.
+ */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     {
         type: "metrics",
@@ -89,6 +109,12 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     },
 ];
 
+/**
+ * Retrieves the widget definition for a given widget type.
+ *
+ * @param type - The unique type identifier of the widget to find.
+ * @returns The definition of the widget if found, otherwise undefined.
+ */
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
     return WIDGET_DEFINITIONS.find(w => w.type === type);
 };

@@ -41,6 +41,12 @@ const actions = [
     }
 ];
 
+/**
+ * QuickActionsWidget component.
+ * Displays a set of quick action cards for common tasks like adding services, managing secrets, etc.
+ *
+ * @returns The rendered component.
+ */
 export function QuickActionsWidget() {
     return (
         <Card className="h-full flex flex-col backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-md transition-all duration-300">

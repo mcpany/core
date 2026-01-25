@@ -20,6 +20,15 @@ interface PolicyEditorProps {
     onChange: (policy: ExportPolicy) => void;
 }
 
+/**
+ * PolicyEditor component.
+ * @param props - The component props.
+ * @param props.title - The title.
+ * @param props.description - The description property.
+ * @param props.policy - The policy property.
+ * @param props.onChange - Callback function when value changes.
+ * @returns The rendered component.
+ */
 export function PolicyEditor({ title, description, policy, onChange }: PolicyEditorProps) {
     // Default to empty policy if undefined
     const currentPolicy: ExportPolicy = policy || {

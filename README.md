@@ -300,13 +300,13 @@ To work on the frontend dashboard:
 
 For more details, see the [UI README](ui/README.md).
 
-### Code Standards
+### Code Standards & Documentation
 
-We strive for high code quality. Please ensure the following before submitting a PR:
+We strive for high code quality and maintain **100% documentation coverage**. Please ensure the following before submitting a PR:
 
 - **Documentation**:
-  - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style). This includes a description of the purpose, parameters, and return values.
-  - **TypeScript/React**: All exported components, functions, interfaces, and types must have JSDoc comments explaining their usage, props/parameters, and return values.
+  - **Go**: All exported functions, methods, types, and constants **must** have complete docstrings (GoDoc style). This includes a description of the purpose, parameters, and return values.
+  - **TypeScript/React**: All exported components, functions, interfaces, and types **must** have JSDoc comments explaining their usage, props/parameters, and return values.
   - **Strict Enforcement**: Documentation coverage is strictly enforced. Do not leave any public symbol undocumented.
   - You can verify Go documentation coverage with:
     ```bash

@@ -26,6 +26,15 @@ interface SmartToolSearchProps {
   onToolSelect: (tool: ToolDefinition) => void;
 }
 
+/**
+ * SmartToolSearch component.
+ * @param props - The component props.
+ * @param props.tools - The tools property.
+ * @param props.searchQuery - The searchQuery property.
+ * @param props.setSearchQuery - The setSearchQuery property.
+ * @param props.onToolSelect - The onToolSelect property.
+ * @returns The rendered component.
+ */
 export function SmartToolSearch({
   tools,
   searchQuery,

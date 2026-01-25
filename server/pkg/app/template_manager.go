@@ -14,7 +14,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// TemplateManager manages the persistence and lifecycle of service templates.
+// TemplateManager handles the storage, retrieval, and management of service templates.
+// It provides thread-safe access to templates stored in a JSON file on disk.
 type TemplateManager struct {
 	mu        sync.RWMutex
 	templates []*configv1.UpstreamServiceConfig
@@ -22,10 +23,13 @@ type TemplateManager struct {
 }
 
 // NewTemplateManager creates a new instance of TemplateManager.
+// It initializes the manager with the path to the templates file and loads any existing templates.
 //
-// dataDir is the dataDir.
+// Parameters:
+//   - dataDir: The directory where the templates JSON file (templates.json) will be stored.
 //
-// Returns the result.
+// Returns:
+//   - A pointer to the initialized TemplateManager.
 func NewTemplateManager(dataDir string) *TemplateManager {
 	tm := &TemplateManager{
 		filePath: filepath.Join(dataDir, "templates.json"),
@@ -101,9 +105,10 @@ func (tm *TemplateManager) save() error {
 	return os.WriteFile(tm.filePath, data, 0600)
 }
 
-// ListTemplates returns a list of all stored templates.
+// ListTemplates returns a copy of the list of all stored service templates.
 //
-// Returns the result.
+// Returns:
+//   - A slice of UpstreamServiceConfig pointers representing the stored templates.
 func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -115,11 +120,14 @@ func (tm *TemplateManager) ListTemplates() []*configv1.UpstreamServiceConfig {
 	return res
 }
 
-// SaveTemplate saves or updates a template.
+// SaveTemplate saves a new template or updates an existing one.
+// It identifies the template by its ID or Name (if ID is missing) and persists the changes to disk.
 //
-// template is the template.
+// Parameters:
+//   - template: The UpstreamServiceConfig to save.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - An error if the save operation fails (e.g., file write error).
 func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig) error {
 	tm.mu.Lock()
 	found := false
@@ -145,11 +153,13 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 	return tm.save()
 }
 
-// DeleteTemplate deletes a template by its ID or Name.
+// DeleteTemplate removes a template from storage by its ID or Name.
 //
-// idOrName is the idOrName.
+// Parameters:
+//   - idOrName: The identifier or name of the template to delete.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - An error if the delete operation fails (e.g., file write error).
 func (tm *TemplateManager) DeleteTemplate(idOrName string) error {
 	tm.mu.Lock()
 	newTemplates := make([]*configv1.UpstreamServiceConfig, 0, len(tm.templates))

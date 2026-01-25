@@ -31,6 +31,14 @@ interface OptimizationTabProps {
     onToggleTool: (name: string, disable: boolean) => void;
 }
 
+/**
+ * OptimizationTab component.
+ * @param props - The component props.
+ * @param props.tools - The tools property.
+ * @param props.toolUsage - The toolUsage property.
+ * @param props.onToggleTool - The onToggleTool property.
+ * @returns The rendered component.
+ */
 export function OptimizationTab({ tools, toolUsage, onToggleTool }: OptimizationTabProps) {
     const analysis = useMemo(() => {
         const ghostTools: { tool: ToolDefinition; tokens: number }[] = [];
