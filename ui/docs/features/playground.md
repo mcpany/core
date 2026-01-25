@@ -48,7 +48,7 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
+- **JSON Mode**: When configuring a tool in the dialog, toggle to the "JSON" tab to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
 
 ### 5. Session History (Import/Export)
