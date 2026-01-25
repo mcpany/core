@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { NotificationCenter } from "./notification-center";
 import { apiClient } from "@/lib/client";
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import React from 'react';
 import "@testing-library/jest-dom";
 
@@ -31,13 +31,13 @@ describe("NotificationCenter", () => {
   });
 
   it("renders the bell icon", () => {
-    (apiClient.listAlerts as any).mockResolvedValue([]);
+    (apiClient.listAlerts as Mock).mockResolvedValue([]);
     render(<NotificationCenter />);
     expect(screen.getByLabelText("Notifications")).toBeInTheDocument();
   });
 
   it("shows badge when there are active alerts", async () => {
-    (apiClient.listAlerts as any).mockResolvedValue([
+    (apiClient.listAlerts as Mock).mockResolvedValue([
       { id: "1", status: "active", title: "Test Alert", timestamp: new Date().toISOString(), severity: "critical", service: "test" }
     ]);
 
@@ -55,7 +55,7 @@ describe("NotificationCenter", () => {
 
   it("opens popover and lists alerts", async () => {
     const alert = { id: "1", status: "active", title: "Test Alert", message: "Something wrong", timestamp: new Date().toISOString(), severity: "critical", service: "test" };
-    (apiClient.listAlerts as any).mockResolvedValue([alert]);
+    (apiClient.listAlerts as Mock).mockResolvedValue([alert]);
 
     render(<NotificationCenter />);
 
@@ -70,8 +70,8 @@ describe("NotificationCenter", () => {
 
   it("marks alert as read", async () => {
     const alert = { id: "1", status: "active", title: "Test Alert", message: "Something wrong", timestamp: new Date().toISOString(), severity: "critical", service: "test" };
-    (apiClient.listAlerts as any).mockResolvedValue([alert]);
-    (apiClient.updateAlertStatus as any).mockResolvedValue({});
+    (apiClient.listAlerts as Mock).mockResolvedValue([alert]);
+    (apiClient.updateAlertStatus as Mock).mockResolvedValue({});
 
     render(<NotificationCenter />);
 

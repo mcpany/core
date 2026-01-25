@@ -30,11 +30,11 @@ export function NotificationCenter() {
 
   const fetchAlerts = async () => {
     try {
-      const data = await apiClient.listAlerts();
+      const data = (await apiClient.listAlerts()) as Alert[];
       // Filter for active alerts
-      const active = data.filter((a: any) => a.status === 'active');
+      const active = data.filter((a) => a.status === 'active');
       // Sort by timestamp desc
-      active.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      active.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       setAlerts(active);
     } catch (e) {
       console.error("Failed to fetch alerts", e);
