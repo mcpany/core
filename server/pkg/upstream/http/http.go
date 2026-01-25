@@ -522,20 +522,23 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Process base parts
 			for _, bp := range baseParts {
-				if bp.isInvalid {
-					finalParts = append(finalParts, bp.raw)
+				// Check override if we have a valid key (even if the value was invalid)
+				overridden := false
+				if bp.keyDecoded {
+					if parts, ok := endPartsByKey[bp.key]; ok {
+						if !keysOverridden[bp.key] {
+							finalParts = append(finalParts, parts...)
+							keysOverridden[bp.key] = true
+						}
+						overridden = true
+					}
+				}
+
+				if overridden {
 					continue
 				}
 
-				// Check override
-				if parts, ok := endPartsByKey[bp.key]; ok {
-					if !keysOverridden[bp.key] {
-						finalParts = append(finalParts, parts...)
-						keysOverridden[bp.key] = true
-					}
-				} else {
-					finalParts = append(finalParts, bp.raw)
-				}
+				finalParts = append(finalParts, bp.raw)
 			}
 
 			// Append remaining endpoint parts
