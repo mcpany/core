@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
 import {
@@ -340,16 +340,14 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                  <div className="flex items-center gap-2">
                      {service.name}
                      {service.lastError && (
-                         <TooltipProvider>
-                             <Tooltip>
-                                 <TooltipTrigger asChild>
-                                     <Badge variant="destructive" className="ml-2 text-[10px] px-1 h-5 cursor-pointer">Error</Badge>
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                     <p className="max-w-xs break-words text-xs">{service.lastError}</p>
-                                 </TooltipContent>
-                             </Tooltip>
-                         </TooltipProvider>
+                         <Tooltip>
+                             <TooltipTrigger asChild>
+                                 <Badge variant="destructive" className="ml-2 text-[10px] px-1 h-5 cursor-pointer">Error</Badge>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                                 <p className="max-w-xs break-words text-xs">{service.lastError}</p>
+                             </TooltipContent>
+                         </Tooltip>
                      )}
                  </div>
              </TableCell>
