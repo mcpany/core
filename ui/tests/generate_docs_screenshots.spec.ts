@@ -130,6 +130,38 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock Topology
+     await page.route('**/api/v1/topology', async route => {
+         await route.fulfill({
+             json: {
+                 clients: [],
+                 core: {
+                     id: 'core',
+                     label: 'MCP Core',
+                     type: 'NODE_TYPE_CORE',
+                     status: 'NODE_STATUS_ACTIVE',
+                     children: [
+                        { id: 'postgres-primary', label: 'Primary DB', type: 'NODE_TYPE_SERVICE', status: 'NODE_STATUS_ACTIVE', metrics: { latencyMs: 10, errorRate: 0, qps: 50 } },
+                        { id: 'openai-gateway', label: 'OpenAI Gateway', type: 'NODE_TYPE_SERVICE', status: 'NODE_STATUS_ACTIVE', metrics: { latencyMs: 150, errorRate: 0.01, qps: 20 } }
+                     ]
+                 }
+             }
+         });
+     });
+
+     // Mock Templates & Settings
+     await page.route('**/api/v1/templates', async route => {
+         await route.fulfill({ json: { templates: [] } });
+     });
+     await page.route('**/api/v1/settings', async route => {
+         await route.fulfill({ json: { theme: 'system' } });
+     });
+
+     // Mock Dashboard Tool Stats
+     await page.route('**/api/v1/dashboard/top-tools*', async route => { await route.fulfill({ json: [] }); });
+     await page.route('**/api/v1/dashboard/tool-usage*', async route => { await route.fulfill({ json: [] }); });
+     await page.route('**/api/v1/dashboard/tool-failures*', async route => { await route.fulfill({ json: [] }); });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -647,7 +679,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.getByRole('button', { name: 'Start Diagnostics' }).click();
 
       // Wait for run to finish (look for "Rerun Diagnostics")
-      await page.getByText('Rerun Diagnostics', { timeout: 10000 }).waitFor();
+      await page.getByText('Rerun Diagnostics').waitFor({ timeout: 10000 });
 
       // Take screenshot of the modal
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
