@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
@@ -99,10 +100,12 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 			return nil, status.Errorf(codes.Internal, "failed to list services: %v", err)
 		}
 		for _, cfg := range configs {
-			services = append(services, cfg)
+			safeCfg := proto.Clone(cfg).(*configv1.UpstreamServiceConfig)
+			config.StripSecretsFromService(safeCfg)
+			services = append(services, safeCfg)
 
 			state := &pb.ServiceState{
-				Config: cfg,
+				Config: safeCfg,
 				Status: proto.String("OK"),
 			}
 			if errMsg, ok := s.serviceRegistry.GetServiceError(cfg.GetId()); ok {
@@ -116,9 +119,11 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 		serviceInfos := s.toolManager.ListServices()
 		for _, info := range serviceInfos {
 			if info.Config != nil {
-				services = append(services, info.Config)
+				safeCfg := proto.Clone(info.Config).(*configv1.UpstreamServiceConfig)
+				config.StripSecretsFromService(safeCfg)
+				services = append(services, safeCfg)
 				serviceStates = append(serviceStates, &pb.ServiceState{
-					Config: info.Config,
+					Config: safeCfg,
 					Status: proto.String("OK"),
 				})
 			}
@@ -144,8 +149,11 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 		if !ok {
 			return nil, status.Error(codes.NotFound, "service not found")
 		}
+		safeCfg := proto.Clone(cfg).(*configv1.UpstreamServiceConfig)
+		config.StripSecretsFromService(safeCfg)
+
 		state := &pb.ServiceState{
-			Config: cfg,
+			Config: safeCfg,
 			Status: proto.String("OK"),
 		}
 		if errMsg, ok := s.serviceRegistry.GetServiceError(cfg.GetId()); ok {
@@ -153,7 +161,7 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 			state.Error = proto.String(errMsg)
 		}
 		return &pb.GetServiceResponse{
-			Service:      cfg,
+			Service:      safeCfg,
 			ServiceState: state,
 		}, nil
 	}
@@ -165,10 +173,13 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 	if info.Config == nil {
 		return nil, status.Error(codes.Internal, "service config not found")
 	}
+	safeCfg := proto.Clone(info.Config).(*configv1.UpstreamServiceConfig)
+	config.StripSecretsFromService(safeCfg)
+
 	return &pb.GetServiceResponse{
-		Service: info.Config,
+		Service: safeCfg,
 		ServiceState: &pb.ServiceState{
-			Config: info.Config,
+			Config: safeCfg,
 			Status: proto.String("OK"),
 		},
 	}, nil
@@ -231,7 +242,10 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	if err := s.storage.CreateUser(ctx, req.User); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
-	return &pb.CreateUserResponse{User: req.User}, nil
+
+	safeUser := proto.Clone(req.User).(*configv1.User)
+	config.StripSecretsFromAuth(safeUser.Authentication)
+	return &pb.CreateUserResponse{User: safeUser}, nil
 }
 
 // GetUser retrieves a user by ID.
@@ -249,7 +263,10 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 	if user == nil {
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
-	return &pb.GetUserResponse{User: user}, nil
+
+	safeUser := proto.Clone(user).(*configv1.User)
+	config.StripSecretsFromAuth(safeUser.Authentication)
+	return &pb.GetUserResponse{User: safeUser}, nil
 }
 
 // ListUsers lists all users.
@@ -264,7 +281,15 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
-	return &pb.ListUsersResponse{Users: users}, nil
+
+	safeUsers := make([]*configv1.User, 0, len(users))
+	for _, u := range users {
+		safeUser := proto.Clone(u).(*configv1.User)
+		config.StripSecretsFromAuth(safeUser.Authentication)
+		safeUsers = append(safeUsers, safeUser)
+	}
+
+	return &pb.ListUsersResponse{Users: safeUsers}, nil
 }
 
 // UpdateUser updates an existing user.
@@ -293,7 +318,10 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 	if err := s.storage.UpdateUser(ctx, req.User); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
-	return &pb.UpdateUserResponse{User: req.User}, nil
+
+	safeUser := proto.Clone(req.User).(*configv1.User)
+	config.StripSecretsFromAuth(safeUser.Authentication)
+	return &pb.UpdateUserResponse{User: safeUser}, nil
 }
 
 // DeleteUser deletes a user by ID.
