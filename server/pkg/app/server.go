@@ -1357,7 +1357,13 @@ func (a *Application) runServerMode(
 	startupCallback func(),
 	tlsCert, tlsKey, tlsClientCA string,
 ) error {
-	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(a.SettingsManager.GetAllowedIPs())
+	// Trust Proxy Config
+	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
+
+	ipMiddleware, err := middleware.NewIPAllowlistMiddleware(
+		a.SettingsManager.GetAllowedIPs(),
+		middleware.WithIPAllowlistTrustProxy(trustProxy),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
@@ -1405,9 +1411,6 @@ func (a *Application) runServerMode(
 			}
 		}
 	}
-
-	// Trust Proxy Config
-	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
 
 	var authMiddleware func(http.Handler) http.Handler
 	if authDisabled {
@@ -2154,16 +2157,12 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
 			// This prevents accidental exposure of the server to the public internet (RCE risk).
-			host, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				// Fallback if RemoteAddr is weird, assume host is the string itself
-				host = r.RemoteAddr
-			}
+			// We use util.GetClientIP which respects trustProxy (X-Forwarded-For) if configured.
+			clientIP := util.GetClientIP(r, trustProxy)
+			ipAddr := net.ParseIP(clientIP)
 
-			// Check if the request is from a loopback address
-			ipAddr := net.ParseIP(host)
 			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", clientIP)
 				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 				return
 			}

@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // IPAllowlistMiddleware restricts access to allowed IP addresses.
@@ -17,6 +18,18 @@ import (
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
+	trustProxy    bool
+}
+
+// IPAllowlistOption defines a functional option for IPAllowlistMiddleware.
+type IPAllowlistOption func(*IPAllowlistMiddleware)
+
+// WithIPAllowlistTrustProxy enables trusting the X-Forwarded-For header.
+// This should only be used when the server is behind a trusted reverse proxy.
+func WithIPAllowlistTrustProxy(trust bool) IPAllowlistOption {
+	return func(m *IPAllowlistMiddleware) {
+		m.trustProxy = trust
+	}
 }
 
 // NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
@@ -25,8 +38,11 @@ type IPAllowlistMiddleware struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
+func NewIPAllowlistMiddleware(allowedCIDRs []string, opts ...IPAllowlistOption) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
+	for _, opt := range opts {
+		opt(m)
+	}
 	if err := m.Update(allowedCIDRs); err != nil {
 		return nil, err
 	}
@@ -111,7 +127,8 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 // Returns the result.
 func (m *IPAllowlistMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !m.Allow(r.RemoteAddr) {
+		ip := util.GetClientIP(r, m.trustProxy)
+		if !m.Allow(ip) {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}

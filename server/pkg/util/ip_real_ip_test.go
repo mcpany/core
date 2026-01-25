@@ -58,7 +58,7 @@ func TestGetClientIP_XRealIP(t *testing.T) {
 				"X-Forwarded-For": "9.9.9.9, 5.6.7.8",
 			},
 			trustProxy: true,
-			want:       "9.9.9.9",
+			want:       "5.6.7.8",
 		},
 	}
 
