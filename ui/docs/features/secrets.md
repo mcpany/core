@@ -23,4 +23,11 @@ Navigate to `/secrets` (or **Settings > Secrets**).
 ![Create Secret](screenshots/secret_create_modal.png)
 
 ### 3. Usage in Services
-When configuring a service, reference the secret using the `${secrets.KEY_NAME}` syntax in any environment variable field.
+
+When configuring a service, you can reference the secret in environment variable fields.
+
+**YAML Configuration:**
+Use the `${secrets.KEY_NAME}` syntax in your `config.yaml` or `config.json` files.
+
+**UI Configuration:**
+The UI currently treats manual input as plain text. To use secrets in the UI, ensure they are loaded from the configuration file, or use the "Secrets" management interface to view existing secret references.
