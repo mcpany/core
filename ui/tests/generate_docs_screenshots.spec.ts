@@ -282,6 +282,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.getByText('filesystem.read').first().click({ force: true });
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
+
+    // Click Sequence Diagram Tab
+    await page.getByRole('tab', { name: 'Sequence Diagram' }).click();
+    await page.waitForTimeout(1000); // Wait for mermaid render
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail_sequence.png'), fullPage: true });
   });
 
   test('Middleware Screenshots', async ({ page }) => {

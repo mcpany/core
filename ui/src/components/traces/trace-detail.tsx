@@ -17,6 +17,8 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TraceSequenceDiagram } from "@/components/traces/trace-sequence";
 
 // For Syntax Highlighting (simple version)
 /**
@@ -206,44 +208,79 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
             </div>
 
             <ScrollArea className="flex-1 p-6">
-                <Card className="mb-6">
-                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2 pr-6">
-                         <div className="w-full border rounded-md bg-background/50 overflow-hidden">
-                             {/* Header Row */}
-                             <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
-                                 <div className="flex-1 pl-2">Span Name</div>
-                                 <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
-                             </div>
-                             <WaterfallItem
-                                span={trace.rootSpan}
-                                traceStart={trace.rootSpan.startTime}
-                                traceDuration={trace.totalDuration}
-                            />
-                         </div>
-                    </CardContent>
-                </Card>
+                <Tabs defaultValue="waterfall" className="w-full space-y-4">
+                    <TabsList className="bg-muted/50">
+                        <TabsTrigger value="waterfall">Waterfall</TabsTrigger>
+                        <TabsTrigger value="sequence">Sequence Diagram</TabsTrigger>
+                        <TabsTrigger value="json">JSON</TabsTrigger>
+                    </TabsList>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <JsonView data={trace.rootSpan.input} />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                             <JsonView data={trace.rootSpan.output} />
-                        </CardContent>
-                    </Card>
-                </div>
+                    <TabsContent value="waterfall" className="space-y-6">
+                        <Card>
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pl-2 pr-6">
+                                <div className="w-full border rounded-md bg-background/50 overflow-hidden">
+                                    {/* Header Row */}
+                                    <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
+                                        <div className="flex-1 pl-2">Span Name</div>
+                                        <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
+                                    </div>
+                                    <WaterfallItem
+                                        span={trace.rootSpan}
+                                        traceStart={trace.rootSpan.startTime}
+                                        traceDuration={trace.totalDuration}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <JsonView data={trace.rootSpan.input} />
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <JsonView data={trace.rootSpan.output} />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="sequence">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-sm font-medium">Sequence Diagram</CardTitle>
+                                <CardDescription>Visualizing interaction flow between User, Tools, and Services.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <TraceSequenceDiagram trace={trace} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="json">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-sm font-medium">Raw Trace JSON</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[600px] overflow-auto">
+                                   <JsonView data={trace} />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
             </ScrollArea>
         </div>
     );
