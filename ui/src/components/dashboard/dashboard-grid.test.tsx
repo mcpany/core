@@ -6,6 +6,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DashboardGrid } from "./dashboard-grid";
 import { vi, describe, it, expect, beforeEach } from "vitest";
+import { DashboardDensityProvider } from "@/contexts/dashboard-density-context";
 
 // Mock Child Widgets
 vi.mock("@/components/dashboard/metrics-overview", () => ({
@@ -44,20 +45,32 @@ describe("DashboardGrid", () => {
   });
 
   it("renders all default widgets initially", () => {
-    render(<DashboardGrid />);
+    render(
+      <DashboardDensityProvider>
+        <DashboardGrid />
+      </DashboardDensityProvider>
+    );
     expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
     expect(screen.getByTestId("widget-uptime")).toBeInTheDocument();
   });
 
   it("loads layout from localStorage", () => {
+    // The component expects migrated "WidgetInstance" format mostly, but handles legacy.
+    // Let's use the new format to match `WidgetInstance` interface in dashboard-grid.tsx
+    // The key change is `id` -> `instanceId` and `type` is preserved.
+    // But the migration logic handles `id` as `type` if `instanceId` is missing.
     const savedLayout = [
-        { id: "metrics", title: "Metrics Overview", type: "full", hidden: true }, // Hidden
-        { id: "recent-activity", title: "Recent Activity", type: "half", hidden: false }
+        { id: "metrics", title: "Metrics Overview", type: "metrics", hidden: true }, // Legacy-ish format being tested
+        { id: "recent-activity", title: "Recent Activity", type: "recent-activity", hidden: false }
     ];
     localStorage.setItem("dashboard-layout", JSON.stringify(savedLayout));
 
-    render(<DashboardGrid />);
+    render(
+      <DashboardDensityProvider>
+        <DashboardGrid />
+      </DashboardDensityProvider>
+    );
 
     // Metrics should be hidden (not rendered in the grid list)
     expect(screen.queryByTestId("widget-metrics")).not.toBeInTheDocument();
@@ -67,34 +80,46 @@ describe("DashboardGrid", () => {
   it("migrates old layout schema", () => {
     // Old schema: type="wide" (mapped to full), missing hidden
     const oldLayout = [
-        { id: "metrics", title: "Metrics Overview", type: "wide" }
+        { id: "metrics", title: "Metrics Overview", type: "metrics" } // id used as type
     ];
     localStorage.setItem("dashboard-layout", JSON.stringify(oldLayout));
 
-    render(<DashboardGrid />);
+    render(
+      <DashboardDensityProvider>
+        <DashboardGrid />
+      </DashboardDensityProvider>
+    );
 
     expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
     // Verify it updated localStorage with new schema (we can't check localStorage directly easily as it updates on DragEnd usually or specific actions, but state should reflect it)
   });
 
   it("opens customization menu", async () => {
-    render(<DashboardGrid />);
+    render(
+      <DashboardDensityProvider>
+        <DashboardGrid />
+      </DashboardDensityProvider>
+    );
 
-    const customizeBtn = screen.getByText("Customize View");
+    const customizeBtn = screen.getByText("Layout");
     fireEvent.click(customizeBtn);
 
-    expect(screen.getByText("Toggle Widgets")).toBeInTheDocument();
+    expect(screen.getByText("Visible Widgets")).toBeInTheDocument();
     expect(screen.getByText("Metrics Overview")).toBeInTheDocument();
   });
 
   it("toggles widget visibility via customization menu", async () => {
-    render(<DashboardGrid />);
+    render(
+      <DashboardDensityProvider>
+        <DashboardGrid />
+      </DashboardDensityProvider>
+    );
 
     // Initially visible
     expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
 
     // Open menu
-    fireEvent.click(screen.getByText("Customize View"));
+    fireEvent.click(screen.getByText("Layout"));
 
     // Toggle off
     // Note: In JSDOM, clicking the label usually triggers the checkbox

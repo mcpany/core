@@ -32,6 +32,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { useDashboardDensity } from "@/contexts/dashboard-density-context";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 
 export interface WidgetInstance {
     instanceId: string;
@@ -58,6 +61,7 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const { density, setDensity } = useDashboardDensity();
 
     useEffect(() => {
         setIsMounted(true);
@@ -190,6 +194,20 @@ export function DashboardGrid() {
                     </PopoverTrigger>
                     <PopoverContent className="w-56" align="end">
                         <div className="space-y-2">
+                            <h4 className="font-medium leading-none mb-2">Density</h4>
+                            <RadioGroup value={density} onValueChange={(v) => setDensity(v as any)} className="gap-2">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="comfortable" id="r-comfortable" />
+                                    <Label htmlFor="r-comfortable" className="cursor-pointer">Comfortable</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="compact" id="r-compact" />
+                                    <Label htmlFor="r-compact" className="cursor-pointer">Compact</Label>
+                                </div>
+                            </RadioGroup>
+
+                            <Separator className="my-2" />
+
                             <h4 className="font-medium leading-none mb-2">Visible Widgets</h4>
                             {widgets.map((widget) => (
                                 <div key={widget.instanceId} className="flex items-center space-x-2">
@@ -220,7 +238,10 @@ export function DashboardGrid() {
                         <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            className="grid grid-cols-12 gap-4"
+                            className={cn(
+                                "grid grid-cols-12",
+                                density === "compact" ? "gap-2" : "gap-4"
+                            )}
                         >
                             {visibleWidgets.map((widget, index) => (
                                 <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>

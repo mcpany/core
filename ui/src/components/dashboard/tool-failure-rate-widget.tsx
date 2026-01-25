@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
 import { apiClient } from "@/lib/client";
+import { useDashboardDensity } from "@/contexts/dashboard-density-context";
+import { cn } from "@/lib/utils";
 
 interface ToolFailureRate {
     name: string;
@@ -27,6 +29,8 @@ interface ToolFailureRate {
 export function ToolFailureRateWidget() {
     const [tools, setTools] = useState<ToolFailureRate[]>([]);
     const [loading, setLoading] = useState(true);
+    const { density } = useDashboardDensity();
+    const isCompact = density === "compact";
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -51,12 +55,15 @@ export function ToolFailureRateWidget() {
 
     return (
         <Card className="col-span-3 backdrop-blur-sm bg-background/50">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardHeader className={cn(
+                "flex flex-row items-center justify-between space-y-0",
+                isCompact ? "p-3 pb-1" : "pb-2"
+            )}>
                 <CardTitle className="text-sm font-medium">Tool Failure Rates</CardTitle>
                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
+            <CardContent className={isCompact ? "p-3 pt-0" : ""}>
+                <div className={isCompact ? "space-y-2" : "space-y-4"}>
                     {tools.map((tool) => (
                         <div key={tool.name} className="space-y-1">
                             <div className="flex items-center justify-between text-xs">

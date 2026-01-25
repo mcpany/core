@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SystemHealthCard } from "./system-health-card";
+import { useDashboardDensity } from "@/contexts/dashboard-density-context";
+import { cn } from "@/lib/utils";
 
 interface Metric {
   label: string;
@@ -49,7 +51,7 @@ const iconMap: Record<string, any> = {
  * @param props.metric - The metric property.
  * @returns The rendered component.
  */
-const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
+const MetricItem = memo(function MetricItem({ metric, density }: { metric: Metric, density: "comfortable" | "compact" }) {
   const Icon = iconMap[metric.icon] || Activity;
   const isPositiveTrend = metric.trend === "up";
   // For latency and errors, down is usually good (green), up is bad (red)
@@ -60,16 +62,27 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
       trendColor = isPositiveTrend ? "text-red-500" : "text-green-500";
   }
 
+  const isCompact = density === "compact";
+
   return (
-    <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className={cn(
+        "backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300",
+        isCompact ? "p-0" : "" // Card usually has p-6 by default via class, but here we control content padding? No, Card has no default padding, it's in Header/Content
+    )}>
+      <CardHeader className={cn(
+          "flex flex-row items-center justify-between space-y-0",
+          isCompact ? "p-3 pb-1" : "pb-2"
+      )}>
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {metric.label}
         </CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+      <CardContent className={isCompact ? "p-3 pt-0" : ""}>
+        <div className={cn(
+            "font-bold tracking-tight",
+            isCompact ? "text-xl" : "text-2xl"
+        )}>{metric.value}</div>
         <div className="flex items-center justify-between mt-1">
             {metric.change && (
           <p className={`text-xs flex items-center ${trendColor}`}>
@@ -102,6 +115,7 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
+  const { density } = useDashboardDensity();
 
   useEffect(() => {
     async function fetchMetrics() {
@@ -143,10 +157,10 @@ export const MetricsOverview = memo(function MetricsOverview() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className={cn("space-y-4", density === "compact" && "space-y-2")}>
+      <div className={cn("grid md:grid-cols-2 lg:grid-cols-4", density === "compact" ? "gap-2" : "gap-4")}>
         {metrics.map((metric) => (
-          <MetricItem key={metric.label} metric={metric} />
+          <MetricItem key={metric.label} metric={metric} density={density} />
         ))}
       </div>
       <SystemHealthCard />

@@ -8,6 +8,8 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useDashboardDensity } from "@/contexts/dashboard-density-context";
+import { cn } from "@/lib/utils";
 
 interface ToolUsageStats {
   name: string;
@@ -22,6 +24,8 @@ interface ToolUsageStats {
 export function TopToolsWidget() {
   const [data, setData] = useState<ToolUsageStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const { density } = useDashboardDensity();
+  const isCompact = density === "compact";
 
   useEffect(() => {
     async function fetchData() {
@@ -47,11 +51,11 @@ export function TopToolsWidget() {
   if (loading && data.length === 0) {
       return (
           <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
-            <CardHeader>
+            <CardHeader className={isCompact ? "p-3 pb-1" : ""}>
                 <CardTitle>Top Tools</CardTitle>
-                <CardDescription>Most frequently executed tools.</CardDescription>
+                <CardDescription className={isCompact ? "text-[10px]" : ""}>Most frequently executed tools.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground">
+            <CardContent className={cn("h-[300px] flex items-center justify-center text-muted-foreground", isCompact ? "p-3 pt-0" : "")}>
                 Loading...
             </CardContent>
           </Card>
@@ -62,11 +66,11 @@ export function TopToolsWidget() {
   if (data.length === 0) {
       return (
         <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
-            <CardHeader>
+            <CardHeader className={isCompact ? "p-3 pb-1" : ""}>
                 <CardTitle>Top Tools</CardTitle>
-                <CardDescription>Most frequently executed tools.</CardDescription>
+                <CardDescription className={isCompact ? "text-[10px]" : ""}>Most frequently executed tools.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground">
+            <CardContent className={cn("h-[300px] flex items-center justify-center text-muted-foreground", isCompact ? "p-3 pt-0" : "")}>
                 No tool usage data yet.
             </CardContent>
         </Card>
@@ -75,13 +79,13 @@ export function TopToolsWidget() {
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50 h-full">
-      <CardHeader>
+      <CardHeader className={isCompact ? "p-3 pb-1" : ""}>
         <CardTitle>Top Tools</CardTitle>
-        <CardDescription>
+        <CardDescription className={isCompact ? "text-[10px]" : ""}>
           Most frequently executed tools.
         </CardDescription>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className={cn("pl-2", isCompact ? "p-3 pt-0 pl-1" : "")}>
         <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>

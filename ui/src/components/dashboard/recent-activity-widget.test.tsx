@@ -6,6 +6,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { RecentActivityWidget } from "./recent-activity-widget";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
+import { DashboardDensityProvider } from "@/contexts/dashboard-density-context";
 
 // Mock Trace data
 const mockTraces = [
@@ -42,7 +43,11 @@ describe("RecentActivityWidget", () => {
     // Return a promise that never resolves immediately to test loading state
     mockFetch.mockReturnValue(new Promise(() => {}));
 
-    render(<RecentActivityWidget />);
+    render(
+      <DashboardDensityProvider>
+        <RecentActivityWidget />
+      </DashboardDensityProvider>
+    );
     expect(screen.getByText(/Loading activity/i)).toBeInTheDocument();
   });
 
@@ -52,7 +57,11 @@ describe("RecentActivityWidget", () => {
       json: async () => mockTraces,
     });
 
-    render(<RecentActivityWidget />);
+    render(
+      <DashboardDensityProvider>
+        <RecentActivityWidget />
+      </DashboardDensityProvider>
+    );
 
     await waitFor(() => {
         expect(screen.getByText("get_weather")).toBeInTheDocument();
@@ -71,7 +80,11 @@ describe("RecentActivityWidget", () => {
       json: async () => [],
     });
 
-    render(<RecentActivityWidget />);
+    render(
+      <DashboardDensityProvider>
+        <RecentActivityWidget />
+      </DashboardDensityProvider>
+    );
 
     await waitFor(() => {
         expect(screen.getByText("No recent activity recorded.")).toBeInTheDocument();
@@ -84,7 +97,11 @@ describe("RecentActivityWidget", () => {
       status: 500,
     });
 
-    render(<RecentActivityWidget />);
+    render(
+      <DashboardDensityProvider>
+        <RecentActivityWidget />
+      </DashboardDensityProvider>
+    );
 
     await waitFor(() => {
         expect(screen.getByText("Failed to load activity.")).toBeInTheDocument();

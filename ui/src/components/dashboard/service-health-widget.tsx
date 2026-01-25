@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDashboardDensity } from "@/contexts/dashboard-density-context";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -109,24 +110,33 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
 
 // ⚡ Bolt Optimization: Memoized individual service items.
-const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
+const ServiceHealthItem = memo(function ServiceHealthItem({ service, history, density }: { service: ServiceHealth, history: HealthHistoryPoint[], density: string }) {
+    const isCompact = density === "compact";
+
     return (
         <div
-            className="group flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors"
+            className={cn(
+                "group flex items-center justify-between hover:bg-muted/50 rounded-lg transition-colors",
+                isCompact ? "p-1.5" : "p-3"
+            )}
         >
-            <div className="flex items-center space-x-4 flex-1 min-w-0">
-                <div className={cn("p-2 rounded-full bg-background shadow-sm border shrink-0", getStatusColor(service.status).split(" ")[0])}>
+            <div className={cn("flex items-center flex-1 min-w-0", isCompact ? "space-x-2" : "space-x-4")}>
+                <div className={cn(
+                    "rounded-full bg-background shadow-sm border shrink-0",
+                    isCompact ? "p-1.5" : "p-2",
+                    getStatusColor(service.status).split(" ")[0]
+                )}>
                     {getStatusIcon(service.status)}
                 </div>
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium leading-none mb-1 truncate">{service.name}</p>
+                        <p className={cn("font-medium leading-none truncate", isCompact ? "text-xs mb-0.5" : "text-sm mb-1")}>{service.name}</p>
                         {service.message && (
                             <ServiceDiagnosisPopover message={service.message} />
                         )}
                     </div>
                     {service.status !== 'inactive' && service.latency !== '--' && (
-                        <p className="text-xs text-muted-foreground flex items-center">
+                        <p className={cn("text-muted-foreground flex items-center", isCompact ? "text-[10px]" : "text-xs")}>
                         <Activity className="h-3 w-3 mr-1" />
                         Latency: <span className="font-mono ml-1">{service.latency}</span>
                         </p>
@@ -139,11 +149,11 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
                 </div>
             </div>
 
-            <div className="flex items-center space-x-4 shrink-0">
+            <div className={cn("flex items-center shrink-0", isCompact ? "space-x-2" : "space-x-4")}>
                 {(service.status !== 'inactive' && service.uptime !== '--') && (
                     <div className="text-right hidden sm:block">
                         <p className="text-xs text-muted-foreground">Uptime</p>
-                        <p className="text-sm font-medium">{service.uptime}</p>
+                        <p className={cn("font-medium", isCompact ? "text-xs" : "text-sm")}>{service.uptime}</p>
                     </div>
                 )}
                 <Badge variant="outline" className={cn("capitalize shadow-none", getStatusColor(service.status))}>
@@ -160,6 +170,8 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
  */
 export function ServiceHealthWidget() {
   const { services, history, isLoading } = useServiceHealthHistory();
+  const { density } = useDashboardDensity();
+  const isCompact = density === "compact";
 
   const sortedServices = useMemo(() => {
     return Array.isArray(services) ? [...services].sort((a, b) => {
@@ -224,6 +236,7 @@ export function ServiceHealthWidget() {
                 key={service.id}
                 service={service}
                 history={history[service.id]}
+                density={density}
             />
           ))}
         </div>

@@ -169,6 +169,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
+
+    // Enable Compact Mode
+    await page.getByRole('button', { name: 'Layout' }).click();
+    await page.getByLabel('Compact').click();
+    await page.keyboard.press('Escape'); // Close popover
+    await page.waitForTimeout(1000); // Wait for transition
+
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_compact.png'), fullPage: true });
   });
 
   test('Services Screenshots', async ({ page }) => {
