@@ -463,6 +463,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			raw       string
 			key       string
 			isInvalid bool
+			keyValid  bool
 		}
 
 		parseQueryManual := func(rawQuery string) []queryPart {
@@ -488,6 +489,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				decodedKey, errKey := url.QueryUnescape(key)
 				if errKey == nil {
 					qp.key = decodedKey
+					qp.keyValid = true
 				}
 
 				_, errVal := url.QueryUnescape(value)
@@ -510,7 +512,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			for _, p := range endParts {
 				// We include invalid parts if we managed to extract the key,
 				// so they can participate in override logic.
-				if p.key != "" {
+				if p.keyValid {
 					endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
 				}
 			}
@@ -539,7 +541,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Append remaining endpoint parts
 			for _, ep := range endParts {
 				// If we couldn't decode the key, we just append it (no override logic possible)
-				if ep.key == "" {
+				if !ep.keyValid {
 					finalParts = append(finalParts, ep.raw)
 					continue
 				}
