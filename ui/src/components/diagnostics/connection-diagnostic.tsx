@@ -13,6 +13,7 @@ import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
+import { apiClient } from "@/lib/client";
 
 interface DiagnosticStep {
   id: string;
@@ -172,50 +173,43 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
     // --- Step 2: Backend Health Check ---
     updateStep("backend_health", { status: "running" });
-    addLog("backend_health", "Querying backend service status...");
+    addLog("backend_health", "Running active backend diagnostics...");
 
     try {
-        const res = await fetch("/api/dashboard/health", { cache: 'no-store' });
-        if (!res.ok) {
-             throw new Error(`API Error: ${res.status} ${res.statusText}`);
+        const result = await apiClient.diagnoseService(service.name);
+
+        addLog("backend_health", `Diagnostic Result: ${result.Status}`);
+        if (result.Message) {
+             addLog("backend_health", `Message: ${result.Message}`);
         }
-        const data: ServiceHealth[] = await res.json();
 
-        // Find our service
-        const serviceStatus = data.find(s => s.id === service.id || s.name === service.name);
-
-        if (!serviceStatus) {
-             addLog("backend_health", "Warning: Service not found in backend registry.");
-             addLog("backend_health", "This might happen if the service was just added or backend is restarting.");
-             updateStep("backend_health", { status: "failure", detail: "Service Not Found" });
+        if (result.Status === "OK") {
+             addLog("backend_health", "Service is connected and responding.");
+             updateStep("backend_health", { status: "success", detail: "Healthy" });
+        } else if (result.Status === "SKIPPED") {
+             addLog("backend_health", "Service check skipped (likely disabled).");
+             updateStep("backend_health", { status: "skipped", detail: "Skipped" });
         } else {
-             addLog("backend_health", `Backend reports status: ${serviceStatus.status.toUpperCase()}`);
+             // ERROR or WARNING
+             const isError = result.Status === "ERROR";
+             updateStep("backend_health", { status: isError ? "failure" : "running", detail: result.Status });
 
-             if (serviceStatus.status === 'healthy') {
-                 addLog("backend_health", "Service is connected and responding.");
-                 updateStep("backend_health", { status: "success", detail: "Connected" });
-             } else if (serviceStatus.status === 'inactive') {
-                 addLog("backend_health", "Service is explicitly disabled.");
-                 updateStep("backend_health", { status: "skipped", detail: "Disabled" });
-             } else {
-                 // Unhealthy or Degraded
-                 addLog("backend_health", `Error: ${serviceStatus.message || "Unknown error"}`);
+             if (result.Error) {
+                 addLog("backend_health", `Error Details: ${result.Error}`);
+             }
 
-                 const diagnosis = analyzeConnectionError(serviceStatus.message || "");
-                 if (diagnosis.category !== 'unknown') {
-                     addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
-                     addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);
-                     setDiagnosticResult(diagnosis);
-                 }
-
-                 updateStep("backend_health", { status: "failure", detail: serviceStatus.status });
+             const diagnosis = analyzeConnectionError(result.Message || result.Error || "Unknown error");
+             if (diagnosis.category !== 'unknown') {
+                 addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
+                 addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);
+                 setDiagnosticResult(diagnosis);
              }
         }
 
     } catch (error: unknown) {
         const msg = error instanceof Error ? error.message : "Unknown error";
-        addLog("backend_health", `Failed to contact backend API: ${msg}`);
-        updateStep("backend_health", { status: "failure", detail: "API Failure" });
+        addLog("backend_health", `Failed to run diagnostics: ${msg}`);
+        updateStep("backend_health", { status: "failure", detail: "Diagnostic Failed" });
     }
 
     setIsRunning(false);

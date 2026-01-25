@@ -411,6 +411,19 @@ export const apiClient = {
     },
 
     /**
+     * Diagnoses a service.
+     * @param name The name of the service to diagnose.
+     * @returns A promise that resolves to the diagnostic result.
+     */
+    diagnoseService: async (name: string): Promise<any> => {
+        const response = await fetchWithAuth(`/api/v1/services/${name}/diagnose`, {
+            method: 'POST'
+        });
+        if (!response.ok) throw new Error('Failed to diagnose service');
+        return response.json();
+    },
+
+    /**
      * Validates a service configuration.
      * @param config The service configuration to validate.
      * @returns A promise that resolves to the validation result.
