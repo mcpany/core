@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // For Syntax Highlighting (simple version)
 /**
@@ -205,46 +206,78 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 </div>
             </div>
 
-            <ScrollArea className="flex-1 p-6">
-                <Card className="mb-6">
-                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2 pr-6">
-                         <div className="w-full border rounded-md bg-background/50 overflow-hidden">
-                             {/* Header Row */}
-                             <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
-                                 <div className="flex-1 pl-2">Span Name</div>
-                                 <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
-                             </div>
-                             <WaterfallItem
-                                span={trace.rootSpan}
-                                traceStart={trace.rootSpan.startTime}
-                                traceDuration={trace.totalDuration}
-                            />
-                         </div>
-                    </CardContent>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <JsonView data={trace.rootSpan.input} />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                             <JsonView data={trace.rootSpan.output} />
-                        </CardContent>
-                    </Card>
+            <Tabs defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
+                <div className="px-6 border-b">
+                   <TabsList className="bg-transparent border-b-0 p-0 h-auto">
+                       <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Overview</TabsTrigger>
+                       <TabsTrigger value="payload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Payload</TabsTrigger>
+                   </TabsList>
                 </div>
-            </ScrollArea>
+                <TabsContent value="overview" className="flex-1 p-0 overflow-hidden m-0">
+                    <ScrollArea className="h-full p-6">
+                        <Card className="mb-6">
+                             <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pl-2 pr-6">
+                                 <div className="w-full border rounded-md bg-background/50 overflow-hidden">
+                                     {/* Header Row */}
+                                     <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
+                                         <div className="flex-1 pl-2">Span Name</div>
+                                         <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
+                                     </div>
+                                     <WaterfallItem
+                                        span={trace.rootSpan}
+                                        traceStart={trace.rootSpan.startTime}
+                                        traceDuration={trace.totalDuration}
+                                    />
+                                 </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <JsonView data={trace.rootSpan.input} />
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                     <JsonView data={trace.rootSpan.output} />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </ScrollArea>
+                </TabsContent>
+                <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
+                     <ScrollArea className="h-full p-6">
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                    <Code className="h-4 w-4" /> Request Payload
+                                </h3>
+                                <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
+                                    <pre>{JSON.stringify(trace.rootSpan.input, null, 2)}</pre>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                    <Terminal className="h-4 w-4" /> Response Payload
+                                </h3>
+                                <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
+                                     <pre>{JSON.stringify(trace.rootSpan.output, null, 2)}</pre>
+                                </div>
+                            </div>
+                        </div>
+                     </ScrollArea>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

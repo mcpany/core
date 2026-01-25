@@ -25,7 +25,8 @@ import {
   ShoppingBag,
   ShieldCheck,
   Zap,
-  ClipboardCheck
+  ClipboardCheck,
+  Bug
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -108,6 +109,11 @@ const devItems = [
     title: "Playground",
     url: "/playground",
     icon: Bot,
+  },
+  {
+    title: "Inspector",
+    url: "/inspector",
+    icon: Bug,
   },
   {
     title: "Schema Validation",
