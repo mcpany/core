@@ -225,6 +225,7 @@ export function PlaygroundClientPro() {
               id: Date.now().toString() + "-result",
               type: "tool-result",
               toolName: toolName,
+              toolArgs: toolArgs,
               toolResult: result,
               timestamp: new Date(),
           }]);
@@ -413,9 +414,30 @@ export function PlaygroundClientPro() {
                 <div className="flex-1 overflow-hidden relative">
                     <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
                         <div className="max-w-4xl mx-auto pb-10 space-y-4">
-                            {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
-                            ))}
+                            {displayMessages.map((msg, index) => {
+                                let previousResult = undefined;
+                                if (msg.type === "tool-result" && msg.toolName) {
+                                    // Look backwards for a previous result with same tool and args
+                                    for (let i = index - 1; i >= 0; i--) {
+                                        const prev = displayMessages[i];
+                                        if (prev.type === "tool-result" &&
+                                            prev.toolName === msg.toolName &&
+                                            JSON.stringify(prev.toolArgs) === JSON.stringify(msg.toolArgs)) {
+                                            previousResult = prev.toolResult;
+                                            break;
+                                        }
+                                    }
+                                }
+                                return (
+                                    <ChatMessage
+                                        key={msg.id}
+                                        message={msg}
+                                        onReplay={handleReplay}
+                                        onRetry={handleReplay}
+                                        previousResult={previousResult}
+                                    />
+                                );
+                            })}
                             {isLoading && (
                                 <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
                                     <Sparkles className="size-3 text-primary" />

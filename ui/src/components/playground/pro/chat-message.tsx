@@ -5,7 +5,7 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,6 +15,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import * as diff from 'diff';
 
 /**
  * MessageType type definition.
@@ -38,6 +39,7 @@ interface ChatMessageProps {
     message: Message;
     onReplay?: (toolName: string, args: Record<string, unknown>) => void;
     onRetry?: (toolName: string, args: Record<string, unknown>) => void;
+    previousResult?: unknown;
 }
 
 function analyzeError(error: string): string | null {
@@ -68,8 +70,9 @@ function analyzeError(error: string): string | null {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
+export function ChatMessage({ message, onReplay, onRetry, previousResult }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
+    const [showDiff, setShowDiff] = useState(false);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -188,32 +191,63 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
                             </span>
                         </div>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">
-                                <span className="group-data-[state=open]:hidden">Show Result</span>
-                                <span className="group-data-[state=closed]:hidden">Hide Result</span>
-                            </Button>
-                        </CollapsibleTrigger>
+                        <div className="flex items-center gap-2">
+                            {previousResult && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={`h-6 px-2 text-[10px] gap-1 ${showDiff ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowDiff(!showDiff);
+                                    }}
+                                >
+                                    <GitCompare className="h-3 w-3" />
+                                    {showDiff ? "Show Original" : "Compare Previous"}
+                                </Button>
+                            )}
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">
+                                    <span className="group-data-[state=open]:hidden">Show Result</span>
+                                    <span className="group-data-[state=closed]:hidden">Hide Result</span>
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
                     </div>
                     <CollapsibleContent>
                         <div className="relative group/code max-h-[400px] overflow-auto">
-                             <SyntaxHighlighter
-                                language="json"
-                                style={vscDarkPlus}
-                                customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', minHeight: '100%' }}
-                                wrapLines={true}
-                                wrapLongLines={true}
-                            >
-                                {JSON.stringify(message.toolResult, null, 2)}
-                            </SyntaxHighlighter>
-                             <Button
-                                size="icon"
-                                variant="ghost"
-                                className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover/code:opacity-100 transition-opacity bg-muted/20 hover:bg-muted/50 text-white"
-                                onClick={() => copyToClipboard(JSON.stringify(message.toolResult, null, 2))}
-                            >
-                                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
+                             {showDiff && previousResult ? (
+                                <div className="p-4 font-mono text-xs bg-[#1e1e1e] text-white min-h-[100px] whitespace-pre-wrap">
+                                    {diff.diffJson(previousResult as object, message.toolResult as object).map((part, index) => {
+                                        const color = part.added ? 'text-green-400 bg-green-900/30' : part.removed ? 'text-red-400 bg-red-900/30' : 'text-gray-400';
+                                        return (
+                                            <span key={index} className={color}>
+                                                {part.value}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                             ) : (
+                                 <SyntaxHighlighter
+                                    language="json"
+                                    style={vscDarkPlus}
+                                    customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', minHeight: '100%' }}
+                                    wrapLines={true}
+                                    wrapLongLines={true}
+                                >
+                                    {JSON.stringify(message.toolResult, null, 2)}
+                                </SyntaxHighlighter>
+                             )}
+                             {!showDiff && (
+                                 <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover/code:opacity-100 transition-opacity bg-muted/20 hover:bg-muted/50 text-white"
+                                    onClick={() => copyToClipboard(JSON.stringify(message.toolResult, null, 2))}
+                                >
+                                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                </Button>
+                             )}
                         </div>
                     </CollapsibleContent>
                 </Collapsible>

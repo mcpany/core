@@ -232,7 +232,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(1000);
 
     // Select Tool
-    const tool = page.getByText('filesystem.list_dir');
+    // Use first() to avoid strict mode violation if tool name appears in heading
+    const tool = page.getByText('filesystem.list_dir').first();
     if (await tool.isVisible()) {
         await tool.click();
         await page.waitForTimeout(500);
@@ -245,6 +246,52 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     // Tools alias
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tools.png'), fullPage: true });
+
+    // --- Feature: Tool Output Diffing Screenshot ---
+    // We need to execute the tool twice to show the diff button
+    // Mock Execution
+    let execCount = 0;
+    await page.route('**/api/v1/execute', async route => {
+        execCount++;
+        await route.fulfill({
+            json: {
+                content: [{ type: 'text', text: execCount === 1 ? '{"status": "ok", "version": 1}' : '{"status": "ok", "version": 2}' }],
+                isError: false
+            }
+        });
+    });
+
+    if (await tool.isVisible()) {
+        // Run once
+        await page.getByRole('button', { name: /Build Command/i }).click();
+        await page.getByLabel('Send').click();
+        await page.waitForTimeout(500);
+
+        // Run again (same args)
+        // Need to reset form or just re-submit from input?
+        // Let's use the sidebar again to be sure
+        await tool.click();
+        // Wait for dialog
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await page.getByRole('button', { name: /Build Command/i }).click();
+        // Wait for dialog to close
+        await expect(page.getByRole('dialog')).not.toBeVisible();
+        // Wait for input to be populated
+        const input = page.getByRole('textbox', { name: /enter command/i });
+        await expect(input).not.toBeEmpty();
+        // Wait for Send button to be enabled
+        await expect(page.getByLabel('Send')).toBeEnabled();
+        await page.getByLabel('Send').click();
+        await page.waitForTimeout(1000);
+
+        // Click Compare Previous
+        const compareBtn = page.getByRole('button', { name: /Compare Previous/i }).last();
+        if (await compareBtn.isVisible()) {
+            await compareBtn.click();
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_diff_view.png') });
+        }
+    }
   });
 
   test('Stack Composer Screenshots', async ({ page }) => {
