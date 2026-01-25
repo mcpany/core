@@ -31,8 +31,9 @@ describe('PromptWorkbench', () => {
     title: 'Test Prompt',
     description: 'A test prompt',
     inputSchema: {
-      fields: {
-         arg1: { kind: { case: 'stringValue', value: 'Argument 1' } }
+      type: 'object',
+      properties: {
+        arg1: { type: 'string', description: 'Argument 1' }
       }
     },
     messages: [

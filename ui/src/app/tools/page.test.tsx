@@ -5,7 +5,7 @@
 
 
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import ToolsPage from './page';
 import { apiClient } from '@/lib/client';
 import { vi, Mock } from 'vitest';
@@ -16,6 +16,7 @@ vi.mock('@/lib/client', () => ({
         listTools: vi.fn(),
         listServices: vi.fn(),
         setToolStatus: vi.fn(),
+        getToolUsage: vi.fn().mockResolvedValue([]),
     },
 }));
 
@@ -117,10 +118,11 @@ describe('ToolsPage', () => {
 
         await waitFor(() => {
             // tool1 and tool3 should be visible (Service One)
-            expect(screen.getByText('tool1')).toBeInTheDocument();
-            expect(screen.getByText('tool3')).toBeInTheDocument();
+            const table = screen.getByRole('table');
+            expect(within(table).getByText('tool1')).toBeInTheDocument();
+            expect(within(table).getByText('tool3')).toBeInTheDocument();
             // tool2 should not be visible (Service Two)
-            expect(screen.queryByText('tool2')).not.toBeInTheDocument();
+            expect(within(table).queryByText('tool2')).not.toBeInTheDocument();
         });
     });
 
@@ -136,9 +138,10 @@ describe('ToolsPage', () => {
         fireEvent.change(searchInput, { target: { value: 'special' } });
 
         await waitFor(() => {
-            expect(screen.getByText('special-tool')).toBeInTheDocument();
-            expect(screen.queryByText('tool1')).not.toBeInTheDocument();
-            expect(screen.queryByText('tool2')).not.toBeInTheDocument();
+            const table = screen.getByRole('table');
+            expect(within(table).getByText('special-tool')).toBeInTheDocument();
+            expect(within(table).queryByText('tool1')).not.toBeInTheDocument();
+            expect(within(table).queryByText('tool2')).not.toBeInTheDocument();
         });
     });
 
@@ -153,8 +156,9 @@ describe('ToolsPage', () => {
         fireEvent.change(searchInput, { target: { value: 'very special' } });
 
         await waitFor(() => {
-            expect(screen.getByText('special-tool')).toBeInTheDocument();
-            expect(screen.queryByText('tool1')).not.toBeInTheDocument();
+            const table = screen.getByRole('table');
+            expect(within(table).getByText('special-tool')).toBeInTheDocument();
+            expect(within(table).queryByText('tool1')).not.toBeInTheDocument();
         });
     });
 
