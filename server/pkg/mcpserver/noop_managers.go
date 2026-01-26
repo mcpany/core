@@ -118,6 +118,13 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 	return nil, false
 }
 
+// ListMCPToolsForServices implements tool.ManagerInterface.
+//
+// _ is an unused parameter.
+//
+// Returns the result.
+func (m *NoOpToolManager) ListMCPToolsForServices(_ map[string]bool) []*mcp.Tool { return nil }
+
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
 type NoOpPromptManager struct{}
 

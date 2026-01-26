@@ -119,6 +119,12 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
+	// ListMCPToolsForServices returns registered tools in MCP format for the allowed services.
+	//
+	// allowedServices is a map of allowed service IDs.
+	//
+	// Returns the result.
+	ListMCPToolsForServices(allowedServices map[string]bool) []*mcp.Tool
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -147,7 +153,9 @@ type Manager struct {
 	// cachedMCPTools caches the list of tools in MCP format to avoid
 	// re-allocating and re-converting them on every request.
 	cachedMCPTools []*mcp.Tool
-	toolsMutex     sync.RWMutex
+	// cachedMCPToolsByService caches the list of tools in MCP format grouped by service ID.
+	cachedMCPToolsByService map[string][]*mcp.Tool
+	toolsMutex              sync.RWMutex
 
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
@@ -676,6 +684,7 @@ func (tm *Manager) AddTool(tool Tool) error {
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
 	tm.cachedMCPTools = nil
+	tm.cachedMCPToolsByService = nil
 	tm.toolsMutex.Unlock()
 
 	if tm.mcpServer != nil {
@@ -855,9 +864,16 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 
 	tm.toolsMutex.Lock()
 	defer tm.toolsMutex.Unlock()
-	// Double check
+
+	tm.ensureMCPToolsCache()
+	return tm.cachedMCPTools
+}
+
+// ensureMCPToolsCache ensures that cachedMCPTools and cachedMCPToolsByService are populated.
+// Caller MUST hold tm.toolsMutex.Lock().
+func (tm *Manager) ensureMCPToolsCache() {
 	if tm.cachedMCPTools != nil {
-		return tm.cachedMCPTools
+		return
 	}
 
 	tools := tm.cachedTools
@@ -868,22 +884,62 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	// Build MCPTools cache
 	// We perform this under the lock to ensure that the cachedMCPTools matches cachedTools.
 	mcpTools := make([]*mcp.Tool, 0, len(tools))
+	mcpToolsByService := make(map[string][]*mcp.Tool)
+
 	for _, t := range tools {
 		if mt := t.MCPTool(); mt != nil {
 			// Enforce namespacing for the tool list to match AddTool and mcpServer registration
-			if t.Tool().GetServiceId() != "" {
-				expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
+			serviceID := t.Tool().GetServiceId()
+			if serviceID != "" {
+				expectedName := serviceID + "." + t.Tool().GetName()
 				if mt.Name != expectedName {
 					// Update the name in the cached MCP tool
 					mt.Name = expectedName
 				}
 			}
 			mcpTools = append(mcpTools, mt)
+			mcpToolsByService[serviceID] = append(mcpToolsByService[serviceID], mt)
 		}
 	}
 
 	tm.cachedMCPTools = mcpTools
-	return mcpTools
+	tm.cachedMCPToolsByService = mcpToolsByService
+}
+
+// ListMCPToolsForServices returns registered tools in MCP format for the allowed services.
+//
+// allowedServices is a map of allowed service IDs.
+//
+// Returns the result.
+func (tm *Manager) ListMCPToolsForServices(allowedServices map[string]bool) []*mcp.Tool {
+	tm.toolsMutex.RLock()
+	if tm.cachedMCPToolsByService != nil {
+		defer tm.toolsMutex.RUnlock()
+		return tm.listMCPToolsFromCache(allowedServices)
+	}
+	tm.toolsMutex.RUnlock()
+
+	tm.toolsMutex.Lock()
+	defer tm.toolsMutex.Unlock()
+
+	tm.ensureMCPToolsCache()
+	return tm.listMCPToolsFromCache(allowedServices)
+}
+
+// listMCPToolsFromCache retrieves tools from the cache. Caller MUST ensure cache is populated
+// and (at least) read lock is held if accessing the map (though the map itself is replaced atomically
+// in ListMCPTools, the reference tm.cachedMCPToolsByService needs protection or ensuring it's not nil).
+// Actually, since we return a slice of pointers, and the map value is a slice, we should append to a new slice.
+func (tm *Manager) listMCPToolsFromCache(allowedServices map[string]bool) []*mcp.Tool {
+	// Optimization: Pre-allocate slice if possible? We don't know exact size easily without iterating.
+	// But we can guess or just let append handle it.
+	var result []*mcp.Tool
+	for serviceID := range allowedServices {
+		if tools, ok := tm.cachedMCPToolsByService[serviceID]; ok {
+			result = append(result, tools...)
+		}
+	}
+	return result
 }
 
 // ClearToolsForService removes all tools associated with a given service key from
@@ -928,6 +984,7 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 		tm.toolsMutex.Lock()
 		tm.cachedTools = nil
 		tm.cachedMCPTools = nil
+		tm.cachedMCPToolsByService = nil
 		tm.toolsMutex.Unlock()
 	}
 	log.Debug("Cleared tools for serviceID", "count", deletedCount)
