@@ -35,7 +35,8 @@ describe("ServiceHealthContext", () => {
 
         (global.fetch as any).mockResolvedValue({
             ok: true,
-            json: async () => mockTopology
+            json: async () => mockTopology,
+            text: async () => JSON.stringify(mockTopology)
         });
 
         const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -76,7 +77,8 @@ describe("ServiceHealthContext", () => {
 
         (global.fetch as any).mockResolvedValue({
             ok: true,
-            json: async () => mockTopology
+            json: async () => mockTopology,
+            text: async () => JSON.stringify(mockTopology)
         });
 
         vi.useFakeTimers();
@@ -110,7 +112,8 @@ describe("ServiceHealthContext", () => {
         const mockTopology2 = JSON.parse(JSON.stringify(mockTopology));
         (global.fetch as any).mockResolvedValue({
             ok: true,
-            json: async () => mockTopology2
+            json: async () => mockTopology2,
+            text: async () => JSON.stringify(mockTopology2)
         });
 
         // Advance timer to trigger poll
