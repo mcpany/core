@@ -392,14 +392,27 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 
 	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
 
-	history := m.GetTrafficHistory("")
+	history := m.GetTrafficHistory("", 1*time.Hour)
 	require.NotEmpty(t, history)
+	require.Len(t, history, 60)
 
 	lastPoint := history[len(history)-1]
 
 	assert.Equal(t, int64(1), lastPoint.Total)
 	assert.Equal(t, int64(0), lastPoint.Errors)
 	assert.Equal(t, int64(100), lastPoint.Latency)
+}
+
+func TestManager_GetTrafficHistory_24h(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
+
+	history := m.GetTrafficHistory("", 24*time.Hour)
+	require.NotEmpty(t, history)
+	require.Len(t, history, 24*60)
 }
 
 func TestManager_SeedTrafficHistory(t *testing.T) {

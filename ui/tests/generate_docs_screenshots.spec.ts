@@ -180,6 +180,17 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
+
+    // Test Time Range Filter Interaction
+    // Default should be "Last 1 Hour"
+    const trigger = page.getByRole('combobox').filter({ hasText: 'Last 1 Hour' });
+    if (await trigger.isVisible()) {
+        await trigger.click();
+        await page.waitForTimeout(500);
+        await page.getByRole('option', { name: 'Last 24 Hours' }).click();
+        await page.waitForTimeout(1000); // Wait for potential refetch
+        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_24h.png'), fullPage: true });
+    }
   });
 
   test('Services Screenshots', async ({ page }) => {

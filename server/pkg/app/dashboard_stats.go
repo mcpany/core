@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/topology"
@@ -117,7 +118,15 @@ func (a *Application) handleDashboardTraffic() http.HandlerFunc {
 		}
 
 		serviceID := r.URL.Query().Get("serviceId")
-		points := a.TopologyManager.GetTrafficHistory(serviceID)
+		rangeStr := r.URL.Query().Get("range")
+		duration := time.Hour // Default 1h
+		if rangeStr != "" {
+			if d, err := time.ParseDuration(rangeStr); err == nil {
+				duration = d
+			}
+		}
+
+		points := a.TopologyManager.GetTrafficHistory(serviceID, duration)
 
 		// Transform to simple JSON if needed, or just return as is.
 		// UI expects [{time: "00:00", total: 123}, ...]

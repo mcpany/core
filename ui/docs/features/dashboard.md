@@ -38,3 +38,13 @@ The **Quick Actions** widget provides one-click access to the most common manage
 - **Network Map**: Visualize the system topology.
 
 ![Quick Actions](../screenshots/dashboard_quick_actions.png)
+
+### 5. Time Range Filtering
+You can filter the dashboard metrics (such as Request Volume) by time range using the dropdown in the toolbar.
+Supported ranges:
+- Last 1 Hour (Default)
+- Last 6 Hours
+- Last 12 Hours
+- Last 24 Hours
+
+![Time Range Filter](../screenshots/dashboard_24h.png)

@@ -45,7 +45,7 @@ func TestManager_Filtering(t *testing.T) {
 	assert.Equal(t, 1.0, statsB.ErrorRate)
 
 	// Test Traffic History Filtering
-	historyA := m.GetTrafficHistory("service-a")
+	historyA := m.GetTrafficHistory("service-a", 1*time.Hour)
 	if assert.NotEmpty(t, historyA) {
 		lastPoint := historyA[len(historyA)-1]
 		assert.Equal(t, int64(1), lastPoint.Total)
@@ -53,7 +53,7 @@ func TestManager_Filtering(t *testing.T) {
 		assert.Equal(t, int64(100), lastPoint.Latency)
 	}
 
-	historyB := m.GetTrafficHistory("service-b")
+	historyB := m.GetTrafficHistory("service-b", 1*time.Hour)
 	if assert.NotEmpty(t, historyB) {
 		lastPoint := historyB[len(historyB)-1]
 		assert.Equal(t, int64(1), lastPoint.Total)
