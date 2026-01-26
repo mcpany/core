@@ -24,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
+import { ServiceInspector } from "@/components/services/editor/service-inspector";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -115,6 +116,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             <TabsTrigger value="policies">Policies</TabsTrigger>
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
                             <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
+                            {service.id && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
                         </TabsList>
                     </div>
 
@@ -473,6 +475,12 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                         <TabsContent value="diagnostics" className="space-y-4 mt-0">
                             <ServiceDiagnostics service={service} />
                         </TabsContent>
+
+                        {service.id && (
+                            <TabsContent value="inspector" className="space-y-4 mt-0">
+                                <ServiceInspector service={service} />
+                            </TabsContent>
+                        )}
                     </div>
                 </Tabs>
             </div>

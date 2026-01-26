@@ -749,4 +749,47 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
   });
 
+  test('Service Inspector Screenshots', async ({ page }) => {
+    // Override the mock to make postgres-primary an HTTP service (editable)
+    await page.route('**/api/v1/services*', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({
+                json: {
+                    services: [
+                        {
+                            id: 'postgres-primary',
+                            name: 'Primary DB',
+                            type: 'http',
+                            httpService: { address: 'https://api.example.com' },
+                            status: 'healthy',
+                            version: '1.0.0'
+                        }
+                    ]
+                }
+            });
+        } else {
+            await route.continue();
+        }
+    });
+
+    await page.goto('/services');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Open Actions Menu for the first service (postgres-primary)
+    await page.getByRole('button', { name: 'Open menu' }).first().click();
+    await page.getByText('Edit').click();
+
+    await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });
+
+    // Click Inspector Tab
+    await expect(page.getByRole('tab', { name: 'Inspector' })).toBeVisible();
+    await page.getByRole('tab', { name: 'Inspector' }).click();
+    await page.waitForTimeout(1000);
+
+    await expect(page.getByText('Live Traffic')).toBeVisible();
+
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_inspector.png') });
+  });
+
 });
