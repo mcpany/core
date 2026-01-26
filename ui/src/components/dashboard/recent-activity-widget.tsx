@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
  * Displays the most recent tool executions.
  * @returns The rendered component.
  */
-export function RecentActivityWidget() {
+export const RecentActivityWidget = memo(function RecentActivityWidget() {
   const [traces, setTraces] = useState<Trace[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +44,26 @@ export function RecentActivityWidget() {
 
   useEffect(() => {
     fetchTraces();
-    const interval = setInterval(fetchTraces, 5000);
-    return () => clearInterval(interval);
+    // Poll every 5 seconds
+    const interval = setInterval(() => {
+      // ⚡ Bolt Optimization: Stop polling when tab is hidden to save resources
+      if (!document.hidden) {
+        fetchTraces();
+      }
+    }, 5000);
+
+    // ⚡ Bolt Optimization: Resume immediately when tab becomes visible
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchTraces();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   const formatTime = (timestamp: string) => {
@@ -136,4 +154,4 @@ export function RecentActivityWidget() {
       </CardContent>
     </Card>
   );
-}
+});

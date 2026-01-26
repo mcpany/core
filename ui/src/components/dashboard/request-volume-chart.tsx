@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
@@ -13,7 +13,7 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
  * RequestVolumeChart component.
  * @returns The rendered component.
  */
-export function RequestVolumeChart() {
+export const RequestVolumeChart = memo(function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; total: number }[]>([]);
   const [mounted, setMounted] = useState(false);
   const { serviceId } = useDashboard();
@@ -31,8 +31,25 @@ export function RequestVolumeChart() {
     };
     fetchData();
     // Poll every 30 seconds
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      // ⚡ Bolt Optimization: Stop polling when tab is hidden to save resources
+      if (!document.hidden) {
+        fetchData();
+      }
+    }, 30000);
+
+    // ⚡ Bolt Optimization: Resume immediately when tab becomes visible
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchData();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [serviceId]);
 
   if (!mounted) return null;
@@ -86,4 +103,4 @@ export function RequestVolumeChart() {
       </CardContent>
     </Card>
   );
-}
+});

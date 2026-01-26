@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
@@ -21,7 +21,7 @@ interface ToolUsageStats {
  * TopToolsWidget displays a bar chart of the most frequently executed tools.
  * @returns The rendered TopToolsWidget component.
  */
-export function TopToolsWidget() {
+export const TopToolsWidget = memo(function TopToolsWidget() {
   const [data, setData] = useState<ToolUsageStats[]>([]);
   const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();
@@ -40,8 +40,25 @@ export function TopToolsWidget() {
 
     fetchData();
     // Refresh every 30s
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      // ⚡ Bolt Optimization: Stop polling when tab is hidden to save resources
+      if (!document.hidden) {
+        fetchData();
+      }
+    }, 30000);
+
+    // ⚡ Bolt Optimization: Resume immediately when tab becomes visible
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchData();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [serviceId]);
 
   if (loading && data.length === 0) {
@@ -113,4 +130,4 @@ export function TopToolsWidget() {
       </CardContent>
     </Card>
   );
-}
+});
