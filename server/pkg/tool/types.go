@@ -982,6 +982,9 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 			return nil, "", fmt.Errorf("failed to render input template: %w", err)
 		}
 		body = strings.NewReader(renderedBody)
+		if fastJSON.Valid([]byte(renderedBody)) {
+			contentType = contentTypeJSON
+		}
 	case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 		// Fallback for unexpected case
 		return nil, "", fmt.Errorf("input template configured but not cached (initialization error?)")
@@ -1432,6 +1435,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("failed to render input template: %w", err)
 			}
 			body = strings.NewReader(renderedBody)
+			if fastJSON.Valid([]byte(renderedBody)) {
+				contentType = contentTypeJSON
+			}
 		case t.inputTransformer != nil && t.inputTransformer.GetTemplate() != "": //nolint:staticcheck
 			// Fallback for unexpected case
 			return nil, fmt.Errorf("input template configured but not cached (initialization error?)")

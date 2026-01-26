@@ -100,8 +100,8 @@ func TestHTTPTool_PrepareBody_Template(t *testing.T) {
 
 	bodyReader, contentType, err := httpTool.prepareBody(ctx, inputs, "POST", "test-tool", nil, false)
 	assert.NoError(t, err)
-	// When using a template, contentType is not explicitly set by default logic unless detected.
-	assert.Equal(t, "", contentType)
+	// When using a template, contentType is set to application/json if the output is valid JSON.
+	assert.Equal(t, "application/json", contentType)
 
 	// Verify body content
 	buf := new(bytes.Buffer)
