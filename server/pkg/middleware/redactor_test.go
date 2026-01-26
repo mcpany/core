@@ -256,3 +256,23 @@ func TestRedactJSON_Empty(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, output)
 }
+
+func TestRedactor_Bug_CommentPreservation(t *testing.T) {
+	enabled := true
+	cfg := configv1.DLPConfig_builder{
+		Enabled: &enabled,
+	}.Build()
+	r := NewRedactor(cfg, slog.Default())
+
+	// Input contains a division operator (slash) followed by a comment containing a PII-like string.
+	// "user@example.com" should NOT be redacted because it is in a comment.
+	input := []byte(`{ "val": 1 / 1 // "user@example.com" }`)
+
+	output, err := r.RedactJSON(input)
+	assert.NoError(t, err)
+
+	outputStr := string(output)
+	// Expect the comment to be preserved AS IS.
+	assert.Contains(t, outputStr, "user@example.com")
+	assert.NotContains(t, outputStr, "***REDACTED***")
+}
