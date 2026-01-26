@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package main implements a simple webhook server for testing.
+// Package main implements the Webhook Sidecar server.
 package main
 
 import (
@@ -39,12 +39,34 @@ func main() {
 	}
 
 	reg := hooks.NewRegistry()
-	// Simulate loading from config
-	// In real world, we would read a directory of yaml/proto files
-	// For now, we manually register the known system hooks
-	reg.Register("/markdown", &hooks.MarkdownHandler{})
-	reg.Register("/truncate", &hooks.TruncateHandler{})
-	reg.Register("/paginate", &hooks.PaginateHandler{})
+
+	// Load configuration
+	configPath := os.Getenv("WEBHOOK_CONFIG_PATH")
+	if configPath != "" {
+		log.Printf("Loading config from %s", configPath)
+		cfg, err := LoadConfig(configPath)
+		if err != nil {
+			log.Fatalf("Failed to load config: %v", err)
+		}
+		for _, h := range cfg.Hooks {
+			switch h.Handler {
+			case "markdown":
+				reg.Register(h.Path, &hooks.MarkdownHandler{})
+			case "truncate":
+				reg.Register(h.Path, &hooks.TruncateHandler{})
+			case "paginate":
+				reg.Register(h.Path, &hooks.PaginateHandler{})
+			default:
+				log.Printf("Warning: Unknown handler type %q for path %q", h.Handler, h.Path)
+			}
+		}
+	} else {
+		// Default behavior for backward compatibility
+		log.Println("No WEBHOOK_CONFIG_PATH set, using default handlers.")
+		reg.Register("/markdown", &hooks.MarkdownHandler{})
+		reg.Register("/truncate", &hooks.TruncateHandler{})
+		reg.Register("/paginate", &hooks.PaginateHandler{})
+	}
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path

@@ -44,5 +44,5 @@ skills/
 
 ## Constraints
 
-- **Name**: 1-64 characters, lowercase alphanumeric and hyphens only. No start/end hyphen. No consecutive hyphens.
+- **Name**: Lowercase alphanumeric and hyphens only. No start/end hyphen. No consecutive hyphens. (Regex: `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
 - **Paths**: Asset paths must be relative to the skill directory and cannot contain parents (`..`).
