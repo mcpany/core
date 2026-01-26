@@ -116,7 +116,20 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 			},
 		}, nil
 	default:
-		return nil, fmt.Errorf("unsupported tool result type for dynamic resource: %T", result)
+		// Attempt to marshal any other type to JSON
+		data, err := json.Marshal(content)
+		if err != nil {
+			return nil, fmt.Errorf("unsupported tool result type for dynamic resource: %T, and failed to marshal to JSON: %w", result, err)
+		}
+		return &mcp.ReadResourceResult{
+			Contents: []*mcp.ResourceContents{
+				{
+					URI:      r.resource.URI,
+					Text:     string(data),
+					MIMEType: r.resource.MIMEType,
+				},
+			},
+		}, nil
 	}
 }
 

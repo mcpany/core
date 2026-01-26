@@ -243,6 +243,14 @@ type Application struct {
 	MetricsGatherer prometheus.Gatherer
 }
 
+// SetRunStdioModeFunc sets the function to be used for running the server in
+// stdio mode. This is useful for testing.
+//
+// f is the function to use.
+func (a *Application) SetRunStdioModeFunc(f func(ctx context.Context, mcpSrv *mcpserver.Server) error) {
+	a.runStdioModeFunc = f
+}
+
 // NewApplication creates a new Application with default dependencies.
 // It initializes the application with the standard implementation of the stdio
 // mode runner, making it ready to be configured and started.
