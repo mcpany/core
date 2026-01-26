@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -216,7 +217,19 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 		return client
 	}
 
+	dialer := util.NewSafeDialer()
+	// Allow overriding safety checks via environment variables (consistent with validation package)
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr || os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+		dialer.AllowLoopback = true
+		// Typically allowing local IPs implies allowing private IPs too, but let's be explicit
+		dialer.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+		dialer.AllowPrivate = true
+	}
+
 	transport := &http.Transport{
+		DialContext:         dialer.DialContext,
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 10,
 		IdleConnTimeout:     90 * time.Second,
