@@ -51,3 +51,29 @@ func TestToolIntegrityConfig(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "integrity check failed")
 }
+
+func TestCalculateConfigHash(t *testing.T) {
+	toolDef := &configv1.ToolDefinition{
+		Name:        proto.String("test-tool"),
+		Description: proto.String("A test tool"),
+	}
+
+	hash, err := CalculateConfigHash(toolDef)
+	require.NoError(t, err)
+	require.NotEmpty(t, hash)
+
+	// Verify determinism
+	hash2, err := CalculateConfigHash(toolDef)
+	require.NoError(t, err)
+	require.Equal(t, hash, hash2)
+
+	// Verify sensitivity
+	toolDef.Description = proto.String("Modified description")
+	hash3, err := CalculateConfigHash(toolDef)
+	require.NoError(t, err)
+	require.NotEqual(t, hash, hash3)
+}
+
+func TestVerifyConfigIntegrity(t *testing.T) {
+	require.NoError(t, VerifyConfigIntegrity(nil))
+}

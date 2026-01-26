@@ -66,7 +66,14 @@ func TestParseURLSegments(t *testing.T) {
 			name:     "Param with spaces",
 			template: "{{ param }}",
 			want: []urlSegment{
-				{isParam: true, value: " param "},
+				{isParam: true, value: "param"},
+			},
+		},
+		{
+			name:     "Param with lots of spaces",
+			template: "{{   param   }}",
+			want: []urlSegment{
+				{isParam: true, value: "param"},
 			},
 		},
 		{

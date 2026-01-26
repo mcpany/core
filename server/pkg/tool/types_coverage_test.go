@@ -156,6 +156,51 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 	assert.True(t, resMap["authed"].(bool))
 }
 
+func TestHTTPTool_Execute_WhitespaceParam(t *testing.T) {
+	t.Parallel()
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/users/123" {
+			_, _ = w.Write([]byte(`{"ok":true}`))
+		} else {
+			w.WriteHeader(404)
+		}
+	}))
+	defer s.Close()
+
+	pm := pool.NewManager()
+	factory := func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: s.Client()}, nil
+	}
+	p, _ := pool.New(factory, 1, 1, 1, 0, false)
+	pm.Register("svc", p)
+
+	// Tool definition with whitespace in placeholder
+	toolDef := &pb.Tool{
+		Name:                proto.String("whitespace-tool"),
+		UnderlyingMethodFqn: proto.String(fmt.Sprintf("GET %s/users/{{ id }}", s.URL)),
+	}
+
+	callDef := &configv1.HttpCallDefinition{
+		Parameters: []*configv1.HttpParameterMapping{
+			{
+				Schema: &configv1.ParameterSchema{Name: proto.String("id"), Type: configv1.ParameterType_STRING.Enum()},
+			},
+		},
+	}
+
+	ht := NewHTTPTool(toolDef, pm, "svc", nil, callDef, nil, nil, "")
+
+	req := &ExecutionRequest{
+		ToolName:   "whitespace-tool",
+		ToolInputs: json.RawMessage(`{"id":"123"}`),
+	}
+	res, err := ht.Execute(context.Background(), req)
+	assert.NoError(t, err)
+	resMap, ok := res.(map[string]any)
+	assert.True(t, ok)
+	assert.Equal(t, true, resMap["ok"])
+}
+
 type MockTypesAuthenticator struct {
 	AuthenticateFunc func(r *http.Request) error
 }
@@ -337,4 +382,86 @@ func TestOpenAPITool_Execute_QueryParam(t *testing.T) {
 	resMap, ok := res.(map[string]any)
 	assert.True(t, ok)
 	assert.Equal(t, true, resMap["found"])
+}
+
+func TestHTTPTool_MCPTool(t *testing.T) {
+	toolDef := &pb.Tool{
+		Name:        proto.String("http-tool"),
+		Description: proto.String("desc"),
+		ServiceId:   proto.String("svc"),
+	}
+	ht := NewHTTPTool(toolDef, nil, "svc", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+	mcpTool := ht.MCPTool()
+	require.NotNil(t, mcpTool)
+	require.Equal(t, "svc.http-tool", mcpTool.Name)
+	require.Equal(t, "desc", mcpTool.Description)
+
+	// Check caching
+	mcpTool2 := ht.MCPTool()
+	require.Same(t, mcpTool, mcpTool2)
+}
+
+func TestOpenAPITool_MCPTool(t *testing.T) {
+	t.Log("Running TestOpenAPITool_MCPTool")
+	toolDef := &pb.Tool{
+		Name:        proto.String("openapi-tool"),
+		Description: proto.String("desc"),
+		ServiceId:   proto.String("svc"),
+	}
+	ot := NewOpenAPITool(toolDef, nil, nil, "GET", "/", nil, &configv1.OpenAPICallDefinition{})
+	mcpTool := ot.MCPTool()
+	require.NotNil(t, mcpTool)
+	require.Equal(t, "svc.openapi-tool", mcpTool.Name)
+
+	// Check caching
+	mcpTool2 := ot.MCPTool()
+	require.Same(t, mcpTool, mcpTool2)
+}
+
+func TestMCPTool_MCPTool_Method(t *testing.T) {
+	toolDef := &pb.Tool{
+		Name:        proto.String("mcp-tool"),
+		Description: proto.String("desc"),
+		ServiceId:   proto.String("svc"),
+	}
+	mt := NewMCPTool(toolDef, nil, &configv1.MCPCallDefinition{})
+	mcpTool := mt.MCPTool()
+	require.NotNil(t, mcpTool)
+	require.Equal(t, "svc.mcp-tool", mcpTool.Name)
+
+	// Check caching
+	mcpTool2 := mt.MCPTool()
+	require.Same(t, mcpTool, mcpTool2)
+}
+
+func TestLocalCommandTool_MCPTool(t *testing.T) {
+	toolDef := &pb.Tool{
+		Name:        proto.String("cmd-tool"),
+		Description: proto.String("desc"),
+		ServiceId:   proto.String("svc"),
+	}
+	ct := NewLocalCommandTool(toolDef, &configv1.CommandLineUpstreamService{}, &configv1.CommandLineCallDefinition{}, nil, "")
+	mcpTool := ct.MCPTool()
+	require.NotNil(t, mcpTool)
+	require.Equal(t, "svc.cmd-tool", mcpTool.Name)
+
+	// Check caching
+	mcpTool2 := ct.MCPTool()
+	require.Same(t, mcpTool, mcpTool2)
+}
+
+func TestCommandTool_MCPTool(t *testing.T) {
+	toolDef := &pb.Tool{
+		Name:        proto.String("cmd-tool-2"),
+		Description: proto.String("desc"),
+		ServiceId:   proto.String("svc"),
+	}
+	ct := NewCommandTool(toolDef, &configv1.CommandLineUpstreamService{}, &configv1.CommandLineCallDefinition{}, nil, "")
+	mcpTool := ct.MCPTool()
+	require.NotNil(t, mcpTool)
+	require.Equal(t, "svc.cmd-tool-2", mcpTool.Name)
+
+	// Check caching
+	mcpTool2 := ct.MCPTool()
+	require.Same(t, mcpTool, mcpTool2)
 }

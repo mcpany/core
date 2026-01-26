@@ -437,7 +437,7 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		}
 		absoluteEnd := absoluteIdx + 2 + end
 
-		key := input[absoluteIdx+2 : absoluteEnd]
+		key := strings.TrimSpace(input[absoluteIdx+2 : absoluteEnd])
 		v, ok := params[key]
 		if !ok {
 			sb.WriteString(input[absoluteIdx : absoluteEnd+2])

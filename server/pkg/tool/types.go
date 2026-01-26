@@ -486,10 +486,12 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	pathStr := u.EscapedPath()
 	pathStr = strings.ReplaceAll(pathStr, "%7B", "{")
 	pathStr = strings.ReplaceAll(pathStr, "%7D", "}")
+	pathStr = strings.ReplaceAll(pathStr, "%20", " ")
 
 	queryStr := u.RawQuery
 	queryStr = strings.ReplaceAll(queryStr, "%7B", "{")
 	queryStr = strings.ReplaceAll(queryStr, "%7D", "}")
+	queryStr = strings.ReplaceAll(queryStr, "%20", " ")
 
 	t.pathSegments = parseURLSegments(pathStr)
 	t.querySegments = parseURLSegments(queryStr)
@@ -500,13 +502,19 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
 			name := schema.GetName()
-			placeholder := "{{" + name + "}}"
 
-			if strings.Contains(pathStr, placeholder) {
-				t.paramInPath[i] = true
+			for _, seg := range t.pathSegments {
+				if seg.isParam && seg.value == name {
+					t.paramInPath[i] = true
+					break
+				}
 			}
-			if strings.Contains(queryStr, placeholder) {
-				t.paramInQuery[i] = true
+
+			for _, seg := range t.querySegments {
+				if seg.isParam && seg.value == name {
+					t.paramInQuery[i] = true
+					break
+				}
 			}
 		}
 	}
@@ -934,7 +942,7 @@ func parseURLSegments(template string) []urlSegment {
 			continue
 		}
 
-		paramName := subparts[0]
+		paramName := strings.TrimSpace(subparts[0])
 		segments = append(segments, urlSegment{isParam: true, value: paramName})
 		if len(subparts) > 1 && subparts[1] != "" {
 			segments = append(segments, urlSegment{isParam: false, value: subparts[1]})

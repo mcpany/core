@@ -495,6 +495,12 @@ func TestReplaceURLPath(t *testing.T) {
 			params:   map[string]interface{}{"userID": "123"},
 			expected: "/users/{{userID",
 		},
+		{
+			name:     "replace param with whitespace",
+			urlPath:  "/api/v1/users/{{ userID }}",
+			params:   map[string]interface{}{"userID": "123"},
+			expected: "/api/v1/users/123",
+		},
 	}
 
 	for _, tt := range tests {
