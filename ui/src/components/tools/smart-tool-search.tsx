@@ -26,6 +26,17 @@ interface SmartToolSearchProps {
   onToolSelect: (tool: ToolDefinition) => void;
 }
 
+/**
+ * A search component that provides autocomplete for finding and selecting tools.
+ * It also displays recently used tools for quick access.
+ *
+ * @param props - The component props.
+ * @param props.tools - The list of available tools to search.
+ * @param props.searchQuery - The current search query string.
+ * @param props.setSearchQuery - Callback to update the search query.
+ * @param props.onToolSelect - Callback invoked when a tool is selected.
+ * @returns The rendered search component.
+ */
 export function SmartToolSearch({
   tools,
   searchQuery,
