@@ -49,7 +49,9 @@ export function middleware(request: NextRequest) {
     "worker-src 'self' blob:", // Added for Monaco Editor workers
     "frame-ancestors 'none'",
     "object-src 'none'",
-    "base-uri 'self'"
+    "base-uri 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests"
   ].join('; ');
 
   response.headers.set('Content-Security-Policy', csp);
