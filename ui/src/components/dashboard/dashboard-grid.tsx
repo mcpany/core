@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { useUser } from "@/components/user-context";
 
 export interface WidgetInstance {
     instanceId: string;
@@ -56,53 +57,84 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * @returns The rendered component.
  */
 export function DashboardGrid() {
+    const { user, updatePreferences } = useUser();
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!user) return;
+
+        // Priority 1: Remote User Preferences
+        const remoteLayout = user.preferences?.["dashboard-layout"];
+        if (remoteLayout) {
+            try {
+                const parsed = JSON.parse(remoteLayout);
+                if (validateAndSetWidgets(parsed)) return;
+            } catch (e) {
+                console.error("Failed to parse remote dashboard layout", e);
+            }
+        }
+
+        // Priority 2: Local Storage (Legacy/Fallback)
         const saved = localStorage.getItem("dashboard-layout");
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
-                        instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
-                        title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
-                        size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
-                        hidden: w.hidden ?? false
-                    }));
-
-                    // Filter out any invalid types
-                    const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
-                        setWidgets(DEFAULT_LAYOUT);
-                    } else {
-                        setWidgets(validMigrated);
-                    }
-                } else {
-                    // Case 2: Already in new format
-                    setWidgets(parsed);
-                }
+                if (validateAndSetWidgets(parsed)) return;
             } catch (e) {
-                console.error("Failed to load dashboard layout", e);
-                setWidgets(DEFAULT_LAYOUT);
+                console.error("Failed to load dashboard layout from local storage", e);
             }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
         }
-    }, []);
+
+        // Priority 3: Default Layout
+        if (widgets.length === 0) {
+             setWidgets(DEFAULT_LAYOUT);
+        }
+
+    }, [user]); // Re-run when user loads (preferences might be fetched async)
+
+
+    const validateAndSetWidgets = (parsed: any[]): boolean => {
+         // Migration Logic
+        // Case 1: Legacy format (DashboardWidget[]) where id matches type
+        if (parsed.length > 0 && !parsed[0].instanceId) {
+            const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                instanceId: crypto.randomUUID(),
+                type: w.id, // In legacy, id was effectively the type
+                title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
+                size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
+                hidden: w.hidden ?? false
+            }));
+
+            // Filter out any invalid types
+            const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
+
+            if (validMigrated.length > 0) {
+                setWidgets(validMigrated);
+                return true;
+            }
+        } else if (Array.isArray(parsed) && parsed.length > 0) {
+            // Case 2: Already in new format
+             setWidgets(parsed);
+             return true;
+        }
+        return false;
+    };
+
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
-        localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
+        const json = JSON.stringify(newWidgets);
+
+        // Save locally for offline/fallback
+        localStorage.setItem("dashboard-layout", json);
+
+        // Save remotely
+        updatePreferences({ "dashboard-layout": json });
     };
 
     const onDragEnd = (result: DropResult) => {

@@ -972,6 +972,17 @@ export const apiClient = {
     // User Management
 
     /**
+     * Gets a single user by ID.
+     * @param id The ID of the user.
+     * @returns A promise that resolves to the user response.
+     */
+    getUser: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`);
+        if (!res.ok) throw new Error('Failed to get user');
+        return res.json();
+    },
+
+    /**
      * Lists all users.
      * @returns A promise that resolves to a list of users.
      */

@@ -34,7 +34,9 @@ type User struct {
 	// The list of profile IDs this user has access to.
 	ProfileIds []string `protobuf:"bytes,3,rep,name=profile_ids" json:"profile_ids,omitempty"`
 	// The list of roles assigned to the user.
-	Roles         []string `protobuf:"bytes,4,rep,name=roles" json:"roles,omitempty"`
+	Roles []string `protobuf:"bytes,4,rep,name=roles" json:"roles,omitempty"`
+	// User preferences (e.g., dashboard layout, theme settings).
+	Preferences   map[string]string `protobuf:"bytes,5,rep,name=preferences" json:"preferences,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -92,6 +94,13 @@ func (x *User) GetRoles() []string {
 	return nil
 }
 
+func (x *User) GetPreferences() map[string]string {
+	if x != nil {
+		return x.Preferences
+	}
+	return nil
+}
+
 func (x *User) SetId(v string) {
 	x.Id = &v
 }
@@ -106,6 +115,10 @@ func (x *User) SetProfileIds(v []string) {
 
 func (x *User) SetRoles(v []string) {
 	x.Roles = v
+}
+
+func (x *User) SetPreferences(v map[string]string) {
+	x.Preferences = v
 }
 
 func (x *User) HasId() bool {
@@ -141,6 +154,8 @@ type User_builder struct {
 	ProfileIds []string
 	// The list of roles assigned to the user.
 	Roles []string
+	// User preferences (e.g., dashboard layout, theme settings).
+	Preferences map[string]string
 }
 
 func (b0 User_builder) Build() *User {
@@ -151,6 +166,7 @@ func (b0 User_builder) Build() *User {
 	x.Authentication = b.Authentication
 	x.ProfileIds = b.ProfileIds
 	x.Roles = b.Roles
+	x.Preferences = b.Preferences
 	return m0
 }
 
@@ -158,25 +174,31 @@ var File_proto_config_v1_user_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"\x98\x01\n" +
+	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"\xa3\x02\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05rolesB3B\tUserProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x05roles\x18\x04 \x03(\tR\x05roles\x12I\n" +
+	"\vpreferences\x18\x05 \x03(\v2'.mcpany.config.v1.User.PreferencesEntryR\vpreferences\x1a>\n" +
+	"\x10PreferencesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B3B\tUserProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
-var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_config_v1_user_proto_goTypes = []any{
 	(*User)(nil),           // 0: mcpany.config.v1.User
-	(*Authentication)(nil), // 1: mcpany.config.v1.Authentication
+	nil,                    // 1: mcpany.config.v1.User.PreferencesEntry
+	(*Authentication)(nil), // 2: mcpany.config.v1.Authentication
 }
 var file_proto_config_v1_user_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.Authentication
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 0: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.Authentication
+	1, // 1: mcpany.config.v1.User.preferences:type_name -> mcpany.config.v1.User.PreferencesEntry
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_user_proto_init() }
@@ -191,7 +213,7 @@ func file_proto_config_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_user_proto_rawDesc), len(file_proto_config_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
