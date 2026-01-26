@@ -189,6 +189,9 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			if cfg.APIKey() == "" {
 				log.Warn("⚠️  Running without a global API key. This is NOT recommended for production deployment.")
 			}
+			if cfg.APIKey() == "CHANGE_ME_IN_PRODUCTION" {
+				log.Error("🚨 CRITICAL SECURITY WARNING: API Key is set to default 'CHANGE_ME_IN_PRODUCTION'. Change this immediately!")
+			}
 
 			// Track 1: Friction Fighter - Strict Mode
 			strict, _ := cmd.Flags().GetBool("strict")

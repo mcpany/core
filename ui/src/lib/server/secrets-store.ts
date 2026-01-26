@@ -54,8 +54,20 @@ function decrypt(encryptedValue: string, iv: string, authTag: string): string {
 }
 
 // Initial mock data
-const secret1 = encrypt("sk-mock-openai-key-value-must-be-replaced");
-const secret2 = encrypt("AKIA-mock-aws-key-value-must-be-replaced");
+const defaultOpenAIKey = "sk-mock-openai-key-value-must-be-replaced";
+const defaultAWSKey = "AKIA-mock-aws-key-value-must-be-replaced";
+
+const openAIKey = process.env.MOCK_OPENAI_API_KEY || defaultOpenAIKey;
+const awsKey = process.env.MOCK_AWS_ACCESS_KEY_ID || defaultAWSKey;
+
+if (openAIKey === defaultOpenAIKey || awsKey === defaultAWSKey) {
+    if (process.env.NODE_ENV === 'production') {
+        console.warn("🚨 SECURITY WARNING: Using default mock secrets in production environment! Set MOCK_OPENAI_API_KEY and MOCK_AWS_ACCESS_KEY_ID.");
+    }
+}
+
+const secret1 = encrypt(openAIKey);
+const secret2 = encrypt(awsKey);
 
 let mockSecrets: Secret[] = [
     {
