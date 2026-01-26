@@ -127,6 +127,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 	// Enable loopback for reachability checks
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+	t.Setenv("MCPANY_ALLOW_UNSAFE_CONFIG", "true")
 
 	app := &Application{}
 	handler := app.handleServiceValidate()

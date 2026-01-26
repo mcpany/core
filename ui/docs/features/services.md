@@ -68,3 +68,7 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 
 - **Environment Variables**: Define key-value pairs injected into the process (for CMD) or sent as metadata. Supports `secrets.*` references.
 - **Health Checks**: The system periodically pings the `health_check_endpoint` (default `/health`) to update the status.
+- **Active Validation**: Before saving a configuration, you can use the "Validate" button to perform a live connection test.
+  - **MCP Services**: Performs a full protocol handshake (initialization) to ensure the server binary is compatible and responsive.
+  - **HTTP Services**: Verifies TCP reachability and basic connectivity.
+  - **Security**: Validation of potentially unsafe services (e.g., local command execution) is restricted to administrators.

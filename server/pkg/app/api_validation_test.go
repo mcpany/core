@@ -18,6 +18,7 @@ import (
 )
 
 func TestHandleServiceValidate_Filesystem(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_UNSAFE_CONFIG", "true")
 	app := &Application{}
 	tmpDir := t.TempDir()
 
@@ -68,6 +69,7 @@ func TestHandleServiceValidate_Filesystem(t *testing.T) {
 }
 
 func TestHandleServiceValidate_CommandLine(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_UNSAFE_CONFIG", "true")
 	app := &Application{}
 
 	// Assuming "ls" (or "dir" on windows) exists.
@@ -128,4 +130,74 @@ func TestHandleServiceValidate_CommandLine(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestHandleServiceValidate_McpStdio(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_UNSAFE_CONFIG", "true")
+	app := &Application{}
+
+	// Test case: Invalid command (should fail handshake because it doesn't speak MCP)
+	// We use "echo hello" which exits immediately or prints "hello" and not JSON-RPC.
+	echoCmd := "echo"
+	if os.PathSeparator == '\\' {
+		echoCmd = "cmd" // cmd /c echo hello ? Too complex for cross platform, just rely on echo usually available or fails command check
+	}
+
+	// Case 1: Bad Protocol (Handshake fail)
+	t.Run("Handshake Fail", func(t *testing.T) {
+		svc := &configv1.UpstreamServiceConfig{
+			Name: proto.String("mcp-service-invalid"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+				McpService: &configv1.McpUpstreamService{
+					ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+						StdioConnection: &configv1.McpStdioConnection{
+							Command: proto.String(echoCmd),
+							Args:    []string{"hello"},
+						},
+					},
+				},
+			},
+		}
+		body, _ := protojson.Marshal(svc)
+		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+		app.handleServiceValidate().ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Contains(t, w.Body.String(), `"valid":false`)
+		// It will fail because "echo hello" isn't a valid MCP server.
+		// Error might be "process exited" or "decode error".
+		// We just check it's invalid and has some error detail.
+		assert.Contains(t, w.Body.String(), "error")
+	})
+
+	// Case 2: Non-existent Command
+	t.Run("Non-existent Command", func(t *testing.T) {
+		svc := &configv1.UpstreamServiceConfig{
+			Name: proto.String("mcp-service-missing"),
+			ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+				McpService: &configv1.McpUpstreamService{
+					ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+						StdioConnection: &configv1.McpStdioConnection{
+							Command: proto.String("nonexistent_command_xyz_123"),
+						},
+					},
+				},
+			},
+		}
+		body, _ := protojson.Marshal(svc)
+		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		w := httptest.NewRecorder()
+		app.handleServiceValidate().ServeHTTP(w, req)
+
+		// Static validation might catch this and return 400
+		if w.Code == http.StatusBadRequest {
+			assert.Contains(t, w.Body.String(), `"valid":false`)
+			// Error message from validator might vary but usually indicates failure
+		} else {
+			assert.Equal(t, http.StatusOK, w.Code)
+			assert.Contains(t, w.Body.String(), `"valid":false`)
+			assert.Contains(t, w.Body.String(), "not found")
+		}
+	})
 }

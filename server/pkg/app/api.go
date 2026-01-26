@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
+	mcpupstream "github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -328,6 +329,26 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
+		// Security Check: Block unsafe configurations unless admin or explicitly allowed
+		if isUnsafeConfig(&svc) {
+			allow := false
+			if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
+				allow = true
+			} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				allow = true
+			}
+
+			if !allow {
+				w.Header().Set("Content-Type", "application/json")
+				_ = json.NewEncoder(w).Encode(map[string]any{
+					"valid":   false,
+					"error":   "Security Restriction: Validation of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins.",
+					"details": "Ensure you have admin privileges or MCPANY_ALLOW_UNSAFE_CONFIG is enabled.",
+				})
+				return
+			}
+		}
+
 		// 2. Connectivity / Health Check
 		var checkErr error
 		var checkDetails string
@@ -356,10 +377,9 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			// MCP Remote check (if stdio, check command; if http, check url)
 			switch mcpSvc.WhichConnectionType() {
 			case configv1.McpUpstreamService_StdioConnection_case:
-				stdio := mcpSvc.GetStdioConnection()
-				if stdio != nil {
-					checkErr = checkCommandAvailability(stdio.GetCommand(), stdio.GetWorkingDirectory())
-					checkDetails = "MCP Stdio command check failed"
+				if err := verifyMcpHandshake(r.Context(), mcpSvc); err != nil {
+					checkErr = err
+					checkDetails = "MCP handshake failed"
 				}
 			case configv1.McpUpstreamService_HttpConnection_case:
 				httpConn := mcpSvc.GetHttpConnection()
@@ -1222,4 +1242,61 @@ func isUnsafeConfig(service *configv1.UpstreamServiceConfig) bool {
 		return true
 	}
 	return false
+}
+
+func verifyMcpHandshake(ctx context.Context, mcpSvc *configv1.McpUpstreamService) error {
+	if mcpSvc.WhichConnectionType() != configv1.McpUpstreamService_StdioConnection_case {
+		return nil
+	}
+
+	stdioConfig := mcpSvc.GetStdioConnection()
+	if stdioConfig == nil {
+		return fmt.Errorf("stdio configuration is missing")
+	}
+
+	cmd := stdioConfig.GetCommand()
+	args := stdioConfig.GetArgs()
+	env := stdioConfig.GetEnv()
+
+	// Validate command existence first (fast fail)
+	if err := checkCommandAvailability(cmd, stdioConfig.GetWorkingDirectory()); err != nil {
+		return err
+	}
+
+	// Create Command
+	//nolint:gosec // Purposeful execution of user-defined command for validation
+	cmdExec := exec.CommandContext(ctx, cmd, args...)
+	if stdioConfig.GetWorkingDirectory() != "" {
+		cmdExec.Dir = stdioConfig.GetWorkingDirectory()
+	}
+	// Environment
+	if len(env) > 0 {
+		cmdExec.Env = os.Environ()
+		for k, v := range env {
+			cmdExec.Env = append(cmdExec.Env, fmt.Sprintf("%s=%s", k, v))
+		}
+	}
+
+	transport := &mcpupstream.StdioTransport{
+		Command: cmdExec,
+	}
+
+	// Create Client
+	client := mcp.NewClient(&mcp.Implementation{
+		Name:    "mcp-any-validator",
+		Version: "1.0.0",
+	}, nil)
+
+	// Start
+	// Create a sub-context with timeout for safety
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	conn, err := client.Connect(ctx, transport, nil)
+	if err != nil {
+		return fmt.Errorf("MCP handshake failed: %w", err)
+	}
+	defer func() { _ = conn.Close() }()
+
+	return nil
 }
