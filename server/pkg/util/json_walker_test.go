@@ -139,6 +139,40 @@ func TestWalkJSONStrings(t *testing.T) {
 			},
 			expected: `{ /* "ignore" */ "key": "REPLACED" }`,
 		},
+		{
+			name:  "comment with preceding slash (bug fix)",
+			input: `{ "k": 1 / 1 // "hidden" }`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `{ "k": 1 / 1 // "hidden" }`,
+		},
+		{
+			name:  "comment with preceding slash and visible string",
+			input: `{ "k": 1 / 1 // "hidden"
+"visible"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `{ "k": 1 / 1 // "hidden"
+"REPLACED"}`,
+		},
+		{
+			name:  "multiple slashes before comment",
+			input: ` / / / // "hidden"`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: ` / / / // "hidden"`,
+		},
+		{
+			name:  "slash before block comment",
+			input: ` / /* "hidden" */ "visible"`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: ` / /* "hidden" */ "REPLACED"`,
+		},
 	}
 
 	for _, tt := range tests {
