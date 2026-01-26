@@ -21,8 +21,7 @@ import {
 } from "lucide-react"
 
 import { useSearchParams } from "next/navigation"
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import dynamic from "next/dynamic";
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -37,6 +36,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+
+// ⚡ Bolt Optimization: Lazy load the syntax highlighter.
+// react-syntax-highlighter is a heavy dependency. By lazy loading it only when a user
+// expands a JSON log, we significantly reduce the initial bundle size of the LogStream.
+const JsonViewer = dynamic(() => import("./json-viewer"), {
+  loading: () => (
+    <div className="p-4 text-xs text-muted-foreground bg-[#1e1e1e] rounded-lg border border-white/10">
+      Loading highlighter...
+    </div>
+  ),
+  ssr: false,
+});
 
 /**
  * LogLevel type definition.
@@ -213,21 +224,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
             {isExpanded && isPotentialJson && (
               <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
                 {jsonContent ? (
-                  <SyntaxHighlighter
-                    language="json"
-                    style={vscDarkPlus}
-                    customStyle={{
-                      margin: 0,
-                      padding: '1rem',
-                      borderRadius: '0.5rem',
-                      backgroundColor: '#1e1e1e', // Dark background
-                      fontSize: '12px',
-                      lineHeight: '1.5'
-                    }}
-                    wrapLongLines={true}
-                  >
-                    {JSON.stringify(jsonContent, null, 2)}
-                  </SyntaxHighlighter>
+                  <JsonViewer data={jsonContent} />
                 ) : (
                   <div className="p-2 bg-muted/20 rounded border border-white/10 text-muted-foreground italic">
                     Invalid JSON
