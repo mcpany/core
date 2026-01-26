@@ -59,6 +59,24 @@ export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
     },
   },
   {
+    id: "slack",
+    name: "Slack",
+    description: "Interact with Slack channels and messages.",
+    icon: "Slack",
+    config: {
+      command: "npx",
+      args: ["-y", "@modelcontextprotocol/server-slack"],
+      envVars: [
+        {
+          name: "SLACK_BOT_TOKEN",
+          description: "Slack Bot Token (xoxb-...)",
+          required: true,
+          type: "password",
+        },
+      ],
+    },
+  },
+  {
     id: "github",
     name: "GitHub",
     description: "Access GitHub repositories, issues, and pull requests.",

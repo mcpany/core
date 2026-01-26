@@ -4,7 +4,7 @@
  */
 
 import { UpstreamServiceConfig } from "@/lib/types";
-import { Database, FileText, Github, Globe, Server, Activity, Cloud } from "lucide-react";
+import { Database, FileText, Github, Globe, Server, Activity, Cloud, Slack } from "lucide-react";
 
 /**
  * A template for creating a new service configuration.
@@ -249,5 +249,30 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     },
+  },
+  {
+    id: "slack",
+    name: "Slack",
+    description: "Interact with Slack channels and messages.",
+    icon: Slack,
+    config: {
+      name: "slack-integration",
+      commandLineService: {
+        command: "npx -y @modelcontextprotocol/server-slack",
+        env: {
+            "SLACK_BOT_TOKEN": ""
+        },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    },
+    fields: [
+      {
+        name: "token",
+        label: "Slack Bot Token",
+        placeholder: "xoxb-...",
+        key: "commandLineService.env.SLACK_BOT_TOKEN",
+        type: "password"
+      }
+    ]
   },
 ];

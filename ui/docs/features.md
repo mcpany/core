@@ -19,6 +19,7 @@ Detailed documentation for the MCP Any user interface capabilities.
 - [Webhooks](features/webhooks.md) - External event notifications.
 - [Secrets](features/secrets.md) - Secure credential management.
 - [Authentication](features/auth.md) - User and access management.
+- [Slack Integration](features/slack_integration.md) - Connect to Slack workspaces.
 
 ## Discovery
 - [Marketplace](features/marketplace.md) - Pre-configured service templates.
