@@ -237,6 +237,44 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
+// Log writes an audit entry to the audit log.
+// It populates UserID and ProfileID from the context if they are missing.
+//
+// ctx is the context for the request.
+// entry is the entry.
+//
+// Returns an error if the operation fails.
+func (m *AuditMiddleware) Log(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	auditConfig := m.config
+	store := m.store
+	m.mu.RUnlock()
+
+	if auditConfig == nil || !auditConfig.GetEnabled() {
+		return nil
+	}
+
+	if entry.Timestamp.IsZero() {
+		entry.Timestamp = time.Now()
+	}
+
+	if entry.UserID == "" {
+		if userID, ok := auth.UserFromContext(ctx); ok {
+			entry.UserID = userID
+		}
+	}
+	if entry.ProfileID == "" {
+		if profileID, ok := auth.ProfileIDFromContext(ctx); ok {
+			entry.ProfileID = profileID
+		}
+	}
+
+	if store != nil {
+		return store.Write(ctx, entry)
+	}
+	return nil
+}
+
 // Read reads audit entries from the underlying store.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()

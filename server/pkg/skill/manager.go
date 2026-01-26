@@ -165,7 +165,10 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	// validate path to prevent traversal
 	// filepath.Clean removes ..
 	cleanPath := filepath.Clean(relPath)
-	if strings.Contains(cleanPath, "..") || strings.HasPrefix(cleanPath, "/") {
+	if filepath.IsAbs(cleanPath) {
+		return fmt.Errorf("invalid asset path: %s (absolute paths not allowed)", relPath)
+	}
+	if strings.Contains(cleanPath, "..") {
 		return fmt.Errorf("invalid asset path: %s", relPath)
 	}
 

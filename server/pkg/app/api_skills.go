@@ -4,10 +4,13 @@
 package app
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
@@ -36,17 +39,56 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
+		// Limit the request body size to 10MB to prevent DoS attacks
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
+			if strings.Contains(err.Error(), "request body too large") {
+				http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+				return
+			}
 			http.Error(w, "Failed to read body", http.StatusBadRequest)
 			return
 		}
 
 		if err := a.SkillManager.SaveAsset(skillName, assetPath, body); err != nil {
 			logging.GetLogger().Error("Failed to save asset", "skill", skillName, "path", assetPath, "error", err)
+
+			// Audit log failure
+			if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+				args := map[string]string{
+					"skill": skillName,
+					"path":  assetPath,
+				}
+				argsBytes, _ := json.Marshal(args)
+				entry := audit.Entry{
+					ToolName:  "SkillAssetUpload",
+					Arguments: json.RawMessage(argsBytes),
+					Error:     err.Error(),
+				}
+				_ = a.standardMiddlewares.Audit.Log(r.Context(), entry)
+			}
+
 			// Sentinel Security: Return generic error to avoid leaking path information or internal details
 			http.Error(w, "Failed to save asset", http.StatusInternalServerError)
 			return
+		}
+
+		// Audit log success
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			args := map[string]string{
+				"skill": skillName,
+				"path":  assetPath,
+				"size":  fmt.Sprintf("%d", len(body)),
+			}
+			argsBytes, _ := json.Marshal(args)
+			entry := audit.Entry{
+				ToolName:  "SkillAssetUpload",
+				Arguments: json.RawMessage(argsBytes),
+				Result:    "success",
+			}
+			_ = a.standardMiddlewares.Audit.Log(r.Context(), entry)
 		}
 
 		w.WriteHeader(http.StatusOK)
