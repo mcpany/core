@@ -265,11 +265,12 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		}
 
 		var secretVal string
-		if result.SecretString != nil {
+		switch {
+		case result.SecretString != nil:
 			secretVal = *result.SecretString
-		} else if result.SecretBinary != nil {
+		case result.SecretBinary != nil:
 			secretVal = string(result.SecretBinary)
-		} else {
+		default:
 			return "", fmt.Errorf("secret value is not a string or binary")
 		}
 
