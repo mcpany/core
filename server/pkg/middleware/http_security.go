@@ -22,7 +22,7 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("X-XSS-Protection", "0")
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=()")
+		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=(), fullscreen=()")
 
 		// Additional Security Headers
 		// COOP and COEP are commented out to avoid breaking external resource loading (e.g. Google Fonts)
@@ -30,9 +30,10 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		// w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
 		// w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
 		w.Header().Set("Cross-Origin-Resource-Policy", "same-origin")
+		w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
 
 		// Prevent information leakage about the server
-		w.Header().Set("Server", "")
+		w.Header().Del("Server")
 
 		// Check if the request is for the UI
 		if strings.HasPrefix(r.URL.Path, "/ui/") {
