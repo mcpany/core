@@ -13,6 +13,19 @@ Previously, users had to manually encode files to base64 strings and paste them 
 3.  **Automatic Encoding**: The selected file is automatically read and converted to a base64 string.
 4.  **Submission**: The base64 string is populated in the form data and sent to the tool execution API.
 
+## Drag and Drop Support
+
+To further streamline the workflow, you can now drag and drop a file anywhere onto the tool configuration form.
+
+### How to use
+
+1.  Open a tool that accepts file inputs.
+2.  Drag a file from your operating system into the browser window.
+3.  An overlay "Drop File Here" will appear.
+4.  Drop the file to automatically fill the matching file input field.
+
+![Drag and Drop Overlay](../screenshots/playground_drag_drop.png)
+
 ## Example Schema
 
 ```json
@@ -31,4 +44,4 @@ Previously, users had to manually encode files to base64 strings and paste them 
 
 ## Screenshot
 
-![Native File Upload](native_file_upload_playground.png)
+![Native File Upload](../screenshots/playground_form_filled.png)

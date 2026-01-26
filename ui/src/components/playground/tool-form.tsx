@@ -15,6 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
+import { findFileFieldPath, setDeepValue } from "@/lib/schema-utils";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { Upload } from "lucide-react";
 
 interface ToolFormProps {
   tool: ToolDefinition;
@@ -32,6 +36,8 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   const [jsonInput, setJsonInput] = useState<string>("{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [mode, setMode] = useState<"form" | "json" | "schema">("form");
+  const [isDragging, setIsDragging] = useState(false);
+  const { toast } = useToast();
 
   // Initialize AJV and compile schema
   const validate = useMemo(() => {
@@ -196,8 +202,80 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   // removed errors from deps to avoid infinite loop if setErrors is called.
   // actually including formData/jsonInput is enough.
 
+  const handleDragOver = (e: React.DragEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (findFileFieldPath(tool.inputSchema)) {
+        setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Check if we are actually leaving the form (not just entering a child)
+    if (e.currentTarget.contains(e.relatedTarget as Node)) {
+        return;
+    }
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    const path = findFileFieldPath(tool.inputSchema);
+    if (!path) {
+        toast({
+            title: "No file input found",
+            description: "This tool does not accept file inputs.",
+            variant: "destructive",
+        });
+        return;
+    }
+
+    // Read file
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const result = event.target?.result as string;
+        const base64 = result.split(",")[1];
+
+        // Update form data
+        const newData = setDeepValue(formData, path, base64);
+        setFormData(newData);
+
+        // Update JSON input if needed
+        if (mode === "json") {
+            setJsonInput(JSON.stringify(newData, null, 2));
+        }
+
+        toast({
+            title: "File Loaded",
+            description: `File '${file.name}' loaded into '${path}'.`,
+        });
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
+    <form
+        onSubmit={handleSubmit}
+        className="space-y-4 py-2 flex flex-col h-[60vh] relative"
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+    >
+        {isDragging && (
+            <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-sm border-2 border-dashed border-primary rounded-lg flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 pointer-events-none">
+                <Upload className="h-12 w-12 text-primary mb-2 animate-bounce" />
+                <p className="text-xl font-bold text-primary">Drop File Here</p>
+                <p className="text-sm text-muted-foreground">to automatically fill the file input</p>
+            </div>
+        )}
       <Tabs value={mode} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-1 mb-2">
             <TabsList className="grid w-[300px] grid-cols-3">

@@ -328,6 +328,60 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tools.png'), fullPage: true });
   });
 
+  test('Playground Drag Drop Screenshots', async ({ page }) => {
+    // Navigate to playground
+    await page.goto('/playground');
+    await page.waitForTimeout(1000);
+
+    // Mock Tools with File Input
+    await page.route('**/api/v1/tools', async route => {
+         await route.fulfill({
+             json: {
+                 tools: [
+                     {
+                         name: 'image_analyzer',
+                         description: 'Analyzes an image',
+                         inputSchema: {
+                             type: 'object',
+                             properties: {
+                                 image: {
+                                     type: 'string',
+                                     contentEncoding: 'base64',
+                                     description: 'The image to analyze'
+                                 }
+                             }
+                         }
+                     }
+                 ]
+             }
+         });
+    });
+
+    // Reload to get new tools
+    await page.reload();
+    await page.waitForTimeout(1000);
+
+    // Open Sidebar if closed (default is open on desktop, but check)
+    // Click tool to open config dialog
+    await page.getByText('image_analyzer').click();
+    await page.waitForTimeout(500);
+
+    // Verify dialog open
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    // Dispatch dragover to show overlay
+    // Use evaluate to dispatch event on form
+    const form = page.locator('form');
+    await form.evaluate(element => element.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true })));
+
+    // Wait for overlay
+    await expect(page.getByText('Drop File Here')).toBeVisible();
+
+    // Take screenshot
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_drag_drop.png') });
+  });
+
   test('Stack Composer Screenshots', async ({ page }) => {
     await page.goto('/stacks');
     await page.waitForTimeout(1000);
