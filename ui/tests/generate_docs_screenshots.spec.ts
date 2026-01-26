@@ -423,6 +423,59 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_diagnostics.png'), fullPage: true });
   });
 
+  test('Inspector Screenshots', async ({ page }) => {
+      // Reuse Traces mock but navigate to /inspector
+      await page.route('**/api/traces*', async route => {
+          const now = Date.now();
+          await route.fulfill({
+              json: [
+                   {
+                       id: 't1',
+                       timestamp: now,
+                       rootSpan: {
+                           id: 's1',
+                           name: 'filesystem.read',
+                           type: 'tool',
+                           startTime: now,
+                           endTime: now + 120,
+                           status: 'success',
+                           input: { path: '/var/log/syslog' },
+                           output: { content: '...' }
+                       },
+                       status: 'success',
+                       totalDuration: 120,
+                       trigger: 'user'
+                   },
+                   {
+                       id: 't2',
+                       timestamp: now - 5000,
+                       rootSpan: {
+                           id: 's2',
+                           name: 'calculator.add',
+                           type: 'tool',
+                           startTime: now - 5000,
+                           endTime: now - 4990,
+                           status: 'error',
+                           errorMessage: 'Division by zero'
+                       },
+                       status: 'error',
+                       totalDuration: 10,
+                       trigger: 'user'
+                   }
+              ]
+          });
+      });
+
+      await page.goto('/inspector');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'inspector.png'), fullPage: true });
+
+      // Toggle Live Mode
+      await page.getByLabel('Live Mode').click();
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'inspector_live.png'), fullPage: true });
+  });
+
   test('Middleware Screenshots', async ({ page }) => {
       await page.goto('/middleware');
       await page.waitForTimeout(1000);
