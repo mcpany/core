@@ -5,7 +5,6 @@ package logging
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"runtime"
 	"sync"
@@ -104,12 +103,7 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		entry.Source = f.Function
 	}
 
-	data, err := json.Marshal(entry)
-	if err != nil {
-		return err
-	}
-
-	h.broadcaster.Broadcast(data)
+	h.broadcaster.BroadcastLog(entry)
 	return nil
 }
 

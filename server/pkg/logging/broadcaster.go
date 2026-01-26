@@ -4,6 +4,8 @@
 package logging
 
 import (
+	"context"
+	"encoding/json"
 	"sync"
 )
 
@@ -13,6 +15,7 @@ type Broadcaster struct {
 	subscribers map[chan []byte]struct{}
 	history     [][]byte
 	limit       int
+	store       LogStore
 }
 
 var (
@@ -29,6 +32,56 @@ func NewBroadcaster() *Broadcaster {
 		history:     make([][]byte, 0, 1000),
 		limit:       1000,
 	}
+}
+
+// SetStore sets the persistent store for the broadcaster and loads recent history.
+func (b *Broadcaster) SetStore(store LogStore) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.store = store
+
+	// Load recent history from store
+	// We use a background context as this is typically called during initialization
+	entries, err := store.GetRecentLogs(context.Background(), b.limit)
+	if err == nil && len(entries) > 0 {
+		var dbHistory [][]byte
+		for _, entry := range entries {
+			if data, err := json.Marshal(entry); err == nil {
+				dbHistory = append(dbHistory, data)
+			}
+		}
+
+		// Prepend DB history to existing in-memory history (startup logs)
+		// Result: [Oldest DB Log ... Newest DB Log, Startup Log 1 ... Startup Log N]
+		b.history = append(dbHistory, b.history...)
+
+		if len(b.history) > b.limit {
+			// Keep the last N logs
+			start := len(b.history) - b.limit
+			b.history = b.history[start:]
+		}
+	}
+}
+
+// BroadcastLog broadcasts a structured log entry and persists it.
+func (b *Broadcaster) BroadcastLog(entry LogEntry) {
+	data, err := json.Marshal(entry)
+	if err != nil {
+		return
+	}
+
+	// Persist asynchronously to avoid blocking
+	b.mu.RLock()
+	store := b.store
+	b.mu.RUnlock()
+
+	if store != nil {
+		go func() {
+			_ = store.SaveLog(context.Background(), entry)
+		}()
+	}
+
+	b.Broadcast(data)
 }
 
 // Subscribe returns a channel that will receive broadcast messages.

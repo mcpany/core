@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -112,6 +113,29 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// SaveLog saves a log entry to the store.
+//
+// ctx is the context for the request.
+// entry is the log entry.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveLog(ctx context.Context, entry logging.LogEntry) error {
+	// Not implemented yet
+	return nil
+}
+
+// GetRecentLogs retrieves the most recent log entries.
+//
+// ctx is the context for the request.
+// limit is the maximum number of logs to return.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]logging.LogEntry, error) {
+	// Not implemented yet
+	return nil, nil
 }
 
 // GetService retrieves an upstream service configuration by name.

@@ -8,10 +8,13 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Storage defines the interface for persisting configuration.
 type Storage interface {
+	logging.LogStore
+
 	// Load retrieves the full server configuration.
 	// Note: Currently it mostly returns UpstreamServices.
 	// Load retrieves the full server configuration.

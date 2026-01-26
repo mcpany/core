@@ -775,6 +775,10 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	// Configure Persistent Logging
+	// Since storage.Storage now embeds logging.LogStore, we can pass it directly.
+	logging.GlobalBroadcaster.SetStore(a.Storage)
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {

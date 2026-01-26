@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -566,4 +567,27 @@ func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	defer s.mu.Unlock()
 	delete(s.credentials, id)
 	return nil
+}
+
+// SaveLog saves a log entry to the store.
+//
+// _ is an unused parameter.
+// entry is the log entry.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveLog(_ context.Context, entry logging.LogEntry) error {
+	// Not implemented
+	return nil
+}
+
+// GetRecentLogs retrieves the most recent log entries.
+//
+// _ is an unused parameter.
+// limit is the maximum number of logs to return.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]logging.LogEntry, error) {
+	// Not implemented
+	return nil, nil
 }
