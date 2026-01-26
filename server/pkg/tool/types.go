@@ -2602,6 +2602,20 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
+	// Sentinel Security Update: cmd.exe (Windows) does NOT respect single quotes for escaping.
+	// Arguments wrapped in single quotes are still vulnerable to injection (e.g., & | >).
+	// If the command is cmd.exe, we must downgrade Single Quoted context (2) to Unquoted (0).
+	// We use manual string checks to be robust against cross-platform execution (e.g. running on Linux but validating Windows paths)
+	// and case-insensitivity.
+	cmdLower := strings.ToLower(command)
+	isCmd := cmdLower == "cmd.exe" || cmdLower == "cmd" ||
+		strings.HasSuffix(cmdLower, "/cmd.exe") || strings.HasSuffix(cmdLower, "\\cmd.exe") ||
+		strings.HasSuffix(cmdLower, "/cmd") || strings.HasSuffix(cmdLower, "\\cmd")
+
+	if quoteLevel == 2 && isCmd {
+		quoteLevel = 0
+	}
+
 	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
