@@ -8,10 +8,9 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { generateCurlCommand } from "@/lib/curl-generator";
 
 /**
  * SpanIcon component.
@@ -185,6 +185,16 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
         });
     };
 
+    const handleCopyCurl = () => {
+        if (!trace) return;
+        const curl = generateCurlCommand(trace.rootSpan);
+        navigator.clipboard.writeText(curl);
+        toast({
+            title: "Copied to clipboard",
+            description: "Curl command copied to your clipboard.",
+        });
+    };
+
     return (
         <div className="h-full flex flex-col bg-background">
             <div className="p-6 border-b flex items-start justify-between bg-muted/10">
@@ -202,6 +212,9 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handleCopyCurl} className="gap-2">
+                        <Terminal className="h-3 w-3" /> Copy as Curl
+                    </Button>
                     {trace.rootSpan.type === 'tool' && (
                         <Button
                             variant="default"
@@ -307,16 +320,16 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Code className="h-4 w-4" /> Request Payload
                                 </h3>
-                                <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
-                                    <pre>{JSON.stringify(trace.rootSpan.input, null, 2)}</pre>
+                                <div className="rounded-lg overflow-hidden border">
+                                    <JsonView data={trace.rootSpan.input} className="border-0 rounded-none" />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
-                                <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
-                                     <pre>{JSON.stringify(trace.rootSpan.output, null, 2)}</pre>
+                                <div className="rounded-lg overflow-hidden border">
+                                     <JsonView data={trace.rootSpan.output} className="border-0 rounded-none" />
                                 </div>
                             </div>
                         </div>

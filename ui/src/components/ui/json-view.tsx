@@ -10,6 +10,8 @@ import { Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface JsonViewProps {
   data: unknown;
@@ -44,20 +46,34 @@ export function JsonView({ data, className }: JsonViewProps) {
       return <span className="text-muted-foreground italic">null</span>;
   }
 
+  const jsonString = JSON.stringify(data, null, 2);
+
   return (
-    <div className={cn("relative group", className)}>
+    <div className={cn("relative group rounded-md overflow-hidden border bg-[#1e1e1e]", className)}>
         <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background"
+            className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 hover:bg-white/20 text-white z-10"
             onClick={handleCopy}
             title="Copy JSON"
         >
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </Button>
-        <pre className="text-[10px] md:text-xs font-mono bg-muted/50 p-3 rounded-md overflow-x-auto text-foreground/90 border">
-            {JSON.stringify(data, null, 2)}
-        </pre>
+        <SyntaxHighlighter
+            language="json"
+            style={vscDarkPlus}
+            customStyle={{
+                margin: 0,
+                padding: '1rem',
+                fontSize: '0.75rem', // text-xs
+                lineHeight: '1.5',
+                background: 'transparent', // Let parent handle bg
+            }}
+            wrapLines={true}
+            wrapLongLines={true}
+        >
+            {jsonString}
+        </SyntaxHighlighter>
     </div>
   );
 }
