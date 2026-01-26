@@ -297,13 +297,13 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           }
 
           const config = constructConfig(values);
-          const response = await apiClient.validateService(config);
-          setValidationResult({ valid: response.valid, message: response.message });
+          const response = await apiClient.validateService(config, true);
+          setValidationResult({ valid: response.valid, message: response.message || response.details || (response.error ? response.error : "") });
 
           if (response.valid) {
-              toast({ title: "Validation Successful", description: response.message });
+              toast({ title: "Validation Successful", description: response.message || "Service configuration is valid and reachable." });
           } else {
-              toast({ variant: "destructive", title: "Validation Failed", description: response.message });
+              toast({ variant: "destructive", title: "Validation Failed", description: response.message || response.error });
           }
       } catch (error: any) {
           toast({ variant: "destructive", title: "Validation Error", description: error.message });

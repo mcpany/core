@@ -22,6 +22,8 @@ import (
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
@@ -329,7 +331,7 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
-		// 2. Connectivity / Health Check
+		// 2. Connectivity / Health Check (Shallow)
 		var checkErr error
 		var checkDetails string
 
@@ -380,6 +382,50 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 				"details": checkDetails,
 			})
 			return
+		}
+
+		// 3. Deep Connection Check (Optional)
+		if r.URL.Query().Get("check_connection") == util.TrueStr {
+			if a.UpstreamFactory == nil {
+				// Should not happen in real app, maybe in tests if not init
+				logging.GetLogger().Warn("UpstreamFactory is nil during deep check")
+			} else {
+				// Create upstream
+				u, err := a.UpstreamFactory.NewUpstream(&svc)
+				if err != nil {
+					w.Header().Set("Content-Type", "application/json")
+					_ = json.NewEncoder(w).Encode(map[string]any{
+						"valid":   false,
+						"error":   err.Error(),
+						"details": "Failed to create upstream instance: " + err.Error(),
+					})
+					return
+				}
+
+				// Create temp managers
+				tempToolMgr := tool.NewManager(nil)
+				tempPromptMgr := prompt.NewManager()
+				tempResourceMgr := resource.NewManager()
+
+				// Register (with timeout)
+				ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second) // 10s timeout for deep check
+				defer cancel()
+
+				_, _, _, err = u.Register(ctx, &svc, tempToolMgr, tempPromptMgr, tempResourceMgr, false)
+
+				// Always shutdown to cleanup resources/processes
+				_ = u.Shutdown(context.Background())
+
+				if err != nil {
+					w.Header().Set("Content-Type", "application/json")
+					_ = json.NewEncoder(w).Encode(map[string]any{
+						"valid":   false,
+						"error":   err.Error(),
+						"details": "Deep connection check failed: " + err.Error(),
+					})
+					return
+				}
+			}
 		}
 
 		w.Header().Set("Content-Type", "application/json")

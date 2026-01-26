@@ -438,9 +438,10 @@ export const apiClient = {
     /**
      * Validates a service configuration.
      * @param config The service configuration to validate.
+     * @param checkConnection Whether to perform a deep connection check.
      * @returns A promise that resolves to the validation result.
      */
-    validateService: async (config: UpstreamServiceConfig) => {
+    validateService: async (config: UpstreamServiceConfig, checkConnection?: boolean) => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
             id: config.id,
@@ -485,7 +486,12 @@ export const apiClient = {
             payload.resource_export_policy = config.resourceExportPolicy;
         }
 
-        const response = await fetchWithAuth('/api/v1/services/validate', {
+        let url = '/api/v1/services/validate';
+        if (checkConnection) {
+            url += '?check_connection=true';
+        }
+
+        const response = await fetchWithAuth(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
