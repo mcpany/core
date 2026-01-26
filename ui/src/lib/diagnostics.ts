@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Trace } from "@/app/api/traces/route";
+import { Trace } from "@/types/trace";
 
 export interface Diagnostic {
   type: 'error' | 'warning' | 'info';

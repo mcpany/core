@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { analyzeTrace } from './diagnostics';
-import { Trace } from '@/app/api/traces/route';
+import { Trace } from '@/types/trace';
 
 // Mock Trace Helper
 function createMockTrace(status: 'success' | 'error', errorMessage?: string, outputError?: string): Trace {

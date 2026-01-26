@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle } from "lucide-react";
-import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
+import { Trace, Span, SpanStatus } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
