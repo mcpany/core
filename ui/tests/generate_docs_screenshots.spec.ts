@@ -261,23 +261,58 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   test('Traces Screenshots', async ({ page }) => {
     // Mock Traces (UI calls /api/traces, expects direct array with rootSpan)
     await page.route('**/api/traces*', async route => {
+        const now = Date.now();
         await route.fulfill({
             json: [
                  {
                      id: 't1',
-                     timestamp: Date.now(),
-                     rootSpan: { name: 'filesystem.read' },
+                     timestamp: now,
+                     rootSpan: {
+                         id: 's1',
+                         name: 'filesystem.read',
+                         type: 'tool',
+                         startTime: now,
+                         endTime: now + 120,
+                         status: 'success',
+                         input: { path: '/var/log/syslog' },
+                         output: { content: '...' }
+                     },
                      status: 'success',
                      totalDuration: 120,
                      trigger: 'user'
                  },
                  {
                      id: 't2',
-                     timestamp: Date.now() - 5000,
-                     rootSpan: { name: 'calculator.add' },
+                     timestamp: now - 5000,
+                     rootSpan: {
+                         id: 's2',
+                         name: 'calculator.add',
+                         type: 'tool',
+                         startTime: now - 5000,
+                         endTime: now - 4990,
+                         status: 'error',
+                         errorMessage: 'Division by zero'
+                     },
                      status: 'error',
-                     error: 'Division by zero',
                      totalDuration: 10,
+                     trigger: 'user'
+                 },
+                 {
+                     id: 't3',
+                     timestamp: now - 10000,
+                     rootSpan: {
+                         id: 's3',
+                         name: 'memory.read_graph',
+                         type: 'tool',
+                         status: 'error',
+                         startTime: now - 10000,
+                         endTime: now - 9950,
+                         input: { entities: [{ name: 'test', extra: 'field' }] },
+                         output: { error: 'Schema validation error: properties "extra" not allowed' },
+                         errorMessage: 'Schema validation error: properties "extra" not allowed'
+                     },
+                     status: 'error',
+                     totalDuration: 50,
                      trigger: 'user'
                  }
             ]
@@ -294,6 +329,17 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.getByText('filesystem.read').first().click({ force: true });
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
+
+    // Close sheet by reloading (simplest way to reset state in tests without complex interaction)
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click diagnostics trace
+    await page.getByText('memory.read_graph').first().click({ force: true });
+    await page.waitForTimeout(500);
+    await expect(page.getByText('Diagnostics & Suggestions')).toBeVisible();
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_diagnostics.png'), fullPage: true });
   });
 
   test('Middleware Screenshots', async ({ page }) => {

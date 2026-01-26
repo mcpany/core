@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { InspectorTable } from "@/components/inspector/inspector-table";
-import { Trace } from "@/app/api/traces/route";
+import { Trace } from "@/types/trace";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, Bug } from "lucide-react";
 
