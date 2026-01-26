@@ -102,6 +102,9 @@ message UpstreamServiceConfig {
   repeated PromptDefinition prompts = 33;
   // Tags for organizing and filtering services.
   repeated string tags = 34 [json_name = "tags"];
+  // JSON Schema string defining the configuration parameters (env vars, args) required by this service.
+  // This is used by the UI to generate a configuration form.
+  string configuration_schema = 38 [json_name = "configuration_schema"];
 }
 
 message CallPolicy {
