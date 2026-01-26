@@ -564,15 +564,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	defer func() {
-		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
-		// MeasureSince emits in milliseconds.
-		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels(metricToolsCallLatency, duration, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
-	}()
+	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
+		{Name: "tool", Value: req.ToolName},
+		{Name: "service_id", Value: serviceID},
+	})
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
@@ -627,9 +622,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
 						// Fall through to raw data handling
 					}
-				} else {
-					// Marshal failed? Extremely rare for map[string]any unless it has cycles/funcs
-					// Fall through to error handling or raw data
 				}
 
 				// Special case: If content is a string, wrap it in TextContent

@@ -135,6 +135,8 @@ nodes:
 		"--set", "ui.service.type=NodePort",
 		"--set", "ui.service.nodePort=30000",
 		"--set", "ui.apiKey=test-token",
+		"--set", "apiKey=test-token",
+		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
