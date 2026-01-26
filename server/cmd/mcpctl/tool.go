@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newToolCmd() *cobra.Command {
+func newToolCmd(fs afero.Fs) *cobra.Command {
 	toolCmd := &cobra.Command{
 		Use:   "tool",
 		Short: "Manage tools",
@@ -26,13 +26,12 @@ func newToolCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			toolName := args[0]
-			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
-			if err := cfg.Load(cmd, osFs); err != nil {
+			if err := cfg.Load(cmd, fs); err != nil {
 				return fmt.Errorf("configuration load failed: %w", err)
 			}
 
-			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			store := config.NewFileStore(fs, cfg.ConfigPaths())
 			serverConfig, err := store.Load(context.Background())
 			if err != nil {
 				return fmt.Errorf("failed to load configuration: %w", err)

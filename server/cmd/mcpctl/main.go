@@ -23,12 +23,12 @@ var (
 
 // main is the entry point for the mcpctl CLI.
 func main() {
-	if err := newRootCmd().Execute(); err != nil {
+	if err := newRootCmd(afero.NewOsFs()).Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
-func newRootCmd() *cobra.Command {
+func newRootCmd(fs afero.Fs) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "mcpctl",
 		Short: "mcpctl is a command line tool for MCP Any",
@@ -38,14 +38,13 @@ func newRootCmd() *cobra.Command {
 		Use:   "validate",
 		Short: "Validate the configuration file",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			// Load checks flags and env vars to populate config struct
-			if err := cfg.Load(cmd, osFs); err != nil {
+			if err := cfg.Load(cmd, fs); err != nil {
 				return fmt.Errorf("configuration load failed: %w", err)
 			}
 
-			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			store := config.NewFileStore(fs, cfg.ConfigPaths())
 			configs, err := config.LoadServices(context.Background(), store, "server")
 			if err != nil {
 				return fmt.Errorf("failed to load configurations from %v: %w", cfg.ConfigPaths(), err)
@@ -73,8 +72,8 @@ func newRootCmd() *cobra.Command {
 	// Bind flags like --config, etc.
 	config.BindRootFlags(rootCmd)
 	rootCmd.AddCommand(validateCmd)
-	rootCmd.AddCommand(newDoctorCmd())
-	rootCmd.AddCommand(newToolCmd())
+	rootCmd.AddCommand(newDoctorCmd(fs))
+	rootCmd.AddCommand(newToolCmd(fs))
 
 	versionCmd := &cobra.Command{
 		Use:   "version",

@@ -19,7 +19,7 @@ import (
 )
 
 // newDoctorCmd creates the doctor command.
-func newDoctorCmd() *cobra.Command {
+func newDoctorCmd(fs afero.Fs) *cobra.Command {
 	return &cobra.Command{
 		Use:   "doctor",
 		Short: "Check the health of the MCP Any configuration and server",
@@ -35,14 +35,13 @@ func newDoctorCmd() *cobra.Command {
 
 			// 1. Check Configuration
 			_, _ = fmt.Fprint(cmd.OutOrStdout(), "[ ] Checking Configuration... ")
-			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
-			if err := cfg.Load(cmd, osFs); err != nil {
+			if err := cfg.Load(cmd, fs); err != nil {
 				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "FAILED")
 				return fmt.Errorf("configuration load failed: %w", err)
 			}
 
-			store := config.NewFileStore(osFs, cfg.ConfigPaths())
+			store := config.NewFileStore(fs, cfg.ConfigPaths())
 			configs, err := config.LoadServices(ctx, store, "server")
 			if err != nil {
 				// If loading fails, it might be due to no config files found, which might be okay or not.

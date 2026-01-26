@@ -12,11 +12,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRootCmd(t *testing.T) {
-	cmd := newRootCmd()
+	cmd := newRootCmd(afero.NewMemMapFs())
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
 	cmd.SetArgs([]string{"version"})
@@ -26,7 +27,7 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestDoctorCmd_Offline(t *testing.T) {
-	cmd := newRootCmd()
+	cmd := newRootCmd(afero.NewMemMapFs())
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
 	// Use a random port that is likely closed
@@ -59,7 +60,7 @@ func TestDoctorCmd_Online(t *testing.T) {
 	_, port, err := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 	assert.NoError(t, err)
 
-	cmd := newRootCmd()
+	cmd := newRootCmd(afero.NewMemMapFs())
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
 	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":" + port})
@@ -85,7 +86,7 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := newRootCmd()
+			cmd := newRootCmd(afero.NewMemMapFs())
 			b := bytes.NewBufferString("")
 			cmd.SetOut(b)
 			// We expect connection failure, but we want to make sure it parses correctly and attempts connection
@@ -106,7 +107,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
-		cmd := newRootCmd()
+		cmd := newRootCmd(afero.NewMemMapFs())
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":" + port})
@@ -126,7 +127,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
-		cmd := newRootCmd()
+		cmd := newRootCmd(afero.NewMemMapFs())
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":" + port})
@@ -147,7 +148,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
-		cmd := newRootCmd()
+		cmd := newRootCmd(afero.NewMemMapFs())
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":" + port})
@@ -169,7 +170,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
-		cmd := newRootCmd()
+		cmd := newRootCmd(afero.NewMemMapFs())
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":" + port})
