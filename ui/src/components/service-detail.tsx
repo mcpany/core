@@ -13,7 +13,7 @@ import { UpstreamServiceConfig, ToolDefinition, PromptDefinition, ResourceDefini
 import { apiClient } from "@/lib/client";
 import { OAuthStatusBanner } from './oauth-status-banner';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp } from "lucide-react";
+import { Server, AlertTriangle, Wrench, Book, Database, Settings, TrendingUp, Shield } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 import { Switch } from "@/components/ui/switch";
@@ -25,6 +25,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegisterServiceDialog } from "./register-service-dialog";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { Button } from "@/components/ui/button";
+import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
+import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
 
 /**
  * DefinitionsTable component.
@@ -329,10 +331,11 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="configuration"><Settings className="mr-2" />Configuration</TabsTrigger>
                 <TabsTrigger value="metrics"><TrendingUp className="mr-2"/>Metrics</TabsTrigger>
+                <TabsTrigger value="safety"><Shield className="mr-2"/>Safety</TabsTrigger>
             </TabsList>
              <TabsContent value="general" className="mt-4 grid gap-6">
                 <ServicePropertyCard title="General" data={{
@@ -392,6 +395,10 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">
                 <MetricsCard serviceId={serviceId} />
+            </TabsContent>
+            <TabsContent value="safety" className="mt-4 grid gap-6">
+                <ToolSafetyTable tools={tools} onUpdate={fetchService} />
+                <ResourceSafetyTable resources={resources} onUpdate={fetchService} />
             </TabsContent>
         </Tabs>
       </CardContent>
