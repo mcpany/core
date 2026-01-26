@@ -58,7 +58,8 @@ func main() {
 	withVerify := func(h http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if hook != nil {
-				body, err := io.ReadAll(r.Body)
+				// Limit body size to 1MB to prevent DoS
+				body, err := io.ReadAll(io.LimitReader(r.Body, 1024*1024))
 				if err != nil {
 					http.Error(w, "Failed to read body", http.StatusInternalServerError)
 					return
