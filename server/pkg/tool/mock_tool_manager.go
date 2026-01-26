@@ -248,6 +248,30 @@ func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
 }
 
+// IsToolAllowed mocks base method.
+//
+// tool is the tool.
+// profileID is the profileID.
+//
+// Returns true if successful.
+func (m *MockManagerInterface) IsToolAllowed(tool Tool, profileID string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsToolAllowed", tool, profileID)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// IsToolAllowed indicates an expected call of IsToolAllowed.
+//
+// tool is the tool.
+// profileID is the profileID.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) IsToolAllowed(tool, profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsToolAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsToolAllowed), tool, profileID)
+}
+
 // ListMCPTools mocks base method.
 //
 // Returns the result.

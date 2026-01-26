@@ -105,6 +105,13 @@ type ManagerInterface interface {
 	//
 	// Returns true if successful.
 	IsServiceAllowed(serviceID, profileID string) bool
+	// IsToolAllowed checks if a specific tool is allowed for a given profile.
+	//
+	// tool is the tool.
+	// profileID is the profileID.
+	//
+	// Returns true if successful.
+	IsToolAllowed(tool Tool, profileID string) bool
 	// ToolMatchesProfile checks if a tool matches a given profile.
 	//
 	// tool represents the tool definition.
@@ -287,6 +294,49 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	// But if a profile selects tools via tags, the service is implicitly allowed?
 	// Ideally, service should be explicitly enabled.
 	return false
+}
+
+// IsToolAllowed checks if a specific tool is allowed for a given profile.
+// It checks service enablement and tool-specific allow/block lists.
+func (tm *Manager) IsToolAllowed(tool Tool, profileID string) bool {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+
+	def, ok := tm.profileDefs[profileID]
+	if !ok {
+		return false
+	}
+
+	serviceID := tool.Tool().GetServiceId()
+	sc, ok := def.GetServiceConfig()[serviceID]
+	if !ok || !sc.GetEnabled() {
+		return false
+	}
+
+	toolName := tool.Tool().GetName()
+
+	// Check Blocked Tools (Precedence)
+	for _, blocked := range sc.GetBlockedTools() {
+		if blocked == toolName {
+			return false
+		}
+	}
+
+	// Check Allowed Tools
+	if len(sc.GetAllowedTools()) > 0 {
+		allowed := false
+		for _, a := range sc.GetAllowedTools() {
+			if a == toolName {
+				allowed = true
+				break
+			}
+		}
+		if !allowed {
+			return false
+		}
+	}
+
+	return true
 }
 
 // ToolMatchesProfile checks if a tool matches a given profile.

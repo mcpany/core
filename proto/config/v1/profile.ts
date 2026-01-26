@@ -24,6 +24,17 @@ export interface Profile {
 export interface ProfileServiceConfig {
   /** Whether the service is enabled in this profile. */
   enabled: boolean;
+  /**
+   * List of tools that are explicitly allowed.
+   * If empty and blocked_tools is empty, all tools in the service are allowed (if service is enabled).
+   * If set, only tools in this list are allowed.
+   */
+  allowedTools: string[];
+  /**
+   * List of tools that are explicitly blocked.
+   * Takes precedence over allowed_tools.
+   */
+  blockedTools: string[];
 }
 
 export interface RateLimitConfig {
@@ -265,13 +276,19 @@ export const Profile: MessageFns<Profile> = {
 };
 
 function createBaseProfileServiceConfig(): ProfileServiceConfig {
-  return { enabled: false };
+  return { enabled: false, allowedTools: [], blockedTools: [] };
 }
 
 export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   encode(message: ProfileServiceConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.enabled !== false) {
       writer.uint32(8).bool(message.enabled);
+    }
+    for (const v of message.allowedTools) {
+      writer.uint32(18).string(v!);
+    }
+    for (const v of message.blockedTools) {
+      writer.uint32(26).string(v!);
     }
     return writer;
   },
@@ -291,6 +308,22 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
           message.enabled = reader.bool();
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.allowedTools.push(reader.string());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.blockedTools.push(reader.string());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -301,13 +334,31 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   },
 
   fromJSON(object: any): ProfileServiceConfig {
-    return { enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false };
+    return {
+      enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false,
+      allowedTools: globalThis.Array.isArray(object?.allowedTools)
+        ? object.allowedTools.map((e: any) => globalThis.String(e))
+        : globalThis.Array.isArray(object?.allowed_tools)
+        ? object.allowed_tools.map((e: any) => globalThis.String(e))
+        : [],
+      blockedTools: globalThis.Array.isArray(object?.blockedTools)
+        ? object.blockedTools.map((e: any) => globalThis.String(e))
+        : globalThis.Array.isArray(object?.blocked_tools)
+        ? object.blocked_tools.map((e: any) => globalThis.String(e))
+        : [],
+    };
   },
 
   toJSON(message: ProfileServiceConfig): unknown {
     const obj: any = {};
     if (message.enabled !== false) {
       obj.enabled = message.enabled;
+    }
+    if (message.allowedTools?.length) {
+      obj.allowedTools = message.allowedTools;
+    }
+    if (message.blockedTools?.length) {
+      obj.blockedTools = message.blockedTools;
     }
     return obj;
   },
@@ -318,6 +369,8 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   fromPartial<I extends Exact<DeepPartial<ProfileServiceConfig>, I>>(object: I): ProfileServiceConfig {
     const message = createBaseProfileServiceConfig();
     message.enabled = object.enabled ?? false;
+    message.allowedTools = object.allowedTools?.map((e) => e) || [];
+    message.blockedTools = object.blockedTools?.map((e) => e) || [];
     return message;
   },
 };

@@ -281,24 +281,10 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 			managedTools := s.toolManager.ListTools()
 			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
 
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
-
 			for _, toolInstance := range managedTools {
 				// Profile-based filtering
 				if profileID != "" {
-					serviceID := toolInstance.Tool().GetServiceId()
-					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
-						// Profile not found or error, default to deny if profileID was present?
-						// Original IsServiceAllowed logic: if profile not found, return false.
+					if !s.toolManager.IsToolAllowed(toolInstance, profileID) {
 						continue
 					}
 				}
@@ -553,7 +539,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	profileID, _ := auth.ProfileIDFromContext(ctx)
 	if profileID != "" && serviceID != "" {
-		if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
+		if !s.toolManager.IsToolAllowed(req.Tool, profileID) {
 			logging.GetLogger().Warn("Access denied to tool by profile", "toolName", req.ToolName, "profileID", profileID)
 			return nil, fmt.Errorf("access denied to tool %q", req.ToolName)
 		}

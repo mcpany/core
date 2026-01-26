@@ -100,6 +100,14 @@ func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 // Returns true if successful.
 func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
+// IsToolAllowed implements tool.ManagerInterface.
+//
+// _ is an unused parameter.
+// _ is an unused parameter.
+//
+// Returns true if successful.
+func (m *NoOpToolManager) IsToolAllowed(_ tool.Tool, _ string) bool { return true }
+
 // ToolMatchesProfile implements tool.ManagerInterface.
 //
 // _ is an unused parameter.

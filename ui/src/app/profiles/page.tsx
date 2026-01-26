@@ -35,7 +35,16 @@ export default function ProfilesPage() {
               id: p.name, // Use name as ID
               name: p.name,
               description: "", // Not supported in backend yet, but we can display placeholder
-              services: p.serviceConfig ? Object.keys(p.serviceConfig) : [],
+              services: p.serviceConfig ? Object.fromEntries(
+                  Object.entries(p.serviceConfig).map(([key, val]: [string, any]) => [
+                      key,
+                      {
+                          enabled: val.enabled,
+                          allowedTools: val.allowed_tools,
+                          blockedTools: val.blocked_tools
+                      }
+                  ])
+              ) : {},
               type: (p.selector?.tags?.find((t: string) => ["dev", "prod", "debug"].includes(t)) as "dev" | "prod" | "debug") || "dev",
               secrets: p.secrets
           }));
@@ -117,7 +126,7 @@ export default function ProfilesPage() {
                               {profile.type.toUpperCase()}
                           </Badge>
                           <span className="text-xs text-muted-foreground flex items-center">
-                              {profile.services.length} Services
+                              {Object.keys(profile.services).length} Services
                           </span>
                       </div>
                       <div className="flex justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

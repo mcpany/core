@@ -261,12 +261,14 @@ func (b0 Profile_builder) Build() *Profile {
 }
 
 type ProfileServiceConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Enabled      bool                   `protobuf:"varint,1,opt,name=enabled"`
+	xxx_hidden_AllowedTools []string               `protobuf:"bytes,2,rep,name=allowed_tools,json=allowedTools"`
+	xxx_hidden_BlockedTools []string               `protobuf:"bytes,3,rep,name=blocked_tools,json=blockedTools"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *ProfileServiceConfig) Reset() {
@@ -301,9 +303,31 @@ func (x *ProfileServiceConfig) GetEnabled() bool {
 	return false
 }
 
+func (x *ProfileServiceConfig) GetAllowedTools() []string {
+	if x != nil {
+		return x.xxx_hidden_AllowedTools
+	}
+	return nil
+}
+
+func (x *ProfileServiceConfig) GetBlockedTools() []string {
+	if x != nil {
+		return x.xxx_hidden_BlockedTools
+	}
+	return nil
+}
+
 func (x *ProfileServiceConfig) SetEnabled(v bool) {
 	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *ProfileServiceConfig) SetAllowedTools(v []string) {
+	x.xxx_hidden_AllowedTools = v
+}
+
+func (x *ProfileServiceConfig) SetBlockedTools(v []string) {
+	x.xxx_hidden_BlockedTools = v
 }
 
 func (x *ProfileServiceConfig) HasEnabled() bool {
@@ -323,6 +347,13 @@ type ProfileServiceConfig_builder struct {
 
 	// Whether the service is enabled in this profile.
 	Enabled *bool
+	// List of tools that are explicitly allowed.
+	// If empty and blocked_tools is empty, all tools in the service are allowed (if service is enabled).
+	// If set, only tools in this list are allowed.
+	AllowedTools []string
+	// List of tools that are explicitly blocked.
+	// Takes precedence over allowed_tools.
+	BlockedTools []string
 }
 
 func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
@@ -330,9 +361,11 @@ func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
 		x.xxx_hidden_Enabled = *b.Enabled
 	}
+	x.xxx_hidden_AllowedTools = b.AllowedTools
+	x.xxx_hidden_BlockedTools = b.BlockedTools
 	return m0
 }
 
@@ -515,9 +548,11 @@ const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12H\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"7\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"\x81\x01\n" +
 	"\x14ProfileServiceConfig\x12\x1f\n" +
-	"\aenabled\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x01R\aenabled\"\xa1\x06\n" +
+	"\aenabled\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x01R\aenabled\x12#\n" +
+	"\rallowed_tools\x18\x02 \x03(\tR\fallowedTools\x12#\n" +
+	"\rblocked_tools\x18\x03 \x03(\tR\fblockedTools\"\xa1\x06\n" +
 	"\x0fRateLimitConfig\x12\x1e\n" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\n" +

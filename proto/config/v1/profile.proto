@@ -24,6 +24,13 @@ message Profile {
 message ProfileServiceConfig {
   // Whether the service is enabled in this profile.
   bool enabled = 1 [features.field_presence = EXPLICIT];
+  // List of tools that are explicitly allowed.
+  // If empty and blocked_tools is empty, all tools in the service are allowed (if service is enabled).
+  // If set, only tools in this list are allowed.
+  repeated string allowed_tools = 2;
+  // List of tools that are explicitly blocked.
+  // Takes precedence over allowed_tools.
+  repeated string blocked_tools = 3;
   // Other service-specific overrides can be added here.
   // We explicitly removed upstream_authentication to use centralized secrets instead.
 }
