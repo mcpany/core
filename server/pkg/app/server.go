@@ -1484,9 +1484,8 @@ func (a *Application) runServerMode(
 			fileServer.ServeHTTP(w, r)
 		})
 
-		// Apply Gzip compression
-		handler := middleware.GzipCompressionMiddleware(cachingFileServer)
-		mux.Handle("/ui/", http.StripPrefix("/ui", handler))
+		// Apply Gzip compression globally
+		mux.Handle("/ui/", http.StripPrefix("/ui", cachingFileServer))
 	}
 
 	// Handle root path with gRPC-Web support
@@ -1862,14 +1861,16 @@ func (a *Application) runServerMode(
 		}
 	}
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
+	// Middleware order: Gzip -> SecurityHeaders -> CORS -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
-	handler := middleware.HTTPSecurityHeadersMiddleware(
-		corsMiddleware.Handler(
-			middleware.JSONRPCComplianceMiddleware(
-				middleware.RecoveryMiddleware(
-					ipMiddleware.Handler(
-						rateLimiter.Handler(finalHandler),
+	handler := middleware.GzipCompressionMiddleware(
+		middleware.HTTPSecurityHeadersMiddleware(
+			corsMiddleware.Handler(
+				middleware.JSONRPCComplianceMiddleware(
+					middleware.RecoveryMiddleware(
+						ipMiddleware.Handler(
+							rateLimiter.Handler(finalHandler),
+						),
 					),
 				),
 			),
