@@ -146,21 +146,29 @@ message DebuggerConfig {
   int32 size = 2 [json_name = "size"];
 }
 
+// TelemetryConfig configures telemetry (tracing and metrics).
 message TelemetryConfig {
-  // Tracing configuration
-  string traces_exporter = 1 [json_name = "traces_exporter"]; // "otlp", "stdout", "none"
-  // Metrics configuration
-  string metrics_exporter = 2 [json_name = "metrics_exporter"]; // "otlp", "stdout", "none"
-  // OTLP endpoint (shared for now, or can be split)
+  // Tracing configuration.
+  // Valid values: "otlp", "stdout", "none".
+  string traces_exporter = 1 [json_name = "traces_exporter"];
+  // Metrics configuration.
+  // Valid values: "otlp", "stdout", "none".
+  string metrics_exporter = 2 [json_name = "metrics_exporter"];
+  // OTLP endpoint (shared for now, or can be split).
   string otlp_endpoint = 3 [json_name = "otlp_endpoint"];
-  // Service name override (optional)
+  // Service name override (optional).
   string service_name = 4 [json_name = "service_name"];
 }
 
+// OIDCConfig configures OpenID Connect authentication.
 message OIDCConfig {
+  // The OIDC issuer URL.
   string issuer = 1 [json_name = "issuer"];
+  // The client ID.
   string client_id = 2 [json_name = "client_id"];
+  // The client secret.
   string client_secret = 3 [json_name = "client_secret"];
+  // The redirect URL.
   string redirect_url = 4 [json_name = "redirect_url"];
 }
 
@@ -216,23 +224,37 @@ message AuditConfig {
   DatadogConfig datadog = 9 [json_name = "datadog"];
 }
 
+// SplunkConfig configures Splunk audit logging.
 message SplunkConfig {
+  // The HEC URL.
   string hec_url = 1 [json_name = "hec_url"];
+  // The HEC token.
   string token = 2 [json_name = "token"];
+  // The index to log to.
   string index = 3 [json_name = "index"];
+  // The source of the logs.
   string source = 4 [json_name = "source"];
+  // The sourcetype of the logs.
   string sourcetype = 5 [json_name = "sourcetype"];
 }
 
+// DatadogConfig configures Datadog audit logging.
 message DatadogConfig {
+  // The Datadog API key.
   string api_key = 1 [json_name = "api_key"];
+  // The Datadog site (e.g., "datadoghq.com").
   string site = 2 [json_name = "site"];
+  // The service name.
   string service = 3 [json_name = "service"];
+  // Comma-separated tags.
   string tags = 4 [json_name = "tags"];
 }
 
+// ProfileDefinition defines a profile and its properties.
 message ProfileDefinition {
+  // The name of the profile.
   string name = 1;
+  // The selector for matching tools to this profile.
   ProfileSelector selector = 2;
   // List of roles required to access this profile.
   repeated string required_roles = 3 [json_name = "required_roles"];
@@ -244,8 +266,11 @@ message ProfileDefinition {
   map<string, SecretValue> secrets = 6 [json_name = "secrets"];
 }
 
+// ProfileSelector defines criteria for selecting tools.
 message ProfileSelector {
+  // List of tags to match.
   repeated string tags = 1;
+  // Map of tool properties to match.
   map<string, string> tool_properties = 2 [json_name = "tool_properties"];
 }
 
