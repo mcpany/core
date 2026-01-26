@@ -24,6 +24,10 @@ var isJSONWhitespace [256]bool
 // isNumberDelimiter is a lookup table for fast number delimiter checking.
 var isNumberDelimiter [256]bool
 
+// hexValues is a lookup table for hex digit values.
+// -1 indicates invalid hex digit.
+var hexValues [256]int
+
 func init() {
 	isJSONWhitespace[' '] = true
 	isJSONWhitespace['\t'] = true
@@ -43,6 +47,20 @@ func init() {
 	// Quotes and colons should also stop number scanning to avoid consuming keys in invalid JSON
 	isNumberDelimiter['"'] = true
 	isNumberDelimiter[':'] = true
+
+	// Initialize hex values
+	for i := 0; i < 256; i++ {
+		hexValues[i] = -1
+	}
+	for i := '0'; i <= '9'; i++ {
+		hexValues[i] = int(i - '0')
+	}
+	for i := 'a'; i <= 'f'; i++ {
+		hexValues[i] = int(i - 'a' + 10)
+	}
+	for i := 'A'; i <= 'F'; i++ {
+		hexValues[i] = int(i - 'A' + 10)
+	}
 }
 
 // redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
@@ -504,18 +522,9 @@ func unescapeKeySmall(input []byte, buf []byte) ([]byte, bool) {
 					valid := true
 					for k := 0; k < 4; k++ {
 						h := input[i+1+k]
-						var d int
-						switch {
-						case h >= '0' && h <= '9':
-							d = int(h - '0')
-						case h >= 'a' && h <= 'f':
-							d = int(h - 'a' + 10)
-						case h >= 'A' && h <= 'F':
-							d = int(h - 'A' + 10)
-						default:
+						d := hexValues[h]
+						if d == -1 {
 							valid = false
-						}
-						if !valid {
 							break
 						}
 						val = (val << 4) | d
@@ -602,18 +611,9 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 					valid := true
 					for k := 0; k < 4; k++ {
 						h := keyContent[i+1+k]
-						var d int
-						switch {
-						case h >= '0' && h <= '9':
-							d = int(h - '0')
-						case h >= 'a' && h <= 'f':
-							d = int(h - 'a' + 10)
-						case h >= 'A' && h <= 'F':
-							d = int(h - 'A' + 10)
-						default:
+						d := hexValues[h]
+						if d == -1 {
 							valid = false
-						}
-						if !valid {
 							break
 						}
 						val = (val << 4) | d
