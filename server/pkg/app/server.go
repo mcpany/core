@@ -198,6 +198,7 @@ type Application struct {
 	// Middlewares that need manual updates
 	ipMiddleware   *middleware.IPAllowlistMiddleware
 	corsMiddleware *middleware.HTTPCORSMiddleware
+	csrfMiddleware *middleware.CSRFMiddleware
 
 	busProvider *bus.Provider
 
@@ -896,6 +897,9 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 	if a.corsMiddleware != nil {
 		a.corsMiddleware.Update(a.SettingsManager.GetAllowedOrigins())
+	}
+	if a.csrfMiddleware != nil {
+		a.csrfMiddleware.Update(a.SettingsManager.GetAllowedOrigins())
 	}
 
 	if a.standardMiddlewares != nil {
@@ -1827,6 +1831,10 @@ func (a *Application) runServerMode(
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
 	a.corsMiddleware = corsMiddleware
 
+	// Apply CSRF Middleware
+	csrfMiddleware := middleware.NewCSRFMiddleware(a.SettingsManager.GetAllowedOrigins())
+	a.csrfMiddleware = csrfMiddleware
+
 	// Prepare final handler (Mux wrapped with Content Optimizer and Debugger)
 	var finalHandler http.Handler = mux
 
@@ -1841,14 +1849,16 @@ func (a *Application) runServerMode(
 		}
 	}
 
-	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
+	// Middleware order: SecurityHeaders -> CORS -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> CSRF -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			middleware.JSONRPCComplianceMiddleware(
 				middleware.RecoveryMiddleware(
 					ipMiddleware.Handler(
-						rateLimiter.Handler(finalHandler),
+						rateLimiter.Handler(
+							csrfMiddleware.Handler(finalHandler),
+						),
 					),
 				),
 			),

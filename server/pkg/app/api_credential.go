@@ -173,6 +173,10 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 		writeError(w, fmt.Errorf("method not allowed"))
 		return
 	}
+	if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+		writeError(w, fmt.Errorf("content-type must be application/json"))
+		return
+	}
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	if len(pathParts) < 2 {
 		writeError(w, fmt.Errorf("id is required"))

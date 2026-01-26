@@ -65,6 +65,7 @@ func TestCredentialCRUD(t *testing.T) {
 		}
 		body, _ := protojson.Marshal(cred)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/credentials", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
 		rr := httptest.NewRecorder()
 		app.createCredentialHandler(rr, req)
 
@@ -98,6 +99,7 @@ func TestCredentialCRUD(t *testing.T) {
 		}
 		body, _ := protojson.Marshal(cred)
 		req := httptest.NewRequest(http.MethodPut, "/api/v1/credentials/"+createdID, bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
 		rr := httptest.NewRecorder()
 		app.updateCredentialHandler(rr, req)
 
@@ -349,6 +351,7 @@ func TestCredentialHandlers(t *testing.T) {
 		}
 		body, _ := json.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -364,6 +367,7 @@ func TestCredentialHandlers(t *testing.T) {
 		}
 		body, _ := json.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
@@ -371,6 +375,7 @@ func TestCredentialHandlers(t *testing.T) {
 
 	t.Run("UpdateCredential_BadBody", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader([]byte("bad json")))
+		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
