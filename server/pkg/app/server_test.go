@@ -2515,27 +2515,25 @@ func TestRunServerMode_Auth(t *testing.T) {
 	require.NoError(t, err)
 
 	users := []*configv1.User{
-		{
+		configv1.User_builder{
 			Id: proto.String("user_with_auth"),
-			Authentication: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_ApiKey{
-					ApiKey: &configv1.APIKeyAuth{
-						VerificationValue: ptr("user-secret"),
-						In:                ptr(configv1.APIKeyAuth_HEADER),
-						ParamName:         ptr("X-API-Key"),
-					},
-				},
-			},
+			Authentication: configv1.Authentication_builder{
+				ApiKey: configv1.APIKeyAuth_builder{
+					VerificationValue: ptr("user-secret"),
+					In:                ptr(configv1.APIKeyAuth_HEADER),
+					ParamName:         ptr("X-API-Key"),
+				}.Build(),
+			}.Build(),
 			ProfileIds: []string{"profileA"},
-		},
-		{
-			Id: proto.String("user_no_auth"),
+		}.Build(),
+		configv1.User_builder{
+			Id:         proto.String("user_no_auth"),
 			ProfileIds: []string{"profileB"},
-		},
-		{
+		}.Build(),
+		configv1.User_builder{
 			Id:         proto.String("user_blocked"),
 			ProfileIds: []string{},
-		},
+		}.Build(),
 	}
 	authManager.SetUsers(users)
 
@@ -3291,10 +3289,14 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 
 	// Setup a user to access
 	users := []*configv1.User{
-		{
+		configv1.User_builder{
+			Id:         proto.String("user_with_access"),
+			ProfileIds: []string{"profileA"},
+		}.Build(),
+		configv1.User_builder{
 			Id:         proto.String("user_no_auth"),
 			ProfileIds: []string{"profileB"},
-		},
+		}.Build(),
 	}
 	authManager.SetUsers(users)
 

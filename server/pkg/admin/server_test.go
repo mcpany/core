@@ -100,8 +100,8 @@ func TestServer_UserManagement(t *testing.T) {
 	createResp, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: user})
 	require.NoError(t, err)
 	assert.Equal(t, "user1", createResp.User.GetId())
-	assert.NotEqual(t, "plaintext", createResp.User.Authentication.GetBasicAuth().GetPasswordHash())
-	assert.Contains(t, createResp.User.Authentication.GetBasicAuth().GetPasswordHash(), "$2")
+	assert.NotEqual(t, "plaintext", createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash())
+	assert.Contains(t, createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash(), "$2")
 
 	// Test CreateUser validation
 	_, err = s.CreateUser(ctx, &pb.CreateUserRequest{User: nil})
@@ -123,10 +123,10 @@ func TestServer_UserManagement(t *testing.T) {
 	assert.Len(t, listResp.Users, 1)
 
 	// Test UpdateUser
-	user.Roles = []string{"admin"}
+	user.SetRoles([]string{"admin"})
 	updateResp, err := s.UpdateUser(ctx, &pb.UpdateUserRequest{User: user})
 	require.NoError(t, err)
-	assert.Equal(t, []string{"admin"}, updateResp.User.Roles)
+	assert.Equal(t, []string{"admin"}, updateResp.User.GetRoles())
 
 	_, err = s.UpdateUser(ctx, &pb.UpdateUserRequest{User: nil})
 	assert.Error(t, err)

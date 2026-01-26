@@ -110,25 +110,21 @@ func TestValidateSecretValue(t *testing.T) {
 		},
 		{
 			name: "Remote content invalid URL",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: strPtr("not-a-url"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: proto.String("not-a-url"),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "remote secret has invalid http_url",
 		},
 		{
 			name: "Remote content invalid scheme",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_RemoteContent{
-					RemoteContent: &configv1.RemoteContent{
-						HttpUrl: strPtr("ftp://example.com/secret"),
-					},
-				},
-			},
+			secret: configv1.SecretValue_builder{
+				RemoteContent: configv1.RemoteContent_builder{
+					HttpUrl: proto.String("ftp://example.com/secret"),
+				}.Build(),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "remote secret has invalid http_url scheme",
 		},
@@ -151,33 +147,27 @@ func TestValidateSecretValue(t *testing.T) {
 		},
 		{
 			name: "Valid regex match (env_var)",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_EnvironmentVariable{
-					EnvironmentVariable: "TEST_ENV_VAR",
-				},
-				ValidationRegex: proto.String(`^exists$`),
-			},
+			secret: configv1.SecretValue_builder{
+				ValidationRegex:     proto.String(`^exists$`),
+				EnvironmentVariable: proto.String("TEST_ENV_VAR"),
+			}.Build(),
 			expectErr: false,
 		},
 		{
 			name: "Invalid regex match (env_var)",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_EnvironmentVariable{
-					EnvironmentVariable: "TEST_ENV_VAR",
-				},
-				ValidationRegex: proto.String(`^wrong$`),
-			},
+			secret: configv1.SecretValue_builder{
+				ValidationRegex:     proto.String(`^wrong$`),
+				EnvironmentVariable: proto.String("TEST_ENV_VAR"),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "secret value does not match validation regex",
 		},
 		{
 			name: "Invalid regex pattern",
-			secret: &configv1.SecretValue{
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "value",
-				},
+			secret: configv1.SecretValue_builder{
 				ValidationRegex: proto.String(`[`),
-			},
+				PlainText:       proto.String("value"),
+			}.Build(),
 			expectErr: true,
 			errMsg:    "invalid validation regex",
 		},

@@ -39,7 +39,6 @@ func TestWebhooksE2E(t *testing.T) {
 	portStr := fmt.Sprintf("%d", port)
 
 	const secret = "dGVzdC1zZWNyZXQtMTIz" //nolint:gosec // base64("test-secret-123")
-	secretPtr := secret                   // Create addressable variable
 	serverCmd := exec.Command(webhookBin) //nolint:gosec
 	serverCmd.Stdout = os.Stdout
 	serverCmd.Stderr = os.Stderr
@@ -60,11 +59,11 @@ func TestWebhooksE2E(t *testing.T) {
 
 	t.Run("MarkdownConversion", func(t *testing.T) {
 		url := fmt.Sprintf("http://127.0.0.1:%d/markdown", port)
-		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
-			Url:           url,
+		hook := tool.NewWebhookHook(configv1.WebhookConfig_builder{
+			Url:           proto.String(url),
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
-			WebhookSecret: secretPtr,
-		})
+			WebhookSecret: proto.String(secret),
+		}.Build())
 
 		ctx := context.Background()
 		req := &tool.ExecutionRequest{
@@ -101,11 +100,11 @@ func TestWebhooksE2E(t *testing.T) {
 
 	t.Run("TextTruncation", func(t *testing.T) {
 		url := fmt.Sprintf("http://127.0.0.1:%d/truncate?max_chars=5", port)
-		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
-			Url:           url,
+		hook := tool.NewWebhookHook(configv1.WebhookConfig_builder{
+			Url:           proto.String(url),
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
-			WebhookSecret: secretPtr,
-		})
+			WebhookSecret: proto.String(secret),
+		}.Build())
 
 		ctx := context.Background()
 		req := &tool.ExecutionRequest{
@@ -180,8 +179,8 @@ func TestFullSystemWebhooks(t *testing.T) {
 			configv1.CallHook_builder{
 				Name: proto.String("markdown-converter"),
 				Webhook: configv1.WebhookConfig_builder{
-					Url:           webhookURL,
-					WebhookSecret: secret,
+					Url:           proto.String(webhookURL),
+					WebhookSecret: proto.String(secret),
 					Timeout:       TIMESTAMPCB.New(5 * time.Second),
 				}.Build(),
 			}.Build(),

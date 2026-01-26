@@ -102,8 +102,8 @@ func TestStripSecretsFromHook(t *testing.T) {
 	// Webhook with secret
 	hook := configv1.CallHook_builder{
 		Webhook: configv1.WebhookConfig_builder{
-			Url:           "http://example.com",
-			WebhookSecret: "secret",
+			Url:           proto.String("http://example.com"),
+			WebhookSecret: proto.String("secret"),
 		}.Build(),
 	}.Build()
 	stripSecretsFromHook(hook)
@@ -594,7 +594,7 @@ func TestStripSecretsFromHookAndCache(t *testing.T) {
 		Id: proto.String("hook-cache"),
 		PreCallHooks: []*configv1.CallHook{
 			configv1.CallHook_builder{
-				Webhook: configv1.WebhookConfig_builder{WebhookSecret: "secret"}.Build(),
+				Webhook: configv1.WebhookConfig_builder{WebhookSecret: proto.String("secret")}.Build(),
 			}.Build(),
 		},
 		Cache: configv1.CacheConfig_builder{

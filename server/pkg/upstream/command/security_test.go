@@ -27,15 +27,25 @@ func TestArgInjection(t *testing.T) {
 		Name: proto.String("test-vuln-service"),
 		CommandLineService: configv1.CommandLineUpstreamService_builder{
 			Command: proto.String("/bin/echo"),
-			Calls: map[string]*configv1.CommandLineCallDefinition{
-				"echo-call": configv1.CommandLineCallDefinition_builder{
-					Id: proto.String("echo-call"),
-				}.Build(),
-			},
+
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
 					Name:   proto.String("echo-safe"),
 					CallId: proto.String("echo-call"),
+				}.Build(),
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("malicious-tool"),
+					CallId: proto.String("cat-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.CommandLineCallDefinition{
+				"echo-call": configv1.CommandLineCallDefinition_builder{
+					Id: proto.String("echo-call"),
+					Args: []string{"hello"},
+				}.Build(),
+				"cat-call": configv1.CommandLineCallDefinition_builder{
+					Id: proto.String("cat-call"),
+					Args: []string{"/etc/passwd"},
 				}.Build(),
 			},
 		}.Build(),

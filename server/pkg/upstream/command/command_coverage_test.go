@@ -27,9 +27,20 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
 
+	toolDef := configv1.ToolDefinition_builder{
+		Name:    proto.String("cmd-tool"),
+		CallId:  proto.String("echo-call"),
+		Disable: proto.Bool(true),
+	}.Build()
+
 	cmdService := configv1.CommandLineUpstreamService_builder{
-		Tools: []*configv1.ToolDefinition{
-			configv1.ToolDefinition_builder{Name: proto.String("tool1"), Disable: proto.Bool(true)}.Build(),
+		Command: proto.String("ls"),
+		Tools:   []*configv1.ToolDefinition{toolDef},
+		Calls: map[string]*configv1.CommandLineCallDefinition{
+			"echo-call": configv1.CommandLineCallDefinition_builder{
+				Id:      proto.String("echo-call"),
+				Args:    []string{"echo"},
+			}.Build(),
 		},
 		Prompts: []*configv1.PromptDefinition{
 			configv1.PromptDefinition_builder{Name: proto.String("prompt1"), Disable: proto.Bool(true)}.Build(),

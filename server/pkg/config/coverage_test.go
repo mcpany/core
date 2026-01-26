@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestStripSecretsFromService_Coverage(t *testing.T) {
@@ -292,32 +293,31 @@ func TestStripSecretsFromService_Filesystem_Vector_More(t *testing.T) {
     }
 
     // Test Vector Pinecone
-    vecPine := &configv1.UpstreamServiceConfig{}
-	{
-		pinecone := &configv1.PineconeVectorDB{}
-		pinecone.SetApiKey("secret")
+	vecPine := configv1.UpstreamServiceConfig_builder{}.Build()
+	vecPine.SetName("pinecone")
+	vector1 := configv1.VectorUpstreamService_builder{
+		Pinecone: configv1.PineconeVectorDB_builder{
+			ApiKey: proto.String("secret"),
+		}.Build(),
+	}.Build()
+	vecPine.SetVectorService(vector1)
 
-		svc := &configv1.VectorUpstreamService{}
-		svc.SetPinecone(pinecone)
-		vecPine.SetVectorService(svc)
-	}
+	vecMilvus := configv1.UpstreamServiceConfig_builder{}.Build()
+	vecMilvus.SetName("milvus")
+	vector2 := configv1.VectorUpstreamService_builder{
+		Milvus: configv1.MilvusVectorDB_builder{
+			ApiKey:   proto.String("secret"),
+			Password: proto.String("pass"),
+		}.Build(),
+	}.Build()
+	vecMilvus.SetVectorService(vector2)
 
     StripSecretsFromService(vecPine)
     if vecPine.GetVectorService().GetPinecone().GetApiKey() != "" {
         t.Error("Failed to strip Pinecone API key")
     }
 
-    // Test Vector Milvus
-    vecMilvus := &configv1.UpstreamServiceConfig{}
-	{
-		milvus := &configv1.MilvusVectorDB{}
-		milvus.SetApiKey("secret")
-		milvus.SetPassword("pass")
 
-		svc := &configv1.VectorUpstreamService{}
-		svc.SetMilvus(milvus)
-		vecMilvus.SetVectorService(svc)
-	}
 
     StripSecretsFromService(vecMilvus)
     if vecMilvus.GetVectorService().GetMilvus().GetApiKey() != "" {

@@ -122,24 +122,35 @@ func TestStdioUpstream_Register(t *testing.T) {
 			Name: proto.String("test-stdio-service"),
 			CommandLineService: configv1.CommandLineUpstreamService_builder{
 				Command: proto.String("/bin/echo"),
+
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:    proto.String("echo"),
+						CallId:  proto.String("echo-call"),
+					}.Build(),
+				},
 				Calls: map[string]*configv1.CommandLineCallDefinition{
 					"echo-call": configv1.CommandLineCallDefinition_builder{
 						Id: proto.String("echo-call"),
+						// Command is defined at service level, args here?
+						// CommandLineCallDefinition has args (repeated string).
+						// Wait, CommandLineUpstreamService has `command`.
+						// If I want to override command per tool, can I?
+						// CommandLineUpstreamService has ONE command.
+						// CommandLineCallDefinition has `args`.
+						// It seems `CommandLineUpstreamService` runs ONE command (e.g. bash or python script) and `args` are passed?
+						// Or `command` is the executable and `args` are arguments?
+						// If the previous test assumed `Command` per Tool, maybe it was assuming `LocalCommandTool` behavior?
+						// But `LocalCommandTool` constructor takes `CommandLineUpstreamService`.
+						// Let's assume `args` in CallDefinition are sufficient.
 						Parameters: []*configv1.CommandLineParameterMapping{
 							configv1.CommandLineParameterMapping_builder{
 								Schema: configv1.ParameterSchema_builder{
-									Name:        proto.String("args"),
-									Type:        configv1.ParameterType_ARRAY.Enum(),
-									Description: proto.String("Additional arguments"),
+									Name: proto.String("args"),
+									Type: configv1.ParameterType_STRING.Enum(),
 								}.Build(),
 							}.Build(),
 						},
-					}.Build(),
-				},
-				Tools: []*configv1.ToolDefinition{
-					configv1.ToolDefinition_builder{
-						Name:   proto.String("echo"),
-						CallId: proto.String("echo-call"),
 					}.Build(),
 				},
 			}.Build(),
@@ -370,7 +381,7 @@ func TestStdioUpstream_Register_RequiredParams(t *testing.T) {
 			},
 			Tools: []*configv1.ToolDefinition{
 				configv1.ToolDefinition_builder{
-					Name:   proto.String("echo"),
+					Name:   proto.String("tool1"),
 					CallId: proto.String("echo-call"),
 				}.Build(),
 			},

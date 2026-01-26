@@ -228,8 +228,8 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		return nil, status.Error(codes.InvalidArgument, "user is required")
 	}
 	// Hash password if needed
-	if req.User.Authentication != nil {
-		if basic := req.User.Authentication.GetBasicAuth(); basic != nil {
+	if req.User.GetAuthentication() != nil {
+		if basic := req.User.GetAuthentication().GetBasicAuth(); basic != nil {
 			if basic.GetPasswordHash() != "" && !strings.HasPrefix(basic.GetPasswordHash(), "$2") {
 				hashed, err := passhash.Password(basic.GetPasswordHash())
 				if err != nil {
@@ -244,7 +244,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 	}
 
 	safeUser := proto.Clone(req.User).(*configv1.User)
-	config.StripSecretsFromAuth(safeUser.Authentication)
+	config.StripSecretsFromAuth(safeUser.GetAuthentication())
 	return &pb.CreateUserResponse{User: safeUser}, nil
 }
 
@@ -265,7 +265,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 	}
 
 	safeUser := proto.Clone(user).(*configv1.User)
-	config.StripSecretsFromAuth(safeUser.Authentication)
+	config.StripSecretsFromAuth(safeUser.GetAuthentication())
 	return &pb.GetUserResponse{User: safeUser}, nil
 }
 
@@ -285,7 +285,7 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 	safeUsers := make([]*configv1.User, 0, len(users))
 	for _, u := range users {
 		safeUser := proto.Clone(u).(*configv1.User)
-		config.StripSecretsFromAuth(safeUser.Authentication)
+		config.StripSecretsFromAuth(safeUser.GetAuthentication())
 		safeUsers = append(safeUsers, safeUser)
 	}
 
@@ -304,8 +304,8 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 		return nil, status.Error(codes.InvalidArgument, "user is required")
 	}
 	// Hash password if needed
-	if req.User.Authentication != nil {
-		if basic := req.User.Authentication.GetBasicAuth(); basic != nil {
+	if req.User.GetAuthentication() != nil {
+		if basic := req.User.GetAuthentication().GetBasicAuth(); basic != nil {
 			if basic.GetPasswordHash() != "" && !strings.HasPrefix(basic.GetPasswordHash(), "$2") {
 				hashed, err := passhash.Password(basic.GetPasswordHash())
 				if err != nil {
@@ -320,7 +320,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 	}
 
 	safeUser := proto.Clone(req.User).(*configv1.User)
-	config.StripSecretsFromAuth(safeUser.Authentication)
+	config.StripSecretsFromAuth(safeUser.GetAuthentication())
 	return &pb.UpdateUserResponse{User: safeUser}, nil
 }
 

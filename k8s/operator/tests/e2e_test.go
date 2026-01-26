@@ -79,7 +79,7 @@ nodes:
 		t.Fatalf("Failed to write temp kind config: %v", err)
 	}
 
-	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "2m"); err != nil {
+	if err := runCommand(t, ctx, rootDir, "kind", "create", "cluster", "--name", clusterName, "--image", kindImage, "--config", tmpConfig, "--wait", "5m"); err != nil {
 		t.Fatalf("Failed to create kind cluster: %v", err)
 	}
 

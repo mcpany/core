@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/user.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -26,17 +25,15 @@ const (
 )
 
 type User struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique ID of the user (UUID or Username).
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// The authentication configuration for the user.
-	Authentication *Authentication `protobuf:"bytes,2,opt,name=authentication" json:"authentication,omitempty"`
-	// The list of profile IDs this user has access to.
-	ProfileIds []string `protobuf:"bytes,3,rep,name=profile_ids" json:"profile_ids,omitempty"`
-	// The list of roles assigned to the user.
-	Roles         []string `protobuf:"bytes,4,rep,name=roles" json:"roles,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,2,opt,name=authentication"`
+	xxx_hidden_ProfileIds     []string               `protobuf:"bytes,3,rep,name=profile_ids"`
+	xxx_hidden_Roles          []string               `protobuf:"bytes,4,rep,name=roles"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
@@ -65,69 +62,74 @@ func (x *User) ProtoReflect() protoreflect.Message {
 }
 
 func (x *User) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *User) GetAuthentication() *Authentication {
 	if x != nil {
-		return x.Authentication
+		return x.xxx_hidden_Authentication
 	}
 	return nil
 }
 
 func (x *User) GetProfileIds() []string {
 	if x != nil {
-		return x.ProfileIds
+		return x.xxx_hidden_ProfileIds
 	}
 	return nil
 }
 
 func (x *User) GetRoles() []string {
 	if x != nil {
-		return x.Roles
+		return x.xxx_hidden_Roles
 	}
 	return nil
 }
 
 func (x *User) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *User) SetAuthentication(v *Authentication) {
-	x.Authentication = v
+	x.xxx_hidden_Authentication = v
 }
 
 func (x *User) SetProfileIds(v []string) {
-	x.ProfileIds = v
+	x.xxx_hidden_ProfileIds = v
 }
 
 func (x *User) SetRoles(v []string) {
-	x.Roles = v
+	x.xxx_hidden_Roles = v
 }
 
 func (x *User) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *User) HasAuthentication() bool {
 	if x == nil {
 		return false
 	}
-	return x.Authentication != nil
+	return x.xxx_hidden_Authentication != nil
 }
 
 func (x *User) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *User) ClearAuthentication() {
-	x.Authentication = nil
+	x.xxx_hidden_Authentication = nil
 }
 
 type User_builder struct {
@@ -147,10 +149,13 @@ func (b0 User_builder) Build() *User {
 	m0 := &User{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Authentication = b.Authentication
-	x.ProfileIds = b.ProfileIds
-	x.Roles = b.Roles
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Authentication = b.Authentication
+	x.xxx_hidden_ProfileIds = b.ProfileIds
+	x.xxx_hidden_Roles = b.Roles
 	return m0
 }
 
@@ -158,12 +163,12 @@ var File_proto_config_v1_user_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a\x1aproto/config/v1/auth.proto\"\x98\x01\n" +
+	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\"\x98\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05rolesB3B\tUserProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x05roles\x18\x04 \x03(\tR\x05rolesB;B\tUserProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_user_proto_goTypes = []any{
