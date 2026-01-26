@@ -55,9 +55,6 @@ k8s-e2e:
 
 k8s-test: k8s-e2e
 
-update-screenshots:
-	$(MAKE) -C ui update-screenshots
-
 lint:
 	$(MAKE) -C server lint
 
