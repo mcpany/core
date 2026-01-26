@@ -76,3 +76,23 @@ func TestRedactor_Bug_StringInComment_CorruptsStructure(t *testing.T) {
 	expected := input
 	assert.Equal(t, expected, string(redacted))
 }
+
+func TestRedactor_Bug_DivisionBeforeComment(t *testing.T) {
+	// A division operator / before a comment // should not hide the comment.
+	// If it does, the redactor might try to redact content inside the comment.
+	// We use "user@example.com" inside the comment, which would be redacted if seen as a string.
+	input := `{"a": 10 / 5 // "user@example.com"
+, "b": "safe"}`
+
+	cfg := &configv1.DLPConfig{
+		Enabled: proto.Bool(true),
+	}
+
+	r := middleware.NewRedactor(cfg, nil)
+
+	redacted, err := r.RedactJSON([]byte(input))
+	assert.NoError(t, err)
+
+	// We expect NO changes because the PII is commented out.
+	assert.Equal(t, input, string(redacted))
+}

@@ -139,6 +139,16 @@ func TestWalkJSONStrings(t *testing.T) {
 			},
 			expected: `{ /* "ignore" */ "key": "REPLACED" }`,
 		},
+		{
+			name: "division before comment",
+			input: `{"a": [ 10 / 5, // "commented"
+ "valid" ]}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"REPLACED"`), true
+			},
+			expected: `{"a": [ 10 / 5, // "commented"
+ "REPLACED" ]}`,
+		},
 	}
 
 	for _, tt := range tests {
