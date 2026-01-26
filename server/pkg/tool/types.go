@@ -1703,22 +1703,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForAbsolutePath(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
+					if err := validateInputString(k, val, isDocker, t.service.GetCommand(), arg, placeholder); err != nil {
+						return nil, err
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -1745,22 +1731,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForAbsolutePath(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
+						if err := validateInputString("args", argStr, isDocker, t.service.GetCommand(), "", ""); err != nil {
+							return nil, err
 						}
 						args = append(args, argStr)
 					} else {
@@ -2012,22 +1984,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForAbsolutePath(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
+					if err := validateInputString(k, val, isDocker, t.service.GetCommand(), arg, placeholder); err != nil {
+						return nil, err
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -2054,22 +2012,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForAbsolutePath(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
+						if err := validateInputString("args", argStr, isDocker, t.service.GetCommand(), "", ""); err != nil {
+							return nil, err
 						}
 						args = append(args, argStr)
 					} else {
@@ -2438,6 +2382,34 @@ func checkForPathTraversal(val string) error {
 			}
 		}
 		i++
+	}
+
+	// Extra Robustness: Use filepath.Clean to resolve path and check if it attempts to go up.
+	// This helps catch edge cases that string matching might miss.
+	cleaned := filepath.Clean(val)
+	if strings.HasPrefix(cleaned, ".."+string(os.PathSeparator)) || cleaned == ".." {
+		return fmt.Errorf("path traversal attempt detected (cleaned path escapes root)")
+	}
+
+	return nil
+}
+
+func validateInputString(key string, val string, isDocker bool, serviceCmd string, templateArg string, placeholder string) error {
+	if err := checkForPathTraversal(val); err != nil {
+		return fmt.Errorf("parameter %q: %w", key, err)
+	}
+	if !isDocker {
+		if err := checkForAbsolutePath(val); err != nil {
+			return fmt.Errorf("parameter %q: %w", key, err)
+		}
+	}
+	if err := checkForArgumentInjection(val); err != nil {
+		return fmt.Errorf("parameter %q: %w", key, err)
+	}
+	if isShellCommand(serviceCmd) {
+		if err := checkForShellInjection(val, templateArg, placeholder, serviceCmd); err != nil {
+			return fmt.Errorf("parameter %q: %w", key, err)
+		}
 	}
 	return nil
 }

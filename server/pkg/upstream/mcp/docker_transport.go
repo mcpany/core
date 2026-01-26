@@ -108,8 +108,10 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}
 
 	envVars := make([]string, 0, len(resolvedEnv))
+	secrets := make([]string, 0, len(resolvedEnv))
 	for k, v := range resolvedEnv {
 		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
+		secrets = append(secrets, v)
 	}
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
@@ -153,7 +155,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 
 	go func() {
 		defer func() { _ = stdoutWriter.Close() }()
-		logWriter := &slogWriter{log: log, level: slog.LevelError}
+		logWriter := &slogWriter{log: log, level: slog.LevelError, redactionList: secrets}
 		// Write stderr to both capture buffer and log
 		multiStderr := io.MultiWriter(logWriter, stderrCapture)
 		_, err := stdcopy.StdCopy(stdoutWriter, multiStderr, hijackedResp.Reader)
@@ -365,8 +367,9 @@ func (c *dockerReadWriteCloser) Close() error {
 // slogWriter implements the io.Writer interface, allowing it to be used as a
 // destination for log output. It writes each line of the input to a slog.Logger.
 type slogWriter struct {
-	log   *slog.Logger
-	level slog.Level
+	log           *slog.Logger
+	level         slog.Level
+	redactionList []string
 }
 
 // Write takes a byte slice, scans it for lines, and logs each line
@@ -374,7 +377,11 @@ type slogWriter struct {
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
-		s.log.Log(context.Background(), s.level, scanner.Text())
+		text := scanner.Text()
+		if len(s.redactionList) > 0 {
+			text = util.RedactSecrets(text, s.redactionList)
+		}
+		s.log.Log(context.Background(), s.level, text)
 	}
 	return len(p), nil
 }

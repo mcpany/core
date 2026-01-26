@@ -20,7 +20,8 @@ import (
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
-	Command *exec.Cmd
+	Command       *exec.Cmd
+	RedactionList []string
 }
 
 // Connect starts the command and returns a connection.
@@ -51,7 +52,7 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	stderrCapture := &tailBuffer{limit: 4096}
 	// We also want to log stderr to the application logs
 	// Note: slog.LevelError is imported from "log/slog"
-	logWriter := &slogWriter{log: log, level: slog.LevelError}
+	logWriter := &slogWriter{log: log, level: slog.LevelError, redactionList: t.RedactionList}
 
 	multiStderr := io.MultiWriter(stderrCapture, logWriter)
 

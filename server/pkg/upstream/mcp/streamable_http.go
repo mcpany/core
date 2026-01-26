@@ -363,12 +363,13 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 			if c.globalSettings != nil {
 				useSudo = c.globalSettings.GetUseSudoForDocker()
 			}
-			cmd, err := buildCommandFromStdioConfig(ctx, c.stdioConfig, useSudo)
+			cmd, secrets, err := buildCommandFromStdioConfig(ctx, c.stdioConfig, useSudo)
 			if err != nil {
 				return fmt.Errorf("failed to build command from stdio config: %w", err)
 			}
 			transport = &StdioTransport{
-				Command: cmd,
+				Command:       cmd,
+				RedactionList: secrets,
 			}
 		}
 	case c.bundleTransport != nil:
@@ -429,12 +430,18 @@ func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams
 // buildCommandFromStdioConfig constructs an *exec.Cmd from an McpStdioConnection
 // configuration. It combines the setup commands and the main command into a
 // single shell script to be executed.
-func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (*exec.Cmd, error) {
+// It also returns the list of secrets values for redaction.
+func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (*exec.Cmd, []string, error) {
 	command := stdio.GetCommand()
 	args := stdio.GetArgs()
 	resolvedEnv, err := util.ResolveSecretMap(ctx, stdio.GetEnv(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+
+	secrets := make([]string, 0, len(resolvedEnv))
+	for _, v := range resolvedEnv {
+		secrets = append(secrets, v)
 	}
 
 	// Pre-flight check: Ensure the command exists.
@@ -443,7 +450,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	// However, if the command is NOT docker, we should check if it exists.
 	if command != "docker" {
 		if _, err := exec.LookPath(command); err != nil {
-			return nil, fmt.Errorf("command not found: %s. Please check that the executable exists and is in the system PATH", command)
+			return nil, nil, fmt.Errorf("command not found: %s. Please check that the executable exists and is in the system PATH", command)
 		}
 	}
 
@@ -463,10 +470,10 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 		// Validate required environment variables
 		if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
-		return cmd, nil
+		return cmd, secrets, nil
 	}
 
 	// Combine all commands into a single script.
@@ -483,15 +490,15 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 		// Validate required environment variables
 		if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
-		return cmd, nil
+		return cmd, secrets, nil
 	}
 
 	// Sentinel Security: Disable setup_commands by default as they allow arbitrary command execution.
 	if os.Getenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS") != "true" {
-		return nil, fmt.Errorf("setup_commands are disabled by default for security reasons. Set MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true to enable them if you trust the configuration")
+		return nil, nil, fmt.Errorf("setup_commands are disabled by default for security reasons. Set MCP_ALLOW_UNSAFE_SETUP_COMMANDS=true to enable them if you trust the configuration")
 	}
 
 	logging.GetLogger().Warn("Using setup_commands in StdioTransport is dangerous and allows Command Injection if config is untrusted.", "setup_commands", "HIDDEN")
@@ -513,10 +520,10 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	// Validate required environment variables
 	if err := validateRequiredEnv(env, stdio.GetValidation()); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return cmd, nil
+	return cmd, secrets, nil
 }
 
 func validateRequiredEnv(env []string, validation *configv1.EnvValidation) error {
@@ -637,13 +644,14 @@ func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnectio
 		}
 		return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
 	}
-	cmd, err := buildCommandFromStdioConfig(ctx, stdio, useSudo)
+	cmd, secrets, err := buildCommandFromStdioConfig(ctx, stdio, useSudo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build command: %w", err)
 	}
 	// Use our robust StdioTransport instead of mcp.CommandTransport
 	return &StdioTransport{
-		Command: cmd,
+		Command:       cmd,
+		RedactionList: secrets,
 	}, nil
 }
 

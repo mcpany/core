@@ -38,7 +38,7 @@ func TestStdioTransport_EnvironmentSecurity(t *testing.T) {
 		},
 	}.Build()
 
-	cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
+	cmd, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 	require.NoError(t, err)
 
 	// Verify cmd.Env directly

@@ -28,7 +28,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		cmd, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
 		assert.NotNil(t, cmd)
 		assert.Contains(t, cmd.Env, "REQUIRED_VAR=present")
@@ -43,7 +43,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		cmd, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.Error(t, err)
 		assert.Nil(t, cmd)
 		assert.Contains(t, err.Error(), "missing required environment variables: MISSING_VAR")
@@ -58,7 +58,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		cmd, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
 		assert.NotNil(t, cmd)
 		found := false
@@ -79,7 +79,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		_, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		_, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "missing required environment variables: MISSING_1, MISSING_2")
 	})
@@ -98,7 +98,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		cmd, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
 		assert.NotNil(t, cmd)
 		assert.Contains(t, cmd.Env, "DOCKER_ENV=val")
@@ -113,7 +113,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		_, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		_, _, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "missing required environment variables: MISSING_DOCKER_VAR")
 	})
