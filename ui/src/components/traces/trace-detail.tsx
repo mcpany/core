@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -143,6 +143,7 @@ function WaterfallItem({
  */
 export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();
+    const { toast } = useToast();
 
     if (!trace) {
         return (
@@ -157,6 +158,26 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
          router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
+    };
+
+    const handleExportJSON = () => {
+        if (!trace) return;
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(trace, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `trace-${trace.id}.json`);
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
+    const handleCopyJSON = () => {
+        if (!trace) return;
+        navigator.clipboard.writeText(JSON.stringify(trace, null, 2));
+        toast({
+            title: "Copied to clipboard",
+            description: "Trace JSON has been copied to your clipboard.",
+        });
     };
 
     return (
@@ -186,7 +207,12 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                             <Play className="h-3 w-3" /> Replay in Playground
                         </Button>
                     )}
-                    <Button variant="outline" size="sm">Export JSON</Button>
+                    <Button variant="outline" size="sm" onClick={handleCopyJSON} className="gap-2">
+                        <Copy className="h-3 w-3" /> Copy
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleExportJSON} className="gap-2">
+                        <Download className="h-3 w-3" /> Export JSON
+                    </Button>
                 </div>
             </div>
 

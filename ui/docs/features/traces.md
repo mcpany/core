@@ -29,3 +29,8 @@ To quickly reproduce a bug or test a tool:
 1. Open a trace detail.
 2. Click the **"Replay in Playground"** button.
 3. You will be redirected to the Playground with the tool and arguments pre-filled.
+
+### 4. Export & Share
+To share a trace with your team or attach it to a bug report:
+- **Copy**: Click the **Copy** button to copy the full trace JSON to your clipboard.
+- **Export JSON**: Click **Export JSON** to download the trace as a `.json` file.
