@@ -27,6 +27,7 @@ import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-
 import { Button } from "@/components/ui/button";
 import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
 import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
+import { HealthHistoryCard } from "@/components/health-history";
 
 /**
  * DefinitionsTable component.
@@ -395,6 +396,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">
                 <MetricsCard serviceId={serviceId} />
+                <HealthHistoryCard serviceId={serviceId} />
             </TabsContent>
             <TabsContent value="safety" className="mt-4 grid gap-6">
                 <ToolSafetyTable tools={tools} onUpdate={fetchService} />

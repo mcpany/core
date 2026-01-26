@@ -34,9 +34,21 @@ const (
 	healthCheckLatencyMetric = "mcp_any_health_check_latency_seconds"
 )
 
+// AvailabilityStatus alias for external users
+type AvailabilityStatus = health.AvailabilityStatus
+
+// Exported status constants
+const (
+	StatusUp      = health.StatusUp
+	StatusDown    = health.StatusDown
+	StatusUnknown = health.StatusUnknown
+)
+
 var (
 	globalAlertConfig   *configv1.AlertConfig
 	globalAlertConfigMu sync.RWMutex
+	statusListeners     []func(string, health.AvailabilityStatus)
+	statusListenersMu   sync.RWMutex
 )
 
 // SetGlobalAlertConfig sets the global alert configuration.
@@ -44,6 +56,13 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
+}
+
+// AddStatusListener adds a listener for health status changes.
+func AddStatusListener(f func(string, health.AvailabilityStatus)) {
+	statusListenersMu.Lock()
+	defer statusListenersMu.Unlock()
+	statusListeners = append(statusListeners, f)
 }
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
@@ -146,6 +165,13 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 			if alertConfig != nil && alertConfig.GetEnabled() && alertConfig.GetWebhookUrl() != "" {
 				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
+			}
+
+			statusListenersMu.RLock()
+			listeners := statusListeners
+			statusListenersMu.RUnlock()
+			for _, f := range listeners {
+				f(serviceName, state.Status)
 			}
 		}),
 		// Using synchronous checks for now to simplify the implementation and ensure

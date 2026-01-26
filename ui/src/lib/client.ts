@@ -757,6 +757,18 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the health history for a service.
+     * @param serviceId The service ID.
+     * @returns A promise that resolves to the health history points.
+     */
+    getHealthHistory: async (serviceId: string): Promise<any[]> => {
+        const url = `/api/v1/dashboard/health-history?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) return [];
+        return res.json();
+    },
+
     // Alerts
 
     /**

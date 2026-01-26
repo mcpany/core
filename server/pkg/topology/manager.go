@@ -20,8 +20,15 @@ type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
 	trafficHistory  map[int64]*MinuteStats // Unix timestamp (minute) -> stats
+	healthHistory   map[string][]*HealthPoint
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	toolManager     tool.ManagerInterface
+}
+
+// HealthPoint represents a health status at a point in time.
+type HealthPoint struct {
+	Time   int64  `json:"time"`
+	Status string `json:"status"`
 }
 
 // SessionStats contains statistics about a topology session.
@@ -77,6 +84,7 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 	return &Manager{
 		sessions:        make(map[string]*SessionStats),
 		trafficHistory:  make(map[int64]*MinuteStats),
+		healthHistory:   make(map[string][]*HealthPoint),
 		serviceRegistry: registry,
 		toolManager:     tm,
 	}
@@ -167,6 +175,45 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 			}
 		}
 	}
+}
+
+// RecordHealthStatus records the health status of a service.
+func (m *Manager) RecordHealthStatus(serviceID string, status string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if m.healthHistory == nil {
+		m.healthHistory = make(map[string][]*HealthPoint)
+	}
+
+	m.healthHistory[serviceID] = append(m.healthHistory[serviceID], &HealthPoint{
+		Time:   time.Now().Unix(),
+		Status: status,
+	})
+
+	// Keep last 3000 points (approx 24h at 30s interval)
+	if len(m.healthHistory[serviceID]) > 3000 {
+		m.healthHistory[serviceID] = m.healthHistory[serviceID][len(m.healthHistory[serviceID])-3000:]
+	}
+}
+
+// GetHealthHistory returns the health history for a service.
+func (m *Manager) GetHealthHistory(serviceID string) []*HealthPoint {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	if m.healthHistory == nil {
+		return nil
+	}
+
+	// Return copy
+	history, ok := m.healthHistory[serviceID]
+	if !ok {
+		return nil
+	}
+	result := make([]*HealthPoint, len(history))
+	copy(result, history)
+	return result
 }
 
 // GetStats returns the aggregated stats.

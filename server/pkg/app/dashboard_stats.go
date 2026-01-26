@@ -363,3 +363,32 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		_ = json.NewEncoder(w).Encode(analytics)
 	}
 }
+
+// handleDashboardHealthHistory returns the health history for a service.
+func (a *Application) handleDashboardHealthHistory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.TopologyManager == nil {
+			http.Error(w, "Topology manager not initialized", http.StatusServiceUnavailable)
+			return
+		}
+
+		serviceID := r.URL.Query().Get("serviceId")
+		if serviceID == "" {
+			http.Error(w, "serviceId is required", http.StatusBadRequest)
+			return
+		}
+
+		history := a.TopologyManager.GetHealthHistory(serviceID)
+		if history == nil {
+			history = []*topology.HealthPoint{}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(history)
+	}
+}

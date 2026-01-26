@@ -548,6 +548,19 @@ func (a *Application) Run(opts RunOptions) error {
 	// Initialize Topology Manager
 	a.TopologyManager = topology.NewManager(serviceRegistry, a.ToolManager)
 
+	// Register TopologyManager as a listener for health changes
+	health.AddStatusListener(func(service string, status health.AvailabilityStatus) {
+		s := "unknown"
+		if status == health.StatusUp {
+			s = "up"
+		} else if status == health.StatusDown {
+			s = "down"
+		} else {
+			s = "degraded"
+		}
+		a.TopologyManager.RecordHealthStatus(service, s)
+	})
+
 	// Initialize servers with the message bus
 	mcpSrv, err := mcpserver.NewServer(
 		opts.Ctx,
