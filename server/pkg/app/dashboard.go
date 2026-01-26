@@ -42,7 +42,7 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 			errorRate = stats.ErrorRate
 
 			// Calculate throughput from history (last 60m)
-			history := a.TopologyManager.GetTrafficHistory(serviceID)
+			history := a.TopologyManager.GetTrafficHistory(serviceID, 60*time.Minute)
 			var totalInWindow int64
 			for _, p := range history {
 				totalInWindow += p.Total

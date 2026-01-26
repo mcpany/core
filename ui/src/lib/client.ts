@@ -733,11 +733,15 @@ export const apiClient = {
     /**
      * Gets the dashboard traffic history.
      * @param serviceId Optional service ID to filter by.
+     * @param timeRange Optional time range to filter by (e.g. "1h", "24h").
      * @returns A promise that resolves to the traffic history points.
      */
-    getDashboardTraffic: async (serviceId?: string) => {
-        let url = '/api/v1/dashboard/traffic';
-        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+    getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
+        const params = new URLSearchParams();
+        if (serviceId) params.set('serviceId', serviceId);
+        if (timeRange) params.set('range', timeRange);
+
+        const url = `/api/v1/dashboard/traffic?${params.toString()}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
         return res.json();
