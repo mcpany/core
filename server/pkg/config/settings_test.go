@@ -15,7 +15,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestSettings_Load(t *testing.T) {
@@ -226,11 +225,13 @@ func TestSettings_GetDbDriver(t *testing.T) {
 func TestSettings_GetDlp(t *testing.T) {
 	enabled := true
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{
-			Dlp: &configv1.DLPConfig{
-				Enabled: &enabled,
-			},
-		},
+		proto: func() *configv1.GlobalSettings {
+			gs := &configv1.GlobalSettings{}
+			dlp := &configv1.DLPConfig{}
+			dlp.SetEnabled(enabled)
+			gs.SetDlp(dlp)
+			return gs
+		}(),
 	}
 	assert.NotNil(t, settings.GetDlp())
 	assert.True(t, settings.GetDlp().GetEnabled())
@@ -242,16 +243,20 @@ func TestSettings_GetDlp(t *testing.T) {
 func TestSettings_ExtraGetters(t *testing.T) {
 	// Create a Settings instance manually with populated fields
 	middlewares := []*configv1.Middleware{
-		{
-			Name: proto.String("test-middleware"),
-		},
+		func() *configv1.Middleware {
+			m := &configv1.Middleware{}
+			m.SetName("test-middleware")
+			return m
+		}(),
 	}
 
 	s := &Settings{
 		dbPath: "/path/to/db.sqlite",
-		proto: &configv1.GlobalSettings{
-			Middlewares: middlewares,
-		},
+		proto: func() *configv1.GlobalSettings {
+			gs := &configv1.GlobalSettings{}
+			gs.SetMiddlewares(middlewares)
+			return gs
+		}(),
 	}
 
 	assert.Equal(t, "/path/to/db.sqlite", s.DBPath())

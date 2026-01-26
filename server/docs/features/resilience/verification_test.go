@@ -26,14 +26,14 @@ func TestResilienceConfig(t *testing.T) {
 	err = protojson.Unmarshal(jsonContent, cfg)
 	require.NoError(t, err)
 
-	require.Len(t, cfg.UpstreamServices, 1)
-	service := cfg.UpstreamServices[0]
+	require.Len(t, cfg.GetUpstreamServices(), 1)
+	service := cfg.GetUpstreamServices()[0]
 
 	require.Equal(t, "resilient-service", service.GetName())
-	require.NotNil(t, service.Resilience)
-	require.NotNil(t, service.Resilience.CircuitBreaker)
-	require.Equal(t, 0.5, service.Resilience.CircuitBreaker.GetFailureRateThreshold())
-	require.Equal(t, int64(5), service.Resilience.CircuitBreaker.GetOpenDuration().GetSeconds())
+	require.NotNil(t, service.GetResilience())
+	require.NotNil(t, service.GetResilience().GetCircuitBreaker())
+	require.Equal(t, 0.5, service.GetResilience().GetCircuitBreaker().GetFailureRateThreshold())
+	require.Equal(t, int64(5), service.GetResilience().GetCircuitBreaker().GetOpenDuration().GetSeconds())
 
 	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)

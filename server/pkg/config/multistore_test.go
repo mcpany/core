@@ -10,7 +10,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 type MockStore struct {
@@ -32,7 +31,7 @@ func (m *MockStore) GetService(ctx context.Context, name string) (*configv1.Upst
 
 func (m *MockStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if m.Config != nil {
-		return m.Config.UpstreamServices, nil
+		return m.Config.GetUpstreamServices(), nil
 	}
 	return nil, m.Err
 }
@@ -52,18 +51,22 @@ func (m *MockStore) HasConfigSources() bool {
 func TestMultiStore(t *testing.T) {
 	t.Run("MergeConfigs", func(t *testing.T) {
 		s1 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				GlobalSettings: &configv1.GlobalSettings{
-					ApiKey: proto.String("key1"),
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key1")
+				cfg.SetGlobalSettings(gs)
+				return cfg
+			}(),
 		}
 		s2 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				GlobalSettings: &configv1.GlobalSettings{
-					McpListenAddress: proto.String(":8080"),
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetMcpListenAddress(":8080")
+				cfg.SetGlobalSettings(gs)
+				return cfg
+			}(),
 		}
 
 		ms := NewMultiStore(s1, s2)
@@ -76,18 +79,22 @@ func TestMultiStore(t *testing.T) {
 
 	t.Run("OverrideValues", func(t *testing.T) {
 		s1 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				GlobalSettings: &configv1.GlobalSettings{
-					ApiKey: proto.String("key1"),
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key1")
+				cfg.SetGlobalSettings(gs)
+				return cfg
+			}(),
 		}
 		s2 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				GlobalSettings: &configv1.GlobalSettings{
-					ApiKey: proto.String("key2"),
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key2")
+				cfg.SetGlobalSettings(gs)
+				return cfg
+			}(),
 		}
 
 		ms := NewMultiStore(s1, s2)
@@ -113,27 +120,31 @@ func TestMultiStore(t *testing.T) {
 
 	t.Run("MergeLists", func(t *testing.T) {
 		s1 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{Name: proto.String("svc1")},
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc1 := &configv1.UpstreamServiceConfig{}
+				svc1.SetName("svc1")
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc1})
+				return cfg
+			}(),
 		}
 		s2 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{Name: proto.String("svc2")},
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc2 := &configv1.UpstreamServiceConfig{}
+				svc2.SetName("svc2")
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc2})
+				return cfg
+			}(),
 		}
 
 		ms := NewMultiStore(s1, s2)
 		cfg, err := ms.Load(context.Background())
 		assert.NoError(t, err)
 
-		assert.Len(t, cfg.UpstreamServices, 2)
-		assert.Equal(t, "svc1", cfg.UpstreamServices[0].GetName())
-		assert.Equal(t, "svc2", cfg.UpstreamServices[1].GetName())
+		assert.Len(t, cfg.GetUpstreamServices(), 2)
+		assert.Equal(t, "svc1", cfg.GetUpstreamServices()[0].GetName())
+		assert.Equal(t, "svc2", cfg.GetUpstreamServices()[1].GetName())
 	})
 
 	t.Run("NilConfigIgnored", func(t *testing.T) {
@@ -141,11 +152,13 @@ func TestMultiStore(t *testing.T) {
 			Config: nil, // Should be ignored
 		}
 		s2 := &MockStore{
-			Config: &configv1.McpAnyServerConfig{
-				GlobalSettings: &configv1.GlobalSettings{
-					ApiKey: proto.String("key2"),
-				},
-			},
+			Config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key2")
+				cfg.SetGlobalSettings(gs)
+				return cfg
+			}(),
 		}
 
 		ms := NewMultiStore(s1, s2)

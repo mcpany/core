@@ -177,16 +177,14 @@ func TestFullSystemWebhooks(t *testing.T) {
 			}.Build(),
 		}.Build(),
 		PostCallHooks: []*configv1.CallHook{
-			{
+			configv1.CallHook_builder{
 				Name: proto.String("markdown-converter"),
-				HookConfig: &configv1.CallHook_Webhook{
-					Webhook: configv1.WebhookConfig_builder{
-						Url:           webhookURL,
-						WebhookSecret: secret,
-						Timeout:       TIMESTAMPCB.New(5 * time.Second),
-					}.Build(),
-				},
-			},
+				Webhook: configv1.WebhookConfig_builder{
+					Url:           webhookURL,
+					WebhookSecret: secret,
+					Timeout:       TIMESTAMPCB.New(5 * time.Second),
+				}.Build(),
+			}.Build(),
 		},
 	}.Build()
 

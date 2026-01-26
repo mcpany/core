@@ -115,7 +115,7 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 			return nil, fmt.Errorf("configuration sources provided but loaded configuration is empty. Check if the sources are empty or invalid")
 		}
 		log.Info("No configuration files found or all were empty, using default configuration.")
-		fileConfig = &configv1.McpAnyServerConfig{}
+		fileConfig = configv1.McpAnyServerConfig_builder{}.Build()
 	}
 
 	// Use profiles from config if available, otherwise fall back to global settings
@@ -150,23 +150,21 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		}
 
 		apiKey := GlobalSettings().APIKey()
-		defaultUser := &configv1.User{
+		defaultUser := configv1.User_builder{
 			Id:         proto.String("default"),
 			ProfileIds: profileIDs,
-		}
+		}.Build()
 		if apiKey != "" {
 			headerLoc := configv1.APIKeyAuth_HEADER
-			defaultUser.Authentication = &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_ApiKey{
-					ApiKey: &configv1.APIKeyAuth{
-						ParamName:         proto.String("X-API-Key"),
-						VerificationValue: proto.String(apiKey),
-						In:                &headerLoc,
-					},
-				},
-			}
+			defaultUser.SetAuthentication(configv1.Authentication_builder{
+				ApiKey: configv1.APIKeyAuth_builder{
+					ParamName:         proto.String("X-API-Key"),
+					VerificationValue: proto.String(apiKey),
+					In:                &headerLoc,
+				}.Build(),
+			}.Build())
 		}
-		fileConfig.Users = []*configv1.User{defaultUser}
+		fileConfig.SetUsers([]*configv1.User{defaultUser})
 	}
 
 	return fileConfig, nil

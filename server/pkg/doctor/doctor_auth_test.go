@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestRunChecks_Authentication_ActiveVerification(t *testing.T) {
@@ -42,137 +43,99 @@ func TestRunChecks_Authentication_ActiveVerification(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &configv1.McpAnyServerConfig{
+	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("api-key-success"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_ApiKey{
-						ApiKey: &configv1.APIKeyAuth{
-							ParamName: strPtr("X-API-Key"),
-							Value: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "secret123",
-								},
-							},
-						},
-					},
-				},
-			},
-			{
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						ParamName: strPtr("X-API-Key"),
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("secret123"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("api-key-fail"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_ApiKey{
-						ApiKey: &configv1.APIKeyAuth{
-							ParamName: strPtr("X-API-Key"),
-							Value: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "wrong-key",
-								},
-							},
-						},
-					},
-				},
-			},
-			{
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						ParamName: strPtr("X-API-Key"),
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("wrong-key"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("bearer-success"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_BearerToken{
-						BearerToken: &configv1.BearerTokenAuth{
-							Token: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "valid-token",
-								},
-							},
-						},
-					},
-				},
-			},
-			{
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					BearerToken: configv1.BearerTokenAuth_builder{
+						Token: configv1.SecretValue_builder{
+							PlainText: proto.String("valid-token"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("bearer-fail"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_BearerToken{
-						BearerToken: &configv1.BearerTokenAuth{
-							Token: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "invalid-token",
-								},
-							},
-						},
-					},
-				},
-			},
-			{
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					BearerToken: configv1.BearerTokenAuth_builder{
+						Token: configv1.SecretValue_builder{
+							PlainText: proto.String("invalid-token"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("basic-success"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_BasicAuth{
-						BasicAuth: &configv1.BasicAuth{
-							Username: strPtr("user"),
-							Password: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "pass",
-								},
-							},
-						},
-					},
-				},
-			},
-			{
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					BasicAuth: configv1.BasicAuth_builder{
+						Username: strPtr("user"),
+						Password: configv1.SecretValue_builder{
+							PlainText: proto.String("pass"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("basic-fail"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_BasicAuth{
-						BasicAuth: &configv1.BasicAuth{
-							Username: strPtr("user"),
-							Password: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{
-									PlainText: "wrongpass",
-								},
-							},
-						},
-					},
-				},
-			},
-			{
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					BasicAuth: configv1.BasicAuth_builder{
+						Username: strPtr("user"),
+						Password: configv1.SecretValue_builder{
+							PlainText: proto.String("wrongpass"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
 				Name: strPtr("no-auth-401"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: strPtr(ts.URL),
-					},
-				},
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: strPtr(ts.URL),
+				}.Build(),
 				// No Auth configured
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	results := RunChecks(context.Background(), config)
 

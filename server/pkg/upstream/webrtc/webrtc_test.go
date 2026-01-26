@@ -15,7 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
+	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -67,7 +67,7 @@ func (m *MockToolManager) ListTools() []tool.Tool {
 	return tools
 }
 
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool {
+func (m *MockToolManager) ListMCPTools() []*mcp_sdk.Tool {
 	return nil
 }
 
@@ -82,28 +82,23 @@ func (m *MockToolManager) ClearToolsForService(serviceID string) {
 }
 
 func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-
 func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-
 func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-
 func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
-
 func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
 	return nil
 }
-
 func (m *MockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (interface{}, error) {
 	return nil, errors.New("not implemented")
 }
-
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {
-}
-
+func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool {
 	return true
+}
+func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+	return nil, true
 }
 
 // MockPromptManager is a mock implementation of the PromptManagerInterface.
@@ -151,8 +146,7 @@ func (m *MockPromptManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
 	return nil, false
 }
 
-func (m *MockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {
-}
+func (m *MockPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
 func (m *MockPromptManager) ClearPromptsForService(serviceID string) {
 	m.mu.Lock()
@@ -189,8 +183,7 @@ func (m *MockResourceManager) GetResource(name string) (resource.Resource, bool)
 	return r, ok
 }
 
-func (m *MockResourceManager) RemoveResource(_ string) {
-}
+func (m *MockResourceManager) RemoveResource(_ string) {}
 
 func (m *MockResourceManager) ListResources() []resource.Resource {
 	m.mu.Lock()
@@ -202,8 +195,7 @@ func (m *MockResourceManager) ListResources() []resource.Resource {
 	return resources
 }
 
-func (m *MockResourceManager) OnListChanged(_ func()) {
-}
+func (m *MockResourceManager) OnListChanged(_ func()) {}
 
 func (m *MockResourceManager) ClearResourcesForService(serviceID string) {
 	m.mu.Lock()
@@ -245,18 +237,20 @@ func TestUpstream_Register(t *testing.T) {
 			CallId:      proto.String("echo-call"),
 		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-		calls := make(map[string]*configv1.WebrtcCallDefinition)
-		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
-			Id: proto.String("echo-call"),
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"echo-call": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("echo-call"),
+				}.Build(),
+			},
 		}.Build()
-		webrtcService.SetCalls(calls)
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -289,9 +283,9 @@ func TestUpstream_Register(t *testing.T) {
 		var resourceManager resource.ManagerInterface
 		upstream := NewUpstream(poolManager)
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service")
-		serviceConfig.SetWebrtcService(nil)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-webrtc-service"),
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
@@ -311,18 +305,20 @@ func TestUpstream_Register(t *testing.T) {
 			CallId: proto.String("echo-call"),
 		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-		calls := make(map[string]*configv1.WebrtcCallDefinition)
-		calls["echo-call"] = configv1.WebrtcCallDefinition_builder{
-			Id: proto.String("echo-call"),
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"echo-call": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("echo-call"),
+				}.Build(),
+			},
 		}.Build()
-		webrtcService.SetCalls(calls)
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -336,29 +332,32 @@ func TestUpstream_Register(t *testing.T) {
 		var resourceManager resource.ManagerInterface
 		upstream := NewUpstream(poolManager)
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service")
-		authConfig := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					ParamName: proto.String(""), // Invalid header name
-				},
-			},
-		}
-		serviceConfig.SetUpstreamAuth(authConfig)
+		authConfig := configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String(""), // Invalid header name
+			}.Build(),
+		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		toolDef := &configv1.ToolDefinition{}
-		toolDef.SetName("echo")
-		toolDef.SetCallId("echo-call")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetId("echo-call")
-		webrtcService.SetCalls(map[string]*configv1.WebrtcCallDefinition{
-			"echo-call": callDef,
-		})
-		serviceConfig.SetWebrtcService(webrtcService)
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("echo"),
+					CallId: proto.String("echo-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"echo-call": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("echo-call"),
+				}.Build(),
+			},
+		}.Build()
+
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service"),
+			UpstreamAuth:  authConfig,
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -373,15 +372,20 @@ func TestUpstream_Register(t *testing.T) {
 		var resourceManager resource.ManagerInterface
 		upstream := NewUpstream(poolManager)
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service")
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		toolDef := &configv1.ToolDefinition{}
-		toolDef.SetName("echo")
-		toolDef.SetCallId("non-existent-call-id")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-		serviceConfig.SetWebrtcService(webrtcService)
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("echo"),
+					CallId: proto.String("non-existent-call-id"),
+				}.Build(),
+			},
+		}.Build()
+
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -396,41 +400,47 @@ func TestUpstream_Register(t *testing.T) {
 		resourceManager := NewMockResourceManager()
 		upstream := NewUpstream(poolManager)
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service-with-prompts-and-resources")
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("get-weather"),
+					CallId: proto.String("get-weather-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"get-weather-call": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("get-weather-call"),
+				}.Build(),
+			},
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{
+					Name: proto.String("weather-prompt"),
+					Messages: []*configv1.PromptMessage{
+						configv1.PromptMessage_builder{
+							Text: configv1.TextContent_builder{
+								Text: proto.String("What is the weather in {{.location}}?"),
+							}.Build(),
+						}.Build(),
+					},
+				}.Build(),
+			},
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name: proto.String("weather-resource"),
+					Dynamic: configv1.DynamicResource_builder{
+						WebrtcCall: configv1.WebrtcCallDefinition_builder{
+							Id: proto.String("get-weather-call"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
+		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		toolDef := &configv1.ToolDefinition{}
-		toolDef.SetName("get-weather")
-		toolDef.SetCallId("get-weather-call")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-
-		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetId("get-weather-call")
-		webrtcService.SetCalls(map[string]*configv1.WebrtcCallDefinition{
-			"get-weather-call": callDef,
-		})
-
-		promptDef := &configv1.PromptDefinition{}
-		promptDef.SetName("weather-prompt")
-		promptMessage := &configv1.PromptMessage{}
-		textContent := &configv1.TextContent{}
-		textContent.SetText("What is the weather in {{.location}}?")
-		promptMessage.SetText(textContent)
-		promptDef.SetMessages([]*configv1.PromptMessage{promptMessage})
-		webrtcService.SetPrompts([]*configv1.PromptDefinition{promptDef})
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("weather-resource")
-		dynamicResource := &configv1.DynamicResource{}
-		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("get-weather-call")
-		dynamicResource.SetWebrtcCall(webrtcCall)
-		resourceDef.SetDynamic(dynamicResource)
-		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service-with-prompts-and-resources"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -452,32 +462,35 @@ func TestUpstream_Register(t *testing.T) {
 			return "", errors.New("sanitization failed")
 		}
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-service-with-sanitizer-failure")
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("get-weather"),
+					CallId: proto.String("get-weather-call"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"get-weather-call": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("get-weather-call"),
+				}.Build(),
+			},
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name: proto.String("weather-resource"),
+					Dynamic: configv1.DynamicResource_builder{
+						WebrtcCall: configv1.WebrtcCallDefinition_builder{
+							Id: proto.String("get-weather-call"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
+		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		toolDef := &configv1.ToolDefinition{}
-		toolDef.SetName("get-weather")
-		toolDef.SetCallId("get-weather-call")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-
-		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetId("get-weather-call")
-		webrtcService.SetCalls(map[string]*configv1.WebrtcCallDefinition{
-			"get-weather-call": callDef,
-		})
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("weather-resource")
-		dynamicResource := &configv1.DynamicResource{}
-		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("get-weather-call")
-		dynamicResource.SetWebrtcCall(webrtcCall)
-		resourceDef.SetDynamic(dynamicResource)
-		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-service-with-sanitizer-failure"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -499,18 +512,20 @@ func TestUpstream_Register_ToolNameGeneration(t *testing.T) {
 		CallId:      proto.String("test-call"),
 	}.Build()
 
-	webrtcService := &configv1.WebrtcUpstreamService{}
-	webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-	webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-	calls := make(map[string]*configv1.WebrtcCallDefinition)
-	calls["test-call"] = configv1.WebrtcCallDefinition_builder{
-		Id: proto.String("test-call"),
+	webrtcService := configv1.WebrtcUpstreamService_builder{
+		Address: proto.String("http://127.0.0.1:8080/signal"),
+		Tools:   []*configv1.ToolDefinition{toolDef},
+		Calls: map[string]*configv1.WebrtcCallDefinition{
+			"test-call": configv1.WebrtcCallDefinition_builder{
+				Id: proto.String("test-call"),
+			}.Build(),
+		},
 	}.Build()
-	webrtcService.SetCalls(calls)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-webrtc-service-tool-name-generation")
-	serviceConfig.SetWebrtcService(webrtcService)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:          proto.String("test-webrtc-service-tool-name-generation"),
+		WebrtcService: webrtcService,
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -532,13 +547,15 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 			Disable: proto.Bool(true),
 		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools:   []*configv1.ToolDefinition{toolDef},
+		}.Build()
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-disabled")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-disabled"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 		require.NoError(t, err)
@@ -551,21 +568,25 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
 		toolDef := configv1.ToolDefinition_builder{
-			Name:        proto.String(""), // Empty name
-			Description: proto.String(""), // Empty description -> no summary
+			Name:        proto.String(""),
+			Description: proto.String(""),
 			CallId:      proto.String("call-id"),
 		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-		calls := make(map[string]*configv1.WebrtcCallDefinition)
-		calls["call-id"] = configv1.WebrtcCallDefinition_builder{Id: proto.String("call-id")}.Build()
-		webrtcService.SetCalls(calls)
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools:   []*configv1.ToolDefinition{toolDef},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"call-id": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("call-id"),
+				}.Build(),
+			},
+		}.Build()
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-empty-name")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-empty-name"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 		require.NoError(t, err)
@@ -581,17 +602,20 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		resourceManager := NewMockResourceManager()
 		upstream := NewUpstream(poolManager)
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name:    proto.String("disabled-resource"),
+					Disable: proto.Bool(true),
+				}.Build(),
+			},
+		}.Build()
 
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("disabled-resource")
-		resourceDef.SetDisable(true)
-		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-disabled-resource")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-disabled-resource"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
 		require.NoError(t, err)
@@ -604,19 +628,20 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		resourceManager := NewMockResourceManager()
 		upstream := NewUpstream(poolManager)
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name:    proto.String("resource-missing-call"),
+					Dynamic: configv1.DynamicResource_builder{}.Build(),
+				}.Build(),
+			},
+		}.Build()
 
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("resource-missing-call")
-		dynamicResource := &configv1.DynamicResource{}
-		// No WebrtcCall set
-		resourceDef.SetDynamic(dynamicResource)
-		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-missing-call")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-missing-call"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
 		require.NoError(t, err)
@@ -629,21 +654,24 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		resourceManager := NewMockResourceManager()
 		upstream := NewUpstream(poolManager)
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name: proto.String("resource-call-not-found"),
+					Dynamic: configv1.DynamicResource_builder{
+						WebrtcCall: configv1.WebrtcCallDefinition_builder{
+							Id: proto.String("unknown-call-id"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
+		}.Build()
 
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("resource-call-not-found")
-		dynamicResource := &configv1.DynamicResource{}
-		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("unknown-call-id")
-		dynamicResource.SetWebrtcCall(webrtcCall)
-		resourceDef.SetDynamic(dynamicResource)
-		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-call-not-found")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-call-not-found"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
 		require.NoError(t, err)
@@ -658,30 +686,35 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 
 		toolManager.lastErr = errors.New("fail add tool")
 
-		toolDef := configv1.ToolDefinition_builder{
-			Name:   proto.String("tool1"),
-			CallId: proto.String("call1"),
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("tool1"),
+					CallId: proto.String("call1"),
+				}.Build(),
+			},
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"call1": configv1.WebrtcCallDefinition_builder{
+					Id: proto.String("call1"),
+				}.Build(),
+			},
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name: proto.String("resource1"),
+					Dynamic: configv1.DynamicResource_builder{
+						WebrtcCall: configv1.WebrtcCallDefinition_builder{
+							Id: proto.String("call1"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
 		}.Build()
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
-		webrtcService.SetTools([]*configv1.ToolDefinition{toolDef})
-		calls := make(map[string]*configv1.WebrtcCallDefinition)
-		calls["call1"] = configv1.WebrtcCallDefinition_builder{Id: proto.String("call1")}.Build()
-		webrtcService.SetCalls(calls)
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("resource1")
-		dynamicResource := &configv1.DynamicResource{}
-		webrtcCall := &configv1.WebrtcCallDefinition{}
-		webrtcCall.SetId("call1")
-		dynamicResource.SetWebrtcCall(webrtcCall)
-		resourceDef.SetDynamic(dynamicResource)
-		webrtcService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-tool-not-found")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-tool-not-found"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
 		require.NoError(t, err)
@@ -694,17 +727,20 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		promptManager := NewMockPromptManager()
 		upstream := NewUpstream(poolManager)
 
-		webrtcService := &configv1.WebrtcUpstreamService{}
-		webrtcService.SetAddress("http://127.0.0.1:8080/signal")
+		webrtcService := configv1.WebrtcUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080/signal"),
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{
+					Name:    proto.String("disabled-prompt"),
+					Disable: proto.Bool(true),
+				}.Build(),
+			},
+		}.Build()
 
-		promptDef := &configv1.PromptDefinition{}
-		promptDef.SetName("disabled-prompt")
-		promptDef.SetDisable(true)
-		webrtcService.SetPrompts([]*configv1.PromptDefinition{promptDef})
-
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-webrtc-disabled-prompt")
-		serviceConfig.SetWebrtcService(webrtcService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name:          proto.String("test-webrtc-disabled-prompt"),
+			WebrtcService: webrtcService,
+		}.Build()
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, nil, false)
 		require.NoError(t, err)
@@ -771,8 +807,4 @@ func TestUpstream_Register_CornerCases(t *testing.T) {
 		assert.Len(t, requiredList, 1)
 		assert.Equal(t, "param1", requiredList[0].GetStringValue())
 	})
-}
-
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, true
 }

@@ -18,10 +18,10 @@ import (
 
 func TestMilvusClient_Query(t *testing.T) {
 	mock := &mockMilvusClient{}
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 	c := &MilvusClient{
 		config: config,
 		client: mock,
@@ -73,10 +73,10 @@ func TestMilvusClient_Query(t *testing.T) {
 
 func TestMilvusClient_Query_Errors(t *testing.T) {
 	ctx := context.Background()
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("localhost:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 
 	t.Run("LoadCollection_Fail", func(t *testing.T) {
 		mock := &mockMilvusClient{}
@@ -145,10 +145,10 @@ func TestMilvusClient_Query_Errors(t *testing.T) {
 
 func TestMilvusClient_Upsert(t *testing.T) {
 	mock := &mockMilvusClient{}
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 	c := &MilvusClient{
 		config: config,
 		client: mock,
@@ -185,10 +185,10 @@ func TestMilvusClient_Upsert(t *testing.T) {
 
 func TestMilvusClient_Upsert_Errors(t *testing.T) {
 	ctx := context.Background()
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("localhost:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 
 	t.Run("DescribeCollection_Fail", func(t *testing.T) {
 		mock := &mockMilvusClient{}
@@ -241,10 +241,10 @@ func TestMilvusClient_Upsert_Errors(t *testing.T) {
 
 func TestMilvusClient_Delete(t *testing.T) {
 	mock := &mockMilvusClient{}
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 	c := &MilvusClient{
 		config: config,
 		client: mock,
@@ -275,10 +275,10 @@ func TestMilvusClient_Delete(t *testing.T) {
 
 func TestMilvusClient_Delete_Errors(t *testing.T) {
 	ctx := context.Background()
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("localhost:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 
 	t.Run("DescribeCollection_Fail", func(t *testing.T) {
 		mock := &mockMilvusClient{}
@@ -335,10 +335,10 @@ func TestMilvusClient_Delete_Errors(t *testing.T) {
 
 func TestMilvusClient_DescribeIndexStats(t *testing.T) {
 	mock := &mockMilvusClient{}
-	config := &configv1.MilvusVectorDB{
+	config := configv1.MilvusVectorDB_builder{
 		Address:        proto.String("127.0.0.1:19530"),
 		CollectionName: proto.String("test_coll"),
-	}
+	}.Build()
 	c := &MilvusClient{
 		config: config,
 		client: mock,

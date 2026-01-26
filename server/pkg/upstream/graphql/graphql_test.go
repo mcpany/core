@@ -109,10 +109,12 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+	}.Build()
 
 	serviceKey, toolDefs, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)
@@ -133,9 +135,9 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 	userTool, ok := toolManager.GetTool("test-service.test-service-user")
 	require.True(t, ok)
 
-	callableTool, ok := userTool.(*tool.CallableTool)
+	userToolCallable, ok := userTool.(*tool.CallableTool)
 	require.True(t, ok)
-	callable, ok := callableTool.Callable().(*Callable)
+	callable, ok := userToolCallable.Callable().(*Callable)
 	require.True(t, ok)
 
 	assert.Contains(t, callable.query, "user(id: $id) { id name }")
@@ -190,15 +192,17 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	selectionSet := "{ id }"
-	calls := make(map[string]*configv1.GraphQLCallDefinition)
-	calls["user"] = &configv1.GraphQLCallDefinition{}
-	calls["user"].SetSelectionSet(selectionSet)
-	serviceConfig.GetGraphqlService().SetCalls(calls)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+			Calls: map[string]*configv1.GraphQLCallDefinition{
+				"user": configv1.GraphQLCallDefinition_builder{
+					SelectionSet: proto.String("{ id }"),
+				}.Build(),
+			},
+		}.Build(),
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)
@@ -206,9 +210,9 @@ func TestGraphQLUpstream_RegisterWithSelectionSet(t *testing.T) {
 	userTool, ok := toolManager.GetTool("test-service.test-service-user")
 	require.True(t, ok)
 
-	callableTool, ok := userTool.(*tool.CallableTool)
+	userToolCallable, ok := userTool.(*tool.CallableTool)
 	require.True(t, ok)
-	callable, ok := callableTool.Callable().(*Callable)
+	callable, ok := userToolCallable.Callable().(*Callable)
 	require.True(t, ok)
 
 	assert.Contains(t, callable.query, "user(id: $id) { id }")
@@ -265,22 +269,20 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth(t *testing.T) {
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	apiKeyAuth := &configv1.APIKeyAuth{
-		ParamName: proto.String("X-API-Key"),
-		Value: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"},
-		},
-	}
-	authConfig := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: apiKeyAuth,
-		},
-	}
-	serviceConfig.SetUpstreamAuth(authConfig)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+		UpstreamAuth: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String("X-API-Key"),
+				Value: configv1.SecretValue_builder{
+					PlainText: proto.String("test-api-key"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)
@@ -310,22 +312,20 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_IntrospectionFails(t *testing.T)
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	apiKeyAuth := &configv1.APIKeyAuth{
-		ParamName: proto.String("X-API-Key"),
-		Value: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"},
-		},
-	}
-	authConfig := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: apiKeyAuth,
-		},
-	}
-	serviceConfig.SetUpstreamAuth(authConfig)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+		UpstreamAuth: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String("X-API-Key"),
+				Value: configv1.SecretValue_builder{
+					PlainText: proto.String("test-api-key"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.Error(t, err)
@@ -378,22 +378,20 @@ func TestGraphQLUpstream_RegisterWithAPIKeyAuth_ToolCallFails(t *testing.T) {
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
-	apiKeyAuth := &configv1.APIKeyAuth{
-		ParamName: proto.String("X-API-Key"),
-		Value: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "test-api-key"},
-		},
-	}
-	authConfig := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: apiKeyAuth,
-		},
-	}
-	serviceConfig.SetUpstreamAuth(authConfig)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+		UpstreamAuth: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String("X-API-Key"),
+				Value: configv1.SecretValue_builder{
+					PlainText: proto.String("test-api-key"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.NoError(t, err)
@@ -425,12 +423,15 @@ func TestGraphQLTool_ExecuteQuery(t *testing.T) {
 	}))
 	defer server.Close()
 
-	toolDef := &configv1.ToolDefinition{}
-	toolDef.SetName("test-service-user")
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	toolDef := configv1.ToolDefinition_builder{
+		Name: proto.String("test-service-user"),
+	}.Build()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+	}.Build()
 
 	callable := &Callable{
 		client: graphql.NewClient(server.URL),
@@ -472,12 +473,15 @@ func TestGraphQLTool_ExecuteMutation(t *testing.T) {
 	}))
 	defer server.Close()
 
-	toolDef := &configv1.ToolDefinition{}
-	toolDef.SetName("test-service-createUser")
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress(server.URL)
+	toolDef := configv1.ToolDefinition_builder{
+		Name: proto.String("test-service-createUser"),
+	}.Build()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+	}.Build()
 
 	callable := &Callable{
 		client: graphql.NewClient(server.URL),
@@ -508,10 +512,12 @@ func TestGraphQLUpstream_Register_InvalidAddress(t *testing.T) {
 	upstream := NewGraphQLUpstream()
 	toolManager := tool.NewManager(nil)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service-invalid")
-	serviceConfig.SetGraphqlService(&configv1.GraphQLUpstreamService{})
-	serviceConfig.GetGraphqlService().SetAddress("file:///etc/passwd")
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-invalid"),
+		GraphqlService: configv1.GraphQLUpstreamService_builder{
+			Address: proto.String("file:///etc/passwd"),
+		}.Build(),
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
 	require.Error(t, err)
