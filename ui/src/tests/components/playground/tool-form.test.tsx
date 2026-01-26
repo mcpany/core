@@ -40,7 +40,7 @@ describe("ToolForm", () => {
   it("renders form mode by default", () => {
     render(<ToolForm tool={mockTool} onSubmit={handleSubmit} onCancel={handleCancel} />);
     expect(screen.getByRole("tab", { name: "Form" })).toHaveAttribute("data-state", "active");
-    expect(screen.getByRole("button", { name: "Build Command" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Run" })).toBeInTheDocument();
   });
 
   it("switches to Schema tab and displays schema", async () => {
@@ -82,5 +82,17 @@ describe("ToolForm", () => {
     // Use fireEvent to bypass opacity/visibility checks
     fireEvent.click(copyBtn);
     expect(writeText).toHaveBeenCalledWith(JSON.stringify(mockTool.inputSchema, null, 2));
+  });
+
+  it("calls onSubmit with dryRun=true when Dry Run button is clicked", async () => {
+    const user = userEvent.setup();
+    render(<ToolForm tool={mockTool} onSubmit={handleSubmit} onCancel={handleCancel} />);
+
+    // Fill required field
+    await user.type(screen.getByLabelText("foo*"), "bar");
+
+    await user.click(screen.getByRole("button", { name: "Dry Run" }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(expect.anything(), true);
   });
 });

@@ -15,10 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
+import { ShieldCheck, Play } from "lucide-react";
 
 interface ToolFormProps {
   tool: ToolDefinition;
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit: (data: Record<string, unknown>, dryRun?: boolean) => void;
   onCancel: () => void;
 }
 
@@ -94,9 +95,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       return {};
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmission = (dryRun: boolean = false) => {
     let finalData = formData;
 
     if (mode === "json") {
@@ -116,7 +115,12 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
     }
 
     setErrors({});
-    onSubmit(finalData);
+    onSubmit(finalData, dryRun);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmission(false);
   };
 
   const handleTabChange = (value: string) => {
@@ -272,11 +276,21 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       </Tabs>
 
       <div className="flex justify-end gap-2 pt-4 border-t mt-auto">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="ghost" onClick={onCancel}>
           Cancel
         </Button>
+        <Button
+            type="button"
+            variant="secondary"
+            onClick={() => handleSubmission(true)}
+            title="Execute tool in dry-run mode (no side effects)"
+        >
+            <ShieldCheck className="w-4 h-4 mr-2" />
+            Dry Run
+        </Button>
         <Button type="submit">
-          Build Command
+          <Play className="w-4 h-4 mr-2" />
+          Run
         </Button>
       </div>
     </form>

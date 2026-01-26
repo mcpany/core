@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -38,6 +38,11 @@ import {
 import { ToolForm } from "@/components/playground/tool-form";
 
 type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
+
+interface ToolResult {
+    dry_run?: boolean;
+    [key: string]: unknown;
+}
 
 interface Message {
   id: string;
@@ -108,7 +113,7 @@ export function PlaygroundClient() {
     }
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = async (dryRun: boolean = false) => {
     if (!input.trim()) return;
 
     const userMsg: Message = {
@@ -123,10 +128,10 @@ export function PlaygroundClient() {
     setIsLoading(true);
 
     // Process immediately
-    processResponse(input);
+    processResponse(input, dryRun);
   };
 
-  const handleToolFormSubmit = (data: Record<string, unknown>) => {
+  const handleToolFormSubmit = (data: Record<string, unknown>, dryRun: boolean = false) => {
     if (!toolToConfigure) return;
 
     // Construct the command string from the form data
@@ -153,10 +158,10 @@ export function PlaygroundClient() {
 
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
-    processResponse(command);
+    processResponse(command, dryRun);
   };
 
-  const processResponse = async (userInput: string) => {
+  const processResponse = async (userInput: string, dryRun: boolean = false) => {
 
       // Parse input as "tool_name {json_args}"
       // Logic: First word is tool name. Rest is JSON args.
@@ -201,7 +206,7 @@ export function PlaygroundClient() {
           const result = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
-          });
+          }, dryRun);
           const endTime = performance.now();
           const duration = Math.round(endTime - startTime);
 
@@ -319,13 +324,24 @@ export function PlaygroundClient() {
                         placeholder="e.g. calculator { &quot;operation&quot;: &quot;add&quot;, &quot;a&quot;: 5, &quot;b&quot;: 3 }"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                        onKeyDown={(e) => e.key === "Enter" && handleSend(false)}
                         disabled={isLoading}
-                        className="bg-background shadow-sm pr-20 font-mono text-sm"
+                        className="bg-background shadow-sm pr-24 font-mono text-sm"
                         autoFocus
                     />
-                    <div className="absolute right-1 top-1">
-                        <Button size="sm" className="h-8" onClick={handleSend} disabled={isLoading || !input.trim()}>
+                    <div className="absolute right-1 top-1 flex gap-1">
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleSend(true)}
+                            disabled={isLoading || !input.trim()}
+                            title="Dry Run (No Side Effects)"
+                        >
+                             <ShieldCheck className="size-4 text-muted-foreground hover:text-primary" />
+                             <span className="sr-only">Dry Run</span>
+                        </Button>
+                        <Button size="sm" className="h-8" onClick={() => handleSend(false)} disabled={isLoading || !input.trim()}>
                             {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
                             <span className="sr-only">Send</span>
                         </Button>
@@ -419,13 +435,19 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
     }
 
     if (message.type === "tool-result") {
+         const isDryRun = (message.toolResult as ToolResult)?.dry_run === true;
          return (
             <div className="flex justify-start gap-3 pl-11 w-full pr-10">
                  <Collapsible className="w-full group" defaultOpen>
                     <div className="flex items-center justify-between rounded-t-md border border-b-0 bg-muted/30 px-3 py-2 text-xs shadow-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
-                            <Sparkles className="size-3 text-green-500" />
+                            <Sparkles className={`size-3 ${isDryRun ? "text-amber-500" : "text-green-500"}`} />
                             <span className="font-medium">Result ({message.toolName})</span>
+                            {isDryRun && (
+                                <Badge variant="outline" className="ml-2 text-[10px] h-5 px-1.5 font-mono text-amber-600 border-amber-200 bg-amber-50">
+                                    DRY RUN
+                                </Badge>
+                            )}
                             {message.duration !== undefined && (
                                 <Badge variant="outline" className="ml-2 text-[10px] h-5 px-1.5 font-mono text-muted-foreground bg-background/50">
                                     {message.duration}ms
