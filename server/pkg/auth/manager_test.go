@@ -23,19 +23,17 @@ func TestManager_SettersAndGetters(t *testing.T) {
 	// We can't verify private field easily without reflection or exposing getter, or testing behavior.
 	// InitiateOAuth fails if storage is nil, succeeds if set.
 	ctx := context.Background()
-	svc := &configv1.UpstreamServiceConfig{
+	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("svc"),
-		UpstreamAuth: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oauth2{
-				Oauth2: &configv1.OAuth2Auth{
-					ClientId:         &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "id"}},
-					ClientSecret:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "secret"}},
-					AuthorizationUrl: proto.String("http://auth"),
-					TokenUrl:         proto.String("http://token"),
-				},
-			},
-		},
-	}
+		UpstreamAuth: configv1.Authentication_builder{
+			Oauth2: configv1.OAuth2Auth_builder{
+				ClientId:         configv1.SecretValue_builder{PlainText: proto.String("id")}.Build(),
+				ClientSecret:     configv1.SecretValue_builder{PlainText: proto.String("secret")}.Build(),
+				AuthorizationUrl: proto.String("http://auth"),
+				TokenUrl:         proto.String("http://token"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	require.NoError(t, store.SaveService(ctx, svc))
 
 	_, _, err := am.InitiateOAuth(ctx, "u", "svc", "", "http://cb")
@@ -43,16 +41,14 @@ func TestManager_SettersAndGetters(t *testing.T) {
 
 	// Test SetUsers and GetUser
 	users := []*configv1.User{
-		{
+		configv1.User_builder{
 			Id: proto.String("user1"),
-			Authentication: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_BasicAuth{
-					BasicAuth: &configv1.BasicAuth{
-						PasswordHash: proto.String("hash"),
-					},
-				},
-			},
-		},
+			Authentication: configv1.Authentication_builder{
+				BasicAuth: configv1.BasicAuth_builder{
+					PasswordHash: proto.String("hash"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 	am.SetUsers(users)
 

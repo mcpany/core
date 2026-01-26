@@ -702,7 +702,7 @@ func (u *Upstream) registerTools(
 			continue
 		}
 
-		callDef := &configv1.MCPCallDefinition{}
+		callDef := configv1.MCPCallDefinition_builder{}.Build()
 		if hasConfig {
 			if call, callOk := calls[configTool.GetCallId()]; callOk {
 				callDef = call
@@ -762,7 +762,7 @@ func (u *Upstream) registerTools(
 
 			// Apply other annotations/hints
 			if pbTool.Annotations == nil {
-				pbTool.Annotations = &v1.ToolAnnotations{}
+				pbTool.Annotations = v1.ToolAnnotations_builder{}.Build()
 			}
 			if configTool.GetReadOnlyHint() { // Only override if true? Or if set? Proto bool is false by default.
 				pbTool.Annotations.ReadOnlyHint = proto.Bool(configTool.GetReadOnlyHint())

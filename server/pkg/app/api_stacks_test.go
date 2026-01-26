@@ -15,7 +15,6 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleStackConfig_Get(t *testing.T) {
@@ -24,19 +23,16 @@ func TestHandleStackConfig_Get(t *testing.T) {
 
 	// Setup: Create a stack (collection)
 	stackID := "test-stack"
-	collection := &configv1.Collection{
-		Name: proto.String(stackID),
-		Services: []*configv1.UpstreamServiceConfig{
-			{
-				Name: proto.String("svc1"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: proto.String("http://example.com"),
-					},
-				},
-			},
-		},
-	}
+	httpSvc := &configv1.HttpUpstreamService{}
+	httpSvc.SetAddress("http://example.com")
+
+	svc1 := &configv1.UpstreamServiceConfig{}
+	svc1.SetName("svc1")
+	svc1.SetHttpService(httpSvc)
+
+	collection := &configv1.Collection{}
+	collection.SetName(stackID)
+	collection.SetServices([]*configv1.UpstreamServiceConfig{svc1})
 	require.NoError(t, store.SaveServiceCollection(context.Background(), collection))
 
 	// Test GET

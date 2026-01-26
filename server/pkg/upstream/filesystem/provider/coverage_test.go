@@ -100,7 +100,7 @@ func TestZipProvider_Methods(t *testing.T) {
 	require.NoError(t, zFile.Close())
 
 	// Now load it
-	cfg := &configv1.ZipFs{FilePath: proto.String(tmpZip)}
+	cfg := configv1.ZipFs_builder{FilePath: proto.String(tmpZip)}.Build()
 	p, err := NewZipProvider(cfg)
 	require.NoError(t, err)
 	defer p.Close()
@@ -114,7 +114,8 @@ func TestZipProvider_Methods(t *testing.T) {
 
 func TestZipProvider_Errors(t *testing.T) {
 	// 1. File not found
-	_, err := NewZipProvider(&configv1.ZipFs{FilePath: proto.String("non_existent.zip")})
+	cfg1 := configv1.ZipFs_builder{FilePath: proto.String("non_existent.zip")}.Build()
+	_, err := NewZipProvider(cfg1)
 	assert.Error(t, err)
 
 	// 2. Not a zip file
@@ -122,7 +123,8 @@ func TestZipProvider_Errors(t *testing.T) {
 	err = os.WriteFile(tmpFile, []byte("not a zip"), 0644)
 	require.NoError(t, err)
 
-	_, err = NewZipProvider(&configv1.ZipFs{FilePath: proto.String(tmpFile)})
+	cfg2 := configv1.ZipFs_builder{FilePath: proto.String(tmpFile)}.Build()
+	_, err = NewZipProvider(cfg2)
 	assert.Error(t, err)
 }
 

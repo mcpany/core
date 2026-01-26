@@ -15,7 +15,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestSplunkAuditStore(t *testing.T) {
@@ -48,13 +47,12 @@ func TestSplunkAuditStore(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &configv1.SplunkConfig{
-		HecUrl:     proto.String(ts.URL + "/services/collector/event"),
-		Token:      proto.String("my-token"),
-		Index:      proto.String("my-index"),
-		Source:     proto.String("my-source"),
-		Sourcetype: proto.String("my-sourcetype"),
-	}
+	config := &configv1.SplunkConfig{}
+	config.SetHecUrl(ts.URL + "/services/collector/event")
+	config.SetToken("my-token")
+	config.SetIndex("my-index")
+	config.SetSource("my-source")
+	config.SetSourcetype("my-sourcetype")
 
 	store := NewSplunkAuditStore(config)
 
@@ -103,9 +101,8 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &configv1.SplunkConfig{
-		HecUrl: proto.String(ts.URL),
-	}
+	config := &configv1.SplunkConfig{}
+	config.SetHecUrl(ts.URL)
 	store := NewSplunkAuditStore(config)
 
 	for i := 0; i < 5; i++ {

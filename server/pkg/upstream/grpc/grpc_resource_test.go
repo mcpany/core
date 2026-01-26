@@ -149,28 +149,24 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		mockToolManager := new(TestMockToolManager)
 		mockResourceManager := new(MockResourceManager)
 
-		grpcService := &configv1.GrpcUpstreamService{
+		grpcService := configv1.GrpcUpstreamService_builder{
 			Tools: []*configv1.ToolDefinition{
-				{
+				configv1.ToolDefinition_builder{
 					Name:   proto.String("myTool"),
 					CallId: proto.String("call1"),
-				},
+				}.Build(),
 			},
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Name: proto.String("myResource"),
-					ResourceType: &configv1.ResourceDefinition_Dynamic{
-						Dynamic: &configv1.DynamicResource{
-							CallDefinition: &configv1.DynamicResource_GrpcCall{
-								GrpcCall: &configv1.GrpcCallDefinition{
-									Id: proto.String("call1"),
-								},
-							},
-						},
-					},
-				},
+					Dynamic: configv1.DynamicResource_builder{
+						GrpcCall: configv1.GrpcCallDefinition_builder{
+							Id: proto.String("call1"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		mockToolManager.On("GetTool", "test-service.myTool").Return(new(MockTool), true)
 		mockResourceManager.On("AddResource", mock.Anything).Return()
@@ -185,29 +181,25 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		mockToolManager := new(TestMockToolManager)
 		mockResourceManager := new(MockResourceManager)
 
-		grpcService := &configv1.GrpcUpstreamService{
+		grpcService := configv1.GrpcUpstreamService_builder{
 			Tools: []*configv1.ToolDefinition{
-				{
+				configv1.ToolDefinition_builder{
 					Name:   proto.String("myTool"),
 					CallId: proto.String("call1"),
-				},
+				}.Build(),
 			},
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Name:    proto.String("myResource"),
 					Disable: proto.Bool(true),
-					ResourceType: &configv1.ResourceDefinition_Dynamic{
-						Dynamic: &configv1.DynamicResource{
-							CallDefinition: &configv1.DynamicResource_GrpcCall{
-								GrpcCall: &configv1.GrpcCallDefinition{
-									Id: proto.String("call1"),
-								},
-							},
-						},
-					},
-				},
+					Dynamic: configv1.DynamicResource_builder{
+						GrpcCall: configv1.GrpcCallDefinition_builder{
+							Id: proto.String("call1"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
@@ -219,25 +211,21 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		mockToolManager := new(TestMockToolManager)
 		mockResourceManager := new(MockResourceManager)
 
-		grpcService := &configv1.GrpcUpstreamService{
+		grpcService := configv1.GrpcUpstreamService_builder{
 			Tools: []*configv1.ToolDefinition{
 				// No tool matching call ID
 			},
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Name: proto.String("myResource"),
-					ResourceType: &configv1.ResourceDefinition_Dynamic{
-						Dynamic: &configv1.DynamicResource{
-							CallDefinition: &configv1.DynamicResource_GrpcCall{
-								GrpcCall: &configv1.GrpcCallDefinition{
-									Id: proto.String("call1"),
-								},
-							},
-						},
-					},
-				},
+					Dynamic: configv1.DynamicResource_builder{
+						GrpcCall: configv1.GrpcCallDefinition_builder{
+							Id: proto.String("call1"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
@@ -249,28 +237,24 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		mockToolManager := new(TestMockToolManager)
 		mockResourceManager := new(MockResourceManager)
 
-		grpcService := &configv1.GrpcUpstreamService{
+		grpcService := configv1.GrpcUpstreamService_builder{
 			Tools: []*configv1.ToolDefinition{
-				{
+				configv1.ToolDefinition_builder{
 					Name:   proto.String("myTool"),
 					CallId: proto.String("call1"),
-				},
+				}.Build(),
 			},
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Name: proto.String("myResource"),
-					ResourceType: &configv1.ResourceDefinition_Dynamic{
-						Dynamic: &configv1.DynamicResource{
-							CallDefinition: &configv1.DynamicResource_GrpcCall{
-								GrpcCall: &configv1.GrpcCallDefinition{
-									Id: proto.String("call1"),
-								},
-							},
-						},
-					},
-				},
+					Dynamic: configv1.DynamicResource_builder{
+						GrpcCall: configv1.GrpcCallDefinition_builder{
+							Id: proto.String("call1"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		mockToolManager.On("GetTool", "test-service.myTool").Return(nil, false)
 
@@ -284,18 +268,16 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		mockToolManager := new(TestMockToolManager)
 		mockResourceManager := new(MockResourceManager)
 
-		grpcService := &configv1.GrpcUpstreamService{
+		grpcService := configv1.GrpcUpstreamService_builder{
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Name: proto.String("myResource"),
-					ResourceType: &configv1.ResourceDefinition_Dynamic{
-						Dynamic: &configv1.DynamicResource{
-							// Missing call definition
-						},
-					},
-				},
+					Dynamic: configv1.DynamicResource_builder{
+						// Missing call definition
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		u.registerDynamicResources(serviceID, grpcService, mockResourceManager, mockToolManager)
 
@@ -307,28 +289,24 @@ func TestRegisterDynamicResources_Detailed(t *testing.T) {
 		mockToolManager := new(TestMockToolManager)
 		mockResourceManager := new(MockResourceManager)
 
-		grpcService := &configv1.GrpcUpstreamService{
+		grpcService := configv1.GrpcUpstreamService_builder{
 			Tools: []*configv1.ToolDefinition{
-				{
+				configv1.ToolDefinition_builder{
 					Name:   proto.String("myTool"),
 					CallId: proto.String("call1"),
-				},
+				}.Build(),
 			},
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Name: proto.String("myResource"),
-					ResourceType: &configv1.ResourceDefinition_Dynamic{
-						Dynamic: &configv1.DynamicResource{
-							CallDefinition: &configv1.DynamicResource_GrpcCall{
-								GrpcCall: &configv1.GrpcCallDefinition{
-									Id: proto.String("call1"),
-								},
-							},
-						},
-					},
-				},
+					Dynamic: configv1.DynamicResource_builder{
+						GrpcCall: configv1.GrpcCallDefinition_builder{
+							Id: proto.String("call1"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 
 		// Return nil tool but true to trigger error in NewDynamicResource
 		mockToolManager.On("GetTool", "test-service.myTool").Return(nil, true)

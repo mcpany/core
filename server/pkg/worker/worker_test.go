@@ -626,9 +626,9 @@ func TestServiceRegistrationWorker_ListRequest(t *testing.T) {
 		resultBus, err := bus.GetBus[*bus.ServiceListResult](bp, bus.ServiceListResultTopic)
 		require.NoError(t, err)
 
-		expectedServices := []*configv1.UpstreamServiceConfig{
-			{Name: ptr("service1")},
-		}
+		s1 := &configv1.UpstreamServiceConfig{}
+		s1.SetName("service1")
+		expectedServices := []*configv1.UpstreamServiceConfig{s1}
 
 		registry := &mockServiceRegistry{
 			getAllServicesFunc: func() ([]*configv1.UpstreamServiceConfig, error) {
