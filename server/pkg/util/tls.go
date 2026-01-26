@@ -11,6 +11,7 @@ import (
 	"os"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 )
 
 // NewHTTPClientWithTLS creates a new *http.Client configured with the specified
@@ -33,6 +34,9 @@ func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 		}
 
 		if tlsConfig.GetCaCertPath() != "" {
+			if err := validation.IsSecurePath(tlsConfig.GetCaCertPath()); err != nil {
+				return nil, fmt.Errorf("insecure CA certificate path: %w", err)
+			}
 			caCert, err := os.ReadFile(tlsConfig.GetCaCertPath())
 			if err != nil {
 				return nil, fmt.Errorf("failed to read CA certificate: %w", err)
@@ -45,6 +49,12 @@ func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 		}
 
 		if tlsConfig.GetClientCertPath() != "" && tlsConfig.GetClientKeyPath() != "" {
+			if err := validation.IsSecurePath(tlsConfig.GetClientCertPath()); err != nil {
+				return nil, fmt.Errorf("insecure client certificate path: %w", err)
+			}
+			if err := validation.IsSecurePath(tlsConfig.GetClientKeyPath()); err != nil {
+				return nil, fmt.Errorf("insecure client key path: %w", err)
+			}
 			clientCert, err := tls.LoadX509KeyPair(tlsConfig.GetClientCertPath(), tlsConfig.GetClientKeyPath())
 			if err != nil {
 				return nil, fmt.Errorf("failed to load client key pair: %w", err)

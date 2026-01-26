@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -75,11 +76,20 @@ func NewGrpcPool(
 	factory := func(_ context.Context) (*client.GrpcClientWrapper, error) {
 		var transportCreds credentials.TransportCredentials
 		if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
+			if err := validation.IsSecurePath(mtlsConfig.GetClientCertPath()); err != nil {
+				return nil, fmt.Errorf("insecure client certificate path: %w", err)
+			}
+			if err := validation.IsSecurePath(mtlsConfig.GetClientKeyPath()); err != nil {
+				return nil, fmt.Errorf("insecure client key path: %w", err)
+			}
 			certificate, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
 			if err != nil {
 				return nil, err
 			}
 
+			if err := validation.IsSecurePath(mtlsConfig.GetCaCertPath()); err != nil {
+				return nil, fmt.Errorf("insecure CA certificate path: %w", err)
+			}
 			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
 			if err != nil {
 				return nil, err

@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -16,6 +17,7 @@ import (
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -56,19 +58,30 @@ var NewHTTPPool = func(
 	}
 
 	if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
+		if err := validation.IsSecurePath(mtlsConfig.GetClientCertPath()); err != nil {
+			return nil, fmt.Errorf("insecure client certificate path: %w", err)
+		}
+		if err := validation.IsSecurePath(mtlsConfig.GetClientKeyPath()); err != nil {
+			return nil, fmt.Errorf("insecure client key path: %w", err)
+		}
 		cert, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
 		if err != nil {
 			return nil, err
 		}
 		tlsConfig.Certificates = []tls.Certificate{cert}
 
-		caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
-		if err != nil {
-			return nil, err
+		if mtlsConfig.GetCaCertPath() != "" {
+			if err := validation.IsSecurePath(mtlsConfig.GetCaCertPath()); err != nil {
+				return nil, fmt.Errorf("insecure CA certificate path: %w", err)
+			}
+			caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
+			if err != nil {
+				return nil, err
+			}
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(caCert)
+			tlsConfig.RootCAs = caCertPool
 		}
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM(caCert)
-		tlsConfig.RootCAs = caCertPool
 	}
 
 	dialer := util.NewSafeDialer()
