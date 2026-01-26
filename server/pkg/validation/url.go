@@ -20,7 +20,9 @@ const trueVal = "true"
 //
 // NOTE: This function performs DNS resolution to check the IP.
 // It is susceptible to DNS rebinding attacks if the check is separated from the connection.
-// For critical security, use a custom Dialer that validates the IP after resolution.
+// For critical security, ALWAYS use a custom Dialer (like util.SafeDialer) that validates
+// the IP after resolution during the connection phase. This function should be considered
+// an "early warning" check only.
 //
 // IsSafeURL is a variable to allow mocking in tests.
 var IsSafeURL = func(urlStr string) error {

@@ -576,17 +576,37 @@ func RedactSecrets(text string, secrets []string) string {
 	// Sort secrets by length descending to avoid partial replacements (e.g. replacing "pass" in "password")
 	// Although for random secrets this might be less of an issue, but good practice.
 	// Making a copy to avoid mutating the input slice.
-	sortedSecrets := make([]string, len(secrets))
-	copy(sortedSecrets, secrets)
+	sortedSecrets := make([]string, 0, len(secrets)*3)
+	seen := make(map[string]bool)
+
+	for _, secret := range secrets {
+		if secret == "" {
+			continue
+		}
+		if !seen[secret] {
+			sortedSecrets = append(sortedSecrets, secret)
+			seen[secret] = true
+		}
+
+		// Also add URL encoded versions
+		encodedQuery := url.QueryEscape(secret)
+		if encodedQuery != secret && !seen[encodedQuery] {
+			sortedSecrets = append(sortedSecrets, encodedQuery)
+			seen[encodedQuery] = true
+		}
+
+		encodedPath := url.PathEscape(secret)
+		if encodedPath != secret && !seen[encodedPath] {
+			sortedSecrets = append(sortedSecrets, encodedPath)
+			seen[encodedPath] = true
+		}
+	}
 
 	sort.Slice(sortedSecrets, func(i, j int) bool {
 		return len(sortedSecrets[i]) > len(sortedSecrets[j])
 	})
 
 	for _, secret := range sortedSecrets {
-		if secret == "" {
-			continue
-		}
 		text = strings.ReplaceAll(text, secret, redactedPlaceholder)
 	}
 	return text
