@@ -31,6 +31,16 @@ interface OptimizationTabProps {
     onToggleTool: (name: string, disable: boolean) => void;
 }
 
+/**
+ * OptimizationTab displays analysis of tool usage and suggests optimizations.
+ * It identifies "Ghost Tools" which are heavy in tokens but rarely used.
+ *
+ * @param props - The component props.
+ * @param props.tools - The list of available tools.
+ * @param props.toolUsage - A record of tool usage statistics.
+ * @param props.onToggleTool - Callback function to toggle a tool's enabled state.
+ * @returns The rendered optimization tab.
+ */
 export function OptimizationTab({ tools, toolUsage, onToggleTool }: OptimizationTabProps) {
     const analysis = useMemo(() => {
         const ghostTools: { tool: ToolDefinition; tokens: number }[] = [];

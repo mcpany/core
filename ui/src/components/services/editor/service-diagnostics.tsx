@@ -25,6 +25,14 @@ interface DiagnosticResult {
     details?: string;
 }
 
+/**
+ * A component that runs and displays diagnostic checks for a service.
+ * Checks include configuration validation, runtime status, and tool discovery.
+ *
+ * @param props - The component props.
+ * @param props.service - The service configuration to diagnose.
+ * @returns The rendered diagnostic component.
+ */
 export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
     const [running, setRunning] = useState(false);
     const [results, setResults] = useState<DiagnosticResult[]>([]);

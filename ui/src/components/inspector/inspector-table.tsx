@@ -25,8 +25,17 @@ import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "luc
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
+/**
+ * Props for the InspectorTable component.
+ */
 interface InspectorTableProps {
+  /**
+   * List of traces to display in the table.
+   */
   traces: Trace[];
+  /**
+   * Whether the table is currently loading data.
+   */
   loading?: boolean;
 }
 
@@ -45,6 +54,15 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
     }
 }
 
+/**
+ * A table component for displaying and inspecting traces.
+ * Allows clicking on a row to view detailed trace information in a sheet.
+ *
+ * @param props - The component props.
+ * @param props.traces - The list of traces to display.
+ * @param props.loading - Whether the data is loading.
+ * @returns The rendered table component.
+ */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
