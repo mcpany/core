@@ -449,9 +449,11 @@ func isKeyColon(input []byte, endOffset int) bool {
 // dsnPasswordRegex handles fallback cases but we prefer net/url.
 // Matches colon, followed by password (which may start with / if followed by non-/, or be empty), followed by @.
 // We avoid matching :// by ensuring if it starts with /, it's not followed by another /.
+// We allow slashes inside the password (e.g. "pass/word") provided they are not consecutive (to avoid //)
+// and not trailing (to avoid swallowing path).
 // We use [^/?#\s] to stop at path/query/fragment/space, avoiding swallowing the path or matching paths as passwords.
 // This also avoids matching text with spaces (e.g. "Contact: bob@example.com").
-var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?#\s]*|)(@)`)
+var dsnPasswordRegex = regexp.MustCompile(`(:)((?:[^/?#@\s][^/?#\s]*(?:/[^/?#\s]+)*|/[^/?#@\s][^/?#\s]*|))(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
 // We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing

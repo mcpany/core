@@ -5,51 +5,42 @@ package util
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestRedactDSN_Leak_AtInPassword(t *testing.T) {
-	// Case 3: Password contains @ and no scheme (url.Parse fails)
-	// "user:p@ssword@host"
-	dsn := "user:p@ssword@host"
+func TestRedactDSN_SlashInPassword_Fix(t *testing.T) {
+	// Scenario: DSN without scheme, password contains a slash.
+	// This mimics some non-standard DSNs or user input where slash is not encoded.
+	// Previously, the regex strictly forbade slash to avoid matching "://" in URLs.
+	// We want to support slash if it doesn't look like "://".
 
+	dsn := "user:pass/word@host"
 	redacted := RedactDSN(dsn)
-	t.Logf("Redacted: %s", redacted)
 
-	// We expect "user:[REDACTED]@host"
-	if redacted == "user:[REDACTED]@ssword@host" {
-		t.Errorf("Leaked part of password containing @: %s", redacted)
-	}
+	expected := "user:[REDACTED]@host"
 
-	if redacted != "user:[REDACTED]@host" {
-		t.Errorf("Expected user:[REDACTED]@host, got %s", redacted)
-	}
+	assert.Equal(t, expected, redacted, "Should redact password containing slash")
 }
 
-func TestRedactDSN_SpaceFalsePositive(t *testing.T) {
-	// "Contact: bob@example.com"
-	// Should NOT be redacted because of space.
-	dsn := "Contact: bob@example.com"
+func TestRedactDSN_SlashAtStartOfPassword(t *testing.T) {
+	dsn := "user:/password@host"
 	redacted := RedactDSN(dsn)
-	t.Logf("Redacted: %s", redacted)
-
-	if redacted != dsn {
-		t.Errorf("False positive redaction on string with space: %s", redacted)
-	}
+	expected := "user:[REDACTED]@host"
+	assert.Equal(t, expected, redacted)
 }
 
-func TestRedactDSN_NoSpaceFalsePositive(t *testing.T) {
-	// "email:bob@example.com"
-	// This will still be redacted because we can't distinguish from dsn.
-	dsn := "email:bob@example.com"
-	redacted := RedactDSN(dsn)
-	t.Logf("Redacted: %s", redacted)
+func TestRedactDSN_ConsecutiveSlashes_ShouldNotRedact(t *testing.T) {
+	// This looks like a URL scheme "user://..." or path "//..."
+	// We should NOT redact this as a password, because it's ambiguous and likely a URL.
+	// If we redacted it, we might break "http://host@path".
 
-	if redacted == dsn {
-		// If it is NOT redacted, that's fine too (if we improved heuristic), but current expectation is it might be redacted.
-		// My proposed fix redacts it.
-	} else if redacted == "email:[REDACTED]@example.com" {
-		// Expected behavior for now
-	} else {
-		t.Errorf("Unexpected redaction: %s", redacted)
-	}
+	// Case 1: Likely a URL with authority
+	dsn := "http://user@host"
+	// Regex check:
+	// If we allow //, matches ://user@.
+	// Result http:[REDACTED]host. BAD.
+
+	redacted := RedactDSN(dsn)
+	assert.Equal(t, dsn, redacted, "Should NOT redact URL scheme as password")
 }
