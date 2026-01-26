@@ -9,7 +9,8 @@ import { ServiceHealthWidget } from "@/components/dashboard/service-health-widge
 import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap } from "lucide-react";
+import { SystemDiagnosticsWidget } from "@/components/dashboard/system-diagnostics-widget";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Bug } from "lucide-react";
 
 /**
  * Defines the possible sizes for a dashboard widget.
@@ -74,6 +75,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "third",
         component: ToolFailureRateWidget,
         icon: AlertTriangle
+    },
+    {
+        type: "system-diagnostics",
+        title: "System Diagnostics",
+        description: "Automated analysis of system errors and failures.",
+        defaultSize: "third",
+        component: SystemDiagnosticsWidget,
+        icon: Bug
     },
     {
         type: "recent-activity",

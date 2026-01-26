@@ -130,6 +130,49 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock Traces for Diagnostics Widget
+     await page.route('**/api/traces*', async route => {
+        const now = Date.now();
+        await route.fulfill({
+            json: [
+                 {
+                     id: 't1',
+                     timestamp: now,
+                     rootSpan: {
+                         id: 's1',
+                         name: 'filesystem.read',
+                         type: 'tool',
+                         startTime: now,
+                         endTime: now + 120,
+                         status: 'error',
+                         input: { path: '/root/secret' },
+                         output: { error: 'EACCES: permission denied' },
+                         errorMessage: 'EACCES: permission denied'
+                     },
+                     status: 'error',
+                     totalDuration: 120,
+                     trigger: 'user'
+                 },
+                 {
+                     id: 't2',
+                     timestamp: now - 5000,
+                     rootSpan: {
+                         id: 's2',
+                         name: 'calculator.add',
+                         type: 'tool',
+                         startTime: now - 5000,
+                         endTime: now - 4990,
+                         status: 'error',
+                         errorMessage: 'Schema validation error'
+                     },
+                     status: 'error',
+                     totalDuration: 10,
+                     trigger: 'user'
+                 }
+            ]
+        });
+    });
+
   });
 
   test('Dashboard Screenshots', async ({ page }) => {

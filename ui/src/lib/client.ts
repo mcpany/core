@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { Trace } from '@/types/trace';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -766,6 +767,16 @@ export const apiClient = {
     listAlerts: async () => {
         const res = await fetchWithAuth('/api/v1/alerts');
         if (!res.ok) throw new Error('Failed to fetch alerts');
+        return res.json();
+    },
+
+    /**
+     * Lists all traces (Debug/Inspector).
+     * @returns A promise that resolves to a list of traces.
+     */
+    listTraces: async (): Promise<Trace[]> => {
+        const res = await fetchWithAuth('/api/traces');
+        if (!res.ok) throw new Error('Failed to fetch traces');
         return res.json();
     },
 

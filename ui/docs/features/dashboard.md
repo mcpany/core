@@ -38,3 +38,12 @@ The **Quick Actions** widget provides one-click access to the most common manage
 - **Network Map**: Visualize the system topology.
 
 ![Quick Actions](../screenshots/dashboard_quick_actions.png)
+
+### 5. System Diagnostics
+The **System Diagnostics** widget provides automated analysis of system errors.
+
+- **Automated Analysis**: Automatically analyzes recent failed traces to identify root causes (e.g., Schema Validation Errors, Timeouts, Permission Denied).
+- **Prioritization**: Groups and sorts errors by frequency, helping you focus on the most critical issues.
+- **Drill-down**: Provides a direct link to the Inspector to view the full trace details.
+
+![System Diagnostics](../screenshots/dashboard_overview.png)
