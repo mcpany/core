@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -69,15 +70,41 @@ export function DashboardGrid() {
 
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
+        const init = async () => {
+            let loadedWidgets: WidgetInstance[] = [];
+            let loadedFromBackend = false;
 
+            // 1. Try Backend
+            try {
+                const user = await apiClient.getMe();
+                if (user?.preferences?.["dashboard_layout"]) {
+                    loadedWidgets = JSON.parse(user.preferences["dashboard_layout"]);
+                    loadedFromBackend = true;
+                }
+            } catch (e) {
+                // Not logged in or failed to fetch
+            }
+
+            // 2. Try LocalStorage if backend failed
+            if (!loadedFromBackend) {
+                const saved = localStorage.getItem("dashboard-layout");
+                if (saved) {
+                    try {
+                        loadedWidgets = JSON.parse(saved);
+                    } catch (e) {
+                        console.error("Failed to parse local storage", e);
+                    }
+                }
+            }
+
+            // 3. Migration & Apply
+            if (loadedWidgets.length > 0) {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
-                if (parsed.length > 0 && !parsed[0].instanceId) {
-                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                // Check first item
+                const first = loadedWidgets[0] as any;
+                if (first && !first.instanceId) {
+                    const migrated: WidgetInstance[] = loadedWidgets.map((w: any) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
                         title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
@@ -88,8 +115,6 @@ export function DashboardGrid() {
                     // Filter out any invalid types
                     const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
 
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
                     if (validMigrated.length === 0) {
                         setWidgets(DEFAULT_LAYOUT);
                     } else {
@@ -97,20 +122,35 @@ export function DashboardGrid() {
                     }
                 } else {
                     // Case 2: Already in new format
-                    setWidgets(parsed);
+                    setWidgets(loadedWidgets);
                 }
-            } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+            } else {
                 setWidgets(DEFAULT_LAYOUT);
             }
-        } else {
-            setWidgets(DEFAULT_LAYOUT);
-        }
+        };
+        init();
     }, []);
 
-    const saveWidgets = (newWidgets: WidgetInstance[]) => {
+    const saveWidgets = async (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
-        localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
+        const json = JSON.stringify(newWidgets);
+        localStorage.setItem("dashboard-layout", json);
+
+        // Sync to backend if logged in
+        try {
+            const user = await apiClient.getMe();
+            if (user) {
+                await apiClient.updateUser({
+                    ...user,
+                    preferences: {
+                        ...user.preferences,
+                        "dashboard_layout": json
+                    }
+                });
+            }
+        } catch (e) {
+            // Ignore backend save errors (offline, not logged in)
+        }
     };
 
     const onDragEnd = (result: DropResult) => {

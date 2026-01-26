@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
@@ -18,6 +19,37 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
+
+func (a *Application) handleGetMe(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		userID, ok := auth.UserFromContext(r.Context())
+		if !ok || userID == "" {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		user, err := store.GetUser(r.Context(), userID)
+		if err != nil {
+			logging.GetLogger().Error("failed to get current user", "user_id", userID, "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if user == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		b, _ := opts.Marshal(util.SanitizeUser(user))
+		_, _ = w.Write(b)
+	}
+}
 
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

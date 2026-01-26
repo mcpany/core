@@ -972,6 +972,16 @@ export const apiClient = {
     // User Management
 
     /**
+     * Gets the current user profile.
+     * @returns A promise that resolves to the current user.
+     */
+    getMe: async () => {
+        const res = await fetchWithAuth('/api/v1/me');
+        if (!res.ok) throw new Error('Failed to fetch current user');
+        return res.json();
+    },
+
+    /**
      * Lists all users.
      * @returns A promise that resolves to a list of users.
      */

@@ -50,6 +50,49 @@ func TestHandleUsers_List(t *testing.T) {
 	assert.Equal(t, "user1", u.GetId())
 }
 
+func TestHandleGetMe(t *testing.T) {
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.AuthManager = auth.NewManager()
+	store := memory.NewStore()
+	app.Storage = store
+	handler := app.handleGetMe(store)
+
+	// Create a user
+	user := &configv1.User{
+		Id: proto.String("user1"),
+		Preferences: map[string]string{
+			"theme": "dark",
+		},
+	}
+	require.NoError(t, store.CreateUser(context.Background(), user))
+
+	t.Run("Authenticated", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/me", nil)
+		// Inject user into context
+		ctx := auth.ContextWithUser(req.Context(), "user1")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var u configv1.User
+		err := protojson.Unmarshal(w.Body.Bytes(), &u)
+		require.NoError(t, err)
+		assert.Equal(t, "user1", u.GetId())
+		assert.Equal(t, "dark", u.GetPreferences()["theme"])
+	})
+
+	t.Run("Unauthenticated", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/me", nil)
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+	})
+}
+
 func TestHandleUserDetail(t *testing.T) {
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
