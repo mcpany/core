@@ -166,3 +166,137 @@ func TestHashUserPassword_Redaction(t *testing.T) {
 	// 4. Verify that the hash was restored to "real-hash"
 	assert.Equal(t, "real-hash", updatedUser.GetAuthentication().GetBasicAuth().GetPasswordHash())
 }
+
+func TestCreateUser_ColonInUsername(t *testing.T) {
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.AuthManager = auth.NewManager()
+	store := memory.NewStore()
+	app.Storage = store
+	handler := app.handleUsers(store)
+
+	// Attempt to create user with colon
+	user := &configv1.User{Id: proto.String("user:name")}
+	opts := protojson.MarshalOptions{UseProtoNames: true}
+	userBytes, _ := opts.Marshal(user)
+	bodyMap := map[string]json.RawMessage{
+		"user": json.RawMessage(userBytes),
+	}
+	body, _ := json.Marshal(bodyMap)
+
+	req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+	w := httptest.NewRecorder()
+	handler(w, req)
+
+	// Expect 400 Bad Request
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestHandleUsers_Errors(t *testing.T) {
+	app := NewApplication()
+	store := memory.NewStore()
+	handler := app.handleUsers(store)
+
+	tests := []struct {
+		name       string
+		method     string
+		body       string
+		wantStatus int
+	}{
+		{
+			name:       "Invalid JSON",
+			method:     http.MethodPost,
+			body:       `{invalid}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Missing ID",
+			method:     http.MethodPost,
+			body:       `{"user": {}}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Method Not Allowed",
+			method:     http.MethodDelete,
+			body:       ``,
+			wantStatus: http.StatusMethodNotAllowed,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, "/users", bytes.NewReader([]byte(tc.body)))
+			w := httptest.NewRecorder()
+			handler(w, req)
+			assert.Equal(t, tc.wantStatus, w.Code)
+		})
+	}
+}
+
+func TestHandleUserDetail_Errors(t *testing.T) {
+	app := NewApplication()
+	store := memory.NewStore()
+	handler := app.handleUserDetail(store)
+
+	// Pre-create user
+	user := &configv1.User{Id: proto.String("user1")}
+	require.NoError(t, store.CreateUser(context.Background(), user))
+
+	tests := []struct {
+		name       string
+		method     string
+		path       string
+		body       string
+		wantStatus int
+	}{
+		{
+			name:       "Missing ID in Path",
+			method:     http.MethodGet,
+			path:       "/users/",
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Put Invalid JSON",
+			method:     http.MethodPut,
+			path:       "/users/user1",
+			body:       `{invalid}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Put ID Mismatch",
+			method:     http.MethodPut,
+			path:       "/users/user1",
+			body:       `{"user": {"id": "user2"}}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Put ID With Colon (Update)",
+			method:     http.MethodPut,
+			path:       "/users/user1",
+			body:       `{"user": {"id": "user:2"}}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Put ID With Colon (URL)",
+			method:     http.MethodPut,
+			path:       "/users/user:2", // This triggers the new validation
+			body:       `{"user": {"id": "user:2"}}`,
+			wantStatus: http.StatusBadRequest,
+		},
+		{
+			name:       "Method Not Allowed",
+			method:     http.MethodPost,
+			path:       "/users/user1",
+			wantStatus: http.StatusMethodNotAllowed,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, bytes.NewReader([]byte(tc.body)))
+			w := httptest.NewRecorder()
+			handler(w, req)
+			assert.Equal(t, tc.wantStatus, w.Code)
+		})
+	}
+}

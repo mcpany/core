@@ -78,6 +78,11 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
+			if strings.Contains(user.GetId(), ":") {
+				http.Error(w, "user id cannot contain colon", http.StatusBadRequest)
+				return
+			}
+
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -163,6 +168,12 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "id mismatch", http.StatusBadRequest)
 				return
 			}
+
+			if strings.Contains(id, ":") {
+				http.Error(w, "user id cannot contain colon", http.StatusBadRequest)
+				return
+			}
+
 			user.Id = proto.String(id)
 
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
