@@ -40,9 +40,9 @@ func TestNewGcsProvider(t *testing.T) {
 	t.Run("Valid Config", func(t *testing.T) {
 		// This test relies on default client behavior, which might fail without creds.
 		// That's fine, we preserve existing behavior.
-		config := &configv1.GcsFs{
+		config := configv1.GcsFs_builder{
 			Bucket: proto.String("my-bucket"),
-		}
+		}.Build()
 		p, err := NewGcsProvider(context.Background(), config)
 		if err == nil {
 			defer p.Close()
@@ -77,9 +77,9 @@ func TestGcsProvider_WithMockClient(t *testing.T) {
 		return storage.NewClient(ctx, option.WithHTTPClient(httpClient))
 	}
 
-	config := &configv1.GcsFs{
+	config := configv1.GcsFs_builder{
 		Bucket: proto.String("my-bucket"),
-	}
+	}.Build()
 
 	p, err := NewGcsProvider(context.Background(), config)
 	require.NoError(t, err)
@@ -110,9 +110,9 @@ func TestNewGcsProvider_ClientError(t *testing.T) {
 		return nil, fmt.Errorf("mock error")
 	}
 
-	config := &configv1.GcsFs{
+	config := configv1.GcsFs_builder{
 		Bucket: proto.String("my-bucket"),
-	}
+	}.Build()
 
 	_, err := NewGcsProvider(context.Background(), config)
 	assert.Error(t, err)

@@ -16,7 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
@@ -516,7 +515,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			svc.Name = proto.String(name) // Force name match
+			svc.SetName(name) // Force name match
 
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
@@ -649,7 +648,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				return
 			}
 			if settings == nil {
-				settings = &configv1.GlobalSettings{}
+				settings = configv1.GlobalSettings_builder{}.Build()
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
@@ -783,7 +782,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			}
 			// Redact sensitive values
 			for _, s := range secrets {
-				s.Value = proto.String("[REDACTED]")
+				s.SetValue("[REDACTED]")
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
@@ -809,13 +808,23 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+
 			if secret.GetId() == "" {
-				secret.Id = proto.String(uuid.New().String())
+				http.Error(w, "id is required", http.StatusBadRequest)
+				return
 			}
+
+			// Validate skipped as config.ValidateOrError expects UpstreamServiceConfig
+
 			if err := store.SaveSecret(r.Context(), &secret); err != nil {
 				logging.GetLogger().Error("failed to save secret", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
+			}
+
+			// Reload
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after secret save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
@@ -827,17 +836,17 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 
 func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/secrets/")
-		if id == "" {
+		path := strings.TrimPrefix(r.URL.Path, "/secrets/")
+		if path == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return
 		}
 
 		switch r.Method {
 		case http.MethodGet:
-			secret, err := store.GetSecret(r.Context(), id)
+			secret, err := store.GetSecret(r.Context(), path)
 			if err != nil {
-				logging.GetLogger().Error("failed to get secret", "id", id, "error", err)
+				logging.GetLogger().Error("failed to get secret", "id", path, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -845,19 +854,50 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				http.NotFound(w, r)
 				return
 			}
-			// Redact sensitive value
-			secret.Value = proto.String("[REDACTED]")
-
+			// Redact
+			secret.SetValue("[REDACTED]")
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			b, _ := opts.Marshal(secret)
 			_, _ = w.Write(b)
 
-		case http.MethodDelete:
-			if err := store.DeleteSecret(r.Context(), id); err != nil {
-				logging.GetLogger().Error("failed to delete secret", "id", id, "error", err)
+		case http.MethodPut:
+			var secret configv1.Secret
+			body, err := readBodyWithLimit(w, r, 1048576)
+			if err != nil {
+				return
+			}
+			if err := protojson.Unmarshal(body, &secret); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if secret.GetName() == "" && secret.GetId() != "" {
+				secret.SetName(secret.GetId())
+			}
+
+
+			// Force ID
+			secret.SetId(path)
+
+			if err := store.SaveSecret(r.Context(), &secret); err != nil {
+				logging.GetLogger().Error("failed to save secret", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
+			}
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after secret update", "error", err)
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
+
+		case http.MethodDelete:
+			if err := store.DeleteSecret(r.Context(), path); err != nil {
+				logging.GetLogger().Error("failed to delete secret", "id", path, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after secret delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
 		default:
@@ -870,6 +910,14 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
+			// Mix of config defined and DB defined?
+			// Profiles are in GlobalSettings.
+			// Currently GlobalSettings are single object.
+			// But DB can store user profiles separately?
+			// The handler seems to treat them as separate entities, but config stores them in GlobalSettings.ProfileDefinitions.
+			// Storage methods for Profiles might map to GlobalSettings mutation.
+
+			// Assuming Store.ListProfiles exists (it usually extracts from GlobalSettings)
 			profiles, err := store.ListProfiles(r.Context())
 			if err != nil {
 				logging.GetLogger().Error("failed to list profiles", "error", err)
@@ -904,6 +952,8 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "name is required", http.StatusBadRequest)
 				return
 			}
+			// ProfileDefinition uses Name as identifier, no ID field.
+
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
 				logging.GetLogger().Error("failed to save profile", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -913,7 +963,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
 			}
-			w.WriteHeader(http.StatusCreated)
+			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -983,7 +1033,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			profile.Name = proto.String(name) // Force name match
+			profile.SetName(name) // Force name match
 
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
 				logging.GetLogger().Error("failed to save profile", "name", name, "error", err)
@@ -1131,7 +1181,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			collection.Name = proto.String(name) // Force name match
+			collection.SetName(name) // Force name match
 
 			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
 				logging.GetLogger().Error("failed to save collection", "name", name, "error", err)
@@ -1173,7 +1223,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Apply services
-	for _, rawSvc := range collection.Services {
+	for _, rawSvc := range collection.GetServices() {
 		svc := proto.Clone(rawSvc).(*configv1.UpstreamServiceConfig)
 		// We should probably check if service already exists?
 		// "Upsert" logic ideally.

@@ -24,90 +24,69 @@ func TestCreateProvider_Coverage(t *testing.T) {
 	tm := tool.NewManager(b)
 
 	// Test HTTP filesystem (unsupported)
-	configHttp := &configv1.UpstreamServiceConfig{
+	configHttp := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_http"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Http{
-					Http: &configv1.HttpFs{Endpoint: proto.String("http://example.com")},
-				},
-			},
-		},
-	}
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			Http: configv1.HttpFs_builder{Endpoint: proto.String("http://example.com")}.Build(),
+		}.Build(),
+	}.Build()
+
 	_, _, _, err := u.Register(context.Background(), configHttp, tm, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "http filesystem is not yet supported")
 
 	// Test GCS filesystem (creation failure due to missing creds/config)
-	configGcs := &configv1.UpstreamServiceConfig{
+	configGcs := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_gcs"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Gcs{
-					Gcs: &configv1.GcsFs{Bucket: proto.String("mybucket")},
-				},
-			},
-		},
-	}
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			Gcs: configv1.GcsFs_builder{Bucket: proto.String("mybucket")}.Build(),
+		}.Build(),
+	}.Build()
+
 	_, _, _, err = u.Register(context.Background(), configGcs, tm, nil, nil, false)
 	if err != nil {
 		assert.Contains(t, err.Error(), "failed to create filesystem provider")
 	}
 
 	// Test SFTP filesystem (fail)
-	configSftp := &configv1.UpstreamServiceConfig{
+	configSftp := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_sftp"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Sftp{
-					Sftp: &configv1.SftpFs{
-						Address:  proto.String("invalid.host.local"),
-						Username: proto.String("user"),
-						Password: proto.String("pass"),
-					},
-				},
-			},
-		},
-	}
-	// NewSftpProvider calls Dial, which should fail for 127.0.0.1 if no ssh server or creds wrong
-	// Use invalid port/host to be sure.
-	configSftp.GetFilesystemService().GetSftp().Address = proto.String("invalid.host.local:2222")
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			Sftp: configv1.SftpFs_builder{
+				Address:  proto.String("invalid.host.local:2222"),
+				Username: proto.String("user"),
+				Password: proto.String("pass"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
 	_, _, _, err = u.Register(context.Background(), configSftp, tm, nil, nil, false)
 	assert.Error(t, err)
 
 	// Test Zip filesystem (fail due to missing file)
-	configZip := &configv1.UpstreamServiceConfig{
+	configZip := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_zip"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_Zip{
-					Zip: &configv1.ZipFs{FilePath: proto.String("non_existent.zip")},
-				},
-			},
-		},
-	}
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			Zip: configv1.ZipFs_builder{FilePath: proto.String("non_existent.zip")}.Build(),
+		}.Build(),
+	}.Build()
+
 	_, _, _, err = u.Register(context.Background(), configZip, tm, nil, nil, false)
 	assert.Error(t, err)
 
 	// Test S3 filesystem (might succeed creation but cover the case)
-	configS3 := &configv1.UpstreamServiceConfig{
+	configS3 := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_s3"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				FilesystemType: &configv1.FilesystemUpstreamService_S3{
-					S3: &configv1.S3Fs{
-						Bucket: proto.String("mybucket"),
-						Region: proto.String("us-east-1"),
-					},
-				},
-			},
-		},
-	}
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			S3: configv1.S3Fs_builder{
+				Bucket: proto.String("mybucket"),
+				Region: proto.String("us-east-1"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
 	_, _, _, err = u.Register(context.Background(), configS3, tm, nil, nil, false)
 	// NewS3Provider might return error if config is invalid (e.g. nil), but here it's valid enough.
-	// We just want to cover the switch case.
-	// If it requires credentials in env, it might fail or succeed.
-	// We don't assert error here, just coverage.
 }
 
 func TestCall_Coverage(t *testing.T) {
@@ -131,23 +110,18 @@ func TestTools_ErrorPaths(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_error"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				RootPaths: map[string]string{
-					"/data": tempDir,
-				},
-				// Deny paths to trigger ResolvePath errors
-				DeniedPaths: []string{
-					filepath.Join(tempDir, "denied"),
-				},
-				FilesystemType: &configv1.FilesystemUpstreamService_Os{
-					Os: &configv1.OsFs{},
-				},
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			RootPaths: map[string]string{
+				"/data": tempDir,
 			},
-		},
-	}
+			DeniedPaths: []string{
+				filepath.Join(tempDir, "denied"),
+			},
+			Os: configv1.OsFs_builder{}.Build(),
+		}.Build(),
+	}.Build()
 
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
@@ -293,9 +267,6 @@ func TestTools_ErrorPaths(t *testing.T) {
 			},
 		})
 		assert.Error(t, err)
-		// On some systems ResolvePath fails with "not a directory" (Linux), on others MkdirAll fails.
-		// afero OsFs uses syscalls.
-		// If ResolvePath is robust, it fails on "not a directory" because "existingfile" is not a dir.
 		assert.True(t,
 			(err != nil && (contains(err.Error(), "failed to create parent directory") || contains(err.Error(), "not a directory"))),
 			"error should be either 'failed to create parent directory' or 'not a directory', got: %v", err)
@@ -343,16 +314,12 @@ func TestTools_ErrorPaths(t *testing.T) {
 
 	t.Run("Register_SanitizeError", func(t *testing.T) {
 		// Provide empty name
-		configInvalid := &configv1.UpstreamServiceConfig{
+		configInvalid := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String(""),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					FilesystemType: &configv1.FilesystemUpstreamService_Tmpfs{
-						Tmpfs: &configv1.MemMapFs{},
-					},
-				},
-			},
-		}
+			FilesystemService: configv1.FilesystemUpstreamService_builder{
+				Tmpfs: configv1.MemMapFs_builder{}.Build(),
+			}.Build(),
+		}.Build()
 		_, _, _, err := u.Register(context.Background(), configInvalid, tm, nil, nil, false)
 		assert.Error(t, err)
 	})
@@ -378,28 +345,25 @@ func TestTools_ErrorPaths(t *testing.T) {
 	})
 
 	t.Run("Register_DefaultProvider", func(t *testing.T) {
-		configNil := &configv1.UpstreamServiceConfig{
+		configNil := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test_nil_fs"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{
-						"/": tempDir,
-					},
-					// FilesystemType is nil
+			FilesystemService: configv1.FilesystemUpstreamService_builder{
+				RootPaths: map[string]string{
+					"/": tempDir,
 				},
-			},
-		}
+			}.Build(),
+		}.Build()
 		_, _, _, err := u.Register(context.Background(), configNil, tm, nil, nil, false)
 		require.NoError(t, err)
 	})
 
 	t.Run("Register_WrongServiceType", func(t *testing.T) {
-		configGrpc := &configv1.UpstreamServiceConfig{
+		configGrpc := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test_grpc"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{Address: proto.String("127.0.0.1:50051")},
-			},
-		}
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: proto.String("127.0.0.1:50051"),
+			}.Build(),
+		}.Build()
 		_, _, _, err := u.Register(context.Background(), configGrpc, tm, nil, nil, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "filesystem service config is nil")
@@ -482,16 +446,12 @@ func TestTools_ErrorPaths(t *testing.T) {
 	})
 
 	t.Run("Register_Twice_HealthChecker", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{
+		config := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("test_re_register"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					FilesystemType: &configv1.FilesystemUpstreamService_Tmpfs{
-						Tmpfs: &configv1.MemMapFs{},
-					},
-				},
-			},
-		}
+			FilesystemService: configv1.FilesystemUpstreamService_builder{
+				Tmpfs: configv1.MemMapFs_builder{}.Build(),
+			}.Build(),
+		}.Build()
 
 		_, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 		require.NoError(t, err)
@@ -552,26 +512,19 @@ func TestValidateLocalPaths_Error(t *testing.T) {
 	lockedDir := filepath.Join(tempDir, "locked")
 	err = os.Mkdir(lockedDir, 0000) // No permissions
 	require.NoError(t, err)
-	// defer os.Chmod(lockedDir, 0755) // Restore to allow cleanup
 
 	// Use a path inside locked dir as root
-	// On some systems root can stat anything? Assuming running as non-root.
-	// If running as root (docker?), this might fail to trigger error.
 	targetPath := filepath.Join(lockedDir, "subdir")
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test_validate_error"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{
-				RootPaths: map[string]string{
-					"/locked": targetPath,
-				},
-				FilesystemType: &configv1.FilesystemUpstreamService_Os{
-					Os: &configv1.OsFs{},
-				},
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			RootPaths: map[string]string{
+				"/locked": targetPath,
 			},
-		},
-	}
+			Os: configv1.OsFs_builder{}.Build(),
+		}.Build(),
+	}.Build()
 
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)

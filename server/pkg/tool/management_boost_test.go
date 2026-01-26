@@ -9,17 +9,17 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
-    "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 func TestManager_ListMCPTools(t *testing.T) {
 	m := NewManager(nil)
 
-    svcConfig := &configv1.UpstreamServiceConfig{
-        Name: proto.String("svc1"),
-    }
+    svcConfig := configv1.UpstreamServiceConfig_builder{
+        Id: proto.String("svc1"),
+    }.Build()
     m.AddServiceInfo("svc1", &ServiceInfo{
         Name: "svc1",
         Config: svcConfig,
@@ -56,7 +56,7 @@ func TestManager_ListMCPTools(t *testing.T) {
 func TestManager_ProfileMatching(t *testing.T) {
 	m := NewManager(nil)
 
-	svcConfig := &configv1.UpstreamServiceConfig{Name: proto.String("svc1")}
+	svcConfig := configv1.UpstreamServiceConfig_builder{Id: proto.String("svc1")}.Build()
 	m.AddServiceInfo("svc1", &ServiceInfo{Name: "svc1", Config: svcConfig})
 
 	toolDef := &v1.Tool{
@@ -69,17 +69,17 @@ func TestManager_ProfileMatching(t *testing.T) {
     assert.NoError(t, err)
 
 	// Define profile matching tag1
-	profile := &configv1.ProfileDefinition{
+	profile := configv1.ProfileDefinition_builder{
 		Name: proto.String("p1"),
 		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-			"svc1": {
+			"svc1": configv1.ProfileServiceConfig_builder{
 				Enabled: proto.Bool(true),
-			},
+			}.Build(),
 		},
-		Selector: &configv1.ProfileSelector{
+		Selector: configv1.ProfileSelector_builder{
 			Tags: []string{"tag1"},
-		},
-	}
+		}.Build(),
+	}.Build()
 	m.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{profile})
 
 	// Should match
@@ -102,11 +102,11 @@ func TestManager_ProfileMatching(t *testing.T) {
 }
 
 func TestWebrtcTool_Coverage(t *testing.T) {
-    toolDef := &v1.Tool{Name: proto.String("webrtc-tool")}
+    toolDef := v1.Tool_builder{Name: proto.String("webrtc-tool")}.Build()
     // CallDefinition is required or handled gracefully?
     // We pass nil for callDef, which might panic in NewWebrtcTool if it accesses fields.
     // NewWebrtcTool accesses callDefinition.GetParameters() etc.
-    callDef := &configv1.WebrtcCallDefinition{}
+    callDef := configv1.WebrtcCallDefinition_builder{}.Build()
     wt, err := NewWebrtcTool(toolDef, nil, "svc1", nil, callDef)
     assert.NoError(t, err)
     assert.NotNil(t, wt)

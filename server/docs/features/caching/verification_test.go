@@ -41,8 +41,8 @@ func TestCachingConfig(t *testing.T) {
 	err = protojson.Unmarshal(jsonContent, cfg)
 	require.NoError(t, err)
 
-	require.Len(t, cfg.UpstreamServices, 1)
-	service := cfg.UpstreamServices[0]
+	require.Len(t, cfg.GetUpstreamServices(), 1)
+	service := cfg.GetUpstreamServices()[0]
 
 	require.Equal(t, "cached-weather-service", service.GetName())
 	require.NotNil(t, service.Cache)

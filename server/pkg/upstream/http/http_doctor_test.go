@@ -23,28 +23,21 @@ func TestHTTPUpstream_Register_Unreachable(t *testing.T) {
 	unreachableAddr := "http://127.0.0.1:59999"
 
 	pm := pool.NewManager()
-	// Use a nil tool manager to minimize dependencies, or a mock if needed.
-	// Since the code calls AddServiceInfo, we need a functional or mock ToolManager.
 	tm := tool.NewManager(nil)
 
 	upstream := upstreamhttp.NewUpstream(pm)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("unreachable-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(unreachableAddr),
-			},
-		},
-	}
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(unreachableAddr),
+		}.Build(),
+	}.Build()
 
 	// Execution
 	// This should log the large ERROR box but NOT return an error.
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 
 	// Assertion
-	// The key behavior we are testing is that startup is NOT blocked (err is nil).
-	// Verifying the log output in unit tests is complex and usually fragile,
-	// but ensuring this code path executes without panic or error is sufficient for coverage.
 	assert.NoError(t, err)
 }

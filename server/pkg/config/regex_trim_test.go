@@ -9,35 +9,33 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestRegexTrimValidationBug(t *testing.T) {
 	// Setup: plain_text value with spaces
-	config := &configv1.McpAnyServerConfig{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: proto.String("test-trim-bug"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-							StdioConnection: &configv1.McpStdioConnection{
-								Command: proto.String("ls"),
-								Env: map[string]*configv1.SecretValue{
-									"TEST_TRIM": {
-										Value: &configv1.SecretValue_PlainText{
-											PlainText: " value ",
-										},
-										ValidationRegex: proto.String("^value$"),
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
+	config := func() *configv1.McpAnyServerConfig {
+		cfg := &configv1.McpAnyServerConfig{}
+		svc := &configv1.UpstreamServiceConfig{}
+		svc.SetName("test-trim-bug")
+
+		mcp := &configv1.McpUpstreamService{}
+		stdio := &configv1.McpStdioConnection{}
+		stdio.SetCommand("ls")
+
+		secret := &configv1.SecretValue{}
+		secret.SetPlainText(" value ")
+		secret.SetValidationRegex("^value$")
+
+		stdio.SetEnv(map[string]*configv1.SecretValue{
+			"TEST_TRIM": secret,
+		})
+
+		mcp.SetStdioConnection(stdio)
+		svc.SetMcpService(mcp)
+
+		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+		return cfg
+	}()
 
 	// This assumes that execLookPath is mocked or "ls" exists.
 	// We need to mock execLookPath to avoid dependency on system "ls" or PATH.

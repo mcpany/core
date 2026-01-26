@@ -62,7 +62,7 @@ func TestCoverageEnhancement_DynamicResourceErrors(t *testing.T) {
 			]
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
     // Make AddTool fail so op1 is not registered
@@ -102,7 +102,7 @@ func TestCoverageEnhancement_InvalidEndpointPath(t *testing.T) {
 		}
 	}`
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -134,7 +134,7 @@ func TestCoverageEnhancement_InvalidQueryEncoding(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -180,7 +180,7 @@ func TestCoverageEnhancement_MTLSError(t *testing.T) {
             }
         }
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -266,7 +266,7 @@ func TestCoverageEnhancement_ExportPolicy(t *testing.T) {
             ]
         }
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
@@ -304,7 +304,7 @@ func TestCoverageEnhancement_InvalidCallPolicy(t *testing.T) {
 	}`
     // "[" is invalid regex.
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -341,7 +341,7 @@ func TestCoverageEnhancement_DynamicResource_EmptyToolName(t *testing.T) {
             ]
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
@@ -380,7 +380,7 @@ func TestCoverageEnhancement_DynamicResource_NoCall(t *testing.T) {
 	}`
     // dynamic is present but empty. GetHttpCall() returns nil.
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, rm, false)
@@ -421,7 +421,7 @@ func TestCoverageEnhancement_QueryFlags(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -484,7 +484,7 @@ func TestCoverageEnhancement_InputSchemaOverlap(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -516,7 +516,7 @@ func TestCoverageEnhancement_EmptyAddress(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -560,7 +560,7 @@ func TestCoverageEnhancement_InputSchema_InvalidPropertiesType(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -663,7 +663,7 @@ func TestCoverageEnhancement_MTLSSuccess(t *testing.T) {
             }
         }
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -698,7 +698,7 @@ func TestCoverageEnhancement_AutoDiscovery(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)
@@ -748,7 +748,7 @@ func TestCoverageEnhancement_InputSchema_EmptyStruct(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, mockTm, nil, nil, false)

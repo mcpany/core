@@ -68,59 +68,43 @@ func TestIsUnsafeConfig(t *testing.T) {
 	}{
 		{
 			name: "Safe HTTP Service",
-			config: &configv1.UpstreamServiceConfig{
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{},
-				},
-			},
+			config: configv1.UpstreamServiceConfig_builder{
+				HttpService: configv1.HttpUpstreamService_builder{}.Build(),
+			}.Build(),
 			isUnsafe: false,
 		},
 		{
 			name: "Unsafe Command Line Service",
-			config: &configv1.UpstreamServiceConfig{
-				ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-					CommandLineService: &configv1.CommandLineUpstreamService{},
-				},
-			},
+			config: configv1.UpstreamServiceConfig_builder{
+				CommandLineService: configv1.CommandLineUpstreamService_builder{}.Build(),
+			}.Build(),
 			isUnsafe: true,
 		},
 		{
 			name: "Unsafe MCP Stdio Service",
-			config: &configv1.UpstreamServiceConfig{
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-							StdioConnection: &configv1.McpStdioConnection{},
-						},
-					},
-				},
-			},
+			config: configv1.UpstreamServiceConfig_builder{
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{}.Build(),
+				}.Build(),
+			}.Build(),
 			isUnsafe: true,
 		},
 		{
 			name: "Unsafe MCP Bundle Service",
-			config: &configv1.UpstreamServiceConfig{
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-							BundleConnection: &configv1.McpBundleConnection{},
-						},
-					},
-				},
-			},
+			config: configv1.UpstreamServiceConfig_builder{
+				McpService: configv1.McpUpstreamService_builder{
+					BundleConnection: configv1.McpBundleConnection_builder{}.Build(),
+				}.Build(),
+			}.Build(),
 			isUnsafe: true,
 		},
 		{
 			name: "Safe MCP HTTP Service",
-			config: &configv1.UpstreamServiceConfig{
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-							HttpConnection: &configv1.McpStreamableHttpConnection{},
-						},
-					},
-				},
-			},
+			config: configv1.UpstreamServiceConfig_builder{
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{}.Build(),
+				}.Build(),
+			}.Build(),
 			isUnsafe: false,
 		},
 	}
@@ -143,9 +127,9 @@ func TestHandleServiceStatus_Mocked(t *testing.T) {
 	}
 
 	// Setup: Add a service to the store
-	svc := &configv1.UpstreamServiceConfig{
+	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
-	}
+	}.Build()
 	require.NoError(t, store.SaveService(context.Background(), svc))
 
 	t.Run("Status Inactive", func(t *testing.T) {
@@ -197,15 +181,13 @@ func TestHandleServices(t *testing.T) {
 	handler := app.handleServices(store)
 
 	// Test POST Success
-	svc := &configv1.UpstreamServiceConfig{
+	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://127.0.0.1:8080"),
-			},
-		},
-		Id: proto.String(uuid.New().String()),
-	}
+		Id:   proto.String(uuid.New().String()),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080"),
+		}.Build(),
+	}.Build()
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(svc)
 	req := httptest.NewRequest(http.MethodPost, "/services", bytes.NewReader(body))
@@ -226,7 +208,7 @@ func TestHandleServices(t *testing.T) {
 	}
 
 	// Test POST Missing Name
-	svc.Name = proto.String("")
+	svc.SetName("")
 	body, _ = opts.Marshal(svc)
 	req = httptest.NewRequest(http.MethodPost, "/services", bytes.NewReader(body))
 	w = httptest.NewRecorder()
@@ -240,15 +222,13 @@ func TestHandleServiceDetail(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleServiceDetail(store)
 
-	svc := &configv1.UpstreamServiceConfig{
-		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://127.0.0.1:8080"),
-			},
-		},
-		Id: proto.String(uuid.New().String()),
-	}
+	httpSvc := &configv1.HttpUpstreamService{}
+	httpSvc.SetAddress("http://127.0.0.1:8080")
+
+	svc := &configv1.UpstreamServiceConfig{}
+	svc.SetName("test-service")
+	svc.SetId(uuid.New().String())
+	svc.SetHttpService(httpSvc)
 	_ = store.SaveService(context.Background(), svc)
 
 	// Test GET
@@ -268,11 +248,9 @@ func TestHandleServiceDetail(t *testing.T) {
 	}
 
 	// Test PUT
-	svc.ServiceConfig = &configv1.UpstreamServiceConfig_HttpService{
-		HttpService: &configv1.HttpUpstreamService{
-			Address: proto.String("http://updated:8080"),
-		},
-	}
+	svc.SetHttpService(configv1.HttpUpstreamService_builder{
+		Address: proto.String("http://updated:8080"),
+	}.Build())
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(svc)
 	req = httptest.NewRequest(http.MethodPut, "/services/test-service", bytes.NewReader(body))
@@ -295,14 +273,12 @@ func TestHandleServiceStatus_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleServiceDetail(store)
 
-	svc := &configv1.UpstreamServiceConfig{
+	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String("http://127.0.0.1:8080"),
-			},
-		},
-	}
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1:8080"),
+		}.Build(),
+	}.Build()
 	_ = store.SaveService(context.Background(), svc)
 
 	req := httptest.NewRequest(http.MethodGet, "/services/test-service/status", nil)
@@ -318,9 +294,9 @@ func TestHandleSettings_Detailed(t *testing.T) {
 	handler := app.handleSettings(store)
 
 	// Test POST
-	settings := &configv1.GlobalSettings{
+	settings := configv1.GlobalSettings_builder{
 		AllowedIps: []string{"127.0.0.1"},
-	}
+	}.Build()
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(settings)
 	req := httptest.NewRequest(http.MethodPost, "/settings", bytes.NewReader(body))
@@ -380,10 +356,11 @@ func TestHandleSecrets_Detailed(t *testing.T) {
 	handler := app.handleSecrets(store)
 
 	// Test POST
-	secret := &configv1.Secret{
+	secret := configv1.Secret_builder{
 		Name:  proto.String("my-secret"),
+		Id:    proto.String("my-secret-id"),
 		Value: proto.String("super-secret"),
-	}
+	}.Build()
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(secret)
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(body))
@@ -410,11 +387,11 @@ func TestHandleSecretDetail_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleSecretDetail(store)
 
-	secret := &configv1.Secret{
+	secret := configv1.Secret_builder{
 		Id:    proto.String("sec-123"),
 		Name:  proto.String("my-secret"),
 		Value: proto.String("super-secret"),
-	}
+	}.Build()
 	_ = store.SaveSecret(context.Background(), secret)
 
 	// Test GET
@@ -441,16 +418,15 @@ func TestHandleProfiles_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleProfiles(store)
 
-	profile := &configv1.ProfileDefinition{
-		Name: proto.String("dev"),
-	}
+	profile := &configv1.ProfileDefinition{}
+	profile.SetName("dev")
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(profile)
 	req := httptest.NewRequest(http.MethodPost, "/profiles", bytes.NewReader(body))
 	w := httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
-	if w.Code != http.StatusCreated {
-		t.Errorf("Expected 201 Created, got %d", w.Code)
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected 200 OK, got %d", w.Code)
 	}
 
 	req = httptest.NewRequest(http.MethodGet, "/profiles", nil)
@@ -465,9 +441,8 @@ func TestHandleProfileDetail_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleProfileDetail(store)
 
-	profile := &configv1.ProfileDefinition{
-		Name: proto.String("dev"),
-	}
+	profile := &configv1.ProfileDefinition{}
+	profile.SetName("dev")
 	_ = store.SaveProfile(context.Background(), profile)
 
 	// Test GET
@@ -509,9 +484,8 @@ func TestHandleCollections_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleCollections(store)
 
-	collection := &configv1.Collection{
-		Name: proto.String("col1"),
-	}
+	collection := &configv1.Collection{}
+	collection.SetName("col1")
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(collection)
 	req := httptest.NewRequest(http.MethodPost, "/collections", bytes.NewReader(body))
@@ -533,19 +507,17 @@ func TestHandleCollectionDetail_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleCollectionDetail(store)
 
-	collection := &configv1.Collection{
-		Name: proto.String("col1"),
-		Services: []*configv1.UpstreamServiceConfig{
-			{
-				Name: proto.String("svc1"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: proto.String("http://foo"),
-					},
-				},
-			},
-		},
-	}
+	svc1 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("svc1"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://foo"),
+		}.Build(),
+	}.Build()
+
+	collection := configv1.Collection_builder{
+		Name:     proto.String("col1"),
+		Services: []*configv1.UpstreamServiceConfig{svc1},
+	}.Build()
 	_ = store.SaveServiceCollection(context.Background(), collection)
 
 	// Test GET
@@ -944,18 +916,17 @@ func TestHandleServices_IncludesError(t *testing.T) {
 	store := sqlite.NewStore(db)
 
 	mockRegistry := new(MockServiceRegistry)
-	service1 := &configv1.UpstreamServiceConfig{
-		Name: proto.String("service-1"),
-		Id:   proto.String("service-1"),
-	}
-	service2 := &configv1.UpstreamServiceConfig{
-		Name: proto.String("service-2"),
-		Id:   proto.String("service-2"),
-	}
-	service3 := &configv1.UpstreamServiceConfig{
-		Name:          proto.String("service-3"),
-		SanitizedName: proto.String("service-3-sanitized"),
-	}
+	service1 := &configv1.UpstreamServiceConfig{}
+	service1.SetName("service-1")
+	service1.SetId("service-1")
+
+	service2 := &configv1.UpstreamServiceConfig{}
+	service2.SetName("service-2")
+	service2.SetId("service-2")
+
+	service3 := &configv1.UpstreamServiceConfig{}
+	service3.SetName("service-3")
+	service3.SetSanitizedName("service-3-sanitized")
 
 	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{service1, service2, service3}, nil)
 	mockRegistry.On("GetServiceError", "service-1").Return("", false)
@@ -1013,14 +984,12 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 	handler := app.createAPIHandler(store)
 
 	t.Run("Invalid URL Scheme", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("malicious-service"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-				HttpService: &configv1.HttpUpstreamService{
-					Address: proto.String("gopher://malicious.com"),
-				},
-			},
-		}
+		httpSvc := &configv1.HttpUpstreamService{}
+		httpSvc.SetAddress("gopher://malicious.com")
+
+		svc := &configv1.UpstreamServiceConfig{}
+		svc.SetName("malicious-service")
+		svc.SetHttpService(httpSvc)
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
@@ -1033,18 +1002,15 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 	})
 
 	t.Run("Absolute Bundle Path", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("absolute-path-service"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-				McpService: &configv1.McpUpstreamService{
-					ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-						BundleConnection: &configv1.McpBundleConnection{
-							BundlePath: proto.String("/etc/passwd"),
-						},
-					},
-				},
-			},
-		}
+		bundleConn := &configv1.McpBundleConnection{}
+		bundleConn.SetBundlePath("/etc/passwd")
+
+		mcpSvc := &configv1.McpUpstreamService{}
+		mcpSvc.SetBundleConnection(bundleConn)
+
+		svc := &configv1.UpstreamServiceConfig{}
+		svc.SetName("absolute-path-service")
+		svc.SetMcpService(mcpSvc)
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
@@ -1057,19 +1023,14 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 	})
 
 	t.Run("Block Filesystem Service (Regular User)", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("unsafe-fs"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{
-						"/": "/",
-					},
-					FilesystemType: &configv1.FilesystemUpstreamService_Os{
-						Os: &configv1.OsFs{},
-					},
-				},
-			},
-		}
+		osFs := &configv1.OsFs{}
+		fsSvc := &configv1.FilesystemUpstreamService{}
+		fsSvc.SetRootPaths(map[string]string{"/": "/"})
+		fsSvc.SetOs(osFs)
+
+		svc := &configv1.UpstreamServiceConfig{}
+		svc.SetName("unsafe-fs")
+		svc.SetFilesystemService(fsSvc)
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
@@ -1081,19 +1042,14 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 	})
 
 	t.Run("Allow Filesystem Service (Admin)", func(t *testing.T) {
-		svc := &configv1.UpstreamServiceConfig{
-			Name: proto.String("unsafe-fs-admin"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{
-						"/": "/",
-					},
-					FilesystemType: &configv1.FilesystemUpstreamService_Os{
-						Os: &configv1.OsFs{},
-					},
-				},
-			},
-		}
+		osFs := &configv1.OsFs{}
+		fsSvc := &configv1.FilesystemUpstreamService{}
+		fsSvc.SetRootPaths(map[string]string{"/": "/"})
+		fsSvc.SetOs(osFs)
+
+		svc := &configv1.UpstreamServiceConfig{}
+		svc.SetName("unsafe-fs-admin")
+		svc.SetFilesystemService(fsSvc)
 		body, _ := protojson.Marshal(svc)
 
 		req := httptest.NewRequest("POST", "/services", bytes.NewReader(body))
@@ -1187,11 +1143,11 @@ func TestHandleAuditExport(t *testing.T) {
 	sqliteStore.Close()
 
 	storageType := configv1.AuditConfig_STORAGE_TYPE_SQLITE
-	audit, err := middleware.NewAuditMiddleware(&configv1.AuditConfig{
-		Enabled:     proto.Bool(true),
-		StorageType: &storageType,
-		OutputPath:  proto.String(dbPath),
-	})
+	auditCfg := &configv1.AuditConfig{}
+	auditCfg.SetEnabled(true)
+	auditCfg.SetStorageType(storageType)
+	auditCfg.SetOutputPath(dbPath)
+	audit, err := middleware.NewAuditMiddleware(auditCfg)
 	require.NoError(t, err)
 	app.standardMiddlewares.Audit = audit
 	defer audit.Close()
@@ -1217,19 +1173,23 @@ func TestHandleInitiateOAuth(t *testing.T) {
 	app := &Application{AuthManager: am}
 
 	svcID := "github"
-	svc := &configv1.UpstreamServiceConfig{
-		Name: proto.String(svcID),
-		UpstreamAuth: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oauth2{
-				Oauth2: &configv1.OAuth2Auth{
-					ClientId:         &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
-					ClientSecret:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
-					AuthorizationUrl: proto.String("https://github.com/login/oauth/authorize"),
-					TokenUrl:         proto.String("https://github.com/login/oauth/access_token"),
-				},
-			},
-		},
-	}
+	clientId := &configv1.SecretValue{}
+	clientId.SetPlainText("client-id")
+	clientSecret := &configv1.SecretValue{}
+	clientSecret.SetPlainText("client-secret")
+
+	oauth2 := &configv1.OAuth2Auth{}
+	oauth2.SetClientId(clientId)
+	oauth2.SetClientSecret(clientSecret)
+	oauth2.SetAuthorizationUrl("https://github.com/login/oauth/authorize")
+	oauth2.SetTokenUrl("https://github.com/login/oauth/access_token")
+
+	authConfig := &configv1.Authentication{}
+	authConfig.SetOauth2(oauth2)
+
+	svc := &configv1.UpstreamServiceConfig{}
+	svc.SetName(svcID)
+	svc.SetUpstreamAuth(authConfig)
 	store.SaveService(context.Background(), svc)
 
 	t.Run("Success_Service", func(t *testing.T) {
@@ -1327,7 +1287,8 @@ func TestHandleUsers(t *testing.T) {
 	handler := app.handleUsers(store)
 
 	t.Run("CreateUser", func(t *testing.T) {
-		user := &configv1.User{Id: proto.String("user1")}
+		user := &configv1.User{}
+		user.SetId("user1")
 		userBytes, _ := protojson.Marshal(user)
 		body, _ := json.Marshal(map[string]json.RawMessage{"user": json.RawMessage(userBytes)})
 		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
@@ -1362,14 +1323,15 @@ func TestHandleUsers_Security_Redaction(t *testing.T) {
 	app.Storage = store
 	handler := app.handleUsers(store)
 
-	user := &configv1.User{
-		Id: proto.String("secure-user"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{VerificationValue: proto.String("super-secret-key")},
-			},
-		},
-	}
+	user := &configv1.User{}
+	user.SetId("secure-user")
+
+	apiKeyAuth := &configv1.APIKeyAuth{}
+	apiKeyAuth.SetVerificationValue("super-secret-key")
+
+	auth := &configv1.Authentication{}
+	auth.SetApiKey(apiKeyAuth)
+	user.SetAuthentication(auth)
 	store.CreateUser(context.Background(), user)
 
 	t.Run("ListUsers_ShouldNotLeakSecrets", func(t *testing.T) {
@@ -1394,12 +1356,12 @@ func TestCheckURLReachability(t *testing.T) {
 
 func TestHandleServiceValidate(t *testing.T) {
 	app := &Application{}
-	svc := &configv1.UpstreamServiceConfig{
-		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://example.com")},
-		},
-	}
+	httpSvc := &configv1.HttpUpstreamService{}
+	httpSvc.SetAddress("http://example.com")
+
+	svc := &configv1.UpstreamServiceConfig{}
+	svc.SetName("test-service")
+	svc.SetHttpService(httpSvc)
 	body, _ := protojson.Marshal(svc)
 	req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 	w := httptest.NewRecorder()
@@ -1565,11 +1527,18 @@ func TestHandleServices_ToolCount(t *testing.T) {
 	app.ToolManager = tm
 
 	app.ServiceRegistry = &TestMockServiceRegistry{
-		services: []*configv1.UpstreamServiceConfig{
-			{Id: proto.String("service-1"), Name: proto.String("service-1")},
-			{Id: proto.String("service-2"), Name: proto.String("service-2")},
-			{Id: proto.String("service-3"), Name: proto.String("service-3")},
-		},
+		services: func() []*configv1.UpstreamServiceConfig {
+			s1 := &configv1.UpstreamServiceConfig{}
+			s1.SetName("service-1")
+			s1.SetId("service-1")
+			s2 := &configv1.UpstreamServiceConfig{}
+			s2.SetName("service-2")
+			s2.SetId("service-2")
+			s3 := &configv1.UpstreamServiceConfig{}
+			s3.SetName("service-3")
+			s3.SetId("service-3")
+			return []*configv1.UpstreamServiceConfig{s1, s2, s3}
+		}(),
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/services", nil)
@@ -1598,12 +1567,13 @@ func TestSkillServiceServer(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("CreateSkill", func(t *testing.T) {
+		skill := &configv1.Skill{}
+		skill.SetName("test-skill")
+		skill.SetDescription("A test skill")
+		skill.SetInstructions("Do something")
+
 		req := &pb.CreateSkillRequest{
-			Skill: &configv1.Skill{
-				Name:         strPtr("test-skill"),
-				Description:  strPtr("A test skill"),
-				Instructions: strPtr("Do something"),
-			},
+			Skill: skill,
 		}
 		resp, err := server.CreateSkill(ctx, req)
 		require.NoError(t, err)

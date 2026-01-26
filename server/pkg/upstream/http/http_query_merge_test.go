@@ -83,7 +83,7 @@ func TestHTTPUpstream_URLConstruction_QueryMergeBug(t *testing.T) {
 					}
 				}
 			}`
-			serviceConfig := &configv1.UpstreamServiceConfig{}
+			serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)

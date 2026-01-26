@@ -5,17 +5,17 @@ package http
 
 import (
 	"context"
+	"errors"
 	"testing"
-    "time"
-    "errors"
+	"time"
 
 	"github.com/alexliesenfeld/health"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
-    "github.com/mcpany/core/server/pkg/tool"
-    configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
-    "google.golang.org/protobuf/proto"
-    "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestHTTPUpstream_CheckHealth_Coverage(t *testing.T) {
@@ -88,52 +88,46 @@ func TestHTTPUpstream_Register_Coverage(t *testing.T) {
     tm := tool.NewManager(nil)
 
     t.Run("nil http service", func(t *testing.T) {
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test"),
             // ServiceConfig is nil, GetHttpService() will return nil
-        }
+        }.Build()
         _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "http service config is nil")
     })
 
     t.Run("empty address", func(t *testing.T) {
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test"),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String(""),
-                },
-            },
-        }
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String(""),
+            }.Build(),
+        }.Build()
         _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "http service address is required")
     })
 
     t.Run("invalid address scheme", func(t *testing.T) {
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test"),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("ftp://example.com"),
-                },
-            },
-        }
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("ftp://example.com"),
+            }.Build(),
+        }.Build()
         _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "invalid http service address scheme")
     })
 
     t.Run("invalid service name", func(t *testing.T) {
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String(""),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("http://example.com"),
-                },
-            },
-        }
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("http://example.com"),
+            }.Build(),
+        }.Build()
         _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.Error(t, err)
     })
@@ -146,23 +140,21 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
 
     t.Run("invalid method", func(t *testing.T) {
         invalidMethod := configv1.HttpCallDefinition_HttpMethod(999)
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test-invalid-method"),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("http://example.com"),
-                    Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
-                            Method: &invalidMethod,
-                            EndpointPath: proto.String("/foo"),
-                        },
-                    },
-                    Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
-                    },
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("http://example.com"),
+                Calls: map[string]*configv1.HttpCallDefinition{
+                    "call1": configv1.HttpCallDefinition_builder{
+                        Method:       &invalidMethod,
+                        EndpointPath: proto.String("/foo"),
+                    }.Build(),
                 },
-            },
-        }
+                Tools: []*configv1.ToolDefinition{
+                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
+                },
+            }.Build(),
+        }.Build()
         _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.NoError(t, err)
         assert.Len(t, tools, 0) // Should skip the tool
@@ -170,23 +162,21 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
 
     t.Run("invalid url", func(t *testing.T) {
         validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test-invalid-url"),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("http://example.com"),
-                    Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
-                            Method: &validMethod,
-                            EndpointPath: proto.String(":/foo\nbar"), // Invalid URL char
-                        },
-                    },
-                    Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
-                    },
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("http://example.com"),
+                Calls: map[string]*configv1.HttpCallDefinition{
+                    "call1": configv1.HttpCallDefinition_builder{
+                        Method:       validMethod.Enum(),
+                        EndpointPath: proto.String(":/foo\nbar"), // Invalid URL char
+                    }.Build(),
                 },
-            },
-        }
+                Tools: []*configv1.ToolDefinition{
+                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
+                },
+            }.Build(),
+        }.Build()
         _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.NoError(t, err)
         assert.Len(t, tools, 0)
@@ -202,38 +192,36 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
             "required": []interface{}{"existing"},
         })
 
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test-schema-merge"),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("http://example.com"),
-                    Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
-                            Method: &validMethod,
-                            EndpointPath: proto.String("/foo"),
-                            InputSchema: inputSchema,
-                            Parameters: []*configv1.HttpParameterMapping{
-                                {
-                                    Schema: &configv1.ParameterSchema{
-                                        Name: proto.String("new_param"),
-                                        IsRequired: proto.Bool(true),
-                                    },
-                                },
-                                {
-                                    Schema: &configv1.ParameterSchema{
-                                        Name: proto.String("existing"), // Should merge/overwrite
-                                        IsRequired: proto.Bool(true),
-                                    },
-                                },
-                            },
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("http://example.com"),
+                Calls: map[string]*configv1.HttpCallDefinition{
+                    "call1": configv1.HttpCallDefinition_builder{
+                        Method:       validMethod.Enum(),
+                        EndpointPath: proto.String("/foo"),
+                        InputSchema:  inputSchema,
+                        Parameters: []*configv1.HttpParameterMapping{
+                            configv1.HttpParameterMapping_builder{
+                                Schema: configv1.ParameterSchema_builder{
+                                    Name:       proto.String("new_param"),
+                                    IsRequired: proto.Bool(true),
+                                }.Build(),
+                            }.Build(),
+                            configv1.HttpParameterMapping_builder{
+                                Schema: configv1.ParameterSchema_builder{
+                                    Name:       proto.String("existing"), // Should merge/overwrite
+                                    IsRequired: proto.Bool(true),
+                                }.Build(),
+                            }.Build(),
                         },
-                    },
-                    Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
-                    },
+                    }.Build(),
                 },
-            },
-        }
+                Tools: []*configv1.ToolDefinition{
+                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
+                },
+            }.Build(),
+        }.Build()
         _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.NoError(t, err)
         assert.Len(t, tools, 1)
@@ -255,23 +243,21 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
 
     t.Run("disabled tool", func(t *testing.T) {
         validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test-disabled-tool"),
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("http://example.com"),
-                    Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
-                            Method: &validMethod,
-                            EndpointPath: proto.String("/foo"),
-                        },
-                    },
-                    Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1"), Disable: proto.Bool(true)},
-                    },
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("http://example.com"),
+                Calls: map[string]*configv1.HttpCallDefinition{
+                    "call1": configv1.HttpCallDefinition_builder{
+                        Method:       validMethod.Enum(),
+                        EndpointPath: proto.String("/foo"),
+                    }.Build(),
                 },
-            },
-        }
+                Tools: []*configv1.ToolDefinition{
+                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1"), Disable: proto.Bool(true)}.Build(),
+                },
+            }.Build(),
+        }.Build()
         _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.NoError(t, err)
         assert.Len(t, tools, 0)
@@ -279,26 +265,24 @@ func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
 
     t.Run("export policy skip", func(t *testing.T) {
         validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        config := &configv1.UpstreamServiceConfig{
+        config := configv1.UpstreamServiceConfig_builder{
             Name: proto.String("test-export-policy"),
-            ToolExportPolicy: &configv1.ExportPolicy{
+            ToolExportPolicy: configv1.ExportPolicy_builder{
                 DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
-            },
-            ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-                HttpService: &configv1.HttpUpstreamService{
-                    Address: proto.String("http://example.com"),
-                    Calls: map[string]*configv1.HttpCallDefinition{
-                        "call1": {
-                            Method: &validMethod,
-                            EndpointPath: proto.String("/foo"),
-                        },
-                    },
-                    Tools: []*configv1.ToolDefinition{
-                        {Name: proto.String("tool1"), CallId: proto.String("call1")},
-                    },
+            }.Build(),
+            HttpService: configv1.HttpUpstreamService_builder{
+                Address: proto.String("http://example.com"),
+                Calls: map[string]*configv1.HttpCallDefinition{
+                    "call1": configv1.HttpCallDefinition_builder{
+                        Method:       validMethod.Enum(),
+                        EndpointPath: proto.String("/foo"),
+                    }.Build(),
                 },
-            },
-        }
+                Tools: []*configv1.ToolDefinition{
+                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
+                },
+            }.Build(),
+        }.Build()
         _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
         assert.NoError(t, err)
         assert.Len(t, tools, 0)
