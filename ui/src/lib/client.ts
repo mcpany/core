@@ -286,6 +286,21 @@ export const apiClient = {
     },
 
     /**
+     * Gets the health history of a service.
+     * @param name The name of the service.
+     * @returns A promise that resolves to the health history.
+     */
+    getServiceHealthHistory: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/services/${name}/health-history`);
+        if (!res.ok) {
+            // Return empty if not found or not supported yet to avoid breaking UI
+            if (res.status === 404) return [];
+            throw new Error('Failed to fetch service health history');
+        }
+        return res.json();
+    },
+
+    /**
      * Restarts a service.
      * @param name The name of the service to restart.
      * @returns A promise that resolves when the service is restarted.

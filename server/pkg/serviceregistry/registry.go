@@ -62,6 +62,12 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns the result.
 	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
+	// GetHealthHistory returns the health history for a service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the history and true if successful.
+	GetHealthHistory(serviceID string) ([]HealthStatus, bool)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -75,6 +81,7 @@ type ServiceRegistry struct {
 	serviceInfo     map[string]*tool.ServiceInfo
 	serviceErrors   map[string]string
 	healthErrors    map[string]string
+	healthHistory   map[string]*RingBuffer
 	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
 	toolManager     tool.ManagerInterface
@@ -100,6 +107,7 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		serviceErrors:   make(map[string]string),
 		healthErrors:    make(map[string]string),
+		healthHistory:   make(map[string]*RingBuffer),
 		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
 		toolManager:     toolManager,
@@ -311,6 +319,7 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 	delete(r.serviceConfigs, serviceID)
 	delete(r.serviceInfo, serviceID)
 	delete(r.serviceErrors, serviceID)
+	delete(r.healthHistory, serviceID)
 	r.toolManager.ClearToolsForService(serviceID)
 	r.promptManager.ClearPromptsForService(serviceID)
 	r.resourceManager.ClearResourcesForService(serviceID)
@@ -364,13 +373,25 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 
 	for id, u := range targets {
 		var errStr string
+		var latency time.Duration
+		status := "ok"
+
 		if checker, ok := u.(upstream.HealthChecker); ok {
 			// Use a short timeout for health checks
 			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			start := time.Now()
 			if err := checker.CheckHealth(checkCtx); err != nil {
 				errStr = err.Error()
+				status = "error"
 			}
+			latency = time.Since(start)
 			cancel()
+		} else {
+			// If no health checker, we assume it's OK? Or we skip?
+			// Existing logic skipped if not a checker.
+			// If we want history for non-checkers (e.g. they are always "ok" if running), we can record that.
+			// But traditionally we only record explicit checks.
+			continue
 		}
 
 		r.mu.Lock()
@@ -379,8 +400,42 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 		} else {
 			delete(r.healthErrors, id)
 		}
+
+		// Update History
+		if _, exists := r.healthHistory[id]; !exists {
+			r.healthHistory[id] = NewRingBuffer(100) // Keep last 100 checks
+		}
+		r.healthHistory[id].Add(HealthStatus{
+			Timestamp: time.Now(),
+			Status:    status,
+			Error:     errStr,
+			Latency:   latency.String(),
+		})
+
 		r.mu.Unlock()
 	}
+}
+
+// GetHealthHistory returns the health history for a service.
+//
+// serviceID is the serviceID.
+//
+// Returns the history and true if successful.
+func (r *ServiceRegistry) GetHealthHistory(serviceID string) ([]HealthStatus, bool) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	// Check if service exists
+	if _, ok := r.serviceConfigs[serviceID]; !ok {
+		return nil, false
+	}
+
+	if history, ok := r.healthHistory[serviceID]; ok {
+		return history.GetAll(), true
+	}
+
+	// Service exists but no history yet
+	return []HealthStatus{}, true
 }
 
 // Close gracefully shuts down all registered services.

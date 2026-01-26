@@ -27,6 +27,7 @@ import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-
 import { Button } from "@/components/ui/button";
 import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
 import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
+import { HealthHistoryChart } from "@/components/charts/health-history-chart";
 
 /**
  * DefinitionsTable component.
@@ -139,6 +140,32 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
             </CardContent>
         </Card>
     )
+}
+
+function HealthHistoryCard({ serviceId }: { serviceId: string }) {
+    const [history, setHistory] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        setIsLoading(true);
+        apiClient.getServiceHealthHistory(serviceId)
+            .then(res => setHistory(res))
+            .catch(err => console.error("Failed to fetch health history", err))
+            .finally(() => setIsLoading(false));
+    }, [serviceId]);
+
+    if (isLoading) return <Skeleton className="h-48 w-full" />;
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2"><TrendingUp /> Health History</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <HealthHistoryChart data={history} />
+            </CardContent>
+        </Card>
+    );
 }
 
 /**
@@ -395,6 +422,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             </TabsContent>
             <TabsContent value="metrics" className="mt-4 grid gap-6">
                 <MetricsCard serviceId={serviceId} />
+                <HealthHistoryCard serviceId={serviceId} />
             </TabsContent>
             <TabsContent value="safety" className="mt-4 grid gap-6">
                 <ToolSafetyTable tools={tools} onUpdate={fetchService} />
