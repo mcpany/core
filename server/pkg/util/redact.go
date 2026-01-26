@@ -550,9 +550,13 @@ func RedactDSN(dsn string) string {
 				// as user:password when missing @. We should not redact if it looks like http/https.
 				// However, if the DSN contains an '@', it strongly suggests credentials, so we should allow redaction
 				// (even if dsnSchemeRegex failed to match it for some reason).
-				// We only skip redaction if it's http/https AND there is no '@'.
+				// We only skip redaction if it's http/https/ws/wss/grpc AND there is no '@'.
 				trimmedDSN := strings.TrimSpace(strings.ToLower(dsn))
-				if (strings.HasPrefix(trimmedDSN, "http://") || strings.HasPrefix(trimmedDSN, "https://")) && !strings.Contains(dsn, "@") {
+				if (strings.HasPrefix(trimmedDSN, "http://") ||
+					strings.HasPrefix(trimmedDSN, "https://") ||
+					strings.HasPrefix(trimmedDSN, "ws://") ||
+					strings.HasPrefix(trimmedDSN, "wss://") ||
+					strings.HasPrefix(trimmedDSN, "grpc://")) && !strings.Contains(dsn, "@") {
 					return m
 				}
 
