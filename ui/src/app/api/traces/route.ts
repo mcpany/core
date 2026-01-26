@@ -100,6 +100,22 @@ export async function GET(request: Request) {
             output = { raw: entry.response_body };
         }
 
+        let errorMessage: string | undefined;
+        if (entry.status >= 400 && output) {
+            if (typeof output.error === 'string') {
+                errorMessage = output.error;
+            } else if (output.error && typeof output.error.message === 'string') {
+                errorMessage = output.error.message;
+            } else if (typeof output.message === 'string') {
+                errorMessage = output.message;
+            } else if (typeof output.detail === 'string') {
+                errorMessage = output.detail;
+            } else if (output.raw && typeof output.raw === 'string') {
+                // Truncate raw body if it's too long
+                errorMessage = output.raw.length > 200 ? output.raw.substring(0, 200) + '...' : output.raw;
+            }
+        }
+
         const span: Span = {
             id: entry.id,
             name: `${entry.method} ${entry.path}`,
@@ -109,6 +125,7 @@ export async function GET(request: Request) {
             status: entry.status >= 400 ? 'error' : 'success',
             input: input,
             output: output,
+            errorMessage: errorMessage,
             children: [],
             serviceName: 'backend'
         };
