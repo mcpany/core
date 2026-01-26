@@ -31,14 +31,10 @@ const TEMPLATES = [
         config: {
             commandLineService: {
                 command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname" }
-                }
+                env: {}
             }
         },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
+        params: {}
     },
     {
         id: 'filesystem',
@@ -47,14 +43,10 @@ const TEMPLATES = [
         config: {
             commandLineService: {
                 command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user" }
-                }
+                env: {}
             }
         },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
+        params: {}
     }
 ];
 
