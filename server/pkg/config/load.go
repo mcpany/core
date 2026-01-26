@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/spf13/viper"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -118,10 +119,17 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		fileConfig = configv1.McpAnyServerConfig_builder{}.Build()
 	}
 
-	// Use profiles from config if available, otherwise fall back to global settings
-	profiles := fileConfig.GetGlobalSettings().GetProfiles()
-	if len(profiles) == 0 {
+	// Priority: Env/Flag > Config File > Default
+	// We use viper.IsSet to determine if profiles were explicitly provided via Env or Flag.
+	// Note: GlobalSettings().Profiles() returns ["default"] if not set, so we can't just check for emptiness.
+	var profiles []string
+	if viper.IsSet("profiles") {
 		profiles = GlobalSettings().Profiles()
+	} else {
+		profiles = fileConfig.GetGlobalSettings().GetProfiles()
+		if len(profiles) == 0 {
+			profiles = []string{"default"}
+		}
 	}
 
 	manager := NewUpstreamServiceManager(profiles)
@@ -130,6 +138,11 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		return nil, fmt.Errorf("failed to load and merge services: %w", err)
 	}
 	fileConfig.SetUpstreamServices(services)
+	// Ensure the returned config reflects the active profiles used for filtering
+	if fileConfig.GetGlobalSettings() == nil {
+		fileConfig.SetGlobalSettings(configv1.GlobalSettings_builder{}.Build())
+	}
+	fileConfig.GetGlobalSettings().SetProfiles(profiles)
 
 	// If no users are configured, create a default user that has access to all profiles
 	if len(fileConfig.GetUsers()) == 0 {
