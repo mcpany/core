@@ -64,8 +64,9 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 // Load initializes the global settings from the command line and config files.
 //
 // Parameters:
-//   cmd: The cobra command containing flags.
-//   fs: The file system interface for reading config files.
+//
+//	cmd: The cobra command containing flags.
+//	fs: The file system interface for reading config files.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -361,38 +362,58 @@ func getStringSlice(key string) []string {
 	if val, ok := raw.(string); ok && val != "" {
 		// It's a string, so it likely comes from an environment variable or flag.
 		// We handle comma separation manually to avoid splitting by spaces within paths.
-		if strings.Contains(val, ",") {
-			parts := strings.Split(val, ",")
-			var final []string
-			for _, p := range parts {
-				p = strings.TrimSpace(p)
-				if p != "" {
-					final = append(final, p)
-				}
-			}
-			return final
-		}
-		return []string{strings.TrimSpace(val)}
+		// We use splitWithEscape to allow escaping commas (e.g. \,) in paths.
+		return splitWithEscape(val, ',')
 	}
 
 	// Fallback for slices (from config files) or empty values.
 	res := viper.GetStringSlice(key)
 	var final []string
 	for _, item := range res {
-		if strings.Contains(item, ",") {
-			parts := strings.Split(item, ",")
-			for _, p := range parts {
-				p = strings.TrimSpace(p)
-				if p != "" {
-					final = append(final, p)
-				}
-			}
-		} else {
-			item = strings.TrimSpace(item)
-			if item != "" {
-				final = append(final, item)
-			}
-		}
+		// Even if it comes from a list, we still split by comma for backward compatibility
+		// and consistency, but we respect escaping.
+		parts := splitWithEscape(item, ',')
+		final = append(final, parts...)
 	}
 	return final
+}
+
+// splitWithEscape splits a string by the separator, respecting backslash escapes.
+// e.g. "a,b\,c" -> ["a", "b,c"]
+//
+//	"a\\b" -> ["a\b"]
+func splitWithEscape(s string, sep rune) []string {
+	var res []string
+	var current strings.Builder
+	escaped := false
+
+	for _, r := range s {
+		if escaped {
+			current.WriteRune(r)
+			escaped = false
+			continue
+		}
+
+		if r == '\\' {
+			escaped = true
+			continue
+		}
+
+		if r == sep {
+			part := strings.TrimSpace(current.String())
+			if part != "" {
+				res = append(res, part)
+			}
+			current.Reset()
+		} else {
+			current.WriteRune(r)
+		}
+	}
+	// Add the last part
+	part := strings.TrimSpace(current.String())
+	if part != "" {
+		res = append(res, part)
+	}
+
+	return res
 }
