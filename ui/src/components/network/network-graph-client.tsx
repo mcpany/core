@@ -151,15 +151,6 @@ function Flow() {
       setIsSheetOpen(true);
   }, []);
 
-  const getStatusBadgeVariant = (status: NodeStatus) => {
-      switch (status) {
-          case 'NODE_STATUS_ACTIVE': return 'default'; // primary color usually indicates active/good
-          case 'NODE_STATUS_INACTIVE': return 'secondary';
-          case 'NODE_STATUS_ERROR': return 'destructive';
-          default: return 'outline';
-      }
-  };
-
   return (
     <div className="h-full w-full relative bg-muted/5 group">
       <div className={cn("absolute top-4 left-4 right-4 z-10 space-y-4 pointer-events-none flex flex-col gap-2 transition-all", isMobile ? "items-start" : "")}>
@@ -379,7 +370,7 @@ function Flow() {
  * @param props.intent - The intent property.
  * @returns The rendered component.
  */
-function MetricCard({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) {
+const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) => {
     return (
         <Card className={`p-3 bg-card/50 ${intent === 'danger' ? 'border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-900' : ''}`}>
             <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{label}</div>
@@ -388,7 +379,17 @@ function MetricCard({ label, value, unit, intent = "neutral" }: { label: string,
             </div>
         </Card>
     )
-}
+});
+MetricCard.displayName = 'MetricCard';
+
+const getStatusBadgeVariant = (status: NodeStatus) => {
+    switch (status) {
+        case 'NODE_STATUS_ACTIVE': return 'default'; // primary color usually indicates active/good
+        case 'NODE_STATUS_INACTIVE': return 'secondary';
+        case 'NODE_STATUS_ERROR': return 'destructive';
+        default: return 'outline';
+    }
+};
 
 /**
  * NetworkGraphClient component.

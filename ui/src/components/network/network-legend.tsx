@@ -33,7 +33,7 @@ interface LegendItemProps {
  * @param props.color - The color property.
  * @returns The rendered component.
  */
-const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
+const LegendItem = React.memo(({ icon, label, description, color }: LegendItemProps) => (
     <div className="flex items-start gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
         <div className={cn("p-1.5 rounded-md", color)}>
             {React.cloneElement(icon as React.ReactElement, { className: "h-4 w-4 text-white" })}
@@ -43,7 +43,8 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
             <p className="text-xs text-muted-foreground">{description}</p>
         </div>
     </div>
-);
+));
+LegendItem.displayName = 'LegendItem';
 
 /**
  * NetworkLegend component.
@@ -51,7 +52,7 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
  *
  * @returns The rendered NetworkLegend component.
  */
-export function NetworkLegend() {
+export const NetworkLegend = React.memo(function NetworkLegend() {
     return (
         <div className="space-y-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -130,4 +131,5 @@ export function NetworkLegend() {
             </div>
         </div>
     );
-}
+});
+NetworkLegend.displayName = 'NetworkLegend';
