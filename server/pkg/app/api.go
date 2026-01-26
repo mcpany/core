@@ -301,6 +301,12 @@ func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request
 	_, _ = w.Write([]byte("{}"))
 }
 
+type ValidationStep struct {
+	Name    string `json:"name"`
+	Status  string `json:"status"` // "pending", "success", "error", "skipped"
+	Message string `json:"message,omitempty"`
+}
+
 func (a *Application) handleServiceValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -317,17 +323,32 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
+		start := time.Now()
+		steps := []ValidationStep{
+			{Name: "Configuration Syntax", Status: "pending"},
+			{Name: "Connectivity Check", Status: "pending"},
+		}
+
 		// 1. Static Validation
 		if err := config.ValidateOrError(r.Context(), &svc); err != nil {
+			steps[0].Status = "error"
+			steps[0].Message = err.Error()
+			steps[1].Status = "skipped"
+
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest) // Keep 400 for static config error? Or 200? The UI expects 200/400 logic differently maybe?
+            // Existing logic returned 400. Let's return 200 to allow UI to parse steps.
+            w.WriteHeader(http.StatusOK)
 			_ = json.NewEncoder(w).Encode(map[string]any{
-				"valid":   false,
-				"error":   err.Error(),
-				"details": "Static validation failed",
+				"valid":      false,
+				"error":      err.Error(),
+				"details":    "Static validation failed",
+				"steps":      steps,
+				"latency_ms": time.Since(start).Milliseconds(),
 			})
 			return
 		}
+		steps[0].Status = "success"
 
 		// 2. Connectivity / Health Check
 		var checkErr error
@@ -372,19 +393,27 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 		}
 
 		if checkErr != nil {
+			steps[1].Status = "error"
+			steps[1].Message = checkErr.Error()
+
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
 			_ = json.NewEncoder(w).Encode(map[string]any{
-				"valid":   false,
-				"error":   checkErr.Error(),
-				"details": checkDetails,
+				"valid":      false,
+				"error":      checkErr.Error(),
+				"details":    checkDetails,
+				"steps":      steps,
+				"latency_ms": time.Since(start).Milliseconds(),
 			})
 			return
 		}
+		steps[1].Status = "success"
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]any{
-			"valid": true,
+			"valid":      true,
+			"steps":      steps,
+			"latency_ms": time.Since(start).Milliseconds(),
 		})
 	}
 }

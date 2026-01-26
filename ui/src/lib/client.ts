@@ -37,7 +37,19 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse } from '@proto/api/v1/registration';
+
+export interface ValidateServiceResponse {
+    valid: boolean;
+    error?: string;
+    details?: string;
+    latency_ms?: number;
+    steps?: {
+        name: string;
+        status: string;
+        message?: string;
+    }[];
+}
 
 // Initialize gRPC Web Client
 // Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
@@ -440,7 +452,7 @@ export const apiClient = {
      * @param config The service configuration to validate.
      * @returns A promise that resolves to the validation result.
      */
-    validateService: async (config: UpstreamServiceConfig) => {
+    validateService: async (config: UpstreamServiceConfig): Promise<ValidateServiceResponse> => {
         // Map camelCase (UI) to snake_case (Server REST)
         const payload: any = {
             id: config.id,

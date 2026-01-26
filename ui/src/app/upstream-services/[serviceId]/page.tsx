@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { DiagnosticModal } from "@/components/diagnostics/diagnostic-modal";
 
 /**
  * UpstreamServiceDetailPage component.
@@ -31,7 +32,7 @@ export default function UpstreamServiceDetailPage() {
     const [service, setService] = useState<UpstreamServiceConfig | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [testing, setTesting] = useState(false);
+    const [diagnosticOpen, setDiagnosticOpen] = useState(false);
 
     // Fetch Service
     useEffect(() => {
@@ -90,24 +91,7 @@ export default function UpstreamServiceDetailPage() {
 
     const handleTestConnection = async () => {
         if (!service) return;
-        setTesting(true);
-        try {
-            // validateService sends the current config state to the backend for validation
-            const result = await apiClient.validateService(service);
-            if (result.valid) {
-                toast({ title: "Connection Successful", description: "Service is reachable and configured correctly." });
-            } else {
-                toast({
-                    title: "Connection Failed",
-                    description: result.error ? `${result.error}${result.details ? `: ${result.details}` : ''}` : "Unknown error",
-                    variant: "destructive"
-                });
-            }
-        } catch (e) {
-            toast({ title: "Validation Error", description: String(e), variant: "destructive" });
-        } finally {
-            setTesting(false);
-        }
+        setDiagnosticOpen(true);
     };
 
     if (loading) {
@@ -142,9 +126,9 @@ export default function UpstreamServiceDetailPage() {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleTestConnection} disabled={testing}>
-                        {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
-                        Test Connection
+                    <Button variant="outline" onClick={handleTestConnection}>
+                        <Play className="mr-2 h-4 w-4" />
+                        Run Diagnostics
                     </Button>
                     <Button variant="outline" onClick={handleToggleStatus}>
                         <Power className="mr-2 h-4 w-4" />
@@ -276,6 +260,14 @@ export default function UpstreamServiceDetailPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {service && (
+                <DiagnosticModal
+                    service={service}
+                    open={diagnosticOpen}
+                    onOpenChange={setDiagnosticOpen}
+                />
+            )}
         </div>
     );
 }
