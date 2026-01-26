@@ -25,6 +25,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
+import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -436,6 +437,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
                     <TabsTrigger value="auth">Authentication</TabsTrigger>
                     <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
+                    {isEditing && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
                 </TabsList>
 
                 <Form {...form}>
@@ -680,6 +682,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     )}
                     />
                 </TabsContent>
+
+                {isEditing && serviceToEdit && (
+                    <TabsContent value="inspector" className="space-y-4">
+                        <ServiceInspector service={serviceToEdit} />
+                    </TabsContent>
+                )}
 
                 {validationResult && (
                     <div className={`p-3 rounded-md text-sm mb-4 ${validationResult.valid ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300" : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"}`}>
