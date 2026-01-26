@@ -56,6 +56,8 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
     if (service.websocketService || service.httpService) {
         initialSteps.splice(1, 0, { id: "browser_connectivity", name: "Browser Connectivity Check", status: "pending", logs: [] });
+    } else if (service.filesystemService) {
+        initialSteps.splice(1, 0, { id: "filesystem_check", name: "Filesystem Path Verification", status: "pending", logs: [] });
     }
 
     setSteps(initialSteps);
@@ -115,7 +117,37 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     }
     updateStep("config", { status: "success", detail: "Configuration valid" });
 
-    // --- Step 1.5: Browser Connectivity (WebSocket & HTTP) ---
+    // --- Step 1.5: Filesystem Verification ---
+    if (service.filesystemService) {
+        updateStep("filesystem_check", { status: "running" });
+        addLog("filesystem_check", "Verifying filesystem paths...");
+
+        try {
+            const validation = await apiClient.validateService(service);
+            if (validation.valid) {
+                addLog("filesystem_check", "All paths are accessible and readable.");
+                updateStep("filesystem_check", { status: "success", detail: "Verified" });
+            } else {
+                addLog("filesystem_check", `Error: ${validation.error}`);
+                if (validation.details) {
+                    addLog("filesystem_check", `Details: ${validation.details}`);
+                }
+                setDiagnosticResult({
+                    category: "configuration",
+                    title: "Filesystem Access Error",
+                    description: validation.details || validation.error || "Failed to access filesystem roots.",
+                    suggestion: "Check if the directory exists and the server process has read permissions.",
+                    severity: "critical"
+                });
+                updateStep("filesystem_check", { status: "failure", detail: "Access Denied" });
+            }
+        } catch (error: any) {
+            addLog("filesystem_check", `Validation check failed: ${error.message}`);
+            updateStep("filesystem_check", { status: "failure", detail: "Check Failed" });
+        }
+    }
+
+    // --- Step 1.6: Browser Connectivity (WebSocket & HTTP) ---
     if (service.websocketService) {
         updateStep("browser_connectivity", { status: "running" });
         addLog("browser_connectivity", `Attempting to connect to ${url} from browser...`);

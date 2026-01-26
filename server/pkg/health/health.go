@@ -461,9 +461,28 @@ func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.
 
 			if isLocal {
 				for virtualPath, localPath := range c.GetRootPaths() {
-					if _, err := os.Stat(localPath); err != nil {
+					info, err := os.Stat(localPath)
+					if err != nil {
+						if os.IsNotExist(err) {
+							return fmt.Errorf("root path check failed for %s (%s): path does not exist", virtualPath, localPath)
+						}
 						return fmt.Errorf("root path check failed for %s (%s): %w", virtualPath, localPath, err)
 					}
+
+					// Verify read permissions
+					f, err := os.Open(localPath)
+					if err != nil {
+						return fmt.Errorf("root path check failed for %s (%s): permission denied (open): %w", virtualPath, localPath, err)
+					}
+
+					if info.IsDir() {
+						_, err = f.Readdirnames(1)
+						if err != nil && err != io.EOF {
+							_ = f.Close()
+							return fmt.Errorf("root path check failed for %s (%s): permission denied (read dir): %w", virtualPath, localPath, err)
+						}
+					}
+					_ = f.Close()
 				}
 			}
 			// For other types, assume healthy for now or add specific checks later.

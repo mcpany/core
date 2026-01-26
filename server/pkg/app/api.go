@@ -424,14 +424,30 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 }
 
 func checkFilesystemAccess(path string) error {
-	_, err := os.Stat(path)
+	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("path does not exist: %s", path)
 		}
 		return fmt.Errorf("failed to access path: %w", err)
 	}
-	// We allow both files and directories, so existence is sufficient validation for now.
+
+	// Try to open the path to ensure we have read permissions
+	f, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("permission denied: failed to open path: %w", err)
+	}
+	defer func() { _ = f.Close() }()
+
+	// If it's a directory, ensure we can list its contents (read permission)
+	if info.IsDir() {
+		// Readdirnames(1) is efficient enough to check if we can read the dir
+		_, err = f.Readdirnames(1)
+		if err != nil && err != io.EOF {
+			return fmt.Errorf("permission denied: failed to read directory: %w", err)
+		}
+	}
+
 	return nil
 }
 

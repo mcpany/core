@@ -12,6 +12,7 @@ import { vi } from "vitest";
 vi.mock("@/lib/client", () => ({
     apiClient: {
         getService: vi.fn(),
+        validateService: vi.fn(),
     },
 }));
 
@@ -62,6 +63,33 @@ const mockWebSocketService: UpstreamServiceConfig = {
       calls: {},
     }
   };
+
+const mockFilesystemService: UpstreamServiceConfig = {
+    id: "fs-service",
+    name: "Filesystem Service",
+    version: "1.0.0",
+    disable: false,
+    priority: 0,
+    loadBalancingStrategy: 0,
+    sanitizedName: "fs-service",
+    callPolicies: [],
+    preCallHooks: [],
+    postCallHooks: [],
+    prompts: [],
+    autoDiscoverTool: false,
+    configError: "",
+    tags: [],
+    filesystemService: {
+        rootPaths: { "/": "/tmp" },
+        readOnly: false,
+        tools: [],
+        resources: [],
+        prompts: [],
+        allowedPaths: [],
+        deniedPaths: [],
+        symlinkMode: 0
+    }
+};
 
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
@@ -314,5 +342,26 @@ describe("ConnectionDiagnosticDialog", () => {
 
         expect(screen.getByText("Schema Validation Error")).toBeInTheDocument();
         expect(screen.getByText("The upstream server returned data that does not match the expected schema.")).toBeInTheDocument();
+  });
+
+  it("adds filesystem verification step for filesystem service", async () => {
+    (apiClient.validateService as any).mockResolvedValue({ valid: true });
+
+    render(<ConnectionDiagnosticDialog service={mockFilesystemService} />);
+
+    const trigger = screen.getByText("Troubleshoot");
+    fireEvent.click(trigger);
+
+    const startButton = screen.getByText("Start Diagnostics");
+    fireEvent.click(startButton);
+
+    await waitFor(() => {
+        expect(screen.getByText("Filesystem Path Verification")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+        expect(apiClient.validateService).toHaveBeenCalledWith(mockFilesystemService);
+        expect(screen.getByText("Verified")).toBeInTheDocument();
+    });
   });
 });
