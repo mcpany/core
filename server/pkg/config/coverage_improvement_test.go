@@ -83,12 +83,12 @@ func TestSettingsCoverage(t *testing.T) {
 func TestValidatorCoverage(t *testing.T) {
 	// Test ValidateOrError
 	// ValidateOrError expects UpstreamServiceConfig
-	cfg := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("valid-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("http://example.com"),
-		}.Build(),
-	}.Build()
+	svc := configv1.UpstreamServiceConfig_builder{}.Build()
+	svc.SetName("valid-service")
+	svc.SetHttpService(configv1.HttpUpstreamService_builder{
+		Address: proto.String("http://example.com"),
+	}.Build())
+	cfg := svc
 	err := config.ValidateOrError(context.Background(), cfg)
     assert.NoError(t, err)
 
@@ -133,15 +133,15 @@ func TestValidatorCoverageMore(t *testing.T) {
 
     // 5. Websocket Service Invalid Scheme
     cfgWs := configv1.McpAnyServerConfig_builder{
-        UpstreamServices: []*configv1.UpstreamServiceConfig{
-            configv1.UpstreamServiceConfig_builder{
-                Name: proto.String("bad-ws"),
-                WebsocketService: configv1.WebsocketUpstreamService_builder{
-                    Address: proto.String("http://example.com"),
-                }.Build(),
-            }.Build(),
-        },
-    }.Build()
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("bad-ws"),
+				WebsocketService: configv1.WebsocketUpstreamService_builder{
+					Address: proto.String("http://example.com"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
     errs = config.Validate(ctx, cfgWs, config.Server)
     assert.NotEmpty(t, errs)
     assert.Contains(t, errs[0].Err.Error(), "invalid websocket address scheme")
@@ -190,10 +190,10 @@ func TestSecretsHydration(t *testing.T) {
 
     // Command Line Service
     cmdService := func() *configv1.UpstreamServiceConfig {
-        svc := &configv1.UpstreamServiceConfig{}
-        svc.SetName("cmd-svc")
-        cmd := &configv1.CommandLineUpstreamService{}
-        cmd.SetEnv(map[string]*configv1.SecretValue{
+        svc := configv1.UpstreamServiceConfig_builder{}.Build()
+		svc.SetName("cmd-svc")
+		cmd := configv1.CommandLineUpstreamService_builder{}.Build()
+		cmd.SetEnv(map[string]*configv1.SecretValue{
             "API_KEY": func() *configv1.SecretValue {
                 s := &configv1.SecretValue{}
                 s.SetEnvironmentVariable("MY_SECRET")

@@ -407,7 +407,7 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 		callDef := configv1.OpenAPICallDefinition_builder{
 			InputTransformer: configv1.InputTransformer_builder{
 				Webhook: configv1.WebhookConfig_builder{
-					Url: webhookServer.URL,
+					Url: proto.String(webhookServer.URL),
 				}.Build(),
 			}.Build(),
 		}.Build()

@@ -140,18 +140,16 @@ global_settings:
 
 	// Create initial user
 	userID := fmt.Sprintf("e2e-test-user-%d", time.Now().UnixNano())
-	user1 := &configv1.User{
+	user1 := configv1.User_builder{
 		Id: proto.String(userID),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					VerificationValue: proto.String("secret-key"),
-				},
-			},
-		},
+		Authentication: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				VerificationValue: proto.String("secret-key"),
+			}.Build(),
+		}.Build(),
 		ProfileIds: []string{"profile-1"},
 		Roles:      []string{"viewer"},
-	}
+	}.Build()
 
 	createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user1})
 	require.NoError(t, err)
@@ -178,10 +176,10 @@ global_settings:
 	require.Equal(t, userID, foundUser.GetId())
 
 	// Update user
-	user1.Roles = []string{"admin"}
+	user1.SetRoles([]string{"admin"})
 	updateResp, err := adminClient.UpdateUser(ctx, &pb_admin.UpdateUserRequest{User: user1})
 	require.NoError(t, err)
-	require.Equal(t, []string{"admin"}, updateResp.User.Roles)
+	require.Equal(t, []string{"admin"}, updateResp.User.GetRoles())
 
 	// Delete user
 	_, err = adminClient.DeleteUser(ctx, &pb_admin.DeleteUserRequest{UserId: proto.String(userID)})

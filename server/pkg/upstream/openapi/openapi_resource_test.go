@@ -119,7 +119,7 @@ func TestRegisterDynamicResources(t *testing.T) {
 		mockResourceManager := new(MockResourceManager)
 
 		definitions := []*configv1.ToolDefinition{
-			// No tools matching call ID
+			configv1.ToolDefinition_builder{Name: proto.String("tool1")}.Build(),
 		}
 
 		resources := []*configv1.ResourceDefinition{

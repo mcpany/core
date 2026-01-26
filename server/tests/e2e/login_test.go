@@ -97,18 +97,16 @@ global_settings:
 	// 1. Create User with Basic Auth (Get-or-Create to avoid flakes)
 	username := "e2e-login-user"
 	password := "password123"
-	user := &configv1.User{
+	user := configv1.User_builder{
 		Id: proto.String(username),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					Username:     proto.String(username),
-					PasswordHash: proto.String(password), // Will be hashed by server
-				},
-			},
-		},
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String(username),
+				PasswordHash: proto.String(password),
+			}.Build(),
+		}.Build(),
 		Roles: []string{"viewer"},
-	}
+	}.Build()
 
 	// Try to get first
 	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(username)})

@@ -55,7 +55,7 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 	if user == nil {
 		return false
 	}
-	return slices.Contains(user.Roles, role)
+	return slices.Contains(user.GetRoles(), role)
 }
 
 // HasAnyRole checks if the user has at least one of the specified roles.
@@ -69,7 +69,7 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 		return false
 	}
 	for _, role := range roles {
-		if slices.Contains(user.Roles, role) {
+		if slices.Contains(user.GetRoles(), role) {
 			return true
 		}
 	}

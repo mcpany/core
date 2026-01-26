@@ -374,7 +374,7 @@ func TestInitializeAdminUser_RandomPassword(t *testing.T) {
 	assert.NotNil(t, capturedUser)
 	assert.Equal(t, "admin", capturedUser.GetId())
 
-	hash := capturedUser.Authentication.GetBasicAuth().GetPasswordHash()
+	hash := capturedUser.GetAuthentication().GetBasicAuth().GetPasswordHash()
 	assert.NotEmpty(t, hash)
 
 	// Check that the password is NOT "password"

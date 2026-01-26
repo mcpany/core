@@ -67,6 +67,7 @@ func TestHTTPUpstream_URLConstruction_FlagOverride(t *testing.T) {
 						}.Build(),
 					},
 					Tools: []*configv1.ToolDefinition{
+						configv1.ToolDefinition_builder{Name: proto.String("tool1")}.Build(),
 						configv1.ToolDefinition_builder{
 							Name:   proto.String("test-tool"),
 							CallId: proto.String("test-call"),

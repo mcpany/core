@@ -592,10 +592,7 @@ func TestUpstream_Register_HttpConnectionError(t *testing.T) {
 				HttpAddress: proto.String("http://127.0.0.1:12345"),
 			}.Build(),
 			Tools: []*configv1.ToolDefinition{
-				configv1.ToolDefinition_builder{
-					Name:   proto.String("test-tool"),
-					CallId: proto.String("test-call"),
-				}.Build(),
+				configv1.ToolDefinition_builder{Name: proto.String("tool1")}.Build(),
 			},
 			Calls: map[string]*configv1.MCPCallDefinition{
 				"test-call": configv1.MCPCallDefinition_builder{

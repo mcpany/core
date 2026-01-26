@@ -10,12 +10,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/stretchr/testify/require"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -55,13 +55,13 @@ func TestMCPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 		},
 	}
 
-	callDef := &configv1.MCPCallDefinition{
-		InputTransformer: &configv1.InputTransformer{
-			Webhook: &configv1.WebhookConfig{
-				Url: webhookServer.URL,
-			},
-		},
-	}
+	callDef := configv1.MCPCallDefinition_builder{
+		InputTransformer: configv1.InputTransformer_builder{
+			Webhook: configv1.WebhookConfig_builder{
+				Url: proto.String(webhookServer.URL),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	mcpTool := v1.Tool_builder{
 		Name:                proto.String("test-tool"),

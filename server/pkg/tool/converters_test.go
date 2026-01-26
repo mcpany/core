@@ -6,8 +6,8 @@ package tool
 import (
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -41,12 +41,12 @@ func TestConvertToolDefinitionToProto(t *testing.T) {
 			},
 		})
 
-		toolDef := &configv1.ToolDefinition{
+		toolDef := configv1.ToolDefinition_builder{
 			Name:        proto.String("test-tool"),
 			Description: proto.String("A test tool"),
 			Title:       proto.String("Test Tool"),
 			ServiceId:   proto.String("test-service"),
-		}
+		}.Build()
 
 		pbTool, err := ConvertToolDefinitionToProto(toolDef, inputSchema, outputSchema)
 		assert.NoError(t, err)
@@ -250,9 +250,9 @@ func TestConvertProtoToMCPTool_NilTool(t *testing.T) {
 
 func TestConvertProtoToMCPTool_EmptyToolName(t *testing.T) {
 	t.Parallel()
-	pbTool := &configv1.ToolDefinition{
+	pbTool := configv1.ToolDefinition_builder{
 		Name: proto.String(""),
-	}
+	}.Build()
 	pbToolProto, err := ConvertToolDefinitionToProto(pbTool, nil, nil)
 	assert.NoError(t, err)
 
@@ -265,12 +265,12 @@ func TestConvertProtoToMCPTool_EmptyToolName(t *testing.T) {
 func TestConvertProtoToMCPTool(t *testing.T) {
 	t.Parallel()
 	t.Run("valid tool", func(t *testing.T) {
-		pbTool := &configv1.ToolDefinition{
+		pbTool := configv1.ToolDefinition_builder{
 			Name:        proto.String("test-tool"),
 			Description: proto.String("A test tool"),
 			Title:       proto.String("Test Tool"),
 			ServiceId:   proto.String("test-service"),
-		}
+		}.Build()
 		pbToolProto, err := ConvertToolDefinitionToProto(pbTool, nil, nil)
 		assert.NoError(t, err)
 

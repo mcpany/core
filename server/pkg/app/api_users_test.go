@@ -31,7 +31,7 @@ func TestHandleUsers_List(t *testing.T) {
 	handler := app.handleUsers(store)
 
 	// Create a user first
-	user := &configv1.User{Id: proto.String("user1")}
+	user := configv1.User_builder{Id: proto.String("user1")}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	req := httptest.NewRequest(http.MethodGet, "/users", nil)
@@ -59,7 +59,7 @@ func TestHandleUserDetail(t *testing.T) {
 	handler := app.handleUserDetail(store)
 
 	// Create a user
-	user := &configv1.User{Id: proto.String("user1")}
+	user := configv1.User_builder{Id: proto.String("user1")}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	t.Run("Get User", func(t *testing.T) {
@@ -82,16 +82,14 @@ func TestHandleUserDetail(t *testing.T) {
 	})
 
 	t.Run("Update User", func(t *testing.T) {
-		updatedUser := &configv1.User{
-			Id:       proto.String("user1"),
-			Authentication: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_BasicAuth{
-					BasicAuth: &configv1.BasicAuth{
-						PasswordHash: proto.String("newpass"),
-					},
-				},
-			},
-		}
+		updatedUser := configv1.User_builder{
+			Id: proto.String("user1"),
+			Authentication: configv1.Authentication_builder{
+				BasicAuth: configv1.BasicAuth_builder{
+					PasswordHash: proto.String("newpass"),
+				}.Build(),
+			}.Build(),
+		}.Build()
 		// Wrap in { user: ... }
 		opts := protojson.MarshalOptions{UseProtoNames: true}
 		userBytes, _ := opts.Marshal(updatedUser)
@@ -135,29 +133,25 @@ func TestHashUserPassword_Redaction(t *testing.T) {
 	store := memory.NewStore()
 
 	// 1. Create a user with a real hash
-	user := &configv1.User{
+	user := configv1.User_builder{
 		Id: proto.String("user-redact"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					PasswordHash: proto.String("real-hash"),
-				},
-			},
-		},
-	}
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				PasswordHash: proto.String("real-hash"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	// 2. Simulate an update where password_hash is "[REDACTED]"
-	updatedUser := &configv1.User{
+	updatedUser := configv1.User_builder{
 		Id: proto.String("user-redact"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					PasswordHash: proto.String("REDACTED"),
-				},
-			},
-		},
-	}
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				PasswordHash: proto.String("REDACTED"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	// 3. Call hashUserPassword
 	err := hashUserPassword(context.Background(), updatedUser, store)

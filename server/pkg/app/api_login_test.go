@@ -34,17 +34,15 @@ func TestHandleLogin(t *testing.T) {
 	hashedPassword, err := passhash.Password("secret123")
 	require.NoError(t, err)
 
-	user := &configv1.User{
+	user := configv1.User_builder{
 		Id: proto.String("testuser"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					Username:     proto.String("testuser"),
-					PasswordHash: proto.String(hashedPassword),
-				},
-			},
-		},
-	}
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String("testuser"),
+				PasswordHash: proto.String(hashedPassword),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	t.Run("Success", func(t *testing.T) {

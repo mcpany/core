@@ -23,8 +23,8 @@ import (
 func TestNewWebhookHook(t *testing.T) {
 	t.Parallel()
 	config := configv1.WebhookConfig_builder{
-		Url:           "http://example.com",
-		WebhookSecret: "dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0",
+		Url:           proto.String("http://example.com"),
+		WebhookSecret: proto.String("dGVzdC1zZWNyZXQtdmFsaWQtYmFzZTY0"),
 	}.Build()
 	hook := NewWebhookHook(config)
 	assert.NotNil(t, hook)
@@ -39,8 +39,8 @@ func TestSigningRoundTripper_RoundTrip(t *testing.T) {
 	validSecret := "test-secret-valid-base64"
 	encodedSecret := base64.StdEncoding.EncodeToString([]byte(validSecret))
 	config := configv1.WebhookConfig_builder{
-		Url:           "http://example.com",
-		WebhookSecret: encodedSecret,
+		Url:           proto.String("http://example.com"),
+		WebhookSecret: proto.String(encodedSecret),
 	}.Build()
 	hook := NewWebhookHook(config)
 
@@ -107,7 +107,7 @@ func TestWebhookHook_ExecutePre(t *testing.T) {
 	defer server.Close()
 
 	config := configv1.WebhookConfig_builder{
-		Url: server.URL,
+		Url: proto.String(server.URL),
 	}.Build()
 	hook := NewWebhookHook(config)
 

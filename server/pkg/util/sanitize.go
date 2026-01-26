@@ -20,8 +20,8 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 	// Clone to avoid modifying the original
 	clone := proto.Clone(u).(*configv1.User)
 
-	if clone.Authentication != nil {
-		clone.Authentication = SanitizeAuthentication(clone.Authentication)
+	if clone.GetAuthentication() != nil {
+		clone.SetAuthentication(SanitizeAuthentication(clone.GetAuthentication()))
 	}
 
 	return clone
@@ -34,12 +34,12 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	}
 	clone := proto.Clone(c).(*configv1.Credential)
 
-	if clone.Authentication != nil {
-		clone.Authentication = SanitizeAuthentication(clone.Authentication)
+	if clone.GetAuthentication() != nil {
+		clone.SetAuthentication(SanitizeAuthentication(clone.GetAuthentication()))
 	}
 
-	if clone.Token != nil {
-		clone.Token = SanitizeUserToken(clone.Token)
+	if clone.GetToken() != nil {
+		clone.SetToken(SanitizeUserToken(clone.GetToken()))
 	}
 
 	return clone
@@ -52,36 +52,44 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 		return nil
 	}
 
-	switch m := a.AuthMethod.(type) {
-	case *configv1.Authentication_ApiKey:
-		if m.ApiKey != nil {
-			if m.ApiKey.Value != nil {
-				m.ApiKey.Value = SanitizeSecretValue(m.ApiKey.Value)
+	// Since we can't easily modify oneof fields in-place if they are private/hidden in Opaque API without using Setters,
+	// checking the type and then setting the field is cleaner.
+	// However, we are operating on a clone, so we can use Setters.
+
+	switch {
+	case a.HasApiKey():
+		m := a.GetApiKey() // Returns *APIKeyAuth
+		if m != nil {
+			if m.HasValue() {
+				m.SetValue(SanitizeSecretValue(m.GetValue()))
 			}
-			// VerificationValue might be nil if optional, or *string.
-			if m.ApiKey.VerificationValue != nil && *m.ApiKey.VerificationValue != "" {
-				m.ApiKey.VerificationValue = proto.String(RedactedString)
-			}
-		}
-	case *configv1.Authentication_BearerToken:
-		if m.BearerToken != nil {
-			m.BearerToken.Token = SanitizeSecretValue(m.BearerToken.Token)
-		}
-	case *configv1.Authentication_BasicAuth:
-		if m.BasicAuth != nil {
-			m.BasicAuth.Password = SanitizeSecretValue(m.BasicAuth.Password)
-			if m.BasicAuth.PasswordHash != nil && *m.BasicAuth.PasswordHash != "" {
-				m.BasicAuth.PasswordHash = proto.String(RedactedString)
+			if m.GetVerificationValue() != "" {
+				m.SetVerificationValue(RedactedString)
 			}
 		}
-	case *configv1.Authentication_Oauth2:
-		if m.Oauth2 != nil {
-			m.Oauth2.ClientSecret = SanitizeSecretValue(m.Oauth2.ClientSecret)
-			m.Oauth2.ClientId = SanitizeSecretValue(m.Oauth2.ClientId)
+	case a.HasBearerToken():
+		m := a.GetBearerToken()
+		if m != nil {
+			m.SetToken(SanitizeSecretValue(m.GetToken()))
 		}
-	case *configv1.Authentication_TrustedHeader:
-		if m.TrustedHeader != nil && m.TrustedHeader.HeaderValue != nil && *m.TrustedHeader.HeaderValue != "" {
-			m.TrustedHeader.HeaderValue = proto.String(RedactedString)
+	case a.HasBasicAuth():
+		m := a.GetBasicAuth()
+		if m != nil {
+			m.SetPassword(SanitizeSecretValue(m.GetPassword()))
+			if m.GetPasswordHash() != "" {
+				m.SetPasswordHash(RedactedString)
+			}
+		}
+	case a.HasOauth2():
+		m := a.GetOauth2()
+		if m != nil {
+			m.SetClientSecret(SanitizeSecretValue(m.GetClientSecret()))
+			m.SetClientId(SanitizeSecretValue(m.GetClientId()))
+		}
+	case a.HasTrustedHeader():
+		m := a.GetTrustedHeader()
+		if m != nil && m.GetHeaderValue() != "" {
+			m.SetHeaderValue(RedactedString)
 		}
 	}
 
@@ -93,11 +101,11 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
 	}
-	if t.AccessToken != nil && *t.AccessToken != "" {
-		t.AccessToken = proto.String(RedactedString)
+	if t.GetAccessToken() != "" {
+		t.SetAccessToken(RedactedString)
 	}
-	if t.RefreshToken != nil && *t.RefreshToken != "" {
-		t.RefreshToken = proto.String(RedactedString)
+	if t.GetRefreshToken() != "" {
+		t.SetRefreshToken(RedactedString)
 	}
 	return t
 }
@@ -110,16 +118,16 @@ func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 
 	switch s.WhichValue() {
 	case configv1.SecretValue_PlainText_case:
-		s.Value = &configv1.SecretValue_PlainText{PlainText: RedactedString}
+		s.SetPlainText(RedactedString)
 	case configv1.SecretValue_RemoteContent_case:
 		rc := s.GetRemoteContent()
-		if rc != nil && rc.Auth != nil {
-			rc.Auth = SanitizeAuthentication(rc.Auth)
+		if rc != nil && rc.GetAuth() != nil {
+			rc.SetAuth(SanitizeAuthentication(rc.GetAuth()))
 		}
 	case configv1.SecretValue_Vault_case:
 		v := s.GetVault()
 		if v != nil {
-			v.Token = SanitizeSecretValue(v.Token)
+			v.SetToken(SanitizeSecretValue(v.GetToken()))
 		}
 	}
 
