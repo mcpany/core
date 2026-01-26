@@ -10,61 +10,54 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestLinter_Run_AllAuthTypes_PlainText(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("service-all-auth"),
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_ApiKey{
-						ApiKey: &configv1.APIKeyAuth{
-							Value: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{PlainText: "api-key"},
-							},
-						},
-					},
-				},
-			},
-			{
-				Name: ptr("service-bearer"),
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_BearerToken{
-						BearerToken: &configv1.BearerTokenAuth{
-							Token: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{PlainText: "bearer-token"},
-							},
-						},
-					},
-				},
-			},
-			{
-				Name: ptr("service-basic"),
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_BasicAuth{
-						BasicAuth: &configv1.BasicAuth{
-							Password: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{PlainText: "basic-password"},
-							},
-						},
-					},
-				},
-			},
-			{
-				Name: ptr("service-oauth"),
-				UpstreamAuth: &configv1.Authentication{
-					AuthMethod: &configv1.Authentication_Oauth2{
-						Oauth2: &configv1.OAuth2Auth{
-							ClientSecret: &configv1.SecretValue{
-								Value: &configv1.SecretValue_PlainText{PlainText: "oauth-secret"},
-							},
-						},
-					},
-				},
-			},
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("service-all-auth"),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("api-key"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("service-bearer"),
+				UpstreamAuth: configv1.Authentication_builder{
+					BearerToken: configv1.BearerTokenAuth_builder{
+						Token: configv1.SecretValue_builder{
+							PlainText: proto.String("bearer-token"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("service-basic"),
+				UpstreamAuth: configv1.Authentication_builder{
+					BasicAuth: configv1.BasicAuth_builder{
+						Password: configv1.SecretValue_builder{
+							PlainText: proto.String("basic-password"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("service-oauth"),
+				UpstreamAuth: configv1.Authentication_builder{
+					Oauth2: configv1.OAuth2Auth_builder{
+						ClientSecret: configv1.SecretValue_builder{
+							PlainText: proto.String("oauth-secret"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())
@@ -80,53 +73,43 @@ func TestLinter_Run_AllAuthTypes_PlainText(t *testing.T) {
 }
 
 func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("cmd-env"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-					CommandLineService: &configv1.CommandLineUpstreamService{
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("cmd-env"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Env: map[string]*configv1.SecretValue{
+						"KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
+					},
+					ContainerEnvironment: configv1.ContainerEnvironment_builder{
 						Env: map[string]*configv1.SecretValue{
-							"KEY": {Value: &configv1.SecretValue_PlainText{PlainText: "val"}},
+							"CONTAINER_KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
 						},
-						ContainerEnvironment: &configv1.ContainerEnvironment{
-							Env: map[string]*configv1.SecretValue{
-								"CONTAINER_KEY": {Value: &configv1.SecretValue_PlainText{PlainText: "val"}},
-							},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("mcp-env"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Env: map[string]*configv1.SecretValue{
+							"STDIO_KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
 						},
-					},
-				},
-			},
-			{
-				Name: ptr("mcp-env"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-							StdioConnection: &configv1.McpStdioConnection{
-								Env: map[string]*configv1.SecretValue{
-									"STDIO_KEY": {Value: &configv1.SecretValue_PlainText{PlainText: "val"}},
-								},
-							},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("mcp-bundle-env"),
+				McpService: configv1.McpUpstreamService_builder{
+					BundleConnection: configv1.McpBundleConnection_builder{
+						Env: map[string]*configv1.SecretValue{
+							"BUNDLE_KEY": configv1.SecretValue_builder{PlainText: proto.String("val")}.Build(),
 						},
-					},
-				},
-			},
-			{
-				Name: ptr("mcp-bundle-env"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-							BundleConnection: &configv1.McpBundleConnection{
-								Env: map[string]*configv1.SecretValue{
-									"BUNDLE_KEY": {Value: &configv1.SecretValue_PlainText{PlainText: "val"}},
-								},
-							},
-						},
-					},
-				},
-			},
+					}.Build(),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())
@@ -142,56 +125,42 @@ func TestLinter_Run_EnvVars_PlainText(t *testing.T) {
 }
 
 func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("openapi-insecure"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-					OpenapiService: &configv1.OpenapiUpstreamService{
-						Address: ptr("http://api.openapi.com"),
-					},
-				},
-			},
-			{
-				Name: ptr("openapi-spec-insecure"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-					OpenapiService: &configv1.OpenapiUpstreamService{
-						SpecSource: &configv1.OpenapiUpstreamService_SpecUrl{
-							SpecUrl: "http://spec.openapi.com",
-						},
-					},
-				},
-			},
-			{
-				Name: ptr("mcp-http-insecure"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-							HttpConnection: &configv1.McpStreamableHttpConnection{
-								HttpAddress: ptr("http://mcp.example.com"),
-							},
-						},
-					},
-				},
-			},
-			{
-				Name: ptr("safe-127.0.0.1"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: ptr("http://127.0.0.1:8080"),
-					},
-				},
-			},
-			{
-				Name: ptr("safe-127"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-					HttpService: &configv1.HttpUpstreamService{
-						Address: ptr("http://127.0.0.1:8080"),
-					},
-				},
-			},
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("openapi-insecure"),
+				OpenapiService: configv1.OpenapiUpstreamService_builder{
+					Address: ptr("http://api.openapi.com"),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("openapi-spec-insecure"),
+				OpenapiService: configv1.OpenapiUpstreamService_builder{
+					SpecUrl: proto.String("http://spec.openapi.com"),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("mcp-http-insecure"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: ptr("http://mcp.example.com"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("safe-127.0.0.1"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: ptr("http://127.0.0.1:8080"),
+				}.Build(),
+			}.Build(),
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("safe-127"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: ptr("http://127.0.0.1:8080"),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())
@@ -207,22 +176,18 @@ func TestLinter_Run_OtherInsecureHTTP(t *testing.T) {
 }
 
 func TestLinter_Run_ShellInjection_Extra(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
+	cfg := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			{
-				Name: ptr("mcp-stdio-shell"),
-				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-					McpService: &configv1.McpUpstreamService{
-						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-							StdioConnection: &configv1.McpStdioConnection{
-								Command: ptr("bash -c 'bad'"),
-							},
-						},
-					},
-				},
-			},
+			configv1.UpstreamServiceConfig_builder{
+				Id: ptr("mcp-stdio-shell"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: ptr("bash -c 'bad'"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	linter := NewLinter(cfg)
 	results, err := linter.Run(context.Background())

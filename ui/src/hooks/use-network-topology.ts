@@ -82,8 +82,6 @@ export function useNetworkTopology() {
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
     const lastStructureHash = useRef<string>('');
-    // ⚡ Bolt Optimization: Track content hash to skip processing identical API responses
-    const lastGraphContentHash = useRef<string>('');
 
     // Keep refs in sync with state
     useEffect(() => { nodesRef.current = nodes; }, [nodes]);
@@ -91,14 +89,6 @@ export function useNetworkTopology() {
 
     const processGraph = useCallback((graph: Graph) => {
         try {
-            // ⚡ Bolt Optimization: Check if graph content has actually changed before processing.
-            // This prevents unnecessary object creation, layout calculations, and React state updates.
-            const graphContentHash = JSON.stringify(graph);
-            if (graphContentHash === lastGraphContentHash.current) {
-                return;
-            }
-            lastGraphContentHash.current = graphContentHash;
-
             const newNodes: Node[] = [];
             const newEdges: Edge[] = [];
 

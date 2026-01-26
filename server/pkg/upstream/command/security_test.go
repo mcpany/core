@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -23,26 +23,23 @@ func TestArgInjection(t *testing.T) {
 	rm := resource.NewManager()
 	u := NewUpstream()
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-vuln-service")
-	cmdService := &configv1.CommandLineUpstreamService{}
-	cmdService.SetCommand("/bin/echo")
-
-	// Define a tool WITHOUT args parameter
-	toolDef := configv1.ToolDefinition_builder{
-		Name:   proto.String("echo-safe"),
-		CallId: proto.String("echo-call"),
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-vuln-service"),
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("/bin/echo"),
+			Calls: map[string]*configv1.CommandLineCallDefinition{
+				"echo-call": configv1.CommandLineCallDefinition_builder{
+					Id: proto.String("echo-call"),
+				}.Build(),
+			},
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("echo-safe"),
+					CallId: proto.String("echo-call"),
+				}.Build(),
+			},
+		}.Build(),
 	}.Build()
-
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Id: proto.String("echo-call"),
-	}.Build()
-
-	calls := make(map[string]*configv1.CommandLineCallDefinition)
-	calls["echo-call"] = callDef
-	cmdService.SetCalls(calls)
-	cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-	serviceConfig.SetCommandLineService(cmdService)
 
 	_, _, _, err := u.Register(
 		context.Background(),

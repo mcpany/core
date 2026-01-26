@@ -10,16 +10,13 @@ import (
 
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 	"go.opentelemetry.io/otel"
+	"google.golang.org/protobuf/proto"
 )
 
-func strPtr(s string) *string {
-	return &s
-}
-
 func TestInitTelemetry(t *testing.T) {
-	cfg := &config_v1.TelemetryConfig{
-		TracesExporter: strPtr("stdout"),
-	}
+	cfg := config_v1.TelemetryConfig_builder{
+		TracesExporter: proto.String("stdout"),
+	}.Build()
 
 	var buf bytes.Buffer
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, &buf)
@@ -43,11 +40,11 @@ func TestInitTelemetry(t *testing.T) {
 }
 
 func TestInitTelemetry_NoExporter(t *testing.T) {
-	cfg := &config_v1.TelemetryConfig{
-		TracesExporter:  strPtr(""),
-		OtlpEndpoint:    strPtr(""),
-		MetricsExporter: strPtr(""),
-	}
+	cfg := config_v1.TelemetryConfig_builder{
+		TracesExporter:  proto.String(""),
+		OtlpEndpoint:    proto.String(""),
+		MetricsExporter: proto.String(""),
+	}.Build()
 
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
 	if err != nil {
@@ -59,9 +56,9 @@ func TestInitTelemetry_NoExporter(t *testing.T) {
 }
 
 func TestInitTelemetry_NilWriter(t *testing.T) {
-	cfg := &config_v1.TelemetryConfig{
-		TracesExporter: strPtr("stdout"),
-	}
+	cfg := config_v1.TelemetryConfig_builder{
+		TracesExporter: proto.String("stdout"),
+	}.Build()
 
 	// Passing nil writer should not panic and should default to io.Discard
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
@@ -76,10 +73,10 @@ func TestInitTelemetry_NilWriter(t *testing.T) {
 
 func TestInitTelemetry_AutoDetectOTLP(t *testing.T) {
 	// Set endpoint but no exporter type, should default to OTLP
-	cfg := &config_v1.TelemetryConfig{
-		TracesExporter: strPtr(""),
-		OtlpEndpoint:   strPtr("127.0.0.1:4318"),
-	}
+	cfg := config_v1.TelemetryConfig_builder{
+		TracesExporter: proto.String(""),
+		OtlpEndpoint:   proto.String("127.0.0.1:4318"),
+	}.Build()
 
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
 	// It might succeed in creating the exporter even if the endpoint is not reachable (lazy connection)
@@ -91,9 +88,9 @@ func TestInitTelemetry_AutoDetectOTLP(t *testing.T) {
 }
 
 func TestInitTelemetry_MetricsStdout(t *testing.T) {
-	cfg := &config_v1.TelemetryConfig{
-		MetricsExporter: strPtr("stdout"),
-	}
+	cfg := config_v1.TelemetryConfig_builder{
+		MetricsExporter: proto.String("stdout"),
+	}.Build()
 
 	var buf bytes.Buffer
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, &buf)
@@ -116,10 +113,10 @@ func TestInitTelemetry_MetricsStdout(t *testing.T) {
 }
 
 func TestInitTelemetry_MetricsOTLP(t *testing.T) {
-	cfg := &config_v1.TelemetryConfig{
-		MetricsExporter: strPtr("otlp"),
-		OtlpEndpoint:    strPtr("127.0.0.1:4318"),
-	}
+	cfg := config_v1.TelemetryConfig_builder{
+		MetricsExporter: proto.String("otlp"),
+		OtlpEndpoint:    proto.String("127.0.0.1:4318"),
+	}.Build()
 
 	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
 	if err != nil {

@@ -40,6 +40,6 @@ global_settings:
 	require.NoError(t, err)
 
 	// Verify overrides
-	require.NotNil(t, cfg.GlobalSettings.Profiles)
-	assert.Equal(t, []string{"custom1", "custom2"}, cfg.GlobalSettings.Profiles)
+	require.NotNil(t, cfg.GetGlobalSettings().GetProfiles())
+	assert.Equal(t, []string{"custom1", "custom2"}, cfg.GetGlobalSettings().GetProfiles())
 }

@@ -7,9 +7,9 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -34,7 +34,7 @@ func TestHTTPUpstream_InvalidMethod(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)

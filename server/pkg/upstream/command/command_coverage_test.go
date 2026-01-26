@@ -7,9 +7,9 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -27,21 +27,23 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
 
-	config := &configv1.UpstreamServiceConfig{
-		Name: proto.String("disabled-items-service"),
-	}
-	cmdService := &configv1.CommandLineUpstreamService{
+	cmdService := configv1.CommandLineUpstreamService_builder{
 		Tools: []*configv1.ToolDefinition{
-			{Name: proto.String("tool1"), Disable: proto.Bool(true)},
+			configv1.ToolDefinition_builder{Name: proto.String("tool1"), Disable: proto.Bool(true)}.Build(),
 		},
 		Prompts: []*configv1.PromptDefinition{
-			{Name: proto.String("prompt1"), Disable: proto.Bool(true)},
+			configv1.PromptDefinition_builder{Name: proto.String("prompt1"), Disable: proto.Bool(true)}.Build(),
 		},
 		Resources: []*configv1.ResourceDefinition{
-			{Name: proto.String("resource1"), Disable: proto.Bool(true)},
+			configv1.ResourceDefinition_builder{Name: proto.String("resource1"), Disable: proto.Bool(true)}.Build(),
 		},
-	}
-	config.SetCommandLineService(cmdService)
+	}.Build()
+
+	config := configv1.UpstreamServiceConfig_builder{
+		Id:                 proto.String("disabled-items-service"),
+		Name:               proto.String("disabled-items-service"),
+		CommandLineService: cmdService,
+	}.Build()
 
 	_, tools, _, err := u.Register(context.Background(), config, tm, prm, rm, false)
 	require.NoError(t, err)
@@ -57,25 +59,25 @@ func TestUpstream_Register_DynamicResourceErrors(t *testing.T) {
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
 
-	config := &configv1.UpstreamServiceConfig{
-		Name: proto.String("dynamic-errors"),
-	}
-
-	cmdService := &configv1.CommandLineUpstreamService{
+	cmdService := configv1.CommandLineUpstreamService_builder{
 		Calls: map[string]*configv1.CommandLineCallDefinition{
-			"c1": {Id: proto.String("c1")},
+			"c1": configv1.CommandLineCallDefinition_builder{Id: proto.String("c1")}.Build(),
 		},
-	}
+		Resources: []*configv1.ResourceDefinition{
+			configv1.ResourceDefinition_builder{
+				Name: proto.String("res1"),
+				Dynamic: configv1.DynamicResource_builder{
+					CommandLineCall: configv1.CommandLineCallDefinition_builder{Id: proto.String("c1")}.Build(),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
 
-	resDef := &configv1.ResourceDefinition{
-		Name: proto.String("res1"),
-	}
-	dynRes := &configv1.DynamicResource{}
-	dynRes.SetCommandLineCall(&configv1.CommandLineCallDefinition{Id: proto.String("c1")})
-	resDef.SetDynamic(dynRes)
-
-	cmdService.SetResources([]*configv1.ResourceDefinition{resDef})
-	config.SetCommandLineService(cmdService)
+	config := configv1.UpstreamServiceConfig_builder{
+		Id:                 proto.String("dynamic-errors"),
+		Name:               proto.String("dynamic-errors"),
+		CommandLineService: cmdService,
+	}.Build()
 
 	// Register should succeed but resource not added because toolName not found for c1
 	_, _, _, err := u.Register(context.Background(), config, tm, prm, rm, false)

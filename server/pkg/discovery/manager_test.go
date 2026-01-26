@@ -34,7 +34,7 @@ func TestManager_Run(t *testing.T) {
 	p1 := &MockProvider{
 		name: "p1",
 		services: []*configv1.UpstreamServiceConfig{
-			{Name: pointer("s1")},
+			configv1.UpstreamServiceConfig_builder{Name: pointer("s1")}.Build(),
 		},
 	}
 	manager.RegisterProvider(p1)
@@ -51,7 +51,7 @@ func TestManager_Run(t *testing.T) {
 
 	// Check results
 	assert.Len(t, services, 1)
-	assert.Equal(t, "s1", *services[0].Name)
+	assert.Equal(t, "s1", services[0].GetName())
 
 	// Check statuses
 	status1, ok := manager.GetProviderStatus("p1")

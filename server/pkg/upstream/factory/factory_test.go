@@ -6,6 +6,7 @@ package factory
 import (
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/upstream/command"
 	"github.com/mcpany/core/server/pkg/upstream/filesystem"
@@ -18,7 +19,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/vector"
 	"github.com/mcpany/core/server/pkg/upstream/webrtc"
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -46,71 +46,49 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 	pm := pool.NewManager()
 	f := NewUpstreamServiceFactory(pm, nil)
 
-	grpcConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-			GrpcService: &configv1.GrpcUpstreamService{},
-		},
-	}
+	grpcConfig := configv1.UpstreamServiceConfig_builder{
+		GrpcService: configv1.GrpcUpstreamService_builder{}.Build(),
+	}.Build()
 
-	httpConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{},
-		},
-	}
+	httpConfig := configv1.UpstreamServiceConfig_builder{
+		HttpService: configv1.HttpUpstreamService_builder{}.Build(),
+	}.Build()
 
-	openapiConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-			OpenapiService: &configv1.OpenapiUpstreamService{},
-		},
-	}
+	openapiConfig := configv1.UpstreamServiceConfig_builder{
+		OpenapiService: configv1.OpenapiUpstreamService_builder{}.Build(),
+	}.Build()
 
-	mcpConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-			McpService: &configv1.McpUpstreamService{},
-		},
-	}
+	mcpConfig := configv1.UpstreamServiceConfig_builder{
+		McpService: configv1.McpUpstreamService_builder{}.Build(),
+	}.Build()
 
-	commandLineConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-			CommandLineService: &configv1.CommandLineUpstreamService{},
-		},
-	}
+	commandLineConfig := configv1.UpstreamServiceConfig_builder{
+		CommandLineService: configv1.CommandLineUpstreamService_builder{}.Build(),
+	}.Build()
 
-	websocketConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
-			WebsocketService: &configv1.WebsocketUpstreamService{},
-		},
-	}
+	websocketConfig := configv1.UpstreamServiceConfig_builder{
+		WebsocketService: configv1.WebsocketUpstreamService_builder{}.Build(),
+	}.Build()
 
-	webrtcConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
-			WebrtcService: &configv1.WebrtcUpstreamService{},
-		},
-	}
+	webrtcConfig := configv1.UpstreamServiceConfig_builder{
+		WebrtcService: configv1.WebrtcUpstreamService_builder{}.Build(),
+	}.Build()
 
-	graphqlConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
-			GraphqlService: &configv1.GraphQLUpstreamService{},
-		},
-	}
+	graphqlConfig := configv1.UpstreamServiceConfig_builder{
+		GraphqlService: configv1.GraphQLUpstreamService_builder{}.Build(),
+	}.Build()
 
-	sqlConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
-			SqlService: &configv1.SqlUpstreamService{},
-		},
-	}
+	sqlConfig := configv1.UpstreamServiceConfig_builder{
+		SqlService: configv1.SqlUpstreamService_builder{}.Build(),
+	}.Build()
 
-	filesystemConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-			FilesystemService: &configv1.FilesystemUpstreamService{},
-		},
-	}
+	filesystemConfig := configv1.UpstreamServiceConfig_builder{
+		FilesystemService: configv1.FilesystemUpstreamService_builder{}.Build(),
+	}.Build()
 
-	vectorConfig := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
-			VectorService: &configv1.VectorUpstreamService{},
-		},
-	}
+	vectorConfig := configv1.UpstreamServiceConfig_builder{
+		VectorService: configv1.VectorUpstreamService_builder{}.Build(),
+	}.Build()
 
 	testCases := []struct {
 		name        string
@@ -175,7 +153,7 @@ func TestUpstreamServiceFactory_NewUpstream(t *testing.T) {
 		},
 		{
 			name:        "Unknown Service",
-			config:      &configv1.UpstreamServiceConfig{},
+			config:      configv1.UpstreamServiceConfig_builder{}.Build(),
 			expectError: true,
 		},
 		{

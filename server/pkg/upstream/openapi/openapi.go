@@ -348,7 +348,7 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 			}
 		}
 
-		methodAndPath := strings.Fields(pbTool.GetUnderlyingMethodFqn())
+		methodAndPath := strings.SplitN(pbTool.GetUnderlyingMethodFqn(), " ", 2)
 		if len(methodAndPath) != 2 {
 			log.Error("Invalid underlying method FQN", "fqn", pbTool.GetUnderlyingMethodFqn())
 			continue
