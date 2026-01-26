@@ -758,7 +758,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         }
     });
 
-    await page.goto('/services');
+    await page.goto('/upstream-services');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
