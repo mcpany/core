@@ -235,6 +235,7 @@ var sensitiveKeys = []string{
 	"passwords", "tokens", "api_keys", "apikeys",
 	"authentication", "authenticator", "credentials", "secrets",
 	"passphrase", "passphrases", "ssh_key",
+	"session_id", "sessionid", "jsessionid", "sid", "access_key",
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
