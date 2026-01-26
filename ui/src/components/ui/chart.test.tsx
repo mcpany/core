@@ -70,4 +70,30 @@ describe("ChartStyle Security", () => {
     const styleTag = container.querySelector("style");
     expect(styleTag?.innerHTML).toContain("--color-test: hsl(var(--primary));");
   });
+
+  it("should block values containing 'javascript:'", () => {
+    const dangerousColor = "javascript:alert(1)";
+    const config = {
+      test: {
+        color: dangerousColor,
+      },
+    };
+
+    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const styleTag = container.querySelector("style");
+    expect(styleTag?.innerHTML).not.toContain("--color-test");
+  });
+
+  it("should block values containing 'data:'", () => {
+    const dangerousColor = "data:text/html;base64,...";
+    const config = {
+      test: {
+        color: dangerousColor,
+      },
+    };
+
+    const { container } = render(<ChartStyle id="test-chart" config={config} />);
+    const styleTag = container.querySelector("style");
+    expect(styleTag?.innerHTML).not.toContain("--color-test");
+  });
 });

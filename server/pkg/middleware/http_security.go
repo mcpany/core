@@ -22,7 +22,7 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("X-XSS-Protection", "0")
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=(), fullscreen=()")
+		w.Header().Set("Permissions-Policy", "geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=(), fullscreen=(), screen-wake-lock=(), web-share=()")
 
 		// Additional Security Headers
 		// COOP and COEP are commented out to avoid breaking external resource loading (e.g. Google Fonts)
@@ -56,7 +56,7 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 			// - img-src 'self' data: https: : Allows images from self, data URIs, and HTTPS sources.
 			// - frame-ancestors 'self': Prevents clickjacking by only allowing framing from the same origin.
 			w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests")
-			w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+			w.Header().Set("X-Frame-Options", "DENY")
 
 			// Prevent caching of sensitive data
 			w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")

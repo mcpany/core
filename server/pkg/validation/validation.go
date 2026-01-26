@@ -62,6 +62,11 @@ func IsValidBindAddress(s string) error {
 // IsSecurePath checks if a given file path is secure.
 // It is a variable to allow mocking in tests.
 var IsSecurePath = func(path string) error {
+	// Check for null bytes which can cause truncation issues in underlying syscalls
+	if strings.Contains(path, "\x00") {
+		return fmt.Errorf("path contains null byte")
+	}
+
 	// Check original path for traversal attempts before cleaning
 	parts := strings.Split(path, string(os.PathSeparator))
 	for _, part := range parts {

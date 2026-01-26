@@ -121,7 +121,16 @@ ${colorConfig
     const safeKey = key.replace(allowedCharsRegex, "")
     // Block url() to prevent external requests or javascript:
     // Also block expression() for old IE XSS vectors.
-    if (value && (/url\s*\(/i.test(value) || /expression\s*\(/i.test(value))) {
+    // Also block javascript:, vbscript:, data: protocols.
+    if (
+      value &&
+      (/url\s*\(/i.test(value) ||
+        /expression\s*\(/i.test(value) ||
+        (color &&
+          (/javascript:/i.test(color) ||
+            /vbscript:/i.test(color) ||
+            /data:/i.test(color))))
+    ) {
       return null
     }
     return value ? `  --color-${safeKey}: ${value};` : null
