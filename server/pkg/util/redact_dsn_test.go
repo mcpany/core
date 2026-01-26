@@ -142,12 +142,12 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "http named port",
 			input:    "http://myservice:web",
-			expected: "http://myservice:web",
+			expected: "http://myservice:[REDACTED]",
 		},
 		{
 			name:     "https named port",
 			input:    "https://myservice:web",
-			expected: "https://myservice:web",
+			expected: "https://myservice:[REDACTED]",
 		},
 		{
 			name:     "redis empty host password",
@@ -167,7 +167,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "http credentials without at (treated as host:port)",
 			input:    "http://user:secret",
-			expected: "http://user:secret",
+			expected: "http://user:[REDACTED]",
 		},
 	}
 
