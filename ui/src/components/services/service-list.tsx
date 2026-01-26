@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal, ArrowUp, ArrowDown, ArrowUpDown, Rows, List } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,11 +63,58 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [bulkTags, setBulkTags] = useState("");
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+  const [density, setDensity] = useState<'default' | 'compact'>('default');
+
+  const handleSort = (key: string) => {
+    setSortConfig(current => {
+      if (current?.key === key) {
+        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
 
   const filteredServices = useMemo(() => {
-    if (!tagFilter) return services;
-    return services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase())));
-  }, [services, tagFilter]);
+    let result = services;
+    if (tagFilter) {
+      result = services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase())));
+    }
+
+    if (sortConfig) {
+      result = [...result].sort((a, b) => {
+        let aValue: any = "";
+        let bValue: any = "";
+
+        switch (sortConfig.key) {
+          case "name":
+            aValue = a.name;
+            bValue = b.name;
+            break;
+          case "type":
+            aValue = (a.httpService ? "HTTP" : a.grpcService ? "gRPC" : a.commandLineService ? "CLI" : a.mcpService ? "MCP" : "Other");
+            bValue = (b.httpService ? "HTTP" : b.grpcService ? "gRPC" : b.commandLineService ? "CLI" : b.mcpService ? "MCP" : "Other");
+            break;
+          case "version":
+            aValue = a.version || "";
+            bValue = b.version || "";
+            break;
+          case "secure":
+             aValue = !!(a.grpcService?.tlsConfig || a.httpService?.tlsConfig || a.mcpService?.httpConnection?.tlsConfig);
+             bValue = !!(b.grpcService?.tlsConfig || b.httpService?.tlsConfig || b.mcpService?.httpConnection?.tlsConfig);
+             break;
+          default:
+            return 0;
+        }
+
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [services, tagFilter, sortConfig]);
 
   // Reset selection when filtering changes or services change
   useEffect(() => {
@@ -121,6 +168,22 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               onChange={(e) => setTagFilter(e.target.value)}
               className="h-8"
             />
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDensity(d => d === 'default' ? 'compact' : 'default')}
+                        className="h-8 w-8"
+                        aria-label="Toggle density"
+                    >
+                        {density === 'default' ? <Rows className="h-4 w-4" /> : <List className="h-4 w-4" />}
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    Toggle Density
+                </TooltipContent>
+            </Tooltip>
           </div>
 
                    {selected.size > 0 && (
@@ -169,13 +232,41 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                   />
               </TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead>
+                <button className="flex items-center gap-1 hover:text-foreground font-medium" onClick={() => handleSort("name")}>
+                  Name
+                  {sortConfig?.key === "name" ? (
+                    sortConfig.direction === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                  ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                </button>
+              </TableHead>
+              <TableHead>
+                 <button className="flex items-center gap-1 hover:text-foreground font-medium" onClick={() => handleSort("type")}>
+                  Type
+                  {sortConfig?.key === "type" ? (
+                    sortConfig.direction === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                  ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                </button>
+              </TableHead>
               <TableHead>Activity</TableHead>
               <TableHead>Tags</TableHead>
               <TableHead>Address / Command</TableHead>
-              <TableHead>Version</TableHead>
-              <TableHead className="text-center">Secure</TableHead>
+              <TableHead>
+                 <button className="flex items-center gap-1 hover:text-foreground font-medium" onClick={() => handleSort("version")}>
+                  Version
+                  {sortConfig?.key === "version" ? (
+                    sortConfig.direction === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                  ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                </button>
+              </TableHead>
+              <TableHead className="text-center">
+                 <button className="flex items-center justify-center gap-1 hover:text-foreground font-medium mx-auto" onClick={() => handleSort("secure")}>
+                  Secure
+                  {sortConfig?.key === "secure" ? (
+                    sortConfig.direction === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                  ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                </button>
+              </TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -193,6 +284,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                   onExport={onExport}
                   onLogin={onLogin}
                   onRestart={onRestart}
+                  density={density}
                />
             ))}
             {filteredServices.length === 0 && (
@@ -255,7 +347,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
  * @param props.onLogin - The onLogin property.
  * @returns The rendered component.
  */
-const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
+const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart, density }: {
     service: UpstreamServiceConfig,
     isSelected: boolean,
     onSelect: (name: string, checked: boolean) => void,
@@ -265,8 +357,11 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     onDuplicate?: (service: UpstreamServiceConfig) => void,
     onExport?: (service: UpstreamServiceConfig) => void,
     onLogin?: (service: UpstreamServiceConfig) => void,
-    onRestart?: (name: string) => void
+    onRestart?: (name: string) => void,
+    density: 'default' | 'compact'
 }) {
+    const cellClass = density === 'compact' ? "p-2" : "p-4";
+
     const type = useMemo(() => {
         if (service.httpService) return "HTTP";
         if (service.grpcService) return "gRPC";
@@ -304,19 +399,20 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
 
     return (
         <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
-             <TableCell>
+             <TableCell className={cellClass}>
                  <Checkbox
                     checked={isSelected}
                     onCheckedChange={(checked) => onSelect(service.name, !!checked)}
                     aria-label={`Select ${service.name}`}
                  />
              </TableCell>
-             <TableCell>
+             <TableCell className={cellClass}>
                  <div className="flex items-center gap-2">
                     {onToggle && (
                         <Switch
                             checked={!service.disable}
                             onCheckedChange={(checked) => onToggle(service.name, checked)}
+                            className={density === 'compact' ? "h-4 w-8" : ""}
                         />
                     )}
                     {service.lastError && (
@@ -336,7 +432,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                     )}
                  </div>
              </TableCell>
-             <TableCell className="font-medium">
+             <TableCell className={`${cellClass} font-medium`}>
                  <div className="flex items-center gap-2">
                      {service.name}
                      {service.lastError && (
@@ -351,10 +447,10 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                      )}
                  </div>
              </TableCell>
-             <TableCell>
+             <TableCell className={cellClass}>
                  <Badge variant="outline">{type}</Badge>
              </TableCell>
-             <TableCell>
+             <TableCell className={cellClass}>
                 <div className="w-[80px] h-[24px]">
                     {!service.disable && (
                         <Sparkline
@@ -367,7 +463,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                     )}
                 </div>
              </TableCell>
-             <TableCell>
+             <TableCell className={cellClass}>
                  <div className="flex flex-wrap gap-1">
                      {service.tags?.map((tag) => (
                          <Badge key={tag} variant="secondary" className="text-xs px-1 py-0 h-5">
@@ -376,16 +472,16 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                      ))}
                  </div>
              </TableCell>
-             <TableCell className="font-mono text-xs max-w-[200px] truncate" title={address}>
+             <TableCell className={`${cellClass} font-mono text-xs max-w-[200px] truncate`} title={address}>
                  {address}
              </TableCell>
-             <TableCell>
+             <TableCell className={cellClass}>
                  {service.version}
              </TableCell>
-             <TableCell className="text-center">
+             <TableCell className={`${cellClass} text-center`}>
                  {secure ? <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />}
              </TableCell>
-             <TableCell className="text-right">
+             <TableCell className={`${cellClass} text-right`}>
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
