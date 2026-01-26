@@ -684,11 +684,6 @@ func (tm *Manager) AddTool(tool Tool) error {
 			return fmt.Errorf("failed to convert proto tool to mcp tool: %w", err)
 		}
 
-		// Enforce namespacing for the MCP server registration as well
-		if tool.Tool().GetServiceId() != "" {
-			mcpTool.Name = tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
-		}
-
 		if tool.Tool().GetInputSchema() != nil {
 			b, err := tool.Tool().GetInputSchema().MarshalJSON()
 			if err != nil {
@@ -870,14 +865,6 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	mcpTools := make([]*mcp.Tool, 0, len(tools))
 	for _, t := range tools {
 		if mt := t.MCPTool(); mt != nil {
-			// Enforce namespacing for the tool list to match AddTool and mcpServer registration
-			if t.Tool().GetServiceId() != "" {
-				expectedName := t.Tool().GetServiceId() + "." + t.Tool().GetName()
-				if mt.Name != expectedName {
-					// Update the name in the cached MCP tool
-					mt.Name = expectedName
-				}
-			}
 			mcpTools = append(mcpTools, mt)
 		}
 	}

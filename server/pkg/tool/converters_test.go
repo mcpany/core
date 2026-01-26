@@ -281,4 +281,20 @@ func TestConvertProtoToMCPTool(t *testing.T) {
 		assert.Equal(t, "A test tool", mcpTool.Description)
 		assert.Equal(t, "Test Tool", mcpTool.Title)
 	})
+
+	t.Run("empty service id", func(t *testing.T) {
+		pbTool := &configv1.ToolDefinition{
+			Name:        proto.String("test-tool"),
+			Description: proto.String("A test tool"),
+			Title:       proto.String("Test Tool"),
+			// ServiceId is intentionally empty/nil
+		}
+		pbToolProto, err := ConvertToolDefinitionToProto(pbTool, nil, nil)
+		assert.NoError(t, err)
+
+		mcpTool, err := ConvertProtoToMCPTool(pbToolProto)
+		assert.NoError(t, err)
+		assert.NotNil(t, mcpTool)
+		assert.Equal(t, "test-tool", mcpTool.Name)
+	})
 }

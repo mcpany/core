@@ -206,8 +206,13 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 		return nil, fmt.Errorf("tool name cannot be empty")
 	}
 
+	name := pbTool.GetName()
+	if pbTool.GetServiceId() != "" {
+		name = pbTool.GetServiceId() + "." + name
+	}
+
 	mcpTool := &mcp.Tool{
-		Name:        pbTool.GetServiceId() + "." + pbTool.GetName(),
+		Name:        name,
 		Description: pbTool.GetDescription(),
 		Title:       pbTool.GetDisplayName(),
 	}
