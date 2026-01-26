@@ -71,8 +71,11 @@ test.describe('Service Diagnostics', () => {
     await page.getByRole('button', { name: 'Run Diagnostics' }).click();
 
     // Expect error message
+    // Use :text-is to match exact text or be specific
     await expect(page.getByText('Check Failed')).toBeVisible();
-    await expect(page.getByText('Connection refused')).toBeVisible();
-    await expect(page.getByText('Failed to reach http://example.com')).toBeVisible();
+    // The previous test failed because "Connection refused" appeared in multiple places (toast + detailed error)
+    // We can target the specific container or use .first() if we just want to ensure it's visible somewhere.
+    await expect(page.getByText('Connection refused').first()).toBeVisible();
+    await expect(page.getByText('Failed to reach http://example.com').first()).toBeVisible();
   });
 });
