@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +19,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
+import { analyzeTrace } from "@/lib/diagnostics";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 /**
  * SpanIcon component.
@@ -155,6 +157,8 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
         );
     }
 
+    const diagnostics = analyzeTrace(trace);
+
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
@@ -226,6 +230,36 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 </div>
                 <TabsContent value="overview" className="flex-1 p-0 overflow-hidden m-0">
                     <ScrollArea className="h-full p-6">
+                        {diagnostics.length > 0 && (
+                            <Card className="mb-6 border-l-4 border-l-destructive">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                                        <Lightbulb className="h-4 w-4 text-amber-500" />
+                                        Diagnostics & Suggestions
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Intelligent analysis of the error.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {diagnostics.map((diag, i) => (
+                                        <Alert key={i} variant={diag.type === 'error' ? 'destructive' : 'default'}>
+                                            <AlertTriangle className="h-4 w-4" />
+                                            <AlertTitle>{diag.title}</AlertTitle>
+                                            <AlertDescription className="mt-2">
+                                                <p className="font-medium">{diag.message}</p>
+                                                {diag.suggestion && (
+                                                    <p className="mt-1 text-muted-foreground opacity-90">
+                                                        <span className="font-semibold">Suggestion:</span> {diag.suggestion}
+                                                    </p>
+                                                )}
+                                            </AlertDescription>
+                                        </Alert>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        )}
+
                         <Card className="mb-6">
                              <CardHeader className="pb-3">
                                 <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
