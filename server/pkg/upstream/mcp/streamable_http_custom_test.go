@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/client"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/client"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -60,10 +60,10 @@ func (m *MockClientSession) Close() error {
 }
 
 func TestMcpConnection_CallTool(t *testing.T) {
+	stdioConfig := configv1.McpStdioConnection_builder{}.Build()
+	stdioConfig.SetCommand("echo")
 	conn := &mcpConnection{
-		stdioConfig: &configv1.McpStdioConnection{
-			Command: &[]string{"echo"}[0],
-		},
+		stdioConfig: stdioConfig,
 	}
 	ctx := context.Background()
 	params := &mcp.CallToolParams{Name: "test-tool"}

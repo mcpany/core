@@ -138,6 +138,37 @@ func TestRedactDSN(t *testing.T) {
 			input:    "postgres://user:password@host:invalidport/db?email=foo@bar.com",
 			expected: "postgres://user:[REDACTED]@host:invalidport/db?email=foo@bar.com",
 		},
+		// New cases for named ports in http/https (Bug fix)
+		{
+			name:     "http named port",
+			input:    "http://myservice:web",
+			expected: "http://myservice:web",
+		},
+		{
+			name:     "https named port",
+			input:    "https://myservice:web",
+			expected: "https://myservice:web",
+		},
+		{
+			name:     "redis empty host password",
+			input:    "redis://:secret",
+			expected: "redis://:[REDACTED]",
+		},
+		{
+			name:     "scylla host list",
+			input:    "scylla://node1:9042,node2:9042",
+			expected: "scylla://node1:9042,node2:9042",
+		},
+		{
+			name:     "http credentials with at",
+			input:    "http://user:secret@host",
+			expected: "http://user:[REDACTED]@host",
+		},
+		{
+			name:     "http credentials without at (treated as host:port)",
+			input:    "http://user:secret",
+			expected: "http://user:secret",
+		},
 	}
 
 	for _, tt := range tests {

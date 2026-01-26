@@ -28,3 +28,13 @@ The dashboard features a fully customizable layout engine ("Portainer-style").
 - **Persisted State**: Your custom layout is automatically saved to your local browser storage.
 
 ![Widget Gallery](../screenshots/dashboard_overview.png)
+
+### 4. Quick Actions
+The **Quick Actions** widget provides one-click access to the most common management tasks, helping new users get started and power users navigate efficiently.
+
+- **Add Service**: Connect a new API, database, or agent.
+- **Playground**: Interactively test tools.
+- **Manage Secrets**: Securely store API keys.
+- **Network Map**: Visualize the system topology.
+
+![Quick Actions](../screenshots/dashboard_quick_actions.png)

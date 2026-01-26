@@ -14,6 +14,7 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestTmpfsProvider(t *testing.T) {
@@ -54,9 +55,9 @@ func TestZipProvider(t *testing.T) {
 	tmpZip.Close()
 
 	pathStr := tmpZip.Name()
-	config := &configv1.ZipFs{
-		FilePath: &pathStr,
-	}
+	config := configv1.ZipFs_builder{
+		FilePath: proto.String(pathStr),
+	}.Build()
 
 	p, err := NewZipProvider(config)
 	require.NoError(t, err)
@@ -67,7 +68,6 @@ func TestZipProvider(t *testing.T) {
 
 	path, err := p.ResolvePath("/test.txt")
 	assert.NoError(t, err)
-	// filepath.Clean depends on OS.
 	assert.Equal(t, filepath.Clean("/test.txt"), path)
 
 	err = p.Close()
@@ -81,16 +81,6 @@ func TestSftpProvider_ResolvePath(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, filepath.Clean("/some/path"), path)
 
-	// SFTP Close calls client.Close() and conn.Close().
-	// func (p *SftpProvider) Close() error {
-	// 	if p.client != nil {
-	// 		_ = p.client.Close()
-	// 	}
-	// 	if p.conn != nil {
-	// 		_ = p.conn.Close()
-	// 	}
-	// 	return nil
-	// }
 	assert.NotNil(t, p.GetFs())
 	assert.NoError(t, p.Close())
 }

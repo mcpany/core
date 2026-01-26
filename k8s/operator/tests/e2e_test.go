@@ -134,6 +134,7 @@ nodes:
 		"--set", "ui.image.pullPolicy=Never",
 		"--set", "ui.service.type=NodePort",
 		"--set", "ui.service.nodePort=30000",
+		"--set", "ui.apiKey=test-token",
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {

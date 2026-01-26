@@ -21,14 +21,12 @@ func TestCheckService_Redaction_Mailto_HTTP(t *testing.T) {
 	// This covers the flow: CheckService -> checkHTTPService -> checkURL -> RedactDSN.
 
 	urlStr := "mailto:bob@example.com"
-	service := &configv1.UpstreamServiceConfig{
+	service := configv1.UpstreamServiceConfig_builder{
 		Name: stringPtr("test-http-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: stringPtr(urlStr),
-			},
-		},
-	}
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: stringPtr(urlStr),
+		}.Build(),
+	}.Build()
 
 	res := CheckService(context.Background(), service)
 

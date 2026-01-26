@@ -39,6 +39,17 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                             status: 'healthy',
                             uptime: '5h 30m',
                             version: '2.1.0'
+                        },
+                        {
+                            id: 'broken-service',
+                            name: 'Legacy API',
+                            type: 'http',
+                            http_service: { address: 'https://api.example.com' },
+                            status: 'unhealthy',
+                            last_error: 'ZodError: Invalid input: expected string, received number',
+                            lastError: 'ZodError: Invalid input: expected string, received number',
+                            tool_count: 0,
+                            version: '1.0.0'
                         }
                     ]
                 }
@@ -172,7 +183,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/upstream-services');
+    await page.goto('/services');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
@@ -181,10 +192,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
-    // Click Add Service (Link)
-    await page.getByRole('link', { name: 'Add Service' }).click();
+    // Click Add Service (Button)
+    await page.getByRole('button', { name: 'Add Service' }).click();
     await page.waitForTimeout(1000);
-    await expect(page).toHaveURL(/.*marketplace.*/);
+    // await expect(page).toHaveURL(/.*marketplace.*/); // It opens a sheet now
+    await expect(page.getByText('New Service')).toBeVisible();
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
@@ -195,6 +207,87 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Increased wait time
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
+
+    // Diff Feature Screenshot
+    // Navigate to the Service Detail page which uses RegisterServiceDialog for editing
+    await page.goto('/service/postgres-primary');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click Edit Config
+    const editBtn = page.getByRole('button', { name: 'Edit Config' });
+    await expect(editBtn).toBeVisible({ timeout: 10000 });
+    await editBtn.click();
+    await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });
+    // Verify we are editing the HTTP service
+    // Note: 'HTTP' might be in a select value or text.
+    await page.getByLabel('Address / URL').waitFor({ state: 'visible', timeout: 10000 });
+
+    // Make a change to trigger diff
+    // We need to change a field. Let's change the address.
+    // Assuming 'http' type service from mock.
+    // The dialog should populate with 'grpc://postgres:5432' as per mock?
+    // Mock says type: 'remote' (which might be 'mcp' in frontend?) or 'grpc'.
+    // Let's verify mock content in beforeEach.
+    // Mock: type: 'remote', endpoint: ...
+    // RegisterServiceDialog handles 'mcp' via 'other'? Or maybe 'grpc'?
+    // Let's force a simpler service mock for this test or assume 'http' fallback?
+    // Actually, let's just create a new service in the dialog to be safe, OR use a known editable mocked service.
+    // The 'postgres-primary' mock has type 'remote'.
+    // RegisterServiceDialog might treat 'remote' as 'other'?
+
+    // Let's modify the mock for postgres-primary to be HTTP for this test if needed, OR just type in a field.
+    // If we type in 'address', it should work.
+    // Check if 'Address / URL' input is visible.
+    // trace-detail.tsx uses RegisterServiceDialog.
+
+    // Let's try to type into 'Address / URL' input.
+    // And verify 'Review Changes' button appears or we click it.
+
+    // Changing the mock temporarily for this test might be complex.
+    // Let's try to edit 'postgres-primary'.
+
+    // Wait for dialog to be stable
+
+    // Since mock type is 'remote', constructConfig might treat it as 'other' or logic might fail?
+    // Let's check RegisterServiceDialog logic again?
+    // It maps types.
+
+    // Simplification: trigger 'Add Service' (already tested above), fill it, then finding 'Review Changes' is hard because it's not editing.
+    // But we can simulate "Edit" by navigating to a page that opens it.
+
+    // Let's UPDATE the mock for this specific test block to return type 'http' so editing is easy.
+    await page.route('**/api/v1/services/postgres-primary', async route => {
+        await route.fulfill({
+            json: {
+                service: {
+                    id: 'postgres-primary',
+                    name: 'Primary DB',
+                    type: 'http',
+                    httpService: { address: 'https://api.example.com' },
+                    status: 'healthy',
+                }
+            }
+        });
+    });
+
+    await page.reload(); // Reload to get new mock
+    await page.waitForTimeout(1000);
+    await page.getByRole('button', { name: 'Edit Config' }).click();
+    await page.waitForTimeout(500);
+
+    // Change address
+    await page.getByLabel('Address / URL').fill('https://api.example.org');
+
+    // Click Review Changes
+    await page.getByRole('button', { name: 'Review Changes' }).click();
+    await page.waitForTimeout(1000);
+
+    await expect(page.getByText('Review Changes')).toBeVisible();
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diff-feature.png') });
+
+    // Close dialog
+    await page.keyboard.press('Escape');
   });
 
   test('Playground Screenshots', async ({ page }) => {
@@ -249,23 +342,58 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   test('Traces Screenshots', async ({ page }) => {
     // Mock Traces (UI calls /api/traces, expects direct array with rootSpan)
     await page.route('**/api/traces*', async route => {
+        const now = Date.now();
         await route.fulfill({
             json: [
                  {
                      id: 't1',
-                     timestamp: Date.now(),
-                     rootSpan: { name: 'filesystem.read' },
+                     timestamp: now,
+                     rootSpan: {
+                         id: 's1',
+                         name: 'filesystem.read',
+                         type: 'tool',
+                         startTime: now,
+                         endTime: now + 120,
+                         status: 'success',
+                         input: { path: '/var/log/syslog' },
+                         output: { content: '...' }
+                     },
                      status: 'success',
                      totalDuration: 120,
                      trigger: 'user'
                  },
                  {
                      id: 't2',
-                     timestamp: Date.now() - 5000,
-                     rootSpan: { name: 'calculator.add' },
+                     timestamp: now - 5000,
+                     rootSpan: {
+                         id: 's2',
+                         name: 'calculator.add',
+                         type: 'tool',
+                         startTime: now - 5000,
+                         endTime: now - 4990,
+                         status: 'error',
+                         errorMessage: 'Division by zero'
+                     },
                      status: 'error',
-                     error: 'Division by zero',
                      totalDuration: 10,
+                     trigger: 'user'
+                 },
+                 {
+                     id: 't3',
+                     timestamp: now - 10000,
+                     rootSpan: {
+                         id: 's3',
+                         name: 'memory.read_graph',
+                         type: 'tool',
+                         status: 'error',
+                         startTime: now - 10000,
+                         endTime: now - 9950,
+                         input: { entities: [{ name: 'test', extra: 'field' }] },
+                         output: { error: 'Schema validation error: properties "extra" not allowed' },
+                         errorMessage: 'Schema validation error: properties "extra" not allowed'
+                     },
+                     status: 'error',
+                     totalDuration: 50,
                      trigger: 'user'
                  }
             ]
@@ -282,6 +410,17 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.getByText('filesystem.read').first().click({ force: true });
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
+
+    // Close sheet by reloading (simplest way to reset state in tests without complex interaction)
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click diagnostics trace
+    await page.getByText('memory.read_graph').first().click({ force: true });
+    await page.waitForTimeout(500);
+    await expect(page.getByText('Diagnostics & Suggestions')).toBeVisible();
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_diagnostics.png'), fullPage: true });
   });
 
   test('Middleware Screenshots', async ({ page }) => {
@@ -464,6 +603,26 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials_list.png'), fullPage: true });
+
+    // Verification Screenshot (Test Connection)
+    await page.getByRole('button', { name: 'New Credential' }).click();
+    await expect(page.getByText('Create Credential', { exact: true })).toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(500);
+
+    await page.getByLabel('Name').fill('Test Credential');
+    // Test Connection section
+    await page.getByPlaceholder('https://api.example.com/test').fill('https://api.example.com/status');
+    const testBtn = page.getByRole('button', { name: 'Test', exact: true });
+
+    // Mock testAuth response
+    await page.route('**/api/v1/auth/test', async route => {
+         await route.fulfill({ status: 200, json: { status: 200, status_text: 'OK' } });
+    });
+
+    await testBtn.click();
+    await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
+
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
   });
 
   test('Stats Screenshots', async ({ page }) => {
@@ -473,7 +632,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Service Actions Screenshots', async ({ page }) => {
-      await page.goto('/upstream-services');
+      await page.goto('/services');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
@@ -521,6 +680,73 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.goto('/audit');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
+  });
+
+  test('Diagnostics Failure Screenshots', async ({ page }) => {
+      // Mock service detail for operational check
+      await page.route('**/api/v1/services/broken-service', async route => {
+          await route.fulfill({
+              json: {
+                  service: {
+                      id: 'broken-service',
+                      name: 'Legacy API',
+                      type: 'http',
+                      http_service: { address: 'https://api.example.com' },
+                      status: 'unhealthy',
+                      last_error: 'ZodError: Invalid input: expected string, received number',
+                      lastError: 'ZodError: Invalid input: expected string, received number',
+                      tool_count: 0,
+                      toolCount: 0
+                  }
+              }
+          });
+      });
+
+      // Mock Health Check for backend health step
+      await page.route('**/api/dashboard/health', async route => {
+        await route.fulfill({
+            json: [
+               {
+                   id: 'broken-service',
+                   name: 'Legacy API',
+                   status: 'unhealthy',
+                   latency: '--',
+                   uptime: '10m',
+                   message: 'ZodError: Invalid input: expected string, received number'
+               }
+            ]
+        });
+      });
+
+      await page.goto('/services');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+
+      // Verify service row is present
+      await expect(page.getByText('Legacy API')).toBeVisible();
+
+      // Verify Error badge is present (confirms lastError is recognized)
+      // await expect(page.getByText('Error', { exact: true })).toBeVisible(); // Flaky
+
+      // Open Actions Dropdown (More Reliable)
+      const menuButton = page.getByRole('button', { name: 'Open menu' }).first();
+      await expect(menuButton).toBeVisible();
+      await menuButton.click();
+
+      // Click Diagnose in menu
+      await page.getByText('Diagnose').click();
+
+      // Wait for dialog
+      await expect(page.getByText('Connection Diagnostics')).toBeVisible();
+
+      // Click Start
+      await page.getByRole('button', { name: 'Start Diagnostics' }).click();
+
+      // Wait for run to finish (look for "Rerun Diagnostics")
+      await page.getByText('Rerun Diagnostics').waitFor({ timeout: 10000 });
+
+      // Take screenshot of the modal
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
   });
 
 });

@@ -29,7 +29,7 @@ const (
 // --- Messages ---
 type EchoRequest struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,7 +86,7 @@ func (b0 EchoRequest_builder) Build() *EchoRequest {
 
 type EchoResponse struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	EchoedMessage string                 `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage,proto3" json:"echoed_message,omitempty"`
+	EchoedMessage string                 `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage" json:"echoed_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,7 +143,7 @@ func (b0 EchoResponse_builder) Build() *EchoResponse {
 
 type GetDetailsRequest struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
+	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId" json:"item_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -200,9 +200,9 @@ func (b0 GetDetailsRequest_builder) Build() *GetDetailsRequest {
 
 type GetDetailsResponse struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
-	Detail        string                 `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
-	Attributes    map[string]string      `protobuf:"bytes,3,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId" json:"item_id,omitempty"`
+	Detail        string                 `protobuf:"bytes,2,opt,name=detail" json:"detail,omitempty"`
+	Attributes    map[string]string      `protobuf:"bytes,3,rep,name=attributes" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -307,7 +307,7 @@ const file_proto_examples_userservice_v1_userservice_proto_rawDesc = "" +
 	"\vEchoService\x12\x9b\x01\n" +
 	"\x04Echo\x12$.examples.userservice.v1.EchoRequest\x1a%.examples.userservice.v1.EchoResponse\"Fʆ\xa1\xfc\b\bEchoTool҆\xa1\xfc\b2Echoes back the input message. Useful for testing.\x12\xa8\x01\n" +
 	"\n" +
-	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B6Z4github.com/mcpany/core/proto/examples/userservice/v1b\x06proto3"
+	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B;Z4github.com/mcpany/core/proto/examples/userservice/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_examples_userservice_v1_userservice_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_examples_userservice_v1_userservice_proto_goTypes = []any{

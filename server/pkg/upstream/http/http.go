@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/doctor"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -238,13 +238,13 @@ func (u *Upstream) Register(
 			}
 			if !exists {
 				// Create a default tool definition
-				newTool := &configv1.ToolDefinition{
+				newTool := configv1.ToolDefinition_builder{
 					Name:        proto.String(callID),
 					CallId:      proto.String(callID),
 					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
-				}
+				}.Build()
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
-				httpService.Tools = append(httpService.Tools, newTool)
+				httpService.SetTools(append(httpService.GetTools(), newTool))
 			}
 		}
 	}
@@ -522,20 +522,20 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Process base parts
 			for _, bp := range baseParts {
-				if bp.isInvalid {
-					finalParts = append(finalParts, bp.raw)
-					continue
+				// Check override if we have a decoded key
+				if bp.keyDecoded {
+					if parts, ok := endPartsByKey[bp.key]; ok {
+						if !keysOverridden[bp.key] {
+							finalParts = append(finalParts, parts...)
+							keysOverridden[bp.key] = true
+						}
+						// If overridden, we skip adding the base part (even if it was invalid)
+						continue
+					}
 				}
 
-				// Check override
-				if parts, ok := endPartsByKey[bp.key]; ok {
-					if !keysOverridden[bp.key] {
-						finalParts = append(finalParts, parts...)
-						keysOverridden[bp.key] = true
-					}
-				} else {
-					finalParts = append(finalParts, bp.raw)
-				}
+				// If not overridden (or key not decoded), add the base part
+				finalParts = append(finalParts, bp.raw)
 			}
 
 			// Append remaining endpoint parts

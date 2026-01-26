@@ -48,9 +48,9 @@ func TestZipProvider_E2E(t *testing.T) {
 	require.NoError(t, zipFile.Close())
 
 	// Create ZipProvider
-	config := &configv1.ZipFs{
+	config := configv1.ZipFs_builder{
 		FilePath: proto.String(zipPath),
-	}
+	}.Build()
 	p, err := NewZipProvider(config)
 	require.NoError(t, err)
 	defer p.Close()
@@ -87,6 +87,6 @@ func TestZipProvider_E2E(t *testing.T) {
 	assert.Equal(t, int64(5), info.Size())
 
 	// Test Failures
-	_, err = NewZipProvider(&configv1.ZipFs{FilePath: proto.String("non_existent.zip")})
+	_, err = NewZipProvider(configv1.ZipFs_builder{FilePath: proto.String("non_existent.zip")}.Build())
 	assert.Error(t, err)
 }

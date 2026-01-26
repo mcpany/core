@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/config"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/config"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,10 +40,10 @@ global_settings:
 	require.NoError(t, err)
 
 	// Verify overrides
-	require.NotNil(t, cfg.GlobalSettings.LogLevel)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, *cfg.GlobalSettings.LogLevel)
-	require.NotNil(t, cfg.GlobalSettings.McpListenAddress)
-	assert.Equal(t, "0.0.0.0:6000", *cfg.GlobalSettings.McpListenAddress)
+	require.NotNil(t, cfg.GetGlobalSettings().GetLogLevel())
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, cfg.GetGlobalSettings().GetLogLevel())
+	require.NotNil(t, cfg.GetGlobalSettings().GetMcpListenAddress())
+	assert.Equal(t, "0.0.0.0:6000", cfg.GetGlobalSettings().GetMcpListenAddress())
 }
 
 func TestEnvVarInjectionWithoutConfig(t *testing.T) {
@@ -64,8 +64,8 @@ func TestEnvVarInjectionWithoutConfig(t *testing.T) {
 	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 
-	require.NotNil(t, cfg.GlobalSettings.McpListenAddress)
-	assert.Equal(t, "0.0.0.0:7000", *cfg.GlobalSettings.McpListenAddress)
+	require.NotNil(t, cfg.GetGlobalSettings().GetMcpListenAddress())
+	assert.Equal(t, "0.0.0.0:7000", cfg.GetGlobalSettings().GetMcpListenAddress())
 }
 
 func TestEnvVarOverrideLowercase(t *testing.T) {
@@ -90,6 +90,6 @@ global_settings:
 	require.NoError(t, err)
 
 	// Verify overrides
-	require.NotNil(t, cfg.GlobalSettings.LogLevel)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, *cfg.GlobalSettings.LogLevel)
+	require.NotNil(t, cfg.GetGlobalSettings().GetLogLevel())
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, cfg.GetGlobalSettings().GetLogLevel())
 }

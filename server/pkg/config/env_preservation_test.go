@@ -44,13 +44,13 @@ upstream_services:
 	require.NoError(t, err)
 
 	// Verify we still have 2 services
-	require.Len(t, cfg.UpstreamServices, 2, "Should have 2 services")
+	require.Len(t, cfg.GetUpstreamServices(), 2, "Should have 2 services")
 
 	// Verify service 1 is overridden
-	assert.Equal(t, "service-1", cfg.UpstreamServices[0].GetName(), "Service 1 name should be preserved")
-	assert.Equal(t, "http://service1-overridden.com", cfg.UpstreamServices[0].GetHttpService().GetAddress())
+	assert.Equal(t, "service-1", cfg.GetUpstreamServices()[0].GetName(), "Service 1 name should be preserved")
+	assert.Equal(t, "http://service1-overridden.com", cfg.GetUpstreamServices()[0].GetHttpService().GetAddress())
 
 	// Verify service 2 is preserved
-	assert.Equal(t, "service-2", cfg.UpstreamServices[1].GetName())
-	assert.Equal(t, "http://service2.com", cfg.UpstreamServices[1].GetHttpService().GetAddress())
+	assert.Equal(t, "service-2", cfg.GetUpstreamServices()[1].GetName())
+	assert.Equal(t, "http://service2.com", cfg.GetUpstreamServices()[1].GetHttpService().GetAddress())
 }

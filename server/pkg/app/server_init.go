@@ -5,6 +5,8 @@ package app
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 
 	"os"
@@ -28,7 +30,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		if err != nil {
 			return err
 		}
-		if cfg != nil && (len(cfg.GetUpstreamServices()) > 0 || cfg.GlobalSettings != nil) {
+		if cfg != nil && (len(cfg.GetUpstreamServices()) > 0 || cfg.GetGlobalSettings() != nil) {
 			return nil // Already initialized
 		}
 	} else {
@@ -50,56 +52,58 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	log.Info("Database appears empty, initializing with default configuration...")
 
 	// Default Configuration
-	defaultGS := &configv1.GlobalSettings{
+	defaultGS := configv1.GlobalSettings_builder{
 		ProfileDefinitions: []*configv1.ProfileDefinition{
-			{
+			configv1.ProfileDefinition_builder{
 				Name: proto.String("Default Dev"),
-				Selector: &configv1.ProfileSelector{
+				Selector: configv1.ProfileSelector_builder{
 					Tags: []string{"dev"},
-				},
-			},
+				}.Build(),
+			}.Build(),
 		},
 		DbPath: proto.String("mcpany.db"),
 		Middlewares: []*configv1.Middleware{
-			{Name: proto.String("auth"), Priority: proto.Int32(1), Disabled: proto.Bool(true)},
+			configv1.Middleware_builder{
+				Name:     proto.String("auth"),
+				Priority: proto.Int32(1),
+				Disabled: proto.Bool(true),
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	// Default Weather Service for demonstration
-	weatherService := &configv1.UpstreamServiceConfig{
+	weatherService := configv1.UpstreamServiceConfig_builder{
 		Id:   proto.String("weather-service"),
 		Name: proto.String("weather-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-			CommandLineService: &configv1.CommandLineUpstreamService{
-				Command: proto.String("echo"),
-				Tools: []*configv1.ToolDefinition{
-					{
-						Name:        proto.String("get_weather"),
-						Description: proto.String("Get current weather"),
-						CallId:      proto.String("get_weather"),
-					},
-				},
-				Calls: map[string]*configv1.CommandLineCallDefinition{
-					"get_weather": {
-						Args: []string{"{\"weather\": \"sunny\"}"},
-					},
-				},
-				Resources: []*configv1.ResourceDefinition{
-					{
-						Uri:      proto.String("system://logs"),
-						Name:     proto.String("System Logs"),
-						MimeType: proto.String("text/plain"),
-					},
-				},
-				Prompts: []*configv1.PromptDefinition{
-					{
-						Name:        proto.String("summarize_text"),
-						Description: proto.String("Summarize text"),
-					},
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("echo"),
+			Tools: []*configv1.ToolDefinition{
+				{
+					Name:        proto.String("get_weather"),
+					Description: proto.String("Get current weather"),
+					CallId:      proto.String("get_weather"),
 				},
 			},
-		},
-	}
+			Calls: map[string]*configv1.CommandLineCallDefinition{
+				"get_weather": {
+					Args: []string{"{\"weather\": \"sunny\"}"},
+				},
+			},
+			Resources: []*configv1.ResourceDefinition{
+				{
+					Uri:      proto.String("system://logs"),
+					Name:     proto.String("System Logs"),
+					MimeType: proto.String("text/plain"),
+				},
+			},
+			Prompts: []*configv1.PromptDefinition{
+				{
+					Name:        proto.String("summarize_text"),
+					Description: proto.String("Summarize text"),
+				},
+			},
+		}.Build(),
+	}.Build()
 
 	// Save to DB
 	if s, ok := store.(storage.Storage); ok {
@@ -146,7 +150,14 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 	password := os.Getenv("MCPANY_ADMIN_INIT_PASSWORD")
 	if password == "" {
-		password = "password"
+		// Generate strong random password
+		b := make([]byte, 32)
+		if _, err := rand.Read(b); err != nil {
+			return fmt.Errorf("failed to generate random password: %w", err)
+		}
+		password = base64.RawURLEncoding.EncodeToString(b)
+		logging.GetLogger().Warn("⚠️  GENERATED ADMIN PASSWORD: " + password + " ⚠️")
+		logging.GetLogger().Warn("Please save this password immediately and change it upon first login.")
 	}
 
 	hash, err := passhash.Password(password)
@@ -154,18 +165,16 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	adminUser := &configv1.User{
+	adminUser := configv1.User_builder{
 		Id: proto.String(username),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					Username:     proto.String(username),
-					PasswordHash: proto.String(hash),
-				},
-			},
-		},
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String(username),
+				PasswordHash: proto.String(hash),
+			}.Build(),
+		}.Build(),
 		Roles: []string{"admin"},
-	}
+	}.Build()
 
 	if err := s.CreateUser(ctx, adminUser); err != nil {
 		return fmt.Errorf("failed to create admin user: %w", err)

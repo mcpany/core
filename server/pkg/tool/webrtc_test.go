@@ -90,7 +90,7 @@ func TestWebrtcTool_PoolInteraction(t *testing.T) {
 	}))
 	defer signalingServer.Close()
 
-	tool := &v1.Tool{}
+	tool := v1.Tool_builder{}.Build()
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
 	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
@@ -162,7 +162,7 @@ func TestWebrtcTool_Execute_Success(t *testing.T) {
 	defer signalingServer.Close()
 	defer wg.Done()
 
-	tool := &v1.Tool{}
+	tool := v1.Tool_builder{}.Build()
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 
 	poolManager := pool.NewManager()
@@ -225,7 +225,7 @@ func TestWebrtcTool_Execute_WithTransformers(t *testing.T) {
 	defer signalingServer.Close()
 	defer wg.Done()
 
-	tool := &v1.Tool{}
+	tool := v1.Tool_builder{}.Build()
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
 	callDef := &configv1.WebrtcCallDefinition{}
@@ -293,7 +293,7 @@ func TestWebrtcTool_Execute_WithAuth(t *testing.T) {
 	defer signalingServer.Close()
 	defer wg.Done()
 
-	tool := &v1.Tool{}
+	tool := v1.Tool_builder{}.Build()
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
 	authenticator := &MockAuthenticator{
@@ -315,7 +315,7 @@ func TestWebrtcTool_Execute_SignalingFailure(t *testing.T) {
 	}))
 	defer signalingServer.Close()
 
-	tool := &v1.Tool{}
+	tool := v1.Tool_builder{}.Build()
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
 	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})
@@ -353,7 +353,7 @@ func TestWebrtcTool_Execute_Timeout(t *testing.T) {
 	}))
 	defer signalingServer.Close()
 
-	tool := &v1.Tool{}
+	tool := v1.Tool_builder{}.Build()
 	tool.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
 	poolManager := pool.NewManager()
 	wt, err := NewWebrtcTool(tool, poolManager, "webrtc-service", nil, &configv1.WebrtcCallDefinition{})

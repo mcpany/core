@@ -1,7 +1,9 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-syntax = "proto3";
+edition = "2023";
+
+option features.field_presence = IMPLICIT;
 
 import "proto/config/v1/auth.proto";
 import "proto/bus/bus.proto"; // For RedisBus in RateLimitConfig
@@ -21,7 +23,7 @@ message Profile {
 
 message ProfileServiceConfig {
   // Whether the service is enabled in this profile.
-  optional bool enabled = 1;
+  bool enabled = 1 [features.field_presence = EXPLICIT];
   // Other service-specific overrides can be added here.
   // We explicitly removed upstream_authentication to use centralized secrets instead.
 }

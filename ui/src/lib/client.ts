@@ -13,6 +13,7 @@
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
@@ -35,7 +36,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -210,6 +211,9 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -243,6 +247,9 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
+                         toolExportPolicy: s.tool_export_policy,
+                         promptExportPolicy: s.prompt_export_policy,
+                         resourceExportPolicy: s.resource_export_policy,
                      };
                  }
                  return data;
@@ -331,6 +338,15 @@ export const apiClient = {
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
         }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -382,6 +398,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -449,6 +474,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -698,20 +732,26 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the traffic history points.
      */
-    getDashboardTraffic: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/traffic');
+    getDashboardTraffic: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/traffic';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
         return res.json();
     },
 
     /**
      * Gets the top used tools.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the top tools stats.
      */
-    getTopTools: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/top-tools');
+    getTopTools: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/top-tools';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
         return res.json();
@@ -732,20 +772,26 @@ export const apiClient = {
     /**
     /**
      * Gets the tools with highest failure rates.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool failure stats.
      */
-    getToolFailures: async (): Promise<ToolFailureStats[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
+    getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
+        let url = '/api/v1/dashboard/tool-failures';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
 
     /**
      * Gets the tool usage analytics.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool usage stats.
      */
-    getToolUsage: async (): Promise<ToolAnalytics[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-usage');
+    getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
+        let url = '/api/v1/dashboard/tool-usage';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
@@ -867,7 +913,8 @@ export const apiClient = {
         return apiClient.saveCollection(collection);
     },
 
-    // Profiles
+
+    // User Management
 
     /**
      * Lists all profiles.
@@ -875,27 +922,16 @@ export const apiClient = {
      */
     listProfiles: async () => {
         const res = await fetchWithAuth('/api/v1/profiles');
-        if (!res.ok) throw new Error('Failed to list profiles');
-        return res.json();
-    },
-
-    /**
-     * Gets a single profile by name.
-     * @param name The name of the profile.
-     * @returns A promise that resolves to the profile.
-     */
-    getProfile: async (name: string) => {
-        const res = await fetchWithAuth(`/api/v1/profiles/${name}`);
-        if (!res.ok) throw new Error('Failed to get profile');
+        if (!res.ok) throw new Error('Failed to fetch profiles');
         return res.json();
     },
 
     /**
      * Creates a new profile.
-     * @param profile The profile to create.
-     * @returns A promise that resolves when the profile is created.
+     * @param profile The profile definition.
+     * @returns A promise that resolves to the created profile.
      */
-    createProfile: async (profile: any) => {
+    createProfile: async (profile: ProfileDefinition) => {
         const res = await fetchWithAuth('/api/v1/profiles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -907,10 +943,10 @@ export const apiClient = {
 
     /**
      * Updates an existing profile.
-     * @param profile The profile to update.
-     * @returns A promise that resolves when the profile is updated.
+     * @param profile The profile definition.
+     * @returns A promise that resolves to the updated profile.
      */
-    updateProfile: async (profile: any) => {
+    updateProfile: async (profile: ProfileDefinition) => {
         const res = await fetchWithAuth(`/api/v1/profiles/${profile.name}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -1155,6 +1191,9 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -1197,6 +1236,15 @@ export const apiClient = {
         }
         if (template.postCallHooks) {
             payload.post_call_hooks = template.postCallHooks;
+        }
+        if (template.toolExportPolicy) {
+            payload.tool_export_policy = template.toolExportPolicy;
+        }
+        if (template.promptExportPolicy) {
+            payload.prompt_export_policy = template.promptExportPolicy;
+        }
+        if (template.resourceExportPolicy) {
+            payload.resource_export_policy = template.resourceExportPolicy;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {

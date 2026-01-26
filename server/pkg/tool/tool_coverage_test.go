@@ -15,8 +15,8 @@ import (
 func TestCallableTool(t *testing.T) {
 	t.Parallel()
 	// Setup
-	toolDef := &configv1.ToolDefinition{Name: proto.String("test-tool")}
-	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String("test-service")}
+	toolDef := configv1.ToolDefinition_builder{Name: proto.String("test-tool")}.Build()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{Id: proto.String("test-service")}.Build()
 
 	mockCallable := &MockCallable{}
 
@@ -48,7 +48,10 @@ func (m *MockCallable) Parameters() map[string]any {
 func TestCallableTool_Execute(t *testing.T) {
 	t.Parallel()
 	mockC := &MockCallable{}
-	ct, _ := NewCallableTool(&configv1.ToolDefinition{Name: proto.String("t")}, &configv1.UpstreamServiceConfig{Name: proto.String("s")}, mockC, nil, nil)
+	ct, _ := NewCallableTool(
+		configv1.ToolDefinition_builder{Name: proto.String("t")}.Build(),
+		configv1.UpstreamServiceConfig_builder{Id: proto.String("s")}.Build(),
+		mockC, nil, nil)
 
 	res, err := ct.Execute(context.Background(), &ExecutionRequest{})
 	assert.NoError(t, err)

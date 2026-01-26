@@ -11,28 +11,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play } from "lucide-react";
-import { Trace, Span, SpanStatus } from "@/app/api/traces/route";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle } from "lucide-react";
+import { Trace, Span, SpanStatus } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
-
-// For Syntax Highlighting (simple version)
-/**
- * JsonView component.
- * @param props - The component props.
- * @param props.data - The data to display.
- * @returns The rendered component.
- */
-function JsonView({ data }: { data: any }) {
-    if (!data) return <span className="text-muted-foreground italic">null</span>;
-    return (
-        <pre className="text-[10px] md:text-xs font-mono bg-muted/50 p-3 rounded-md overflow-x-auto text-foreground/90 border">
-            {JSON.stringify(data, null, 2)}
-        </pre>
-    );
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { JsonView } from "@/components/ui/json-view";
+import { analyzeTrace } from "@/lib/diagnostics";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 /**
  * SpanIcon component.
@@ -158,6 +146,7 @@ function WaterfallItem({
  */
 export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();
+    const { toast } = useToast();
 
     if (!trace) {
         return (
@@ -168,10 +157,32 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
         );
     }
 
+    const diagnostics = analyzeTrace(trace);
+
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
          router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
+    };
+
+    const handleExportJSON = () => {
+        if (!trace) return;
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(trace, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `trace-${trace.id}.json`);
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
+    const handleCopyJSON = () => {
+        if (!trace) return;
+        navigator.clipboard.writeText(JSON.stringify(trace, null, 2));
+        toast({
+            title: "Copied to clipboard",
+            description: "Trace JSON has been copied to your clipboard.",
+        });
     };
 
     return (
@@ -201,50 +212,117 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                             <Play className="h-3 w-3" /> Replay in Playground
                         </Button>
                     )}
-                    <Button variant="outline" size="sm">Export JSON</Button>
+                    <Button variant="outline" size="sm" onClick={handleCopyJSON} className="gap-2">
+                        <Copy className="h-3 w-3" /> Copy
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleExportJSON} className="gap-2">
+                        <Download className="h-3 w-3" /> Export JSON
+                    </Button>
                 </div>
             </div>
 
-            <ScrollArea className="flex-1 p-6">
-                <Card className="mb-6">
-                     <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2 pr-6">
-                         <div className="w-full border rounded-md bg-background/50 overflow-hidden">
-                             {/* Header Row */}
-                             <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
-                                 <div className="flex-1 pl-2">Span Name</div>
-                                 <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
-                             </div>
-                             <WaterfallItem
-                                span={trace.rootSpan}
-                                traceStart={trace.rootSpan.startTime}
-                                traceDuration={trace.totalDuration}
-                            />
-                         </div>
-                    </CardContent>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <JsonView data={trace.rootSpan.input} />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                             <JsonView data={trace.rootSpan.output} />
-                        </CardContent>
-                    </Card>
+            <Tabs defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
+                <div className="px-6 border-b">
+                   <TabsList className="bg-transparent border-b-0 p-0 h-auto">
+                       <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Overview</TabsTrigger>
+                       <TabsTrigger value="payload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Payload</TabsTrigger>
+                   </TabsList>
                 </div>
-            </ScrollArea>
+                <TabsContent value="overview" className="flex-1 p-0 overflow-hidden m-0">
+                    <ScrollArea className="h-full p-6">
+                        {diagnostics.length > 0 && (
+                            <Card className="mb-6 border-l-4 border-l-destructive">
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
+                                        <Lightbulb className="h-4 w-4 text-amber-500" />
+                                        Diagnostics & Suggestions
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Intelligent analysis of the error.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {diagnostics.map((diag, i) => (
+                                        <Alert key={i} variant={diag.type === 'error' ? 'destructive' : 'default'}>
+                                            <AlertTriangle className="h-4 w-4" />
+                                            <AlertTitle>{diag.title}</AlertTitle>
+                                            <AlertDescription className="mt-2">
+                                                <p className="font-medium">{diag.message}</p>
+                                                {diag.suggestion && (
+                                                    <p className="mt-1 text-muted-foreground opacity-90">
+                                                        <span className="font-semibold">Suggestion:</span> {diag.suggestion}
+                                                    </p>
+                                                )}
+                                            </AlertDescription>
+                                        </Alert>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        <Card className="mb-6">
+                             <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pl-2 pr-6">
+                                 <div className="w-full border rounded-md bg-background/50 overflow-hidden">
+                                     {/* Header Row */}
+                                     <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
+                                         <div className="flex-1 pl-2">Span Name</div>
+                                         <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
+                                     </div>
+                                     <WaterfallItem
+                                        span={trace.rootSpan}
+                                        traceStart={trace.rootSpan.startTime}
+                                        traceDuration={trace.totalDuration}
+                                    />
+                                 </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <JsonView data={trace.rootSpan.input} />
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                     <JsonView data={trace.rootSpan.output} />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </ScrollArea>
+                </TabsContent>
+                <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
+                     <ScrollArea className="h-full p-6">
+                        <div className="grid grid-cols-1 gap-6">
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                    <Code className="h-4 w-4" /> Request Payload
+                                </h3>
+                                <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
+                                    <pre>{JSON.stringify(trace.rootSpan.input, null, 2)}</pre>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                    <Terminal className="h-4 w-4" /> Response Payload
+                                </h3>
+                                <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
+                                     <pre>{JSON.stringify(trace.rootSpan.output, null, 2)}</pre>
+                                </div>
+                            </div>
+                        </div>
+                     </ScrollArea>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

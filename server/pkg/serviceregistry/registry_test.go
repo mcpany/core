@@ -111,21 +111,17 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	am := auth.NewManager()
 	registry := New(f, tm, prm, rm, am)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
-	httpService := &configv1.HttpUpstreamService{}
-	httpService.SetAddress("http://127.0.0.1")
-	serviceConfig.SetHttpService(httpService)
-
-	apiKeyAuth := &configv1.APIKeyAuth{
-		VerificationValue: proto.String("test-key"),
-	}
-	authConfig := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: apiKeyAuth,
-		},
-	}
-	serviceConfig.SetAuthentication(authConfig)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://127.0.0.1"),
+		}.Build(),
+		Authentication: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				VerificationValue: proto.String("test-key"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	// Successful registration
 	serviceID, tools, resources, err := registry.RegisterService(context.Background(), serviceConfig)
@@ -157,21 +153,18 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	assert.False(t, ok)
 
 	t.Run("with OAuth2 authenticator", func(t *testing.T) {
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("oauth2-service")
-		httpService := &configv1.HttpUpstreamService{}
-		httpService.SetAddress("http://127.0.0.1")
-		serviceConfig.SetHttpService(httpService)
-		oauth2Config := &configv1.OAuth2Auth{
-			IssuerUrl: proto.String("https://accounts.google.com"),
-			Audience:  proto.String("test-audience"),
-		}
-		authConfig := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oauth2{
-				Oauth2: oauth2Config,
-			},
-		}
-		serviceConfig.SetAuthentication(authConfig)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("oauth2-service"),
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: proto.String("http://127.0.0.1"),
+			}.Build(),
+			Authentication: configv1.Authentication_builder{
+				Oauth2: configv1.OAuth2Auth_builder{
+					IssuerUrl: proto.String("https://accounts.google.com"),
+					Audience:  proto.String("test-audience"),
+				}.Build(),
+			}.Build(),
+		}.Build()
 		serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 		require.NoError(t, err)
 
@@ -190,8 +183,9 @@ func TestServiceRegistry_RegisterService_FactoryError(t *testing.T) {
 	tm := &mockToolManager{}
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), factoryErr.Error())
@@ -233,14 +227,16 @@ func TestServiceRegistry_RegisterService_DuplicateName(t *testing.T) {
 	tm := &mockToolManager{}
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig1 := &configv1.UpstreamServiceConfig{}
-	serviceConfig1.SetName("test-service")
+	serviceConfig1 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
 	require.NoError(t, err, "First registration should succeed")
 
 	// Attempt to register another service with the same name
-	serviceConfig2 := &configv1.UpstreamServiceConfig{}
-	serviceConfig2.SetName("test-service")
+	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.Error(t, err, "Second registration with the same name should fail")
 	assert.Contains(t, err.Error(), `service with name "test-service" already registered`)
@@ -264,8 +260,9 @@ func TestServiceRegistry_UnregisterService(t *testing.T) {
 	am := auth.NewManager()
 	registry := New(f, tm, prm, rm, am)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 
 	// Register the service
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
@@ -311,8 +308,9 @@ func TestServiceRegistry_Close(t *testing.T) {
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
 	// Register a service
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
 
@@ -325,8 +323,9 @@ func TestServiceRegistry_Close(t *testing.T) {
 		return errors.New("shutdown error")
 	}
 	// Register another service to test error
-	serviceConfig2 := &configv1.UpstreamServiceConfig{}
-	serviceConfig2.SetName("test-service-2")
+	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service-2"),
+	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.NoError(t, err)
 
@@ -356,13 +355,15 @@ func TestServiceRegistry_GetAllServices(t *testing.T) {
 	assert.Empty(t, services)
 
 	// Register two services
-	serviceConfig1 := &configv1.UpstreamServiceConfig{}
-	serviceConfig1.SetName("service1")
+	serviceConfig1 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("service1"),
+	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig1)
 	require.NoError(t, err)
 
-	serviceConfig2 := &configv1.UpstreamServiceConfig{}
-	serviceConfig2.SetName("service2")
+	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("service2"),
+	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.NoError(t, err)
 
@@ -474,13 +475,14 @@ func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *te
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
 	// Register the first service with a tool
-	serviceConfig1 := &configv1.UpstreamServiceConfig{}
-	serviceConfig1.SetName("test-service")
+	serviceConfig1 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig1)
 	require.NoError(t, err, "First registration should succeed")
 
 	// Add a tool to the service
-	tool1 := &mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("tool1"), ServiceId: proto.String(serviceID)}}
+	tool1 := &mockTool{tool: mcp_routerv1.Tool_builder{Name: proto.String("tool1"), ServiceId: proto.String(serviceID)}.Build()}
 	err = tm.AddTool(tool1)
 	require.NoError(t, err)
 
@@ -489,8 +491,9 @@ func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *te
 	assert.True(t, ok, "Tool should be present after first registration")
 
 	// Attempt to register another service with the same name
-	serviceConfig2 := &configv1.UpstreamServiceConfig{}
-	serviceConfig2.SetName("test-service")
+	serviceConfig2 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	_, _, _, err = registry.RegisterService(context.Background(), serviceConfig2)
 	require.Error(t, err, "Second registration with the same name should fail")
 
@@ -556,13 +559,14 @@ func TestServiceRegistry_UnregisterService_ClearsAllData(t *testing.T) {
 	rm := resource.NewManager()
 	registry := New(f, tm, pm, rm, auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err, "Registration should succeed")
 
 	// Manually add items to the managers
-	err = tm.AddTool(&mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("test-tool"), ServiceId: proto.String(serviceID)}})
+	err = tm.AddTool(&mockTool{tool: mcp_routerv1.Tool_builder{Name: proto.String("test-tool"), ServiceId: proto.String(serviceID)}.Build()})
 	require.NoError(t, err)
 	pm.AddPrompt(&mockPrompt{serviceID: serviceID, p: &mcp.Prompt{Name: "test-prompt"}})
 	rm.AddResource(&mockResource{serviceID: serviceID, r: &mcp.Resource{URI: "test-resource"}})
@@ -602,8 +606,9 @@ func TestServiceRegistry_UnregisterService_CallsShutdown(t *testing.T) {
 	tm := newThreadSafeToolManager()
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-service")
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err, "Registration should succeed")
 
@@ -643,7 +648,9 @@ func TestServiceRegistry_RegisterService_RetryFailed(t *testing.T) {
 	tm := &mockToolManager{}
 	registry := New(failFactory, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String("retry-service")}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("retry-service"),
+	}.Build()
 	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.Error(t, err)
 

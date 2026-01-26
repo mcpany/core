@@ -60,3 +60,5 @@ server/examples/demo/stdio/my-tool-bin
 package-lock.json
 proto/**/*.ts
 proto/google
+client_info.json
+oauth_env.sh

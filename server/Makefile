@@ -599,7 +599,7 @@ endif
 build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-context
 ifdef HAS_DOCKER
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server .
+	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
 
 else
 	@echo "Docker not found. Cannot build http-echo-server image."
@@ -610,7 +610,7 @@ endif
 build-cowsay-docker: tests/integration/cmd/mocks/python_cowsay_server/Dockerfile
 ifdef HAS_DOCKER
 	@echo "Building cowsay Docker image (mcpany/e2e-cowsay-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile tests/integration/cmd/mocks/python_cowsay_server
+	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/cmd/mocks/python_cowsay_server
 else
 	@echo "Docker not found. Cannot build cowsay image."
 	@exit 1
@@ -620,7 +620,7 @@ endif
 docker-build-operator: prepare-docker-context
 ifdef HAS_DOCKER
 	@echo "Building operator Docker image (mcpany/operator:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/operator:latest -f ../k8s/operator/Dockerfile ..
+	@$(DOCKER_BUILD_CMD) -t mcpany/operator:latest -f ../k8s/operator/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 else
 	@echo "Docker not found. Cannot build operator image."
 	@exit 1
@@ -634,7 +634,7 @@ docker-build-http-echo: build-http-echo-docker
 docker-build-dev: docker/Dockerfile.dev
 ifdef HAS_DOCKER
 	@echo "Building dev Docker image (mcpany/dev:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/dev:latest -f docker/Dockerfile.dev ..
+	@$(DOCKER_BUILD_CMD) -t mcpany/dev:latest -f docker/Dockerfile.dev $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 else
 	@echo "Docker not found. Cannot build dev image."
 	@exit 1
@@ -683,7 +683,7 @@ endif
 build-everything-docker: docker/Dockerfile.everything
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
-	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
+	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
 	@echo "Everything server Docker image build complete."
 else
 	@echo "Docker not found. Cannot build everything server image."
