@@ -22,8 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
+  username: z.string().min(1, "Username is required").max(100, "Username too long"),
+  password: z.string().min(1, "Password is required").max(100, "Password too long"),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
