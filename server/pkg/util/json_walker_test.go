@@ -139,6 +139,36 @@ func TestWalkJSONStrings(t *testing.T) {
 			},
 			expected: `{ /* "ignore" */ "key": "REPLACED" }`,
 		},
+		{
+			name:  "slash before line comment with quote",
+			input: `{"key": 1 / 2 // "commented"
+, "k2": "v2"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"commented"` {
+					return []byte(`"REDACTED"`), true
+				}
+				if string(raw) == `"v2"` {
+					return []byte(`"V2"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": 1 / 2 // "commented"
+, "k2": "V2"}`,
+		},
+		{
+			name:  "slash before block comment with quote",
+			input: `{"key": 1 / 2 /* "commented" */, "k2": "v2"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"commented"` {
+					return []byte(`"REDACTED"`), true
+				}
+				if string(raw) == `"v2"` {
+					return []byte(`"V2"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": 1 / 2 /* "commented" */, "k2": "V2"}`,
+		},
 	}
 
 	for _, tt := range tests {
