@@ -91,8 +91,8 @@ func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 
 		// Check Origin
 		if origin != "" {
-			if !m.isOriginAllowed(origin) {
-				logging.GetLogger().Warn("CSRF blocked: Origin not allowed", "origin", origin, "path", r.URL.Path)
+			if !m.isOriginAllowed(origin, r.Host) {
+				logging.GetLogger().Warn("CSRF blocked: Origin not allowed", "origin", origin, "path", r.URL.Path, "host", r.Host)
 				http.Error(w, "Forbidden: CSRF Origin Check Failed", http.StatusForbidden)
 				return
 			}
@@ -105,8 +105,10 @@ func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 				return
 			}
 			// Reconstruct origin from referer (scheme://host)
+			// Note: This loses port if not in Host, but URL.Host typically includes port if present.
 			refOrigin := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-			if !m.isOriginAllowed(refOrigin) {
+			// Check if host matches
+			if !m.isOriginAllowed(refOrigin, r.Host) {
 				logging.GetLogger().Warn("CSRF blocked: Referer Origin not allowed", "referer", referer, "extracted_origin", refOrigin)
 				http.Error(w, "Forbidden: CSRF Referer Check Failed", http.StatusForbidden)
 				return
@@ -117,24 +119,42 @@ func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	})
 }
 
-func (m *CSRFMiddleware) isOriginAllowed(origin string) bool {
+func (m *CSRFMiddleware) isOriginAllowed(origin string, host string) bool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	origin = strings.ToLower(origin)
-	if m.allowedOrigins[origin] {
+	if m.allowedOrigins["*"] || m.allowedOrigins[origin] {
 		return true
 	}
 
-	// Also allow exact match on localhost variants if strictly configured?
-	// Usually allowedOrigins contains them.
-	// But if the user didn't configure anything, allowedOrigins might be empty?
-	// If empty, we should arguably fail or allow same-origin?
-	// But we don't know "same-origin" easily without knowing the server's own public URL.
-	// However, we can check if it matches "null" (local files, blocked usually) or generic checks.
+	// If no origins configured (Dev mode), implicitly allow localhost
+	if len(m.allowedOrigins) == 0 {
+		if strings.HasPrefix(origin, "http://localhost:") ||
+			strings.HasPrefix(origin, "https://localhost:") ||
+			strings.HasPrefix(origin, "http://127.0.0.1:") ||
+			strings.HasPrefix(origin, "https://127.0.0.1:") {
+			return true
+		}
+		// Exact match without port (unlikely but possible)
+		if origin == "http://localhost" || origin == "https://localhost" {
+			return true
+		}
+	}
 
-	// If list is empty, maybe we should be permissive or restrictive?
-	// Default to restrictive if list provided?
-	// If the user provided specific origins, they expect enforcement.
+	// Check for Same Origin (Host header match)
+	// Origin is scheme://host:port
+	// Host is host:port
+	// We extract host from origin
+	if strings.Contains(origin, "://") {
+		parts := strings.SplitN(origin, "://", 2)
+		if len(parts) == 2 {
+			originHost := parts[1]
+			if strings.EqualFold(originHost, host) {
+				return true
+			}
+		}
+	}
+
 	return false
 }
