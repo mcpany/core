@@ -28,7 +28,13 @@ this view is split into tabs:
 
 ![Trace Detail](../screenshots/trace_detail.png)
 
-### 3. Replay Trace
+### 3. Sequence Diagram
+
+Switch to the **Sequence** tab to view an interactive sequence diagram of the trace. This helps visualize the flow between the Client, Core, Services, and Tools.
+
+![Trace Sequence](../screenshots/trace_sequence.png)
+
+### 4. Replay Trace
 
 To quickly reproduce a bug or test a tool:
 
@@ -36,14 +42,14 @@ To quickly reproduce a bug or test a tool:
 2. Click the **"Replay in Playground"** button.
 3. You will be redirected to the Playground with the tool and arguments pre-filled.
 
-### 4. Export & Share
+### 5. Export & Share
 
 To share a trace with your team or attach it to a bug report:
 
 - **Copy**: Click the **Copy** button to copy the full trace JSON to your clipboard.
 - **Export JSON**: Click **Export JSON** to download the trace as a `.json` file.
 
-### 5. Smart Diagnostics
+### 6. Smart Diagnostics
 
 When a trace contains an error (e.g., Schema Validation Error, Connection Refused), the inspector automatically analyzes the failure and provides a **Diagnostics & Suggestions** card.
 
