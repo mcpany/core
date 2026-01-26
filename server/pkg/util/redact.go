@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"unicode"
@@ -573,14 +574,23 @@ func RedactSecrets(text string, secrets []string) string {
 		return text
 	}
 
+	// Optimization: No need to sort if only 1 secret
+	if len(secrets) == 1 {
+		if secrets[0] == "" {
+			return text
+		}
+		return strings.ReplaceAll(text, secrets[0], redactedPlaceholder)
+	}
+
 	// Sort secrets by length descending to avoid partial replacements (e.g. replacing "pass" in "password")
 	// Although for random secrets this might be less of an issue, but good practice.
 	// Making a copy to avoid mutating the input slice.
 	sortedSecrets := make([]string, len(secrets))
 	copy(sortedSecrets, secrets)
 
-	sort.Slice(sortedSecrets, func(i, j int) bool {
-		return len(sortedSecrets[i]) > len(sortedSecrets[j])
+	// Optimization: Use slices.SortFunc which is faster than sort.Slice (avoids reflection)
+	slices.SortFunc(sortedSecrets, func(a, b string) int {
+		return len(b) - len(a)
 	})
 
 	for _, secret := range sortedSecrets {
