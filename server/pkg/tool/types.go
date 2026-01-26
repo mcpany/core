@@ -2682,13 +2682,20 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
+		if inSingle {
+			if char == '\'' {
+				inSingle = false
+			}
+			continue
+		}
+
 		if char == '\\' {
 			escaped = true
 			continue
 		}
 
 		if char == '\'' && !inDouble {
-			inSingle = !inSingle
+			inSingle = true
 		} else if char == '"' && !inSingle {
 			inDouble = !inDouble
 		}
