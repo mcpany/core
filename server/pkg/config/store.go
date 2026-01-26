@@ -6,7 +6,6 @@ package config
 import (
 	"bytes"
 	"context"
-	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -457,7 +456,7 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
 		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is restricted", lineNum, varName)
 		// Write the original string to preserve structure
-		buf.Write(b[startIdx : j])
+		buf.Write(b[startIdx:j])
 		return j - startIdx
 	}
 
@@ -903,17 +902,13 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 					}
 				}
 
-				// Repeated field: split by comma
-				r := csv.NewReader(strings.NewReader(value))
-				r.TrimLeadingSpace = true
-				parts, err := r.Read()
-				if err != nil {
-					// Fallback to simple split if CSV parsing fails
-					parts = strings.Split(value, ",")
-				}
+				// Repeated field: split by comma, respecting JSON structure and quotes
+				parts := splitByCommaIgnoringBraces(value)
 				var list []interface{}
 				for _, part := range parts {
-					part = strings.TrimSpace(part)
+					// If it looks like a quoted CSV value, unquote it.
+					part = unquoteCSV(part)
+
 					switch kind {
 					case protoreflect.BoolKind:
 						b, err := strconv.ParseBool(part)
@@ -1241,4 +1236,72 @@ func findKeyInNode(node *yaml.Node, key string) int {
 		}
 	}
 	return 0
+}
+
+// splitByCommaIgnoringBraces splits a string by comma, but ignores commas inside
+// braces {}, brackets [], and double quotes "".
+func splitByCommaIgnoringBraces(s string) []string {
+	var parts []string
+	var current strings.Builder
+	depth := 0
+	quote := false
+	escape := false
+
+	for _, r := range s {
+		if escape {
+			escape = false
+			current.WriteRune(r)
+			continue
+		}
+
+		if r == '\\' {
+			escape = true
+			current.WriteRune(r)
+			continue
+		}
+
+		if r == '"' {
+			if quote {
+				quote = false
+			} else {
+				// Only start quote if inside braces OR at start of field
+				// (ignoring leading whitespace handled by TrimSpace logic on output, but here we need to check current buffer)
+				isStartOfField := strings.TrimSpace(current.String()) == ""
+				if depth > 0 || isStartOfField {
+					quote = true
+				}
+			}
+		}
+
+		if !quote {
+			switch r {
+			case '{', '[':
+				depth++
+			case '}', ']':
+				depth--
+			}
+		}
+
+		if r == ',' && depth == 0 && !quote {
+			parts = append(parts, strings.TrimSpace(current.String()))
+			current.Reset()
+		} else {
+			current.WriteRune(r)
+		}
+	}
+	if current.Len() > 0 {
+		parts = append(parts, strings.TrimSpace(current.String()))
+	}
+	return parts
+}
+
+// unquoteCSV removes surrounding double quotes and unescapes paired double quotes.
+// Example: "foo" -> foo
+// Example: "foo""bar" -> foo"bar.
+func unquoteCSV(s string) string {
+	if len(s) >= 2 && strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"") {
+		inner := s[1 : len(s)-1]
+		return strings.ReplaceAll(inner, "\"\"", "\"")
+	}
+	return s
 }
