@@ -136,3 +136,33 @@ func TestHTTPCORSMiddleware(t *testing.T) {
 		})
 	}
 }
+
+func TestHTTPCORSMiddleware_Update(t *testing.T) {
+	mw := middleware.NewHTTPCORSMiddleware([]string{"http://initial.com"})
+
+	// Verify initial state
+	req := httptest.NewRequest("GET", "/", nil)
+	req.Header.Set("Origin", "http://initial.com")
+	w := httptest.NewRecorder()
+
+	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+	mw.Handler(next).ServeHTTP(w, req)
+	assert.Equal(t, "http://initial.com", w.Result().Header.Get("Access-Control-Allow-Origin"))
+
+	// Update configuration
+	mw.Update([]string{"http://updated.com"})
+
+	// Verify old origin is no longer allowed
+	req = httptest.NewRequest("GET", "/", nil)
+	req.Header.Set("Origin", "http://initial.com")
+	w = httptest.NewRecorder()
+	mw.Handler(next).ServeHTTP(w, req)
+	assert.Empty(t, w.Result().Header.Get("Access-Control-Allow-Origin"))
+
+	// Verify new origin is allowed
+	req = httptest.NewRequest("GET", "/", nil)
+	req.Header.Set("Origin", "http://updated.com")
+	w = httptest.NewRecorder()
+	mw.Handler(next).ServeHTTP(w, req)
+	assert.Equal(t, "http://updated.com", w.Result().Header.Get("Access-Control-Allow-Origin"))
+}

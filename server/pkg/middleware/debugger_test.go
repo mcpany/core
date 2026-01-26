@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDebuggerMiddleware(t *testing.T) {
@@ -98,4 +99,31 @@ func TestDebuggerLargeBodyTruncation(t *testing.T) {
 	assert.Contains(t, entries[0].RequestBody, "... [truncated]")
 	assert.Contains(t, entries[0].ResponseBody, "This is a ")
 	assert.Contains(t, entries[0].ResponseBody, "... [truncated]")
+}
+
+func TestDebuggerAPIHandler(t *testing.T) {
+	debugger := NewDebugger(10)
+
+	// Add some entries
+	handler := debugger.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/test", nil)
+	handler.ServeHTTP(w, req)
+
+	// Call API Handler
+	apiHandler := debugger.APIHandler()
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest("GET", "/api/debugger", nil)
+	apiHandler.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
+
+	var entries []DebugEntry
+	err := json.NewDecoder(w.Body).Decode(&entries)
+	require.NoError(t, err)
+	assert.Len(t, entries, 1)
+	assert.Equal(t, "/test", entries[0].Path)
 }

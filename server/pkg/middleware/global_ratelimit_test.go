@@ -7,11 +7,16 @@ import (
 	"context"
 	"testing"
 
+	"github.com/alicebob/miniredis/v2"
+	"github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
@@ -146,4 +151,74 @@ func TestGlobalRateLimitMiddleware_KeyByGlobal(t *testing.T) {
 	// Request 2 (Blocked) - shared bucket regardless of context
 	_, err = mw.Execute(context.Background(), "tools/call", nil, next)
 	assert.Error(t, err)
+}
+
+func TestGlobalRateLimitMiddleware_UpdateConfig(t *testing.T) {
+	cfg := &configv1.RateLimitConfig{
+		IsEnabled:         true,
+		RequestsPerSecond: 1,
+		Burst:             1,
+		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
+	}
+	mw := NewGlobalRateLimitMiddleware(cfg)
+
+	newCfg := &configv1.RateLimitConfig{
+		IsEnabled:         false,
+		RequestsPerSecond: 100,
+		Burst:             100,
+	}
+	mw.UpdateConfig(newCfg)
+
+	// Should allow now because disabled
+	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		return &mcp.CallToolResult{}, nil
+	}
+	// Call multiple times
+	for i := 0; i < 5; i++ {
+		_, err := mw.Execute(context.Background(), "tools/call", nil, next)
+		assert.NoError(t, err)
+	}
+}
+
+func TestGlobalRateLimitMiddleware_Redis(t *testing.T) {
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
+
+	// Mock Redis Client Creator to use miniredis
+	SetRedisClientCreatorForTests(func(opts *redis.Options) *redis.Client {
+		return redis.NewClient(&redis.Options{
+			Addr: mr.Addr(),
+		})
+	})
+	defer SetRedisClientCreatorForTests(redis.NewClient)
+
+	cfg := &configv1.RateLimitConfig{
+		IsEnabled:         true,
+		RequestsPerSecond: 10,
+		Burst:             10,
+		Storage:           configv1.RateLimitConfig_STORAGE_REDIS,
+		Redis: bus.RedisBus_builder{
+			Address: proto.String(mr.Addr()),
+		}.Build(),
+		KeyBy: configv1.RateLimitConfig_KEY_BY_IP,
+	}
+
+	mw := NewGlobalRateLimitMiddleware(cfg)
+
+	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		return &mcp.CallToolResult{}, nil
+	}
+
+	ctx := util.ContextWithRemoteIP(context.Background(), "127.0.0.1")
+
+	// Call execute, which triggers getLimiter -> getRedisClient
+	res, err := mw.Execute(ctx, "tools/call", nil, next)
+	assert.NoError(t, err)
+	assert.NotNil(t, res)
+
+	// Test caching of limiter and client
+	// Call again with same config
+	res, err = mw.Execute(ctx, "tools/call", nil, next)
+	assert.NoError(t, err)
 }
