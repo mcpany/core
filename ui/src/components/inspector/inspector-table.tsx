@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Trace, SpanStatus } from "@/types/trace";
 import {
   Table,
@@ -54,6 +54,44 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
     }
 }
 
+const TraceRow = React.memo(({ trace, onClick }: { trace: Trace; onClick: (t: Trace) => void }) => {
+  return (
+      <TableRow
+        className="cursor-pointer hover:bg-muted/50"
+        onClick={() => onClick(trace)}
+        // Optimization: content-visibility allows the browser to skip rendering work for off-screen rows.
+        style={{ contentVisibility: 'auto', containIntrinsicSize: '0 53px' } as React.CSSProperties}
+      >
+        <TableCell className="font-mono text-xs text-muted-foreground">
+          {new Date(trace.timestamp).toLocaleTimeString()}
+          <br />
+          <span className="opacity-50 text-[10px]">
+             {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
+          </span>
+        </TableCell>
+        <TableCell>
+            <TypeIcon type={trace.rootSpan.type} className="h-4 w-4 text-muted-foreground" />
+        </TableCell>
+        <TableCell>
+            <div className="flex flex-col">
+                <span className="font-medium">{trace.rootSpan.name}</span>
+                <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
+            </div>
+        </TableCell>
+        <TableCell>
+           <Badge variant={trace.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
+              <StatusIcon status={trace.status} className="h-3 w-3" />
+              {trace.status}
+           </Badge>
+        </TableCell>
+        <TableCell className="text-right font-mono text-xs">
+            {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
+        </TableCell>
+      </TableRow>
+  )
+})
+TraceRow.displayName = 'TraceRow';
+
 /**
  * A table component for displaying and inspecting traces.
  * Allows clicking on a row to view detailed trace information in a sheet.
@@ -65,6 +103,10 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
  */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
+
+  const handleTraceClick = useCallback((trace: Trace) => {
+    setSelectedTrace(trace);
+  }, []);
 
   return (
     <>
@@ -95,37 +137,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                   </TableRow>
             )}
             {traces.map((trace) => (
-              <TableRow
-                key={trace.id}
-                className="cursor-pointer hover:bg-muted/50"
-                onClick={() => setSelectedTrace(trace)}
-              >
-                <TableCell className="font-mono text-xs text-muted-foreground">
-                  {new Date(trace.timestamp).toLocaleTimeString()}
-                  <br />
-                  <span className="opacity-50 text-[10px]">
-                     {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
-                  </span>
-                </TableCell>
-                <TableCell>
-                    <TypeIcon type={trace.rootSpan.type} className="h-4 w-4 text-muted-foreground" />
-                </TableCell>
-                <TableCell>
-                    <div className="flex flex-col">
-                        <span className="font-medium">{trace.rootSpan.name}</span>
-                        <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
-                    </div>
-                </TableCell>
-                <TableCell>
-                   <Badge variant={trace.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
-                      <StatusIcon status={trace.status} className="h-3 w-3" />
-                      {trace.status}
-                   </Badge>
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs">
-                    {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
-                </TableCell>
-              </TableRow>
+              <TraceRow key={trace.id} trace={trace} onClick={handleTraceClick} />
             ))}
           </TableBody>
         </Table>

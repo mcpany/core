@@ -16,6 +16,9 @@ Navigate to `/traces`. This view shows a chronological log of all system activit
 
 - **Status Icons**: Green check for success, Red X for failure.
 - **Duration**: Time taken for the request to complete.
+- **Real-time Updates**: The list automatically updates as new activity occurs, indicated by the "Live" badge.
+
+![Inspector Realtime](../screenshots/inspector_realtime.png)
 
 ### 2. Inspect Detail
 

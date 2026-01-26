@@ -15,16 +15,18 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/tool"
 	"google.golang.org/protobuf/proto"
 )
 
 // AuditMiddleware provides audit logging for tool executions.
 type AuditMiddleware struct {
-	mu       sync.RWMutex
-	config   *configv1.AuditConfig
-	store    audit.Store
-	redactor *Redactor
+	mu          sync.RWMutex
+	config      *configv1.AuditConfig
+	store       audit.Store
+	redactor    *Redactor
+	broadcaster *logging.Broadcaster
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
@@ -35,7 +37,8 @@ type AuditMiddleware struct {
 // Returns an error if the operation fails.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
-		config: auditConfig,
+		config:      auditConfig,
+		broadcaster: logging.NewBroadcaster(),
 	}
 	if err := m.initializeStore(auditConfig); err != nil {
 		return nil, err
@@ -229,11 +232,33 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 }
 
 func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry audit.Entry) {
+	// Broadcast first (in-memory)
+	if m.broadcaster != nil {
+		if b, err := json.Marshal(entry); err == nil {
+			m.broadcaster.Broadcast(b)
+		}
+	}
+
 	if store == nil {
 		return
 	}
 	if err := store.Write(ctx, entry); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write audit log: %v\n", err)
+	}
+}
+
+// SubscribeWithHistory subscribes to real-time audit logs and returns the current history.
+func (m *AuditMiddleware) SubscribeWithHistory() (chan []byte, [][]byte) {
+	if m.broadcaster == nil {
+		return nil, nil
+	}
+	return m.broadcaster.SubscribeWithHistory()
+}
+
+// Unsubscribe unsubscribes from real-time audit logs.
+func (m *AuditMiddleware) Unsubscribe(ch chan []byte) {
+	if m.broadcaster != nil {
+		m.broadcaster.Unsubscribe(ch)
 	}
 }
 
