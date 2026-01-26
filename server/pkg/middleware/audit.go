@@ -15,16 +15,18 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/tool"
 	"google.golang.org/protobuf/proto"
 )
 
 // AuditMiddleware provides audit logging for tool executions.
 type AuditMiddleware struct {
-	mu       sync.RWMutex
-	config   *configv1.AuditConfig
-	store    audit.Store
-	redactor *Redactor
+	mu          sync.RWMutex
+	config      *configv1.AuditConfig
+	store       audit.Store
+	redactor    *Redactor
+	broadcaster *logging.Broadcaster
 }
 
 // NewAuditMiddleware creates a new AuditMiddleware.
@@ -35,7 +37,8 @@ type AuditMiddleware struct {
 // Returns an error if the operation fails.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
-		config: auditConfig,
+		config:      auditConfig,
+		broadcaster: logging.NewBroadcaster(),
 	}
 	if err := m.initializeStore(auditConfig); err != nil {
 		return nil, err
@@ -229,12 +232,36 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 }
 
 func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry audit.Entry) {
+	// Broadcast first for real-time updates
+	if m.broadcaster != nil {
+		b, err := json.Marshal(entry)
+		if err == nil {
+			m.broadcaster.Broadcast(b)
+		}
+	}
+
 	if store == nil {
 		return
 	}
 	if err := store.Write(ctx, entry); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write audit log: %v\n", err)
 	}
+}
+
+// SubscribeWithHistory returns a channel that will receive broadcast messages,
+// and the current history of messages.
+func (m *AuditMiddleware) SubscribeWithHistory() (chan []byte, [][]byte) {
+	return m.broadcaster.SubscribeWithHistory()
+}
+
+// GetHistory returns the current broadcast history.
+func (m *AuditMiddleware) GetHistory() [][]byte {
+	return m.broadcaster.GetHistory()
+}
+
+// Unsubscribe removes a subscriber channel.
+func (m *AuditMiddleware) Unsubscribe(ch chan []byte) {
+	m.broadcaster.Unsubscribe(ch)
 }
 
 // Read reads audit entries from the underlying store.
