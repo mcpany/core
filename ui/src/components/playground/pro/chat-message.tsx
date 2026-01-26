@@ -5,7 +5,7 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,6 +15,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DiffEditor } from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 /**
  * MessageType type definition.
@@ -31,6 +34,7 @@ export interface Message {
   toolName?: string;
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
+  previousResult?: unknown;
   timestamp: Date;
 }
 
@@ -70,6 +74,8 @@ function analyzeError(error: string): string | null {
  */
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
+    const [showDiff, setShowDiff] = useState(false);
+    const { theme } = useTheme();
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -175,7 +181,11 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
+        const hasDiff = message.previousResult !== undefined &&
+                        JSON.stringify(message.previousResult) !== JSON.stringify(message.toolResult);
+
          return (
+            <>
             <div className="flex justify-start gap-3 pl-11 w-full pr-4 md:pr-10 my-2">
                  <Collapsible className="w-full group rounded-lg border shadow-sm overflow-hidden bg-card" defaultOpen>
                     <div className="flex items-center justify-between bg-muted/30 px-3 py-2 text-xs border-b">
@@ -188,12 +198,25 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
                             </span>
                         </div>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">
-                                <span className="group-data-[state=open]:hidden">Show Result</span>
-                                <span className="group-data-[state=closed]:hidden">Hide Result</span>
-                            </Button>
-                        </CollapsibleTrigger>
+                        <div className="flex items-center gap-2">
+                            {hasDiff && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-6 px-2 text-[10px] gap-1 border-dashed"
+                                    onClick={() => setShowDiff(true)}
+                                >
+                                    <GitCompare className="size-3" />
+                                    Show Changes
+                                </Button>
+                            )}
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] text-muted-foreground hover:text-foreground">
+                                    <span className="group-data-[state=open]:hidden">Show Result</span>
+                                    <span className="group-data-[state=closed]:hidden">Hide Result</span>
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
                     </div>
                     <CollapsibleContent>
                         <div className="relative group/code max-h-[400px] overflow-auto">
@@ -218,6 +241,34 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                     </CollapsibleContent>
                 </Collapsible>
             </div>
+
+            <Dialog open={showDiff} onOpenChange={setShowDiff}>
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <GitCompare className="size-5" />
+                            Output Difference
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
+                        <DiffEditor
+                            original={JSON.stringify(message.previousResult, null, 2)}
+                            modified={JSON.stringify(message.toolResult, null, 2)}
+                            language="json"
+                            theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                            options={{
+                                readOnly: true,
+                                minimap: { enabled: false },
+                                scrollBeyondLastLine: false,
+                                fontSize: 12,
+                                diffCodeLens: true,
+                                renderSideBySide: true,
+                            }}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
+            </>
         );
     }
 
