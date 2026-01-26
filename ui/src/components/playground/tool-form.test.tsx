@@ -74,7 +74,7 @@ describe("ToolForm", () => {
     await user.click(switchEl);
 
     // Submit
-    const submitBtn = screen.getByRole("button", { name: /build command/i });
+    const submitBtn = screen.getByRole("button", { name: /^run$/i });
     await user.click(submitBtn);
 
     await waitFor(() => {
@@ -82,7 +82,28 @@ describe("ToolForm", () => {
             username: "jdoe",
             age: "30", // Schema says string, so input returns string.
             isActive: true
-        });
+        }, false);
+    });
+  });
+
+  it("calls onSubmit with dryRun=true when Dry Run is clicked", async () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+    const user = userEvent.setup();
+
+    render(<ToolForm tool={mockTool} onSubmit={onSubmit} onCancel={onCancel} />);
+
+    // Fill required
+    await user.type(screen.getByLabelText(/username/i), "dry-user");
+
+    // Click Dry Run
+    const dryRunBtn = screen.getByRole("button", { name: /dry run/i });
+    await user.click(dryRunBtn);
+
+    await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith({
+            username: "dry-user"
+        }, true);
     });
   });
 
@@ -94,7 +115,7 @@ describe("ToolForm", () => {
     render(<ToolForm tool={mockTool} onSubmit={onSubmit} onCancel={onCancel} />);
 
     // Submit without filling anything
-    const submitBtn = screen.getByRole("button", { name: /build command/i });
+    const submitBtn = screen.getByRole("button", { name: /^run$/i });
     await user.click(submitBtn);
 
     await waitFor(() => {
@@ -128,7 +149,7 @@ describe("ToolForm", () => {
      // Invalid Code
      await user.type(screen.getByLabelText(/code/i), "abc");
 
-     const submitBtn = screen.getByRole("button", { name: /build command/i });
+     const submitBtn = screen.getByRole("button", { name: /^run$/i });
      await user.click(submitBtn);
 
      await waitFor(() => {
@@ -152,7 +173,7 @@ describe("ToolForm", () => {
          expect(onSubmit).toHaveBeenCalledWith({
              email: "test@example.com",
              code: "ABC"
-         });
+         }, false);
      });
   });
 });

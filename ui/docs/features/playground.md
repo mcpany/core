@@ -49,6 +49,7 @@ The execution result is displayed in the chat stream.
 ## Advanced Features
 
 - **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
+- **Dry Run**: Use the "Dry Run" button (shield icon) to simulate a tool execution. This validates the input and returns the constructed request without performing any side effects (e.g. database writes).
 - **History**: Previous tool calls in the session remain visible above.
 
 ### 5. Session History (Import/Export)

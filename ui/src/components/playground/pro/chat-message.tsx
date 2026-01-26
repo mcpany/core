@@ -5,9 +5,10 @@
 
 "use client";
 
-import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare } from "lucide-react";
+import { User, Bot, Terminal, Sparkles, AlertCircle, Check, Copy, RotateCcw, Lightbulb, GitCompare, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -183,6 +184,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     if (message.type === "tool-result") {
         const hasDiff = message.previousResult !== undefined &&
                         JSON.stringify(message.previousResult) !== JSON.stringify(message.toolResult);
+        const isDryRun = (message.toolResult as any)?.dry_run === true;
 
          return (
             <>
@@ -191,9 +193,14 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                     <div className="flex items-center justify-between bg-muted/30 px-3 py-2 text-xs border-b">
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <div className="bg-green-500/10 p-1 rounded">
-                                <Sparkles className="size-3.5 text-green-600 dark:text-green-400" />
+                                {isDryRun ? <ShieldCheck className="size-3.5 text-amber-500" /> : <Sparkles className="size-3.5 text-green-600 dark:text-green-400" />}
                             </div>
                             <span className="font-medium text-green-700 dark:text-green-400">Result: {message.toolName}</span>
+                            {isDryRun && (
+                                <Badge variant="secondary" className="ml-2 text-[10px] h-5 px-1.5 font-mono bg-amber-500/10 text-amber-600 border-amber-500/20">
+                                    DRY RUN
+                                </Badge>
+                            )}
                             <span className="ml-2 text-[10px] opacity-60" title="Estimated token usage for result">
                                 ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
                             </span>

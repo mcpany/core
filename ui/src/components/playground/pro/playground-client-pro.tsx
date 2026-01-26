@@ -154,11 +154,16 @@ export function PlaygroundClientPro() {
     processResponse(input);
   };
 
-  const handleToolFormSubmit = (data: Record<string, unknown>) => {
+  const handleToolFormSubmit = (data: Record<string, unknown>, dryRun = false) => {
     if (!toolToConfigure) return;
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
     setInput(command);
+    if (dryRun) {
+        setIsDryRun(true);
+        // Execute immediately with dryRun override
+        processResponse(command, true);
+    }
   };
 
   const handleInputChange = (value: string) => {
@@ -183,7 +188,7 @@ export function PlaygroundClientPro() {
       inputRef.current?.focus();
   };
 
-  const processResponse = async (userInput: string) => {
+  const processResponse = async (userInput: string, dryRunOverride?: boolean) => {
       const firstSpaceIndex = userInput.indexOf(' ');
       let toolName = userInput;
       let toolArgs = {};
@@ -216,10 +221,11 @@ export function PlaygroundClientPro() {
       }]);
 
       try {
+          const runAsDryRun = dryRunOverride !== undefined ? dryRunOverride : isDryRun;
           const result = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
-          }, isDryRun);
+          }, runAsDryRun);
 
           // Find previous execution for diffing
           let previousResult: unknown | undefined;

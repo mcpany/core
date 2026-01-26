@@ -8,6 +8,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ToolDefinition } from "@/lib/client";
+import { ShieldCheck, Play } from "lucide-react";
 import { SchemaForm } from "./schema-form";
 import { ToolPresets } from "./tool-presets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,7 +19,7 @@ import addFormats from "ajv-formats";
 
 interface ToolFormProps {
   tool: ToolDefinition;
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit: (data: Record<string, unknown>, dryRun?: boolean) => void;
   onCancel: () => void;
 }
 
@@ -94,9 +95,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       return {};
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const validateAndGetData = () => {
     let finalData = formData;
 
     if (mode === "json") {
@@ -104,7 +103,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
             finalData = JSON.parse(jsonInput);
         } catch (err) {
             setErrors({ "json": "Invalid JSON format" });
-            return;
+            return null;
         }
     }
 
@@ -112,11 +111,26 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
 
     if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
-        return;
+        return null;
     }
 
     setErrors({});
-    onSubmit(finalData);
+    return finalData;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = validateAndGetData();
+    if (data) {
+        onSubmit(data, false);
+    }
+  };
+
+  const handleDryRun = () => {
+    const data = validateAndGetData();
+    if (data) {
+        onSubmit(data, true);
+    }
   };
 
   const handleTabChange = (value: string) => {
@@ -272,12 +286,17 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
       </Tabs>
 
       <div className="flex justify-end gap-2 pt-4 border-t mt-auto">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="ghost" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit">
-          Build Command
-        </Button>
+        <div className="flex gap-2">
+            <Button type="button" variant="secondary" onClick={handleDryRun} className="gap-2">
+                <ShieldCheck className="size-4" /> Dry Run
+            </Button>
+            <Button type="submit" className="gap-2">
+                <Play className="size-4" /> Run
+            </Button>
+        </div>
       </div>
     </form>
   );
