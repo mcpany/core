@@ -55,6 +55,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	t.Setenv("COMPOSE_PROJECT_NAME", projectName)
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_QUERY_AUTH", "true")
 	t.Logf("Using COMPOSE_PROJECT_NAME: %s", projectName)
 
 	// Cleanup function
@@ -201,6 +202,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
 		"-e", "MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true",
 		"-e", "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
+		"-e", "MCPANY_DANGEROUS_ALLOW_QUERY_AUTH=true",
 		"mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050", "--api-key", "demo-key",
 	)
@@ -561,7 +563,7 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	})
 
 	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
-	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
+	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true\n      - MCPANY_DANGEROUS_ALLOW_QUERY_AUTH=true", 1)
 
 	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
 	// We assume typical docker-compose indentation of services/environment.

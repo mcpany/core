@@ -58,7 +58,7 @@ func TestHTTPSecurityHeadersMiddleware_UI(t *testing.T) {
 	assert.Equal(t, "0", resp.Header.Get("X-XSS-Protection"))
 	assert.Equal(t, "strict-origin-when-cross-origin", resp.Header.Get("Referrer-Policy"))
 	// UI has relaxed CSP
-	assert.Contains(t, resp.Header.Get("Content-Security-Policy"), "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net")
+	assert.Contains(t, resp.Header.Get("Content-Security-Policy"), "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net")
 	assert.Contains(t, resp.Header.Get("Content-Security-Policy"), "worker-src 'self' blob:")
 	assert.Contains(t, resp.Header.Get("Content-Security-Policy"), "frame-ancestors 'none'")
 

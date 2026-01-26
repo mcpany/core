@@ -38,12 +38,12 @@ func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 		if strings.HasPrefix(r.URL.Path, "/ui/") {
 			// UI-specific headers
 			// Matches ui/src/middleware.ts requirements:
-			// - script-src: Allows unsafe-eval (Monaco), unsafe-inline (Next.js), cdn.jsdelivr.net (Monaco)
+			// - script-src: Allows unsafe-eval (Monaco), cdn.jsdelivr.net (Monaco). Removed unsafe-inline for security.
 			// - style-src: Allows unsafe-inline (Next.js), cdn.jsdelivr.net
 			// - connect-src: Allows cdn.jsdelivr.net
 			// - worker-src: Allows blob: (Monaco)
 			// - frame-ancestors: none
-			w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://cdn.jsdelivr.net; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests")
+			w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://cdn.jsdelivr.net; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests")
 			w.Header().Set("X-Frame-Options", "DENY")
 
 			// For UI, we allow caching (do not set strict no-cache headers).

@@ -2112,7 +2112,17 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			if apiKey != "" {
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
-					requestKey = r.URL.Query().Get("api_key")
+					queryKey := r.URL.Query().Get("api_key")
+					if queryKey != "" {
+						if os.Getenv("MCPANY_DANGEROUS_ALLOW_QUERY_AUTH") == util.TrueStr {
+							logging.GetLogger().Warn("Allowing insecure API Key in query parameter (MCPANY_DANGEROUS_ALLOW_QUERY_AUTH=true). This is NOT RECOMMENDED for production.", "remote_addr", r.RemoteAddr)
+							requestKey = queryKey
+						} else {
+							logging.GetLogger().Error("Blocked insecure API Key in query parameter. To enable (INSECURE), set MCPANY_DANGEROUS_ALLOW_QUERY_AUTH=true", "remote_addr", r.RemoteAddr)
+							http.Error(w, "API Key in query parameter is not allowed for security reasons. Use X-API-Key header or Bearer token.", http.StatusForbidden)
+							return
+						}
+					}
 				}
 				if requestKey == "" {
 					authHeader := r.Header.Get("Authorization")
