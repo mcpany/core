@@ -413,7 +413,16 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	log.Debug("Executing tool")
 
 	// 1. Resolve Tool and Service Info
-	t, ok := tm.GetTool(req.ToolName)
+	var t Tool
+	var ok bool
+	// ⚡ Bolt Optimization: Use resolved tool if provided to avoid map lookup
+	if req.Tool != nil {
+		t = req.Tool
+		ok = true
+	} else {
+		t, ok = tm.GetTool(req.ToolName)
+	}
+
 	if !ok {
 		log.Error("Tool not found")
 
