@@ -26,7 +26,8 @@ import {
   ShieldCheck,
   Zap,
   ClipboardCheck,
-  Bug
+  Bug,
+  Cable
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -106,6 +107,11 @@ const platformItems = [
     title: "Marketplace",
     url: "/marketplace",
     icon: ShoppingBag,
+  },
+  {
+    title: "Integrations",
+    url: "/integrations",
+    icon: Cable,
   },
 ]
 

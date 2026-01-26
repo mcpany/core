@@ -648,4 +648,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
   });
 
+  test('Integrations Screenshots', async ({ page }) => {
+      await page.goto('/integrations');
+      await page.waitForTimeout(1000);
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'integrations.png'), fullPage: true });
+      // Legacy alias
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'integrations_page.png'), fullPage: true });
+  });
+
 });
