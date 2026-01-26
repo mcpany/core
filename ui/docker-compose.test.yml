@@ -58,14 +58,14 @@ services:
     depends_on:
       server:
         condition: service_healthy
-      ui-http-echo-server:
-        condition: service_started
+      # ui-http-echo-server:
+      #   condition: service_started
     networks:
       default:
 
-  ui-http-echo-server:
-    image: mcpany/http-echo-server:latest
-    ports:
-      - "5678:5678"
-    command:
-      - "--port=5678"
+  # ui-http-echo-server:
+  #   image: mcpany/http-echo-server:latest
+  #   ports:
+  #     - "5678:5678"
+  #   command:
+  #     - "--port=5678"

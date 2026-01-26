@@ -749,4 +749,30 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
   });
 
+  test('Bulk Import Screenshots', async ({ page }) => {
+      await page.goto('/services');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+
+      // Open Bulk Import Dialog
+      await page.getByRole('button', { name: 'Bulk Import' }).click();
+      await expect(page.getByText('Bulk Service Import')).toBeVisible();
+      await page.waitForTimeout(500);
+
+      // Screenshot Input Step
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'bulk_import_input.png') });
+
+      // Enter Data to trigger Preview
+      const testData = [{ name: 'test-service', httpService: { address: 'http://localhost' } }];
+      await page.getByPlaceholder('[{"name": "service1",').fill(JSON.stringify(testData));
+
+      // Click Preview
+      await page.getByRole('button', { name: 'Preview Import' }).click();
+      await expect(page.getByText(/Found.*services/)).toBeVisible();
+      await page.waitForTimeout(500);
+
+      // Screenshot Preview Step
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'bulk_import_preview.png') });
+  });
+
 });

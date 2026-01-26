@@ -55,6 +55,18 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 - **On**: Service is active and receiving traffic.
 - **Off**: Service is disconnected; dependent tools will be unavailable.
 
+### 5. Bulk Service Import
+
+You can import multiple services at once using a JSON configuration file or a URL (for OpenAPI specs or remote configs).
+
+1. Click the **"Bulk Import"** button in the top-right corner.
+2. Enter the URL of an OpenAPI spec or paste a JSON array of service configurations.
+3. Click **"Preview Import"** to review the services found.
+4. Click **"Confirm Import"** to register them all.
+
+![Bulk Import Input](../screenshots/bulk_import_input.png)
+![Bulk Import Preview](../screenshots/bulk_import_preview.png)
+
 ## Technical Details
 
 ### Supported Service Types
