@@ -221,11 +221,31 @@ export function PlaygroundClientPro() {
               arguments: toolArgs
           }, isDryRun);
 
+          // Find previous execution for diffing
+          let previousResult: unknown | undefined;
+          const reversedMessages = [...messages].reverse();
+          const previousCall = reversedMessages.find(m =>
+              m.type === "tool-call" &&
+              m.toolName === toolName &&
+              JSON.stringify(m.toolArgs) === JSON.stringify(toolArgs)
+          );
+
+          if (previousCall) {
+              const callIndex = messages.findIndex(m => m.id === previousCall.id);
+              if (callIndex !== -1 && callIndex + 1 < messages.length) {
+                  const resultMsg = messages[callIndex + 1];
+                  if (resultMsg.type === "tool-result") {
+                      previousResult = resultMsg.toolResult;
+                  }
+              }
+          }
+
           setMessages(prev => [...prev, {
               id: Date.now().toString() + "-result",
               type: "tool-result",
               toolName: toolName,
               toolResult: result,
+              previousResult,
               timestamp: new Date(),
           }]);
 
