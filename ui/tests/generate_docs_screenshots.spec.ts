@@ -602,4 +602,28 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
   });
 
+  test('Service Diagnostics Tab Screenshots', async ({ page }) => {
+    // Navigate to a healthy service
+    await page.goto('/upstream-services/postgres-primary');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click Diagnostics Tab
+    await page.getByRole('tab', { name: 'Diagnostics' }).click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_diagnostics_tab.png') });
+
+    // Mock successful validation
+    await page.route('**/api/v1/services/validate', async route => {
+        await route.fulfill({
+            json: { valid: true }
+        });
+    });
+
+    // Run Diagnostics
+    await page.getByRole('button', { name: 'Run Diagnostics' }).click();
+    await page.waitForTimeout(1000); // Wait for results
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_diagnostics_success.png') });
+  });
+
 });

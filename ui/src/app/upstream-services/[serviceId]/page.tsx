@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Power, Trash2, Save, Play } from "lucide-react";
+import { Loader2, ArrowLeft, Power, Trash2, Save, Play, Activity, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,7 @@ export default function UpstreamServiceDetailPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [testing, setTesting] = useState(false);
+    const [diagnosticResult, setDiagnosticResult] = useState<{ valid: boolean; error?: string; details?: string } | null>(null);
 
     // Fetch Service
     useEffect(() => {
@@ -91,9 +92,11 @@ export default function UpstreamServiceDetailPage() {
     const handleTestConnection = async () => {
         if (!service) return;
         setTesting(true);
+        setDiagnosticResult(null);
         try {
             // validateService sends the current config state to the backend for validation
             const result = await apiClient.validateService(service);
+            setDiagnosticResult(result);
             if (result.valid) {
                 toast({ title: "Connection Successful", description: "Service is reachable and configured correctly." });
             } else {
@@ -104,7 +107,9 @@ export default function UpstreamServiceDetailPage() {
                 });
             }
         } catch (e) {
-            toast({ title: "Validation Error", description: String(e), variant: "destructive" });
+            const errStr = String(e);
+            setDiagnosticResult({ valid: false, error: "Validation Error", details: errStr });
+            toast({ title: "Validation Error", description: errStr, variant: "destructive" });
         } finally {
             setTesting(false);
         }
@@ -160,6 +165,7 @@ export default function UpstreamServiceDetailPage() {
             <Tabs defaultValue="overview" className="w-full">
                 <TabsList>
                     <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
                     <TabsTrigger value="config">Configuration</TabsTrigger>
                     <TabsTrigger value="auth">Authentication</TabsTrigger>
                     <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
@@ -198,6 +204,86 @@ export default function UpstreamServiceDetailPage() {
                     </div>
                 </TabsContent>
 
+                {/* DIAGNOSTICS TAB */}
+                <TabsContent value="diagnostics" className="mt-6 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Diagnostics & Health</CardTitle>
+                            <CardDescription>Check connectivity and validate configuration.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Status Card */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 border rounded-lg flex items-center gap-4 bg-card">
+                                    <div className={`p-2 rounded-full ${service.lastError ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'}`}>
+                                        {service.lastError ? <AlertTriangle className="h-6 w-6" /> : <Activity className="h-6 w-6" />}
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold">Service Status</div>
+                                        <div className="text-sm text-muted-foreground">
+                                            {service.lastError ? "Error Detected" : "Healthy"}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {service.lastError && (
+                                <div className="p-4 bg-destructive/10 text-destructive rounded-md border border-destructive/20">
+                                    <div className="font-semibold mb-1 flex items-center gap-2">
+                                        <XCircle className="h-4 w-4" />
+                                        Last Error
+                                    </div>
+                                    <pre className="text-xs whitespace-pre-wrap mt-2 font-mono bg-background/50 p-2 rounded">{service.lastError}</pre>
+                                </div>
+                            )}
+
+                            <Separator />
+
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-medium">Connectivity Check</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Verify that the MCP Any server can reach this upstream service.
+                                        </p>
+                                    </div>
+                                    <Button onClick={handleTestConnection} disabled={testing}>
+                                        {testing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Run Diagnostics
+                                    </Button>
+                                </div>
+
+                                {diagnosticResult && (
+                                    <div className={`p-4 rounded-md border ${diagnosticResult.valid ? 'bg-green-50/50 border-green-200 dark:bg-green-900/10 dark:border-green-900' : 'bg-red-50/50 border-red-200 dark:bg-red-900/10 dark:border-red-900'}`}>
+                                        <div className="flex items-start gap-3">
+                                            {diagnosticResult.valid ? (
+                                                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+                                            ) : (
+                                                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+                                            )}
+                                            <div className="space-y-1">
+                                                <div className={`font-semibold ${diagnosticResult.valid ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                                                    {diagnosticResult.valid ? "Configuration Valid & Reachable" : "Check Failed"}
+                                                </div>
+                                                {diagnosticResult.error && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {diagnosticResult.error}
+                                                    </p>
+                                                )}
+                                                {diagnosticResult.details && (
+                                                    <pre className="text-xs mt-2 p-2 bg-background/50 rounded border text-muted-foreground whitespace-pre-wrap">
+                                                        {diagnosticResult.details}
+                                                    </pre>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
                 {/* CONFIGURATION TAB */}
                 <TabsContent value="config" className="mt-6">
                     <Card>
@@ -232,7 +318,11 @@ export default function UpstreamServiceDetailPage() {
                             )}
                             {/* Add other service type configs here */}
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="gap-2">
+                            <Button variant="outline" onClick={handleTestConnection} disabled={testing}>
+                                {testing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                                Validate
+                            </Button>
                             <Button onClick={handleSave} disabled={saving}>
                                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 <Save className="mr-2 h-4 w-4" />
