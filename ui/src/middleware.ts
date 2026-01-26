@@ -25,6 +25,7 @@ export function middleware(request: NextRequest) {
     const url = new URL(request.url);
     const newUrl = new URL(pathname + url.search, backendUrl);
 
+    // Inject API Key if present
     if (process.env.MCPANY_API_KEY) {
       requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
     }
