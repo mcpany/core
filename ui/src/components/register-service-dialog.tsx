@@ -23,6 +23,7 @@ import { Credential } from "@proto/config/v1/auth";
 import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
+import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { cn } from "@/lib/utils";
 
@@ -407,26 +408,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                 </div>
             </div>
         ) : view === "templates" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {SERVICE_TEMPLATES.map((template) => {
-                    const Icon = template.icon;
-                    return (
-                        <div
-                            key={template.id}
-                            className="flex flex-col items-start p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                            onClick={() => handleTemplateSelect(template)}
-                        >
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-primary/10 rounded-md text-primary">
-                                    <Icon className="h-5 w-5" />
-                                </div>
-                                <h3 className="font-semibold">{template.name}</h3>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{template.description}</p>
-                        </div>
-                    );
-                })}
-            </div>
+            <ServiceTemplateSelector onSelect={handleTemplateSelect} />
         ) : view === "template-config" ? (
             <form onSubmit={handleTemplateConfigSubmit} className="space-y-4 mt-4">
                 {selectedTemplate?.fields?.map((field) => (
