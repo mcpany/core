@@ -1,6 +1,6 @@
 # Context Optimizer Middleware
 
-The Context Optimizer middleware automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+The Context Optimizer middleware (Roadmap: "Context Usage Estimator") automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
 
 ## Configuration
 
