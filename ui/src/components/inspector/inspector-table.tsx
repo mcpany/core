@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trace, SpanStatus } from "@/app/api/traces/route";
+import { Trace, SpanStatus } from "@/types/trace";
 import {
   Table,
   TableBody,
