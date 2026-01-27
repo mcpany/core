@@ -241,8 +241,7 @@ export function LogStream() {
   const searchParams = useSearchParams()
   const initialSource = searchParams.get("source") || "ALL"
 
-  const initialLevel = searchParams.get("level") || "ALL"
-  const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
+  const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
   const [filterSource, setFilterSource] = React.useState<string>(initialSource)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)

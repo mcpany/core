@@ -149,23 +149,6 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
 
     > **Tip:** Need detailed logs? Add the `--debug` flag to the end of the `run` command.
 
-    **Option 3: Local Installation (from Source)**
-
-    Run the server directly on your machine without Docker.
-
-    ```bash
-    # Clone the repository
-    git clone https://github.com/mcpany/core.git
-    cd core
-
-    # Install dependencies and build
-    make prepare
-    make build
-
-    # Run the server
-    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
-    ```
-
 2.  **Connect Gemini CLI:**
 
     ```bash
