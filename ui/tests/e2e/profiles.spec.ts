@@ -40,6 +40,8 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     // assert headers
     await expect(page.locator('h1, h2').filter({ hasText: 'Profiles' }).first()).toBeVisible();
 
+    // Wait for profiles API call to finish
+    await page.waitForResponse(resp => resp.url().includes('/api/v1/profiles') && resp.status() === 200);
 
     // Click Create
     const createBtn = page.getByRole('button', { name: /Create|Plus/i });

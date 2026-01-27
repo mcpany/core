@@ -78,7 +78,7 @@ function OAuthCallbackContent() {
                     setTimeout(() => window.close(), 1500);
                 } else {
                     // Redirect back to the originating page
-                    setTimeout(() => router.push(context.returnPath || "/upstream-services"), 1500);
+                    setTimeout(() => router.push(context.returnPath || "/services"), 1500);
                 }
 
             } catch (e: any) {
@@ -119,10 +119,10 @@ function OAuthCallbackContent() {
                             {errorMsg || "Unknown error occurred"}
                         </p>
                         <button
-                            onClick={() => router.push("/upstream-services")}
+                            onClick={() => router.push("/services")}
                             className="px-4 py-2 text-sm font-medium text-white bg-primary rounded hover:bg-primary/90"
                         >
-                            Back to Upstream Services
+                            Back to Services
                         </button>
                     </div>
                 )}

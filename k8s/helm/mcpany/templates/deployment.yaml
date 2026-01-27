@@ -46,17 +46,6 @@ spec:
               value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
             - name: REDIS_URL
               value: "redis://{{ include "mcpany.fullname" . }}-redis:6379"
-            {{- if .Values.apiKey }}
-            - name: MCPANY_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "mcpany.fullname" . }}-secret
-                  key: "api-key"
-            {{- end }}
-            {{- range $key, $val := .Values.env }}
-            - name: {{ $key }}
-              value: {{ $val | quote }}
-            {{- end }}
           ports:
             - name: jsonrpc
               containerPort: {{ .Values.service.jsonrpcPort }}
