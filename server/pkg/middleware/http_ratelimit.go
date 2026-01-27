@@ -63,8 +63,9 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //   - http.Handler: An http.Handler that enforces rate limiting.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip := util.ExtractIP(r.RemoteAddr)
+		var ip string
 
+		// If we trust the proxy, check X-Forwarded-For first
 		if m.trustProxy {
 			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 				// Use the last IP in the list (the IP that connected to the trusted proxy).
@@ -77,6 +78,13 @@ func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 					ip = strings.TrimSpace(xff)
 				}
 			}
+		}
+
+		// Fallback to RemoteAddr if no X-Forwarded-For or not trusting proxy,
+		// or if X-Forwarded-For was empty/whitespace.
+		// This lazy evaluation avoids parsing RemoteAddr when X-Forwarded-For is used.
+		if ip == "" {
+			ip = util.ExtractIP(r.RemoteAddr)
 		}
 
 		var limiter *rate.Limiter

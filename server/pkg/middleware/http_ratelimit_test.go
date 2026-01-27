@@ -124,3 +124,44 @@ func TestHTTPRateLimitMiddleware_NoTrustProxy(t *testing.T) {
 	// This confirms that without TrustProxy, rate limiting is shared (Vulnerable behavior if behind proxy)
 	assert.Equal(t, http.StatusTooManyRequests, rec2.Code, "User 2 Request 1 should be blocked due to shared IP")
 }
+
+func TestHTTPRateLimitMiddleware_TrustProxy_EmptyXFF(t *testing.T) {
+	// 5 RPS, burst 5, Trust Proxy Enabled
+	limiter := NewHTTPRateLimitMiddleware(5, 5, WithTrustProxy(true))
+	handler := limiter.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	remoteAddr := "10.0.0.1:1234"
+
+	// Request with empty X-Forwarded-For should fall back to RemoteAddr
+	req := httptest.NewRequest("GET", "/", nil)
+	req.RemoteAddr = remoteAddr
+	req.Header.Set("X-Forwarded-For", "")
+
+	// Consume 5 requests
+	for i := 0; i < 5; i++ {
+		rec := httptest.NewRecorder()
+		// Re-use request? httptest.NewRequest returns new request.
+		// But limiter uses map.
+		reqCopy := req.Clone(req.Context())
+		handler.ServeHTTP(rec, reqCopy)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	}
+
+	// 6th request blocked (based on RemoteAddr)
+	reqBlocked := req.Clone(req.Context())
+	recBlocked := httptest.NewRecorder()
+	handler.ServeHTTP(recBlocked, reqBlocked)
+	assert.Equal(t, http.StatusTooManyRequests, recBlocked.Code)
+
+	// Request with WHITESPACE X-Forwarded-For should also fall back to RemoteAddr
+	reqws := httptest.NewRequest("GET", "/", nil)
+	reqws.RemoteAddr = remoteAddr
+	reqws.Header.Set("X-Forwarded-For", "   ")
+
+	recws := httptest.NewRecorder()
+	handler.ServeHTTP(recws, reqws)
+	// Should be blocked because it shares RemoteAddr which is already rate limited
+	assert.Equal(t, http.StatusTooManyRequests, recws.Code, "Should block based on RemoteAddr even if XFF is whitespace")
+}
