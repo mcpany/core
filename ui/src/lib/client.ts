@@ -178,13 +178,21 @@ export interface Metric {
     subLabel?: string;
 }
 
-
+/**
+ * Represents the current status of the system.
+ */
 export interface SystemStatus {
+    /** The number of seconds the server has been running. */
     uptime_seconds: number;
+    /** The number of currently active connections. */
     active_connections: number;
+    /** The port number where the HTTP server is bound. */
     bound_http_port: number;
+    /** The port number where the gRPC server is bound. */
     bound_grpc_port: number;
+    /** The version string of the server. */
     version: string;
+    /** A list of security warnings, if any. */
     security_warnings: string[];
 }
 

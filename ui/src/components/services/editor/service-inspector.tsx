@@ -17,6 +17,13 @@ interface ServiceInspectorProps {
     service: UpstreamServiceConfig;
 }
 
+/**
+ * Visualizes live traffic traces for a specific service.
+ *
+ * @param props - The component props.
+ * @param props.service - The service configuration to inspect.
+ * @returns The rendered service inspector component.
+ */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {
         traces,

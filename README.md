@@ -81,7 +81,7 @@ The **MCP Any UI** provides a powerful interface for managing your server, servi
 
 ### Dashboard
 Real-time metrics and system health at a glance.
-![Dashboard](ui/docs/screenshots/dashboard.png)
+![Dashboard](ui/docs/screenshots/dashboard_overview.png)
 
 ### Services Management
 Manage upstream services (HTTP, gRPC, MCP, CMD), toggle them on/off, and configure their settings.

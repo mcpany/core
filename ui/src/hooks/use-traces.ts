@@ -10,6 +10,12 @@ interface UseTracesOptions {
     initialPaused?: boolean;
 }
 
+/**
+ * Hook to subscribe to real-time execution traces via WebSocket.
+ *
+ * @param options - Configuration options for the trace subscription.
+ * @returns An object containing the current traces, loading state, connection status, and controls.
+ */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
