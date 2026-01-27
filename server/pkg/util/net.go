@@ -16,6 +16,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/mcpany/core/server/pkg/validation"
 )
 
 // IPResolver defines an interface for looking up IP addresses.
@@ -106,6 +108,23 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		}
 		if !d.AllowPrivate && IsPrivateNetworkIP(ip) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to private ip %s", host, ip)
+		}
+
+		// Check for IPv4-compatible IPv6 addresses (::a.b.c.d)
+		if validation.IsIPv4Compatible(ip) {
+			ip4 := ip[12:16]
+			// Loopback (127.0.0.0/8)
+			if ip4[0] == 127 {
+				if !d.AllowLoopback {
+					return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to loopback ip %s", host, ip)
+				}
+			}
+			// Link-local (169.254.0.0/16)
+			if ip4[0] == 169 && ip4[1] == 254 {
+				if !d.AllowLinkLocal {
+					return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to link-local ip %s", host, ip)
+				}
+			}
 		}
 	}
 
