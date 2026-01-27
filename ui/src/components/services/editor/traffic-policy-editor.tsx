@@ -21,6 +21,7 @@ interface TrafficPolicyEditorProps {
 export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorProps) {
 
     // --- Rate Limit Helpers ---
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateRateLimit = (updates: any) => {
         onChange({
             rateLimit: {
@@ -40,6 +41,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
     };
 
     // --- Resilience Helpers ---
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateResilience = (updates: any) => {
         const currentResilience = service.resilience || {
             timeout: undefined,
@@ -54,6 +56,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateRetryPolicy = (updates: any) => {
         const currentResilience = service.resilience || {};
         const currentRetry = currentResilience.retryPolicy || {
@@ -74,6 +77,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateCircuitBreaker = (updates: any) => {
         const currentResilience = service.resilience || {};
         const currentBreaker = currentResilience.circuitBreaker || {
@@ -95,6 +99,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
     };
 
     // --- Connection Pool Helpers ---
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateConnectionPool = (updates: any) => {
         const currentPool = service.connectionPool || {
             maxConnections: 0,

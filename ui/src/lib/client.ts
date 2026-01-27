@@ -1404,6 +1404,7 @@ export const apiClient = {
         // Backend returns generic UpstreamServiceConfig list.
         // Map snake_case to camelCase
         const list = Array.isArray(data) ? data : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return list.map((s: any) => ({
             ...s,
             // Reuse logic? Or copy/paste mapping
@@ -1418,8 +1419,36 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
-            rateLimit: s.rate_limit,
-            resilience: s.resilience,
+            rateLimit: s.rate_limit ? {
+                isEnabled: s.rate_limit.is_enabled,
+                requestsPerSecond: s.rate_limit.requests_per_second,
+                burst: s.rate_limit.burst,
+                storage: s.rate_limit.storage,
+                keyBy: s.rate_limit.key_by,
+                costMetric: s.rate_limit.cost_metric,
+                redis: s.rate_limit.redis,
+                toolLimits: s.rate_limit.tool_limits,
+            } : undefined,
+            resilience: s.resilience ? {
+                timeout: s.resilience.timeout,
+                retryPolicy: s.resilience.retry_policy ? {
+                    numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                    baseBackoff: s.resilience.retry_policy.base_backoff,
+                    maxBackoff: s.resilience.retry_policy.max_backoff,
+                    maxElapsedTime: s.resilience.retry_policy.max_elapsed_time,
+                } : undefined,
+                circuitBreaker: s.resilience.circuit_breaker ? {
+                    failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                    consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                    openDuration: s.resilience.circuit_breaker.open_duration,
+                    halfOpenRequests: s.resilience.circuit_breaker.half_open_requests,
+                } : undefined,
+            } : undefined,
+            connectionPool: s.connection_pool ? {
+                maxConnections: s.connection_pool.max_connections,
+                maxIdleConnections: s.connection_pool.max_idle_connections,
+                idleTimeout: s.connection_pool.idle_timeout,
+            } : undefined,
         }));
     },
 
