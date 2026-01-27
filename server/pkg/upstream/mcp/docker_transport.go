@@ -48,6 +48,7 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 // running inside a Docker container. It manages the container lifecycle.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
+	ServiceName string
 }
 
 // Connect establishes a connection to the service within the Docker container.
@@ -58,6 +59,10 @@ type DockerTransport struct {
 // Returns an error if the operation fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
+	if t.ServiceName != "" {
+		log = log.With("component", t.ServiceName)
+	}
+
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)

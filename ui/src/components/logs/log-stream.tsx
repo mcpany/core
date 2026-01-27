@@ -24,6 +24,7 @@ import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic";
 
 import { cn } from "@/lib/utils"
+import { useLogStream, LogEntry } from "@/hooks/use-log-stream"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -48,27 +49,6 @@ const JsonViewer = dynamic(() => import("./json-viewer"), {
   ),
   ssr: false,
 });
-
-/**
- * LogLevel type definition.
- */
-export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
-
-/**
- * LogEntry type definition.
- */
-export interface LogEntry {
-  id: string
-  timestamp: string
-  level: LogLevel
-  message: string
-  source?: string
-  metadata?: Record<string, unknown>
-  // Optimization: Pre-computed lowercase string for search performance
-  searchStr?: string
-  // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
-  formattedTime?: string
-}
 
 /**
  * Helper component to highlight search terms within text.
@@ -98,15 +78,7 @@ const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp
 });
 HighlightText.displayName = 'HighlightText';
 
-// ⚡ Bolt Optimization: Reuse DateTimeFormat instance to avoid recreating it for every log message.
-// This improves performance significantly (4.5x in benchmarks) when processing high-frequency logs.
-const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-}) : null;
-
-const getLevelColor = (level: LogLevel) => {
+const getLevelColor = (level: string) => {
   switch (level) {
     case "INFO": return "text-blue-400"
     case "WARN": return "text-yellow-400"
@@ -244,15 +216,7 @@ LogRow.displayName = 'LogRow'
  * @returns The rendered component.
  */
 export function LogStream() {
-  const [logs, setLogs] = React.useState<LogEntry[]>([])
-  const [isPaused, setIsPaused] = React.useState(false)
-  // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
-  // without triggering a reconnection or having a stale closure.
-  const isPausedRef = React.useRef(isPaused)
-
-  React.useEffect(() => {
-    isPausedRef.current = isPaused
-  }, [isPaused])
+  const { logs, isConnected, isPaused, setIsPaused, clearLogs } = useLogStream()
 
   const searchParams = useSearchParams()
   const initialSource = searchParams.get("source") || "ALL"
@@ -261,7 +225,6 @@ export function LogStream() {
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
   const [filterSource, setFilterSource] = React.useState<string>(initialSource)
   const [searchQuery, setSearchQuery] = React.useState("")
-  const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
 
@@ -273,94 +236,6 @@ export function LogStream() {
   }, [deferredSearchQuery]);
 
   const scrollRef = React.useRef<HTMLDivElement>(null)
-  const wsRef = React.useRef<WebSocket | null>(null)
-  // Optimization: Buffer for incoming logs to support batch processing
-  const logBufferRef = React.useRef<LogEntry[]>([])
-
-  React.useEffect(() => {
-    // Optimization: Flush buffer periodically to limit re-renders
-    const flushInterval = setInterval(() => {
-      if (logBufferRef.current.length > 0) {
-        setLogs((prev) => {
-          const buffer = logBufferRef.current
-          logBufferRef.current = [] // Clear buffer
-          const MAX_LOGS = 1000
-
-          // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
-          // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
-
-          // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
-          }
-
-          // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
-          }
-
-          // Case 3: Need to trim from prev to make room for buffer
-          // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
-        })
-      }
-    }, 100) // Flush every 100ms
-
-    const connect = () => {
-      // Determine protocol (ws or wss)
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const host = window.location.host
-
-      const wsUrl = `${protocol}//${host}/api/v1/ws/logs`
-      const ws = new WebSocket(wsUrl)
-
-      ws.onopen = () => {
-        setIsConnected(true)
-      }
-
-      ws.onmessage = (event) => {
-        // Optimization: check against the ref to ensure we respect the current pause state
-        if (isPausedRef.current) return
-        if (document.hidden) return
-
-        try {
-          const newLog: LogEntry = JSON.parse(event.data)
-          // Pre-compute search string
-          newLog.searchStr = (newLog.message + " " + (newLog.source || "")).toLowerCase()
-          // Optimization: Pre-compute formatted time to avoid expensive Date parsing during render.
-          // Uses cached timeFormatter for better performance.
-          newLog.formattedTime = timeFormatter
-            ? timeFormatter.format(new Date(newLog.timestamp))
-            : new Date(newLog.timestamp).toLocaleTimeString()
-
-          // Optimization: Add to buffer instead of calling setLogs directly
-          logBufferRef.current.push(newLog)
-        } catch (e) {
-          console.error("Failed to parse log message", e)
-        }
-      }
-
-      ws.onclose = () => {
-        setIsConnected(false)
-        setTimeout(connect, 3000)
-      }
-
-      ws.onerror = (err) => {
-        console.error("WebSocket error", err)
-        ws.close()
-      }
-
-      wsRef.current = ws
-    }
-
-    connect()
-
-    return () => {
-      wsRef.current?.close()
-      clearInterval(flushInterval)
-    }
-  }, []) // Empty dependency array -> run once
 
   // Auto-scroll
   // Optimization: Cache the viewport element to avoid frequent DOM queries (querySelector).
@@ -417,8 +292,6 @@ export function LogStream() {
       return matchesLevel && matchesSource && matchesSearch
     })
   }, [logs, filterLevel, filterSource, deferredSearchQuery])
-
-  const clearLogs = () => setLogs([])
 
   const downloadLogs = () => {
     const content = logs.map(l => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')

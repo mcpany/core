@@ -9,11 +9,13 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
+import { useLogStream } from "@/hooks/use-log-stream";
 
 interface DiagnosticStep {
   id: string;
@@ -46,6 +48,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
   const [steps, setSteps] = useState<DiagnosticStep[]>([]);
   const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const { logs: liveLogs } = useLogStream({ sourceFilter: service.id || service.name });
 
   const resetSteps = () => {
     const initialSteps: DiagnosticStep[] = [
@@ -360,39 +363,86 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
             {/* Logs View & Diagnosis Report */}
             <div className="col-span-2 flex flex-col h-full bg-zinc-950/90 dark:bg-zinc-950/50 backdrop-blur-sm">
-                {/* Logs */}
-                <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs leading-relaxed">
-                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10 text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                            <Terminal className="h-3 w-3" />
-                            <span className="font-semibold tracking-wide uppercase text-[10px]">Diagnostic Console</span>
-                        </div>
-                        {steps.flatMap(s => s.logs).length > 0 && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-muted-foreground hover:text-white hover:bg-white/10"
-                                onClick={copyLogs}
+                <Tabs defaultValue="diagnostics" className="flex-1 flex flex-col h-full overflow-hidden">
+                    <div className="flex items-center justify-between px-4 pt-2 border-b border-white/10 shrink-0 bg-muted/10">
+                        <TabsList className="h-9 bg-transparent p-0 w-auto justify-start">
+                            <TabsTrigger
+                                value="diagnostics"
+                                className="h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-4 text-xs font-medium bg-transparent"
                             >
-                                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
-                        )}
-                    </div>
-                    <ScrollArea className="flex-1">
-                        <div className="space-y-1">
-                            {steps.flatMap(s => s.logs).length === 0 ? (
-                                <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
-                            ) : (
-                                steps.flatMap(s => s.logs).map((log, i) => (
-                                    <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
-                                ))
-                            )}
-                            {isRunning && (
-                                <div className="animate-pulse">_</div>
+                                <Terminal className="w-3 h-3 mr-2" />
+                                Diagnostics
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="live-logs"
+                                className="h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary px-4 text-xs font-medium bg-transparent"
+                            >
+                                <Activity className="w-3 h-3 mr-2" />
+                                Live Server Logs
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <div className="flex items-center">
+                            {steps.flatMap(s => s.logs).length > 0 && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-muted-foreground hover:text-white hover:bg-white/10"
+                                    onClick={copyLogs}
+                                    title="Copy Logs"
+                                >
+                                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                </Button>
                             )}
                         </div>
-                    </ScrollArea>
-                </div>
+                    </div>
+
+                    <TabsContent value="diagnostics" className="flex-1 flex flex-col overflow-hidden mt-0 p-0">
+                        <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs leading-relaxed">
+                            <ScrollArea className="flex-1">
+                                <div className="space-y-1">
+                                    {steps.flatMap(s => s.logs).length === 0 ? (
+                                        <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
+                                    ) : (
+                                        steps.flatMap(s => s.logs).map((log, i) => (
+                                            <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
+                                        ))
+                                    )}
+                                    {isRunning && (
+                                        <div className="animate-pulse">_</div>
+                                    )}
+                                </div>
+                            </ScrollArea>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="live-logs" className="flex-1 flex flex-col overflow-hidden mt-0 p-0">
+                         <div className="flex-1 overflow-hidden flex flex-col p-4 text-gray-300 font-mono text-xs leading-relaxed">
+                            <ScrollArea className="flex-1">
+                                <div className="space-y-1">
+                                    {liveLogs.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 italic py-10">
+                                            <p>No live logs received from {service.name} yet...</p>
+                                            <p className="text-[10px] mt-2 opacity-70">Logs will appear here when the service writes to stderr/stdout.</p>
+                                        </div>
+                                    ) : (
+                                        liveLogs.map((log) => (
+                                            <div key={log.id} className="break-all whitespace-pre-wrap flex gap-2 border-b border-white/5 pb-0.5 mb-0.5 last:border-0">
+                                                <span className="text-muted-foreground shrink-0 w-16 opacity-50">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                                <span className={cn(
+                                                    "shrink-0 w-10 font-bold",
+                                                    log.level === 'ERROR' ? "text-red-400" :
+                                                    log.level === 'WARN' ? "text-yellow-400" : "text-blue-400"
+                                                )}>{log.level}</span>
+                                                <span className="flex-1">{log.message}</span>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </ScrollArea>
+                         </div>
+                    </TabsContent>
+                </Tabs>
 
                 {/* Diagnosis Suggestion Card */}
                 {diagnosticResult && (

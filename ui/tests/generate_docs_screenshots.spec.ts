@@ -750,6 +750,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
       // Take screenshot of the modal
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
+
+      // Click on "Live Server Logs" tab
+      await page.getByText('Live Server Logs').click();
+      await page.waitForTimeout(500);
+
+      // Take screenshot of the modal with Live Logs tab
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_live_logs.png') });
   });
 
   test('Service Inspector Screenshots', async ({ page }) => {

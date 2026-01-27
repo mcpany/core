@@ -338,6 +338,7 @@ type mcpConnection struct {
 	httpClient      *http.Client
 	sessionRegistry *SessionRegistry
 	globalSettings  *configv1.GlobalSettings
+	serviceName     string
 }
 
 // withMCPClientSession is a helper function that abstracts the process of
@@ -352,6 +353,7 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 			if util.IsDockerSocketAccessible() {
 				transport = &DockerTransport{
 					StdioConfig: c.stdioConfig,
+					ServiceName: c.serviceName,
 				}
 			} else {
 				return fmt.Errorf("docker socket not accessible, but container_image is specified")
@@ -368,7 +370,8 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 				return fmt.Errorf("failed to build command from stdio config: %w", err)
 			}
 			transport = &StdioTransport{
-				Command: cmd,
+				Command:     cmd,
+				ServiceName: c.serviceName,
 			}
 		}
 	case c.bundleTransport != nil:
@@ -574,7 +577,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		useSudo = u.globalSettings.GetUseSudoForDocker()
 	}
 
-	transport, err := createStdioTransport(ctx, stdio, useSudo)
+	transport, err := createStdioTransport(ctx, stdio, useSudo, serviceID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -618,6 +621,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 			stdioConfig:     stdio,
 			sessionRegistry: u.sessionRegistry,
 			globalSettings:  u.globalSettings,
+			serviceName:     serviceID,
 		}
 		toolClient = conn
 		promptConnection = conn
@@ -627,12 +631,13 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
-func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (mcp.Transport, error) {
+func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool, serviceName string) (mcp.Transport, error) {
 	image := stdio.GetContainerImage()
 	if image != "" {
 		if util.IsDockerSocketAccessible() {
 			return &DockerTransport{
 				StdioConfig: stdio,
+				ServiceName: serviceName,
 			}, nil
 		}
 		return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
@@ -643,7 +648,8 @@ func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnectio
 	}
 	// Use our robust StdioTransport instead of mcp.CommandTransport
 	return &StdioTransport{
-		Command: cmd,
+		Command:     cmd,
+		ServiceName: serviceName,
 	}, nil
 }
 
@@ -1029,10 +1035,11 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 		}
 	} else {
 		conn := &mcpConnection{
-			client:      mcpSdkClient,
-			httpAddress: httpAddress,
-			httpClient:  httpClient,
+			client:          mcpSdkClient,
+			httpAddress:     httpAddress,
+			httpClient:      httpClient,
 			sessionRegistry: u.sessionRegistry,
+			serviceName:     serviceID,
 		}
 		toolClient = conn
 		promptConnection = conn

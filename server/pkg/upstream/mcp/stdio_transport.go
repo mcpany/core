@@ -20,7 +20,8 @@ import (
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
-	Command *exec.Cmd
+	Command     *exec.Cmd
+	ServiceName string
 }
 
 // Connect starts the command and returns a connection.
@@ -31,6 +32,9 @@ type StdioTransport struct {
 // Returns an error if the operation fails.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
+	if t.ServiceName != "" {
+		log = log.With("component", t.ServiceName)
+	}
 
 	stdin, err := t.Command.StdinPipe()
 	if err != nil {
