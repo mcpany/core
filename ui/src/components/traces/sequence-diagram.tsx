@@ -42,21 +42,6 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
     const msgGap = 40;
     const startY = 60;
 
-    // Helper to get or create actor
-    const getActorId = (span: Span): string => {
-        if (span.type === 'core') return 'core';
-        if (span.serviceName) return `service-${span.serviceName}`;
-        if (span.type === 'tool') return `tool-${span.name}`;
-        return `other-${span.id}`;
-    };
-
-    const getActorLabel = (span: Span): string => {
-        if (span.type === 'core') return 'MCP Core';
-        if (span.serviceName) return span.serviceName;
-        if (span.type === 'tool') return span.name;
-        return span.name;
-    };
-
     // 1. Identify Actors
     // Always start with User
     actorsMap.set('user', { id: 'user', label: 'User / Client', type: 'user', x: 50 });
@@ -65,8 +50,6 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
     // Traverse to find other actors and messages
     const traverse = (span: Span, parentActorId: string) => {
-        let currentActorId = parentActorId;
-
         // If this span represents a hop to another component, register it
         // Logic: Core spans stay on Core. Tool spans go to Tool actor. Service spans go to Service actor.
         // However, usually Core calls Tool.
