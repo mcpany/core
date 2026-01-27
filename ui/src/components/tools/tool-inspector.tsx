@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, RefreshCw } from "lucide-react";
+import { PlayCircle, Loader2, Zap, BarChart3, Activity, History as HistoryIcon, RefreshCw, RotateCcw } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ import { SchemaViewer } from "./schema-viewer";
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ToolInspectorProps {
   tool: ToolDefinition | null;
@@ -51,6 +52,8 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+  const [activeTab, setActiveTab] = useState("testing");
+  const { toast } = useToast();
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -127,6 +130,20 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
     }
   };
 
+  const handleReplay = (entry: AuditLogEntry) => {
+      try {
+          const args = JSON.parse(entry.arguments);
+          setInput(JSON.stringify(args, null, 2));
+      } catch (e) {
+          setInput(entry.arguments);
+      }
+      setActiveTab("testing");
+      toast({
+          title: "Arguments Loaded",
+          description: "Tool arguments from history have been loaded into the input.",
+      });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px]">
@@ -140,7 +157,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="testing" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="testing" className="flex items-center gap-2">
                     <Zap className="h-4 w-4" /> Test & Execute
@@ -248,19 +265,40 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                         <HistoryIcon className="h-4 w-4" /> Recent Timeline
                     </Label>
                     <div className="space-y-2">
-                         {recentStats.chartData.length === 0 && (
+                         {auditLogs.length === 0 && (
                             <div className="text-xs text-muted-foreground p-2 text-center border rounded bg-muted/10">
                                 No recent executions.
                             </div>
                         )}
-                        {/* Show last 5 reverse chronological */}
-                        {[...recentStats.chartData].reverse().slice(0, 5).map((h, i) => (
-                            <div key={i} className="flex items-center justify-between text-xs p-2 rounded border bg-muted/30">
-                                <div className="flex items-center gap-2">
-                                    <div className={cn("h-2 w-2 rounded-full", h.status === "success" ? "bg-green-500" : "bg-destructive")} />
-                                    <span className="font-medium">{h.time}</span>
+                        {/* Show last 10 reverse chronological */}
+                        {[...auditLogs]
+                            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                            .slice(0, 10)
+                            .map((log, i) => (
+                            <div key={i} className="flex items-center justify-between text-xs p-2 rounded border bg-muted/30 group hover:bg-muted/50 transition-colors">
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    <div className={cn("h-2 w-2 rounded-full shrink-0", !log.error ? "bg-green-500" : "bg-destructive")} />
+                                    <div className="flex flex-col min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-medium">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                            <span className="text-muted-foreground hidden sm:inline-block">{log.durationMs}ms</span>
+                                        </div>
+                                        <span className="text-muted-foreground truncate w-full max-w-[200px] font-mono text-[10px] opacity-80">
+                                            {log.arguments}
+                                        </span>
+                                    </div>
                                 </div>
-                                <span className="text-muted-foreground">{h.latency}ms</span>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={() => handleReplay(log)}
+                                        title="Replay Execution"
+                                    >
+                                        <RotateCcw className="h-3 w-3" />
+                                    </Button>
+                                </div>
                             </div>
                         ))}
                     </div>
