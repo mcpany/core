@@ -13,6 +13,7 @@ func TestCmdExeSingleQuoteVulnerability(t *testing.T) {
 	// Case 1: cmd.exe with single quotes - Dangerous input
 	// cmd.exe treats single quotes as literals, not grouping characters.
 	// Therefore, characters like '&' are interpreted as operators even inside single quotes.
+	// We must ensure these are blocked.
 
 	val := "& calc.exe"
 	arg := "echo '{{INPUT}}'"
