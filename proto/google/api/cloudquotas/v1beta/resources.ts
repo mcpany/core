@@ -74,7 +74,7 @@ export interface QuotaInfo {
    */
   name: string;
   /**
-   * The id of the quota, which is unique within the service.
+   * The id of the quota, which is unquie within the service.
    * For example, `CpusPerProjectPerRegion`
    */
   quotaId: string;

@@ -43,11 +43,11 @@ test.describe('Services Feature', () => {
         }
     });
 
-    await page.goto('/services');
+    await page.goto('/upstream-services');
   });
 
   test('should list services, allow toggle, and manage services', async ({ page }) => {
-    await expect(page.locator('h2')).toContainText('Services');
+    await expect(page.locator('h1')).toContainText('Services');
 
     // Verify services are listed
     await expect(page.getByText('Payment Gateway')).toBeVisible();

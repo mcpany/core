@@ -23,6 +23,14 @@ interface ResourceSafetyTableProps {
     onUpdate?: () => void;
 }
 
+/**
+ * ResourceSafetyTable displays a table of resources and allows toggling their enabled/disabled status.
+ *
+ * @param props - The component props.
+ * @param props.resources - The list of resources to display.
+ * @param props.onUpdate - Callback function called when a resource status is updated.
+ * @returns A table component for managing resource safety.
+ */
 export function ResourceSafetyTable({ resources, onUpdate }: ResourceSafetyTableProps) {
     const { toast } = useToast();
     const [loading, setLoading] = useState<Record<string, boolean>>({});
