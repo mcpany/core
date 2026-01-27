@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { analyzeTrace } from './diagnostics';
-import { Trace } from '@/types/trace';
+import { Trace, Span } from '@/types/trace';
 
 // Mock Trace Helper
 function createMockTrace(status: 'success' | 'error', errorMessage?: string, outputError?: string): Trace {
@@ -105,8 +105,13 @@ describe('analyzeTrace', () => {
     // Create deep chain
     let current = trace.rootSpan;
     for (let i = 0; i < 11; i++) {
-        const child: any = {
+        const child: Span = {
             id: `span-${i}`,
+            name: 'recursive-span',
+            type: 'tool',
+            startTime: Date.now(),
+            endTime: Date.now(),
+            status: 'success',
             children: []
         };
         current.children = [child];

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Trace } from "@/types/trace";
+import { Trace, Span } from "@/types/trace";
 
 /**
  * Diagnostic represents a finding from the trace analysis, indicating an error or warning.
@@ -36,9 +36,9 @@ export function analyzeTrace(trace: Trace): Diagnostic[] {
   const lowerMsg = errorMessage.toLowerCase();
 
   // Check for Recursion Depth
-  const getMaxDepth = (span: any, currentDepth = 1): number => {
+  const getMaxDepth = (span: Span, currentDepth = 1): number => {
       if (!span.children || span.children.length === 0) return currentDepth;
-      return Math.max(...span.children.map((child: any) => getMaxDepth(child, currentDepth + 1)));
+      return Math.max(...span.children.map((child: Span) => getMaxDepth(child, currentDepth + 1)));
   };
   const depth = getMaxDepth(rootSpan);
 
