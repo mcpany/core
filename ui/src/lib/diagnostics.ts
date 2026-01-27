@@ -5,6 +5,9 @@
 
 import { Trace } from "@/types/trace";
 
+/**
+ * Diagnostic represents a finding from the trace analysis, indicating an error or warning.
+ */
 export interface Diagnostic {
   type: 'error' | 'warning' | 'info';
   title: string;
