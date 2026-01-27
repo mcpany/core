@@ -22,14 +22,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SystemHealthCard } from "./system-health-card";
 
-interface Metric {
-  label: string;
-  value: string;
-  change?: string;
-  trend?: "up" | "down" | "neutral";
-  icon: string;
-  subLabel?: string;
-}
+// Metric interface now imported from @/lib/client
 
 const iconMap: Record<string, any> = {
   Users,
@@ -96,6 +89,10 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
 // Memoized to prevent unnecessary re-renders when parent components update.
 // This component manages its own state and data fetching, so it only needs to re-render
 // when its own state changes, not when the parent re-renders.
+import { apiClient, Metric } from "@/lib/client";
+
+// ... (Icon map and MetricItem remain same)
+
 /**
  * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
  * and the system health status. It fetches data periodically from the API.
@@ -108,15 +105,8 @@ export const MetricsOverview = memo(function MetricsOverview() {
   useEffect(() => {
     async function fetchMetrics() {
       try {
-        let url = "/api/v1/dashboard/metrics";
-        if (serviceId) {
-          url += `?serviceId=${encodeURIComponent(serviceId)}`;
-        }
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          setMetrics(data);
-        }
+        const data = await apiClient.getDashboardMetrics(serviceId);
+        setMetrics(data);
       } catch (error) {
         console.error("Failed to fetch metrics", error);
       }

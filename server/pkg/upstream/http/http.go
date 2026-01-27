@@ -122,14 +122,21 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	u.serviceID = sanitizedName
-	serviceID := u.serviceID
+	// Store new ID in local variable
+	serviceID := sanitizedName
 
 	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	if isReload {
-		toolManager.ClearToolsForService(serviceID)
+		// Clear tools using the OLD service ID if available
+		idToClear := u.serviceID
+		if idToClear == "" {
+			idToClear = serviceID
+		}
+		toolManager.ClearToolsForService(idToClear)
 	}
+
+	u.serviceID = serviceID
 
 	httpService := serviceConfig.GetHttpService()
 	if httpService == nil {
