@@ -19,10 +19,10 @@ func TestToString_BugFix(t *testing.T) {
 
 	val := math.Pow(2, 63)
 	str := ToString(val)
-	// It should NOT be negative. It should be scientific notation or a large positive number.
+	// It should NOT be negative. It should be digits.
 	assert.NotContains(t, str, "-", "ToString(2^63) should not be negative")
-	// Updated requirement (2026): Large numbers (>= MaxInt64) should use scientific notation for safety.
-	assert.Contains(t, str, "e+", "ToString(2^63) should be in scientific notation")
+	// Updated requirement (2026): Large numbers (>= MaxInt64) should use digits to support IDs.
+	assert.Equal(t, "9223372036854775808", str)
 }
 
 func TestToString_EdgeCases(t *testing.T) {
@@ -55,7 +55,7 @@ func TestToString_EdgeCases(t *testing.T) {
 			name:     "MaxInt64 float - precision loss",
 			// This value will be rounded to 2^63 when converted to float64, so it behaves like 2^63
 			input:    float64(math.MaxInt64),
-			expected: "9.223372036854776e+18",
+			expected: "9223372036854775808",
 		},
 		{
 			name:     "Largest safe float integer below MaxInt64",

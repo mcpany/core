@@ -553,8 +553,8 @@ func toStringRecursive(v any, depth int) string {
 				return strconv.FormatInt(int64(val), 10)
 			}
 			// For extremely large integers (> MaxInt64), use 'f' with 0 precision
-			// UNLESS it's truly massive where scientific is better.
-			// Let's use 'g' as it is standard and usually what's expected for JSON etc.
+			// to preserve all digits, as scientific notation is often undesirable for IDs.
+			return strconv.FormatFloat(val, 'f', 0, 64)
 		}
 		return strconv.FormatFloat(val, 'g', -1, 64)
 	case fmt.Stringer:

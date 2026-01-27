@@ -16,9 +16,9 @@ func TestToString_Float64_LargeValue(t *testing.T) {
 	var val float64 = 1e20
 
 	actual := ToString(val)
-	// Updated requirement: Use standard Go 'g' behavior.
-	// 1e20 in 'g' format is "1e+20"
-	assert.Equal(t, "1e+20", actual, "Should format 1e20 using scientific notation (standard 'g' behavior)")
+	// Updated requirement: Preserve digits for large integers (e.g. IDs)
+	// 1e20 is an integer in float64.
+	assert.Equal(t, "100000000000000000000", actual, "Should format 1e20 using decimal digits")
 }
 
 func TestToString_Float64_Boundary(t *testing.T) {
@@ -30,12 +30,12 @@ func TestToString_Float64_Boundary(t *testing.T) {
     // but float64(int64(9223372036854775807)) is 9.223372036854776e+18 which is exactly representable)
     // Actually MaxInt64 is NOT exactly representable in float64. 2^63-1.
     // float64 has 53 bits.
+    // float64(MaxInt64) rounds to 9223372036854775808 (2^63).
 
     actual := ToString(val)
-    // It should be either a decimal string representation of the casted value or scientific notation.
     // Given our updated logic, float64(math.MaxInt64) == 9223372036854775808 (2^63)
-    // which exceeds math.MaxInt64, so it should use 'g' and return "9.223372036854776e+18"
-    assert.Contains(t, actual, "e+")
+    // which exceeds math.MaxInt64, so it should use 'f' and return "9223372036854775808"
+    assert.Equal(t, "9223372036854775808", actual)
 }
 
 func TestToString_Float32_LargeInteger(t *testing.T) {

@@ -178,7 +178,7 @@ func TestToString(t *testing.T) {
 		{"uint64", uint64(123), "123"},
 		{"float32", float32(123.456), "123.456"},
 		{"float64", float64(123.456), "123.456"},
-		{"float64 MaxInt64", float64(math.MaxInt64), "9.223372036854776e+18"},
+		{"float64 MaxInt64", float64(math.MaxInt64), "9223372036854775808"},
 		{"fmt.Stringer", StringerStruct{"stringer"}, "stringer"},
 		{"default (struct)", struct{ A int }{A: 1}, "{1}"},
 		{"default (nil)", nil, "<nil>"},
