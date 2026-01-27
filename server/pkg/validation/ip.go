@@ -96,42 +96,65 @@ func IsNAT64Loopback(ip net.IP) bool {
 	return ip4[0] == 127
 }
 
-// IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
-func IsPrivateIP(ip net.IP) bool {
-	if ip.IsLoopback() || ip.IsUnspecified() {
+// IsLoopback checks if the IP is a loopback address.
+// It covers:
+// - Standard Loopback (127.0.0.0/8, ::1)
+// - NAT64 Loopback (64:ff9b::127.0.0.0/8)
+// - IPv4-compatible IPv6 Loopback (::127.0.0.0/8)
+func IsLoopback(ip net.IP) bool {
+	if ip.IsLoopback() {
 		return true
 	}
-
-	if ip4 := ip.To4(); ip4 != nil {
-		// Link-local (169.254.0.0/16)
-		if ip4[0] == 169 && ip4[1] == 254 {
-			return true
-		}
-		return IsPrivateNetworkIPv4(ip4)
-	}
-
-	// IPv6 Link-local (fe80::/10)
-	if len(ip) == net.IPv6len && ip[0] == 0xfe && ip[1]&0xc0 == 0x80 {
+	if IsNAT64Loopback(ip) {
 		return true
 	}
-
-	// Check for IPv4-compatible IPv6 addresses (::a.b.c.d) for Loopback/Link-local
 	if IsIPv4Compatible(ip) {
 		ip4 := ip[12:16]
-		// Loopback (127.0.0.0/8)
-		if ip4[0] == 127 {
-			return true
-		}
-		// Link-local (169.254.0.0/16)
+		return ip4[0] == 127
+	}
+	return false
+}
+
+// IsLinkLocal checks if the IP is a link-local address.
+// It covers:
+// - IPv4 Link-Local (169.254.0.0/16)
+// - IPv6 Link-Local (fe80::/10)
+// - NAT64 Link-Local (64:ff9b::169.254.0.0/16)
+// - IPv4-compatible IPv6 Link-Local (::169.254.0.0/16)
+func IsLinkLocal(ip net.IP) bool {
+	if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+		return true
+	}
+	if ip4 := ip.To4(); ip4 != nil {
+		// IPv4 Link-local (169.254.0.0/16)
+		// Note: ip.IsLinkLocalUnicast() usually covers this for IPv4, but let's be explicit
+		// if we are dealing with raw bytes that might not satisfy net.IP checks depending on how it was constructed.
+		// Actually ip.To4() returns a 4-byte slice.
 		if ip4[0] == 169 && ip4[1] == 254 {
 			return true
 		}
 	}
-
-	if IsNAT64Loopback(ip) || IsNAT64LinkLocal(ip) {
+	if IsNAT64LinkLocal(ip) {
 		return true
 	}
+	if IsIPv4Compatible(ip) {
+		ip4 := ip[12:16]
+		return ip4[0] == 169 && ip4[1] == 254
+	}
+	return false
+}
 
+// IsPrivateIP checks if the IP address is a private, link-local, or loopback address.
+func IsPrivateIP(ip net.IP) bool {
+	if ip.IsUnspecified() {
+		return true
+	}
+	if IsLoopback(ip) {
+		return true
+	}
+	if IsLinkLocal(ip) {
+		return true
+	}
 	return IsPrivateNetworkIP(ip)
 }
 
