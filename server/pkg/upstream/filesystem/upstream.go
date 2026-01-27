@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 
 	"github.com/spf13/afero"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -81,7 +82,7 @@ func (u *Upstream) Register(
 	serviceConfig *configv1.UpstreamServiceConfig,
 	toolManager tool.ManagerInterface,
 	_ prompt.ManagerInterface,
-	_ resource.ManagerInterface,
+	resourceManager resource.ManagerInterface,
 	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	log := logging.GetLogger()
@@ -183,8 +184,106 @@ func (u *Upstream) Register(
 		discoveredTools = append(discoveredTools, toolDef)
 	}
 
-	log.Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools))
-	return serviceID, discoveredTools, nil, nil
+	// Register Resources
+	discoveredResources := make([]*configv1.ResourceDefinition, 0)
+	for _, r := range fsService.GetResources() {
+		resDef := configv1.ResourceDefinition_builder{
+			Name:      proto.String(r.GetName()),
+			Uri:       proto.String(r.GetUri()),
+			MimeType:  proto.String(r.GetMimeType()),
+		}.Build()
+
+		// Create resource implementation
+		resImpl := &fsResource{
+			def:       resDef,
+			serviceID: serviceID,
+			provider:  prov,
+		}
+
+		resourceManager.AddResource(resImpl)
+		discoveredResources = append(discoveredResources, resDef)
+	}
+
+	log.Info("Registered filesystem service", "serviceID", serviceID, "tools", len(discoveredTools), "resources", len(discoveredResources))
+	return serviceID, discoveredTools, discoveredResources, nil
+}
+
+// fsResource implements resource.Resource for filesystem resources.
+type fsResource struct {
+	def       *configv1.ResourceDefinition
+	serviceID string
+	provider  provider.Provider
+}
+
+func (r *fsResource) Resource() *mcp.Resource {
+	return &mcp.Resource{
+		Name:     r.def.GetName(),
+		URI:      r.def.GetUri(),
+		MIMEType: r.def.GetMimeType(),
+	}
+}
+
+func (r *fsResource) Service() string {
+	return r.serviceID
+}
+
+func (r *fsResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
+	// Parse URI to get path?
+	// For filesystem, the URI should typically map to a file path.
+	// But URI scheme is customizable.
+	// However, `provider.ResolvePath` expects a virtual path (e.g. "/workspace/file.txt").
+	// If the URI is `file:///workspace/file.txt`, we should parse it.
+	// But `configv1.ResourceDefinition` doesn't enforce URI structure.
+	// Users configure `uri` and `root_paths`.
+	// If `uri` matches `file://<path>`, we can extract path.
+	// Or maybe we rely on `name` or assume user provides full path in config if needed?
+	// Actually, for static resources in config, user provides the mapping.
+	// But `provider` needs a path relative to its root logic.
+	// Let's assume the user configures resource URI to MATCH a path the provider can resolve?
+	// Or we can try to parse `file://` scheme.
+
+	// For simplicity and convention:
+	// If URI starts with `file://`, we take the rest as path.
+	// If not, we try to use URI as path directly.
+
+	path := r.def.GetUri()
+	if len(path) > 7 && path[:7] == "file://" {
+		path = path[7:]
+	}
+
+	// Read file using provider
+	// ResolvePath handles symlinks and sandbox validation
+	resolvedPath, err := r.provider.ResolvePath(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve path %s: %w", path, err)
+	}
+
+	fs := r.provider.GetFs()
+	f, err := fs.Open(resolvedPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file %s: %w", resolvedPath, err)
+	}
+	defer func() { _ = f.Close() }()
+
+	content, err := io.ReadAll(f)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file %s: %w", resolvedPath, err)
+	}
+
+	return &mcp.ReadResourceResult{
+		Contents: []*mcp.ResourceContents{
+			{
+				URI:      r.def.GetUri(),
+				MIMEType: r.def.GetMimeType(),
+				Text:     string(content),
+			},
+		},
+	}, nil
+}
+
+func (r *fsResource) Subscribe(ctx context.Context) error {
+	// Not implemented
+	return nil
 }
 
 type fsCallable struct {
