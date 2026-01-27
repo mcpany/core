@@ -154,28 +154,18 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     };
 
     const handleDownload = (uri?: string) => {
-        // If called from context menu with URI, we might not have content loaded yet.
-        // For this demo, we only support download if content is already loaded (selected)
-        // or we could fetch it. Ideally we should fetch.
-        // For now, let's fallback to current selection if match.
-
-        // If uri is provided and matches selectedUri, use resourceContent.
-        // Otherwise we can't easily download without fetching first.
         const targetUri = uri || selectedUri;
         if (!targetUri) return;
 
-        if (targetUri === selectedUri && resourceContent) {
-             const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
-             const url = URL.createObjectURL(blob);
-             const a = document.createElement("a");
-             a.href = url;
-             const selectedRes = resources.find(r => r.uri === targetUri);
-             a.download = selectedRes?.name || "resource";
-             a.click();
-        } else {
-             // TODO: Fetch and download
-             toast({ title: "Info", description: "Select the resource first to download." });
-        }
+        const token = typeof window !== 'undefined' ? localStorage.getItem('mcp_auth_token') : '';
+        const downloadUrl = `${window.location.origin}/api/v1/resources/download?uri=${encodeURIComponent(targetUri)}&auth_token=${encodeURIComponent(token || "")}`;
+
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = ""; // Filename is set by Content-Disposition
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleCopyUri = (uri: string) => {
@@ -193,6 +183,16 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         // This allows dragging to apps that accept text/uri-list
         e.dataTransfer.setData("text/plain", res.uri);
         e.dataTransfer.setData("text/uri-list", res.uri);
+
+        // Drag-to-desktop support
+        const token = typeof window !== 'undefined' ? localStorage.getItem('mcp_auth_token') : '';
+        const downloadUrl = `${window.location.origin}/api/v1/resources/download?uri=${encodeURIComponent(res.uri)}&auth_token=${encodeURIComponent(token || "")}`;
+        const mimeType = res.mimeType || "application/octet-stream";
+        const filename = res.name || "resource";
+
+        // Format: mime:filename:url
+        e.dataTransfer.setData("DownloadURL", `${mimeType}:${filename}:${downloadUrl}`);
+
         e.dataTransfer.effectAllowed = "copy";
     };
 

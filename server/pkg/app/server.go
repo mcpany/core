@@ -10,6 +10,7 @@ import (
 	"crypto/subtle"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -2162,6 +2163,20 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			// 2. Check User Authentication (Basic Auth)
 			if !authenticated {
 				username, _, ok := r.BasicAuth()
+
+				// Support auth_token query param for download links where headers can't be set
+				if !ok {
+					if token := r.URL.Query().Get("auth_token"); token != "" {
+						// Decode to ensure it's valid base64 before setting header
+						if _, err := base64.StdEncoding.DecodeString(token); err == nil {
+							// Set the header so ValidateAuthentication can verify the credentials
+							r.Header.Set("Authorization", "Basic "+token)
+							// Re-parse Basic Auth to get the username
+							username, _, ok = r.BasicAuth()
+						}
+					}
+				}
+
 				if ok && a.AuthManager != nil {
 					if user, found := a.AuthManager.GetUser(username); found {
 						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
