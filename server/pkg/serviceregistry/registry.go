@@ -62,6 +62,10 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns the result.
 	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
+	// GetAllHealthHistory returns the health history for all services.
+	//
+	// Returns a map of serviceID to list of HealthPoints.
+	GetAllHealthHistory() (map[string][]HealthPoint, error)
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -75,6 +79,7 @@ type ServiceRegistry struct {
 	serviceInfo     map[string]*tool.ServiceInfo
 	serviceErrors   map[string]string
 	healthErrors    map[string]string
+	healthHistory   map[string][]HealthPoint
 	upstreams       map[string]upstream.Upstream
 	factory         factory.Factory
 	toolManager     tool.ManagerInterface
@@ -100,6 +105,7 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 		serviceInfo:     make(map[string]*tool.ServiceInfo),
 		serviceErrors:   make(map[string]string),
 		healthErrors:    make(map[string]string),
+		healthHistory:   make(map[string][]HealthPoint),
 		upstreams:       make(map[string]upstream.Upstream),
 		factory:         factory,
 		toolManager:     toolManager,
@@ -364,12 +370,15 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 
 	for id, u := range targets {
 		var errStr string
+		var latency int64
 		if checker, ok := u.(upstream.HealthChecker); ok {
 			// Use a short timeout for health checks
 			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			start := time.Now()
 			if err := checker.CheckHealth(checkCtx); err != nil {
 				errStr = err.Error()
 			}
+			latency = time.Since(start).Milliseconds()
 			cancel()
 		}
 
@@ -379,8 +388,47 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 		} else {
 			delete(r.healthErrors, id)
 		}
+
+		if _, ok := u.(upstream.HealthChecker); ok {
+			point := HealthPoint{
+				Timestamp: time.Now().UnixMilli(),
+				Status:    "healthy",
+				Latency:   latency,
+			}
+			if errStr != "" {
+				point.Status = "unhealthy"
+				point.Message = errStr
+			}
+			r.recordHealthHistory(id, point)
+		}
 		r.mu.Unlock()
 	}
+}
+
+func (r *ServiceRegistry) recordHealthHistory(id string, point HealthPoint) {
+	hist := r.healthHistory[id]
+	hist = append(hist, point)
+	// Prune > 3000 points (approx 25 hours if polling every 30s)
+	if len(hist) > 3000 {
+		hist = hist[len(hist)-3000:]
+	}
+	r.healthHistory[id] = hist
+}
+
+// GetAllHealthHistory returns the health history for all services.
+//
+// Returns a map of serviceID to list of HealthPoints.
+func (r *ServiceRegistry) GetAllHealthHistory() (map[string][]HealthPoint, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	result := make(map[string][]HealthPoint)
+	for id, hist := range r.healthHistory {
+		cpy := make([]HealthPoint, len(hist))
+		copy(cpy, hist)
+		result[id] = cpy
+	}
+	return result, nil
 }
 
 // Close gracefully shuts down all registered services.

@@ -57,6 +57,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	mux.HandleFunc("/services", a.handleServices(store))
 	mux.HandleFunc("/services/validate", a.handleServiceValidate())
+	mux.HandleFunc("/services/health/history", a.handleServicesHealthHistory())
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -153,6 +154,30 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 
 	return mux
+}
+
+func (a *Application) handleServicesHealthHistory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if a.ServiceRegistry == nil {
+			http.Error(w, "Service registry not available", http.StatusServiceUnavailable)
+			return
+		}
+
+		hist, err := a.ServiceRegistry.GetAllHealthHistory()
+		if err != nil {
+			logging.GetLogger().Error("failed to get health history", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(hist)
+	}
 }
 
 func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {

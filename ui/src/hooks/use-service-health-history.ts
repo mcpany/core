@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * ServiceStatus represents the possible health states of a service.
@@ -36,6 +36,10 @@ export interface HealthHistoryPoint {
   timestamp: number;
   /** The status of the service at that time. */
   status: ServiceStatus;
+  /** The latency of the check in ms. */
+  latency?: number;
+  /** Optional message. */
+  message?: string;
 }
 
 /**
@@ -45,16 +49,9 @@ export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
 }
 
-const HISTORY_KEY = "mcp_service_health_history";
-const MAX_HISTORY_POINTS = 60; // Keep last 60 checks (e.g. 1 hour if polling every minute, or 10 mins if polling every 10s)
-// Actually, if we poll every 10s, 60 points is 10 minutes.
-// If we want 24h, we need 24 * 60 = 1440 points (if 1 min interval).
-// Storing 1440 * N services might be fine in localStorage (small ints).
-// Let's stick to 100 points for now (visual density).
-
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
- * It polls the backend API for health data and persists the history in local storage.
+ * It polls the backend API for health data history.
  *
  * @returns An object containing the current services list, their health history, and a loading state.
  */
@@ -63,64 +60,25 @@ export function useServiceHealthHistory() {
   const [services, setServices] = useState<ServiceHealth[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load initial history
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = window.localStorage.getItem(HISTORY_KEY);
-        if (stored) {
-          setHistory(JSON.parse(stored));
-        }
-      } catch (e) {
-        console.error("Failed to load health history", e);
-      }
-    }
-  }, []);
-
   useEffect(() => {
     async function fetchHealth() {
       try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data = await res.json();
-          const currentServices: ServiceHealth[] = Array.isArray(data) ? data : [];
+        // Parallel fetch for current status and history
+        const [statusRes, historyRes] = await Promise.all([
+             fetch("/api/dashboard/health"),
+             fetch("/api/v1/services/health/history")
+        ]);
 
-          setServices(currentServices);
-
-          // Update history
-          setHistory(prev => {
-            const next = { ...prev };
-            const now = Date.now();
-
-            currentServices.forEach(svc => {
-              const point: HealthHistoryPoint = {
-                timestamp: now,
-                status: svc.status
-              };
-
-              const svcHistory = next[svc.id] || [];
-              // Add new point
-              const newHistory = [...svcHistory, point];
-
-              // Sort by time just in case
-              newHistory.sort((a, b) => a.timestamp - b.timestamp);
-
-              // Limit size
-              if (newHistory.length > MAX_HISTORY_POINTS) {
-                 newHistory.splice(0, newHistory.length - MAX_HISTORY_POINTS);
-              }
-
-              next[svc.id] = newHistory;
-            });
-
-            // Persist
-            if (typeof window !== "undefined") {
-               window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
-            }
-
-            return next;
-          });
+        if (statusRes.ok) {
+          const data = await statusRes.json();
+          setServices(Array.isArray(data) ? data : []);
         }
+
+        if (historyRes.ok) {
+           const historyData = await historyRes.json();
+           setHistory(historyData);
+        }
+
       } catch (error) {
         console.warn("Failed to fetch health data", error);
       } finally {
@@ -130,12 +88,12 @@ export function useServiceHealthHistory() {
 
     fetchHealth();
 
-    // Poll every 10 seconds
+    // Poll every 30 seconds (backend updates every 30s)
     const interval = setInterval(() => {
       if (!document.hidden) {
         fetchHealth();
       }
-    }, 10000);
+    }, 30000);
 
     const onVisibilityChange = () => {
       if (!document.hidden) {

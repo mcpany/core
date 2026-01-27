@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/skill"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/storage/memory"
@@ -909,6 +910,11 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) GetAllHealthHistory() (map[string][]serviceregistry.HealthPoint, error) {
+	args := m.Called()
+	return args.Get(0).(map[string][]serviceregistry.HealthPoint), args.Error(1)
+}
+
 func TestHandleServices_IncludesError(t *testing.T) {
 	db, err := sqlite.NewDB(":memory:")
 	require.NoError(t, err)
@@ -1514,6 +1520,17 @@ func (m *TestMockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.
 	return nil, false
 }
 func (m *TestMockServiceRegistry) GetServiceError(serviceID string) (string, bool) { return "", false }
+func (m *TestMockServiceRegistry) GetAllHealthHistory() (map[string][]serviceregistry.HealthPoint, error) {
+	return map[string][]serviceregistry.HealthPoint{
+		"service-1": {
+			{
+				Timestamp: 1234567890,
+				Status:    "healthy",
+				Latency:   10,
+			},
+		},
+	}, nil
+}
 
 func TestHandleServices_ToolCount(t *testing.T) {
 	busProvider, _ := bus.NewProvider(nil)
@@ -1733,4 +1750,33 @@ func TestHandleAuthTest(t *testing.T) {
 	app.handleAuthTest()(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestHandleServicesHealthHistory(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockRegistry.On("GetAllHealthHistory").Return(map[string][]serviceregistry.HealthPoint{
+		"service-1": {
+			{
+				Timestamp: 1234567890,
+				Status:    "healthy",
+				Latency:   10,
+			},
+		},
+	}, nil)
+
+	app := NewApplication()
+	app.ServiceRegistry = mockRegistry
+
+	req := httptest.NewRequest(http.MethodGet, "/services/health/history", nil)
+	w := httptest.NewRecorder()
+
+	app.handleServicesHealthHistory().ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	var resp map[string][]serviceregistry.HealthPoint
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
+	require.NoError(t, err)
+	assert.Len(t, resp["service-1"], 1)
+	assert.Equal(t, "healthy", resp["service-1"][0].Status)
+	assert.Equal(t, int64(10), resp["service-1"][0].Latency)
 }

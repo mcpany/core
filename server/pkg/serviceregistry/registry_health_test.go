@@ -85,3 +85,48 @@ func TestHealthCheck(t *testing.T) {
 	msg, ok = registry.GetServiceError(serviceID)
 	assert.False(t, ok, "Service should be healthy now")
 }
+
+func TestHealthHistory(t *testing.T) {
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockHealthCheckerUpstream{
+				mockUpstream: mockUpstream{
+					registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+						serviceID, err := util.SanitizeServiceName(serviceName)
+						require.NoError(t, err)
+						return serviceID, nil, nil, nil
+					},
+				},
+				checkHealthFunc: func(ctx context.Context) error {
+					return nil
+				},
+			}, nil
+		},
+	}
+	tm := &mockToolManager{}
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("history-service")
+
+	// Register service
+	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.NoError(t, err)
+
+	// Trigger health check multiple times
+	for i := 0; i < 5; i++ {
+		registry.checkAllHealth(context.Background())
+	}
+
+	histMap, err := registry.GetAllHealthHistory()
+	require.NoError(t, err)
+
+	hist, ok := histMap[serviceID]
+	require.True(t, ok)
+	assert.Len(t, hist, 5)
+
+	for _, p := range hist {
+		assert.Equal(t, "healthy", p.Status)
+		assert.NotEmpty(t, p.Timestamp)
+	}
+}
