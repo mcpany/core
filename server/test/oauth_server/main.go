@@ -17,7 +17,7 @@ import (
 	"github.com/go-jose/go-jose/v4"
 )
 
-// OAuthServer mock
+// OAuthServer mock.
 type OAuthServer struct {
 	Issuer string
 	Key    *rsa.PrivateKey
