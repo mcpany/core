@@ -89,13 +89,21 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 	case configv1.SecretValue_FilePath_case:
 		// Clean and validate path
 		cleanPath := filepath.Clean(secret.GetFilePath())
-		if err := validation.IsAllowedPath(cleanPath); err != nil {
+
+		// Convert to absolute path to appease static analysis and ensure deterministic behavior
+		absPath, err := filepath.Abs(cleanPath)
+		if err != nil {
+			return "", fmt.Errorf("failed to resolve absolute path for %q: %w", secret.GetFilePath(), err)
+		}
+
+		if err := validation.IsAllowedPath(absPath); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// File reading is blocking and generally fast, but technically could verify context.
 		// For simplicity and standard library limits, we just read.
 		// Sentinel Security Update: Use bounded read to prevent DoS.
-		f, err := os.Open(cleanPath)
+		// Use absolute path for opening
+		f, err := os.Open(absPath)
 		if err != nil {
 			return "", fmt.Errorf("failed to open secret file %q: %w", secret.GetFilePath(), err)
 		}
