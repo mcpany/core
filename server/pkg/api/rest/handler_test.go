@@ -61,6 +61,14 @@ func TestValidateConfigHandler(t *testing.T) {
 			// http.MaxBytesReader causes Read to return error, JSON decoder fails, handler returns 400.
 			expectedStatus: http.StatusBadRequest,
 		},
+		{
+			name:           "Semantic Error (Missing Command)",
+			method:         http.MethodPost,
+			body:           `{"content": "upstream_services:\n  - name: broken-service\n    command_line_service:\n      command: /this/path/definitely/does/not/exist/12345"}`,
+			expectedStatus: http.StatusOK,
+			expectedValid:  false,
+			expectError:    true,
+		},
 	}
 
 	for _, tt := range tests {
