@@ -240,10 +240,24 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
+ * LogStreamProps definition.
+ */
+export interface LogStreamProps {
+  /**
+   * Optional source filter to lock the log stream to a specific source.
+   */
+  source?: string
+  /**
+   * If true, hides the main page header title.
+   */
+  isEmbedded?: boolean
+}
+
+/**
  * LogStream component.
  * @returns The rendered component.
  */
-export function LogStream() {
+export function LogStream({ source, isEmbedded = false }: LogStreamProps) {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -255,7 +269,8 @@ export function LogStream() {
   }, [isPaused])
 
   const searchParams = useSearchParams()
-  const initialSource = searchParams.get("source") || "ALL"
+  // If source prop is provided, use it. Otherwise fall back to URL params.
+  const initialSource = source || searchParams.get("source") || "ALL"
 
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
@@ -435,9 +450,11 @@ export function LogStream() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
         <div className="flex items-center justify-between md:justify-start gap-2">
             <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <Terminal className="w-6 h-6" /> Live Logs
-                </h1>
+                {!isEmbedded && (
+                  <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                      <Terminal className="w-6 h-6" /> Live Logs
+                  </h1>
+                )}
                 <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
                     {isConnected ? (
                       <>
@@ -500,18 +517,22 @@ export function LogStream() {
                     />
                 </div>
                 <div className="flex items-center gap-2 justify-end">
-                    <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <Select value={filterSource} onValueChange={setFilterSource}>
-                        <SelectTrigger className="w-[140px] bg-background">
-                            <SelectValue placeholder="Source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Sources</SelectItem>
-                            {uniqueSources.map(source => (
-                                <SelectItem key={source} value={source}>{source}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    {!source && (
+                      <>
+                        <Monitor className="h-4 w-4 text-muted-foreground" />
+                        <Select value={filterSource} onValueChange={setFilterSource}>
+                            <SelectTrigger className="w-[140px] bg-background">
+                                <SelectValue placeholder="Source" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ALL">All Sources</SelectItem>
+                                {uniqueSources.map(source => (
+                                    <SelectItem key={source} value={source}>{source}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                      </>
+                    )}
 
                     <Filter className="h-4 w-4 text-muted-foreground ml-2" />
                     <Select value={filterLevel} onValueChange={setFilterLevel}>

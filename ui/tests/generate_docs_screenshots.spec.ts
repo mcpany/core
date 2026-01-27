@@ -795,4 +795,21 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_inspector.png') });
   });
 
+  test('Service Detail Logs Screenshots', async ({ page }) => {
+    // Navigate to a service detail page
+    await page.goto('/upstream-services/postgres-primary');
+    await expect(page.getByText('Primary DB')).toBeVisible();
+    await page.waitForTimeout(1000);
+
+    // Click Logs tab
+    await page.getByRole('tab', { name: 'Logs' }).click();
+    await page.waitForTimeout(1000);
+
+    // Check if the embedded logs are visible (by checking the text "Service Logs" in the card header)
+    await expect(page.getByText('Service Logs')).toBeVisible();
+
+    // Take screenshot
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_detail_logs.png') });
+  });
+
 });

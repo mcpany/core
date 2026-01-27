@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { LogStream } from "@/components/logs/log-stream";
 
 /**
  * UpstreamServiceDetailPage component.
@@ -163,6 +164,7 @@ export default function UpstreamServiceDetailPage() {
                     <TabsTrigger value="config">Configuration</TabsTrigger>
                     <TabsTrigger value="auth">Authentication</TabsTrigger>
                     <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
+                    <TabsTrigger value="logs">Logs</TabsTrigger>
                 </TabsList>
 
                 {/* OVERVIEW TAB */}
@@ -272,6 +274,19 @@ export default function UpstreamServiceDetailPage() {
                              <div className="p-4 border rounded-lg bg-muted/20 text-center text-muted-foreground">
                                 Webhook configuration list will appear here.
                             </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* LOGS TAB */}
+                <TabsContent value="logs" className="mt-6">
+                    <Card className="h-[600px] flex flex-col">
+                        <CardHeader>
+                            <CardTitle>Service Logs</CardTitle>
+                            <CardDescription>Real-time logs from this service.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1 p-0 overflow-hidden">
+                            <LogStream source={service.name} isEmbedded={true} />
                         </CardContent>
                     </Card>
                 </TabsContent>
