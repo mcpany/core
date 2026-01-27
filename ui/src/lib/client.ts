@@ -237,6 +237,8 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            rateLimit: s.rate_limit,
+            resilience: s.resilience,
         }));
     },
 
@@ -273,6 +275,8 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         rateLimit: s.rate_limit,
+                         resilience: s.resilience,
                      };
                  }
                  return data;
@@ -370,6 +374,15 @@ export const apiClient = {
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
         }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+        if (config.connectionPool) {
+            payload.connection_pool = config.connectionPool;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -430,6 +443,15 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+        if (config.connectionPool) {
+            payload.connection_pool = config.connectionPool;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -506,6 +528,15 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = config.rateLimit;
+        }
+        if (config.resilience) {
+            payload.resilience = config.resilience;
+        }
+        if (config.connectionPool) {
+            payload.connection_pool = config.connectionPool;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1250,6 +1281,8 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            rateLimit: s.rate_limit,
+            resilience: s.resilience,
         }));
     },
 
@@ -1301,6 +1334,15 @@ export const apiClient = {
         }
         if (template.resourceExportPolicy) {
             payload.resource_export_policy = template.resourceExportPolicy;
+        }
+        if (template.rateLimit) {
+            payload.rate_limit = template.rateLimit;
+        }
+        if (template.resilience) {
+            payload.resilience = template.resilience;
+        }
+        if (template.connectionPool) {
+            payload.connection_pool = template.connectionPool;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {

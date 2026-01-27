@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { TrafficPolicyEditor } from "@/components/services/editor/traffic-policy-editor";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -434,29 +435,12 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                         </TabsContent>
 
                         <TabsContent value="advanced" className="space-y-4 mt-0">
-                            <div className="grid grid-cols-2 gap-4">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Resilience</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                         <div className="space-y-2">
-                                            <Label htmlFor="timeout">Timeout (s)</Label>
-                                            {/* Note: Duration handling is complex in proto (seconds/nanos), simplifying to string for now if client helper handles it, or assuming seconds */}
-                                            {/* In proto, it is google.protobuf.Duration. The JSON mapping usually accepts string "10s" */}
-                                            {/* But the client interface we have uses generated types. Check resilience.timeout */}
-                                            <Input
-                                                id="timeout"
-                                                placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
-                                                defaultValue="30s"
-                                            />
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                            <TrafficPolicyEditor service={service} onChange={updateService} />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                  <Card>
                                     <CardHeader>
-                                        <CardTitle>Export Policy</CardTitle>
+                                        <CardTitle>Advanced Options</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div className="flex items-center space-x-2">
