@@ -6,6 +6,7 @@ package topology
 
 import (
 	"context"
+	"sort"
 	"sync"
 	"time"
 
@@ -331,6 +332,11 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
+		// Sort services by name for deterministic output
+		sort.Slice(services, func(i, j int) bool {
+			return services[i].GetName() < services[j].GetName()
+		})
+
 		tools := m.toolManager.ListTools()
 		for _, svc := range services {
 			svcNode := topologyv1.Node_builder{
@@ -344,26 +350,35 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			}
 
 			// Add Tools
+			var serviceTools []tool.Tool
 			for _, t := range tools {
 				if t.Tool().GetServiceId() == svc.GetName() {
-					toolNode := topologyv1.Node_builder{
-						Id:     "tool-" + t.Tool().GetName(),
-						Label:  t.Tool().GetName(),
-						Type:   topologyv1.NodeType_NODE_TYPE_TOOL,
-						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}.Build()
-
-					// Mock API Call node
-					apiNode := topologyv1.Node_builder{
-						Id:     "api-" + t.Tool().GetName(),
-						Label:  "POST /" + t.Tool().GetName(),
-						Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
-						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}.Build()
-					toolNode.Children = append(toolNode.Children, apiNode)
-
-					svcNode.Children = append(svcNode.Children, toolNode)
+					serviceTools = append(serviceTools, t)
 				}
+			}
+			// Sort tools by name
+			sort.Slice(serviceTools, func(i, j int) bool {
+				return serviceTools[i].Tool().GetName() < serviceTools[j].Tool().GetName()
+			})
+
+			for _, t := range serviceTools {
+				toolNode := topologyv1.Node_builder{
+					Id:     "tool-" + t.Tool().GetName(),
+					Label:  t.Tool().GetName(),
+					Type:   topologyv1.NodeType_NODE_TYPE_TOOL,
+					Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
+				}.Build()
+
+				// Mock API Call node
+				apiNode := topologyv1.Node_builder{
+					Id:     "api-" + t.Tool().GetName(),
+					Label:  "POST /" + t.Tool().GetName(),
+					Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
+					Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
+				}.Build()
+				toolNode.Children = append(toolNode.Children, apiNode)
+
+				svcNode.Children = append(svcNode.Children, toolNode)
 			}
 
 			coreNode.Children = append(coreNode.Children, svcNode)
@@ -420,6 +435,11 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 		}.Build()
 		clients = append(clients, clientNode)
 	}
+
+	// Sort clients by ID for deterministic output
+	sort.Slice(clients, func(i, j int) bool {
+		return clients[i].Id < clients[j].Id
+	})
 
 	return topologyv1.Graph_builder{
 		Clients: clients,
