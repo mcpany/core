@@ -2664,11 +2664,12 @@ func analyzeQuoteContext(template, placeholder string) int {
 		// Check if we match placeholder at current position
 		if strings.HasPrefix(template[i:], placeholder) {
 			foundAny = true
-			if inSingle {
+			switch {
+			case inSingle:
 				mask |= 4
-			} else if inDouble {
+			case inDouble:
 				mask |= 2
-			} else {
+			default:
 				mask |= 1
 			}
 
