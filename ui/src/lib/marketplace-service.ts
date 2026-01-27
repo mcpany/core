@@ -246,6 +246,13 @@ export const marketplaceService = {
                   // Filter out "TOC" items which might look like servers but point to anchors
                   if (url.startsWith('#')) continue;
 
+                  // Sentinel Security: Validate URL to prevent XSS (e.g. javascript:)
+                  const lowerUrl = url.toLowerCase().trim();
+                  if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+                      console.warn(`Skipping potentially unsafe URL for ${name}: ${url}`);
+                      continue;
+                  }
+
                   servers.push({
                       category: currentCategory,
                       name,
@@ -269,6 +276,12 @@ export const marketplaceService = {
    * @returns A promise that resolves to the imported collection.
    */
   importCollection: async (url: string): Promise<ServiceCollection> => {
+     // Sentinel Security: Validate URL
+     const lowerUrl = url.toLowerCase().trim();
+     if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+         throw new Error("Invalid URL: Must start with http:// or https://");
+     }
+
      // Fetch from URL, validate, return
      // Mock for now
      return {
