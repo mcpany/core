@@ -418,13 +418,9 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// If RawPath is empty, Path is the reference string.
 		mustPrepend := false
 		if relRawPath != "" {
-			if strings.HasPrefix(relRawPath, "/") {
-				mustPrepend = true
-			}
+			mustPrepend = strings.HasPrefix(relRawPath, "/")
 		} else {
-			if strings.HasPrefix(relPath, "/") {
-				mustPrepend = true
-			}
+			mustPrepend = strings.HasPrefix(relPath, "/")
 		}
 
 		if mustPrepend {

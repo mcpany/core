@@ -18,10 +18,10 @@ import (
 
 func TestHTTPUpstream_URLConstruction_EscapedSlashBug(t *testing.T) {
 	testCases := []struct {
-		name          string
-		address       string
-		endpointPath  string
-		expectedFqn   string
+		name         string
+		address      string
+		endpointPath string
+		expectedFqn  string
 	}{
 		{
 			name:         "endpoint starting with escaped slash should not have dot prepended",
@@ -30,7 +30,7 @@ func TestHTTPUpstream_URLConstruction_EscapedSlashBug(t *testing.T) {
 			// Decoded path is /foo. Code sees it starts with / and prepends . to RawPath (%2Ffoo).
 			// Resulting in .%2Ffoo, which ResolveReference treats literally.
 			// Expected: http://example.com/api/%2Ffoo
-			expectedFqn:  "GET http://example.com/api/%2Ffoo",
+			expectedFqn: "GET http://example.com/api/%2Ffoo",
 		},
 		{
 			name:         "endpoint starting with normal slash",
@@ -50,7 +50,7 @@ func TestHTTPUpstream_URLConstruction_EscapedSlashBug(t *testing.T) {
 			endpointPath: "/foo%20bar",
 			// Path: /foo bar (starts with /). RawPath: /foo%20bar (starts with /).
 			// mustPrepend should be true.
-			expectedFqn:  "GET http://example.com/api/foo%20bar",
+			expectedFqn: "GET http://example.com/api/foo%20bar",
 		},
 	}
 
