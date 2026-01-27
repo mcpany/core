@@ -60,13 +60,17 @@ describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
     // Default mock global fetch (Success case)
     global.fetch = vi.fn((url: string | Request, _init?: RequestInit) => {
-        if (typeof url === 'string' && url.includes("/api/dashboard/health")) {
+        // Mock for Diagnose Service API
+        if (typeof url === 'string' && url.includes("/diagnose")) {
             return Promise.resolve({
                 ok: true,
-                json: () => Promise.resolve([
-                    { id: "test-service", name: "Test Service", status: "healthy", message: "" },
-                    { id: "ws-service", name: "WebSocket Service", status: "healthy", message: "" }
-                ]),
+                json: () => Promise.resolve({
+                    ServiceName: "test-service",
+                    Status: "OK",
+                    Message: "Service is healthy",
+                    Error: "",
+                    Latency: "10ms"
+                }),
             });
         }
         // Mock for Browser Connectivity Check (HTTP Service)
@@ -78,7 +82,7 @@ describe("ConnectionDiagnosticDialog", () => {
                 json: () => Promise.reject("Opaque response"),
             });
         }
-        return Promise.reject("Unknown URL");
+        return Promise.reject("Unknown URL: " + url);
     }) as unknown as typeof fetch;
   });
 
@@ -117,8 +121,8 @@ describe("ConnectionDiagnosticDialog", () => {
     expect(screen.getByText("Configuration valid")).toBeInTheDocument();
 
     // Check if backend health check was successful
-    expect(global.fetch).toHaveBeenCalledWith("/api/dashboard/health", expect.any(Object));
-    expect(screen.getByText("Connected")).toBeInTheDocument();
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/diagnose"), expect.any(Object));
+    expect(screen.getByText(/Service is connected and responding/)).toBeInTheDocument();
   });
 
   it("detects HTTP service and adds browser check step", async () => {
@@ -189,14 +193,21 @@ describe("ConnectionDiagnosticDialog", () => {
 
   it("displays context-aware suggestion for 404 error", async () => {
       // Mock failure response with 404 error
-      global.fetch = vi.fn(() =>
-        Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve([
-                { id: "test-service", name: "Test Service", status: "unhealthy", message: "404 Not Found" }
-            ]),
-        })
-      ) as unknown as typeof fetch;
+      global.fetch = vi.fn((url: string | Request) => {
+        if (typeof url === 'string' && url.includes("/diagnose")) {
+             return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    ServiceName: "test-service",
+                    Status: "ERROR",
+                    Message: "404 Not Found",
+                    Error: "404 Not Found",
+                    Latency: "0ms"
+                }),
+            });
+        }
+        return Promise.resolve({ ok: true });
+      }) as unknown as typeof fetch;
 
       render(<ConnectionDiagnosticDialog service={mockService} />);
 
@@ -220,14 +231,21 @@ describe("ConnectionDiagnosticDialog", () => {
 
   it("displays context-aware suggestion for Connection Refused", async () => {
     // Mock failure response with connection refused
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([
-              { id: "test-service", name: "Test Service", status: "unhealthy", message: "dial tcp 127.0.0.1:8080: connect: connection refused" }
-          ]),
-      })
-    ) as unknown as typeof fetch;
+    global.fetch = vi.fn((url: string | Request) => {
+        if (typeof url === 'string' && url.includes("/diagnose")) {
+             return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    ServiceName: "test-service",
+                    Status: "ERROR",
+                    Message: "dial tcp 127.0.0.1:8080: connect: connection refused",
+                    Error: "dial tcp 127.0.0.1:8080: connect: connection refused",
+                    Latency: "0ms"
+                }),
+            });
+        }
+        return Promise.resolve({ ok: true });
+      }) as unknown as typeof fetch;
 
     render(<ConnectionDiagnosticDialog service={mockService} />);
 
