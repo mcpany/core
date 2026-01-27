@@ -148,8 +148,13 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 // Configuration can be overridden via environment variables:
 // - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback addresses.
 // - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network addresses.
+// - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow both loopback and private addresses (for testing/development).
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
 	}

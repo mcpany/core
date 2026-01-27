@@ -10,20 +10,10 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/proto"
 )
-
-type MockToolManager struct {
-	mock.Mock
-	tool.ManagerInterface
-}
-
-func (m *MockToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
-	m.Called(serviceID, info)
-}
 
 func TestRegister_SSRFProtection(t *testing.T) {
 	// 1. Start a local server (target for SSRF)
