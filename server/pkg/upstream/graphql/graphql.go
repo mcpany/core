@@ -120,6 +120,50 @@ func mapGraphQLTypeToJSONSchemaType(typeName string) string {
 	}
 }
 
+type graphQLType struct {
+	Kind   string       `json:"kind"`
+	Name   *string      `json:"name"`
+	OfType *graphQLType `json:"ofType"`
+}
+
+func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
+	if t == nil {
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{Fields: map[string]*structpb.Value{"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}}}}}}
+	}
+
+	switch t.Kind {
+	case "NON_NULL":
+		return convertGraphQLTypeToJSONSchema(t.OfType)
+	case "LIST":
+		itemsSchema := convertGraphQLTypeToJSONSchema(t.OfType)
+		return &structpb.Value{
+			Kind: &structpb.Value_StructValue{
+				StructValue: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type":  {Kind: &structpb.Value_StringValue{StringValue: "array"}},
+						"items": itemsSchema,
+					},
+				},
+			},
+		}
+	default: // SCALAR, OBJECT, etc.
+		typeName := ""
+		if t.Name != nil {
+			typeName = *t.Name
+		}
+		jsonType := mapGraphQLTypeToJSONSchemaType(typeName)
+		return &structpb.Value{
+			Kind: &structpb.Value_StructValue{
+				StructValue: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"type": {Kind: &structpb.Value_StringValue{StringValue: jsonType}},
+					},
+				},
+			},
+		}
+	}
+}
+
 // Callable implements the Callable interface for GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
@@ -225,14 +269,7 @@ func (g *Upstream) Register(
 					Name string
 					Args []struct {
 						Name string
-						Type struct {
-							Name   string
-							Kind   string
-							OfType *struct {
-								Name string
-								Kind string
-							}
-						}
+						Type graphQLType `json:"type"`
 					} `json:"args"`
 					Type struct {
 						Kind   string
@@ -270,23 +307,7 @@ func (g *Upstream) Register(
 					Fields: make(map[string]*structpb.Value),
 				}
 				for _, arg := range field.Args {
-					typeName := arg.Type.Name
-					if arg.Type.Kind == "NON_NULL" {
-						typeName = arg.Type.OfType.Name
-					}
-					inputSchema.Fields[arg.Name] = &structpb.Value{
-						Kind: &structpb.Value_StructValue{
-							StructValue: &structpb.Struct{
-								Fields: map[string]*structpb.Value{
-									"type": {
-										Kind: &structpb.Value_StringValue{
-											StringValue: mapGraphQLTypeToJSONSchemaType(typeName),
-										},
-									},
-								},
-							},
-						},
-					}
+					inputSchema.Fields[arg.Name] = convertGraphQLTypeToJSONSchema(&arg.Type)
 				}
 
 				callID := "graphql"
@@ -304,11 +325,15 @@ func (g *Upstream) Register(
 				sb.WriteString(" (")
 				i := 0
 				for _, arg := range field.Args {
-					typeName := arg.Type.Name
-					if arg.Type.Kind == "NON_NULL" {
-						typeName = arg.Type.OfType.Name + "!"
-					}
-					sb.WriteString(fmt.Sprintf("$%s: %s", arg.Name, typeName))
+					// We need to reconstruct the GraphQL type string for the query variable definition
+					// This part also needs to be recursive or handled better if we want full support,
+					// but for now let's stick to what was there or slightly improve it.
+					// The previous code had a loop/recursion implicit via checks.
+					// But wait, constructing the query string requires the Type Name.
+					// If it is a LIST, the name is wrapped in [].
+					// I need a helper for this too.
+
+					sb.WriteString(fmt.Sprintf("$%s: %s", arg.Name, formatGraphQLType(&arg.Type)))
 					if i < len(field.Args)-1 {
 						sb.WriteString(", ")
 					}
@@ -360,4 +385,21 @@ func (g *Upstream) Register(
 	}
 
 	return serviceConfig.GetName(), toolDefs, nil, nil
+}
+
+func formatGraphQLType(t *graphQLType) string {
+	if t == nil {
+		return ""
+	}
+	switch t.Kind {
+	case "NON_NULL":
+		return formatGraphQLType(t.OfType) + "!"
+	case "LIST":
+		return "[" + formatGraphQLType(t.OfType) + "]"
+	default:
+		if t.Name != nil {
+			return *t.Name
+		}
+		return ""
+	}
 }
