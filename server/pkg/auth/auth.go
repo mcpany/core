@@ -362,42 +362,29 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 // Returns a potentially modified context on success, or an error if
 // authentication fails.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
+	authenticatedViaAPIKey := false
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
 		if receivedKey == "" {
 			receivedKey = r.URL.Query().Get("api_key")
 		}
 
-		if receivedKey == "" {
-			return ctx, fmt.Errorf("unauthorized")
+		if receivedKey != "" {
+			if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(am.apiKey)) != 1 {
+				return ctx, fmt.Errorf("unauthorized")
+			}
+			ctx = ContextWithAPIKey(ctx, receivedKey)
+			authenticatedViaAPIKey = true
 		}
-		if subtle.ConstantTimeCompare([]byte(receivedKey), []byte(am.apiKey)) != 1 {
-			return ctx, fmt.Errorf("unauthorized")
-		}
-		ctx = ContextWithAPIKey(ctx, receivedKey)
 	}
 
 	if authenticator, ok := am.authenticators.Load(serviceID); ok {
 		return authenticator.Authenticate(ctx, r)
 	}
+
 	// If no authenticator is configured for the service:
 	// If we authenticated via Global API Key, we allow it.
-	// If not found, check global keys...
-	if am.apiKey != "" {
-		// If we authenticated via Global API Key, we allow it.
-		// NOTE: logic was: if apiKey configured, and we reached here (meaning no service authenticator), allow.
-		// But wait, if apiKey was provided, we updated ctx.
-		// If apiKey was NOT provided, we still fall through?
-		// Authenticate logic above:
-		// if am.apiKey != "" { check header }
-		// if header valid, ctx updated.
-		// If header missing, returns error "unauthorized" IF apiKey is required?
-		// Logic at 373: if receivedKey == "" return error.
-		// So if apiKey is configured, we MUST provide it?
-		// Check lines 365-378.
-		// Yes, if am.apiKey != "", we ENFORCE it.
-		// So if we are here, we passed API key check (if configured).
-		// So we can return nil (allow).
+	if authenticatedViaAPIKey {
 		return ctx, nil
 	}
 

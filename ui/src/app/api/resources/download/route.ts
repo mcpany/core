@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
   const headers: HeadersInit = {};
 
   // Pass auth token from client if provided
-  if (token) {
+  const authHeader = request.headers.get('Authorization');
+  if (authHeader) {
+    headers['Authorization'] = authHeader;
+  } else if (token) {
     headers['Authorization'] = `Basic ${token}`;
-  } else if (process.env.MCPANY_API_KEY) {
-    // Fallback to server-side API Key if configured
-    headers['X-API-Key'] = process.env.MCPANY_API_KEY;
   }
 
   try {

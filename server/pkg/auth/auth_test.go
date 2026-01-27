@@ -181,10 +181,55 @@ func TestAuthManager(t *testing.T) {
 		_, err = authManager.Authenticate(context.Background(), "any-service", req)
 		assert.Error(t, err)
 
-		// Failed authentication (missing key)
+		// Missing key: Should fail ONLY because no other auth is configured
 		req = httptest.NewRequest("GET", "/", nil)
 		_, err = authManager.Authenticate(context.Background(), "any-service", req)
 		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "no authentication configured")
+
+		authManager.SetAPIKey("")
+	})
+
+	t.Run("authenticate_with_global_api_key_and_basic_auth", func(t *testing.T) {
+		authManager.SetAPIKey("global-secret-key")
+
+		// Configure a user
+		password := "secret123"
+		hashed, _ := passhash.Password(password)
+		users := []*configv1.User{
+			{
+				Id: proto.String("user1"),
+				Authentication: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_BasicAuth{
+						BasicAuth: &configv1.BasicAuth{
+							PasswordHash: proto.String(hashed),
+						},
+					},
+				},
+			},
+		}
+		authManager.SetUsers(users)
+
+		// Scenario 1: Valid Basic Auth, No API Key -> SUCCESS
+		req := httptest.NewRequest("GET", "/", nil)
+		req.SetBasicAuth("user1", password)
+		_, err := authManager.Authenticate(context.Background(), "any-service", req)
+		assert.NoError(t, err)
+
+		// Scenario 2: Valid API Key, No Basic Auth -> SUCCESS
+		req = httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "global-secret-key")
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.NoError(t, err)
+
+		// Scenario 3: Invalid API Key, Valid Basic Auth -> FAIL (Security Check)
+		// If API Key is present but invalid, we should reject immediately to prevent ambiguity
+		req = httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("X-API-Key", "wrong-key")
+		req.SetBasicAuth("user1", password)
+		_, err = authManager.Authenticate(context.Background(), "any-service", req)
+		assert.Error(t, err)
+		assert.Equal(t, "unauthorized", err.Error())
 
 		authManager.SetAPIKey("")
 	})
