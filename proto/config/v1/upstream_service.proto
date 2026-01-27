@@ -90,6 +90,7 @@ message UpstreamServiceConfig {
     SqlUpstreamService sql_service = 27 [json_name = "sql_service"];
     FilesystemUpstreamService filesystem_service = 28 [json_name = "filesystem_service"];
     VectorUpstreamService vector_service = 29 [json_name = "vector_service"];
+    BrowserUpstreamService browser_service = 39 [json_name = "browser_service"];
   }
 
   // Policy to control which calls can be made.
@@ -529,6 +530,19 @@ message ConnectionPoolConfig {
   // The duration a connection can remain idle in the pool before being closed.
   google.protobuf.Duration idle_timeout = 3 [json_name = "idle_timeout"];
 }
+
+// BrowserUpstreamService defines an upstream service that provides browser automation.
+message BrowserUpstreamService {
+  // Optional: The address of a remote browser instance (e.g. standard CDP).
+  string address = 1;
+  // Manually defined mappings from MCP tools to browser calls (usually not needed as we auto-register).
+  repeated ToolDefinition tools = 2;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 3;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 4;
+}
+
 // Defines the container environment for running a command.
 message ContainerEnvironment {
   // The name of the container.
