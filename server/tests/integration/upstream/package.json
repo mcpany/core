@@ -12,6 +12,6 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.0"
+    "@playwright/test": "^1.57.0"
   }
 }

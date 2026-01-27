@@ -29,7 +29,7 @@ const (
 // --- Messages ---
 type EchoRequest struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Message       *string                `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -60,20 +60,31 @@ func (x *EchoRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EchoRequest) GetMessage() string {
-	if x != nil {
-		return x.Message
+	if x != nil && x.Message != nil {
+		return *x.Message
 	}
 	return ""
 }
 
 func (x *EchoRequest) SetMessage(v string) {
-	x.Message = v
+	x.Message = &v
+}
+
+func (x *EchoRequest) HasMessage() bool {
+	if x == nil {
+		return false
+	}
+	return x.Message != nil
+}
+
+func (x *EchoRequest) ClearMessage() {
+	x.Message = nil
 }
 
 type EchoRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Message string
+	Message *string
 }
 
 func (b0 EchoRequest_builder) Build() *EchoRequest {
@@ -86,7 +97,7 @@ func (b0 EchoRequest_builder) Build() *EchoRequest {
 
 type EchoResponse struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	EchoedMessage string                 `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage,proto3" json:"echoed_message,omitempty"`
+	EchoedMessage *string                `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage" json:"echoed_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -117,20 +128,31 @@ func (x *EchoResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EchoResponse) GetEchoedMessage() string {
-	if x != nil {
-		return x.EchoedMessage
+	if x != nil && x.EchoedMessage != nil {
+		return *x.EchoedMessage
 	}
 	return ""
 }
 
 func (x *EchoResponse) SetEchoedMessage(v string) {
-	x.EchoedMessage = v
+	x.EchoedMessage = &v
+}
+
+func (x *EchoResponse) HasEchoedMessage() bool {
+	if x == nil {
+		return false
+	}
+	return x.EchoedMessage != nil
+}
+
+func (x *EchoResponse) ClearEchoedMessage() {
+	x.EchoedMessage = nil
 }
 
 type EchoResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	EchoedMessage string
+	EchoedMessage *string
 }
 
 func (b0 EchoResponse_builder) Build() *EchoResponse {
@@ -143,7 +165,7 @@ func (b0 EchoResponse_builder) Build() *EchoResponse {
 
 type GetDetailsRequest struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
+	ItemId        *string                `protobuf:"bytes,1,opt,name=item_id,json=itemId" json:"item_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -174,20 +196,31 @@ func (x *GetDetailsRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GetDetailsRequest) GetItemId() string {
-	if x != nil {
-		return x.ItemId
+	if x != nil && x.ItemId != nil {
+		return *x.ItemId
 	}
 	return ""
 }
 
 func (x *GetDetailsRequest) SetItemId(v string) {
-	x.ItemId = v
+	x.ItemId = &v
+}
+
+func (x *GetDetailsRequest) HasItemId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ItemId != nil
+}
+
+func (x *GetDetailsRequest) ClearItemId() {
+	x.ItemId = nil
 }
 
 type GetDetailsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ItemId string
+	ItemId *string
 }
 
 func (b0 GetDetailsRequest_builder) Build() *GetDetailsRequest {
@@ -200,9 +233,9 @@ func (b0 GetDetailsRequest_builder) Build() *GetDetailsRequest {
 
 type GetDetailsResponse struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
-	Detail        string                 `protobuf:"bytes,2,opt,name=detail,proto3" json:"detail,omitempty"`
-	Attributes    map[string]string      `protobuf:"bytes,3,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ItemId        *string                `protobuf:"bytes,1,opt,name=item_id,json=itemId" json:"item_id,omitempty"`
+	Detail        *string                `protobuf:"bytes,2,opt,name=detail" json:"detail,omitempty"`
+	Attributes    map[string]string      `protobuf:"bytes,3,rep,name=attributes" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -233,15 +266,15 @@ func (x *GetDetailsResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GetDetailsResponse) GetItemId() string {
-	if x != nil {
-		return x.ItemId
+	if x != nil && x.ItemId != nil {
+		return *x.ItemId
 	}
 	return ""
 }
 
 func (x *GetDetailsResponse) GetDetail() string {
-	if x != nil {
-		return x.Detail
+	if x != nil && x.Detail != nil {
+		return *x.Detail
 	}
 	return ""
 }
@@ -254,22 +287,44 @@ func (x *GetDetailsResponse) GetAttributes() map[string]string {
 }
 
 func (x *GetDetailsResponse) SetItemId(v string) {
-	x.ItemId = v
+	x.ItemId = &v
 }
 
 func (x *GetDetailsResponse) SetDetail(v string) {
-	x.Detail = v
+	x.Detail = &v
 }
 
 func (x *GetDetailsResponse) SetAttributes(v map[string]string) {
 	x.Attributes = v
 }
 
+func (x *GetDetailsResponse) HasItemId() bool {
+	if x == nil {
+		return false
+	}
+	return x.ItemId != nil
+}
+
+func (x *GetDetailsResponse) HasDetail() bool {
+	if x == nil {
+		return false
+	}
+	return x.Detail != nil
+}
+
+func (x *GetDetailsResponse) ClearItemId() {
+	x.ItemId = nil
+}
+
+func (x *GetDetailsResponse) ClearDetail() {
+	x.Detail = nil
+}
+
 type GetDetailsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ItemId     string
-	Detail     string
+	ItemId     *string
+	Detail     *string
 	Attributes map[string]string
 }
 
@@ -307,7 +362,7 @@ const file_proto_examples_userservice_v1_userservice_proto_rawDesc = "" +
 	"\vEchoService\x12\x9b\x01\n" +
 	"\x04Echo\x12$.examples.userservice.v1.EchoRequest\x1a%.examples.userservice.v1.EchoResponse\"Fʆ\xa1\xfc\b\bEchoTool҆\xa1\xfc\b2Echoes back the input message. Useful for testing.\x12\xa8\x01\n" +
 	"\n" +
-	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B6Z4github.com/mcpany/core/proto/examples/userservice/v1b\x06proto3"
+	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B6Z4github.com/mcpany/core/proto/examples/userservice/v1b\beditionsp\xe8\a"
 
 var file_proto_examples_userservice_v1_userservice_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_examples_userservice_v1_userservice_proto_goTypes = []any{

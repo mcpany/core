@@ -84,7 +84,9 @@ test.describe('Dashboard Real Data', () => {
         // Avg Throughput matches requests per minute?
         // 1.67 rps approx.
         await expect(page.getByText(/1\.6\d rps/)).toBeVisible();
-
+        // 6000 requests in 3600 seconds = 1.666... rps.
+        // 1.67 rps.
+        await expect(page.getByText('1.67 rps')).toBeVisible();
 
         // 4. Verify charts existence (roughly)
         await expect(page.locator('.recharts-surface').first()).toBeVisible();
