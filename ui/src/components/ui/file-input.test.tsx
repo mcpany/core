@@ -9,6 +9,11 @@ import { FileInput } from "./file-input";
 import { vi } from "vitest";
 
 describe("FileInput", () => {
+    beforeAll(() => {
+        global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
+        global.URL.revokeObjectURL = vi.fn();
+    });
+
     it("renders correctly", () => {
         const onChange = vi.fn();
         render(<FileInput onChange={onChange} />);
@@ -75,5 +80,59 @@ describe("FileInput", () => {
              expect(screen.getByText(/File is too large/i)).toBeInTheDocument();
          });
          expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("displays image preview when image file is dropped", async () => {
+        const Wrapper = () => {
+            const [val, setVal] = React.useState<string | undefined>(undefined);
+            return <FileInput value={val} onChange={setVal} />;
+        };
+
+        const { container } = render(<Wrapper />);
+        const dropZone = container.firstChild as HTMLElement;
+
+        const file = new File(["image content"], "image.png", { type: "image/png" });
+
+        fireEvent.drop(dropZone, {
+            dataTransfer: {
+                files: [file]
+            }
+        });
+
+        await waitFor(() => {
+            expect(screen.getByAltText("Preview")).toBeInTheDocument();
+            expect(screen.getByAltText("Preview")).toHaveAttribute("src", "blob:mock-url");
+        });
+    });
+
+    it("clears preview when file is removed", async () => {
+        const Wrapper = () => {
+            const [val, setVal] = React.useState<string | undefined>(undefined);
+            return <FileInput value={val} onChange={setVal} />;
+        };
+
+        const { container } = render(<Wrapper />);
+        const dropZone = container.firstChild as HTMLElement;
+
+        const file = new File(["image content"], "image.png", { type: "image/png" });
+
+        fireEvent.drop(dropZone, {
+            dataTransfer: {
+                files: [file]
+            }
+        });
+
+        await waitFor(() => {
+            expect(screen.getByAltText("Preview")).toBeInTheDocument();
+        });
+
+        // Click clear button (X icon)
+        const clearButton = container.querySelector("button.ml-auto");
+        fireEvent.click(clearButton!);
+
+        await waitFor(() => {
+            expect(screen.queryByAltText("Preview")).not.toBeInTheDocument();
+            expect(global.URL.revokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
+        });
     });
 });

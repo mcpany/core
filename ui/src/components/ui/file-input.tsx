@@ -27,11 +27,25 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [fileName, setFileName] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+
+  // Cleanup object URL on unmount
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
 
   // Sync internal state with external value
   React.useEffect(() => {
     if (!value) {
       setFileName(null)
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+        setPreviewUrl(null)
+      }
       if (inputRef.current) {
         inputRef.current.value = ""
       }
@@ -53,6 +67,20 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
     }
 
     setFileName(file.name)
+
+    // Generate preview if it's an image
+    if (file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file)
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+      }
+      setPreviewUrl(url)
+    } else {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+        setPreviewUrl(null)
+      }
+    }
 
     const reader = new FileReader()
     reader.onload = (event) => {
@@ -104,6 +132,10 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
 
   const clearFile = () => {
     setFileName(null)
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+      setPreviewUrl(null)
+    }
     onChange(undefined)
     if (inputRef.current) {
       inputRef.current.value = ""
@@ -164,6 +196,12 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
         )}
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
+      {previewUrl && (
+        <div className="relative mt-2 rounded-md overflow-hidden border bg-muted/50 max-w-[200px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={previewUrl} alt="Preview" className="w-full h-auto object-contain max-h-48" />
+        </div>
+      )}
       {accept && <p className="text-[10px] text-muted-foreground">Accepted formats: {accept}</p>}
     </div>
   )

@@ -322,6 +322,51 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tools.png'), fullPage: true });
   });
 
+  test('Playground File Preview Screenshots', async ({ page }) => {
+    await page.route('**/api/v1/tools', async route => {
+        await route.fulfill({
+            json: {
+                tools: [
+                    {
+                        name: 'image_processor.describe',
+                        description: 'Describe an image',
+                        inputSchema: {
+                            type: 'object',
+                            properties: {
+                                image: {
+                                    type: 'string',
+                                    contentEncoding: 'base64',
+                                    contentMediaType: 'image/png'
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        });
+    });
+
+    await page.goto('/playground');
+    await page.getByText('image_processor.describe').click();
+    await page.waitForTimeout(500);
+
+    // Create a dummy image file
+    const buffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+
+    // Upload file
+    const fileInput = page.locator('input[type="file"][accept="image/png"]');
+    await fileInput.setInputFiles({
+      name: 'test.png',
+      mimeType: 'image/png',
+      buffer: buffer
+    });
+
+    await page.waitForTimeout(1000);
+    await expect(page.locator('img[alt="Preview"]')).toBeVisible();
+
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_file_preview.png') });
+  });
+
   test('Stack Composer Screenshots', async ({ page }) => {
     await page.goto('/stacks');
     await page.waitForTimeout(1000);
