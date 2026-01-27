@@ -933,7 +933,8 @@ func (tm *Manager) ListMCPToolsForServices(allowedServices map[string]bool) []*m
 func (tm *Manager) listMCPToolsFromCache(allowedServices map[string]bool) []*mcp.Tool {
 	// Optimization: Pre-allocate slice if possible? We don't know exact size easily without iterating.
 	// But we can guess or just let append handle it.
-	var result []*mcp.Tool
+	// Initialize with empty slice to ensure JSON marshals to [] instead of null
+	result := make([]*mcp.Tool, 0)
 	for serviceID := range allowedServices {
 		if tools, ok := tm.cachedMCPToolsByService[serviceID]; ok {
 			result = append(result, tools...)
