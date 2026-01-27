@@ -29,7 +29,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
-RUN npm run build
+# Pass the build argument to the environment during build
+RUN NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} npm run build
 RUN mkdir -p public
 
 # Production image, copy all the files and run next
