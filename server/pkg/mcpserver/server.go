@@ -675,9 +675,15 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		// If we have a structured result (either directly or converted), use the summarizer.
 		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
 		if !isStructured && jsonBytes != nil && marshalErr == nil {
-			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
-			// This saves a second marshal operation for large maps.
-			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging.
+			// If the payload is too large, we skip redaction and logging content to avoid O(N) cost and allocation.
+			if len(jsonBytes) > 2048 {
+				logValue = slog.StringValue(fmt.Sprintf("<Large JSON result: %d bytes>", len(jsonBytes)))
+			} else {
+				// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
+				// This saves a second marshal operation for large maps.
+				logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+			}
 		} else {
 			logValue = summarizeCallToolResult(finalResult)
 		}
