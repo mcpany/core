@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/logging"
 	"gopkg.in/yaml.v3"
 )
 
@@ -54,7 +55,8 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	// This captures things that JSON schema might miss (custom Go validation logic like file existence)
 	engine, err := config.NewEngine("config.yaml")
 	if err != nil {
-		errors = append(errors, fmt.Sprintf("Failed to initialize config engine: %v", err))
+		logging.GetLogger().Error("Failed to initialize config engine", "error", err)
+		errors = append(errors, "Internal validation error: failed to initialize validation engine")
 	} else {
 		// Skip schema validation in the engine since we already performed it above
 		if configurable, ok := engine.(config.ConfigurableEngine); ok {
@@ -63,7 +65,8 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
 		if err := engine.Unmarshal([]byte(req.Content), cfg); err != nil {
-			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", err))
+			logging.GetLogger().Error("Failed to unmarshal config during validation", "error", err)
+			errors = append(errors, "Failed to parse configuration structure")
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
 			validationErrors := config.Validate(r.Context(), cfg, config.Server)

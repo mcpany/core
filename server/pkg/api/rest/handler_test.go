@@ -49,6 +49,15 @@ func TestValidateConfigHandler(t *testing.T) {
 			expectError:    true,
 		},
 		{
+			name:           "Invalid Config Structure",
+			method:         http.MethodPost,
+			// Valid YAML but invalid structure for McpAnyServerConfig (e.g. array where object expected)
+			body:           `{"content": "global_settings: [1, 2, 3]"}`,
+			expectedStatus: http.StatusOK,
+			expectedValid:  false,
+			expectError:    true,
+		},
+		{
 			name:           "Invalid JSON Body",
 			method:         http.MethodPost,
 			body:           `{"content": "foo",}`, // Invalid JSON
@@ -94,6 +103,20 @@ func TestValidateConfigHandler(t *testing.T) {
 
 				if tt.expectError && len(resp.Errors) == 0 {
 					t.Error("expected errors but got none")
+				}
+
+				// Verify error message sanitization
+				if tt.name == "Invalid Config Structure" {
+					found := false
+					for _, msg := range resp.Errors {
+						if msg == "Failed to parse configuration structure" {
+							found = true
+							break
+						}
+					}
+					if !found {
+						t.Errorf("expected sanitized error message 'Failed to parse configuration structure', got: %v", resp.Errors)
+					}
 				}
 			}
 		})

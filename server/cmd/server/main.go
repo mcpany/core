@@ -51,7 +51,10 @@ func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
 	if envFile != "" {
 		if err := godotenv.Load(envFile); err != nil {
-			return fmt.Errorf("failed to load env file %q: %w", envFile, err)
+			// Don't leak full path details if possible, just say "specified env file" or use base name
+			// But since the user specified it, echoing it back is usually fine in CLI.
+			// However, for strict security, we can be more generic or ensure we don't leak extra context from err.
+			return fmt.Errorf("failed to load specified env file: %w", err)
 		}
 		return nil
 	}
