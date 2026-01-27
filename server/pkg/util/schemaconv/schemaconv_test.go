@@ -162,10 +162,6 @@ func (m *mockFieldDescriptor) Kind() protoreflect.Kind {
 	return m.kind
 }
 
-func (m *mockFieldDescriptor) Options() protoreflect.ProtoMessage {
-	return nil
-}
-
 func (m *mockFieldDescriptor) Message() protoreflect.MessageDescriptor {
 	return m.message
 }

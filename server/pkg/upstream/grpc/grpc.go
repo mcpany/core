@@ -264,9 +264,14 @@ func (u *Upstream) createAndRegisterGRPCTools(
 			continue
 		}
 
-		propertiesStruct, err := schemaconv.MethodDescriptorToProtoProperties(methodDescriptor)
+		requestFields := make([]schemaconv.McpFieldParameter, len(toolDef.RequestFields))
+		for i := range toolDef.RequestFields {
+			requestFields[i] = &toolDef.RequestFields[i]
+		}
+
+		propertiesStruct, err := schemaconv.McpFieldsToProtoProperties(requestFields)
 		if err != nil {
-			log.Error("Failed to convert MethodDescriptor to InputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
+			log.Error("Failed to convert McpFields to InputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
 			continue
 		}
 		if propertiesStruct == nil {
@@ -279,9 +284,13 @@ func (u *Upstream) createAndRegisterGRPCTools(
 			},
 		}
 
-		outputPropertiesStruct, err := schemaconv.MethodOutputDescriptorToProtoProperties(methodDescriptor)
+		responseFields := make([]schemaconv.McpFieldParameter, len(toolDef.ResponseFields))
+		for i := range toolDef.ResponseFields {
+			responseFields[i] = &toolDef.ResponseFields[i]
+		}
+		outputPropertiesStruct, err := schemaconv.McpFieldsToProtoProperties(responseFields)
 		if err != nil {
-			log.Error("Failed to convert MethodDescriptor to OutputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
+			log.Error("Failed to convert McpFields to OutputSchema, skipping.", "tool_name", toolDef.Name, "error", err)
 			continue
 		}
 		if outputPropertiesStruct == nil {

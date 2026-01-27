@@ -9,8 +9,6 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -102,10 +100,6 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]interface{}, error) {
 	schema := map[string]interface{}{
 		"type": TypeString, // Default
-	}
-
-	if opts := field.Options(); opts != nil && proto.HasExtension(opts, mcpopt.E_FieldDescription) {
-		schema["description"] = proto.GetExtension(opts, mcpopt.E_FieldDescription).(string)
 	}
 
 	switch field.Kind() {

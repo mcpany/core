@@ -241,9 +241,6 @@ We welcome contributions to MCP Any! This section provides a brief overview of h
     - Runs all unit, integration, and E2E tests to ensure system stability.
 - **Lint**: `make lint`
     - Runs `golangci-lint` and other static analysis tools to maintain code quality.
-- **Check Docs**:
-    - Go: `go run server/tools/check_doc.go server/`
-    - TypeScript: `python3 server/tools/check_ts_doc.py`
 - **Generate**: `make gen`
     - Regenerates Go and TypeScript code from Protocol Buffers definitions.
 - **Clean**: `make clean`
@@ -323,7 +320,6 @@ We strive for high code quality. Please ensure the following before submitting a
     ```bash
     python3 server/tools/check_ts_doc.py
     ```
-  - **Note**: Ensure these checks pass before submitting your PR.
 - **Testing**: Add unit tests for new functionality. Run all tests with:
   ```bash
   make test

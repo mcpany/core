@@ -23,14 +23,6 @@ interface ToolSafetyTableProps {
     onUpdate?: () => void;
 }
 
-/**
- * ToolSafetyTable displays a table of tools and allows toggling their enabled/disabled status.
- *
- * @param props - The component props.
- * @param props.tools - The list of tools to display.
- * @param props.onUpdate - Callback function called when a tool status is updated.
- * @returns A table component for managing tool safety.
- */
 export function ToolSafetyTable({ tools, onUpdate }: ToolSafetyTableProps) {
     const { toast } = useToast();
     const [loading, setLoading] = useState<Record<string, boolean>>({});
