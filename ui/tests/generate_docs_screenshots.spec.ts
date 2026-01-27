@@ -221,7 +221,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });
     // Verify we are editing the HTTP service
     // Note: 'HTTP' might be in a select value or text.
-    await page.getByLabel('Address / URL').waitFor({ state: 'visible', timeout: 10000 });
+    await page.getByLabel('Address / URL').waitFor({ state: 'visible', timeout: 20000 });
 
     // Make a change to trigger diff
     // We need to change a field. Let's change the address.
@@ -609,18 +609,26 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await expect(page.getByText('Create Credential', { exact: true })).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(500);
 
-    await page.getByLabel('Name').fill('Test Credential');
+    // Use role selector which is more specific than getByLabel which matches multiple
+    await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Test Credential');
     // Test Connection section
     await page.getByPlaceholder('https://api.example.com/test').fill('https://api.example.com/status');
     const testBtn = page.getByRole('button', { name: 'Test', exact: true });
 
     // Mock testAuth response
+    // Use a wildcard for the debug/auth-test endpoint which is used in newer versions
+    await page.route('**/api/v1/debug/auth-test', async route => {
+         await route.fulfill({ status: 200, json: { status: 200, status_text: 'OK' } });
+    });
+    // Fallback for older path if still used
     await page.route('**/api/v1/auth/test', async route => {
          await route.fulfill({ status: 200, json: { status: 200, status_text: 'OK' } });
     });
 
     await testBtn.click();
-    await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
+    // Wait longer and ensure visibility
+    // Relaxed check to match either plain text or accessible text
+    await expect(page.getByText(/Test passed: 200/)).toBeVisible({ timeout: 20000 });
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
   });

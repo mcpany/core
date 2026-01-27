@@ -77,7 +77,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             throw new Error("No services found in the provided configuration.");
         }
 
-        return services.map(s => ({
+        return services.map((s: any) => ({
             ...s,
             _type: s.openapiService ? "OpenAPI" : s.grpcService ? "gRPC" : s.httpService ? "HTTP" : s.mcpService ? "MCP" : "Unknown"
         }));
@@ -101,7 +101,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
         setStep('importing');
         setError(null);
         try {
-            await Promise.all(previewServices.map(s => {
+            await Promise.all(previewServices.map((s: any) => {
                 // Remove internal fields before sending
                 const { _type, ...serviceConfig } = s;
                 return apiClient.registerService(serviceConfig);
