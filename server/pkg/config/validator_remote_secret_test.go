@@ -16,6 +16,13 @@ import (
 )
 
 func TestReproRemoteSecretValidation(t *testing.T) {
+	// Mock execLookPath to ensure "ls" is always found, preventing interference from other tests
+	oldLookPath := execLookPath
+	defer func() { execLookPath = oldLookPath }()
+	execLookPath = func(file string) (string, error) {
+		return "/bin/ls", nil
+	}
+
 	// Allow loopback secrets for this test
 	os.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_SECRETS")
