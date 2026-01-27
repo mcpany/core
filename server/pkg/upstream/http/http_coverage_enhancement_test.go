@@ -39,7 +39,8 @@ func TestHTTPUpstream_CheckHealth_Success(t *testing.T) {
 		"http_service": {
 			"address": "` + server.URL + `",
 			"health_check": {
-				"url": "` + server.URL + `"
+				"url": "` + server.URL + `",
+                "expected_code": 200
 			},
 			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
 			"calls": {
@@ -100,7 +101,8 @@ func TestHTTPUpstream_CheckHealth_CheckerFailure(t *testing.T) {
 		"http_service": {
 			"address": "` + server.URL + `",
 			"health_check": {
-				"url": "` + server.URL + `"
+				"url": "` + server.URL + `",
+                "expected_code": 200
 			},
 			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
 			"calls": {
@@ -324,10 +326,10 @@ func TestHTTPUpstream_Register_WithIdleTimeout(t *testing.T) {
 					"method": "HTTP_METHOD_GET",
 					"endpoint_path": "/test"
 				}
-			},
-			"connection_pool": {
-				"idle_timeout": "60s"
 			}
+		},
+		"connection_pool": {
+			"idle_timeout": "60s"
 		}
 	}`
 	serviceConfig := &configv1.UpstreamServiceConfig{}
