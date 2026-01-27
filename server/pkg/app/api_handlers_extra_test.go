@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/storage/memory"
 	"github.com/spf13/afero"
@@ -145,6 +146,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		req = req.WithContext(auth.ContextWithRoles(req.Context(), []string{"admin"}))
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
@@ -163,6 +165,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		req = req.WithContext(auth.ContextWithRoles(req.Context(), []string{"admin"}))
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
@@ -184,6 +187,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		req = req.WithContext(auth.ContextWithRoles(req.Context(), []string{"admin"}))
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
@@ -203,6 +207,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		req = req.WithContext(auth.ContextWithRoles(req.Context(), []string{"admin"}))
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 

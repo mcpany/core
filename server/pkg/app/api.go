@@ -329,6 +329,22 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
+		// Sentinel Security: Block unsafe configurations unless admin or explicitly allowed
+		if isUnsafeConfig(&svc) {
+			allow := false
+			if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
+				allow = true
+			} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				allow = true
+			}
+
+			if !allow {
+				logging.GetLogger().Warn("Blocked unsafe service validation via API", "service", svc.GetName())
+				http.Error(w, "Validation of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins.", http.StatusForbidden)
+				return
+			}
+		}
+
 		// 2. Connectivity / Health Check
 		var checkErr error
 		var checkDetails string
