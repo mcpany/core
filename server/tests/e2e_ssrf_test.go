@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 )
 
 // mockResolver implements util.IPResolver
@@ -35,6 +36,15 @@ func TestSafeDialer_BlocksDiscardOnly(t *testing.T) {
 
 	// Mock the resolver to force resolution to a Discard-Only IP
 	discardIP := net.ParseIP("100::1")
+	if discardIP == nil {
+		t.Fatal("Failed to parse Discard-Only IP")
+	}
+
+	// Verify that the validation logic considers this private (sanity check for the test environment)
+	if !validation.IsPrivateNetworkIP(discardIP) {
+		t.Fatalf("Sanity Check Failed: validation.IsPrivateNetworkIP(100::1) returned false. The validation fix is not active.")
+	}
+
 	dialer.Resolver = &mockResolver{ip: discardIP}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -57,6 +67,15 @@ func TestSafeDialer_BlocksBenchmarkingIPv6(t *testing.T) {
 	// Verify blocking of 2001:2::/48
 	dialer := util.NewSafeDialer()
 	benchIP := net.ParseIP("2001:2::1")
+	if benchIP == nil {
+		t.Fatal("Failed to parse Benchmarking IP")
+	}
+
+	// Verify that the validation logic considers this private
+	if !validation.IsPrivateNetworkIP(benchIP) {
+		t.Fatalf("Sanity Check Failed: validation.IsPrivateNetworkIP(2001:2::1) returned false. The validation fix is not active.")
+	}
+
 	dialer.Resolver = &mockResolver{ip: benchIP}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
