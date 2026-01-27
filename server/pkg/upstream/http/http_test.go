@@ -566,11 +566,6 @@ func TestHTTPUpstream_Register(t *testing.T) {
 	})
 }
 
-func newMockToolManager() *mockToolManager {
-	return &mockToolManager{
-		addedTools: make([]tool.Tool, 0),
-	}
-}
 
 func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 	pm := pool.NewManager()
@@ -695,69 +690,6 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 	assert.Len(t, discoveredTools, 0, "No tools should be registered for an invalid method")
 }
 
-// mockToolManager to simulate errors
-type mockToolManager struct {
-	tool.ManagerInterface
-	addError    error
-	addedTools  []tool.Tool
-	failOnClear bool
-}
-
-func (m *mockToolManager) AddTool(t tool.Tool) error {
-	if m.addError != nil {
-		return m.addError
-	}
-	m.addedTools = append(m.addedTools, t)
-	return nil
-}
-
-func (m *mockToolManager) GetTool(name string) (tool.Tool, bool) {
-	for _, t := range m.addedTools {
-		// Simplified check: In a real scenario, you'd parse the name
-		// and check against the tool's actual name and service key.
-		// For this mock, we'll just assume the test provides the full tool ID.
-		sanitizedToolName, _ := util.SanitizeToolName(t.Tool().GetName())
-		toolID := t.Tool().GetServiceId() + "." + sanitizedToolName
-		if toolID == name {
-			return t, true
-		}
-	}
-	return nil, false
-}
-
-func (m *mockToolManager) ListTools() []tool.Tool {
-	return m.addedTools
-}
-
-func (m *mockToolManager) ListServices() []*tool.ServiceInfo {
-	return nil
-}
-
-func (m *mockToolManager) ClearToolsForService(serviceID string) {
-	if m.failOnClear {
-		// To test error handling if clearing was to fail, although the
-		// current implementation does not return an error.
-		return
-	}
-	var remainingTools []tool.Tool
-	for _, t := range m.addedTools {
-		if t.Tool().GetServiceId() != serviceID {
-			remainingTools = append(remainingTools, t)
-		}
-	}
-	m.addedTools = remainingTools
-}
-
-func (m *mockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *mockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) {
-	return nil, false
-}
-func (m *mockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *mockToolManager) CallTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
-	return nil, errors.New("not implemented")
-}
-
-func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 func TestHTTPUpstream_URLConstruction(t *testing.T) {
 	testCases := []struct {

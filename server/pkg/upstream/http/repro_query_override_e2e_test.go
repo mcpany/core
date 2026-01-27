@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -22,8 +21,7 @@ import (
 
 func TestHTTPUpstream_E2E_QueryOverride(t *testing.T) {
 	// 0. Enable loopback resources for test
-	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
-	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	// 1. Start mock server
 	receivedQuery := ""
