@@ -45,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ResourceViewer } from "./resource-viewer";
 import { ResourcePreviewModal } from "./resource-preview-modal";
+import { useViewPreferences } from "@/contexts/view-preferences";
 
 
 interface ResourceExplorerProps {
@@ -57,6 +58,9 @@ interface ResourceExplorerProps {
  * @param { initialResources = [] - The { initialResources = [].
  */
 export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProps) {
+    const { density } = useViewPreferences();
+    const isCompact = density === "compact";
+
     const [resources, setResources] = useState<ResourceDefinition[]>(initialResources);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -279,7 +283,8 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                             <ContextMenuTrigger asChild>
                                                 <div
                                                     className={cn(
-                                                        "flex items-center gap-3 p-3 px-4 cursor-pointer hover:bg-accent/50 transition-colors text-sm group",
+                                                        "flex items-center gap-3 cursor-pointer hover:bg-accent/50 transition-colors group",
+                                                        isCompact ? "p-1.5 px-3 text-xs" : "p-3 px-4 text-sm",
                                                         isSelected ? "bg-accent text-accent-foreground border-l-4 border-l-primary pl-3" : "border-l-4 border-l-transparent"
                                                     )}
                                                     onClick={() => setSelectedUri(res.uri)}
@@ -332,9 +337,9 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                     )}
                                                     onClick={() => setSelectedUri(res.uri)}
                                                 >
-                                                    <CardContent className="p-3 flex flex-col items-center text-center gap-2">
-                                                        <div className="p-2 bg-muted rounded-full">
-                                                            <Icon className="h-6 w-6 text-muted-foreground" />
+                                                    <CardContent className={cn("flex flex-col items-center text-center gap-2", isCompact ? "p-2" : "p-3")}>
+                                                        <div className={cn("bg-muted rounded-full", isCompact ? "p-1.5" : "p-2")}>
+                                                            <Icon className={cn("text-muted-foreground", isCompact ? "h-5 w-5" : "h-6 w-6")} />
                                                         </div>
                                                         <div className="w-full">
                                                             <div className="font-medium text-xs truncate" title={res.name}>{res.name}</div>

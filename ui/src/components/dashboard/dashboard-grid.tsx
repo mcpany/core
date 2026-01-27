@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { useViewPreferences } from "@/contexts/view-preferences";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -64,6 +65,8 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * @returns The rendered component.
  */
 export function DashboardGrid() {
+    const { density } = useViewPreferences();
+    const isCompact = density === "compact";
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -180,7 +183,7 @@ export function DashboardGrid() {
     const visibleWidgets = widgets.filter(w => !w.hidden);
 
     return (
-        <div className="space-y-4">
+        <div className={cn("space-y-4", isCompact && "space-y-2")}>
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
@@ -228,7 +231,7 @@ export function DashboardGrid() {
                         <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            className="grid grid-cols-12 gap-4"
+                            className={cn("grid grid-cols-12", isCompact ? "gap-2" : "gap-4")}
                         >
                             {visibleWidgets.map((widget, index) => (
                                 <Draggable key={widget.instanceId} draggableId={widget.instanceId} index={index}>

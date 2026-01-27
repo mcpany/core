@@ -12,8 +12,10 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ViewOptions } from "@/components/view-options"
 import { GlobalSearch } from "@/components/global-search"
 import { Separator } from "@/components/ui/separator"
+import { ViewPreferencesProvider } from "@/contexts/view-preferences"
 import { UserProvider } from "@/components/user-context"
 import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context"
 import { ServiceHealthProvider } from "@/contexts/service-health-context"
@@ -66,6 +68,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+          <ViewPreferencesProvider>
           <TooltipProvider>
             <UserProvider>
               <ServiceHealthProvider>
@@ -82,6 +85,7 @@ export default function RootLayout({
                          </div>
                          <div className="flex items-center gap-2">
                              <GlobalSearch />
+                             <ViewOptions />
                              <ThemeToggle />
                          </div>
                      </div>
@@ -99,6 +103,7 @@ export default function RootLayout({
             </UserProvider>
             <Toaster />
           </TooltipProvider>
+          </ViewPreferencesProvider>
         </ThemeProvider>
       </body>
     </html>

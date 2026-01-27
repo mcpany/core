@@ -36,6 +36,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useViewPreferences } from "@/contexts/view-preferences";
+import { cn } from "@/lib/utils";
 
 
 interface ServiceListProps {
@@ -59,6 +61,8 @@ interface ServiceListProps {
  * @param onExport - The onExport.
  */
 export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
+  const { density } = useViewPreferences();
+  const isCompact = density === "compact";
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -184,6 +188,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
                <ServiceRow
                   key={service.name}
                   service={service}
+                  isCompact={isCompact}
                   isSelected={selected.has(service.name)}
                   onSelect={handleSelectOne}
                   onToggle={onToggle}
@@ -255,8 +260,9 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
  * @param props.onLogin - The onLogin property.
  * @returns The rendered component.
  */
-const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
+const ServiceRow = memo(function ServiceRow({ service, isCompact, isSelected, onSelect, onToggle, onEdit, onDelete, onDuplicate, onExport, onLogin, onRestart }: {
     service: UpstreamServiceConfig,
+    isCompact: boolean,
     isSelected: boolean,
     onSelect: (name: string, checked: boolean) => void,
     onToggle?: (name: string, enabled: boolean) => void,
@@ -303,20 +309,22 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     }, [history]);
 
     return (
-        <TableRow className={service.disable ? "opacity-60 bg-muted/40" : ""}>
-             <TableCell>
+        <TableRow className={cn(service.disable ? "opacity-60 bg-muted/40" : "", isCompact ? "h-8 text-xs" : "")}>
+             <TableCell className={cn(isCompact ? "py-1" : "")}>
                  <Checkbox
                     checked={isSelected}
                     onCheckedChange={(checked) => onSelect(service.name, !!checked)}
                     aria-label={`Select ${service.name}`}
+                    className={cn(isCompact ? "h-3.5 w-3.5" : "")}
                  />
              </TableCell>
-             <TableCell>
+             <TableCell className={cn(isCompact ? "py-1" : "")}>
                  <div className="flex items-center gap-2">
                     {onToggle && (
                         <Switch
                             checked={!service.disable}
                             onCheckedChange={(checked) => onToggle(service.name, checked)}
+                            className={cn(isCompact ? "scale-75 origin-left" : "")}
                         />
                     )}
                     {service.lastError && (
@@ -326,7 +334,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    className={cn("text-destructive hover:text-destructive hover:bg-destructive/10", isCompact ? "h-5 w-5" : "h-6 w-6")}
                                     title="View Error & Troubleshoot"
                                 >
                                     <AlertTriangle className="h-4 w-4" />
@@ -336,7 +344,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                     )}
                  </div>
              </TableCell>
-             <TableCell className="font-medium">
+             <TableCell className={cn("font-medium", isCompact ? "py-1" : "")}>
                  <div className="flex items-center gap-2">
                      {service.name}
                      {service.lastError && (
@@ -351,10 +359,10 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                      )}
                  </div>
              </TableCell>
-             <TableCell>
-                 <Badge variant="outline">{type}</Badge>
+             <TableCell className={cn(isCompact ? "py-1" : "")}>
+                 <Badge variant="outline" className={cn(isCompact ? "text-[10px] h-4 px-1" : "")}>{type}</Badge>
              </TableCell>
-             <TableCell>
+             <TableCell className={cn(isCompact ? "py-1" : "")}>
                 <div className="w-[80px] h-[24px]">
                     {!service.disable && (
                         <Sparkline
@@ -367,25 +375,25 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                     )}
                 </div>
              </TableCell>
-             <TableCell>
+             <TableCell className={cn(isCompact ? "py-1" : "")}>
                  <div className="flex flex-wrap gap-1">
                      {service.tags?.map((tag) => (
-                         <Badge key={tag} variant="secondary" className="text-xs px-1 py-0 h-5">
+                         <Badge key={tag} variant="secondary" className={cn("text-xs px-1 py-0", isCompact ? "h-4 text-[10px]" : "h-5")}>
                              {tag}
                          </Badge>
                      ))}
                  </div>
              </TableCell>
-             <TableCell className="font-mono text-xs max-w-[200px] truncate" title={address}>
+             <TableCell className={cn("font-mono text-xs max-w-[200px] truncate", isCompact ? "py-1" : "")} title={address}>
                  {address}
              </TableCell>
-             <TableCell>
+             <TableCell className={cn(isCompact ? "py-1" : "")}>
                  {service.version}
              </TableCell>
-             <TableCell className="text-center">
-                 {secure ? <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : <XCircle className="h-4 w-4 text-muted-foreground mx-auto" />}
+             <TableCell className={cn("text-center", isCompact ? "py-1" : "")}>
+                 {secure ? <CheckCircle className={cn("text-green-500 mx-auto", isCompact ? "h-3 w-3" : "h-4 w-4")} /> : <XCircle className={cn("text-muted-foreground mx-auto", isCompact ? "h-3 w-3" : "h-4 w-4")} />}
              </TableCell>
-             <TableCell className="text-right">
+             <TableCell className={cn("text-right", isCompact ? "py-1" : "")}>
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
