@@ -36,6 +36,11 @@ test.describe('Settings & Secrets', () => {
         await route.fulfill({ status: 200, json: { nodes: [], edges: [] } });
     });
 
+    // Mock Profiles API
+    await page.route(/\/api\/v1\/profiles/, async route => {
+        await route.fulfill({ status: 200, json: [] });
+    });
+
     // Mock Secrets API with state
     const secretsStore: any[] = [];
 
