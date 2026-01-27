@@ -129,7 +129,7 @@ describe('GlobalSearch', () => {
         // The first one is likely the navigation one based on render order.
         fireEvent.click(serviceItems[0]);
 
-        expect(mockPush).toHaveBeenCalledWith('/services?id=srv1');
+        expect(mockPush).toHaveBeenCalledWith('/upstream-services?id=srv1');
     });
 
     it('triggers restart action', async () => {
