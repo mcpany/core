@@ -14,10 +14,10 @@ import (
 // by the configuration system.
 //
 // Security Policy:
-// 1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
-//    (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection.
-// 2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated).
-// 3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
+//  1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
+//     (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection.
+//  2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated).
+//  3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")
