@@ -297,6 +297,71 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 	return false, nil
 }
 
+// OpenFile opens a file using the local filesystem, resolving the path first.
+// It includes checks to prevent TOCTOU attacks when symlinks are denied.
+//
+// path is the virtual path.
+// flag is the open flag.
+// perm is the permission.
+//
+// Returns the file.
+// Returns an error if the operation fails.
+func (p *LocalProvider) OpenFile(path string, flag int, perm os.FileMode) (afero.File, error) {
+	resolvedPath, err := p.ResolvePath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	f, err := p.fs.OpenFile(resolvedPath, flag, perm)
+	if err != nil {
+		return nil, err
+	}
+
+	// Security check for TOCTOU if symlinks are denied.
+	if p.symlinkMode == configv1.FilesystemUpstreamService_DENY {
+		var info os.FileInfo
+		var err error
+
+		if lstater, ok := p.fs.(afero.Lstater); ok {
+			var called bool
+			info, called, err = lstater.LstatIfPossible(resolvedPath)
+			if !called {
+				// Fallback to simple Stat if Lstat is not supported, but log warning or fail?
+				// Since we require strong security here, we should probably fail if we can't verify.
+				// However, NewOsFs supports Lstat.
+				_ = f.Close()
+				return nil, fmt.Errorf("filesystem does not support Lstat for security verification")
+			}
+		} else {
+			_ = f.Close()
+			return nil, fmt.Errorf("filesystem does not support Lstat for security verification")
+		}
+
+		if err != nil {
+			_ = f.Close()
+			return nil, fmt.Errorf("failed to verify file (lstat): %w", err)
+		}
+
+		if info.Mode()&os.ModeSymlink != 0 {
+			_ = f.Close()
+			return nil, fmt.Errorf("access denied: path is a symlink (possible TOCTOU attack)")
+		}
+
+		fInfo, err := f.Stat()
+		if err != nil {
+			_ = f.Close()
+			return nil, fmt.Errorf("failed to verify file (stat): %w", err)
+		}
+
+		if !os.SameFile(info, fInfo) {
+			_ = f.Close()
+			return nil, fmt.Errorf("security check failed: file changed during open")
+		}
+	}
+
+	return f, nil
+}
+
 // Close closes the provider.
 //
 // Returns an error if the operation fails.

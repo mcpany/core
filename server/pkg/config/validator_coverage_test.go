@@ -141,7 +141,7 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 			ParamName: proto.String(""),
 		}.Build(),
 	}.Build()
-	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err := validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Bearer Token errors
@@ -150,7 +150,7 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 			Token: nil,
 		}.Build(),
 	}.Build()
-	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err = validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Basic Auth errors
@@ -159,7 +159,7 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 			Username: proto.String(""),
 		}.Build(),
 	}.Build()
-	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err = validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 }
 
@@ -248,7 +248,7 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 			TokenUrl: proto.String(""),
 		}.Build(),
 	}.Build()
-	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err := validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Mtls
@@ -257,7 +257,7 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 			ClientCertPath: proto.String(""),
 		}.Build(),
 	}.Build()
-	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err = validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 }
 
@@ -320,7 +320,7 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 			},
 		},
 	}
-	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err := validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "required for outgoing")
 
@@ -333,7 +333,7 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 			}.Build(),
 		}.Build(),
 	}.Build()
-	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err = validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "resolved api key value is empty")
 }

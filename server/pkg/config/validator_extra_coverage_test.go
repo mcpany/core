@@ -58,7 +58,7 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
 	auth := &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_BasicAuth{BasicAuth: basicAuth},
 	}
-	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err := validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "basic auth password validation failed")
 
@@ -71,7 +71,7 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
 	auth = &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_BearerToken{BearerToken: bearerAuth},
 	}
-	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+	err = validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "bearer token validation failed")
 
@@ -85,7 +85,7 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
     auth = &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_Oauth2{Oauth2: oauth},
 	}
-    err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+    err = validateAuthentication(ctx, auth, AuthValidationContextOutgoing)
     assert.Error(t, err)
     assert.Contains(t, err.Error(), "oauth2 client_id validation failed")
 }

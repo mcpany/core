@@ -16,6 +16,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/santhosh-tekuri/jsonschema/v5"
@@ -173,7 +174,7 @@ func validateCollection(ctx context.Context, collection *configv1.Collection) er
 	}
 
 	if authConfig := collection.GetAuthentication(); authConfig != nil {
-		if err := validateUpstreamAuthentication(ctx, authConfig, AuthValidationContextOutgoing); err != nil {
+		if err := validateAuthentication(ctx, authConfig, AuthValidationContextOutgoing); err != nil {
 			return err
 		}
 	}
@@ -301,6 +302,8 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 		return nil
 	}
 	switch secret.WhichValue() {
+	case configv1.SecretValue_PlainText_case:
+		logging.GetLogger().Warn("Security Risk: Using plain text secret in configuration. It is recommended to use environment variables or a secret manager.")
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if _, exists := os.LookupEnv(envVar); !exists {
@@ -482,390 +485,6 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 		return validateOIDCAuth(ctx, authConfig.GetOidc())
 	case configv1.Authentication_TrustedHeader_case:
 		return validateTrustedHeaderAuth(authConfig.GetTrustedHeader())
-	}
-	return nil
-}
-
-func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
-	if httpService := service.GetHttpService(); httpService != nil {
-		return validateHTTPService(httpService)
-	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
-		return validateWebSocketService(websocketService)
-	} else if grpcService := service.GetGrpcService(); grpcService != nil {
-		return validateGrpcService(grpcService)
-	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
-		return validateOpenAPIService(openapiService)
-	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
-		return validateCommandLineService(commandLineService)
-	} else if mcpService := service.GetMcpService(); mcpService != nil {
-		return validateMcpService(mcpService)
-	} else if sqlService := service.GetSqlService(); sqlService != nil {
-		return validateSQLService(sqlService)
-	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
-		return validateGraphQLService(graphqlService)
-	} else if webrtcService := service.GetWebrtcService(); webrtcService != nil {
-		return validateWebrtcService(webrtcService)
-	}
-	return nil
-}
-
-func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
-	if httpService.GetAddress() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("http service has empty address"),
-			Suggestion: "Set the 'address' field in the http_service configuration (e.g., 'http://localhost:8080').",
-		}
-	}
-	if strings.TrimSpace(httpService.GetAddress()) != httpService.GetAddress() {
-		return &ActionableError{
-			Err:        fmt.Errorf("http address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-		}
-	}
-	if !validation.IsValidURL(httpService.GetAddress()) {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid http address: %s", httpService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL (e.g., 'http://example.com').",
-		}
-	}
-	u, _ := url.Parse(httpService.GetAddress())
-	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid http address scheme: %s", u.Scheme),
-			Suggestion: "Use 'http' or 'https' as the scheme (e.g., http://example.com).",
-		}
-	}
-
-	for name, call := range httpService.GetCalls() {
-		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("http call %q input_schema error", name), err)
-		}
-		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("http call %q output_schema error", name), err)
-		}
-	}
-	return nil
-}
-
-func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
-	if websocketService.GetAddress() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("websocket service has empty address"),
-			Suggestion: "Set the 'address' field in the websocket_service configuration (e.g., 'ws://localhost:8080').",
-		}
-	}
-	if strings.TrimSpace(websocketService.GetAddress()) != websocketService.GetAddress() {
-		return &ActionableError{
-			Err:        fmt.Errorf("websocket address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-		}
-	}
-	if !validation.IsValidURL(websocketService.GetAddress()) {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL (e.g., 'ws://example.com').",
-		}
-	}
-	u, _ := url.Parse(websocketService.GetAddress())
-	if u.Scheme != "ws" && u.Scheme != "wss" {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid websocket address scheme: %s", u.Scheme),
-			Suggestion: "Use 'ws' or 'wss' as the scheme.",
-		}
-	}
-
-	for name, call := range websocketService.GetCalls() {
-		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("websocket call %q input_schema error", name), err)
-		}
-		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("websocket call %q output_schema error", name), err)
-		}
-	}
-	return nil
-}
-
-func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
-	if grpcService.GetAddress() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("gRPC service has empty address"),
-			Suggestion: "Set the 'address' field in the grpc_service configuration (e.g., 'localhost:50051').",
-		}
-	}
-
-	for name, call := range grpcService.GetCalls() {
-		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("grpc call %q input_schema error", name), err)
-		}
-		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("grpc call %q output_schema error", name), err)
-		}
-	}
-	return nil
-}
-
-func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) error {
-	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("openapi service must have either an address, spec content or spec url"),
-			Suggestion: "Provide one of 'address', 'spec_content', or 'spec_url' in the openapi_service configuration.",
-		}
-	}
-	if openapiService.GetAddress() != "" {
-		if strings.TrimSpace(openapiService.GetAddress()) != openapiService.GetAddress() {
-			return &ActionableError{
-				Err:        fmt.Errorf("openapi address contains hidden whitespace"),
-				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-			}
-		}
-		if !validation.IsValidURL(openapiService.GetAddress()) {
-			return &ActionableError{
-				Err:        fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
-				Suggestion: "Ensure the address is a valid URL.",
-			}
-		}
-	}
-	if openapiService.GetSpecUrl() != "" {
-		if strings.TrimSpace(openapiService.GetSpecUrl()) != openapiService.GetSpecUrl() {
-			return &ActionableError{
-				Err:        fmt.Errorf("openapi spec_url contains hidden whitespace"),
-				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-			}
-		}
-		if !validation.IsValidURL(openapiService.GetSpecUrl()) {
-			return &ActionableError{
-				Err:        fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
-				Suggestion: "Ensure the spec_url is a valid URL.",
-			}
-		}
-	}
-	return nil
-}
-
-func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
-	if commandLineService.GetCommand() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("command_line_service has empty command"),
-			Suggestion: "Set the 'command' field (e.g., './my-script.sh' or 'python my_script.py').",
-		}
-	}
-
-	// Only validate command existence if not running in a container
-	if commandLineService.GetContainerEnvironment().GetImage() == "" {
-		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
-			return WrapActionableError("command_line_service command validation failed", err)
-		}
-	}
-
-	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
-		return err
-	}
-	return nil
-}
-
-func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
-	if env == nil {
-		return nil
-	}
-	// We only validate volumes if an image is specified, as they are only used with Docker execution.
-	if env.GetImage() != "" {
-		for dest, src := range env.GetVolumes() {
-			if dest == "" {
-				return fmt.Errorf("container environment volume host path is empty")
-			}
-			if src == "" {
-				return fmt.Errorf("container environment volume container path is empty")
-			}
-			// dest is the key (Host Path), src is the value (Container Path).
-			// We must validate the Host Path (dest) to ensure it is secure.
-			// It must be either relative to the CWD or in the allowed list.
-			if err := validation.IsAllowedPath(dest); err != nil {
-				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func validateMcpService(mcpService *configv1.McpUpstreamService) error {
-	switch mcpService.WhichConnectionType() {
-	case configv1.McpUpstreamService_HttpConnection_case:
-		httpConn := mcpService.GetHttpConnection()
-		if httpConn.GetHttpAddress() == "" {
-			return &ActionableError{
-				Err:        fmt.Errorf("mcp service with http_connection has empty http_address"),
-				Suggestion: "Set the 'http_address' field (e.g., 'http://localhost:8080').",
-			}
-		}
-		if strings.TrimSpace(httpConn.GetHttpAddress()) != httpConn.GetHttpAddress() {
-			return &ActionableError{
-				Err:        fmt.Errorf("mcp http_address contains hidden whitespace"),
-				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-			}
-		}
-		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
-			return &ActionableError{
-				Err:        fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress()),
-				Suggestion: "Ensure the http_address is a valid URL.",
-			}
-		}
-	case configv1.McpUpstreamService_StdioConnection_case:
-		stdioConn := mcpService.GetStdioConnection()
-		if len(stdioConn.GetCommand()) == 0 {
-			return &ActionableError{
-				Err:        fmt.Errorf("mcp service with stdio_connection has empty command"),
-				Suggestion: "Set the 'command' field (e.g., 'npx', 'python', or path to executable).",
-			}
-		}
-
-		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
-		if stdioConn.GetContainerImage() == "" {
-			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
-				return WrapActionableError("mcp service with stdio_connection command validation failed", err)
-			}
-
-			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
-				return WrapActionableError("mcp service with stdio_connection argument validation failed", err)
-			}
-
-			if stdioConn.GetWorkingDirectory() != "" {
-				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
-					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
-				}
-				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
-					return fmt.Errorf("mcp service with stdio_connection working_directory validation failed: %w", err)
-				}
-			}
-		}
-
-		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {
-			return fmt.Errorf("mcp service with stdio_connection has invalid secret environment variable: %w", err)
-		}
-	case configv1.McpUpstreamService_BundleConnection_case:
-		bundleConn := mcpService.GetBundleConnection()
-		if bundleConn.GetBundlePath() == "" {
-			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
-		}
-		if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
-			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
-		}
-		if err := validateSecretMap(bundleConn.GetEnv()); err != nil {
-			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
-		}
-	default:
-		return fmt.Errorf("mcp service has no connection_type")
-	}
-
-	for name, call := range mcpService.GetCalls() {
-		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("mcp call %q input_schema error", name), err)
-		}
-		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("mcp call %q output_schema error", name), err)
-		}
-	}
-	return nil
-}
-
-func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
-	if sqlService.GetDriver() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("sql service has empty driver"),
-			Suggestion: "Set the 'driver' field (e.g., 'postgres', 'mysql', 'sqlite3').",
-		}
-	}
-	if sqlService.GetDsn() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("sql service has empty dsn"),
-			Suggestion: "Set the 'dsn' (Data Source Name) field with connection details.",
-		}
-	}
-
-	for name, call := range sqlService.GetCalls() {
-		if call.GetQuery() == "" {
-			return fmt.Errorf("sql call %q query is empty", name)
-		}
-		if err := validateSchema(call.GetInputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("sql call %q input_schema error", name), err)
-		}
-		if err := validateSchema(call.GetOutputSchema()); err != nil {
-			return WrapActionableError(fmt.Sprintf("sql call %q output_schema error", name), err)
-		}
-	}
-	return nil
-}
-
-func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) error {
-	if graphqlService.GetAddress() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("graphql service has empty address"),
-			Suggestion: "Set the 'address' field in the graphql_service configuration.",
-		}
-	}
-	if strings.TrimSpace(graphqlService.GetAddress()) != graphqlService.GetAddress() {
-		return &ActionableError{
-			Err:        fmt.Errorf("graphql address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-		}
-	}
-	if !validation.IsValidURL(graphqlService.GetAddress()) {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL.",
-		}
-	}
-	u, _ := url.Parse(graphqlService.GetAddress())
-	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid graphql address scheme: %s", u.Scheme),
-			Suggestion: "Use 'http' or 'https' as the scheme.",
-		}
-	}
-	return nil
-}
-
-func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error {
-	if webrtcService.GetAddress() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("webrtc service has empty address"),
-			Suggestion: "Set the 'address' field in the webrtc_service configuration.",
-		}
-	}
-	if strings.TrimSpace(webrtcService.GetAddress()) != webrtcService.GetAddress() {
-		return &ActionableError{
-			Err:        fmt.Errorf("webrtc address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
-		}
-	}
-	if !validation.IsValidURL(webrtcService.GetAddress()) {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL.",
-		}
-	}
-	u, _ := url.Parse(webrtcService.GetAddress())
-	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
-		return &ActionableError{
-			Err:        fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme),
-			Suggestion: "Use 'http' or 'https' as the scheme.",
-		}
-	}
-	return nil
-}
-
-func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Authentication, authCtx AuthValidationContext) error {
-	switch authConfig.WhichAuthMethod() {
-	case configv1.Authentication_ApiKey_case:
-		return validateAPIKeyAuth(ctx, authConfig.GetApiKey(), authCtx)
-	case configv1.Authentication_BearerToken_case:
-		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
-	case configv1.Authentication_BasicAuth_case:
-		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
-	case configv1.Authentication_Mtls_case:
-		return validateMtlsAuth(authConfig.GetMtls())
-	case configv1.Authentication_Oauth2_case:
-		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	}
 	return nil
 }
@@ -1308,4 +927,372 @@ func findSimilarEnvVar(target string) string {
 	}
 
 	return bestMatch
+}
+
+func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
+	if httpService := service.GetHttpService(); httpService != nil {
+		return validateHTTPService(httpService)
+	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
+		return validateWebSocketService(websocketService)
+	} else if grpcService := service.GetGrpcService(); grpcService != nil {
+		return validateGrpcService(grpcService)
+	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
+		return validateOpenAPIService(openapiService)
+	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
+		return validateCommandLineService(commandLineService)
+	} else if mcpService := service.GetMcpService(); mcpService != nil {
+		return validateMcpService(mcpService)
+	} else if sqlService := service.GetSqlService(); sqlService != nil {
+		return validateSQLService(sqlService)
+	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
+		return validateGraphQLService(graphqlService)
+	} else if webrtcService := service.GetWebrtcService(); webrtcService != nil {
+		return validateWebrtcService(webrtcService)
+	}
+	return nil
+}
+
+func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
+	if httpService.GetAddress() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("http service has empty address"),
+			Suggestion: "Set the 'address' field in the http_service configuration (e.g., 'http://localhost:8080').",
+		}
+	}
+	if strings.TrimSpace(httpService.GetAddress()) != httpService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("http address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
+	}
+	if !validation.IsValidURL(httpService.GetAddress()) {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid http address: %s", httpService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL (e.g., 'http://example.com').",
+		}
+	}
+	u, _ := url.Parse(httpService.GetAddress())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid http address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme (e.g., http://example.com).",
+		}
+	}
+
+	for name, call := range httpService.GetCalls() {
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("http call %q input_schema error", name), err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("http call %q output_schema error", name), err)
+		}
+	}
+	return nil
+}
+
+func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
+	if websocketService.GetAddress() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("websocket service has empty address"),
+			Suggestion: "Set the 'address' field in the websocket_service configuration (e.g., 'ws://localhost:8080').",
+		}
+	}
+	if strings.TrimSpace(websocketService.GetAddress()) != websocketService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("websocket address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
+	}
+	if !validation.IsValidURL(websocketService.GetAddress()) {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL (e.g., 'ws://example.com').",
+		}
+	}
+	u, _ := url.Parse(websocketService.GetAddress())
+	if u.Scheme != "ws" && u.Scheme != "wss" {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid websocket address scheme: %s", u.Scheme),
+			Suggestion: "Use 'ws' or 'wss' as the scheme.",
+		}
+	}
+
+	for name, call := range websocketService.GetCalls() {
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("websocket call %q input_schema error", name), err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("websocket call %q output_schema error", name), err)
+		}
+	}
+	return nil
+}
+
+func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
+	if grpcService.GetAddress() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("gRPC service has empty address"),
+			Suggestion: "Set the 'address' field in the grpc_service configuration (e.g., 'localhost:50051').",
+		}
+	}
+
+	for name, call := range grpcService.GetCalls() {
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("grpc call %q input_schema error", name), err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("grpc call %q output_schema error", name), err)
+		}
+	}
+	return nil
+}
+
+func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) error {
+	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("openapi service must have either an address, spec content or spec url"),
+			Suggestion: "Provide one of 'address', 'spec_content', or 'spec_url' in the openapi_service configuration.",
+		}
+	}
+	if openapiService.GetAddress() != "" {
+		if strings.TrimSpace(openapiService.GetAddress()) != openapiService.GetAddress() {
+			return &ActionableError{
+				Err:        fmt.Errorf("openapi address contains hidden whitespace"),
+				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
+		if !validation.IsValidURL(openapiService.GetAddress()) {
+			return &ActionableError{
+				Err:        fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
+				Suggestion: "Ensure the address is a valid URL.",
+			}
+		}
+	}
+	if openapiService.GetSpecUrl() != "" {
+		if strings.TrimSpace(openapiService.GetSpecUrl()) != openapiService.GetSpecUrl() {
+			return &ActionableError{
+				Err:        fmt.Errorf("openapi spec_url contains hidden whitespace"),
+				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
+		if !validation.IsValidURL(openapiService.GetSpecUrl()) {
+			return &ActionableError{
+				Err:        fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
+				Suggestion: "Ensure the spec_url is a valid URL.",
+			}
+		}
+	}
+	return nil
+}
+
+func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
+	if commandLineService.GetCommand() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("command_line_service has empty command"),
+			Suggestion: "Set the 'command' field (e.g., './my-script.sh' or 'python my_script.py').",
+		}
+	}
+
+	// Only validate command existence if not running in a container
+	if commandLineService.GetContainerEnvironment().GetImage() == "" {
+		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
+			return WrapActionableError("command_line_service command validation failed", err)
+		}
+	}
+
+	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
+	if env == nil {
+		return nil
+	}
+	// We only validate volumes if an image is specified, as they are only used with Docker execution.
+	if env.GetImage() != "" {
+		for dest, src := range env.GetVolumes() {
+			if dest == "" {
+				return fmt.Errorf("container environment volume host path is empty")
+			}
+			if src == "" {
+				return fmt.Errorf("container environment volume container path is empty")
+			}
+			// dest is the key (Host Path), src is the value (Container Path).
+			// We must validate the Host Path (dest) to ensure it is secure.
+			// It must be either relative to the CWD or in the allowed list.
+			if err := validation.IsAllowedPath(dest); err != nil {
+				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func validateMcpService(mcpService *configv1.McpUpstreamService) error {
+	switch mcpService.WhichConnectionType() {
+	case configv1.McpUpstreamService_HttpConnection_case:
+		httpConn := mcpService.GetHttpConnection()
+		if httpConn.GetHttpAddress() == "" {
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp service with http_connection has empty http_address"),
+				Suggestion: "Set the 'http_address' field (e.g., 'http://localhost:8080').",
+			}
+		}
+		if strings.TrimSpace(httpConn.GetHttpAddress()) != httpConn.GetHttpAddress() {
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp http_address contains hidden whitespace"),
+				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			}
+		}
+		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress()),
+				Suggestion: "Ensure the http_address is a valid URL.",
+			}
+		}
+	case configv1.McpUpstreamService_StdioConnection_case:
+		stdioConn := mcpService.GetStdioConnection()
+		if len(stdioConn.GetCommand()) == 0 {
+			return &ActionableError{
+				Err:        fmt.Errorf("mcp service with stdio_connection has empty command"),
+				Suggestion: "Set the 'command' field (e.g., 'npx', 'python', or path to executable).",
+			}
+		}
+
+		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
+		if stdioConn.GetContainerImage() == "" {
+			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
+				return WrapActionableError("mcp service with stdio_connection command validation failed", err)
+			}
+
+			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
+				return WrapActionableError("mcp service with stdio_connection argument validation failed", err)
+			}
+
+			if stdioConn.GetWorkingDirectory() != "" {
+				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
+					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
+				}
+				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
+					return fmt.Errorf("mcp service with stdio_connection working_directory validation failed: %w", err)
+				}
+			}
+		}
+
+		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {
+			return fmt.Errorf("mcp service with stdio_connection has invalid secret environment variable: %w", err)
+		}
+	case configv1.McpUpstreamService_BundleConnection_case:
+		bundleConn := mcpService.GetBundleConnection()
+		if bundleConn.GetBundlePath() == "" {
+			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
+		}
+		if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
+			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
+		}
+		if err := validateSecretMap(bundleConn.GetEnv()); err != nil {
+			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
+		}
+	default:
+		return fmt.Errorf("mcp service has no connection_type")
+	}
+
+	for name, call := range mcpService.GetCalls() {
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("mcp call %q input_schema error", name), err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("mcp call %q output_schema error", name), err)
+		}
+	}
+	return nil
+}
+
+func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
+	if sqlService.GetDriver() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("sql service has empty driver"),
+			Suggestion: "Set the 'driver' field (e.g., 'postgres', 'mysql', 'sqlite3').",
+		}
+	}
+	if sqlService.GetDsn() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("sql service has empty dsn"),
+			Suggestion: "Set the 'dsn' (Data Source Name) field with connection details.",
+		}
+	}
+
+	for name, call := range sqlService.GetCalls() {
+		if call.GetQuery() == "" {
+			return fmt.Errorf("sql call %q query is empty", name)
+		}
+		if err := validateSchema(call.GetInputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("sql call %q input_schema error", name), err)
+		}
+		if err := validateSchema(call.GetOutputSchema()); err != nil {
+			return WrapActionableError(fmt.Sprintf("sql call %q output_schema error", name), err)
+		}
+	}
+	return nil
+}
+
+func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) error {
+	if graphqlService.GetAddress() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("graphql service has empty address"),
+			Suggestion: "Set the 'address' field in the graphql_service configuration.",
+		}
+	}
+	if strings.TrimSpace(graphqlService.GetAddress()) != graphqlService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("graphql address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
+	}
+	if !validation.IsValidURL(graphqlService.GetAddress()) {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL.",
+		}
+	}
+	u, _ := url.Parse(graphqlService.GetAddress())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid graphql address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme.",
+		}
+	}
+	return nil
+}
+
+func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error {
+	if webrtcService.GetAddress() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("webrtc service has empty address"),
+			Suggestion: "Set the 'address' field in the webrtc_service configuration.",
+		}
+	}
+	if strings.TrimSpace(webrtcService.GetAddress()) != webrtcService.GetAddress() {
+		return &ActionableError{
+			Err:        fmt.Errorf("webrtc address contains hidden whitespace"),
+			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+		}
+	}
+	if !validation.IsValidURL(webrtcService.GetAddress()) {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress()),
+			Suggestion: "Ensure the address is a valid URL.",
+		}
+	}
+	u, _ := url.Parse(webrtcService.GetAddress())
+	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
+		return &ActionableError{
+			Err:        fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme),
+			Suggestion: "Use 'http' or 'https' as the scheme.",
+		}
+	}
+	return nil
 }

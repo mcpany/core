@@ -75,6 +75,22 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
+// OpenFile opens a file using the GCS filesystem, resolving the path first.
+//
+// path is the virtual path.
+// flag is the open flag.
+// perm is the permission.
+//
+// Returns the file.
+// Returns an error if the operation fails.
+func (p *GcsProvider) OpenFile(path string, flag int, perm os.FileMode) (afero.File, error) {
+	resolvedPath, err := p.ResolvePath(path)
+	if err != nil {
+		return nil, err
+	}
+	return p.fs.OpenFile(resolvedPath, flag, perm)
+}
+
 // Close closes the GCS client.
 //
 // Returns an error if the operation fails.

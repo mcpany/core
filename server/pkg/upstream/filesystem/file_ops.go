@@ -6,6 +6,8 @@ package filesystem
 import (
 	"context"
 	"fmt"
+	"io"
+	"os"
 	"path/filepath"
 
 	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
@@ -28,13 +30,15 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				return nil, fmt.Errorf("path is required")
 			}
 
-			resolvedPath, err := prov.ResolvePath(path)
+			// Securely open the file, preventing TOCTOU attacks
+			f, err := prov.OpenFile(path, os.O_RDONLY, 0)
 			if err != nil {
 				return nil, err
 			}
+			defer func() { _ = f.Close() }()
 
 			// Check if it's a directory
-			info, err := fs.Stat(resolvedPath)
+			info, err := f.Stat()
 			if err != nil {
 				return nil, err
 			}
@@ -42,6 +46,8 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				return nil, fmt.Errorf("path is a directory")
 			}
 			if !info.Mode().IsRegular() {
+				// We already checked for symlinks in OpenFile if DENY mode is on.
+				// But we also want to block devices, pipes, etc if they were somehow opened.
 				return nil, fmt.Errorf("path is not a regular file")
 			}
 
@@ -51,7 +57,7 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				return nil, fmt.Errorf("file size exceeds limit of %d bytes", maxFileSize)
 			}
 
-			content, err := afero.ReadFile(fs, resolvedPath)
+			content, err := io.ReadAll(f)
 			if err != nil {
 				return nil, err
 			}
@@ -84,6 +90,8 @@ func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesyste
 				return nil, fmt.Errorf("content is required")
 			}
 
+			// We need resolved path for MkdirAll.
+			// Ideally we would assume parent exists or handle error, but UX requires creating parent.
 			resolvedPath, err := prov.ResolvePath(path)
 			if err != nil {
 				// Check if parent directory is allowed if file doesn't exist yet
@@ -97,7 +105,14 @@ func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesyste
 				return nil, fmt.Errorf("failed to create parent directory: %w", err)
 			}
 
-			if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
+			// Securely open/create the file
+			f, err := prov.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+			if err != nil {
+				return nil, err
+			}
+			defer func() { _ = f.Close() }()
+
+			if _, err := f.Write([]byte(content)); err != nil {
 				return nil, err
 			}
 			return map[string]interface{}{"success": true}, nil
