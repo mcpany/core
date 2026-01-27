@@ -27,7 +27,7 @@ describe('SystemStatusBanner', () => {
     render(<SystemStatusBanner />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/doctor');
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/v1/doctor'), expect.any(Object));
     });
 
     expect(screen.queryByText(/System Status/i)).not.toBeInTheDocument();
@@ -77,7 +77,8 @@ describe('SystemStatusBanner', () => {
 
     await vi.advanceTimersByTimeAsync(30000);
 
-    expect(global.fetch).toHaveBeenCalledTimes(2);
+    // Initial check (1) + 30s at 5s interval (6) = 7 calls
+    expect(global.fetch).toHaveBeenCalledTimes(7);
 
     vi.useRealTimers();
   });

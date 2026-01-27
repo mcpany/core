@@ -42,7 +42,6 @@ To share a trace with your team or attach it to a bug report:
 
 - **Copy**: Click the **Copy** button to copy the full trace JSON to your clipboard.
 - **Export JSON**: Click **Export JSON** to download the trace as a `.json` file.
-
 ### 5. Smart Diagnostics
 
 When a trace contains an error (e.g., Schema Validation Error, Connection Refused), the inspector automatically analyzes the failure and provides a **Diagnostics & Suggestions** card.

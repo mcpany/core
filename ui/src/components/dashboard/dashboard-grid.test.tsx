@@ -80,10 +80,10 @@ describe("DashboardGrid", () => {
   it("opens customization menu", async () => {
     render(<DashboardGrid />);
 
-    const customizeBtn = screen.getByText("Customize View");
+    const customizeBtn = screen.getByText("Layout");
     fireEvent.click(customizeBtn);
 
-    expect(screen.getByText("Toggle Widgets")).toBeInTheDocument();
+    expect(screen.getByText("Visible Widgets")).toBeInTheDocument();
     expect(screen.getByText("Metrics Overview")).toBeInTheDocument();
   });
 
@@ -94,7 +94,7 @@ describe("DashboardGrid", () => {
     expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
 
     // Open menu
-    fireEvent.click(screen.getByText("Customize View"));
+    fireEvent.click(screen.getByText("Layout"));
 
     // Toggle off
     // Note: In JSDOM, clicking the label usually triggers the checkbox
