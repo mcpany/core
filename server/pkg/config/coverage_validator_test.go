@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -150,6 +151,10 @@ func TestValidateDirectoryExists_Coverage(t *testing.T) {
 
 func TestValidateFileExists_Coverage(t *testing.T) {
     tmpDir := t.TempDir()
+    // Allow the temporary directory for validation
+    validation.SetAllowedPaths([]string{tmpDir})
+    defer validation.SetAllowedPaths(nil)
+
     tmpFile := filepath.Join(tmpDir, "test-file")
     os.WriteFile(tmpFile, []byte("content"), 0644)
 

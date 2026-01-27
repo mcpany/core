@@ -32,7 +32,8 @@ func TestValidatorActionableErrors(t *testing.T) {
 	}
 
 	// 3. Test missing file
-	err = validateFileExists("/non/existent/file/path/test", "")
+	// Use a relative path so it passes IsAllowedPath (defaults to CWD)
+	err = validateFileExists("non_existent_file_path_test", "")
 	if err == nil {
 		t.Fatal("Expected error for missing file")
 	}

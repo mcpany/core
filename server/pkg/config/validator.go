@@ -270,6 +270,11 @@ func validateFileExists(path string, workingDir string) error {
 		targetPath = filepath.Join(workingDir, path)
 	}
 
+	// Sentinel Security: Ensure the path is allowed before checking existence to prevent probing
+	if err := validation.IsAllowedPath(targetPath); err != nil {
+		return fmt.Errorf("file path %q is not secure: %w", targetPath, err)
+	}
+
 	info, err := osStat(targetPath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -1224,10 +1229,11 @@ func validateCommandExists(command string, workingDir string) error {
 		if info.IsDir() {
 			return fmt.Errorf("%q is a directory, not an executable", command)
 		}
-		// Check for executable permission bit (simplified)
-		// Note: os.Access(path, unix.X_OK) is better but unix package adds dependency.
-		// For now os.Stat is good enough to check existence.
-		// exec.LookPath handles permission checks better.
+		// Check for executable permission bit
+		// Sentinel Security: Ensure the file is actually executable to prevent probing data files
+		if info.Mode()&0111 == 0 {
+			return fmt.Errorf("%q is not executable", command)
+		}
 	}
 
 	// If workingDir is provided and the command contains path separators (relative path),

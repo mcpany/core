@@ -624,10 +624,10 @@ func TestValidateCommandExists(t *testing.T) {
 	defer func() { osStat = oldOsStat }()
 	osStat = func(name string) (os.FileInfo, error) {
 		if name == "/bin/ls" {
-			return &mockFileInfo{isDir: false}, nil
+			return &mockFileInfo{isDir: false, mode: 0755}, nil
 		}
 		if name == "/bin/dir" {
-			return &mockFileInfo{isDir: true}, nil
+			return &mockFileInfo{isDir: true, mode: 0755}, nil
 		}
 		return nil, os.ErrNotExist
 	}
@@ -687,10 +687,10 @@ func TestValidateDirectoryExists(t *testing.T) {
 	defer func() { osStat = oldOsStat }()
 	osStat = func(name string) (os.FileInfo, error) {
 		if name == "/valid/dir" {
-			return &mockFileInfo{isDir: true}, nil
+			return &mockFileInfo{isDir: true, mode: 0755}, nil
 		}
 		if name == "/valid/file" {
-			return &mockFileInfo{isDir: false}, nil
+			return &mockFileInfo{isDir: false, mode: 0644}, nil
 		}
 		return nil, os.ErrNotExist
 	}
@@ -735,11 +735,12 @@ func TestValidateDirectoryExists(t *testing.T) {
 
 type mockFileInfo struct {
 	isDir bool
+	mode  os.FileMode
 }
 
 func (m *mockFileInfo) Name() string       { return "mock" }
 func (m *mockFileInfo) Size() int64        { return 0 }
-func (m *mockFileInfo) Mode() os.FileMode  { return 0 }
+func (m *mockFileInfo) Mode() os.FileMode  { return m.mode }
 func (m *mockFileInfo) ModTime() time.Time { return time.Time{} }
 func (m *mockFileInfo) IsDir() bool        { return m.isDir }
 func (m *mockFileInfo) Sys() any           { return nil }
