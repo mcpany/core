@@ -55,3 +55,9 @@ This feature detects common issues like:
 - **JSON Errors**: Invalid JSON payloads.
 - **Timeouts**: Operations taking too long.
 - **Connection Failures**: Upstream services being unreachable.
+
+### 6. Sequence Diagram
+
+Switch to the **Sequence** tab to visualize the flow of messages between the User, MCP Core, Services, and Tools. This is particularly useful for understanding the order of operations in complex multi-step interactions.
+
+![Sequence Diagram](../screenshots/trace_sequence.png)
