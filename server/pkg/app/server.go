@@ -550,12 +550,13 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Register TopologyManager as a listener for health changes
 	health.AddStatusListener(func(service string, status health.AvailabilityStatus) {
-		s := "unknown"
-		if status == health.StatusUp {
+		var s string
+		switch status {
+		case health.StatusUp:
 			s = "up"
-		} else if status == health.StatusDown {
+		case health.StatusDown:
 			s = "down"
-		} else {
+		default:
 			s = "degraded"
 		}
 		a.TopologyManager.RecordHealthStatus(service, s)

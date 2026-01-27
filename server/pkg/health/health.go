@@ -34,10 +34,10 @@ const (
 	healthCheckLatencyMetric = "mcp_any_health_check_latency_seconds"
 )
 
-// AvailabilityStatus alias for external users
+// AvailabilityStatus alias for external users.
 type AvailabilityStatus = health.AvailabilityStatus
 
-// Exported status constants
+// Exported status constants.
 const (
 	StatusUp      = health.StatusUp
 	StatusDown    = health.StatusDown
