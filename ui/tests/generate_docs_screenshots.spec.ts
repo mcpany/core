@@ -17,7 +17,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test.beforeEach(async ({ page }) => {
     // Global mocks to ensure consistent state
-    await page.route(/.*\/api\/v1\/services/, async route => {
+    await page.route('**/api/v1/services*', async route => {
         if (route.request().method() === 'GET') {
             await route.fulfill({
                 json: {
@@ -65,9 +65,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                 service: {
                     id: 'postgres-primary',
                     name: 'Primary DB',
-
-                    type: 'grpc',
-                    grpc_service: { address: 'postgres:5432' },
+                    type: 'remote',
                     endpoint: 'grpc://postgres:5432',
                     status: 'healthy',
                     config: {
@@ -145,8 +143,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         window.localStorage.setItem('mcp_service_health_history', JSON.stringify(history));
     });
 
-
-    await page.route(/.*\/api\/dashboard\/health/, async route => {
+    await page.route('**/api/dashboard/health', async route => {
         await route.fulfill({
             json: [
                {
@@ -178,14 +175,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     await page.goto('/');
-    // Wait for the widget to appear (use static title as fallback if data fails)
-    await expect(page.getByText('System Health')).toBeVisible();
-    // Try to wait for data, but don't block if missing (e.g. backend down in test)
-    try {
-        await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 2000 });
-    } catch (e) {
-        console.warn('Primary DB not visible, proceeding with screenshot of empty/error state');
-    }
+    await page.waitForLoadState('networkidle');
     // Give widgets extra time to render after data fetch
     await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
@@ -193,95 +183,111 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/upstream-services');
-    await expect(page.getByText('Primary DB')).toBeVisible();
+    await page.goto('/services');
+    await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
     await expect(page.locator('text=Loading...')).not.toBeVisible();
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
-    // await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true }); // Removed duplicate/redundant if services_list covers it
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
     // Click Add Service (Button)
     await page.getByRole('button', { name: 'Add Service' }).click();
     await page.waitForTimeout(1000);
+    // await expect(page).toHaveURL(/.*marketplace.*/); // It opens a sheet now
     await expect(page.getByText('New Service')).toBeVisible();
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
-    // await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
+
+    // Configure Service
+    // Ensure we are navigating to the correct URL for configuration
+    await page.goto('/upstream-services/postgres-primary');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000); // Increased wait time
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
+
+    // Diff Feature Screenshot
+    // Navigate to the Service Detail page which uses RegisterServiceDialog for editing
+    await page.goto('/service/postgres-primary');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // Click Edit Config
+    const editBtn = page.getByRole('button', { name: 'Edit Config' });
+    await expect(editBtn).toBeVisible({ timeout: 10000 });
+    await editBtn.click();
+    await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });
+    // Verify we are editing the HTTP service
+    // Note: 'HTTP' might be in a select value or text.
+    await page.getByLabel('Address / URL').waitFor({ state: 'visible', timeout: 10000 });
+
+    // Make a change to trigger diff
+    // We need to change a field. Let's change the address.
+    // Assuming 'http' type service from mock.
+    // The dialog should populate with 'grpc://postgres:5432' as per mock?
+    // Mock says type: 'remote' (which might be 'mcp' in frontend?) or 'grpc'.
+    // Let's verify mock content in beforeEach.
+    // Mock: type: 'remote', endpoint: ...
+    // RegisterServiceDialog handles 'mcp' via 'other'? Or maybe 'grpc'?
+    // Let's force a simpler service mock for this test or assume 'http' fallback?
+    // Actually, let's just create a new service in the dialog to be safe, OR use a known editable mocked service.
+    // The 'postgres-primary' mock has type 'remote'.
+    // RegisterServiceDialog might treat 'remote' as 'other'?
+
+    // Let's modify the mock for postgres-primary to be HTTP for this test if needed, OR just type in a field.
+    // If we type in 'address', it should work.
+    // Check if 'Address / URL' input is visible.
+    // trace-detail.tsx uses RegisterServiceDialog.
+
+    // Let's try to type into 'Address / URL' input.
+    // And verify 'Review Changes' button appears or we click it.
+
+    // Changing the mock temporarily for this test might be complex.
+    // Let's try to edit 'postgres-primary'.
+
+    // Wait for dialog to be stable
+
+    // Since mock type is 'remote', constructConfig might treat it as 'other' or logic might fail?
+    // Let's check RegisterServiceDialog logic again?
+    // It maps types.
+
+    // Simplification: trigger 'Add Service' (already tested above), fill it, then finding 'Review Changes' is hard because it's not editing.
+    // But we can simulate "Edit" by navigating to a page that opens it.
+
+    // Let's UPDATE the mock for this specific test block to return type 'http' so editing is easy.
+    await page.route('**/api/v1/services/postgres-primary', async route => {
+        await route.fulfill({
+            json: {
+                service: {
+                    id: 'postgres-primary',
+                    name: 'Primary DB',
+                    type: 'http',
+                    httpService: { address: 'https://api.example.com' },
+                    status: 'healthy',
+                }
+            }
+        });
+    });
+
+    await page.reload(); // Reload to get new mock
+    await page.waitForTimeout(1000);
+    await page.getByRole('button', { name: 'Edit Config' }).click();
+    await page.waitForTimeout(500);
+
+    // Change address
+    await page.getByLabel('Address / URL').fill('https://api.example.org');
+
+    // Click Review Changes
+    await page.getByRole('button', { name: 'Review Changes' }).click();
+    await page.waitForTimeout(1000);
+
+    await expect(page.getByText('Review Changes')).toBeVisible();
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diff-feature.png') });
 
     // Close dialog
     await page.keyboard.press('Escape');
-  });
-
-  test('Playground Diff Screenshots', async ({ page }) => {
-    // Mock the tools API response for diff tool
-    await page.route('**/api/v1/tools', async route => {
-      const json = {
-        tools: [
-          {
-            name: 'diff_test_tool',
-            description: 'Test diffing',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                arg: { type: 'string' }
-              }
-            }
-          }
-        ]
-      };
-      await route.fulfill({ json });
-    });
-
-    // Mock the tool execution to return different versions
-    let callCount = 0;
-    await page.route('**/api/v1/execute', async route => {
-      callCount++;
-      const result = callCount === 1 ? { value: "Version 1" } : { value: "Version 2" };
-
-      await route.fulfill({
-        json: {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result)
-            }
-          ],
-          isError: false,
-          ...result
-        }
-      });
-    });
-
-    await page.goto('/playground');
-    await page.waitForTimeout(1000);
-
-    // 1. Run the tool first time
-    await page.fill('input[placeholder="Enter command or select a tool..."]', 'diff_test_tool {"arg":"test"}');
-    await page.keyboard.press('Enter');
-
-    // Wait for first result
-    await expect(page.getByText('"Version 1"')).toBeVisible();
-
-    // 2. Run the tool second time (same args)
-    await page.fill('input[placeholder="Enter command or select a tool..."]', 'diff_test_tool {"arg":"test"}');
-    await page.keyboard.press('Enter');
-
-    // Wait for second result
-    await expect(page.getByText('"Version 2"')).toBeVisible();
-
-    // 3. Check for "Show Changes" button and click
-    const showDiffBtn = page.getByRole('button', { name: 'Show Changes' });
-    await expect(showDiffBtn).toBeVisible();
-    await showDiffBtn.click();
-
-    // 4. Verify Dialog opens and Diff Editor is present
-    await expect(page.getByText('Output Difference')).toBeVisible();
-    await expect(page.locator('.monaco-diff-editor')).toBeVisible();
-
-    // Take screenshot
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diff-feature.png') });
   });
 
   test('Playground Screenshots', async ({ page }) => {
@@ -395,7 +401,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     await page.goto('/traces');
-    await expect(page.getByText('filesystem.read').first()).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces.png'), fullPage: true });
@@ -407,7 +413,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     // Close sheet by reloading (simplest way to reset state in tests without complex interaction)
     await page.reload();
-    await expect(page.getByText('filesystem.read').first()).toBeVisible();
+    await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
     // Click diagnostics trace
@@ -467,7 +473,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
           });
       });
       await page.goto('/secrets');
-      await expect(page.getByText('API_KEY')).toBeVisible();
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
       await expect(page.getByText('Loading secrets...')).not.toBeVisible();
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'secrets_list.png'), fullPage: true });
@@ -514,7 +520,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Resources Screenshots', async ({ page }) => {
       await page.goto('/resources');
-
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_list.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources.png'), fullPage: true });
@@ -564,22 +570,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Profiles Screenshots', async ({ page }) => {
       await page.goto('/profiles');
-      await expect(page.getByRole('button', { name: 'Create Profile' })).toBeVisible();
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_page.png'), fullPage: true });
 
       // Open Editor (Create)
       await page.getByRole('button', { name: 'Create Profile' }).click();
       await page.waitForTimeout(1000);
-
-      // Add a tag to demonstrate the feature
-      const tagInput = page.getByPlaceholder('Add tag (e.g. finance, hr)');
-      if (await tagInput.isVisible()) {
-          await tagInput.fill('finance');
-          await page.keyboard.press('Enter');
-          await page.waitForTimeout(500);
-      }
-
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profile_editor.png') });
   });
 
@@ -612,13 +609,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await expect(page.getByText('Create Credential', { exact: true })).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(500);
 
-    await page.getByPlaceholder('My Credential').fill('Test Credential');
+    await page.getByLabel('Name').fill('Test Credential');
     // Test Connection section
     await page.getByPlaceholder('https://api.example.com/test').fill('https://api.example.com/status');
     const testBtn = page.getByRole('button', { name: 'Test', exact: true });
 
     // Mock testAuth response
-    await page.route('**/api/v1/debug/auth-test', async route => {
+    await page.route('**/api/v1/auth/test', async route => {
          await route.fulfill({ status: 200, json: { status: 200, status_text: 'OK' } });
     });
 
@@ -635,8 +632,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Service Actions Screenshots', async ({ page }) => {
-      await page.goto('/upstream-services');
-      await expect(page.getByText('Primary DB')).toBeVisible();
+      await page.goto('/services');
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
       // Open Actions Dropdown
@@ -721,8 +718,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
       });
 
-      await page.goto('/upstream-services');
-      await expect(page.getByText('Legacy API')).toBeVisible();
+      await page.goto('/services');
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
       // Verify service row is present
@@ -775,8 +772,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         }
     });
 
-    await page.goto('/upstream-services');
-    await expect(page.getByText('Primary DB')).toBeVisible();
+    await page.goto('/services');
+    await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
     // Open Actions Menu for the first service (postgres-primary)

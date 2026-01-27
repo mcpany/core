@@ -12,11 +12,11 @@ test.describe('Services Verification', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Upstream Services' })).toBeVisible();
 
     // 2. Click Add Service
-    // It is a button that opens a dialog (initially shows Template selector)
-    await page.getByRole('button', { name: 'Add Service' }).click();
+    // It is a link now
+    await page.getByRole('link', { name: 'Add Service' }).click();
 
-    // 3. Verify Sheet/Dialog Opens
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible();
+    // 3. Verify Navigation
+    await expect(page).toHaveURL(/\/marketplace\?tab=local/);
+    await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
   });
 });

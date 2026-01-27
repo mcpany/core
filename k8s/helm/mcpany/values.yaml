@@ -6,7 +6,6 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-apiKey: ""
 
 image:
   repository: mcpany/server

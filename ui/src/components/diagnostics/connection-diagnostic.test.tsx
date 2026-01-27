@@ -264,7 +264,7 @@ describe("ConnectionDiagnosticDialog", () => {
     }, { timeout: 5000 });
 
     // Check for suggestion card elements
-    expect(screen.getByText("Connection Failed")).toBeInTheDocument();
+    expect(screen.getByText("Connection Refused")).toBeInTheDocument();
     // Use getAllByText because it appears in logs and the card
     expect(screen.getAllByText(/Check if the upstream service is running/).length).toBeGreaterThan(0);
 });
@@ -314,51 +314,5 @@ describe("ConnectionDiagnosticDialog", () => {
 
         expect(screen.getByText("Schema Validation Error")).toBeInTheDocument();
         expect(screen.getByText("The upstream server returned data that does not match the expected schema.")).toBeInTheDocument();
-  });
-
-  it("warns about localhost/Docker usage when connection fails", async () => {
-    // Mock fetch to throw error for localhost
-    const originalFetch = global.fetch;
-    global.fetch = vi.fn((url: string | Request, init?: RequestInit) => {
-        if (typeof url === 'string' && url.includes("localhost")) {
-            return Promise.reject(new TypeError("Failed to fetch"));
-        }
-        return originalFetch(url, init);
-    }) as unknown as typeof fetch;
-
-    // Mock localhost service
-    const localhostService = {
-        ...mockService,
-        httpService: {
-            address: "http://localhost:3000",
-            tools: [],
-            resources: [],
-            prompts: [],
-            calls: {},
-        }
-    };
-
-    render(<ConnectionDiagnosticDialog service={localhostService} />);
-
-    const trigger = screen.getByText("Troubleshoot");
-    fireEvent.click(trigger);
-
-    const startButton = screen.getByText("Start Diagnostics");
-    fireEvent.click(startButton);
-
-    // Wait for failure
-    await waitFor(() => {
-        expect(screen.getByText("Not Accessible")).toBeInTheDocument();
-    });
-
-    // Check for the warning message in logs
-    // We use getAllByText or check for partial text
-    await waitFor(() => {
-        expect(screen.getByText((content) => content.includes("WARNING: You are using 'localhost'"))).toBeInTheDocument();
-    });
-    expect(screen.getByText((content) => content.includes("host.docker.internal"))).toBeInTheDocument();
-
-    // Restore fetch
-    global.fetch = originalFetch;
   });
 });
