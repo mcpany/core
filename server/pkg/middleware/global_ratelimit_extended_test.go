@@ -19,6 +19,7 @@ import (
 )
 
 func TestGlobalRateLimitMiddleware_UpdateConfig(t *testing.T) {
+	// Test that updating configuration dynamically works
 	cfg := &configv1.RateLimitConfig{
 		IsEnabled:         true,
 		RequestsPerSecond: 10,
