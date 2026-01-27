@@ -72,7 +72,7 @@ test.describe('Playground Complex Schema Support', () => {
     await expect(page.getByRole('dialog').getByText('user', { exact: false })).toBeVisible();
 
     // Try to submit empty form (should fail validation because user.name is required)
-    await page.getByRole('button', { name: 'Build Command' }).click();
+    await page.getByRole('button', { name: /^Run$/ }).click();
 
     // Fill the form
     await page.getByPlaceholder('name').fill('Bob');
@@ -83,8 +83,12 @@ test.describe('Playground Complex Schema Support', () => {
     await page.getByPlaceholder('Item 1').fill('developer');
 
     // Run Tool (Build Command)
-    await page.getByRole('button', { name: 'Build Command' }).click();
-    await page.getByLabel('Send').click();
+    await page.getByRole('button', { name: /^Run$/ }).click();
+    // await page.getByLabel('Send').click(); // Run button now populates input but doesn't auto-send? Wait, logic says it populates.
+    // The previous code had await page.getByLabel('Send').click();
+    // My manual verification showed "Run" populates input.
+    // So I need to keep the send click if "Run" only populates.
+    await page.getByRole('button', { name: 'Send' }).click();
 
     // Verify execution
     // The playground adds a user message with the command
