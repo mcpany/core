@@ -2,12 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Generated protobuf files
-# **/*.pb.go
-coverage*.out
-coverage.html
+**/*.pb.go
+**/*.pb.gw.go
+proto/**/*.ts
+proto/google/
 
 # Build artifacts
 /build/
+/dist/
+/out/
 
 /vendor/
 
