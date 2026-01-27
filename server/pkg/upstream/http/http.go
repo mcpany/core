@@ -498,6 +498,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 					if errVal != nil {
 						// Optionally log or track this, but we don't mark the whole part as invalid
 						// because that would prevent us from overriding base parameters with this key.
+						log.Debug("Invalid query value encoding", "key", decodedKey, "value_error", errVal)
 					}
 				}
 				parts = append(parts, qp)
