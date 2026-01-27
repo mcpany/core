@@ -1840,8 +1840,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			"dry_run": true,
 			"request": map[string]any{
 				"command": t.service.GetCommand(),
-				"args":    args,
-				"env":     env,
+				"args":    redactStringSlice(args, secrets),
+				"env":     redactStringSlice(env, secrets),
 			},
 		}, nil
 	}
@@ -1924,7 +1924,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
-		"args":            args,
+		"args":            redactStringSlice(args, secrets),
 		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
 		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
 		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
@@ -2162,8 +2162,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			"dry_run": true,
 			"request": map[string]any{
 				"command": t.service.GetCommand(),
-				"args":    args,
-				"env":     env,
+				"args":    redactStringSlice(args, secrets),
+				"env":     redactStringSlice(env, secrets),
 			},
 		}, nil
 	}
@@ -2246,7 +2246,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
-		"args":            args,
+		"args":            redactStringSlice(args, secrets),
 		"stdout":          util.RedactSecrets(stdoutBuf.String(), secrets),
 		"stderr":          util.RedactSecrets(stderrBuf.String(), secrets),
 		"combined_output": util.RedactSecrets(combinedBuf.String(), secrets),
@@ -2699,4 +2699,15 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	return minLevel
+}
+
+func redactStringSlice(slice []string, secrets []string) []string {
+	if len(secrets) == 0 {
+		return slice
+	}
+	redacted := make([]string, len(slice))
+	for i, s := range slice {
+		redacted[i] = util.RedactSecrets(s, secrets)
+	}
+	return redacted
 }
