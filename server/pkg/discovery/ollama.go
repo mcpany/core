@@ -59,15 +59,13 @@ func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServ
 	// If reachable, return a template config for Ollama as an OpenAI-compatible service
 	// Note: Ollama has an OpenAI compatible /v1 endpoint now.
 	return []*configv1.UpstreamServiceConfig{
-		{
+		configv1.UpstreamServiceConfig_builder{
 			Name:    proto.String("Local Ollama"),
 			Version: proto.String("v1"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-				HttpService: &configv1.HttpUpstreamService{
-					Address: proto.String(p.Endpoint + "/v1"),
-				},
-			},
+			HttpService: configv1.HttpUpstreamService_builder{
+				Address: proto.String(p.Endpoint + "/v1"),
+			}.Build(),
 			Tags: []string{"local-llm", "ollama", "openai-compatible"},
-		},
+		}.Build(),
 	}, nil
 }

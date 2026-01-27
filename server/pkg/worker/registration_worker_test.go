@@ -104,7 +104,11 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 	registry := &MockServiceRegistry{
 		registerFunc: func(ctx context.Context, config *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 			assert.Equal(t, "test-service", config.GetName())
-			return "test-service-id", []*configv1.ToolDefinition{{Name: strPtr("tool1")}}, []*configv1.ResourceDefinition{{Uri: strPtr("res1")}}, nil
+			tool1 := &configv1.ToolDefinition{}
+			tool1.SetName("tool1")
+			res1 := &configv1.ResourceDefinition{}
+			res1.SetUri("res1")
+			return "test-service-id", []*configv1.ToolDefinition{tool1}, []*configv1.ResourceDefinition{res1}, nil
 		},
 	}
 	w := worker.NewServiceRegistrationWorker(b, registry)
@@ -125,10 +129,10 @@ func TestServiceRegistrationWorker_Register_Success(t *testing.T) {
 	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](b, bus.ServiceRegistrationRequestTopic)
 	require.NoError(t, err)
 
+	cfg := &configv1.UpstreamServiceConfig{}
+	cfg.SetName("test-service")
 	req := &bus.ServiceRegistrationRequest{
-		Config: &configv1.UpstreamServiceConfig{
-			Name: strPtr("test-service"),
-		},
+		Config: cfg,
 	}
 	req.SetCorrelationID(correlationID)
 	err = requestBus.Publish(ctx, "request", req)
@@ -174,10 +178,10 @@ func TestServiceRegistrationWorker_Register_Failure(t *testing.T) {
 	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](b, bus.ServiceRegistrationRequestTopic)
 	require.NoError(t, err)
 
+	cfg := &configv1.UpstreamServiceConfig{}
+	cfg.SetName("fail-service")
 	req := &bus.ServiceRegistrationRequest{
-		Config: &configv1.UpstreamServiceConfig{
-			Name: strPtr("fail-service"),
-		},
+		Config: cfg,
 	}
 	req.SetCorrelationID(correlationID)
 	err = requestBus.Publish(ctx, "request", req)
@@ -226,11 +230,11 @@ func TestServiceRegistrationWorker_Unregister(t *testing.T) {
 	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](b, bus.ServiceRegistrationRequestTopic)
 	require.NoError(t, err)
 
+	cfg := &configv1.UpstreamServiceConfig{}
+	cfg.SetName("disabled-service")
+	cfg.SetDisable(true)
 	req := &bus.ServiceRegistrationRequest{
-		Config: &configv1.UpstreamServiceConfig{
-			Name:    strPtr("disabled-service"),
-			Disable: boolPtr(true),
-		},
+		Config: cfg,
 	}
 	req.SetCorrelationID(correlationID)
 	err = requestBus.Publish(ctx, "request", req)
@@ -252,10 +256,11 @@ func TestServiceRegistrationWorker_List(t *testing.T) {
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
-	services := []*configv1.UpstreamServiceConfig{
-		{Name: strPtr("s1")},
-		{Name: strPtr("s2")},
-	}
+	s1 := &configv1.UpstreamServiceConfig{}
+	s1.SetName("s1")
+	s2 := &configv1.UpstreamServiceConfig{}
+	s2.SetName("s2")
+	services := []*configv1.UpstreamServiceConfig{s1, s2}
 	registry := &MockServiceRegistry{
 		getAllServicesFunc: func() ([]*configv1.UpstreamServiceConfig, error) {
 			return services, nil
@@ -298,7 +303,8 @@ func TestServiceRegistrationWorker_Get(t *testing.T) {
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
-	service := &configv1.UpstreamServiceConfig{Name: strPtr("my-service")}
+	service := &configv1.UpstreamServiceConfig{}
+	service.SetName("my-service")
 	registry := &MockServiceRegistry{
 		getServiceConfigFunc: func(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
 			if serviceID == "my-service" {
@@ -417,13 +423,15 @@ func TestServiceRegistrationWorker_Register_Timeout(t *testing.T) {
 	requestBus, err := bus.GetBus[*bus.ServiceRegistrationRequest](b, bus.ServiceRegistrationRequestTopic)
 	require.NoError(t, err)
 
+	resilience := &configv1.ResilienceConfig{}
+	resilience.SetTimeout(durationpb.New(500 * time.Millisecond))
+
+	cfg := &configv1.UpstreamServiceConfig{}
+	cfg.SetName("timeout-service")
+	cfg.SetResilience(resilience)
+
 	req := &bus.ServiceRegistrationRequest{
-		Config: &configv1.UpstreamServiceConfig{
-			Name: strPtr("timeout-service"),
-			Resilience: &configv1.ResilienceConfig{
-				Timeout: durationpb.New(500 * time.Millisecond),
-			},
-		},
+		Config: cfg,
 	}
 	req.SetCorrelationID(correlationID)
 	err = requestBus.Publish(ctx, "request", req)

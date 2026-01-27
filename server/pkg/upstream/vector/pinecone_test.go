@@ -17,32 +17,32 @@ import (
 
 func TestNewPineconeClient(t *testing.T) {
 	// Missing API Key
-	_, err := NewPineconeClient(&configv1.PineconeVectorDB{})
+	_, err := NewPineconeClient(configv1.PineconeVectorDB_builder{}.Build())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "api_key is required")
 
 	// Missing Host and Environment
-	_, err = NewPineconeClient(&configv1.PineconeVectorDB{
+	_, err = NewPineconeClient(configv1.PineconeVectorDB_builder{
 		ApiKey: proto.String("key"),
-	})
+	}.Build())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "host OR (index_name, project_id, environment) must be provided")
 
 	// Success with Host
-	c, err := NewPineconeClient(&configv1.PineconeVectorDB{
+	c, err := NewPineconeClient(configv1.PineconeVectorDB_builder{
 		ApiKey: proto.String("key"),
 		Host:   proto.String("https://custom-host"),
-	})
+	}.Build())
 	assert.NoError(t, err)
 	assert.Equal(t, "https://custom-host", c.baseURL)
 
 	// Success with components
-	c, err = NewPineconeClient(&configv1.PineconeVectorDB{
+	c, err = NewPineconeClient(configv1.PineconeVectorDB_builder{
 		ApiKey:      proto.String("key"),
 		IndexName:   proto.String("idx"),
 		ProjectId:   proto.String("proj"),
 		Environment: proto.String("env"),
-	})
+	}.Build())
 	assert.NoError(t, err)
 	assert.Equal(t, "https://idx-proj.svc.env.pinecone.io", c.baseURL)
 }
@@ -92,10 +92,10 @@ func TestPineconeClient_Operations(t *testing.T) {
 	}))
 	defer server.Close()
 
-	c, err := NewPineconeClient(&configv1.PineconeVectorDB{
+	c, err := NewPineconeClient(configv1.PineconeVectorDB_builder{
 		ApiKey: proto.String("key"),
 		Host:   proto.String(server.URL),
-	})
+	}.Build())
 	assert.NoError(t, err)
 	// Override client to trust test server cert if needed, but httptest usually works with default client if using URL
 	// Actually default client might fail if server uses https without valid cert, but httptest.NewServer uses http by default unless NewTLSServer
@@ -135,10 +135,10 @@ func TestPineconeClient_Errors(t *testing.T) {
 	}))
 	defer server.Close()
 
-	c, _ := NewPineconeClient(&configv1.PineconeVectorDB{
+	c, _ := NewPineconeClient(configv1.PineconeVectorDB_builder{
 		ApiKey: proto.String("key"),
 		Host:   proto.String(server.URL),
-	})
+	}.Build())
 
 	_, err := c.Query(context.Background(), []float32{0.1}, 1, nil, "")
 	assert.Error(t, err)

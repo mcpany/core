@@ -117,3 +117,9 @@ func TestVectorCallable_Error(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "handler error", err.Error())
 }
+
+func TestUpstream_Shutdown(t *testing.T) {
+	u := NewUpstream()
+	err := u.Shutdown(context.Background())
+	assert.NoError(t, err)
+}

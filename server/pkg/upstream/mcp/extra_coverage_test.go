@@ -18,10 +18,10 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
@@ -74,7 +74,9 @@ func TestDockerTransport_Connect_Success_Mock(t *testing.T) {
 		Command:        proto.String("echo"),
 		Args:           []string{"hello"},
 		Env: map[string]*configv1.SecretValue{
-			"foo": {Value: &configv1.SecretValue_PlainText{PlainText: "bar"}},
+			"foo": configv1.SecretValue_builder{
+				PlainText: proto.String("bar"),
+			}.Build(),
 		},
 	}.Build()
 

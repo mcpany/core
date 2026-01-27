@@ -88,16 +88,15 @@ func TestServer_UserManagement(t *testing.T) {
 	ctx := context.Background()
 
 	// Test CreateUser
-	user := &configv1.User{
-		Id: proto.String("user1"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					PasswordHash: proto.String("plaintext"),
-				},
-			},
-		},
-	}
+	basicAuth := &configv1.BasicAuth{}
+	basicAuth.SetPasswordHash("plaintext")
+
+	auth := &configv1.Authentication{}
+	auth.SetBasicAuth(basicAuth)
+
+	user := &configv1.User{}
+	user.SetId("user1")
+	user.SetAuthentication(auth)
 	createResp, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: user})
 	require.NoError(t, err)
 	assert.Equal(t, "user1", createResp.User.GetId())
@@ -148,17 +147,16 @@ func TestServer_ServiceManagement(t *testing.T) {
 
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
+	svc1 := &configv1.UpstreamServiceConfig{}
+	svc1.SetName("svc1")
+	svc1.SetId("svc1")
+
+	svcError := &configv1.UpstreamServiceConfig{}
+	svcError.SetName("svc_error")
+	svcError.SetId("svc_error")
+
 	sr := &MockServiceRegistry{
-		services: []*configv1.UpstreamServiceConfig{
-			{
-				Name: proto.String("svc1"),
-				Id:   proto.String("svc1"),
-			},
-			{
-				Name: proto.String("svc_error"),
-				Id:   proto.String("svc_error"),
-			},
-		},
+		services: []*configv1.UpstreamServiceConfig{svc1, svcError},
 		errors: map[string]string{
 			"svc_error": "failed to start",
 		},
@@ -314,9 +312,12 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 
 	errInternal := status.Error(codes.Internal, "storage error")
 
+	u1 := &configv1.User{}
+	u1.SetId("user1")
+
 	// CreateUser Error
 	ms.createUserErr = errInternal
-	_, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: &configv1.User{Id: proto.String("user1")}})
+	_, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: u1})
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	ms.createUserErr = nil
@@ -337,7 +338,7 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 
 	// UpdateUser Error
 	ms.updateUserErr = errInternal
-	_, err = s.UpdateUser(ctx, &pb.UpdateUserRequest{User: &configv1.User{Id: proto.String("user1")}})
+	_, err = s.UpdateUser(ctx, &pb.UpdateUserRequest{User: u1})
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	ms.updateUserErr = nil
@@ -361,16 +362,15 @@ func TestServer_UserManagement_PasswordHashing(t *testing.T) {
 	ctx := context.Background()
 
 	longPassword := string(make([]byte, 73)) // 73 bytes > 72 bytes limit for bcrypt
-	user := &configv1.User{
-		Id: proto.String("user1"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					PasswordHash: proto.String(longPassword),
-				},
-			},
-		},
-	}
+	basicAuth := &configv1.BasicAuth{}
+	basicAuth.SetPasswordHash(longPassword)
+
+	auth := &configv1.Authentication{}
+	auth.SetBasicAuth(basicAuth)
+
+	user := &configv1.User{}
+	user.SetId("user1")
+	user.SetAuthentication(auth)
 
 	// CreateUser - Password hashing failure
 	_, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: user})
@@ -418,11 +418,12 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 	dm := discovery.NewManager()
 
 	// Register provider
+	svcDisc := &configv1.UpstreamServiceConfig{}
+	svcDisc.SetName("discovered-service")
+
 	provider := &MockDiscoveryProvider{
 		name: "test-provider",
-		services: []*configv1.UpstreamServiceConfig{
-			{Name: proto.String("discovered-service")},
-		},
+		services: []*configv1.UpstreamServiceConfig{svcDisc},
 	}
 	dm.RegisterProvider(provider)
 
@@ -484,7 +485,9 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	sr := &MockServiceRegistry{}
 
 	// Create audit middleware
-	am, err := middleware.NewAuditMiddleware(&configv1.AuditConfig{Enabled: proto.Bool(true)})
+	auditCfg := &configv1.AuditConfig{}
+	auditCfg.SetEnabled(true)
+	am, err := middleware.NewAuditMiddleware(auditCfg)
 	require.NoError(t, err)
 
 	// Inject mock store
@@ -547,13 +550,14 @@ func TestServer_ListServices_Fallback(t *testing.T) {
 	s := NewServer(nil, tm, nil, store, nil, nil)
 	ctx := context.Background()
 
+	svcFallback := &configv1.UpstreamServiceConfig{}
+	svcFallback.SetId("svc_fallback")
+	svcFallback.SetName("svc_fallback")
+
 	// Mock ToolManager returning services
 	tm.EXPECT().ListServices().Return([]*tool.ServiceInfo{
 		{
-			Config: &configv1.UpstreamServiceConfig{
-				Id: proto.String("svc_fallback"),
-				Name: proto.String("svc_fallback"),
-			},
+			Config: svcFallback,
 		},
 		{
 			Config: nil, // Should be ignored

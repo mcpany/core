@@ -4,20 +4,20 @@
 package tool
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
-    "bytes"
-    "io"
-    "strings"
-    "encoding/json"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/pool"
-    "github.com/mcpany/core/server/pkg/command"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -93,15 +93,6 @@ func TestHTTPTool_Execute_InvalidInputJSON(t *testing.T) {
 
 func TestCommandTool_Execute_ShellInjection_Args(t *testing.T) {
 	// Tests that checkForShellInjection is called for dynamic args
-	cmd := "sh"
-	service := &configv1.CommandLineUpstreamService{
-		Command: &cmd,
-	}
-	callDef := &configv1.CommandLineCallDefinition{
-		Args: []string{"-c"},
-		// No parameters defined, but we will allow 'args' in schema
-	}
-
 	// Construct schema allowing 'args'
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -117,12 +108,15 @@ func TestCommandTool_Execute_ShellInjection_Args(t *testing.T) {
 		},
 	}
 
-	toolDef := &v1.Tool{
-		Name:        proto.String("test-shell"),
-		InputSchema: inputSchema,
-	}
-
-	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
+	tool := NewLocalCommandTool(
+		v1.Tool_builder{Name: proto.String("test-shell"), InputSchema: inputSchema}.Build(),
+		configv1.CommandLineUpstreamService_builder{Command: proto.String("sh")}.Build(),
+		configv1.CommandLineCallDefinition_builder{
+			Args: []string{"-c"},
+		}.Build(),
+		nil,
+		"id",
+	)
 
 	// Injection via args
 	req := &ExecutionRequest{
@@ -136,14 +130,13 @@ func TestCommandTool_Execute_ShellInjection_Args(t *testing.T) {
 }
 
 func TestCommandTool_DryRun(t *testing.T) {
-	cmd := "echo"
-	service := &configv1.CommandLineUpstreamService{
-		Command: &cmd,
-	}
-	callDef := &configv1.CommandLineCallDefinition{
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"hello"},
-	}
-	toolDef := &v1.Tool{Name: proto.String("test")}
+	}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
 	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
 	req := &ExecutionRequest{
@@ -172,17 +165,16 @@ func TestCommandTool_DryRun(t *testing.T) {
 
 func TestCommandTool_ResolveServiceEnv_Error(t *testing.T) {
 	// Test error when resolving service env secrets
-	cmd := "echo"
-	service := &configv1.CommandLineUpstreamService{
-		Command: &cmd,
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
 		Env: map[string]*configv1.SecretValue{
-			"SECRET": {
-				Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR_XYZ_123"},
-			},
+			"SECRET": configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("MISSING_VAR_XYZ_123"),
+			}.Build(),
 		},
-	}
-	callDef := &configv1.CommandLineCallDefinition{}
-	toolDef := &v1.Tool{Name: proto.String("test")}
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
 	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
 	req := &ExecutionRequest{
@@ -197,20 +189,19 @@ func TestCommandTool_ResolveServiceEnv_Error(t *testing.T) {
 func TestCommandTool_ResolveContainerEnv_Error(t *testing.T) {
 	// Test error when resolving container env secrets
 	// We use NewCommandTool because LocalCommandTool does not handle container envs
-	cmd := "echo"
-	service := &configv1.CommandLineUpstreamService{
-		Command: &cmd,
-		ContainerEnvironment: &configv1.ContainerEnvironment{
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+		ContainerEnvironment: configv1.ContainerEnvironment_builder{
 			Image: proto.String("ubuntu"),
 			Env: map[string]*configv1.SecretValue{
-				"SECRET": {
-					Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR_XYZ_123"},
-				},
+				"SECRET": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MISSING_VAR_XYZ_123"),
+				}.Build(),
 			},
-		},
-	}
-	callDef := &configv1.CommandLineCallDefinition{}
-	toolDef := &v1.Tool{Name: proto.String("test")}
+		}.Build(),
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
 	// Compile policies manually or pass nil (NewCommandTool takes policies slice)
 	tool := NewCommandTool(toolDef, service, callDef, nil, "id")
 
@@ -224,21 +215,20 @@ func TestCommandTool_ResolveContainerEnv_Error(t *testing.T) {
 }
 
 func TestCommandTool_ResolveParameterSecret_Error(t *testing.T) {
-    cmd := "echo"
-    service := &configv1.CommandLineUpstreamService{
-        Command: &cmd,
-    }
-    callDef := &configv1.CommandLineCallDefinition{
+    service := configv1.CommandLineUpstreamService_builder{
+        Command: proto.String("echo"),
+    }.Build()
+    callDef := configv1.CommandLineCallDefinition_builder{
         Parameters: []*configv1.CommandLineParameterMapping{
-            {
-                Schema: &configv1.ParameterSchema{Name: proto.String("secret")},
-                Secret: &configv1.SecretValue{
-                    Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR_XYZ_123"},
-                },
-            },
+            configv1.CommandLineParameterMapping_builder{
+                Schema: configv1.ParameterSchema_builder{Name: proto.String("secret")}.Build(),
+                Secret: configv1.SecretValue_builder{
+                    EnvironmentVariable: proto.String("MISSING_VAR_XYZ_123"),
+                }.Build(),
+            }.Build(),
         },
-    }
-    toolDef := &v1.Tool{Name: proto.String("test")}
+    }.Build()
+    toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
     tool := NewLocalCommandTool(toolDef, service, callDef, nil, "id")
 
     req := &ExecutionRequest{
@@ -251,17 +241,16 @@ func TestCommandTool_ResolveParameterSecret_Error(t *testing.T) {
 }
 
 func TestCommandTool_Success(t *testing.T) {
-    cmd := "echo"
-    service := &configv1.CommandLineUpstreamService{
-        Command: &cmd,
-        ContainerEnvironment: &configv1.ContainerEnvironment{
+    service := configv1.CommandLineUpstreamService_builder{
+        Command: proto.String("echo"),
+        ContainerEnvironment: configv1.ContainerEnvironment_builder{
             Image: proto.String("ubuntu"),
-        },
-    }
-    callDef := &configv1.CommandLineCallDefinition{
+        }.Build(),
+    }.Build()
+    callDef := configv1.CommandLineCallDefinition_builder{
         Args: []string{"hello"},
-    }
-    toolDef := &v1.Tool{Name: proto.String("test")}
+    }.Build()
+    toolDef := v1.Tool_builder{Name: proto.String("test")}.Build()
     tool := NewCommandTool(toolDef, service, callDef, nil, "id")
 
     // Inject mock executor

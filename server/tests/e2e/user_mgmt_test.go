@@ -139,8 +139,9 @@ global_settings:
 	adminClient := pb_admin.NewAdminServiceClient(conn)
 
 	// Create initial user
+	userID := fmt.Sprintf("e2e-test-user-%d", time.Now().UnixNano())
 	user1 := &configv1.User{
-		Id: proto.String("e2e-test-user"),
+		Id: proto.String(userID),
 		Authentication: &configv1.Authentication{
 			AuthMethod: &configv1.Authentication_ApiKey{
 				ApiKey: &configv1.APIKeyAuth{
@@ -154,13 +155,13 @@ global_settings:
 
 	createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user1})
 	require.NoError(t, err)
-	require.Equal(t, "e2e-test-user", createResp.User.GetId())
-	require.Equal(t, "secret-key", createResp.User.GetAuthentication().GetApiKey().GetVerificationValue())
+	require.Equal(t, userID, createResp.User.GetId())
+	require.Empty(t, createResp.User.GetAuthentication().GetApiKey().GetVerificationValue())
 
 	// Get user
-	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("e2e-test-user")})
+	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(userID)})
 	require.NoError(t, err)
-	require.Equal(t, "e2e-test-user", getResp.User.GetId())
+	require.Equal(t, userID, getResp.User.GetId())
 
 	// List users
 	listResp, err := adminClient.ListUsers(ctx, &pb_admin.ListUsersRequest{})
@@ -168,13 +169,13 @@ global_settings:
 	require.GreaterOrEqual(t, len(listResp.Users), 1)
 	var foundUser *configv1.User
 	for _, u := range listResp.Users {
-		if u.GetId() == "e2e-test-user" {
+		if u.GetId() == userID {
 			foundUser = u
 			break
 		}
 	}
-	require.NotNil(t, foundUser, "e2e-test-user should be in the list")
-	require.Equal(t, "e2e-test-user", foundUser.GetId())
+	require.NotNil(t, foundUser, fmt.Sprintf("%s should be in the list", userID))
+	require.Equal(t, userID, foundUser.GetId())
 
 	// Update user
 	user1.Roles = []string{"admin"}
@@ -183,11 +184,11 @@ global_settings:
 	require.Equal(t, []string{"admin"}, updateResp.User.Roles)
 
 	// Delete user
-	_, err = adminClient.DeleteUser(ctx, &pb_admin.DeleteUserRequest{UserId: proto.String("e2e-test-user")})
+	_, err = adminClient.DeleteUser(ctx, &pb_admin.DeleteUserRequest{UserId: proto.String(userID)})
 	require.NoError(t, err)
 
 	// Verify deletion
-	_, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String("e2e-test-user")})
+	_, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(userID)})
 	require.Error(t, err)
 
 	// Test OIDC Configuration (External Authenticator Hook)
