@@ -22,7 +22,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -216,7 +215,7 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 
-	stats := tm.GetStats()
+	stats := tm.GetStats("")
 	assert.Equal(t, int64(123), stats.TotalRequests)
 }
 
@@ -251,7 +250,11 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	mockTM := tool.NewMockManagerInterface(ctrl)
 
 	// Mock Managers for Counts
-	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{{Name: proto.String("s1")}}, nil)
+	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
+		s := &configv1.UpstreamServiceConfig{}
+		s.SetName("s1")
+		return []*configv1.UpstreamServiceConfig{s}
+	}(), nil)
 	mockTM.EXPECT().ListTools().Return([]tool.Tool{&TestMockTool{}})
 
 	// Topology

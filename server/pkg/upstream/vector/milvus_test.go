@@ -24,24 +24,24 @@ func TestNewMilvusClient(t *testing.T) {
 	}{
 		{
 			name: "Valid Config",
-			config: &configv1.MilvusVectorDB{
+			config: configv1.MilvusVectorDB_builder{
 				Address:        proto.String("127.0.0.1:19530"),
 				CollectionName: proto.String("test_collection"),
-			},
+			}.Build(),
 			expectError: true, // Will fail connection in NewMilvusClient
 		},
 		{
 			name: "Missing Address",
-			config: &configv1.MilvusVectorDB{
+			config: configv1.MilvusVectorDB_builder{
 				CollectionName: proto.String("test_collection"),
-			},
+			}.Build(),
 			expectError: true,
 		},
 		{
 			name: "Missing Collection",
-			config: &configv1.MilvusVectorDB{
+			config: configv1.MilvusVectorDB_builder{
 				Address: proto.String("127.0.0.1:19530"),
-			},
+			}.Build(),
 			expectError: true,
 		},
 	}

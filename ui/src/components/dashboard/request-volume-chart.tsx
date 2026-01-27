@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
+import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 /**
  * RequestVolumeChart component.
@@ -15,12 +16,13 @@ import { apiClient } from "@/lib/client";
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; total: number }[]>([]);
   const [mounted, setMounted] = useState(false);
+  const { serviceId } = useDashboard();
 
   useEffect(() => {
     setMounted(true);
     const fetchData = async () => {
         try {
-            const traffic = await apiClient.getDashboardTraffic();
+            const traffic = await apiClient.getDashboardTraffic(serviceId);
             // Backend returns traffic points directly
             setData(traffic);
         } catch (error) {
@@ -31,7 +33,7 @@ export function RequestVolumeChart() {
     // Poll every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [serviceId]);
 
   if (!mounted) return null;
 

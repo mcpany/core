@@ -31,7 +31,13 @@ interface ServiceHealthContextType {
     refreshTopology: () => Promise<void>;
 }
 
+interface TopologyContextType {
+    latestTopology: Graph | null;
+    refreshTopology: () => Promise<void>;
+}
+
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
+const TopologyContext = createContext<TopologyContextType | undefined>(undefined);
 
 /** Maximum number of history points to keep (30 points * 5s = 2.5 minutes). */
 const MAX_HISTORY_POINTS = 30;
@@ -48,7 +54,8 @@ const POLLING_INTERVAL = 5000;
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
-    const lastTopologyHash = useRef<string>('');
+    const lastTopologyText = useRef<string>('');
+    const lastGraph = useRef<Graph | null>(null);
 
     const fetchTopology = useCallback(async () => {
         try {
@@ -56,13 +63,18 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
             const res = await fetch(url);
             if (!res.ok) return;
-            const graph: Graph = await res.json();
 
-            // ⚡ Bolt Optimization: Check if graph content has actually changed before updating state.
-            // This prevents unnecessary re-renders of the entire app context.
-            const graphContentHash = JSON.stringify(graph);
-            if (graphContentHash !== lastTopologyHash.current) {
-                lastTopologyHash.current = graphContentHash;
+            // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
+            // res.text() + string comparison is much faster than res.json() + JSON.stringify().
+            const text = await res.text();
+            let graph: Graph;
+
+            if (text === lastTopologyText.current && lastGraph.current) {
+                graph = lastGraph.current;
+            } else {
+                graph = JSON.parse(text);
+                lastTopologyText.current = text;
+                lastGraph.current = graph;
                 setLatestTopology(graph);
             }
 
@@ -150,9 +162,17 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         refreshTopology: fetchTopology
     }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
 
+    // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
+    const topologyValue = useMemo(() => ({
+        latestTopology,
+        refreshTopology: fetchTopology
+    }), [latestTopology, fetchTopology]);
+
     return (
         <ServiceHealthContext.Provider value={value}>
-            {children}
+            <TopologyContext.Provider value={topologyValue}>
+                {children}
+            </TopologyContext.Provider>
         </ServiceHealthContext.Provider>
     );
 }
@@ -166,6 +186,20 @@ export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
     if (!context) {
         throw new Error("useServiceHealth must be used within a ServiceHealthProvider");
+    }
+    return context;
+}
+
+/**
+ * useTopology is a hook to access network topology.
+ * It is optimized to not re-render when health metrics update.
+ * @returns The topology context.
+ * @throws Error if used outside of a ServiceHealthProvider.
+ */
+export function useTopology() {
+    const context = useContext(TopologyContext);
+    if (!context) {
+        throw new Error("useTopology must be used within a ServiceHealthProvider");
     }
     return context;
 }

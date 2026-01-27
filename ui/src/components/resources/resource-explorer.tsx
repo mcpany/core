@@ -24,8 +24,7 @@ import {
     List as ListIcon,
     Expand,
     ChevronLeft,
-    SearchCode,
-    GripVertical
+    SearchCode
 } from "lucide-react";
 
 import { apiClient, ResourceDefinition, ResourceContent } from "@/lib/client";
@@ -154,51 +153,28 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     };
 
-    const handleDownload = async (uri?: string) => {
+    const handleDownload = (uri?: string) => {
+        // If called from context menu with URI, we might not have content loaded yet.
+        // For this demo, we only support download if content is already loaded (selected)
+        // or we could fetch it. Ideally we should fetch.
+        // For now, let's fallback to current selection if match.
+
+        // If uri is provided and matches selectedUri, use resourceContent.
+        // Otherwise we can't easily download without fetching first.
         const targetUri = uri || selectedUri;
         if (!targetUri) return;
 
-        let content = resourceContent;
-
-        // Fetch if not matching current loaded or if content is missing
-        if (targetUri !== selectedUri || !content) {
-            try {
-                const res = await apiClient.readResource(targetUri);
-                if (res.contents && res.contents.length > 0) {
-                    content = res.contents[0];
-                }
-            } catch (e) {
-                toast({ title: "Error", description: "Failed to download resource content.", variant: "destructive" });
-                return;
-            }
-        }
-
-        if (content) {
-             const mime = content.mimeType || "application/octet-stream";
-             // Handle base64 blob if present
-             let blob: Blob;
-             if (content.blob) {
-                 // Convert base64 to blob
-                 const byteCharacters = atob(content.blob);
-                 const byteNumbers = new Array(byteCharacters.length);
-                 for (let i = 0; i < byteCharacters.length; i++) {
-                     byteNumbers[i] = byteCharacters.charCodeAt(i);
-                 }
-                 const byteArray = new Uint8Array(byteNumbers);
-                 blob = new Blob([byteArray], { type: mime });
-             } else {
-                 blob = new Blob([content.text || ""], { type: mime });
-             }
-
+        if (targetUri === selectedUri && resourceContent) {
+             const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
              const url = URL.createObjectURL(blob);
              const a = document.createElement("a");
              a.href = url;
              const selectedRes = resources.find(r => r.uri === targetUri);
-             a.download = selectedRes?.name || "resource.bin";
-             document.body.appendChild(a);
+             a.download = selectedRes?.name || "resource";
              a.click();
-             document.body.removeChild(a);
-             URL.revokeObjectURL(url);
+        } else {
+             // TODO: Fetch and download
+             toast({ title: "Info", description: "Select the resource first to download." });
         }
     };
 
@@ -218,29 +194,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         e.dataTransfer.setData("text/plain", res.uri);
         e.dataTransfer.setData("text/uri-list", res.uri);
         e.dataTransfer.effectAllowed = "copy";
-
-        // If this is the currently selected resource and we have content,
-        // enable Drag-to-Desktop via DownloadURL (Chrome/Edge feature)
-        if (res.uri === selectedUri && resourceContent) {
-             const mime = resourceContent.mimeType || "application/octet-stream";
-             let blob: Blob;
-             if (resourceContent.blob) {
-                 const byteCharacters = atob(resourceContent.blob);
-                 const byteNumbers = new Array(byteCharacters.length);
-                 for (let i = 0; i < byteCharacters.length; i++) {
-                     byteNumbers[i] = byteCharacters.charCodeAt(i);
-                 }
-                 const byteArray = new Uint8Array(byteNumbers);
-                 blob = new Blob([byteArray], { type: mime });
-             } else {
-                 blob = new Blob([resourceContent.text || ""], { type: mime });
-             }
-
-             const url = URL.createObjectURL(blob);
-             const filename = res.name || "resource.bin";
-             // Format: mime:filename:url
-             e.dataTransfer.setData("DownloadURL", `${mime}:${filename}:${url}`);
-        }
     };
 
     const navigateSibling = (direction: 'next' | 'prev') => {
@@ -356,7 +309,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                     <FileText className="mr-2 h-4 w-4" /> Copy Name
                                                 </ContextMenuItem>
                                                 <ContextMenuSeparator />
-                                                <ContextMenuItem onClick={() => handleDownload(res.uri)}>
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
                                                     <Download className="mr-2 h-4 w-4" /> Download
                                                 </ContextMenuItem>
                                             </ContextMenuContent>
@@ -405,7 +358,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                                     <FileText className="mr-2 h-4 w-4" /> Copy Name
                                                 </ContextMenuItem>
                                                 <ContextMenuSeparator />
-                                                <ContextMenuItem onClick={() => handleDownload(res.uri)}>
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
                                                     <Download className="mr-2 h-4 w-4" /> Download
                                                 </ContextMenuItem>
                                             </ContextMenuContent>
@@ -455,19 +408,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                             <ChevronRight className="h-4 w-4" />
                                         </Button>
                                     </div>
-                                    {selectedUri && (
-                                        <div
-                                            className="h-7 w-6 flex items-center justify-center cursor-grab active:cursor-grabbing hover:bg-muted rounded mr-1"
-                                            draggable
-                                            onDragStart={(e) => {
-                                                const res = resources.find(r => r.uri === selectedUri);
-                                                if (res) handleDragStart(e, res);
-                                            }}
-                                            title="Drag to desktop to save"
-                                        >
-                                            <GripVertical className="h-4 w-4 text-muted-foreground" />
-                                        </div>
-                                    )}
                                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCopyContent} disabled={!resourceContent}>
                                         <Copy className="h-3 w-3 mr-1" /> Copy
                                     </Button>

@@ -201,26 +201,30 @@ func TestRateLimitMiddleware_AllowN(t *testing.T) {
 	toolName := "test-tool"
 
 	// Mock Tool
-	toolDef := &v1.Tool{}
-	toolDef.ServiceId = proto.String(serviceID)
+	toolDef := v1.Tool_builder{
+		ServiceId: proto.String(serviceID),
+	}.Build()
 
 	mockTool := new(MockToolForCost)
 	mockTool.On("Tool").Return(toolDef)
 	mockManager.On("GetTool", toolName).Return(mockTool, true)
 
 	// Config with Token Cost Metric
-	config := &configv1.RateLimitConfig{}
-	config.IsEnabled = true
-	config.RequestsPerSecond = 10
-	config.Burst = 20
-	config.CostMetric = configv1.RateLimitConfig_COST_METRIC_TOKENS
-	config.Storage = configv1.RateLimitConfig_STORAGE_MEMORY
+	config := configv1.RateLimitConfig_builder{
+		IsEnabled:         true,
+		RequestsPerSecond: 10.0,
+		Burst:             20,
+		CostMetric:        configv1.RateLimitConfig_COST_METRIC_TOKENS,
+		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
+	}.Build()
+
+	svcConfig := configv1.UpstreamServiceConfig_builder{
+		RateLimit: config,
+	}.Build()
 
 	mockManager.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{
 		Name: "Test Service",
-		Config: &configv1.UpstreamServiceConfig{
-			RateLimit: config,
-		},
+		Config: svcConfig,
 	}, true)
 
 	ctx := context.Background()

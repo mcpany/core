@@ -199,32 +199,32 @@ func TestValidateGCSettings_Coverage(t *testing.T) {
     }{
         {
             name: "invalid_interval",
-            gc: &configv1.GCSettings{
+            gc: configv1.GCSettings_builder{
                 Interval: proto.String("invalid"),
-            },
+            }.Build(),
             expectErr: "invalid interval",
         },
         {
             name: "invalid_ttl",
-            gc: &configv1.GCSettings{
+            gc: configv1.GCSettings_builder{
                 Ttl: proto.String("invalid"),
-            },
+            }.Build(),
             expectErr: "invalid ttl",
         },
         {
             name: "empty_gc_path",
-            gc: &configv1.GCSettings{
+            gc: configv1.GCSettings_builder{
                 Enabled: proto.Bool(true),
                 Paths:   []string{""},
-            },
+            }.Build(),
             expectErr: "empty gc path",
         },
         {
             name: "relative_gc_path",
-            gc: &configv1.GCSettings{
+            gc: configv1.GCSettings_builder{
                 Enabled: proto.Bool(true),
                 Paths:   []string{"relative/path"},
-            },
+            }.Build(),
             expectErr: "gc path \"relative/path\" must be absolute",
         },
     }
@@ -249,72 +249,62 @@ func TestValidateMcpService_Coverage(t *testing.T) {
     }{
         {
             name: "http_empty_address",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-                    HttpConnection: &configv1.McpStreamableHttpConnection{
-                        HttpAddress: proto.String(""),
-                    },
-                },
-            },
-            expectErr: "mcp service with http_connection has empty http_address",
+			service: configv1.McpUpstreamService_builder{
+				HttpConnection: configv1.McpStreamableHttpConnection_builder{
+					HttpAddress: proto.String(""),
+				}.Build(),
+			}.Build(),
+			expectErr: "mcp service with http_connection has empty http_address",
         },
         {
             name: "http_invalid_address",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-                    HttpConnection: &configv1.McpStreamableHttpConnection{
-                        HttpAddress: proto.String("not-a-url"),
-                    },
-                },
-            },
+			service: configv1.McpUpstreamService_builder{
+				HttpConnection: configv1.McpStreamableHttpConnection_builder{
+					HttpAddress: proto.String("not-a-url"),
+				}.Build(),
+			}.Build(),
             expectErr: "invalid http_address",
         },
         {
             name: "stdio_empty_command",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-                    StdioConnection: &configv1.McpStdioConnection{
-                        Command: proto.String(""),
-                    },
-                },
-            },
-            expectErr: "mcp service with stdio_connection has empty command",
+			service: configv1.McpUpstreamService_builder{
+				StdioConnection: configv1.McpStdioConnection_builder{
+					Command: proto.String(""),
+				}.Build(),
+			}.Build(),
+			expectErr: "mcp service with stdio_connection has empty command",
         },
         {
             name: "bundle_empty_path",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-                    BundleConnection: &configv1.McpBundleConnection{
-                        BundlePath: proto.String(""),
-                    },
-                },
-            },
-            expectErr: "mcp service with bundle_connection has empty bundle_path",
+			service: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: proto.String(""),
+				}.Build(),
+			}.Build(),
+			expectErr: "mcp service with bundle_connection has empty bundle_path",
         },
         {
             name: "bundle_insecure_path",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-                    BundleConnection: &configv1.McpBundleConnection{
-                        BundlePath: proto.String("/etc/passwd"),
-                    },
-                },
-            },
-            expectErr: "mcp service with bundle_connection has insecure bundle_path",
+			service: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: proto.String("/etc/passwd"),
+				}.Build(),
+			}.Build(),
+			expectErr: "mcp service with bundle_connection has insecure bundle_path",
         },
         {
             name: "bundle_invalid_env",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-                    BundleConnection: &configv1.McpBundleConnection{
-                        BundlePath: proto.String("./bundle"),
-                        Env: map[string]*configv1.SecretValue{
-                            "KEY": {Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING"}},
-                        },
-                    },
-                },
-            },
-            expectErr: "mcp service with bundle_connection has invalid secret environment variable",
+			service: configv1.McpUpstreamService_builder{
+				BundleConnection: configv1.McpBundleConnection_builder{
+					BundlePath: proto.String("./bundle"),
+					Env: map[string]*configv1.SecretValue{
+						"KEY": configv1.SecretValue_builder{
+							EnvironmentVariable: proto.String("MISSING"),
+						}.Build(),
+					},
+				}.Build(),
+			}.Build(),
+			expectErr: "mcp service with bundle_connection has invalid secret environment variable",
         },
         {
             name: "unknown_connection_type",
@@ -323,22 +313,20 @@ func TestValidateMcpService_Coverage(t *testing.T) {
         },
         {
             name: "input_schema_error",
-            service: &configv1.McpUpstreamService{
-                ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-                    HttpConnection: &configv1.McpStreamableHttpConnection{
-                        HttpAddress: proto.String("http://example.com"),
-                    },
-                },
-                Calls: map[string]*configv1.MCPCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
-            },
+			service: configv1.McpUpstreamService_builder{
+				HttpConnection: configv1.McpStreamableHttpConnection_builder{
+					HttpAddress: proto.String("http://example.com"),
+				}.Build(),
+				Calls: map[string]*configv1.MCPCallDefinition{
+					"test": configv1.MCPCallDefinition_builder{
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
             expectErr: "input_schema error",
         },
     }
@@ -363,71 +351,71 @@ func TestValidateHTTPService_Coverage(t *testing.T) {
     }{
         {
             name: "empty_address",
-            service: &configv1.HttpUpstreamService{
-                Address: proto.String(""),
-            },
-            expectErr: "http service has empty address",
+			service: configv1.HttpUpstreamService_builder{
+				Address: proto.String(""),
+			}.Build(),
+			expectErr: "http service has empty address",
         },
         {
             name: "invalid_address",
-            service: &configv1.HttpUpstreamService{
-                Address: proto.String("not-a-url"),
-            },
-            expectErr: "invalid http address", // Depending on url.Parse implementation, might pass validation.IsValidURL but fail scheme check? validation.IsValidURL checks if it parses.
+			service: configv1.HttpUpstreamService_builder{
+				Address: proto.String("not-a-url"),
+			}.Build(),
+			expectErr: "invalid http address", // Depending on url.Parse implementation, might pass validation.IsValidURL but fail scheme check? validation.IsValidURL checks if it parses.
         },
         {
             name: "invalid_scheme",
-            service: &configv1.HttpUpstreamService{
-                Address: proto.String("ftp://example.com"),
-            },
-            expectErr: "invalid http address scheme",
+			service: configv1.HttpUpstreamService_builder{
+				Address: proto.String("ftp://example.com"),
+			}.Build(),
+			expectErr: "invalid http address scheme",
         },
         {
             name: "input_schema_error",
-            service: &configv1.HttpUpstreamService{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
-            },
+			service: configv1.HttpUpstreamService_builder{
+				Address: proto.String("http://example.com"),
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"test": configv1.HttpCallDefinition_builder{
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
             expectErr: "input_schema error",
         },
         {
             name: "output_schema_error",
-            service: &configv1.HttpUpstreamService{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "test": {
-                        OutputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
-            },
+			service: configv1.HttpUpstreamService_builder{
+				Address: proto.String("http://example.com"),
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"test": configv1.HttpCallDefinition_builder{
+						OutputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
             expectErr: "output_schema error",
         },
         {
             name: "valid_service",
-            service: &configv1.HttpUpstreamService{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
-                            },
-                        },
-                    },
-                },
-            },
+			service: configv1.HttpUpstreamService_builder{
+				Address: proto.String("http://example.com"),
+				Calls: map[string]*configv1.HttpCallDefinition{
+					"test": configv1.HttpCallDefinition_builder{
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
             expectErr: "",
         },
     }
@@ -452,64 +440,64 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
     }{
         {
             name: "empty_address",
-            service: &configv1.WebsocketUpstreamService{
-                Address: proto.String(""),
-            },
-            expectErr: "websocket service has empty address",
+			service: configv1.WebsocketUpstreamService_builder{
+				Address: proto.String(""),
+			}.Build(),
+			expectErr: "websocket service has empty address",
         },
         {
-             name: "invalid_scheme",
-            service: &configv1.WebsocketUpstreamService{
-                Address: proto.String("http://example.com"),
-            },
-            expectErr: "invalid websocket address scheme",
-        },
-        {
-            name: "input_schema_error",
-            service: &configv1.WebsocketUpstreamService{
-                Address: proto.String("ws://example.com"),
-                Calls: map[string]*configv1.WebsocketCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
-            },
-            expectErr: "input_schema error",
+			name: "invalid_scheme",
+			service: configv1.WebsocketUpstreamService_builder{
+				Address: proto.String("http://example.com"),
+			}.Build(),
+			expectErr: "invalid websocket address scheme",
+		},
+		{
+			name: "input_schema_error",
+			service: configv1.WebsocketUpstreamService_builder{
+				Address: proto.String("ws://example.com"),
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"test": configv1.WebsocketCallDefinition_builder{
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
+			expectErr: "input_schema error",
         },
           {
             name: "output_schema_error",
-            service: &configv1.WebsocketUpstreamService{
-                Address: proto.String("ws://example.com"),
-                Calls: map[string]*configv1.WebsocketCallDefinition{
-                    "test": {
-                        OutputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-                            },
-                        },
-                    },
-                },
-            },
+				service: configv1.WebsocketUpstreamService_builder{
+				Address: proto.String("ws://example.com"),
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"test": configv1.WebsocketCallDefinition_builder{
+						OutputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
             expectErr: "output_schema error",
         },
          {
             name: "valid_service",
-            service: &configv1.WebsocketUpstreamService{
-                Address: proto.String("ws://example.com"),
-                Calls: map[string]*configv1.WebsocketCallDefinition{
-                    "test": {
-                        InputSchema: &structpb.Struct{
-                            Fields: map[string]*structpb.Value{
-                                "type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
-                            },
-                        },
-                    },
-                },
-            },
+				service: configv1.WebsocketUpstreamService_builder{
+				Address: proto.String("ws://example.com"),
+				Calls: map[string]*configv1.WebsocketCallDefinition{
+					"test": configv1.WebsocketCallDefinition_builder{
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+							},
+						},
+					}.Build(),
+				},
+			}.Build(),
             expectErr: "",
         },
     }
@@ -538,34 +526,34 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
             expectErr: "",
         },
         {
-            name: "empty_host_path",
-            env: &configv1.ContainerEnvironment{
-                Image: proto.String("alpine"),
-                Volumes: map[string]string{
-                    "": "/container/path",
-                },
-            },
-            expectErr: "container environment volume host path is empty",
+				name: "empty_host_path",
+			env: configv1.ContainerEnvironment_builder{
+				Image: proto.String("alpine"),
+				Volumes: map[string]string{
+					"": "/container/path",
+				},
+			}.Build(),
+			expectErr: "container environment volume host path is empty",
         },
         {
-            name: "empty_container_path",
-            env: &configv1.ContainerEnvironment{
-                Image: proto.String("alpine"),
-                Volumes: map[string]string{
-                    "/host/path": "",
-                },
-            },
-            expectErr: "container environment volume container path is empty",
+				name: "empty_container_path",
+			env: configv1.ContainerEnvironment_builder{
+				Image: proto.String("alpine"),
+				Volumes: map[string]string{
+					"/host/path": "",
+				},
+			}.Build(),
+			expectErr: "container environment volume container path is empty",
         },
         {
-            name: "insecure_host_path",
-            env: &configv1.ContainerEnvironment{
-                Image: proto.String("alpine"),
-                Volumes: map[string]string{
-                    "/etc/passwd": "/container/passwd",
-                },
-            },
-            expectErr: "not a secure path",
+				name: "insecure_host_path",
+			env: configv1.ContainerEnvironment_builder{
+				Image: proto.String("alpine"),
+				Volumes: map[string]string{
+					"/etc/passwd": "/container/passwd",
+				},
+			}.Build(),
+			expectErr: "not a secure path",
         },
     }
 
@@ -590,49 +578,49 @@ func TestValidateAPIKeyAuth_Coverage(t *testing.T) {
         expectErr string
     }{
         {
-            name: "empty_param_name",
-            apiKey: &configv1.APIKeyAuth{
-                ParamName: proto.String(""),
-            },
-            ctxType: AuthValidationContextIncoming,
-            expectErr: "param_name",
+				name: "empty_param_name",
+			apiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String(""),
+			}.Build(),
+			ctxType:   AuthValidationContextIncoming,
+			expectErr: "param_name",
         },
         {
-            name: "outgoing_missing_value",
-            apiKey: &configv1.APIKeyAuth{
-                ParamName: proto.String("api_key"),
-                Value: nil,
-            },
-            ctxType: AuthValidationContextOutgoing,
-            expectErr: "api key 'value' is missing",
+				name: "outgoing_missing_value",
+			apiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String("api_key"),
+			}.Build(),
+			ctxType:   AuthValidationContextOutgoing,
+			expectErr: "api key 'value' is missing",
         },
         {
-            name: "incoming_missing_config",
-            apiKey: &configv1.APIKeyAuth{
-                ParamName: proto.String("api_key"),
-                Value: nil,
-                VerificationValue: proto.String(""),
-            },
-            ctxType: AuthValidationContextIncoming,
-            expectErr: "api key configuration is empty",
+				name: "incoming_missing_config",
+			apiKey: configv1.APIKeyAuth_builder{
+				ParamName:         proto.String("api_key"),
+				VerificationValue: proto.String(""),
+			}.Build(),
+			ctxType:   AuthValidationContextIncoming,
+			expectErr: "api key configuration is empty",
         },
         {
              name: "invalid_secret_value",
-             apiKey: &configv1.APIKeyAuth{
-                 ParamName: proto.String("api_key"),
-                 Value: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR"}},
-             },
+				apiKey: configv1.APIKeyAuth_builder{
+				ParamName: proto.String("api_key"),
+				Value: configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MISSING_VAR"),
+				}.Build(),
+			}.Build(),
              ctxType: AuthValidationContextOutgoing,
              expectErr: "api key secret validation failed",
         },
         {
-            name: "valid_incoming_api_key",
-            apiKey: &configv1.APIKeyAuth{
-                ParamName: proto.String("api_key"),
-                VerificationValue: proto.String("secret"),
-            },
-            ctxType: AuthValidationContextIncoming,
-            expectErr: "",
+				name: "valid_incoming_api_key",
+			apiKey: configv1.APIKeyAuth_builder{
+				ParamName:         proto.String("api_key"),
+				VerificationValue: proto.String("secret"),
+			}.Build(),
+			ctxType:   AuthValidationContextIncoming,
+			expectErr: "",
         },
     }
 
@@ -657,23 +645,29 @@ func TestValidateBearerTokenAuth_Coverage(t *testing.T) {
     }{
          {
              name: "invalid_secret",
-             token: &configv1.BearerTokenAuth{
-                 Token: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR"}},
-             },
+             token: configv1.BearerTokenAuth_builder{
+				Token: configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MISSING_VAR"),
+				}.Build(),
+			}.Build(),
              expectErr: "bearer token validation failed",
          },
          {
              name: "empty_secret_resolved",
-             token: &configv1.BearerTokenAuth{
-                 Token: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: ""}},
-             },
+             token: configv1.BearerTokenAuth_builder{
+				Token: configv1.SecretValue_builder{
+					PlainText: proto.String(""),
+				}.Build(),
+			}.Build(),
              expectErr: "bearer token 'token' is empty",
          },
          {
              name: "valid_bearer_token",
-             token: &configv1.BearerTokenAuth{
-                 Token: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "token"}},
-             },
+             token: configv1.BearerTokenAuth_builder{
+				Token: configv1.SecretValue_builder{
+					PlainText: proto.String("token"),
+				}.Build(),
+			}.Build(),
              expectErr: "",
          },
     }
@@ -697,34 +691,40 @@ func TestValidateBasicAuth_Coverage(t *testing.T) {
         expectErr string
     }{
         {
-            name: "empty_username",
-            auth: &configv1.BasicAuth{
-                Username: proto.String(""),
-            },
-            expectErr: "username",
+				name: "empty_username",
+			auth: configv1.BasicAuth_builder{
+				Username: proto.String(""),
+			}.Build(),
+			expectErr: "username",
         },
          {
              name: "invalid_secret",
-             auth: &configv1.BasicAuth{
-                 Username: proto.String("user"),
-                 Password: &configv1.SecretValue{Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR"}},
-             },
+			auth: configv1.BasicAuth_builder{
+				Username: proto.String("user"),
+				Password: configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MISSING_VAR"),
+				}.Build(),
+			}.Build(),
              expectErr: "basic auth password validation failed",
          },
          {
              name: "empty_secret_resolved",
-             auth: &configv1.BasicAuth{
-                 Username: proto.String("user"),
-                 Password: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: ""}},
-             },
+			auth: configv1.BasicAuth_builder{
+				Username: proto.String("user"),
+				Password: configv1.SecretValue_builder{
+					PlainText: proto.String(""),
+				}.Build(),
+			}.Build(),
              expectErr: "basic auth 'password' is empty",
          },
          {
              name: "valid_basic_auth",
-             auth: &configv1.BasicAuth{
-                 Username: proto.String("user"),
-                 Password: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "pass"}},
-             },
+			auth: configv1.BasicAuth_builder{
+				Username: proto.String("user"),
+				Password: configv1.SecretValue_builder{
+					PlainText: proto.String("pass"),
+				}.Build(),
+			}.Build(),
              expectErr: "",
          },
     }

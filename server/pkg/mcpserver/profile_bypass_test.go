@@ -72,9 +72,7 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 
 	serviceInfo := &tool.ServiceInfo{
 		Name: restrictedServiceID,
-		Config: &configv1.UpstreamServiceConfig{
-			// Profiles removed
-		},
+		Config: configv1.UpstreamServiceConfig_builder{}.Build(),
 	}
 	tm.AddServiceInfo(restrictedServiceID, serviceInfo)
 
@@ -96,12 +94,14 @@ func TestServer_CallTool_ProfileBypass_Repro(t *testing.T) {
 	_ = tm.AddTool(restrictedTool)
 
 	// Configure profiles to allow access
-	profileDef := &configv1.ProfileDefinition{
+	profileDef := configv1.ProfileDefinition_builder{
 		Name: proto.String(restrictedProfileID),
 		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-			restrictedServiceID: {Enabled: proto.Bool(true)},
+			restrictedServiceID: configv1.ProfileServiceConfig_builder{
+				Enabled: proto.Bool(true),
+			}.Build(),
 		},
-	}
+	}.Build()
 	tm.SetProfiles([]string{restrictedProfileID}, []*configv1.ProfileDefinition{profileDef})
 
 	// Create client-server connection

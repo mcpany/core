@@ -6,7 +6,14 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ConnectionDiagnosticDialog } from "./connection-diagnostic";
 import { UpstreamServiceConfig } from "@/lib/types";
+import { apiClient } from "@/lib/client";
 import { vi } from "vitest";
+
+vi.mock("@/lib/client", () => ({
+    apiClient: {
+        getService: vi.fn(),
+    },
+}));
 
 const mockService: UpstreamServiceConfig = {
   id: "test-service",
@@ -58,6 +65,14 @@ const mockWebSocketService: UpstreamServiceConfig = {
 
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
+    // Default mock for getService (Operational Verification)
+    (apiClient.getService as any).mockResolvedValue({
+        service: {
+            toolCount: 5,
+            lastError: ""
+        }
+    });
+
     // Default mock global fetch (Success case)
     global.fetch = vi.fn((url: string | Request, _init?: RequestInit) => {
         if (typeof url === 'string' && url.includes("/api/dashboard/health")) {
@@ -119,6 +134,12 @@ describe("ConnectionDiagnosticDialog", () => {
     // Check if backend health check was successful
     expect(global.fetch).toHaveBeenCalledWith("/api/dashboard/health", expect.any(Object));
     expect(screen.getByText("Connected")).toBeInTheDocument();
+
+    // Check Operational Verification
+    expect(screen.getByText("Operational Verification")).toBeInTheDocument();
+    await waitFor(() => {
+         expect(screen.getByText("Fully Operational")).toBeInTheDocument();
+    });
   });
 
   it("detects HTTP service and adds browser check step", async () => {
@@ -243,8 +264,101 @@ describe("ConnectionDiagnosticDialog", () => {
     }, { timeout: 5000 });
 
     // Check for suggestion card elements
-    expect(screen.getByText("Connection Refused")).toBeInTheDocument();
+    expect(screen.getByText("Connection Failed")).toBeInTheDocument();
     // Use getAllByText because it appears in logs and the card
     expect(screen.getAllByText(/Check if the upstream service is running/).length).toBeGreaterThan(0);
 });
+
+  it("warns when no tools are discovered", async () => {
+        (apiClient.getService as any).mockResolvedValue({
+            service: {
+                toolCount: 0,
+                lastError: ""
+            }
+        });
+
+        render(<ConnectionDiagnosticDialog service={mockService} />);
+
+        const trigger = screen.getByText("Troubleshoot");
+        fireEvent.click(trigger);
+
+        const startButton = screen.getByText("Start Diagnostics");
+        fireEvent.click(startButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("No Tools (Warning)")).toBeInTheDocument();
+        }, { timeout: 5000 });
+
+        expect(screen.getByText("No Tools Discovered")).toBeInTheDocument();
+  });
+
+  it("detects and analyzes ZodError in operational check", async () => {
+        (apiClient.getService as any).mockResolvedValue({
+            service: {
+                toolCount: 0,
+                lastError: "ZodError: Invalid input"
+            }
+        });
+
+        render(<ConnectionDiagnosticDialog service={mockService} />);
+
+        const trigger = screen.getByText("Troubleshoot");
+        fireEvent.click(trigger);
+
+        const startButton = screen.getByText("Start Diagnostics");
+        fireEvent.click(startButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("Operational Error")).toBeInTheDocument();
+        }, { timeout: 5000 });
+
+        expect(screen.getByText("Schema Validation Error")).toBeInTheDocument();
+        expect(screen.getByText("The upstream server returned data that does not match the expected schema.")).toBeInTheDocument();
+  });
+
+  it("warns about localhost/Docker usage when connection fails", async () => {
+    // Mock fetch to throw error for localhost
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn((url: string | Request, init?: RequestInit) => {
+        if (typeof url === 'string' && url.includes("localhost")) {
+            return Promise.reject(new TypeError("Failed to fetch"));
+        }
+        return originalFetch(url, init);
+    }) as unknown as typeof fetch;
+
+    // Mock localhost service
+    const localhostService = {
+        ...mockService,
+        httpService: {
+            address: "http://localhost:3000",
+            tools: [],
+            resources: [],
+            prompts: [],
+            calls: {},
+        }
+    };
+
+    render(<ConnectionDiagnosticDialog service={localhostService} />);
+
+    const trigger = screen.getByText("Troubleshoot");
+    fireEvent.click(trigger);
+
+    const startButton = screen.getByText("Start Diagnostics");
+    fireEvent.click(startButton);
+
+    // Wait for failure
+    await waitFor(() => {
+        expect(screen.getByText("Not Accessible")).toBeInTheDocument();
+    });
+
+    // Check for the warning message in logs
+    // We use getAllByText or check for partial text
+    await waitFor(() => {
+        expect(screen.getByText((content) => content.includes("WARNING: You are using 'localhost'"))).toBeInTheDocument();
+    });
+    expect(screen.getByText((content) => content.includes("host.docker.internal"))).toBeInTheDocument();
+
+    // Restore fetch
+    global.fetch = originalFetch;
+  });
 });

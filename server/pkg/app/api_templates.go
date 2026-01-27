@@ -13,7 +13,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
 
 func (a *Application) handleTemplates() http.HandlerFunc {
@@ -54,7 +53,7 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 			}
 
 			if tmpl.GetId() == "" {
-				tmpl.Id = proto.String(uuid.New().String())
+				tmpl.SetId(uuid.New().String())
 			}
 
 			if err := a.TemplateManager.SaveTemplate(&tmpl); err != nil {

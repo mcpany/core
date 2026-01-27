@@ -6,6 +6,7 @@ edition = "2023";
 package mcpany.config.v1;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/go_features.proto";
 import "proto/bus/bus.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/call.proto";
@@ -18,7 +19,7 @@ import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "UpstreamServiceProto";
-
+option features.(pb.go).api_level = API_OPAQUE;
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
 // that mcpany will proxy. It defines the service's identity, how to connect to it,
@@ -101,6 +102,9 @@ message UpstreamServiceConfig {
   repeated PromptDefinition prompts = 33;
   // Tags for organizing and filtering services.
   repeated string tags = 34 [json_name = "tags"];
+  // JSON Schema string defining the configuration parameters (env vars, args) required by this service.
+  // This is used by the UI to generate a configuration form.
+  string configuration_schema = 38 [json_name = "configuration_schema"];
 }
 
 message CallPolicy {

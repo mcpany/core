@@ -7,10 +7,10 @@ import (
 	"context"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -49,7 +49,7 @@ func TestHTTPUpstream_URLConstruction_SpaceBug(t *testing.T) {
 				}
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -76,12 +76,10 @@ func TestHTTPUpstream_URLConstruction_SpaceBug(t *testing.T) {
 		// HTTPTool struct has initError field but it's private.
 		// But Execute() returns initError first thing.
 
-		httpTool, ok := registeredTool.(tool.Tool)
-		require.True(t, ok)
 
 		// Mock execution request
 		req := &tool.ExecutionRequest{
-			ToolName: "test-op",
+			ToolName:   "test-op",
 			ToolInputs: []byte("{}"),
 		}
 
@@ -89,7 +87,7 @@ func TestHTTPUpstream_URLConstruction_SpaceBug(t *testing.T) {
 		// Since we don't have a real pool/client, it will fail later with "no http pool found" or connection error,
 		// but we want to ensure it passes the init check.
 
-		_, err = httpTool.Execute(context.Background(), req)
+		_, err = registeredTool.Execute(context.Background(), req)
 
 		// If the bug exists, err will be "invalid http tool definition: expected method and URL, got ..."
 		// If fixed, it should be something else (like pool error).

@@ -111,7 +111,7 @@ func TestHTTPUpstream_Register_InsecureSkipVerify(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -174,7 +174,7 @@ func TestHTTPUpstream_Register_Disabled(t *testing.T) {
 			]
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	promptManager := prompt.NewManager()
@@ -242,7 +242,7 @@ func TestDeterminismInToolNaming(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -273,7 +273,7 @@ func TestHTTPUpstream_Register_MissingToolName(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -306,7 +306,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				}
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -325,7 +325,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		upstream := NewUpstream(pm)
 
 		configJSON := `{"name": "test-service", "grpc_service": {}}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -339,7 +339,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 		upstream := NewUpstream(pm)
 
 		configJSON := `{"name": "", "http_service": {}}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -369,7 +369,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				}
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -411,7 +411,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				}
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -461,7 +461,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				}
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -495,7 +495,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				"max_idle_connections": 10
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		// We need to replace the NewHTTPPool function with a mock to check the parameters.
@@ -541,7 +541,7 @@ func TestHTTPUpstream_Register(t *testing.T) {
 				}
 			}
 		}`
-		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 		// We need to replace the NewHTTPPool function with a mock to check the parameters.
@@ -595,7 +595,7 @@ func TestCreateAndRegisterHTTPTools_AddToolError(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	var promptManager prompt.ManagerInterface
@@ -627,7 +627,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig1 := &configv1.UpstreamServiceConfig{}
+	serviceConfig1 := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON1), serviceConfig1))
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig1, tm, nil, nil, false)
@@ -648,7 +648,7 @@ func TestHTTPUpstream_Register_WithReload(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig2 := &configv1.UpstreamServiceConfig{}
+	serviceConfig2 := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON2), serviceConfig2))
 
 	// We need to use a mock tool manager to check if ClearToolsForService is called.
@@ -687,7 +687,7 @@ func TestHTTPUpstream_Register_InvalidMethod(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -843,7 +843,7 @@ func TestHTTPUpstream_URLConstruction(t *testing.T) {
 					}
 				}
 			}`
-			serviceConfig := &configv1.UpstreamServiceConfig{}
+			serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 			require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 			serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -886,7 +886,7 @@ func TestHTTPUpstream_Register_Blocked(t *testing.T) {
 			}
 		]
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -918,7 +918,7 @@ func TestHTTPUpstream_CheckHealth(t *testing.T) {
 
 	// Register with bad address
 	configJSON := `{"name": "health-test", "http_service": {"address": "http://localhost:54321"}}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 	tm := tool.NewManager(nil)
 

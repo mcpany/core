@@ -18,9 +18,9 @@ import (
 func TestNewZipProvider_FileNotFound(t *testing.T) {
 	// Use a path in the current directory to pass IsAllowedPath check
 	path := "non-existent-file.zip"
-	config := &configv1.ZipFs{
+	config := configv1.ZipFs_builder{
 		FilePath: proto.String(path),
-	}
+	}.Build()
 	p, err := NewZipProvider(config)
 	assert.Error(t, err)
 	assert.Nil(t, p)
@@ -28,11 +28,11 @@ func TestNewZipProvider_FileNotFound(t *testing.T) {
 }
 
 func TestNewSftpProvider_InvalidKeyFile(t *testing.T) {
-	config := &configv1.SftpFs{
+	config := configv1.SftpFs_builder{
 		Address:  proto.String("127.0.0.1:2222"),
 		Username: proto.String("user"),
 		KeyPath:  proto.String("/path/to/non/existent/key"),
-	}
+	}.Build()
 	p, err := NewSftpProvider(config)
 	assert.Error(t, err)
 	assert.Nil(t, p)
@@ -54,11 +54,11 @@ func TestSftpProvider_ConfigValidation(t *testing.T) {
 	require.NoError(t, err)
 	tmpFile.Close()
 
-	config := &configv1.SftpFs{
+	config := configv1.SftpFs_builder{
 		Address:  proto.String("127.0.0.1"), // No port, should add :22
 		Username: proto.String("user"),
 		KeyPath:  proto.String(tmpFile.Name()),
-	}
+	}.Build()
 
 	p, err := NewSftpProvider(config)
 	assert.Error(t, err)

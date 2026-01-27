@@ -55,7 +55,7 @@ func TestFileStore_Load_Coverage(t *testing.T) {
 	store := NewFileStoreWithSkipErrors(fs, []string{"/bad.yaml", "/good.yaml"})
 	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
 
 	// Expand Error
 	require.NoError(t, afero.WriteFile(fs, "/expand.yaml", []byte("key: ${MISSING}"), 0644))

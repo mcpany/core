@@ -12,6 +12,7 @@ import (
 	"sync/atomic"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 var (
@@ -52,10 +53,17 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 		opts := &slog.HandlerOptions{
 			Level:     level,
 			AddSource: true,
+			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+				if util.IsSensitiveKey(a.Key) {
+					return slog.String(a.Key, "[REDACTED]")
+				}
+				return a
+			},
 		}
 
 		var mainHandler slog.Handler
 		if fmtStr == "json" {
+			output = &RedactingWriter{w: output}
 			mainHandler = slog.NewJSONHandler(output, opts)
 		} else {
 			mainHandler = slog.NewTextHandler(output, opts)

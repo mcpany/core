@@ -25,7 +25,8 @@ import {
   ShoppingBag,
   ShieldCheck,
   Zap,
-  ClipboardCheck
+  ClipboardCheck,
+  Bug
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -65,6 +66,11 @@ const platformItems = [
     title: "Network Graph",
     url: "/network",
     icon: Network,
+  },
+  {
+    title: "Diagnostics",
+    url: "/diagnostics",
+    icon: Activity,
   },
   {
     title: "Live Logs",
@@ -110,6 +116,11 @@ const devItems = [
     icon: Bot,
   },
   {
+    title: "Inspector",
+    url: "/inspector",
+    icon: Bug,
+  },
+  {
     title: "Schema Validation",
     url: "/playground/schema",
     icon: ShieldCheck,
@@ -145,7 +156,7 @@ const configItems = [
 
   {
     title: "Upstream Services",
-    url: "/services",
+    url: "/upstream-services",
     icon: Server,
   },
   {

@@ -26,10 +26,10 @@ func TestAuthenticationConfig(t *testing.T) {
 	err = protojson.Unmarshal(jsonContent, cfg)
 	require.NoError(t, err)
 
-	require.Len(t, cfg.UpstreamServices, 2)
+	require.Len(t, cfg.GetUpstreamServices(), 2)
 
 	// Verify Incoming Auth
-	incomingSvc := cfg.UpstreamServices[0]
+	incomingSvc := cfg.GetUpstreamServices()[0]
 	require.Equal(t, "incoming-auth-service", incomingSvc.GetName())
 	require.NotNil(t, incomingSvc.GetAuthentication())
 	require.NotNil(t, incomingSvc.GetAuthentication().GetApiKey())
@@ -38,7 +38,7 @@ func TestAuthenticationConfig(t *testing.T) {
 	require.Equal(t, "s3cret", incomingSvc.GetAuthentication().GetApiKey().GetVerificationValue())
 
 	// Verify Outgoing Auth
-	outgoingSvc := cfg.UpstreamServices[1]
+	outgoingSvc := cfg.GetUpstreamServices()[1]
 	require.Equal(t, "outgoing-auth-service", outgoingSvc.GetName())
 	require.NotNil(t, outgoingSvc.GetUpstreamAuth())
 	require.NotNil(t, outgoingSvc.GetUpstreamAuth().GetBasicAuth())
