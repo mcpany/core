@@ -57,7 +57,7 @@ func CatFactsHandler() http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `{"fact": "Cats are amazing mock animals.", "length": 28}`)
+		_, _ = fmt.Fprintln(w, `{"fact": "Cats are amazing mock animals.", "length": 28}`)
 	}
 }
 
@@ -70,7 +70,7 @@ func OpenNotifyHandler() http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `{
+		_, _ = fmt.Fprintln(w, `{
 			"message": "success",
 			"number": 3,
 			"people": [

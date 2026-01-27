@@ -507,6 +507,24 @@ func TestBasicAuthenticator(t *testing.T) {
 	authenticator := NewBasicAuthenticator(config)
 	require.NotNil(t, authenticator)
 
+	t.Run("nil_when_username_missing", func(t *testing.T) {
+		badConfig := &configv1.BasicAuth{
+			PasswordHash: proto.String(hashed),
+			// Missing username
+		}
+		auth := NewBasicAuthenticator(badConfig)
+		assert.Nil(t, auth, "NewBasicAuthenticator should return nil if username is missing")
+	})
+
+	t.Run("nil_when_password_missing", func(t *testing.T) {
+		badConfig := &configv1.BasicAuth{
+			Username: proto.String("user"),
+			// Missing password
+		}
+		auth := NewBasicAuthenticator(badConfig)
+		assert.Nil(t, auth, "NewBasicAuthenticator should return nil if password hash is missing")
+	})
+
 	t.Run("successful_authentication", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
 		req.SetBasicAuth("user", password)
