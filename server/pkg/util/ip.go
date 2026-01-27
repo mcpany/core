@@ -106,11 +106,3 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }
-
-func isNAT64Loopback(ip net.IP) bool {
-	return validation.IsNAT64Loopback(ip)
-}
-
-func isNAT64LinkLocal(ip net.IP) bool {
-	return validation.IsNAT64LinkLocal(ip)
-}

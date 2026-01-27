@@ -100,7 +100,7 @@ func IsNAT64Loopback(ip net.IP) bool {
 // It covers:
 // - Standard Loopback (127.0.0.0/8, ::1)
 // - NAT64 Loopback (64:ff9b::127.0.0.0/8)
-// - IPv4-compatible IPv6 Loopback (::127.0.0.0/8)
+// - IPv4-compatible IPv6 Loopback (::127.0.0.0/8).
 func IsLoopback(ip net.IP) bool {
 	if ip.IsLoopback() {
 		return true
@@ -120,7 +120,7 @@ func IsLoopback(ip net.IP) bool {
 // - IPv4 Link-Local (169.254.0.0/16)
 // - IPv6 Link-Local (fe80::/10)
 // - NAT64 Link-Local (64:ff9b::169.254.0.0/16)
-// - IPv4-compatible IPv6 Link-Local (::169.254.0.0/16)
+// - IPv4-compatible IPv6 Link-Local (::169.254.0.0/16).
 func IsLinkLocal(ip net.IP) bool {
 	if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
 		return true
