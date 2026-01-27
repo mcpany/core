@@ -2187,16 +2187,11 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
 			// This prevents accidental exposure of the server to the public internet (RCE risk).
-			host, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				// Fallback if RemoteAddr is weird, assume host is the string itself
-				host = r.RemoteAddr
-			}
-
-			// Check if the request is from a loopback address
-			ipAddr := net.ParseIP(host)
+			// We check the IP derived from GetClientIP, which respects trustProxy (X-Forwarded-For).
+			// This ensures that even behind a trusted proxy, we validate the *client* IP (or at least the IP that connected to the proxy).
+			ipAddr := net.ParseIP(ip)
 			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "client_ip", ip, "remote_addr", r.RemoteAddr)
 				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 				return
 			}

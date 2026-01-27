@@ -144,14 +144,14 @@ func TestGetClientIP(t *testing.T) {
 			remoteAddr: "1.2.3.4:1234",
 			xff:        "5.6.7.8, 9.10.11.12",
 			trustProxy: true,
-			expected:   "5.6.7.8",
+			expected:   "9.10.11.12",
 		},
 		{
 			name:       "Trust Proxy, XFF with Spaces",
 			remoteAddr: "1.2.3.4:1234",
 			xff:        " 5.6.7.8 , 9.10.11.12 ",
 			trustProxy: true,
-			expected:   "5.6.7.8",
+			expected:   "9.10.11.12",
 		},
 		{
 			name:       "Trust Proxy, Invalid XFF, Fallback to RemoteAddr",
@@ -308,6 +308,63 @@ func TestIsPrivateIP(t *testing.T) {
 			ip := net.ParseIP(tt.ip)
 			if got := IsPrivateIP(ip); got != tt.expected {
 				t.Errorf("IsPrivateIP(%q) = %v, want %v", tt.ip, got, tt.expected)
+			}
+		})
+	}
+}
+// TestGetClientIP_XFF_Spoofing verifies that GetClientIP correctly handles
+// X-Forwarded-For spoofing attempts when trustProxy is enabled.
+// It should pick the *last* IP in the list, as that is the one appended by the trusted proxy.
+func TestGetClientIP_XFF_Spoofing(t *testing.T) {
+	tests := []struct {
+		name       string
+		xff        string
+		expected   string
+	}{
+		{
+			name:     "Single IP (trusted proxy)",
+			xff:      "10.0.0.1",
+			expected: "10.0.0.1",
+		},
+		{
+			name:     "Client, TrustedProxy",
+			xff:      "203.0.113.1, 10.0.0.1",
+			expected: "10.0.0.1",
+		},
+		{
+			name:     "SpoofedIP, Client, TrustedProxy",
+			xff:      "1.2.3.4, 203.0.113.1, 10.0.0.1",
+			expected: "10.0.0.1",
+		},
+		{
+			name:     "SpoofedIP, Client (No Spaces)",
+			xff:      "1.2.3.4,203.0.113.1",
+			expected: "203.0.113.1",
+		},
+		{
+			name:     "Empty XFF",
+			xff:      "",
+			expected: "", // Will fallback to RemoteAddr in actual usage, but extract returns empty
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, _ := http.NewRequest("GET", "/", nil)
+			req.Header.Set("X-Forwarded-For", tt.xff)
+			req.RemoteAddr = "127.0.0.1:12345"
+
+			// We don't care about RemoteAddr fallback here, we want to see what extracted from XFF
+			// But GetClientIP falls back to RemoteAddr if XFF is empty/invalid.
+			// So if expected is "", we expect 127.0.0.1
+			expected := tt.expected
+			if expected == "" {
+				expected = "127.0.0.1"
+			}
+
+			got := GetClientIP(req, true)
+			if got != expected {
+				t.Errorf("GetClientIP() = %q, want %q", got, expected)
 			}
 		})
 	}

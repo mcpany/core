@@ -63,13 +63,21 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 			}
 		}
 		if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-			// Use the first IP in the list (client IP)
-			// Optimization: Use strings.Cut to avoid allocating a slice for all parts
-			// in case of multiple IPs in the header.
-			clientIP, _, _ := strings.Cut(xff, ",")
-			clientIP = strings.TrimSpace(clientIP)
-			if clientIP != "" {
-				if ip := ExtractIP(clientIP); ip != "" {
+			// Use the last IP in the list.
+			// When trustProxy is true, we trust the immediate peer (the proxy) to have appended
+			// the IP of the client that connected to it.
+			// If there are multiple proxies, the last IP is the one the trusted proxy saw.
+			// Using the first IP allows spoofing (XFF: spoofed, client).
+			// Using the last IP ensures we see the IP that connected to our trusted proxy.
+			if idx := strings.LastIndex(xff, ","); idx != -1 {
+				// Multiple IPs: take the last one
+				lastIP := strings.TrimSpace(xff[idx+1:])
+				if ip := ExtractIP(lastIP); ip != "" {
+					return ip
+				}
+			} else {
+				// Single IP
+				if ip := ExtractIP(strings.TrimSpace(xff)); ip != "" {
 					return ip
 				}
 			}
