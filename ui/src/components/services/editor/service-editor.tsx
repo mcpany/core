@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { ProxyConfigEditor } from "@/components/services/editor/proxy-config";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -196,6 +197,11 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             placeholder="https://api.example.com"
                                         />
                                     </div>
+                                    <Separator />
+                                    <ProxyConfigEditor
+                                        config={service.httpService.proxyConfig}
+                                        onChange={(cfg) => onChange({ ...service, httpService: { ...service.httpService!, proxyConfig: cfg } })}
+                                    />
                                 </div>
                             )}
 
@@ -292,6 +298,11 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             placeholder="https://api.example.com/openapi.json"
                                         />
                                     </div>
+                                    <Separator />
+                                    <ProxyConfigEditor
+                                        config={service.openapiService.proxyConfig}
+                                        onChange={(cfg) => onChange({ ...service, openapiService: { ...service.openapiService!, proxyConfig: cfg } })}
+                                    />
                                 </div>
                             )}
                         </TabsContent>

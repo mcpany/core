@@ -228,6 +228,8 @@ message HttpUpstreamService {
   repeated ResourceDefinition resources = 5;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 7;
+  // Proxy configuration for connecting to the upstream service.
+  ProxyConfig proxy_config = 8 [json_name = "proxy_config"];
 }
 
 // WebsocketUpstreamService defines an upstream service that communicates over Websocket.
@@ -288,6 +290,8 @@ message OpenapiUpstreamService {
   map<string, OpenAPICallDefinition> calls = 7;
   // A list of prompts served by this service.
   repeated PromptDefinition prompts = 8;
+  // Proxy configuration for connecting to the upstream service.
+  ProxyConfig proxy_config = 10 [json_name = "proxy_config"];
 }
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
@@ -508,6 +512,8 @@ message McpStreamableHttpConnection {
   TLSConfig tls_config = 5 [json_name = "tls_config"];
   // If true, the client will follow HTTP redirects. Default is false (security hardening).
   bool allow_http_redirect = 6 [json_name = "allow_http_redirect"];
+  // Proxy configuration for connecting to the upstream service.
+  ProxyConfig proxy_config = 7 [json_name = "proxy_config"];
 }
 
 // McpBundleConnection defines the parameters for a bundle-based connection.
@@ -599,4 +605,14 @@ message TLSConfig {
   string client_key_path = 4 [json_name = "client_key_path"];
   // If true, the client will not verify the server's certificate chain. Use with caution.
   bool insecure_skip_verify = 5 [json_name = "insecure_skip_verify"];
+}
+
+// ProxyConfig defines the proxy settings for connecting to an upstream service.
+message ProxyConfig {
+  // The URL of the proxy server (e.g., http://proxy.example.com:8080).
+  string url = 1 [json_name = "url"];
+  // The username for proxy authentication (Basic Auth).
+  string username = 2 [json_name = "username"];
+  // The password for proxy authentication (Basic Auth).
+  string password = 3 [json_name = "password"];
 }

@@ -6,9 +6,10 @@ package http //nolint:revive,nolintlint // Package name 'http' is intentional fo
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"crypto/x509"
+	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -107,6 +108,31 @@ var NewHTTPPool = func(
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
 		ForceAttemptHTTP2:     true,
+	}
+
+	// Configure Proxy
+	var proxyConfig *configv1.ProxyConfig
+	if httpService := config.GetHttpService(); httpService != nil {
+		proxyConfig = httpService.GetProxyConfig()
+	} else if openapiService := config.GetOpenapiService(); openapiService != nil {
+		proxyConfig = openapiService.GetProxyConfig()
+	} else if mcpService := config.GetMcpService(); mcpService != nil {
+		if httpConn := mcpService.GetHttpConnection(); httpConn != nil {
+			proxyConfig = httpConn.GetProxyConfig()
+		}
+	}
+
+	if proxyConfig != nil && proxyConfig.GetUrl() != "" {
+		proxyURL, err := url.Parse(proxyConfig.GetUrl())
+		if err != nil {
+			return nil, fmt.Errorf("invalid proxy URL: %w", err)
+		}
+		if proxyConfig.GetUsername() != "" || proxyConfig.GetPassword() != "" {
+			proxyURL.User = url.UserPassword(proxyConfig.GetUsername(), proxyConfig.GetPassword())
+		}
+		baseTransport.Proxy = http.ProxyURL(proxyURL)
+	} else {
+		baseTransport.Proxy = http.ProxyFromEnvironment
 	}
 
 	clientTimeout := 30 * time.Second

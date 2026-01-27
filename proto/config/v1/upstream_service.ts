@@ -388,6 +388,8 @@ export interface HttpUpstreamService {
   resources: ResourceDefinition[];
   /** A list of prompts served by this service. */
   prompts: PromptDefinition[];
+  /** Proxy configuration for connecting to the upstream service. */
+  proxyConfig?: ProxyConfig | undefined;
 }
 
 export interface HttpUpstreamService_CallsEntry {
@@ -473,6 +475,8 @@ export interface OpenapiUpstreamService {
   calls: { [key: string]: OpenAPICallDefinition };
   /** A list of prompts served by this service. */
   prompts: PromptDefinition[];
+  /** Proxy configuration for connecting to the upstream service. */
+  proxyConfig?: ProxyConfig | undefined;
 }
 
 export interface OpenapiUpstreamService_CallsEntry {
@@ -820,6 +824,8 @@ export interface McpStreamableHttpConnection {
     | undefined;
   /** If true, the client will follow HTTP redirects. Default is false (security hardening). */
   allowHttpRedirect: boolean;
+  /** Proxy configuration for connecting to the upstream service. */
+  proxyConfig?: ProxyConfig | undefined;
 }
 
 /** McpBundleConnection defines the parameters for a bundle-based connection. */
@@ -925,6 +931,16 @@ export interface TLSConfig {
   clientKeyPath: string;
   /** If true, the client will not verify the server's certificate chain. Use with caution. */
   insecureSkipVerify: boolean;
+}
+
+/** ProxyConfig defines the proxy settings for connecting to an upstream service. */
+export interface ProxyConfig {
+  /** The URL of the proxy server (e.g., http://proxy.example.com:8080). */
+  url: string;
+  /** The username for proxy authentication (Basic Auth). */
+  username: string;
+  /** The password for proxy authentication (Basic Auth). */
+  password: string;
 }
 
 function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
@@ -2829,6 +2845,7 @@ function createBaseHttpUpstreamService(): HttpUpstreamService {
     tlsConfig: undefined,
     resources: [],
     prompts: [],
+    proxyConfig: undefined,
   };
 }
 
@@ -2854,6 +2871,9 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
     }
     for (const v of message.prompts) {
       PromptDefinition.encode(v!, writer.uint32(58).fork()).join();
+    }
+    if (message.proxyConfig !== undefined) {
+      ProxyConfig.encode(message.proxyConfig, writer.uint32(66).fork()).join();
     }
     return writer;
   },
@@ -2924,6 +2944,14 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
           message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
           continue;
         }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.proxyConfig = ProxyConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2954,6 +2982,7 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
+      proxyConfig: isSet(object.proxy_config) ? ProxyConfig.fromJSON(object.proxy_config) : undefined,
     };
   },
 
@@ -2986,6 +3015,9 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
     if (message.prompts?.length) {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
+    if (message.proxyConfig !== undefined) {
+      obj.proxy_config = ProxyConfig.toJSON(message.proxyConfig);
+    }
     return obj;
   },
 
@@ -3013,6 +3045,9 @@ export const HttpUpstreamService: MessageFns<HttpUpstreamService> = {
       : undefined;
     message.resources = object.resources?.map((e) => ResourceDefinition.fromPartial(e)) || [];
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
+    message.proxyConfig = (object.proxyConfig !== undefined && object.proxyConfig !== null)
+      ? ProxyConfig.fromPartial(object.proxyConfig)
+      : undefined;
     return message;
   },
 };
@@ -3666,6 +3701,7 @@ function createBaseOpenapiUpstreamService(): OpenapiUpstreamService {
     resources: [],
     calls: {},
     prompts: [],
+    proxyConfig: undefined,
   };
 }
 
@@ -3697,6 +3733,9 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
     });
     for (const v of message.prompts) {
       PromptDefinition.encode(v!, writer.uint32(66).fork()).join();
+    }
+    if (message.proxyConfig !== undefined) {
+      ProxyConfig.encode(message.proxyConfig, writer.uint32(82).fork()).join();
     }
     return writer;
   },
@@ -3783,6 +3822,14 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
           message.prompts.push(PromptDefinition.decode(reader, reader.uint32()));
           continue;
         }
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.proxyConfig = ProxyConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3815,6 +3862,7 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
       prompts: globalThis.Array.isArray(object?.prompts)
         ? object.prompts.map((e: any) => PromptDefinition.fromJSON(e))
         : [],
+      proxyConfig: isSet(object.proxy_config) ? ProxyConfig.fromJSON(object.proxy_config) : undefined,
     };
   },
 
@@ -3853,6 +3901,9 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
     if (message.prompts?.length) {
       obj.prompts = message.prompts.map((e) => PromptDefinition.toJSON(e));
     }
+    if (message.proxyConfig !== undefined) {
+      obj.proxy_config = ProxyConfig.toJSON(message.proxyConfig);
+    }
     return obj;
   },
 
@@ -3882,6 +3933,9 @@ export const OpenapiUpstreamService: MessageFns<OpenapiUpstreamService> = {
       {},
     );
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
+    message.proxyConfig = (object.proxyConfig !== undefined && object.proxyConfig !== null)
+      ? ProxyConfig.fromPartial(object.proxyConfig)
+      : undefined;
     return message;
   },
 };
@@ -6839,7 +6893,7 @@ export const EnvValidation: MessageFns<EnvValidation> = {
 };
 
 function createBaseMcpStreamableHttpConnection(): McpStreamableHttpConnection {
-  return { httpAddress: "", tlsConfig: undefined, allowHttpRedirect: false };
+  return { httpAddress: "", tlsConfig: undefined, allowHttpRedirect: false, proxyConfig: undefined };
 }
 
 export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection> = {
@@ -6852,6 +6906,9 @@ export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection
     }
     if (message.allowHttpRedirect !== false) {
       writer.uint32(48).bool(message.allowHttpRedirect);
+    }
+    if (message.proxyConfig !== undefined) {
+      ProxyConfig.encode(message.proxyConfig, writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -6887,6 +6944,14 @@ export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection
           message.allowHttpRedirect = reader.bool();
           continue;
         }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.proxyConfig = ProxyConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -6901,6 +6966,7 @@ export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection
       httpAddress: isSet(object.http_address) ? globalThis.String(object.http_address) : "",
       tlsConfig: isSet(object.tls_config) ? TLSConfig.fromJSON(object.tls_config) : undefined,
       allowHttpRedirect: isSet(object.allow_http_redirect) ? globalThis.Boolean(object.allow_http_redirect) : false,
+      proxyConfig: isSet(object.proxy_config) ? ProxyConfig.fromJSON(object.proxy_config) : undefined,
     };
   },
 
@@ -6915,6 +6981,9 @@ export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection
     if (message.allowHttpRedirect !== false) {
       obj.allow_http_redirect = message.allowHttpRedirect;
     }
+    if (message.proxyConfig !== undefined) {
+      obj.proxy_config = ProxyConfig.toJSON(message.proxyConfig);
+    }
     return obj;
   },
 
@@ -6928,6 +6997,9 @@ export const McpStreamableHttpConnection: MessageFns<McpStreamableHttpConnection
       ? TLSConfig.fromPartial(object.tlsConfig)
       : undefined;
     message.allowHttpRedirect = object.allowHttpRedirect ?? false;
+    message.proxyConfig = (object.proxyConfig !== undefined && object.proxyConfig !== null)
+      ? ProxyConfig.fromPartial(object.proxyConfig)
+      : undefined;
     return message;
   },
 };
@@ -7981,6 +8053,98 @@ export const TLSConfig: MessageFns<TLSConfig> = {
     message.clientCertPath = object.clientCertPath ?? "";
     message.clientKeyPath = object.clientKeyPath ?? "";
     message.insecureSkipVerify = object.insecureSkipVerify ?? false;
+    return message;
+  },
+};
+
+function createBaseProxyConfig(): ProxyConfig {
+  return { url: "", username: "", password: "" };
+}
+
+export const ProxyConfig: MessageFns<ProxyConfig> = {
+  encode(message: ProxyConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    if (message.username !== "") {
+      writer.uint32(18).string(message.username);
+    }
+    if (message.password !== "") {
+      writer.uint32(26).string(message.password);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ProxyConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProxyConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.password = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProxyConfig {
+    return {
+      url: isSet(object.url) ? globalThis.String(object.url) : "",
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      password: isSet(object.password) ? globalThis.String(object.password) : "",
+    };
+  },
+
+  toJSON(message: ProxyConfig): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.password !== "") {
+      obj.password = message.password;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ProxyConfig>, I>>(base?: I): ProxyConfig {
+    return ProxyConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ProxyConfig>, I>>(object: I): ProxyConfig {
+    const message = createBaseProxyConfig();
+    message.url = object.url ?? "";
+    message.username = object.username ?? "";
+    message.password = object.password ?? "";
     return message;
   },
 };
