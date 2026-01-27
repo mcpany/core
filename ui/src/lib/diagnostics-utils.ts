@@ -30,13 +30,13 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
     };
   }
 
-  // Network: Connection Refused / Fetch Failed
-  if (err.includes("connection refused") || err.includes("fetch failed") || (err.includes("dial tcp") && !err.includes("lookup"))) {
+  // Network: Connection Refused
+  if (err.includes("connection refused") || (err.includes("dial tcp") && !err.includes("lookup"))) {
     return {
       category: "network",
-      title: "Connection Failed",
+      title: "Connection Refused",
       description: "The server is unreachable at the specified address/port.",
-      suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. Docker Users: 'localhost' refers to the container itself. Use 'host.docker.internal' to reach your host machine.",
+      suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. If running in Docker, ensure you are using the correct network alias (e.g., 'host.docker.internal' instead of 'localhost').",
       severity: "critical",
     };
   }

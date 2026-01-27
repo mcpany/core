@@ -12,12 +12,11 @@ import { Button } from "@/components/ui/button";
 
 const actions = [
     {
-        title: "Register Service",
-        href: "/upstream-services",
+        title: "Add Service",
+        href: "/services",
         icon: PlusCircle,
         description: "Connect a new API or database",
-        color: "text-blue-500",
-        bgColor: "bg-blue-500/10"
+        color: "text-blue-500"
     },
     {
         title: "Playground",
