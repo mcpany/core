@@ -17,7 +17,7 @@ import (
 // ValidateConfigHandler handles requests to validate configuration.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
 	}
 
@@ -26,12 +26,12 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req ValidateConfigRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		respondWithJSONError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	if req.Content == "" {
-		http.Error(w, "Content is required", http.StatusBadRequest)
+		respondWithJSONError(w, http.StatusBadRequest, "Content is required")
 		return
 	}
 
@@ -85,6 +85,15 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
+}
+
+func respondWithJSONError(w http.ResponseWriter, code int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	_ = json.NewEncoder(w).Encode(ValidateConfigResponse{
+		Valid:  false,
+		Errors: []string{message},
+	})
 }
 
 func respondWithValidationErrors(w http.ResponseWriter, errors []string) {
