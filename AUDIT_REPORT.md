@@ -1,84 +1,54 @@
-# Documentation Audit & System Verification Report
-
-**Date:** 2026-01-25
-**Auditor:** Senior Technical Quality Analyst
+# Audit Report - 2026-01-26
 
 ## Executive Summary
-A comprehensive audit of the MCPAny system documentation and codebase was performed. The audit focused on verifying feature documentation against actual implementation, ensuring system integrity, and aligning with the project roadmap.
+A comprehensive audit of 10 randomly selected documentation features was performed against the codebase and live system (simulated environment). The audit revealed that while the codebase implements the described features, the Roadmap documentation was out of sync with the actual progress. Several features marked as "Planned" or missing were found to be fully implemented.
 
-**Key Findings:**
-- **System Integrity**: Core features (Rate Limiting, Caching, Webhooks, Authentication) are functional.
-- **Documentation**: Several discrepancies were found between documentation and implementation, particularly in UI descriptions and configuration examples.
-- **Code Quality**: Webhook examples required dependency fixes. Docker Compose configuration was missing observability ports.
-- **Roadmap Alignment**: Features tested align with the "Active Development" status.
+## Features Audited
 
-## 1. Features Audited
+The following documents were selected for verification:
 
-The following features were selected for deep-dive verification:
+1.  **Log Search Highlighting** (`ui/docs/features/log-search-highlighting.md`)
+2.  **Resource Preview Modal** (`ui/docs/features/resource_preview_modal.md`)
+3.  **Intelligent Stack Composer** (`ui/docs/features/stack-composer.md`)
+4.  **Tool Output Diffing** (`ui/docs/features/tool-diff.md`)
+5.  **Native File Upload in Playground** (`ui/docs/features/native_file_upload_playground.md`)
+6.  **Tool Search Bar** (`server/docs/features/tool_search_bar.md`)
+7.  **Health Checks** (`server/docs/features/health-checks.md`)
+8.  **Theme Builder** (`server/docs/features/theme_builder.md`)
+9.  **Dynamic UI** (`server/docs/features/dynamic-ui.md`)
+10. **Context Optimizer** (`server/docs/features/context_optimizer.md`)
 
-| ID | Feature | Category | Doc Status | Code Status |
-|----|---------|----------|------------|-------------|
-| 1 | Playground | UI | ⚠️ Updated | ✅ Verified |
-| 2 | Logs | UI | ✅ Accurate | ✅ Verified |
-| 3 | Marketplace | UI | ✅ Accurate | ✅ Verified |
-| 4 | Dashboard | UI | ✅ Accurate | ✅ Verified |
-| 5 | Connection Pooling | Server | ✅ Accurate | ✅ Verified |
-| 6 | Rate Limiting | Server | ⚠️ Discrepancy | ✅ Verified |
-| 7 | Monitoring | Server | ⚠️ Config Fix | ✅ Verified |
-| 8 | Authentication | Server | ✅ Accurate | ✅ Verified |
-| 9 | Caching | Server | ✅ Accurate | ✅ Verified |
-| 10 | Webhooks | Server | ⚠️ Code Fix | ✅ Verified |
+## Verification Results
 
-## 2. Verification Detail & Findings
+| Feature | Verification Step | Outcome | Evidence |
+| :--- | :--- | :--- | :--- |
+| **Log Search Highlighting** | Search for terms in Live Logs UI | **Verified (Code)** | Feature implementation found in `ui/src/components/logs/log-stream.tsx`. UI test encountered timeouts due to environment constraints. |
+| **Resource Preview Modal** | Access "Preview in Modal" for resources | **Verified (Code)** | Modal logic and context menu actions confirmed in `ui/src/components/resource-detail.tsx`. |
+| **Stack Composer** | Navigate to `/stacks` and check editor | **Verified (Code)** | Full page implementation found in `ui/src/app/stacks/page.tsx` including Palette and Visualizer. |
+| **Tool Output Diffing** | Re-run tool with same args | **Verified** | Diffing logic and "Show Changes" button (`GitCompare` icon) confirmed in `ui/src/components/playground/pro/chat-message.tsx`. |
+| **Native File Upload** | Select tool with `base64` input | **Passed** | UI Verification Test passed. File picker appears for appropriate inputs. |
+| **Tool Search Bar** | Filter tools in list | **Verified** | `SmartToolSearch.tsx` implements client-side filtering by name/description. UI test confirmed component existence. |
+| **Health Checks** | Query `/healthz` endpoint | **Passed** | Server returned `HTTP 200 OK`. Code in `server/pkg/upstream` supports HTTP, gRPC, and CLI checks. |
+| **Theme Builder** | Toggle Light/Dark mode | **Passed** | UI Verification Test passed. Theme toggle functional. |
+| **Dynamic UI** | Check for dynamic component loading | **Passed** | Multiple `next/dynamic` imports found in `ui/src` (e.g., Charts, Log Viewer). |
+| **Context Optimizer** | Check middleware existence | **Passed** | Middleware found in `server/pkg/middleware/context_optimizer.go`. |
 
-### UI Verification
-Automated Playwright tests were created (`ui/tests/audit_verify.spec.ts`) to verify UI elements.
+## Changes Made
 
-- **Playground**:
-  - *Finding*: Page title is "MCPAny Manager", but documentation implied "Playground".
-  - *Action*: Updated `ui/docs/features/playground.md` to reflect the global title.
-  - *Note*: Automated test had difficulty locating the tool list in the sidebar under test configuration, though the page loads.
+### Documentation Updates
 
-- **Marketplace**:
-  - *Finding*: Multiple "Marketplace" text elements caused strict mode selectors to fail.
-  - *Action*: Updated test selectors to be more specific. Documentation is accurate regarding functionality.
+*   **`ui/roadmap.md`**:
+    *   Marked **Tool Output Diffing** as Completed `[x]`.
+    *   Marked **Recent Tools in Search** as Completed `[x]`.
+    *   Marked **Intelligent Stack Composer** as Completed `[x]`.
+    *   Removed duplicate entry for **Context Usage Estimator**.
+*   **`server/roadmap.md`**:
+    *   Moved **gRPC Health Checks** from Planned to Completed Features.
+    *   Added **Context Optimizer Middleware** to Completed Features.
 
-### Server Verification
+### Code Remediation
+*   No code changes were required as the implementation was found to be ahead of the roadmap.
+*   Verified system integrity via linting and testing.
 
-- **Monitoring**:
-  - *Finding*: Default `docker-compose.yml` did not expose the metrics port, despite `prometheus.yml` expecting to scrape it (or internal equivalent).
-  - *Action*: Updated `docker-compose.yml` to expose port `9090` and enable metrics on `mcpany-server`. Updated `server/docker/prometheus.yml` to target port `9090`.
-
-- **Rate Limiting**:
-  - *Finding*: Configuration values in `README.md` (10.0 rps) differ from `config.yaml` (50.0 rps) and `tutorial_config.yaml` (1.0 rps).
-  - *Outcome*: This is acceptable as they are examples, but users should be aware of the differences. Functional verification passed.
-
-- **Webhooks**:
-  - *Finding*: The provided examples (`block_rm`, `html_to_md`) failed to run out-of-the-box due to missing/incorrect `go.mod` dependencies (module replacement issues).
-  - *Action*: Fixed `go.mod` files in both examples to correctly replace local module paths. Verified both examples with E2E tests.
-
-- **Caching**:
-  - *Verification*: E2E tests passed after ensuring the server binary was built (`make build`).
-
-## 3. Changes Made
-
-### Documentation
-- Modified `ui/docs/features/playground.md`: Clarified page title.
-- Modified `server/docs/features/webhooks/README.md`: Added note about dependencies.
-
-### Code
-- **Docker Compose**: Enabled metrics on port 9090 in `docker-compose.yml`.
-- **Prometheus Config**: Updated target to `9090` in `server/docker/prometheus.yml`.
-- **Webhooks Examples**: Updated `go.mod` in `server/docs/features/webhooks/examples/block_rm/` and `html_to_md/` to fix build errors.
-- **UI Tests**: Created `ui/tests/audit_verify.spec.ts` for automated verification.
-
-## 4. Roadmap Alignment
-The audited features match the "Active Development" status.
-- **Monitoring & Observability**: The fix to `docker-compose.yml` aligns with the roadmap goal of improved observability.
-- **Resilience**: Rate limiting and Caching features are implemented as described.
-
-## 5. Security Note
-All sensitive information (API keys, secrets) used during verification were test credentials. No production secrets were exposed.
-
----
-**Status**: Audit Complete. System is verified.
+## Roadmap Alignment Notes
+The audit identified a pattern where features were implemented ("Done") but remained unchecked in the Roadmap. This suggests a need for better synchronization between development and documentation updates. The performed updates have brought the Roadmap into alignment with the current code state.
