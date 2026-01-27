@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
@@ -73,4 +74,76 @@ func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
 	// Check if "properties" field exists
 	propsField := inputSchema.GetFields()["properties"]
 	require.NotNil(t, propsField, "InputSchema should have 'properties' field")
+}
+
+func TestGRPCUpstream_SchemaOverride(t *testing.T) {
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
+
+	server, addr := startMockServer(t)
+	defer server.Stop()
+
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+	tm := NewMockToolManager()
+
+	// Define explicit input schema
+	customSchema, err := structpb.NewStruct(map[string]any{
+		"type": "object",
+		"properties": map[string]any{
+			"custom_field": map[string]any{
+				"type":        "string",
+				"description": "A custom field overriding auto-generation",
+			},
+		},
+		"required": []any{"custom_field"},
+	})
+	require.NoError(t, err)
+
+	grpcService := configv1.GrpcUpstreamService_builder{
+		Address:       proto.String(addr),
+		UseReflection: proto.Bool(true),
+		Tools: []*configv1.ToolDefinition{
+			configv1.ToolDefinition_builder{
+				Name:   proto.String("GetWeatherWithOverride"),
+				CallId: proto.String("weather_call_override"),
+			}.Build(),
+		},
+		Calls: map[string]*configv1.GrpcCallDefinition{
+			"weather_call_override": configv1.GrpcCallDefinition_builder{
+				Id:          proto.String("weather_call_override"),
+				Service:     proto.String("examples.weather.v1.WeatherService"),
+				Method:      proto.String("GetWeather"),
+				InputSchema: customSchema,
+			}.Build(),
+		},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:        proto.String("weather-service-override"),
+		GrpcService: grpcService,
+	}.Build()
+
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	toolName := serviceID + ".GetWeatherWithOverride"
+	registeredTool, ok := tm.GetTool(toolName)
+	require.True(t, ok, "Tool should be registered")
+
+	inputSchema := registeredTool.Tool().GetAnnotations().GetInputSchema()
+	require.NotNil(t, inputSchema)
+
+	// Debug logging
+	t.Logf("Input Schema: %v", inputSchema)
+
+	// Check for custom_field
+	props := inputSchema.GetFields()["properties"].GetStructValue().GetFields()
+	_, found := props["custom_field"]
+	assert.True(t, found, "Input schema should contain 'custom_field' from explicit config")
+
+	// Check that required fields list matches explicit config
+	required := inputSchema.GetFields()["required"].GetListValue().GetValues()
+	assert.NotEmpty(t, required)
+	assert.Equal(t, "custom_field", required[0].GetStringValue())
 }
