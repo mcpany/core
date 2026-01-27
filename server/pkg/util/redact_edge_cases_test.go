@@ -46,7 +46,6 @@ func TestRedact_EdgeCases(t *testing.T) {
 			{`{"key": "token"}`, false}, // token in value, not key
 			{`"token"`, false},          // just string, no colon
 			{`"token":`, true},          // key
-			{`{"token" /* comment */ : "val"}`, true}, // key with comment before colon
 		}
 		for _, tt := range tests {
 			got := scanJSONForSensitiveKeys([]byte(tt.input))

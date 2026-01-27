@@ -31,7 +31,7 @@ type CircuitBreaker struct {
 	mutex sync.Mutex
 
 	state        State // Accessed using atomics for read optimization
-	failures     int32 // Accessed using atomics
+	failures     int
 	openTime     time.Time
 	halfOpenHits int
 
@@ -102,13 +102,6 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 		return err
 	}
 
-	// Optimization: If the circuit is closed and there are no recorded failures,
-	// we can skip acquiring the lock. This covers the "Happy Path" where
-	// everything is working normally.
-	if cb.getState() == StateClosed && atomic.LoadInt32(&cb.failures) == 0 {
-		return nil
-	}
-
 	cb.mutex.Lock()
 	cb.onSuccess(originState)
 	cb.mutex.Unlock()
@@ -133,7 +126,7 @@ func (cb *CircuitBreaker) onSuccess(originState State) {
 		cb.setState(StateClosed)
 		cb.halfOpenHits = 0
 	}
-	atomic.StoreInt32(&cb.failures, 0)
+	cb.failures = 0
 }
 
 func (cb *CircuitBreaker) onFailure(originState State) {
@@ -161,8 +154,8 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 		return
 	}
 
-	newFailures := atomic.AddInt32(&cb.failures, 1)
-	if newFailures >= cb.config.GetConsecutiveFailures() {
+	cb.failures++
+	if cb.failures >= int(cb.config.GetConsecutiveFailures()) {
 		cb.setState(StateOpen)
 		cb.openTime = time.Now()
 	}

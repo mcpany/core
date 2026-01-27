@@ -28,12 +28,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			return
 		}
 
-		gatherer := a.MetricsGatherer
-		if gatherer == nil {
-			gatherer = prometheus.DefaultGatherer
-		}
-
-		mfs, err := gatherer.Gather()
+		mfs, err := prometheus.DefaultGatherer.Gather()
 		if err != nil {
 			logging.GetLogger().Error("failed to gather metrics", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -138,108 +133,5 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
-	}
-}
-
-// ToolFailureStats represents failure statistics for a tool.
-type ToolFailureStats struct {
-	Name        string  `json:"name"`
-	ServiceID   string  `json:"serviceId"`
-	FailureRate float64 `json:"failureRate"` // Percentage 0-100
-	TotalCalls  int64   `json:"totalCalls"`
-}
-
-// handleDashboardToolFailures returns the tools with highest failure rates based on Prometheus metrics.
-func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-
-		gatherer := a.MetricsGatherer
-		if gatherer == nil {
-			gatherer = prometheus.DefaultGatherer
-		}
-
-		mfs, err := gatherer.Gather()
-		if err != nil {
-			logging.GetLogger().Error("failed to gather metrics", "error", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		type aggregatedStats struct {
-			Name      string
-			ServiceID string
-			Success   int64
-			Error     int64
-		}
-
-		toolStats := make(map[string]*aggregatedStats)
-
-		for _, mf := range mfs {
-			if mf.GetName() == "mcpany_tools_call_total" {
-				for _, m := range mf.GetMetric() {
-					var toolName, serviceID, status string
-					for _, label := range m.GetLabel() {
-						if label.GetName() == "tool" {
-							toolName = label.GetValue()
-						}
-						if label.GetName() == "service_id" {
-							serviceID = label.GetValue()
-						}
-						if label.GetName() == "status" {
-							status = label.GetValue()
-						}
-					}
-
-					if toolName != "" {
-						key := toolName + "@" + serviceID
-						if _, exists := toolStats[key]; !exists {
-							toolStats[key] = &aggregatedStats{
-								Name:      toolName,
-								ServiceID: serviceID,
-							}
-						}
-						count := int64(m.GetCounter().GetValue())
-						if status == "error" {
-							toolStats[key].Error += count
-						} else {
-							toolStats[key].Success += count
-						}
-					}
-				}
-			}
-		}
-
-		// Convert map to slice of ToolFailureStats
-		var stats []ToolFailureStats
-		for _, s := range toolStats {
-			total := s.Success + s.Error
-			if total == 0 {
-				continue
-			}
-			rate := (float64(s.Error) / float64(total)) * 100.0
-			stats = append(stats, ToolFailureStats{
-				Name:        s.Name,
-				ServiceID:   s.ServiceID,
-				FailureRate: rate,
-				TotalCalls:  total,
-			})
-		}
-
-		// Sort by FailureRate descending
-		sort.Slice(stats, func(i, j int) bool {
-			return stats[i].FailureRate > stats[j].FailureRate
-		})
-
-		// Take top 5
-		if len(stats) > 5 {
-			stats = stats[:5]
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(stats)
 	}
 }

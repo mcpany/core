@@ -162,13 +162,9 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 			required = append(required, paramSchema.GetName())
 		}
 
-		typeStr := strings.ToLower(configv1.ParameterType_name[int32(paramSchema.GetType())])
-		if typeStr == "" {
-			typeStr = "string"
-		}
 		paramStruct := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":        structpb.NewStringValue(typeStr),
+				"type":        structpb.NewStringValue(strings.ToLower(configv1.ParameterType_name[int32(paramSchema.GetType())])),
 				"description": structpb.NewStringValue(paramSchema.GetDescription()),
 			},
 		}

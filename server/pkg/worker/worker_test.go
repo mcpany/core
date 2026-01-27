@@ -71,10 +71,6 @@ func (m *mockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 	return nil, nil
 }
 
-func (m *mockServiceRegistry) GetServiceHealth(serviceID string) (string, bool) {
-	return "healthy", true
-}
-
 type mockToolManager struct {
 	tool.ManagerInterface
 	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)

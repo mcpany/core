@@ -49,12 +49,8 @@ export function CredentialList() {
     try {
       const data = await apiClient.listCredentials()
       // Sort by Name
-      if (Array.isArray(data)) {
-        data.sort((a: Credential, b: Credential) => a.name.localeCompare(b.name))
-        setCredentials(data)
-      } else {
-        setCredentials([])
-      }
+      data.sort((a: Credential, b: Credential) => a.name.localeCompare(b.name))
+      setCredentials(data)
     } catch (error) {
 
       console.error(error)

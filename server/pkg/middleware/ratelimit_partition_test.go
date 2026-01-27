@@ -143,7 +143,7 @@ func TestRateLimitPartitioning(t *testing.T) {
 		// Request A
 		httpReqA, _ := http.NewRequest("POST", "http://example.com", nil)
 		httpReqA.Header.Set("X-API-Key", "key-header-a")
-		ctxA := context.WithValue(baseCtx, middleware.HTTPRequestContextKey, httpReqA)
+		ctxA := context.WithValue(baseCtx, "http.request", httpReqA)
 
 		// 1. Success
 		res, err := rlMiddleware.Execute(ctxA, req, mockNext)
@@ -157,7 +157,7 @@ func TestRateLimitPartitioning(t *testing.T) {
 		// Request B
 		httpReqB, _ := http.NewRequest("POST", "http://example.com", nil)
 		httpReqB.Header.Set("X-API-Key", "key-header-b")
-		ctxB := context.WithValue(baseCtx, middleware.HTTPRequestContextKey, httpReqB)
+		ctxB := context.WithValue(baseCtx, "http.request", httpReqB)
 
 		// 3. Success
 		res, err = rlMiddleware.Execute(ctxB, req, mockNext)
@@ -171,7 +171,7 @@ func TestRateLimitPartitioning(t *testing.T) {
 		// Request A
 		httpReqA, _ := http.NewRequest("POST", "http://example.com", nil)
 		httpReqA.Header.Set("Authorization", "Bearer token-a")
-		ctxA := context.WithValue(baseCtx, middleware.HTTPRequestContextKey, httpReqA)
+		ctxA := context.WithValue(baseCtx, "http.request", httpReqA)
 
 		// 1. Success
 		res, err := rlMiddleware.Execute(ctxA, req, mockNext)
@@ -185,7 +185,7 @@ func TestRateLimitPartitioning(t *testing.T) {
 		// Request B
 		httpReqB, _ := http.NewRequest("POST", "http://example.com", nil)
 		httpReqB.Header.Set("Authorization", "Bearer token-b")
-		ctxB := context.WithValue(baseCtx, middleware.HTTPRequestContextKey, httpReqB)
+		ctxB := context.WithValue(baseCtx, "http.request", httpReqB)
 
 		// 3. Success
 		res, err = rlMiddleware.Execute(ctxB, req, mockNext)

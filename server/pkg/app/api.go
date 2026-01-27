@@ -84,7 +84,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/dashboard/metrics", a.handleDashboardMetrics())
 	mux.HandleFunc("/dashboard/traffic", a.handleDashboardTraffic())
 	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
-	mux.HandleFunc("/dashboard/tool-failures", a.handleDashboardToolFailures())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
@@ -129,7 +128,6 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	})
 
 	// Auth (OAuth)
-	mux.HandleFunc("/auth/login", a.handleLogin)
 	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 

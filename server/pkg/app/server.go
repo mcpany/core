@@ -65,7 +65,6 @@ import (
 	"github.com/mcpany/core/server/pkg/api/rest"
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/afero"
 	gogrpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -138,7 +137,6 @@ type RunOptions struct {
 	TLSKey          string
 	TLSClientCA     string
 }
-
 // Runner defines the interface for running the application.
 type Runner interface {
 	// Run starts the application with the given options.
@@ -236,10 +234,6 @@ type Application struct {
 	// RegistrationRetryDelay allows configuring the retry delay for service registration.
 	// If 0, it defaults to 5 seconds (in the worker).
 	RegistrationRetryDelay time.Duration
-
-	// MetricsGatherer is the interface for gathering metrics.
-	// Defaults to prometheus.DefaultGatherer.
-	MetricsGatherer prometheus.Gatherer
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -260,7 +254,6 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
-		MetricsGatherer: prometheus.DefaultGatherer,
 	}
 }
 
@@ -435,16 +428,7 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Initialize auth manager
 	authManager := auth.NewManager()
-	users := cfg.GetUsers()
-	if s, ok := storageStore.(storage.Storage); ok {
-		dbUsers, err := s.ListUsers(opts.Ctx)
-		if err != nil {
-			log.Error("failed to list users from storage", "error", err)
-		} else {
-			users = append(users, dbUsers...)
-		}
-	}
-	authManager.SetUsers(users)
+	authManager.SetUsers(cfg.GetUsers())
 
 	// Cast storageStore to storage.Storage
 	if s, ok := storageStore.(storage.Storage); ok {
@@ -752,6 +736,8 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	a.Storage = s
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {
@@ -1021,32 +1007,6 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 	}
 
 	log.Info("Reload complete", "tools_count", len(a.ToolManager.ListTools()))
-
-	// Update Auth Manager users
-	users := cfg.GetUsers()
-	if a.Storage != nil {
-		dbUsers, err := a.Storage.ListUsers(ctx)
-		if err != nil {
-			log.Error("failed to list users from storage during reload", "error", err)
-		} else {
-			users = append(users, dbUsers...)
-		}
-	}
-	a.AuthManager.SetUsers(users)
-
-	// Update Service Registry
-	// We need to re-create services or update existing ones?
-	// ServiceRegistry.UpdateServices?
-	// Ideally we have a better way, but for now we might need to rely on individual updates or full re-init?
-	// The ServiceRegistry holds state (tools, prompts).
-	// If we just replace services, we might loose state.
-	// But `UpdateServices` is not exposed on interface?
-	// Actually `ServiceRegistry` is an interface.
-	// Using `UpdateConfig` if available?
-	// For now, let's assume `AuthManager` update is what we really needed for login.
-	// Services are updated via bus or separate flow in real app usually.
-	// But `server.go` logic for Reload needs to be checked.
-	// For this task, updating AuthManager is sufficient for USER LOGIN.
 }
 
 // readConfigFiles reads the raw content of the configuration files.
@@ -1377,7 +1337,7 @@ func (a *Application) runServerMode(
 	httpHandler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Enforce 10MB limit for JSON-RPC body to prevent DoS
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
-		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
+		ctx := context.WithValue(r.Context(), "http.request", r) //nolint:revive,staticcheck // matching legacy usage in auth.go
 		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
 	}), "server-request")
 
@@ -1797,6 +1757,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
 
+
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {
 		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
@@ -2082,21 +2043,14 @@ func (a *Application) runServerMode(
 func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Allow login endpoint without auth
-			if r.URL.Path == "/api/v1/auth/login" {
-				next.ServeHTTP(w, r)
-				return
-			}
-
 			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 
 			apiKey := a.SettingsManager.GetAPIKey()
-			authenticated := false
 
-			// 1. Check Global API Key
-			if apiKey != "" {
+			if !forcePrivateIPOnly && apiKey != "" {
+				// Check X-API-Key or Authorization header
 				requestKey := r.Header.Get("X-API-Key")
 				if requestKey == "" {
 					requestKey = r.URL.Query().Get("api_key")
@@ -2108,53 +2062,27 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					}
 				}
 
-				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
-					authenticated = true
-					// Inject API Key into context if needed
-					ctx = auth.ContextWithAPIKey(ctx, requestKey)
+				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) != 1 {
+					http.Error(w, "Unauthorized", http.StatusUnauthorized)
+					return
+				}
+			} else {
+				// Sentinel Security: If no API key is configured, enforce localhost-only access.
+				// This prevents accidental exposure of the server to the public internet (RCE risk).
+				host, _, err := net.SplitHostPort(r.RemoteAddr)
+				if err != nil {
+					// Fallback if RemoteAddr is weird, assume host is the string itself
+					host = r.RemoteAddr
+				}
+
+				// Check if the request is from a loopback address
+				ip := net.ParseIP(host)
+				if !util.IsPrivateIP(ip) {
+					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+					return
 				}
 			}
-
-			// 2. Check User Authentication (Basic Auth)
-			if !authenticated {
-				username, _, ok := r.BasicAuth()
-				if ok && a.AuthManager != nil {
-					if user, found := a.AuthManager.GetUser(username); found {
-						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
-							authenticated = true
-							ctx = auth.ContextWithUser(ctx, username)
-							// Also check/set roles?
-						}
-					}
-				}
-			}
-
-			if authenticated {
-				next.ServeHTTP(w, r.WithContext(ctx))
-				return
-			}
-
-			if !forcePrivateIPOnly && apiKey != "" {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
-				return
-			}
-
-			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
-			// This prevents accidental exposure of the server to the public internet (RCE risk).
-			host, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				// Fallback if RemoteAddr is weird, assume host is the string itself
-				host = r.RemoteAddr
-			}
-
-			// Check if the request is from a loopback address
-			ipAddr := net.ParseIP(host)
-			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
-				return
-			}
-
 			next.ServeHTTP(w, r)
 		})
 	}

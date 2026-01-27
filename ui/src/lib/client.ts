@@ -60,13 +60,8 @@ const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
-    // Inject Authorization header from localStorage if available
-    if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('mcp_auth_token');
-        if (token) {
-            headers.set('Authorization', `Basic ${token}`);
-        }
-    }
+    // API Key injection is now handled by Next.js Middleware for local API routes.
+    // This prevents exposing the API key in the client-side bundle.
     return fetch(input, { ...init, headers });
 };
 
@@ -137,17 +132,6 @@ export interface DoctorReport {
     /** Map of check names to their results. */
     checks: Record<string, CheckResult>;
 }
-
-/**
- * Tool failure statistics.
- */
-export interface ToolFailureStats {
-    name: string;
-    serviceId: string;
-    failureRate: number;
-    totalCalls: number;
-}
-
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -502,7 +486,7 @@ export const apiClient = {
             if (!res.ok) throw new Error('Failed to execute tool');
             return res.json();
         } catch (e) {
-            console.warn("DEBUG: fetch failed:", e);
+            console.error("DEBUG: fetch failed:", e);
             throw e;
         }
     },
@@ -566,7 +550,7 @@ export const apiClient = {
      */
     listPrompts: async () => {
         const res = await fetchWithAuth('/api/v1/prompts');
-        if (!res.ok) throw new Error(`Failed to fetch prompts: ${res.status}`);
+        if (!res.ok) throw new Error('Failed to fetch prompts');
         return res.json();
     },
 
@@ -690,30 +674,6 @@ export const apiClient = {
         return res.json();
     },
 
-    // Alerts
-
-    /**
-     * Lists all alerts.
-     * @returns A promise that resolves to a list of alerts.
-     */
-    listAlerts: async () => {
-        const res = await fetchWithAuth('/api/v1/alerts');
-        if (!res.ok) throw new Error('Failed to fetch alerts');
-        return res.json();
-    },
-
-    /**
-    /**
-     * Gets the tools with highest failure rates.
-     * @returns A promise that resolves to the tool failure stats.
-     */
-    getToolFailures: async (): Promise<ToolFailureStats[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
-        if (!res.ok) return [];
-        return res.json();
-    },
-
-
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
      * @param points The traffic points to seed.
@@ -725,22 +685,6 @@ export const apiClient = {
             body: JSON.stringify(points)
         });
         if (!res.ok) throw new Error('Failed to seed traffic data');
-    },
-
-    /**
-     * Updates an alert status.
-     * @param id The ID of the alert.
-     * @param status The new status.
-     * @returns A promise that resolves to the updated alert.
-     */
-    updateAlertStatus: async (id: string, status: string) => {
-        const res = await fetchWithAuth(`/api/v1/alerts/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status })
-        });
-        if (!res.ok) throw new Error('Failed to update alert status');
-        return res.json();
     },
 
     // Stack Management

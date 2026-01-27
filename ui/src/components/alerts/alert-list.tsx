@@ -36,7 +36,6 @@ import {
 import { Alert, Severity, AlertStatus } from "./types";
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import { apiClient } from "@/lib/client";
 
 /**
  * AlertList component.
@@ -53,7 +52,9 @@ export function AlertList() {
   const fetchAlerts = async () => {
     setLoading(true);
     try {
-      const data = await apiClient.listAlerts();
+      const res = await fetch("/api/v1/alerts");
+      if (!res.ok) throw new Error("Failed to fetch alerts");
+      const data = await res.json();
       setAlerts(data);
     } catch (error) {
       console.error(error);
@@ -87,7 +88,14 @@ export function AlertList() {
 
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
-        const updated = await apiClient.updateAlertStatus(id, newStatus);
+        const res = await fetch(`/api/v1/alerts/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus }),
+        });
+        if (!res.ok) throw new Error("Failed to update status");
+
+        const updated = await res.json();
         setAlerts(prev => prev.map(a => a.id === id ? updated : a));
         toast({
             title: "Status Updated",

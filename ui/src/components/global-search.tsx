@@ -78,10 +78,10 @@ export function GlobalSearch() {
             apiClient.listResources().catch(() => ({ resources: [] })),
             apiClient.listPrompts().catch(() => ({ prompts: [] }))
         ])
-        setServices(Array.isArray(servicesData) ? servicesData : servicesData?.services || [])
-        setTools(toolsData?.tools || [])
-        setResources(resourcesData?.resources || [])
-        setPrompts(promptsData?.prompts || [])
+        setServices(Array.isArray(servicesData) ? servicesData : servicesData.services || [])
+        setTools(toolsData.tools || [])
+        setResources(resourcesData.resources || [])
+        setPrompts(promptsData.prompts || [])
         lastFetched.current = Date.now()
       } finally {
         setLoading(false)

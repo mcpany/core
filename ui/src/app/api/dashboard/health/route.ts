@@ -14,24 +14,20 @@ interface BackendService {
   // Other fields we might use later
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
-  const authHeader = request.headers.get('Authorization');
 
   try {
-    const headers: HeadersInit = {};
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
-
     const res = await fetch(`${backendUrl}/api/v1/services`, {
       cache: 'no-store', // Always fetch fresh data
-      headers: headers
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || ''
+      }
     });
 
     if (!res.ok) {
-        console.warn(`Failed to fetch services from backend: ${res.status} ${res.statusText}`);
-        return NextResponse.json({ error: "Failed to fetch service health" }, { status: res.status });
+        console.error(`Failed to fetch services from backend: ${res.status} ${res.statusText}`);
+        return NextResponse.json({ error: "Failed to fetch service health" }, { status: 500 });
     }
 
     const data = await res.json();

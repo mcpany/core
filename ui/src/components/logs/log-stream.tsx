@@ -14,14 +14,8 @@ import {
   Download,
   Filter,
   Terminal,
-  Unplug,
-  Monitor,
-  ChevronRight,
-  ChevronDown
+  Unplug
 } from "lucide-react"
-
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -76,21 +70,6 @@ const getLevelColor = (level: LogLevel) => {
   }
 }
 
-const tryParseJson = (str: string): any | null => {
-  if (typeof str !== 'string') return null;
-  const trimmed = str.trim();
-  // Simple heuristic to avoid trying to parse obviously non-JSON strings
-  if ((!trimmed.startsWith('{') || !trimmed.endsWith('}')) &&
-      (!trimmed.startsWith('[') || !trimmed.endsWith(']'))) {
-    return null;
-  }
-  try {
-    return JSON.parse(trimmed);
-  } catch (e) {
-    return null;
-  }
-};
-
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
 /**
  * LogRow component.
@@ -100,81 +79,41 @@ const tryParseJson = (str: string): any | null => {
  */
 const LogRow = React.memo(({ log }: { log: LogEntry }) => {
   const duration = log.metadata?.duration as string | undefined
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
-  // Check if message is JSON
-  const jsonContent = React.useMemo(() => tryParseJson(log.message), [log.message]);
 
   return (
     <div
-      className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
+      className="group flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
       // Optimization: content-visibility allows the browser to skip rendering work for off-screen rows.
       // This significantly improves performance when the log list grows large.
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 32px' } as React.CSSProperties}
     >
-      <div className="flex flex-row w-full items-start gap-1 sm:gap-3">
-          <div className="flex items-center gap-2 sm:contents">
-              <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5">
-                {log.formattedTime || new Date(log.timestamp).toLocaleTimeString()}
-              </span>
-              <span className={cn("font-bold w-12 text-[10px] sm:text-xs sm:mt-0.5", getLevelColor(log.level))}>
-                {log.level}
-              </span>
-              {log.source && (
-                <span className="text-cyan-600 dark:text-cyan-400 sm:hidden inline-block truncate text-[10px] flex-1 text-right" title={log.source}>
-                  [{log.source}]
-                </span>
-              )}
-          </div>
-
+      <div className="flex items-center gap-2 sm:contents">
+          <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5">
+            {log.formattedTime || new Date(log.timestamp).toLocaleTimeString()}
+          </span>
+          <span className={cn("font-bold w-12 text-[10px] sm:text-xs sm:mt-0.5", getLevelColor(log.level))}>
+            {log.level}
+          </span>
           {log.source && (
-            <span className="text-cyan-600 dark:text-cyan-400 hidden sm:inline-block w-24 truncate text-xs mt-0.5 shrink-0" title={log.source}>
+            <span className="text-cyan-600 dark:text-cyan-400 sm:hidden inline-block truncate text-[10px] flex-1 text-right" title={log.source}>
               [{log.source}]
             </span>
           )}
-
-          <div className="flex-1 min-w-0 flex flex-col">
-            <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start">
-               {jsonContent && (
-                  <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground"
-                    aria-label={isExpanded ? "Collapse JSON" : "Expand JSON"}
-                  >
-                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </button>
-               )}
-               <span className="break-all whitespace-pre-wrap">
-                 {log.message}
-               </span>
-               {duration && (
-                <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
-                  {duration}
-                </span>
-              )}
-            </span>
-
-            {isExpanded && jsonContent && (
-              <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
-                <SyntaxHighlighter
-                  language="json"
-                  style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    padding: '1rem',
-                    borderRadius: '0.5rem',
-                    backgroundColor: '#1e1e1e', // Dark background
-                    fontSize: '12px',
-                    lineHeight: '1.5'
-                  }}
-                  wrapLongLines={true}
-                >
-                  {JSON.stringify(jsonContent, null, 2)}
-                </SyntaxHighlighter>
-              </div>
-            )}
-          </div>
       </div>
+
+      {log.source && (
+        <span className="text-cyan-600 dark:text-cyan-400 hidden sm:inline-block w-24 truncate text-xs mt-0.5" title={log.source}>
+          [{log.source}]
+        </span>
+      )}
+      <span className="text-gray-300 flex-1 text-xs sm:text-sm pl-0 sm:pl-0">
+        {log.message}
+        {duration && (
+          <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono">
+            {duration}
+          </span>
+        )}
+      </span>
     </div>
   )
 })
@@ -196,7 +135,6 @@ export function LogStream() {
   }, [isPaused])
 
   const [filterLevel, setFilterLevel] = React.useState<string>("ALL")
-  const [filterSource, setFilterSource] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
@@ -309,29 +247,17 @@ export function LogStream() {
     }
   }, [logs, isPaused])
 
-  // Optimization: Extract unique sources from logs efficiently
-  const uniqueSources = React.useMemo(() => {
-    const sources = new Set<string>()
-    logs.forEach(log => {
-      if (log.source) {
-        sources.add(log.source)
-      }
-    })
-    return Array.from(sources).sort()
-  }, [logs])
-
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
     // Optimization: Fast path for when no filters are active.
-    if (filterLevel === "ALL" && filterSource === "ALL" && !deferredSearchQuery) {
+    if (filterLevel === "ALL" && !deferredSearchQuery) {
       return logs
     }
 
     const lowerSearchQuery = deferredSearchQuery.toLowerCase()
     return logs.filter((log) => {
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
-      const matchesSource = filterSource === "ALL" || log.source === filterSource
 
       // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
       let matchesSearch: boolean | undefined
@@ -343,9 +269,9 @@ export function LogStream() {
           log.source?.toLowerCase().includes(lowerSearchQuery)
       }
 
-      return matchesLevel && matchesSource && matchesSearch
+      return matchesLevel && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery])
+  }, [logs, filterLevel, deferredSearchQuery])
 
   const clearLogs = () => setLogs([])
 
@@ -429,20 +355,7 @@ export function LogStream() {
                     />
                 </div>
                 <div className="flex items-center gap-2 justify-end">
-                    <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <Select value={filterSource} onValueChange={setFilterSource}>
-                        <SelectTrigger className="w-[140px] bg-background">
-                            <SelectValue placeholder="Source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Sources</SelectItem>
-                            {uniqueSources.map(source => (
-                                <SelectItem key={source} value={source}>{source}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    <Filter className="h-4 w-4 text-muted-foreground ml-2" />
+                    <Filter className="h-4 w-4 text-muted-foreground" />
                     <Select value={filterLevel} onValueChange={setFilterLevel}>
                         <SelectTrigger className="w-[120px] bg-background">
                             <SelectValue placeholder="Level" />

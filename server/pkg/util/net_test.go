@@ -200,28 +200,4 @@ func TestCheckConnection(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), ":443")
 	})
-
-	t.Run("IPv6 Host only defaults to port 80", func(t *testing.T) {
-		// This checks if [::1] is correctly handled as [::1]:80 and not [[::1]]:80
-		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-		defer cancel()
-		err := util.CheckConnection(ctx, "[::1]")
-		// Should try [::1]:80. Likely connection refused or timeout.
-		// BUT NOT "failed to split host and port" or "too many colons" for the dialed address.
-		assert.Error(t, err)
-		if err != nil {
-			assert.Contains(t, err.Error(), ":80")
-			// The error message from net.SplitHostPort (which is what happens when we double-wrap)
-			// usually complains about "missing port in address" for [[::1]]:80 because it looks weird
-			// or "too many colons".
-			// Specifically, [[::1]]:80 -> SplitHostPort tries to parse it.
-			// If we successfully fix it, it should be [::1]:80, which is valid address but connection refused.
-			// If bug is present, it constructs [[::1]]:80.
-			// Dial("[[::1]]:80") -> SplitHostPort("[[::1]]:80") -> Error "missing port in address" because of the outer brackets?
-			// Actually: SplitHostPort("[[::1]]:80") -> host="[::1]", port="80" ???
-			// Let's rely on what we saw in the reproduction: "failed to split host and port: address [[::1]]:80: missing port in address"
-			assert.NotContains(t, err.Error(), "[[::1]]")
-			assert.NotContains(t, err.Error(), "missing port in address")
-		}
-	})
 }

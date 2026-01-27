@@ -215,15 +215,6 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	log := logging.GetLogger()
 	log.Info("Seeding traffic history", "points", len(points))
 
-	// Update a dummy session for GetStats to reflect seeded data
-	m.sessions["seed-data"] = &SessionStats{
-		ID:           "seed-data",
-		LastActive:   now,
-		RequestCount: 0,
-		ErrorCount:   0,
-		TotalLatency: 0,
-	}
-
 	for _, p := range points {
 		// Parse time "HH:MM"
 		t, err := time.Parse("15:04", p.Time)
@@ -241,11 +232,6 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 			Latency:  p.Latency * p.Total, // Reverse average
 		}
 		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
-
-		// Accumulate stats for the session
-		m.sessions["seed-data"].RequestCount += p.Total
-		m.sessions["seed-data"].ErrorCount += p.Errors
-		m.sessions["seed-data"].TotalLatency += time.Duration(p.Latency*p.Total) * time.Millisecond
 	}
 }
 

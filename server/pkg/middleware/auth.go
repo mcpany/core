@@ -52,7 +52,7 @@ func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 			// Extract the http.Request from the context.
 			// The key "http.request" is not formally defined in the MCP spec, but it's a
 			// de-facto standard used by the reference implementation.
-			httpReq, ok := ctx.Value(HTTPRequestContextKey).(*http.Request)
+			httpReq, ok := ctx.Value("http.request").(*http.Request)
 			if !ok {
 				// If the http.Request is not in the context, it might be a non-HTTP transport (e.g. Stdio).
 				// In this case, we trust the transport or assume no auth is required/possible via this middleware.

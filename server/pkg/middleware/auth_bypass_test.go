@@ -43,7 +43,7 @@ func TestAuthMiddleware_Bypass_WithGlobalKey(t *testing.T) {
 	// req.Header.Set("X-API-Key", "secret-global-key")
 
 	// Add http.Request to context as required by middleware
-	ctx = context.WithValue(ctx, HTTPRequestContextKey, req)
+	ctx = context.WithValue(ctx, "http.request", req)
 
 	// 6. Execute the handler
 	// We expect this to FAIL with "unauthorized" because we didn't provide the global API key.

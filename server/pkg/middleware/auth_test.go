@@ -36,7 +36,7 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 
 		// Add the http.Request to the context
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		_, err = handler(ctx, "test.method", nil)
 		require.Error(t, err)
@@ -67,7 +67,8 @@ func TestAuthMiddleware(t *testing.T) {
 		require.NoError(t, err)
 
 		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		//nolint:revive,staticcheck // "http.request" is a string key used by convention
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Call the handler. The method "test.method" implies the serviceID is "test".
 		_, err = handler(ctx, "test.method", nil)
@@ -108,7 +109,8 @@ func TestAuthMiddleware(t *testing.T) {
 		httpReq.Header.Set("X-API-Key", "secret")
 
 		// Add the http.Request to the context.
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		//nolint:revive,staticcheck // "http.request" is a string key used by convention
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Call the handler.
 		_, err = handler(ctx, "test.method", nil)
@@ -129,7 +131,7 @@ func TestAuthMiddleware(t *testing.T) {
 
 		httpReq, err := http.NewRequest("POST", "/", nil)
 		require.NoError(t, err)
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Method without dot
 		_, err = handler(ctx, "invalid_method", nil)
@@ -156,7 +158,7 @@ func TestAuthMiddleware(t *testing.T) {
 			return nil, nil
 		})
 
-		// Context without middleware.HTTPRequestContextKey
+		// Context without "http.request"
 		_, err = handler(context.Background(), "test.method", nil)
 		require.NoError(t, err)
 		assert.True(t, nextCalled)
@@ -196,7 +198,7 @@ func TestAuthMiddleware(t *testing.T) {
 		httpReq, err := http.NewRequest("POST", "/", nil) // No X-API-Key
 		require.NoError(t, err)
 
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Call the handler with "tools/call" method
 		_, err = handler(ctx, consts.MethodToolsCall, req)
@@ -222,7 +224,7 @@ func TestAuthMiddleware(t *testing.T) {
 
 		httpReq, err := http.NewRequest("POST", "/", nil) // No X-API-Key
 		require.NoError(t, err)
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Method without dot (serviceID == "")
 		_, err = handler(ctx, "invalid_method", nil)
@@ -247,7 +249,7 @@ func TestAuthMiddleware(t *testing.T) {
 		httpReq, err := http.NewRequest("POST", "/", nil)
 		require.NoError(t, err)
 		httpReq.Header.Set("X-API-Key", "global-secret")
-		ctx := context.WithValue(context.Background(), middleware.HTTPRequestContextKey, httpReq)
+		ctx := context.WithValue(context.Background(), "http.request", httpReq)
 
 		// Method without dot (serviceID == "")
 		_, err = handler(ctx, "invalid_method", nil)

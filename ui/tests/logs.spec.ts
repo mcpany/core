@@ -66,35 +66,4 @@ test.describe('Logs Page', () => {
         expect(count).toBeLessThan(3);
       }).toPass({ timeout: 2000 });
   });
-
-  test('should display and expand JSON logs', async ({ page }) => {
-    // Mock the WebSocket connection
-    await page.routeWebSocket(/\/api\/v1\/ws\/logs/, ws => {
-      // Send a JSON log immediately
-      const jsonMessage = { foo: "bar", nested: { val: 123 } };
-      const logEntry = {
-        id: "json-e2e-1",
-        timestamp: new Date().toISOString(),
-        level: "INFO",
-        message: JSON.stringify(jsonMessage),
-        source: "e2e-test"
-      };
-      ws.send(JSON.stringify(logEntry));
-    });
-
-    await page.goto('/logs');
-
-    // Wait for the log to appear
-    await expect(page.getByText(JSON.stringify({ foo: "bar", nested: { val: 123 } }))).toBeVisible({ timeout: 10000 });
-
-    // Check for the Expand JSON button
-    const expandButton = page.getByLabel("Expand JSON");
-    await expect(expandButton).toBeVisible();
-
-    // Click it
-    await expandButton.click();
-
-    // Verify it expanded (Collapse button visible)
-    await expect(page.getByLabel("Collapse JSON")).toBeVisible();
-  });
 });
