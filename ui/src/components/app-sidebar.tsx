@@ -68,6 +68,11 @@ const platformItems = [
     icon: Network,
   },
   {
+    title: "System Status",
+    url: "/status",
+    icon: Activity,
+  },
+  {
     title: "Diagnostics",
     url: "/diagnostics",
     icon: Activity,

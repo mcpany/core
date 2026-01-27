@@ -221,7 +221,7 @@ export function ServiceHealthWidget() {
             <ServiceHealthItem
                 key={service.id}
                 service={service}
-                history={history[service.id]}
+                history={history[service.id]?.slice(-60) || []}
             />
           ))}
         </div>

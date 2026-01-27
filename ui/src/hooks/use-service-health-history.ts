@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 /**
  * ServiceStatus represents the possible health states of a service.
@@ -46,17 +46,13 @@ export interface ServiceHistory {
 }
 
 const HISTORY_KEY = "mcp_service_health_history";
-const MAX_HISTORY_POINTS = 60; // Keep last 60 checks (e.g. 1 hour if polling every minute, or 10 mins if polling every 10s)
-// Actually, if we poll every 10s, 60 points is 10 minutes.
-// If we want 24h, we need 24 * 60 = 1440 points (if 1 min interval).
-// Storing 1440 * N services might be fine in localStorage (small ints).
-// Let's stick to 100 points for now (visual density).
+const MAX_HISTORY_POINTS = 8640; // Keep last 24h checks (polling every 10s: 6 * 60 * 24 = 8640)
 
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
  * It polls the backend API for health data and persists the history in local storage.
  *
- * @returns An object containing the current services list, their health history, and a loading state.
+ * @returns An object containing the current services list, their health history, a loading state, and a refresh function.
  */
 export function useServiceHealthHistory() {
   const [history, setHistory] = useState<ServiceHistory>({});
@@ -77,57 +73,57 @@ export function useServiceHealthHistory() {
     }
   }, []);
 
-  useEffect(() => {
-    async function fetchHealth() {
-      try {
-        const res = await fetch("/api/dashboard/health");
-        if (res.ok) {
-          const data = await res.json();
-          const currentServices: ServiceHealth[] = Array.isArray(data) ? data : [];
+  const fetchHealth = useCallback(async () => {
+    try {
+      const res = await fetch("/api/dashboard/health");
+      if (res.ok) {
+        const data = await res.json();
+        const currentServices: ServiceHealth[] = Array.isArray(data) ? data : [];
 
-          setServices(currentServices);
+        setServices(currentServices);
 
-          // Update history
-          setHistory(prev => {
-            const next = { ...prev };
-            const now = Date.now();
+        // Update history
+        setHistory(prev => {
+          const next = { ...prev };
+          const now = Date.now();
 
-            currentServices.forEach(svc => {
-              const point: HealthHistoryPoint = {
-                timestamp: now,
-                status: svc.status
-              };
+          currentServices.forEach(svc => {
+            const point: HealthHistoryPoint = {
+              timestamp: now,
+              status: svc.status
+            };
 
-              const svcHistory = next[svc.id] || [];
-              // Add new point
-              const newHistory = [...svcHistory, point];
+            const svcHistory = next[svc.id] || [];
+            // Add new point
+            const newHistory = [...svcHistory, point];
 
-              // Sort by time just in case
-              newHistory.sort((a, b) => a.timestamp - b.timestamp);
+            // Sort by time just in case
+            newHistory.sort((a, b) => a.timestamp - b.timestamp);
 
-              // Limit size
-              if (newHistory.length > MAX_HISTORY_POINTS) {
-                 newHistory.splice(0, newHistory.length - MAX_HISTORY_POINTS);
-              }
-
-              next[svc.id] = newHistory;
-            });
-
-            // Persist
-            if (typeof window !== "undefined") {
-               window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+            // Limit size
+            if (newHistory.length > MAX_HISTORY_POINTS) {
+               newHistory.splice(0, newHistory.length - MAX_HISTORY_POINTS);
             }
 
-            return next;
+            next[svc.id] = newHistory;
           });
-        }
-      } catch (error) {
-        console.warn("Failed to fetch health data", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
 
+          // Persist
+          if (typeof window !== "undefined") {
+             window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+          }
+
+          return next;
+        });
+      }
+    } catch (error) {
+      console.warn("Failed to fetch health data", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchHealth();
 
     // Poll every 10 seconds
@@ -148,7 +144,7 @@ export function useServiceHealthHistory() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, []);
+  }, [fetchHealth]);
 
-  return { services, history, isLoading };
+  return { services, history, isLoading, refresh: fetchHealth };
 }
