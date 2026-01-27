@@ -200,7 +200,7 @@ export function GlobalSearch() {
               <LayoutDashboard className="mr-2 h-4 w-4" />
               <span>Dashboard</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push("/services"))}>
+            <CommandItem onSelect={() => runCommand(() => router.push("/upstream-services"))}>
               <Server className="mr-2 h-4 w-4" />
               <span>Services</span>
             </CommandItem>
@@ -269,7 +269,7 @@ export function GlobalSearch() {
           {services.length > 0 && (
              <CommandGroup heading="Services">
                {services.map((service) => (
-                 <CommandItem key={service.id || service.name} value={`service ${service.name}`} onSelect={() => runCommand(() => router.push(`/services?id=${service.id}`))}>
+                 <CommandItem key={service.id || service.name} value={`service ${service.name}`} onSelect={() => runCommand(() => router.push(`/upstream-services?id=${service.id}`))}>
                    <Database className="mr-2 h-4 w-4" />
                    <span>{service.name}</span>
                    {service.version && <span className="ml-2 text-xs text-muted-foreground">v{service.version}</span>}

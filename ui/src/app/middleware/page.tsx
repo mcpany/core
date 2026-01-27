@@ -53,7 +53,7 @@ export default function MiddlewarePage() {
         <div className="flex-1 space-y-4 p-8 pt-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Middleware Pipeline</h2>
+                    <h1 className="text-3xl font-bold tracking-tight">Middleware Pipeline</h1>
                     <p className="text-muted-foreground">Drag and drop to reorder the request processing pipeline.</p>
                 </div>
                 <Button>

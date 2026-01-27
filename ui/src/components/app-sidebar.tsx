@@ -156,7 +156,7 @@ const configItems = [
 
   {
     title: "Upstream Services",
-    url: "/services",
+    url: "/upstream-services",
     icon: Server,
   },
   {
