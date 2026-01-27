@@ -677,7 +677,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		if !isStructured && jsonBytes != nil && marshalErr == nil {
 			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
 			// This saves a second marshal operation for large maps.
-			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+			logValue = slog.StringValue(redactAndTruncate(jsonBytes))
 		} else {
 			logValue = summarizeCallToolResult(finalResult)
 		}
@@ -860,7 +860,7 @@ type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
 func (l LazyRedact) LogValue() slog.Value {
-	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
+	return slog.StringValue(redactAndTruncate(l))
 }
 
 // LazyLogResult wraps a tool execution result for efficient logging.
@@ -887,7 +887,7 @@ func (r LazyLogResult) LogValue() slog.Value {
 		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
 		// Use json-iterator for speed.
 		jsonBytes, _ := fastJSON.Marshal(v)
-		return slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+		return slog.StringValue(redactAndTruncate(jsonBytes))
 	default:
 		// Fallback for other types
 		return slog.StringValue(util.ToString(v))
@@ -932,6 +932,15 @@ func summarizeCallToolResult(ctr *mcp.CallToolResult) slog.Value {
 	}
 	attrs = append(attrs, slog.Any("content", contentSummaries))
 	return slog.GroupValue(attrs...)
+}
+
+func redactAndTruncate(jsonBytes []byte) string {
+	redacted := util.RedactJSON(jsonBytes)
+	const maxLogSize = 2048
+	if len(redacted) > maxLogSize {
+		return util.BytesToString(redacted[:maxLogSize]) + "... (truncated)"
+	}
+	return util.BytesToString(redacted)
 }
 
 func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
