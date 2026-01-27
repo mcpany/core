@@ -125,16 +125,23 @@ upstream_services:
 	httpUrl := fmt.Sprintf("http://127.0.0.1:%d/healthz", jsonrpcPort)
 	integration.WaitForHTTPHealth(t, httpUrl, 10*time.Second)
 
-	// Include /mcp and api_key in the endpoint
-	endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp?api_key=test-api-key", jsonrpcPort)
+	// Include /mcp in the endpoint
+	endpoint := fmt.Sprintf("http://127.0.0.1:%d/mcp", jsonrpcPort)
 
 	client := mcp.NewClient(&mcp.Implementation{
 		Name:    "test-client",
 		Version: "1.0.0",
 	}, nil)
 
+	// Custom transport to inject X-API-Key header
+	headerTransport := &HeaderTransport{
+		RoundTripper: http.DefaultTransport,
+		Headers:      map[string]string{"X-API-Key": "test-api-key"},
+	}
+
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: endpoint,
+		Endpoint:   endpoint,
+		HTTPClient: &http.Client{Transport: headerTransport},
 	}
 
 	ctxCall, cancelCall := context.WithTimeout(context.Background(), 10*time.Second)
@@ -216,4 +223,16 @@ upstream_services:
 	})
 	require.NoError(t, err)
 	t.Logf("Result from recovered tool: %v", result)
+}
+
+type HeaderTransport struct {
+	http.RoundTripper
+	Headers map[string]string
+}
+
+func (t *HeaderTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	for k, v := range t.Headers {
+		req.Header.Set(k, v)
+	}
+	return t.RoundTripper.RoundTrip(req)
 }
