@@ -152,7 +152,7 @@ func TestHandleOAuthCallback(t *testing.T) {
 		handler.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
-		assert.Contains(t, w.Body.String(), "failed to handle callback")
+		assert.Contains(t, w.Body.String(), "Internal Server Error")
 	})
 
 	t.Run("Method Not Allowed", func(t *testing.T) {

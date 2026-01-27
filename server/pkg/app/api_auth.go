@@ -5,10 +5,10 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // handleInitiateOAuth handles the request to initiate an OAuth2 flow.
@@ -46,7 +46,8 @@ func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request
 
 	url, state, err := a.AuthManager.InitiateOAuth(r.Context(), userID, req.ServiceID, req.CredentialID, req.RedirectURL)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to initiate oauth: %v", err), http.StatusInternalServerError)
+		logging.GetLogger().Error("failed to initiate oauth", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -97,7 +98,8 @@ func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := a.AuthManager.HandleOAuthCallback(r.Context(), userID, req.ServiceID, req.CredentialID, req.Code, req.RedirectURL); err != nil {
-		http.Error(w, fmt.Sprintf("failed to handle callback: %v", err), http.StatusInternalServerError)
+		logging.GetLogger().Error("failed to handle callback", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
