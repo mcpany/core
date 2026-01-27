@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
@@ -51,7 +52,7 @@ func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
 	if envFile != "" {
 		if err := godotenv.Load(envFile); err != nil {
-			return fmt.Errorf("failed to load env file %q: %w", envFile, err)
+			return fmt.Errorf("failed to load env file %q: %w", filepath.Base(envFile), err)
 		}
 		return nil
 	}
