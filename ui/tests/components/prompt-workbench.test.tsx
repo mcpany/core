@@ -61,7 +61,13 @@ describe('PromptWorkbench', () => {
     fireEvent.click(screen.getByText('test-prompt'));
 
     expect(screen.getByText('Configuration')).toBeInTheDocument();
-    expect(screen.getByLabelText(/arg1/i)).toBeInTheDocument();
+    // The label is uppercase in the UI ("ARG1" with a * if required), but regex /arg1/i should match it.
+    // However, if the label text is split or contains other elements, getByLabelText might fail.
+    // We can use getAllByLabelText or just look for the input by ID since we know it.
+    // But sticking to getByLabelText is better for accessibility.
+    // Let's try to find it by text first to debug.
+    expect(screen.getByText(/ARG1/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/ARG1/i)).toBeInTheDocument();
   });
 
   it('executes a prompt', async () => {
@@ -73,7 +79,7 @@ describe('PromptWorkbench', () => {
 
     fireEvent.click(screen.getByText('test-prompt'));
 
-    const input = screen.getByLabelText(/arg1/i);
+    const input = screen.getByLabelText(/ARG1/i);
     fireEvent.change(input, { target: { value: 'value1' } });
 
     const generateBtn = screen.getByText('Generate Preview');
