@@ -89,3 +89,26 @@ upstream_services:
 ## Monitoring
 
 Health check status is logged and can be monitored via the metrics exported by the server. When a service fails its health check (performed on-demand, e.g., via diagnostics or at startup), it is marked as unhealthy, and requests may fail or be routed to other instances (if load balancing is configured).
+
+## Alerts & Webhooks
+
+In addition to logging and metrics, MCP Any can send real-time alerts via Webhooks when a service's health status changes (e.g., from `Healthy` to `Unhealthy`).
+
+This is configured globally in the `alert_config` section:
+
+```yaml
+alert_config:
+  enabled: true
+  webhook_url: "https://hooks.slack.com/services/..."
+```
+
+**Payload Example:**
+
+```json
+{
+  "event": "health_status_changed",
+  "service": "my-postgres-service",
+  "status": "Unhealthy",
+  "timestamp": "2023-11-15T08:30:00Z"
+}
+```

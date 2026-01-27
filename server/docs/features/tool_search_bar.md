@@ -9,9 +9,10 @@ As the number of connected services and tools grows, finding a specific tool can
 ## Usage
 
 1.  Navigate to the **Tools** page in the dashboard.
-2.  Locate the search input field in the toolbar (next to the "Filter by Service" dropdown).
+2.  Locate the search input field in the toolbar (next to the "Group By" and "Filter by Service" dropdowns).
 3.  Type a keyword (e.g., "weather", "calculator").
 4.  The list of tools will update in real-time to show only those matching your query.
+5.  **Quick Access**: As you type, a dropdown will appear showing matching tools and **Recently Used** tools. select a tool from the dropdown to immediately inspect it.
 
 ## Visuals
 
@@ -22,3 +23,4 @@ As the number of connected services and tools grows, finding a specific tool can
 -   **Filtering Logic**: The search is performed client-side on the currently loaded list of tools.
 -   **Fields Searched**: Matches against `name` and `description` (case-insensitive).
 -   **Combination**: Works in conjunction with the "Filter by Service" and "Show Pinned Only" filters.
+-   **Recent History**: Locally stores recently selected tools for quick access.
