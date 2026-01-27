@@ -134,3 +134,36 @@ func TestToString_Float32_Overflow(t *testing.T) {
          t.Errorf("Expected positive string for float32(MaxInt64), got %s", s2)
     }
 }
+
+func TestToString_Pointers(t *testing.T) {
+	strVal := "hello"
+	intVal := 123
+	int64Val := int64(9999999999)
+	boolVal := true
+	floatVal := 123.45
+
+	tests := []struct {
+		name     string
+		input    any
+		expected string
+	}{
+		{"Pointer to String", &strVal, "hello"},
+		{"Pointer to Int", &intVal, "123"},
+		{"Pointer to Int64", &int64Val, "9999999999"},
+		{"Pointer to Bool", &boolVal, "true"},
+		{"Pointer to Float64", &floatVal, "123.45"},
+		{"Nil Pointer to String", (*string)(nil), "<nil>"},
+		{"Nil Pointer to Int", (*int)(nil), "<nil>"},
+		{"Nil Pointer to Int64", (*int64)(nil), "<nil>"},
+		{"Nil Pointer to Bool", (*bool)(nil), "<nil>"},
+		{"Nil Pointer to Float64", (*float64)(nil), "<nil>"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ToString(tt.input); got != tt.expected {
+				t.Errorf("ToString(%v) = %q, want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}

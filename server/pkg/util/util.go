@@ -265,6 +265,11 @@ func init() {
 // TrueStr is a string constant for "true".
 const TrueStr = "true"
 
+const (
+	nilStr   = "<nil>"
+	falseStr = "false"
+)
+
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Returns:
@@ -488,8 +493,14 @@ func toStringRecursive(v any, depth int) string {
 	}
 
 	if v == nil {
-		return "<nil>"
+		return nilStr
 	}
+
+	// Try to handle pointers efficiently first
+	if val, ok := toStringPointer(v, depth); ok {
+		return val
+	}
+
 	switch val := v.(type) {
 	case string:
 		return val
@@ -499,9 +510,9 @@ func toStringRecursive(v any, depth int) string {
 		return val.Error()
 	case bool:
 		if val {
-			return "true"
+			return TrueStr
 		}
-		return "false"
+		return falseStr
 	case int:
 		return strconv.Itoa(val)
 	case int8:
@@ -523,53 +534,97 @@ func toStringRecursive(v any, depth int) string {
 	case uint64:
 		return strconv.FormatUint(val, 10)
 	case float32:
-		// Check if it's an integer and within safe range for exact representation.
-		// float32 has 23 bits of significand, so exact integers up to 2^24 (16,777,216).
-		if val == float32(int32(val)) {
-			return strconv.FormatInt(int64(val), 10)
-		}
-		// Also check if it fits in int64 (for larger integers that are exact in float32)
-		if math.Trunc(float64(val)) == float64(val) {
-			if float64(val) >= float64(math.MinInt64) && float64(val) < float64(math.MaxInt64) {
-				return strconv.FormatInt(int64(val), 10)
-			}
-		}
-		return strconv.FormatFloat(float64(val), 'g', -1, 32)
+		return toStringFloat32(val)
 	case float64:
-		// Check if it's an integer and within int64 range.
-		// float64 has 53 bits of significand. int64 is 64 bits.
-		// We only convert if it fits in int64 and is an exact integer.
-		// math.MinInt64 and math.MaxInt64 are boundaries.
-		// However, casting large float to int64 is undefined if it overflows.
-		// Safe integer range for float64 is +/- 2^53. MaxInt64 is 2^63-1.
-		// So any safe float64 integer fits in int64.
-		// We check if the float value is integral.
-		if math.Trunc(val) == val {
-			// Check bounds to avoid undefined behavior or overflow when casting.
-			// float64 can exactly represent integers up to 2^53.
-			// Beyond that, it can represent some integers but with gaps.
-			// We only use decimal formatting if it is reasonably representative of the value.
-			if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
-				return strconv.FormatInt(int64(val), 10)
-			}
-			// For extremely large integers (> MaxInt64), use 'f' with 0 precision
-			// UNLESS it's truly massive where scientific is better.
-			// Let's use 'g' as it is standard and usually what's expected for JSON etc.
-		}
-		return strconv.FormatFloat(val, 'g', -1, 64)
+		return toStringFloat64(val)
 	case fmt.Stringer:
 		return val.String()
 	default:
-		// Check for pointer type
+		// Check for pointer type (catch-all)
 		rVal := reflect.ValueOf(v)
 		if rVal.Kind() == reflect.Ptr {
 			if rVal.IsNil() {
-				return "<nil>"
+				return nilStr
 			}
 			return toStringRecursive(rVal.Elem().Interface(), depth+1)
 		}
 		return fmt.Sprintf("%v", v)
 	}
+}
+
+func toStringPointer(v any, depth int) (string, bool) {
+	switch val := v.(type) {
+	case *string:
+		if val == nil {
+			return nilStr, true
+		}
+		return *val, true
+	case *int:
+		if val == nil {
+			return nilStr, true
+		}
+		return strconv.Itoa(*val), true
+	case *int64:
+		if val == nil {
+			return nilStr, true
+		}
+		return strconv.FormatInt(*val, 10), true
+	case *bool:
+		if val == nil {
+			return nilStr, true
+		}
+		if *val {
+			return TrueStr, true
+		}
+		return falseStr, true
+	case *float64:
+		if val == nil {
+			return nilStr, true
+		}
+		// Avoid code duplication by recursively calling with dereferenced value.
+		// This avoids reflection but adds one recursion/interface allocation.
+		return toStringRecursive(*val, depth+1), true
+	}
+	return "", false
+}
+
+func toStringFloat32(val float32) string {
+	// Check if it's an integer and within safe range for exact representation.
+	// float32 has 23 bits of significand, so exact integers up to 2^24 (16,777,216).
+	if val == float32(int32(val)) {
+		return strconv.FormatInt(int64(val), 10)
+	}
+	// Also check if it fits in int64 (for larger integers that are exact in float32)
+	if math.Trunc(float64(val)) == float64(val) {
+		if float64(val) >= float64(math.MinInt64) && float64(val) < float64(math.MaxInt64) {
+			return strconv.FormatInt(int64(val), 10)
+		}
+	}
+	return strconv.FormatFloat(float64(val), 'g', -1, 32)
+}
+
+func toStringFloat64(val float64) string {
+	// Check if it's an integer and within int64 range.
+	// float64 has 53 bits of significand. int64 is 64 bits.
+	// We only convert if it fits in int64 and is an exact integer.
+	// math.MinInt64 and math.MaxInt64 are boundaries.
+	// However, casting large float to int64 is undefined if it overflows.
+	// Safe integer range for float64 is +/- 2^53. MaxInt64 is 2^63-1.
+	// So any safe float64 integer fits in int64.
+	// We check if the float value is integral.
+	if math.Trunc(val) == val {
+		// Check bounds to avoid undefined behavior or overflow when casting.
+		// float64 can exactly represent integers up to 2^53.
+		// Beyond that, it can represent some integers but with gaps.
+		// We only use decimal formatting if it is reasonably representative of the value.
+		if val >= float64(math.MinInt64) && val < float64(math.MaxInt64) {
+			return strconv.FormatInt(int64(val), 10)
+		}
+		// For extremely large integers (> MaxInt64), use 'f' with 0 precision
+		// UNLESS it's truly massive where scientific is better.
+		// Let's use 'g' as it is standard and usually what's expected for JSON etc.
+	}
+	return strconv.FormatFloat(val, 'g', -1, 64)
 }
 
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
