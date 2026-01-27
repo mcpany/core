@@ -2627,7 +2627,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+	// We removed backslash from dangerousChars as it prevents passing Windows paths or escaped chars
+	// which are safe when passed as arguments to exec.Command (argv) unless specifically interpreted by the command.
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'"
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables

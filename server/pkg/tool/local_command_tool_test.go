@@ -201,3 +201,46 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	// This assertion should fail before fix
 	assert.Contains(t, err.Error(), "something went wrong")
 }
+
+func TestLocalCommandTool_ShellInjection_OverRestrictive(t *testing.T) {
+	// This test demonstrates that the shell injection protection is too restrictive
+	// for commands like 'python' where arguments are passed via exec.Command (argv)
+	// and not interpolated into a shell string.
+
+	// We use 'python' as the command, which is in the isShellCommand list.
+	cmd := "python"
+
+	toolDef := v1.Tool_builder{
+		Name: proto.String("test-python-tool"),
+	}.Build()
+
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String(cmd),
+		Local:   proto.Bool(true),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("path"),
+				}.Build(),
+			}.Build(),
+		},
+		// We pass the argument directly. It is NOT part of a larger string like "-c 'script {{path}}'".
+		Args: []string{"script.py", "{{path}}"},
+	}.Build()
+
+	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
+
+	// We attempt to pass a Windows-style path with backslashes.
+	// This should be SAFE because it's just an argument to exec.Command.
+	// However, current logic blocks it.
+	inputs := json.RawMessage(`{"path": "foo\\bar"}`)
+	req := &ExecutionRequest{ToolInputs: inputs}
+
+	_, err := localTool.Execute(context.Background(), req)
+
+	// We expect this to succeed now
+	assert.NoError(t, err)
+}
