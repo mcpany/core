@@ -6,8 +6,18 @@
 
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { AnalyticsDashboard } from '../../../src/components/stats/analytics-dashboard';
-import { vi } from 'vitest';
+import { AnalyticsDashboard } from '../../../components/stats/analytics-dashboard';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { apiClient } from '@/lib/client';
+
+// Mock apiClient
+vi.mock("@/lib/client", () => ({
+  apiClient: {
+    getDashboardTraffic: vi.fn(),
+    getTopTools: vi.fn(),
+    listTools: vi.fn(),
+  },
+}));
 
 // Mock recharts to avoid rendering issues in JSDOM
 vi.mock('recharts', async () => {
@@ -26,6 +36,13 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe('AnalyticsDashboard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (apiClient.getDashboardTraffic as any).mockResolvedValue([]);
+    (apiClient.getTopTools as any).mockResolvedValue([]);
+    (apiClient.listTools as any).mockResolvedValue({ tools: [] });
+  });
+
   it('renders the dashboard title', () => {
     render(<AnalyticsDashboard />);
     expect(screen.getByText('Analytics & Stats')).toBeInTheDocument();
@@ -35,9 +52,9 @@ describe('AnalyticsDashboard', () => {
   it('renders key metrics cards', () => {
     render(<AnalyticsDashboard />);
     expect(screen.getByText('Total Requests')).toBeInTheDocument();
+    expect(screen.getByText('Avg Throughput')).toBeInTheDocument();
     expect(screen.getByText('Avg Latency')).toBeInTheDocument();
     expect(screen.getByText('Error Rate')).toBeInTheDocument();
-    expect(screen.getByText('Active Services')).toBeInTheDocument();
   });
 
   it('renders the time range selector', () => {

@@ -5,13 +5,20 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { SystemStatusBanner } from '@/components/system-status-banner';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach, type Mock } from 'vitest';
+import { apiClient } from '@/lib/client';
+
+// Mock apiClient
+vi.mock('@/lib/client', () => ({
+  apiClient: {
+    getDoctorStatus: vi.fn(),
+  },
+}));
 
 describe('SystemStatusBanner', () => {
   beforeEach(() => {
     // Clear mocks before each test
     vi.clearAllMocks();
-    global.fetch = vi.fn();
   });
 
   afterEach(() => {
@@ -19,22 +26,19 @@ describe('SystemStatusBanner', () => {
   });
 
   it('renders nothing when status is healthy', async () => {
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({ status: 'healthy', checks: {} }),
-    });
+    (apiClient.getDoctorStatus as Mock).mockResolvedValue({ status: 'healthy', checks: {} });
 
     render(<SystemStatusBanner />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/doctor');
+      expect(apiClient.getDoctorStatus).toHaveBeenCalled();
     });
 
     expect(screen.queryByText(/System Status/i)).not.toBeInTheDocument();
   });
 
   it('renders error banner when fetch fails', async () => {
-    (global.fetch as any).mockRejectedValue(new Error('Network error'));
+    (apiClient.getDoctorStatus as Mock).mockRejectedValue(new Error('Network error'));
 
     render(<SystemStatusBanner />);
 
@@ -45,15 +49,12 @@ describe('SystemStatusBanner', () => {
   });
 
   it('renders degraded banner when status is degraded', async () => {
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        status: 'degraded',
-        checks: {
-          internet: { status: 'failed', message: 'No internet connection' },
-          configuration: { status: 'ok' }
-        },
-      }),
+    (apiClient.getDoctorStatus as Mock).mockResolvedValue({
+      status: 'degraded',
+      checks: {
+        internet: { status: 'failed', message: 'No internet connection' },
+        configuration: { status: 'ok' }
+      },
     });
 
     render(<SystemStatusBanner />);
@@ -66,18 +67,16 @@ describe('SystemStatusBanner', () => {
 
   it('polls repeatedly', async () => {
     vi.useFakeTimers();
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({ status: 'healthy', checks: {} }),
-    });
+    (apiClient.getDoctorStatus as Mock).mockResolvedValue({ status: 'healthy', checks: {} });
 
     render(<SystemStatusBanner />);
 
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(apiClient.getDoctorStatus).toHaveBeenCalledTimes(1);
 
     await vi.advanceTimersByTimeAsync(30000);
 
-    expect(global.fetch).toHaveBeenCalledTimes(2);
+    // Should have called multiple times (interval is 5s)
+    expect(apiClient.getDoctorStatus).toHaveBeenCalledTimes(7); // 1 initial + 6 polls (30/5)
 
     vi.useRealTimers();
   });
