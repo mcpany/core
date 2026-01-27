@@ -583,7 +583,17 @@ upstream_services:
 		// Use ephemeral ports by passing "0"
 		// The test will hang if we use a real port that's not available.
 		// We expect the Run function to exit gracefully when the context is canceled.
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	// We expect the server to run until the context is canceled, at which point it should
@@ -639,7 +649,17 @@ func TestRun_BusProviderError(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
-	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ConfigPaths:     []string{"/config.yaml"},
+		APIKey:          "",
+		ShutdownTimeout: 5 * time.Second,
+		StartupTimeout:  10 * time.Millisecond,
+	})
 
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create bus provider: injected bus provider error")
@@ -665,6 +685,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 		ConfigPaths:     []string{"/config.yaml"},
 		APIKey:          "",
 		ShutdownTimeout: 5 * time.Second,
+		StartupTimeout:  10 * time.Millisecond,
 	})
 	require.NoError(t, err)
 }
@@ -698,7 +719,17 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "",
+			ConfigPaths:     nil,
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	err := <-errChan
@@ -811,6 +842,7 @@ func TestRun_ServerStartupError_GracefulShutdown(t *testing.T) {
 		ConfigPaths:     nil,
 		APIKey:          "",
 		ShutdownTimeout: 1 * time.Second,
+		StartupTimeout:  10 * time.Millisecond,
 	})
 
 	require.Error(t, runErr, "app.Run should return an error")
@@ -837,6 +869,15 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
+	// Ensure no services are loaded from default DB
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -896,6 +937,15 @@ func TestRun_GrpcPortNumber(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
+	// Ensure no services are loaded from default DB
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
 	errChan := make(chan error, 1)
 
 	go func() {
@@ -1062,6 +1112,7 @@ func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
 			ConfigPaths:     nil,
 			APIKey:          "",
 			ShutdownTimeout: 1 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
 		})
 	}()
 
@@ -1586,7 +1637,17 @@ func TestRun_InMemoryBus(t *testing.T) {
 
 	app := NewApplication()
 	// This should not panic and should exit gracefully.
-	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "127.0.0.1:0",
+		ConfigPaths:     []string{"/config.yaml"},
+		APIKey:          "",
+		ShutdownTimeout: 5 * time.Second,
+		StartupTimeout:  10 * time.Millisecond,
+	})
 	require.NoError(t, err)
 }
 
@@ -1610,7 +1671,17 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	}
 	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
 
-	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5*time.Second})
+	err = app.Run(RunOptions{
+		Ctx:             ctx,
+		Fs:              fs,
+		Stdio:           false,
+		JSONRPCPort:     "127.0.0.1:0",
+		GRPCPort:        "",
+		ConfigPaths:     nil,
+		APIKey:          "",
+		ShutdownTimeout: 5 * time.Second,
+		StartupTimeout:  10 * time.Millisecond,
+	})
 	require.NoError(t, err)
 
 	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
@@ -1842,7 +1913,17 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	// Allow some time for the services to be published.
@@ -1907,7 +1988,17 @@ upstream_services:
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	time.Sleep(100 * time.Millisecond) // Allow time for publication.
@@ -1933,7 +2024,17 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 	errChan := make(chan error, 1)
 
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     nil,
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	err := <-errChan
@@ -1946,6 +2047,15 @@ func TestRun_NoConfig(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
+	// Ensure no services are loaded from default DB
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(RunOptions{
@@ -2279,6 +2389,7 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 			ConfigPaths:     nil,
 			APIKey:          viper.GetString("api-key"),
 			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
 		})
 	}()
 
@@ -2395,7 +2506,28 @@ upstream_services:
 
 		errChan := make(chan error, 1)
 		go func() {
-			errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: addr, GRPCPort: "", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+			errChan <- app.Run(RunOptions{
+				Ctx:             ctx,
+				Fs:              fs,
+				Stdio:           false,
+				JSONRPCPort:     addr,
+				GRPCPort:        "",
+				ConfigPaths:     []string{"/config.yaml"},
+				APIKey:          "",
+				ShutdownTimeout: 5 * time.Second,
+				StartupTimeout:  10 * time.Millisecond,
+			})
+			errChan <- app.Run(RunOptions{
+				Ctx:             ctx,
+				Fs:              fs,
+				Stdio:           false,
+				JSONRPCPort:     addr,
+				GRPCPort:        "",
+				ConfigPaths:     []string{"/config.yaml"},
+				APIKey:          "",
+				ShutdownTimeout: 5 * time.Second,
+				StartupTimeout:  10 * time.Millisecond,
+			})
 		}()
 
 		waitForServerReady(t, addr)
@@ -2686,7 +2818,17 @@ func TestServer_CORS(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: addr, GRPCPort: "", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2719,7 +2861,17 @@ func TestServer_CORS_Strict(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: addr, GRPCPort: "", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     addr,
+			GRPCPort:        "",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	waitForServerReady(t, addr)
@@ -2751,7 +2903,17 @@ func TestRun_WithListenAddress(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	time.Sleep(100 * time.Millisecond)
@@ -3171,7 +3333,17 @@ upstream_services:
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	require.Eventually(t, func() bool { return app.BoundHTTPPort.Load() != 0 }, 5*time.Second, 100*time.Millisecond)
@@ -3206,6 +3378,7 @@ func TestFix_ReloadReliability(t *testing.T) {
 			ConfigPaths:     []string{configPath},
 			APIKey:          "",
 			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
 		})
 	}()
 
@@ -3225,7 +3398,17 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{
+			Ctx:             ctx,
+			Fs:              fs,
+			Stdio:           false,
+			JSONRPCPort:     "127.0.0.1:0",
+			GRPCPort:        "127.0.0.1:0",
+			ConfigPaths:     []string{"/config.yaml"},
+			APIKey:          "",
+			ShutdownTimeout: 5 * time.Second,
+			StartupTimeout:  10 * time.Millisecond,
+		})
 	}()
 
 	startupCtx, scancel := context.WithTimeout(ctx, 5*time.Second)
