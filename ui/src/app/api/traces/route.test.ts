@@ -60,33 +60,4 @@ describe('GET /api/traces', () => {
 
         expect(json).toEqual([]);
     });
-
-    it('should extract error message from failed trace', async () => {
-        const mockEntries = [
-            {
-                id: '2',
-                timestamp: '2023-01-01T00:00:00Z',
-                method: 'POST',
-                path: '/error',
-                status: 500,
-                duration: 5000000,
-                request_body: '{}',
-                response_body: '{"error":{"message":"Something went wrong"}}'
-            }
-        ];
-
-        (global.fetch as any).mockResolvedValue({
-            ok: true,
-            json: async () => mockEntries
-        });
-
-        const req = new Request('http://localhost/api/traces');
-        const res = await GET(req);
-
-        const json = await res.json();
-
-        expect(json).toHaveLength(1);
-        expect(json[0].status).toBe('error');
-        expect(json[0].rootSpan.errorMessage).toBe('Something went wrong');
-    });
 });

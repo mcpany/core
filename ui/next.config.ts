@@ -59,7 +59,7 @@ const nextConfig: NextConfig = {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
       "img-src 'self' data: https://placehold.co https://images.unsplash.com https://picsum.photos",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net. Restricted http/https wildcards for security.
+      "connect-src 'self' http://localhost:8080 https://cdn.jsdelivr.net http: https:", // Added cdn.jsdelivr.net and http/https for diagnostics
       "worker-src 'self' blob:", // Added worker-src
       "object-src 'none'",
       "base-uri 'self'",

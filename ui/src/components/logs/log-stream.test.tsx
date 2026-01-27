@@ -293,42 +293,4 @@ describe("LogStream", () => {
 
     vi.useRealTimers();
   });
-
-  it("gracefully handles invalid JSON that passes heuristic", async () => {
-    vi.useFakeTimers();
-    render(<LogStream />);
-
-    act(() => {
-      if (mockWebSocket.onopen) mockWebSocket.onopen();
-    });
-
-    const invalidJsonMessage = "{ this is not valid json }";
-    const log = {
-      id: "invalid-json-1",
-      timestamp: new Date().toISOString(),
-      level: "INFO",
-      message: invalidJsonMessage,
-      source: "test"
-    };
-
-    act(() => {
-      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
-    });
-
-    act(() => {
-        vi.advanceTimersByTime(200);
-    });
-
-    // Check if the expand button exists (heuristic should pass)
-    const expandButton = screen.getByLabelText("Expand JSON");
-    expect(expandButton).toBeInTheDocument();
-
-    // Click expand
-    fireEvent.click(expandButton);
-
-    // Should show "Invalid JSON" message
-    expect(screen.getByText("Invalid JSON")).toBeInTheDocument();
-
-    vi.useRealTimers();
-  });
 });

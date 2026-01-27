@@ -756,11 +756,33 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (i
 func simpleTokenizeInt(n int) int {
 	// Optimization: Fast path for common integers.
 	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
+	// Positive: 0 to 9,999,999 (7 digits) -> 1 token.
+	// Negative: -1 to -999,999 (7 chars) -> 1 token.
 	if n > -1000000 && n < 10000000 {
 		return 1
 	}
-	// Fallback to generic int64 implementation
-	return simpleTokenizeInt64(int64(n))
+
+	// n cannot be 0 here because it's handled by the fast path.
+	l := 0
+	if n < 0 {
+		l = 1 // count the sign
+		// Handle MinInt special case where -n overflows
+		// For int64 (usually int is int64), MinInt is -9223372036854775808
+		// which has 19 digits.
+		// We can just divide by 10 once to make it safe to negate,
+		// or process negative numbers.
+	}
+
+	for n != 0 {
+		l++
+		n /= 10
+	}
+
+	count := l / 4
+	if count < 1 {
+		return 1
+	}
+	return count
 }
 
 func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}, visited map[uintptr]bool) (int, error) {
@@ -817,62 +839,19 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.
-	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
 	if n > -1000000 && n < 10000000 {
 		return 1
 	}
 
-	// Calculate length using if-chain for performance (approx 4x faster than loop).
+	// n cannot be 0 here because it's handled by the fast path.
 	l := 0
 	if n < 0 {
 		l = 1 // count the sign
-		if n == -9223372036854775808 { // MinInt64
-			l += 19
-			return (l / 4) // 20 / 4 = 5
-		}
-		n = -n
 	}
 
-	// Unrolled loop for digit counting
-	switch {
-	case n < 10:
+	for n != 0 {
 		l++
-	case n < 100:
-		l += 2
-	case n < 1000:
-		l += 3
-	case n < 10000:
-		l += 4
-	case n < 100000:
-		l += 5
-	case n < 1000000:
-		l += 6
-	case n < 10000000:
-		l += 7
-	case n < 100000000:
-		l += 8
-	case n < 1000000000:
-		l += 9
-	case n < 10000000000:
-		l += 10
-	case n < 100000000000:
-		l += 11
-	case n < 1000000000000:
-		l += 12
-	case n < 10000000000000:
-		l += 13
-	case n < 100000000000000:
-		l += 14
-	case n < 1000000000000000:
-		l += 15
-	case n < 10000000000000000:
-		l += 16
-	case n < 100000000000000000:
-		l += 17
-	case n < 1000000000000000000:
-		l += 18
-	default:
-		l += 19
+		n /= 10
 	}
 
 	count := l / 4

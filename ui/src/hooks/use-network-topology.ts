@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
 import dagre from 'dagre';
 import { Graph, Node as TopologyNode } from '../types/topology';
-import { useTopology } from '../contexts/service-health-context';
+import { useServiceHealth } from '../contexts/service-health-context';
 
 /**
  * State and actions for the network graph visualization.
@@ -76,7 +76,7 @@ export function useNetworkTopology() {
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
     // ⚡ Bolt Optimization: Use global topology data from context to avoid redundant polling
-    const { latestTopology, refreshTopology: refreshContextTopology } = useTopology();
+    const { latestTopology, refreshTopology: refreshContextTopology } = useServiceHealth();
 
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);

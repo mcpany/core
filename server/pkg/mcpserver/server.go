@@ -545,7 +545,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
-		req.Tool = t
 		if t.Tool() != nil {
 			serviceID = t.Tool().GetServiceId()
 		}

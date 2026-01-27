@@ -139,7 +139,7 @@ func TestFileAuditStore_Close_Stdout(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestFileAuditStore_Read_Error(t *testing.T) {
+func TestFileAuditStore_Read(t *testing.T) {
 	store, err := NewFileAuditStore("")
 	require.NoError(t, err)
 	defer store.Close()

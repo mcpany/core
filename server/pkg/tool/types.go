@@ -115,8 +115,6 @@ type ExecutionRequest struct {
 	// In dry-run mode, the tool should validate inputs and return a preview
 	// of the execution without performing any side effects.
 	DryRun bool `json:"dryRun"`
-	// Tool is the resolved tool instance. Populated internally to avoid re-lookup.
-	Tool Tool `json:"-"`
 }
 
 // ServiceRegistry defines an interface for a component that can look up tools

@@ -113,17 +113,16 @@ const getSourceHue = (source: string) => {
   return Math.abs(hash % 360);
 };
 
-const isLikelyJson = (str: string): boolean => {
-  if (typeof str !== 'string') return false;
-  const trimmed = str.trim();
-  return (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
-         (trimmed.startsWith('[') && trimmed.endsWith(']'));
-};
-
-const safeParseJson = (str: string): unknown | null => {
+const tryParseJson = (str: string): unknown | null => {
   if (typeof str !== 'string') return null;
+  const trimmed = str.trim();
+  // Simple heuristic to avoid trying to parse obviously non-JSON strings
+  if ((!trimmed.startsWith('{') || !trimmed.endsWith('}')) &&
+      (!trimmed.startsWith('[') || !trimmed.endsWith(']'))) {
+    return null;
+  }
   try {
-    return JSON.parse(str);
+    return JSON.parse(trimmed);
   } catch {
     return null;
   }
@@ -141,17 +140,8 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  // Optimization: Defer JSON parsing until expanded to avoid O(N) parsing on render.
-  // We use a heuristic to decide if we should show the expand button.
-  const isPotentialJson = React.useMemo(() => isLikelyJson(log.message), [log.message]);
-
-  // Only parse if expanded and looks like JSON
-  const jsonContent = React.useMemo(() => {
-    if (isExpanded && isPotentialJson) {
-      return safeParseJson(log.message);
-    }
-    return null;
-  }, [isExpanded, isPotentialJson, log.message]);
+  // Check if message is JSON
+  const jsonContent = React.useMemo(() => tryParseJson(log.message), [log.message]);
 
   return (
     <div
@@ -191,7 +181,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 
           <div className="flex-1 min-w-0 flex flex-col">
             <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start">
-               {isPotentialJson && (
+               {jsonContent && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground"
@@ -210,29 +200,23 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
               )}
             </span>
 
-            {isExpanded && isPotentialJson && (
+            {isExpanded && jsonContent && (
               <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
-                {jsonContent ? (
-                  <SyntaxHighlighter
-                    language="json"
-                    style={vscDarkPlus}
-                    customStyle={{
-                      margin: 0,
-                      padding: '1rem',
-                      borderRadius: '0.5rem',
-                      backgroundColor: '#1e1e1e', // Dark background
-                      fontSize: '12px',
-                      lineHeight: '1.5'
-                    }}
-                    wrapLongLines={true}
-                  >
-                    {JSON.stringify(jsonContent, null, 2)}
-                  </SyntaxHighlighter>
-                ) : (
-                  <div className="p-2 bg-muted/20 rounded border border-white/10 text-muted-foreground italic">
-                    Invalid JSON
-                  </div>
-                )}
+                <SyntaxHighlighter
+                  language="json"
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    backgroundColor: '#1e1e1e', // Dark background
+                    fontSize: '12px',
+                    lineHeight: '1.5'
+                  }}
+                  wrapLongLines={true}
+                >
+                  {JSON.stringify(jsonContent, null, 2)}
+                </SyntaxHighlighter>
               </div>
             )}
           </div>

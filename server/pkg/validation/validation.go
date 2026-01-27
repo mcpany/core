@@ -204,21 +204,13 @@ var allowedOpaqueSchemes = map[string]bool{
 // s is the string to be validated.
 // It returns true if the string is a valid URL, and false otherwise.
 func IsValidURL(s string) bool {
-	if len(s) > 2048 || strings.TrimSpace(s) != s {
+	if len(s) > 2048 || strings.TrimSpace(s) != s || strings.Contains(s, " ") {
 		return false
 	}
 
-	// ⚡ Bolt Optimization: Check for whitespace and control characters in a single pass over bytes.
-	// This avoids:
-	// 1. strings.Contains (scan)
-	// 2. range loop (UTF-8 decoding)
-	//
-	// ASCII control characters are 0-31 and 127.
-	// Space is 32.
-	// So if b <= 32 || b == 127, it's invalid.
-	for i := 0; i < len(s); i++ {
-		b := s[i]
-		if b <= 32 || b == 127 {
+	// Reject control characters (ASCII < 32 or == 127)
+	for _, r := range s {
+		if r < 32 || r == 127 {
 			return false
 		}
 	}

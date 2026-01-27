@@ -546,16 +546,6 @@ func RedactDSN(dsn string) string {
 					return m
 				}
 
-				// Fix: http/https often use named ports (e.g. http://myservice:web) or are misinterpreted
-				// as user:password when missing @. We should not redact if it looks like http/https.
-				// However, if the DSN contains an '@', it strongly suggests credentials, so we should allow redaction
-				// (even if dsnSchemeRegex failed to match it for some reason).
-				// We only skip redaction if it's http/https AND there is no '@'.
-				trimmedDSN := strings.TrimSpace(strings.ToLower(dsn))
-				if (strings.HasPrefix(trimmedDSN, "http://") || strings.HasPrefix(trimmedDSN, "https://")) && !strings.Contains(dsn, "@") {
-					return m
-				}
-
 				return prefix + ":" + redactedPlaceholder
 			})
 		}
