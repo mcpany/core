@@ -52,19 +52,19 @@ describe('RegisterServiceDialog', () => {
     render(<RegisterServiceDialog />);
     fireEvent.click(screen.getByText('Register Service'));
 
-    // Click on Puppeteer template (no fields, goes to form)
-    const puppeteerTemplate = SERVICE_TEMPLATES.find(t => t.id === 'puppeteer');
-    expect(puppeteerTemplate).toBeDefined();
-    if (!puppeteerTemplate) return;
+    // Click on PostgreSQL template
+    const postgresTemplate = SERVICE_TEMPLATES.find(t => t.id === 'postgres');
+    expect(postgresTemplate).toBeDefined();
+    if (!postgresTemplate) return;
 
-    fireEvent.click(screen.getByText(puppeteerTemplate.name));
+    fireEvent.click(screen.getByText(postgresTemplate.name));
 
     // Should switch to Configure Service view
     expect(screen.getByText('Configure Service')).toBeInTheDocument();
 
     // Check if name field is populated
     const nameInput = screen.getByLabelText('Service Name') as HTMLInputElement;
-    expect(nameInput.value).toBe(puppeteerTemplate.config.name);
+    expect(nameInput.value).toBe(postgresTemplate.config.name);
 
     // Check if command is populated (switch to Command Line if needed, but the template pre-sets it?)
     // The form default type depends on the template config.
@@ -77,7 +77,7 @@ describe('RegisterServiceDialog', () => {
     });
 
     const commandInput = screen.getByLabelText('Command') as HTMLInputElement;
-    expect(commandInput.value).toBe(puppeteerTemplate.config.commandLineService?.command);
+    expect(commandInput.value).toBe(postgresTemplate.config.commandLineService?.command);
   });
 
   it('allows going back to templates', () => {
@@ -88,8 +88,8 @@ describe('RegisterServiceDialog', () => {
       fireEvent.click(screen.getByText('Custom Service'));
       expect(screen.getByText('Configure Service')).toBeInTheDocument();
 
-      // Click Back button (aria-label="Back" for form view)
-      fireEvent.click(screen.getByLabelText('Back'));
+      // Click Back button
+      fireEvent.click(screen.getByLabelText('Back to templates'));
 
       expect(screen.getByText('Select Service Template')).toBeInTheDocument();
   });
@@ -98,11 +98,11 @@ describe('RegisterServiceDialog', () => {
     render(<RegisterServiceDialog />);
     fireEvent.click(screen.getByText('Register Service'));
 
-    // Select a template (Puppeteer)
-    const puppeteerTemplate = SERVICE_TEMPLATES.find(t => t.id === 'puppeteer');
-    expect(puppeteerTemplate).toBeDefined();
-    if (!puppeteerTemplate) return;
-    fireEvent.click(screen.getByText(puppeteerTemplate.name));
+    // Select a template (PostgreSQL)
+    const postgresTemplate = SERVICE_TEMPLATES.find(t => t.id === 'postgres');
+    expect(postgresTemplate).toBeDefined();
+    if (!postgresTemplate) return;
+    fireEvent.click(screen.getByText(postgresTemplate.name));
 
     // Find and click Test Connection
     const testBtn = screen.getByText('Test Connection');
