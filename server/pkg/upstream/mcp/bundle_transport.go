@@ -411,4 +411,3 @@ func (c *bundleDockerConn) Close() error {
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
-
