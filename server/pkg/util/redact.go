@@ -575,7 +575,7 @@ func RedactSecrets(text string, secrets []string) string {
 
 	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
 	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
-	var mask []bool
+	mask := make([]bool, len(text))
 	foundAny := false
 
 	for _, secret := range secrets {
@@ -591,10 +591,6 @@ func RedactSecrets(text string, secrets []string) string {
 			}
 			absoluteIdx := start + idx
 			end := absoluteIdx + len(secret)
-
-			if mask == nil {
-				mask = make([]bool, len(text))
-			}
 
 			// Mark bytes as sensitive
 			for i := absoluteIdx; i < end; i++ {

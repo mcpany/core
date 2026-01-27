@@ -12,13 +12,6 @@ interface JsonViewerProps {
   data: unknown;
 }
 
-/**
- * JsonViewer is a component that renders JSON data with syntax highlighting.
- *
- * @param props - The component props.
- * @param props.data - The JSON data to display.
- * @returns A syntax-highlighted JSON view.
- */
 export default function JsonViewer({ data }: JsonViewerProps) {
   return (
     <SyntaxHighlighter

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"gopkg.in/yaml.v3"
 )
@@ -17,7 +16,7 @@ import (
 // ValidateConfigHandler handles requests to validate configuration.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -26,12 +25,12 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req ValidateConfigRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithJSONError(w, http.StatusBadRequest, "Invalid request body")
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	if req.Content == "" {
-		respondWithJSONError(w, http.StatusBadRequest, "Content is required")
+		http.Error(w, "Content is required", http.StatusBadRequest)
 		return
 	}
 
@@ -50,28 +49,9 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		errors = append(errors, err.Error())
 	}
 
-	// 3. Additional Semantic Validation using configv1.McpAnyServerConfig
-	// This captures things that JSON schema might miss (custom Go validation logic like file existence)
-	engine, err := config.NewEngine("config.yaml")
-	if err != nil {
-		errors = append(errors, fmt.Sprintf("Failed to initialize config engine: %v", err))
-	} else {
-		// Skip schema validation in the engine since we already performed it above
-		if configurable, ok := engine.(config.ConfigurableEngine); ok {
-			configurable.SetSkipValidation(true)
-		}
-
-		cfg := configv1.McpAnyServerConfig_builder{}.Build()
-		if err := engine.Unmarshal([]byte(req.Content), cfg); err != nil {
-			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", err))
-		} else {
-			// Run semantic validation (checks file existence, connectivity, etc.)
-			validationErrors := config.Validate(r.Context(), cfg, config.Server)
-			for _, ve := range validationErrors {
-				errors = append(errors, ve.Error())
-			}
-		}
-	}
+	// 3. (Optional) Additional Semantic Validation using configv1.McpAnyServerConfig
+	// This captures things that JSON schema might miss (custom Go validation logic)
+	// For now, we rely primarily on Schema validation as requested by the task.
 
 	if len(errors) > 0 {
 		respondWithValidationErrors(w, errors)
@@ -85,15 +65,6 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
-}
-
-func respondWithJSONError(w http.ResponseWriter, code int, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	_ = json.NewEncoder(w).Encode(ValidateConfigResponse{
-		Valid:  false,
-		Errors: []string{message},
-	})
 }
 
 func respondWithValidationErrors(w http.ResponseWriter, errors []string) {

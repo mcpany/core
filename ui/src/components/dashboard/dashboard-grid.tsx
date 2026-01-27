@@ -81,7 +81,7 @@ export function DashboardGrid() {
                     loadedWidgets = JSON.parse(user.preferences["dashboard_layout"]);
                     loadedFromBackend = true;
                 }
-            } catch (e) {
+            } catch (_) {
                 // Not logged in or failed to fetch
             }
 
@@ -102,8 +102,10 @@ export function DashboardGrid() {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
                 // Check first item
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const first = loadedWidgets[0] as any;
                 if (first && !first.instanceId) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const migrated: WidgetInstance[] = loadedWidgets.map((w: any) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
@@ -148,7 +150,7 @@ export function DashboardGrid() {
                     }
                 });
             }
-        } catch (e) {
+        } catch (_) {
             // Ignore backend save errors (offline, not logged in)
         }
     };
