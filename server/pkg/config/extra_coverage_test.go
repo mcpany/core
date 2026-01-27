@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // TestWrapActionableError_Nested covers the path where WrapActionableError
@@ -72,7 +73,7 @@ global_settings:
 
     cfg, err := store.Load(context.Background())
     require.NoError(t, err)
-    assert.Equal(t, "127.0.0.1:9090", cfg.GetGlobalSettings().GetMcpListenAddress())
+    assert.Equal(t, "127.0.0.1:9090", cfg.GlobalSettings.GetMcpListenAddress())
 }
 
 // TestLoadResolvedConfig_Empty verifies LoadResolvedConfig when store returns empty.
@@ -97,8 +98,8 @@ func TestLoadResolvedConfig_NoSources(t *testing.T) {
     require.NoError(t, err)
     assert.NotNil(t, cfg)
     // Should have default user
-    assert.NotEmpty(t, cfg.GetUsers())
-    assert.Equal(t, "default", cfg.GetUsers()[0].GetId())
+    assert.NotEmpty(t, cfg.Users)
+    assert.Equal(t, "default", cfg.Users[0].GetId())
 }
 
 // TestLoadServices_ActionableError covers handling of ActionableError in LoadServices.
@@ -133,24 +134,12 @@ func (s *MockStoreForError) HasConfigSources() bool {
 
 // TestValidate_DuplicateService covers duplicate service check in Validate.
 func TestValidate_DuplicateService(t *testing.T) {
-    cfg := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-
-		svc1 := &configv1.UpstreamServiceConfig{}
-		svc1.SetName("svc1")
-		http1 := &configv1.HttpUpstreamService{}
-		http1.SetAddress("http://a.com")
-		svc1.SetHttpService(http1)
-
-		svc2 := &configv1.UpstreamServiceConfig{}
-		svc2.SetName("svc1")
-		http2 := &configv1.HttpUpstreamService{}
-		http2.SetAddress("http://b.com")
-		svc2.SetHttpService(http2)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc1, svc2})
-		return cfg
-	}()
+    cfg := &configv1.McpAnyServerConfig{
+        UpstreamServices: []*configv1.UpstreamServiceConfig{
+            {Name: proto.String("svc1"), ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://a.com")}}},
+            {Name: proto.String("svc1"), ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://b.com")}}},
+        },
+    }
     errs := Validate(context.Background(), cfg, Server)
     assert.NotEmpty(t, errs)
     found := false
@@ -165,17 +154,12 @@ func TestValidate_DuplicateService(t *testing.T) {
 
 // TestValidate_DuplicateUser covers duplicate user check.
 func TestValidate_DuplicateUser(t *testing.T) {
-    cfg := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		u1 := &configv1.User{}
-		u1.SetId("u1")
-
-		u2 := &configv1.User{}
-		u2.SetId("u1")
-
-		cfg.SetUsers([]*configv1.User{u1, u2})
-		return cfg
-	}()
+    cfg := &configv1.McpAnyServerConfig{
+        Users: []*configv1.User{
+            {Id: proto.String("u1")},
+            {Id: proto.String("u1")},
+        },
+    }
     errs := Validate(context.Background(), cfg, Server)
     assert.NotEmpty(t, errs)
     found := false
@@ -199,14 +183,14 @@ func TestUpstreamServiceManager_LoadFromURL_Success(t *testing.T) {
 	manager := NewUpstreamServiceManager([]string{"default"})
 	manager.httpClient = ts.Client()
 
-	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		col := &configv1.Collection{}
-		col.SetName("remote-collection")
-		col.SetHttpUrl(ts.URL)
-		cfg.SetCollections([]*configv1.Collection{col})
-		return cfg
-	}()
+	config := &configv1.McpAnyServerConfig{
+		Collections: []*configv1.Collection{
+			{
+				Name:    proto.String("remote-collection"),
+				HttpUrl: proto.String(ts.URL),
+			},
+		},
+	}
 
 	services, err := manager.LoadAndMergeServices(context.Background(), config)
 	require.NoError(t, err)
@@ -223,12 +207,13 @@ func TestUpstreamServiceManager_LoadFromURL_Failure(t *testing.T) {
 	manager := NewUpstreamServiceManager([]string{"default"})
 	manager.httpClient = ts.Client()
 
-	config := &configv1.McpAnyServerConfig{} // Use pointer directly as we use setters
-	{
-		col := &configv1.Collection{}
-		col.SetName("remote-collection")
-		col.SetHttpUrl(ts.URL)
-		config.SetCollections([]*configv1.Collection{col})
+	config := &configv1.McpAnyServerConfig{
+		Collections: []*configv1.Collection{
+			{
+				Name:    proto.String("remote-collection"),
+				HttpUrl: proto.String(ts.URL),
+			},
+		},
 	}
 
 	// LoadAndMergeServices swallows collection loading errors but logs them

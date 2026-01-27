@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -28,19 +28,21 @@ func TestFilesystemUpstream_UnsupportedTypes(t *testing.T) {
 	}{
 		{
 			name: "Http",
-			config: configv1.FilesystemUpstreamService_builder{
-				Http: configv1.HttpFs_builder{}.Build(),
-			}.Build(),
+			config: &configv1.FilesystemUpstreamService{
+				FilesystemType: &configv1.FilesystemUpstreamService_Http{},
+			},
 			errMsg: "http filesystem is not yet supported",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := configv1.UpstreamServiceConfig_builder{
+			config := &configv1.UpstreamServiceConfig{
 				Name: proto.String("test_" + tt.name),
-				FilesystemService: tt.config,
-			}.Build()
+				ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+					FilesystemService: tt.config,
+				},
+			}
 			_, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), tt.errMsg)
@@ -58,13 +60,17 @@ func TestFilesystemUpstream_InputValidation(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_validation"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{"/": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{"/": tempDir},
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
+			},
+		},
+	}
 
 	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -148,13 +154,17 @@ func TestFilesystemUpstream_PathResolution(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Case 1: No root paths
-	configNoRoot := configv1.UpstreamServiceConfig_builder{
+	configNoRoot := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_no_root"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{},
-			Os: configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{},
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
+			},
+		},
+	}
 	id, _, _, err := u.Register(context.Background(), configNoRoot, tm, nil, nil, false)
 	require.NoError(t, err)
 
@@ -169,13 +179,17 @@ func TestFilesystemUpstream_PathResolution(t *testing.T) {
 	assert.Contains(t, err.Error(), "no root paths defined")
 
 	// Case 2: No matching root
-	configMismatch := configv1.UpstreamServiceConfig_builder{
+	configMismatch := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_mismatch"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{"/app": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{"/app": tempDir},
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
+			},
+		},
+	}
 	id2, _, _, err := u.Register(context.Background(), configMismatch, tm, nil, nil, false)
 	require.NoError(t, err)
 
@@ -199,13 +213,17 @@ func TestFilesystemUpstream_SearchEdgeCases(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_search_edge"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{"/": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{"/": tempDir},
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
+			},
+		},
+	}
 	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	require.NoError(t, err)
 
@@ -231,6 +249,14 @@ func TestFilesystemUpstream_SearchEdgeCases(t *testing.T) {
 	})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid regex pattern")
+
+	// Search matching binary content (should be ignored)
+	// Note: 0x00 0x01 ...
+	// The binary check is: contentType == "application/octet-stream"
+	// 4 bytes might be too small to detect?
+	// net/http.DetectContentType doc says: "at most the first 512 bytes".
+	// Let's check what it detects for 4 bytes starting with null.
+	// It should detect octet-stream.
 
 	res, err := searchTool.Execute(context.Background(), &tool.ExecutionRequest{
 		ToolName:  "search_files",
@@ -260,13 +286,17 @@ func TestFilesystemUpstream_FileOperations(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_ops"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{"/": tempDir},
-			Os: configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{"/": tempDir},
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
+			},
+		},
+	}
 	id, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	require.NoError(t, err)
 
@@ -294,10 +324,12 @@ func TestFilesystemUpstream_SanitizeError(t *testing.T) {
 	// Test error when sanitizing service name fails (empty name)
 	u := NewUpstream()
 	tm := tool.NewManager(nil)
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String(""), // Invalid name
-		FilesystemService: configv1.FilesystemUpstreamService_builder{}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{},
+		},
+	}
 	_, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	assert.Error(t, err)
 }
@@ -305,10 +337,12 @@ func TestFilesystemUpstream_SanitizeError(t *testing.T) {
 func TestFilesystemUpstream_NilConfig(t *testing.T) {
 	u := NewUpstream()
 	tm := tool.NewManager(nil)
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_nil"),
-	}.Build()
-	// config.FilesystemService is nil by default in builder if not set
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: nil,
+		},
+	}
 	_, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "filesystem service config is nil")

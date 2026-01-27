@@ -18,9 +18,9 @@ import (
 
 func TestNewMilvusClient_Validation(t *testing.T) {
 	t.Run("Missing Address", func(t *testing.T) {
-		cfg := configv1.MilvusVectorDB_builder{
+		cfg := &configv1.MilvusVectorDB{
 			CollectionName: proto.String("coll"),
-		}.Build()
+		}
 		c, err := NewMilvusClient(cfg)
 		assert.Error(t, err)
 		assert.Nil(t, c)
@@ -28,9 +28,9 @@ func TestNewMilvusClient_Validation(t *testing.T) {
 	})
 
 	t.Run("Missing Collection", func(t *testing.T) {
-		cfg := configv1.MilvusVectorDB_builder{
+		cfg := &configv1.MilvusVectorDB{
 			Address: proto.String("127.0.0.1:19530"),
-		}.Build()
+		}
 		c, err := NewMilvusClient(cfg)
 		assert.Error(t, err)
 		assert.Nil(t, c)
@@ -39,10 +39,10 @@ func TestNewMilvusClient_Validation(t *testing.T) {
 
 	t.Run("Connection Failure", func(t *testing.T) {
 		// Attempt to connect to a random closed port
-		cfg := configv1.MilvusVectorDB_builder{
+		cfg := &configv1.MilvusVectorDB{
 			Address:        proto.String("127.0.0.1:54321"),
 			CollectionName: proto.String("test"),
-		}.Build()
+		}
 		c, err := NewMilvusClient(cfg)
 		// Milvus client creation might succeed initially (lazy connect) or fail fast.
 		// If it connects eagerly and fails, we get error.
@@ -54,7 +54,7 @@ func TestNewMilvusClient_Validation(t *testing.T) {
 
 func TestNewPineconeClient_Validation(t *testing.T) {
 	t.Run("Missing API Key", func(t *testing.T) {
-		cfg := configv1.PineconeVectorDB_builder{}.Build()
+		cfg := &configv1.PineconeVectorDB{}
 		c, err := NewPineconeClient(cfg)
 		assert.Error(t, err)
 		assert.Nil(t, c)
@@ -62,9 +62,9 @@ func TestNewPineconeClient_Validation(t *testing.T) {
 	})
 
 	t.Run("Missing Host Info", func(t *testing.T) {
-		cfg := configv1.PineconeVectorDB_builder{
+		cfg := &configv1.PineconeVectorDB{
 			ApiKey: proto.String("key"),
-		}.Build()
+		}
 		c, err := NewPineconeClient(cfg)
 		assert.Error(t, err)
 		assert.Nil(t, c)
@@ -72,10 +72,10 @@ func TestNewPineconeClient_Validation(t *testing.T) {
 	})
 
 	t.Run("Valid with Host", func(t *testing.T) {
-		cfg := configv1.PineconeVectorDB_builder{
+		cfg := &configv1.PineconeVectorDB{
 			ApiKey: proto.String("key"),
 			Host:   proto.String("https://custom.pinecone.io"),
-		}.Build()
+		}
 		c, err := NewPineconeClient(cfg)
 		require.NoError(t, err)
 		assert.NotNil(t, c)
@@ -83,12 +83,12 @@ func TestNewPineconeClient_Validation(t *testing.T) {
 	})
 
 	t.Run("Valid with Components", func(t *testing.T) {
-		cfg := configv1.PineconeVectorDB_builder{
+		cfg := &configv1.PineconeVectorDB{
 			ApiKey:      proto.String("key"),
 			IndexName:   proto.String("idx"),
 			ProjectId:   proto.String("proj"),
 			Environment: proto.String("env"),
-		}.Build()
+		}
 		c, err := NewPineconeClient(cfg)
 		require.NoError(t, err)
 		assert.NotNil(t, c)
@@ -135,10 +135,10 @@ func TestPineconeClient_Methods(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	cfg := configv1.PineconeVectorDB_builder{
+	cfg := &configv1.PineconeVectorDB{
 		ApiKey: proto.String("test-key"),
 		Host:   proto.String(ts.URL),
-	}.Build()
+	}
 	c, err := NewPineconeClient(cfg)
 	require.NoError(t, err)
 

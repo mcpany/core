@@ -17,31 +17,31 @@ func TestManager_IsToolAllowed(t *testing.T) {
 	manager := NewManager(nil)
 
 	// Define profiles
-	devProfile := configv1.ProfileDefinition_builder{
+	devProfile := &configv1.ProfileDefinition{
 		Name: proto.String("dev"),
-		Selector: configv1.ProfileSelector_builder{
+		Selector: &configv1.ProfileSelector{
 			Tags: []string{"dev"},
-		}.Build(),
-	}.Build()
+		},
+	}
 
-	readonlyProfile := configv1.ProfileDefinition_builder{
+	readonlyProfile := &configv1.ProfileDefinition{
 		Name: proto.String("readonly"),
-		Selector: configv1.ProfileSelector_builder{
+		Selector: &configv1.ProfileSelector{
 			ToolProperties: map[string]string{
 				"read_only": "true",
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 
-	mixedProfile := configv1.ProfileDefinition_builder{
+	mixedProfile := &configv1.ProfileDefinition{
 		Name: proto.String("mixed"),
-		Selector: configv1.ProfileSelector_builder{
+		Selector: &configv1.ProfileSelector{
 			Tags: []string{"dev"},
 			ToolProperties: map[string]string{
 				"read_only": "true",
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	manager.SetProfiles([]string{"dev", "readonly", "mixed"}, []*configv1.ProfileDefinition{devProfile, readonlyProfile, mixedProfile})
 

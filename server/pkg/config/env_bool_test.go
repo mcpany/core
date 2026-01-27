@@ -40,7 +40,7 @@ global_settings:
 	require.NoError(t, err)
 
 	// Verify overrides
-	require.NotNil(t, cfg.GetGlobalSettings().GetAudit())
-	assert.True(t, cfg.GetGlobalSettings().GetAudit().GetEnabled(), "Audit should be enabled")
-	assert.True(t, cfg.GetGlobalSettings().GetAudit().GetLogArguments(), "LogArguments should be enabled")
+	require.NotNil(t, cfg.GlobalSettings.Audit)
+	assert.True(t, *cfg.GlobalSettings.Audit.Enabled, "Audit should be enabled")
+	assert.True(t, *cfg.GlobalSettings.Audit.LogArguments, "LogArguments should be enabled")
 }

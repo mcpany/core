@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 type MockAuditStore struct {
@@ -43,8 +44,9 @@ func TestHandleAuditExport_Mock(t *testing.T) {
 	mockStore := new(MockAuditStore)
 
 	// Initialize middleware
-	auditConfig := &configv1.AuditConfig{}
-	auditConfig.SetEnabled(true)
+	auditConfig := &configv1.AuditConfig{
+		Enabled: proto.Bool(true),
+	}
 	am, err := middleware.NewAuditMiddleware(auditConfig)
 	require.NoError(t, err)
 	am.SetStore(mockStore)

@@ -17,15 +17,19 @@ import (
 
 func TestSearchFiles_BugRepro(t *testing.T) {
 	// Configure the upstream with MemMapFs
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_repro"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{
-				"/": "/",
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{
+					"/": "/",
+				},
+				FilesystemType: &configv1.FilesystemUpstreamService_Tmpfs{
+					Tmpfs: &configv1.MemMapFs{},
+				},
 			},
-			Tmpfs: configv1.MemMapFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)

@@ -25,21 +25,13 @@ import { Search, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-/**
- * Represents a user profile configuration in the UI.
- */
+// Define the shape of Profile used in UI
 export interface Profile {
-    /** Unique identifier for the profile (usually same as name). */
     id: string; // name
-    /** Display name of the profile. */
     name: string;
-    /** Optional description of the profile's purpose. */
     description?: string;
-    /** List of service names enabled for this profile. */
     services: string[]; // List of enabled service names
-    /** The environment type (dev, prod, debug). */
     type: "dev" | "prod" | "debug";
-    /** Optional secrets associated with the profile. */
     secrets?: Record<string, string>;
 }
 
@@ -57,17 +49,6 @@ interface ProfileEditorProps {
     onSave: (profileData: ProfileData) => Promise<void>;
 }
 
-/**
- * A sheet component for creating or editing a user profile.
- * Allows configuring profile details and selecting accessible services.
- *
- * @param props - The component props.
- * @param props.profile - The profile to edit, or null to create a new one.
- * @param props.open - Whether the editor sheet is open.
- * @param props.onOpenChange - Callback to toggle the sheet's open state.
- * @param props.onSave - Callback invoked when the profile is saved.
- * @returns The rendered profile editor component.
- */
 export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEditorProps) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

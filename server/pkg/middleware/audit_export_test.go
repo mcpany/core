@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -32,17 +32,17 @@ func TestExportIntegration(t *testing.T) {
 
 	// Configure middleware with Splunk
 	storageType := configv1.AuditConfig_STORAGE_TYPE_SPLUNK
-	config := configv1.AuditConfig_builder{
+	config := &configv1.AuditConfig{
 		Enabled:     proto.Bool(true),
 		StorageType: &storageType,
-		Splunk: configv1.SplunkConfig_builder{
+		Splunk: &configv1.SplunkConfig{
 			HecUrl:     proto.String(splunkServer.URL),
 			Token:      proto.String("token"),
 			Index:      proto.String("main"),
 			Source:     proto.String("source"),
 			Sourcetype: proto.String("json"),
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	m, err := NewAuditMiddleware(config)
 	require.NoError(t, err)

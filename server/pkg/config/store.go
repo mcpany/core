@@ -580,7 +580,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 			configurable.SetSkipValidation(s.skipValidation)
 		}
 
-		cfg := configv1.McpAnyServerConfig_builder{}.Build()
+		cfg := &configv1.McpAnyServerConfig{}
 		if err := engine.Unmarshal(b, cfg); err != nil {
 			logErr := fmt.Errorf("failed to unmarshal config from %s: %w", path, err)
 			if strings.Contains(err.Error(), "is already set") {
@@ -1070,7 +1070,7 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns the result.
 // Returns an error if the operation fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
-	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
+	mergedConfig := &configv1.McpAnyServerConfig{}
 	for _, s := range ms.stores {
 		cfg, err := s.Load(ctx)
 		if err != nil {
@@ -1137,15 +1137,15 @@ func suggestFix(unknownField string, root proto.Message) string {
 	// We avoid full recursion to prevent suggesting fields from obscure/irrelevant parts of the schema
 	// (like "services" from Collection which confuses users when they mean "upstream_services").
 	commonMessages := []proto.Message{
-		configv1.GlobalSettings_builder{}.Build(),
-		configv1.UpstreamServiceConfig_builder{}.Build(),
-		configv1.HttpUpstreamService_builder{}.Build(),
-		configv1.GrpcUpstreamService_builder{}.Build(),
-		configv1.McpUpstreamService_builder{}.Build(),
-		configv1.OpenapiUpstreamService_builder{}.Build(),
-		configv1.CommandLineUpstreamService_builder{}.Build(),
-		configv1.SqlUpstreamService_builder{}.Build(),
-		configv1.Authentication_builder{}.Build(),
+		&configv1.GlobalSettings{},
+		&configv1.UpstreamServiceConfig{},
+		&configv1.HttpUpstreamService{},
+		&configv1.GrpcUpstreamService{},
+		&configv1.McpUpstreamService{},
+		&configv1.OpenapiUpstreamService{},
+		&configv1.CommandLineUpstreamService{},
+		&configv1.SqlUpstreamService{},
+		&configv1.Authentication{},
 	}
 
 	for _, msg := range commonMessages {

@@ -30,11 +30,11 @@ func TestStore(t *testing.T) {
 	store := NewStore(db)
 
 	t.Run("SaveAndLoad", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name:    proto.String("test-service"),
 			Id:      proto.String("test-id"),
 			Version: proto.String("1.0.0"),
-		}.Build()
+		}
 		if err := store.SaveService(context.Background(), svc); err != nil {
 			t.Fatalf("failed to save service: %v", err)
 		}
@@ -63,22 +63,8 @@ func TestStore(t *testing.T) {
 
 	t.Run("Update", func(t *testing.T) {
 		svc, _ := store.GetService(context.Background(), "test-service")
-		// Correct way to update opaque object is to use builder from it?
-		// Or creating new builder?
-		// Opaque objects are immutable usually?
-		// If I can't mutate `svc.Version`, I must create a new object using builder with modified fields.
-		// Or use `ToBuilder()` if available?
-		// For now, I'll rebuild it since I know the fields.
-		// Wait, `svc.Version = ...` was used. Struct fields are likely hidden or read-only effectively?
-		// If I can't set `svc.Version`, I need to create a new one.
-
-		newSvc := configv1.UpstreamServiceConfig_builder{
-			Name:    proto.String(svc.GetName()),
-			Id:      proto.String(svc.GetId()),
-			Version: proto.String("1.0.1"),
-		}.Build()
-
-		if err := store.SaveService(context.Background(), newSvc); err != nil {
+		svc.Version = proto.String("1.0.1")
+		if err := store.SaveService(context.Background(), svc); err != nil {
 			t.Fatalf("failed to update service: %v", err)
 		}
 		loaded, _ := store.GetService(context.Background(), "test-service")
@@ -102,9 +88,9 @@ func TestStore(t *testing.T) {
 
 	t.Run("GlobalSettings", func(t *testing.T) {
 		level := configv1.GlobalSettings_LOG_LEVEL_DEBUG
-		settings := configv1.GlobalSettings_builder{
+		settings := &configv1.GlobalSettings{
 			LogLevel: &level,
-		}.Build()
+		}
 		err := store.SaveGlobalSettings(context.Background(), settings)
 		if err != nil {
 			t.Fatalf("failed to save global settings: %v", err)
@@ -120,11 +106,11 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("Secrets", func(t *testing.T) {
-		secret := configv1.Secret_builder{
+		secret := &configv1.Secret{
 			Id:   proto.String("sec-1"),
 			Name: proto.String("my-secret"),
 			Key:  proto.String("api_key"),
-		}.Build()
+		}
 		err := store.SaveSecret(context.Background(), secret)
 		if err != nil {
 			t.Fatalf("failed to save secret: %v", err)
@@ -149,14 +135,8 @@ func TestStore(t *testing.T) {
 		}
 
 		// Update
-		// secret.Name = proto.String("updated-secret") // Cannot mutate
-		updatedSecret := configv1.Secret_builder{
-			Id:   proto.String(secret.GetId()),
-			Name: proto.String("updated-secret"),
-			Key:  proto.String(secret.GetKey()),
-		}.Build()
-
-		err = store.SaveSecret(context.Background(), updatedSecret)
+		secret.Name = proto.String("updated-secret")
+		err = store.SaveSecret(context.Background(), secret)
 		if err != nil {
 			t.Fatalf("failed to update secret: %v", err)
 		}
@@ -177,10 +157,10 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("Users", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Id:    proto.String("user-1"),
 			Roles: []string{"admin"},
-		}.Build()
+		}
 		// Create
 		err := store.CreateUser(context.Background(), user)
 		if err != nil {
@@ -206,12 +186,8 @@ func TestStore(t *testing.T) {
 		}
 
 		// Update
-		// user.Roles = []string{"admin", "editor"}
-		updatedUser := configv1.User_builder{
-			Id:    proto.String("user-1"),
-			Roles: []string{"admin", "editor"},
-		}.Build()
-		err = store.UpdateUser(context.Background(), updatedUser)
+		user.Roles = []string{"admin", "editor"}
+		err = store.UpdateUser(context.Background(), user)
 		if err != nil {
 			t.Fatalf("failed to update user: %v", err)
 		}
@@ -221,7 +197,7 @@ func TestStore(t *testing.T) {
 		}
 
 		// Update Non-Existent
-		err = store.UpdateUser(context.Background(), configv1.User_builder{Id: proto.String("non-existent")}.Build())
+		err = store.UpdateUser(context.Background(), &configv1.User{Id: proto.String("non-existent")})
 		if err == nil {
 			t.Error("expected error updating non-existent user, got nil")
 		}
@@ -241,9 +217,9 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("Profiles", func(t *testing.T) {
-		prof := configv1.ProfileDefinition_builder{
+		prof := &configv1.ProfileDefinition{
 			Name: proto.String("prof-1"),
-		}.Build()
+		}
 		// Save
 		err := store.SaveProfile(context.Background(), prof)
 		if err != nil {
@@ -280,9 +256,9 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("ServiceCollections", func(t *testing.T) {
-		col := configv1.Collection_builder{
+		col := &configv1.Collection{
 			Name: proto.String("col-1"),
-		}.Build()
+		}
 		// Save
 		err := store.SaveServiceCollection(context.Background(), col)
 		if err != nil {
@@ -319,10 +295,10 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("Credentials", func(t *testing.T) {
-		cred := configv1.Credential_builder{
+		cred := &configv1.Credential{
 			Id:   proto.String("cred-1"),
 			Name: proto.String("my-cred"),
-		}.Build()
+		}
 		// Save
 		err := store.SaveCredential(context.Background(), cred)
 		if err != nil {
@@ -359,11 +335,11 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("Tokens", func(t *testing.T) {
-		token := configv1.UserToken_builder{
+		token := &configv1.UserToken{
 			UserId:      proto.String("user-1"),
 			ServiceId:   proto.String("svc-1"),
 			AccessToken: proto.String("xyz"),
-		}.Build()
+		}
 		// Save
 		err := store.SaveToken(context.Background(), token)
 		if err != nil {
@@ -408,10 +384,10 @@ func TestSaveServiceValidation(t *testing.T) {
 	store := NewStore(db)
 
 	// Test case: Empty name
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String(""),
 		Id:   proto.String("test-id"),
-	}.Build()
+	}
 	err = store.SaveService(context.Background(), svc)
 	if err == nil {
 		t.Error("expected error for empty service name, got nil")
@@ -505,9 +481,9 @@ func TestDBErrors(t *testing.T) {
 	}
 
 	// Test SaveService
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
-	}.Build()
+	}
 	err = store.SaveService(context.Background(), svc)
 	if err == nil {
 		t.Error("expected error on SaveService with closed DB, got nil")

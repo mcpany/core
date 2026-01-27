@@ -81,6 +81,6 @@ global_settings:
 
 	cfg, err := ms.Load(context.Background())
 	require.NoError(t, err)
-	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GetGlobalSettings().GetLogLevel())
-	assert.Equal(t, "my-key", cfg.GetGlobalSettings().GetApiKey())
+	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_INFO, cfg.GlobalSettings.GetLogLevel())
+	assert.Equal(t, "my-key", cfg.GlobalSettings.GetApiKey())
 }

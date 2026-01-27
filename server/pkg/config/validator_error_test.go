@@ -12,8 +12,11 @@ import (
 
 func TestValidatorActionableErrors(t *testing.T) {
 	// 1. Test missing env var
-	secretEnv := &configv1.SecretValue{}
-	secretEnv.SetEnvironmentVariable("MISSING_ENV_VAR_TEST")
+	secretEnv := &configv1.SecretValue{
+		Value: &configv1.SecretValue_EnvironmentVariable{
+			EnvironmentVariable: "MISSING_ENV_VAR_TEST",
+		},
+	}
 	err := validateSecretValue(secretEnv)
 	if err == nil {
 		t.Fatal("Expected error for missing env var")
@@ -42,9 +45,9 @@ func TestValidatorActionableErrors(t *testing.T) {
 
     // 4. Test invalid URL
     addr := "htp://invalid-scheme.com"
-    svc := &configv1.HttpUpstreamService{}
-    svc.SetAddress(addr)
-    err = validateHTTPService(svc)
+    err = validateHTTPService(&configv1.HttpUpstreamService{
+        Address: &addr,
+    })
     if err == nil {
         t.Fatal("Expected error for invalid URL")
     }

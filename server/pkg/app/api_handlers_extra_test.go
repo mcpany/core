@@ -34,14 +34,8 @@ func TestHandleListServices_ToolCountInjection(t *testing.T) {
 	app.ServiceRegistry = mockRegistry
 
 	// Add services to store (fallback) or registry
-	svc1 := configv1.UpstreamServiceConfig_builder{
-		Id:   proto.String("svc1"),
-		Name: proto.String("Service 1"),
-	}.Build()
-	svc2 := configv1.UpstreamServiceConfig_builder{
-		Id:   proto.String("svc2"),
-		Name: proto.String("Service 2"),
-	}.Build()
+	svc1 := &configv1.UpstreamServiceConfig{Id: proto.String("svc1"), Name: proto.String("Service 1")}
+	svc2 := &configv1.UpstreamServiceConfig{Id: proto.String("svc2"), Name: proto.String("Service 2")}
 
 	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svc1, svc2}, nil)
 	mockRegistry.On("GetServiceError", mock.Anything).Return("", false)
@@ -85,12 +79,14 @@ func TestHandleCreateService_Validation(t *testing.T) {
 	handler := app.handleServices(store)
 
 	// Invalid URL
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("invalid-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("invalid-url"),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Address: proto.String("invalid-url"),
+			},
+		},
+	}
 	body, _ := protojson.Marshal(svc)
 	req := httptest.NewRequest(http.MethodPost, "/services", bytes.NewReader(body))
 	w := httptest.NewRecorder()
@@ -105,13 +101,17 @@ func TestHandleCreateService_Unsafe_NonAdmin(t *testing.T) {
 	handler := app.handleServices(store)
 
 	// Unsafe config (Filesystem)
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("unsafe-fs"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{"/": "/"},
-			Os:        configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{"/": "/"},
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
+			},
+		},
+	}
 	body, _ := protojson.Marshal(svc)
 
 	// Request without admin role
@@ -137,12 +137,12 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("valid-http"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: proto.String(ts.URL),
-			}.Build(),
-		}.Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+				HttpService: &configv1.HttpUpstreamService{Address: proto.String(ts.URL)},
+			},
+		}
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -155,12 +155,12 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 	})
 
 	t.Run("Invalid HTTP", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("invalid-http"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: proto.String("http://127.0.0.1:0"),
-			}.Build(),
-		}.Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+				HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://127.0.0.1:0")}, // Unreachable port
+			},
+		}
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -175,13 +175,17 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 
 	t.Run("Valid Filesystem", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("valid-fs"),
-			FilesystemService: configv1.FilesystemUpstreamService_builder{
-				RootPaths: map[string]string{"root": tmpDir},
-				Os:        configv1.OsFs_builder{}.Build(),
-			}.Build(),
-		}.Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					RootPaths: map[string]string{"root": tmpDir},
+					FilesystemType: &configv1.FilesystemUpstreamService_Os{
+						Os: &configv1.OsFs{},
+					},
+				},
+			},
+		}
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -194,13 +198,17 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 	})
 
 	t.Run("Invalid Filesystem", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("invalid-fs"),
-			FilesystemService: configv1.FilesystemUpstreamService_builder{
-				RootPaths: map[string]string{"root": "/non/existent/path"},
-				Os:        configv1.OsFs_builder{}.Build(),
-			}.Build(),
-		}.Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+				FilesystemService: &configv1.FilesystemUpstreamService{
+					RootPaths: map[string]string{"root": "/non/existent/path"},
+					FilesystemType: &configv1.FilesystemUpstreamService_Os{
+						Os: &configv1.OsFs{},
+					},
+				},
+			},
+		}
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -215,12 +223,14 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 
 	t.Run("Valid Command", func(t *testing.T) {
 		// Use "sh" or "ls" which should exist
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("valid-cmd"),
-			CommandLineService: configv1.CommandLineUpstreamService_builder{
-				Command: proto.String("sh"),
-			}.Build(),
-		}.Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+				CommandLineService: &configv1.CommandLineUpstreamService{
+					Command: proto.String("sh"),
+				},
+			},
+		}
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -233,12 +243,14 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 	})
 
 	t.Run("Invalid Command", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("invalid-cmd"),
-			CommandLineService: configv1.CommandLineUpstreamService_builder{
-				Command: proto.String("non-existent-command-xyz"),
-			}.Build(),
-		}.Build()
+			ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+				CommandLineService: &configv1.CommandLineUpstreamService{
+					Command: proto.String("non-existent-command-xyz"),
+				},
+			},
+		}
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -258,18 +270,18 @@ func TestHandleServiceDetail_Update_Unsafe_NonAdmin(t *testing.T) {
 	handler := app.handleServiceDetail(store)
 
 	// Create initial safe service
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("my-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("http://example.com"),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{Address: proto.String("http://example.com")},
+		},
+	}
 	store.SaveService(context.Background(), svc)
 
 	// Update to unsafe service
-	svc.SetCommandLineService(configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("sh"),
-	}.Build())
+	svc.ServiceConfig = &configv1.UpstreamServiceConfig_CommandLineService{
+		CommandLineService: &configv1.CommandLineUpstreamService{Command: proto.String("sh")},
+	}
 	body, _ := protojson.Marshal(svc)
 
 	req := httptest.NewRequest(http.MethodPut, "/services/my-service", bytes.NewReader(body))
@@ -304,12 +316,14 @@ func TestHandleCreateService_SaveError(t *testing.T) {
 	mockStore := &MockStorage{Storage: store, failSave: true}
 	handler := app.handleServices(mockStore)
 
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("http://127.0.0.1:8080"),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Address: proto.String("http://127.0.0.1:8080"),
+			},
+		},
+	}
 	body, _ := protojson.Marshal(svc)
 	req := httptest.NewRequest(http.MethodPost, "/services", bytes.NewReader(body))
 	w := httptest.NewRecorder()
@@ -323,11 +337,10 @@ func TestHandleSecrets_SaveError(t *testing.T) {
 	mockStore := &MockStorage{Storage: store, failSave: true}
 	handler := app.handleSecrets(mockStore)
 
-	secret := configv1.Secret_builder{
+	secret := &configv1.Secret{
 		Name:  proto.String("my-secret"),
-		Id:    proto.String("my-secret-id"),
 		Value: proto.String("super-secret"),
-	}.Build()
+	}
 	body, _ := protojson.Marshal(secret)
 	req := httptest.NewRequest(http.MethodPost, "/secrets", bytes.NewReader(body))
 	w := httptest.NewRecorder()
@@ -350,9 +363,7 @@ func TestHandleServiceRestart_Error(t *testing.T) {
 	app.ReloadConfig(context.Background(), fs, []string{"config.yaml"})
 
 	// Create service in store so we can restart it
-	svc := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String("svc1"),
-	}.Build()
+	svc := &configv1.UpstreamServiceConfig{Name: proto.String("svc1")}
 	store.SaveService(context.Background(), svc)
 
 	// Now corrupt the config file so ReloadConfig fails

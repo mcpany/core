@@ -19,23 +19,23 @@ func TestRBACEnforcer_HasRole(t *testing.T) {
 	})
 
 	t.Run("user without roles", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{},
-		}.Build()
+		}
 		assert.False(t, enforcer.HasRole(user, "admin"))
 	})
 
 	t.Run("user with different role", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{"user"},
-		}.Build()
+		}
 		assert.False(t, enforcer.HasRole(user, "admin"))
 	})
 
 	t.Run("user with required role", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{"user", "admin"},
-		}.Build()
+		}
 		assert.True(t, enforcer.HasRole(user, "admin"))
 	})
 }
@@ -48,23 +48,23 @@ func TestRBACEnforcer_HasAnyRole(t *testing.T) {
 	})
 
 	t.Run("user without matching roles", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{"user"},
-		}.Build()
+		}
 		assert.False(t, enforcer.HasAnyRole(user, []string{"admin", "superuser"}))
 	})
 
 	t.Run("user with one matching role", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{"admin"},
-		}.Build()
+		}
 		assert.True(t, enforcer.HasAnyRole(user, []string{"admin", "superuser"}))
 	})
 
 	t.Run("empty required roles", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{"admin"},
-		}.Build()
+		}
 		assert.False(t, enforcer.HasAnyRole(user, []string{}))
 	})
 }

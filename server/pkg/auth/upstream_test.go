@@ -35,19 +35,21 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		clientID := configv1.SecretValue_builder{
+		clientID := (&configv1.SecretValue_builder{
 			PlainText: proto.String("id"),
-		}.Build()
-		clientSecret := configv1.SecretValue_builder{
+		}).Build()
+		clientSecret := (&configv1.SecretValue_builder{
 			PlainText: proto.String("secret"),
-		}.Build()
-		config := configv1.Authentication_builder{
-			Oauth2: configv1.OAuth2Auth_builder{
-				ClientId:     clientID,
-				ClientSecret: clientSecret,
-				TokenUrl:     proto.String(ts.URL),
-			}.Build(),
-		}.Build()
+		}).Build()
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: (&configv1.OAuth2Auth_builder{
+					ClientId:     clientID,
+					ClientSecret: clientSecret,
+					TokenUrl:     proto.String(ts.URL),
+				}).Build(),
+			},
+		}
 		auth, err := NewUpstreamAuthenticator(config)
 		require.NoError(t, err)
 		require.NotNil(t, auth)
@@ -59,15 +61,17 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 	})
 
 	t.Run("APIKey", func(t *testing.T) {
-		secret := configv1.SecretValue_builder{
+		secret := (&configv1.SecretValue_builder{
 			PlainText: proto.String("test-key"),
-		}.Build()
-		config := configv1.Authentication_builder{
-			ApiKey: configv1.APIKeyAuth_builder{
-				ParamName: proto.String("X-API-Key"),
-				Value:     secret,
-			}.Build(),
-		}.Build()
+		}).Build()
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: (&configv1.APIKeyAuth_builder{
+					ParamName: proto.String("X-API-Key"),
+					Value:     secret,
+				}).Build(),
+			},
+		}
 		auth, err := NewUpstreamAuthenticator(config)
 		require.NoError(t, err)
 		require.NotNil(t, auth)
@@ -79,14 +83,16 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 	})
 
 	t.Run("BearerToken", func(t *testing.T) {
-		secret := configv1.SecretValue_builder{
+		secret := (&configv1.SecretValue_builder{
 			PlainText: proto.String("test-token"),
-		}.Build()
-		config := configv1.Authentication_builder{
-			BearerToken: configv1.BearerTokenAuth_builder{
-				Token: secret,
-			}.Build(),
-		}.Build()
+		}).Build()
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BearerToken{
+				BearerToken: (&configv1.BearerTokenAuth_builder{
+					Token: secret,
+				}).Build(),
+			},
+		}
 		auth, err := NewUpstreamAuthenticator(config)
 		require.NoError(t, err)
 		require.NotNil(t, auth)
@@ -98,15 +104,17 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 	})
 
 	t.Run("BasicAuth", func(t *testing.T) {
-		secret := configv1.SecretValue_builder{
+		secret := (&configv1.SecretValue_builder{
 			PlainText: proto.String("pass"),
-		}.Build()
-		config := configv1.Authentication_builder{
-			BasicAuth: configv1.BasicAuth_builder{
-				Username: proto.String("user"),
-				Password: secret,
-			}.Build(),
-		}.Build()
+		}).Build()
+		config := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BasicAuth{
+				BasicAuth: (&configv1.BasicAuth_builder{
+					Username: proto.String("user"),
+					Password: secret,
+				}).Build(),
+			},
+		}
 		auth, err := NewUpstreamAuthenticator(config)
 		require.NoError(t, err)
 		require.NotNil(t, auth)
@@ -121,7 +129,7 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 	})
 
 	t.Run("NoAuthMethod", func(t *testing.T) {
-		config := configv1.Authentication_builder{}.Build()
+		config := &configv1.Authentication{}
 		auth, err := NewUpstreamAuthenticator(config)
 		assert.NoError(t, err)
 		assert.Nil(t, auth)
@@ -129,106 +137,122 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 
 	t.Run("Validation", func(t *testing.T) {
 		t.Run("APIKey_MissingHeader", func(t *testing.T) {
-			secret := configv1.SecretValue_builder{
+			secret := (&configv1.SecretValue_builder{
 				PlainText: proto.String("test-key"),
-			}.Build()
-			config := configv1.Authentication_builder{
-				ApiKey: configv1.APIKeyAuth_builder{
-					Value: secret,
-				}.Build(),
-			}.Build()
+			}).Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: (&configv1.APIKeyAuth_builder{
+						Value: secret,
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "API key authentication requires a parameter name")
 		})
 
 		t.Run("APIKey_MissingKey", func(t *testing.T) {
-			config := configv1.Authentication_builder{
-				ApiKey: configv1.APIKeyAuth_builder{
-					ParamName: proto.String("X-API-Key"),
-				}.Build(),
-			}.Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: (&configv1.APIKeyAuth_builder{
+						ParamName: proto.String("X-API-Key"),
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "API key authentication requires an API key")
 		})
 
 		t.Run("BearerToken_MissingToken", func(t *testing.T) {
-			config := configv1.Authentication_builder{
-				BearerToken: configv1.BearerTokenAuth_builder{}.Build(),
-			}.Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_BearerToken{
+					BearerToken: (&configv1.BearerTokenAuth_builder{}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "bearer token authentication requires a token")
 		})
 
 		t.Run("BasicAuth_MissingUsername", func(t *testing.T) {
-			secret := configv1.SecretValue_builder{
+			secret := (&configv1.SecretValue_builder{
 				PlainText: proto.String("pass"),
-			}.Build()
-			config := configv1.Authentication_builder{
-				BasicAuth: configv1.BasicAuth_builder{
-					Password: secret,
-				}.Build(),
-			}.Build()
+			}).Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_BasicAuth{
+					BasicAuth: (&configv1.BasicAuth_builder{
+						Password: secret,
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "basic authentication requires a username")
 		})
 
 		t.Run("BasicAuth_MissingPassword", func(t *testing.T) {
-			config := configv1.Authentication_builder{
-				BasicAuth: configv1.BasicAuth_builder{
-					Username: proto.String("user"),
-				}.Build(),
-			}.Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_BasicAuth{
+					BasicAuth: (&configv1.BasicAuth_builder{
+						Username: proto.String("user"),
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "basic authentication requires a password")
 		})
 
 		t.Run("OAuth2_MissingClientID", func(t *testing.T) {
-			clientSecret := configv1.SecretValue_builder{
+			clientSecret := (&configv1.SecretValue_builder{
 				PlainText: proto.String("secret"),
-			}.Build()
-			config := configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientSecret: clientSecret,
-					TokenUrl:     proto.String("http://token.url"),
-				}.Build(),
-			}.Build()
+			}).Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: (&configv1.OAuth2Auth_builder{
+						ClientSecret: clientSecret,
+						TokenUrl:     proto.String("http://token.url"),
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "OAuth2 authentication requires a client ID")
 		})
 
 		t.Run("OAuth2_MissingClientSecret", func(t *testing.T) {
-			clientID := configv1.SecretValue_builder{
+			clientID := (&configv1.SecretValue_builder{
 				PlainText: proto.String("id"),
-			}.Build()
-			config := configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientId: clientID,
-					TokenUrl: proto.String("http://token.url"),
-				}.Build(),
-			}.Build()
+			}).Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: (&configv1.OAuth2Auth_builder{
+						ClientId: clientID,
+						TokenUrl: proto.String("http://token.url"),
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "OAuth2 authentication requires a client secret")
 		})
 
 		t.Run("OAuth2_MissingTokenURL", func(t *testing.T) {
-			clientID := configv1.SecretValue_builder{
+			clientID := (&configv1.SecretValue_builder{
 				PlainText: proto.String("id"),
-			}.Build()
-			clientSecret := configv1.SecretValue_builder{
+			}).Build()
+			clientSecret := (&configv1.SecretValue_builder{
 				PlainText: proto.String("secret"),
-			}.Build()
-			config := configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientId:     clientID,
-					ClientSecret: clientSecret,
-				}.Build(),
-			}.Build()
+			}).Build()
+			config := &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: (&configv1.OAuth2Auth_builder{
+						ClientId:     clientID,
+						ClientSecret: clientSecret,
+					}).Build(),
+				},
+			}
 			_, err := NewUpstreamAuthenticator(config)
 			assert.ErrorContains(t, err, "OAuth2 authentication requires a token URL or an issuer URL")
 		})
 
 		t.Run("Empty_UpstreamAuthentication", func(t *testing.T) {
-			config := configv1.Authentication_builder{}.Build()
+			config := &configv1.Authentication{}
 			auth, err := NewUpstreamAuthenticator(config)
 			assert.NoError(t, err)
 			assert.Nil(t, auth)
@@ -237,9 +261,9 @@ func TestNewUpstreamAuthenticator(t *testing.T) {
 }
 
 func TestAPIKeyAuth_Authenticate(t *testing.T) {
-	secret := configv1.SecretValue_builder{
+	secret := (&configv1.SecretValue_builder{
 		PlainText: proto.String("secret-key"),
-	}.Build()
+	}).Build()
 
 	t.Run("Header (Default)", func(t *testing.T) {
 		auth := &APIKeyAuth{
@@ -280,9 +304,9 @@ func TestAPIKeyAuth_Authenticate(t *testing.T) {
 }
 
 func TestBearerTokenAuth_Authenticate(t *testing.T) {
-	secret := configv1.SecretValue_builder{
+	secret := (&configv1.SecretValue_builder{
 		PlainText: proto.String("secret-token"),
-	}.Build()
+	}).Build()
 	auth := &BearerTokenAuth{
 		Token: secret,
 	}
@@ -293,9 +317,9 @@ func TestBearerTokenAuth_Authenticate(t *testing.T) {
 }
 
 func TestBasicAuth_Authenticate(t *testing.T) {
-	secret := configv1.SecretValue_builder{
+	secret := (&configv1.SecretValue_builder{
 		PlainText: proto.String("testpassword"),
-	}.Build()
+	}).Build()
 	auth := &BasicAuth{
 		Username: "testuser",
 		Password: secret,
@@ -339,12 +363,12 @@ func TestBasicAuth_Authenticate_Error(t *testing.T) {
 }
 
 func TestOAuth2Auth_Authenticate_Errors(t *testing.T) {
-	clientID := configv1.SecretValue_builder{
+	clientID := (&configv1.SecretValue_builder{
 		PlainText: proto.String("id"),
-	}.Build()
-	clientSecret := configv1.SecretValue_builder{
+	}).Build()
+	clientSecret := (&configv1.SecretValue_builder{
 		PlainText: proto.String("secret"),
-	}.Build()
+	}).Build()
 
 	t.Run("bad_token_url", func(t *testing.T) {
 		auth := &OAuth2Auth{

@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -72,6 +72,10 @@ func (m *callPolicyMockToolManager) ListServices() []*tool.ServiceInfo {
 func TestCallPolicyMiddleware(t *testing.T) {
 	const successResult = "success"
 
+	actionPtr := func(a configv1.CallPolicy_Action) *configv1.CallPolicy_Action {
+		return &a
+	}
+
 	setup := func(policies []*configv1.CallPolicy) (*middleware.CallPolicyMiddleware, *callPolicyMockToolManager, *callPolicyMockTool) {
 		mockToolManager := &callPolicyMockToolManager{}
 		cpMiddleware := middleware.NewCallPolicyMiddleware(mockToolManager)
@@ -83,11 +87,11 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		mockTool := &callPolicyMockTool{toolProto: toolProto}
 
 		compiledPolicies, _ := tool.CompileCallPolicies(policies)
-		svcConfig := &configv1.UpstreamServiceConfig{}
-		svcConfig.SetCallPolicies(policies)
 		serviceInfo := &tool.ServiceInfo{
 			Name: "test-service",
-			Config: svcConfig,
+			Config: &configv1.UpstreamServiceConfig{
+				CallPolicies: policies,
+			},
 			CompiledPolicies: compiledPolicies,
 		}
 
@@ -119,15 +123,15 @@ func TestCallPolicyMiddleware(t *testing.T) {
 	})
 
 	t.Run("name regex deny -> blocked", func(t *testing.T) {
-		policy := configv1.CallPolicy_builder{
-			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+		policy := &configv1.CallPolicy{
+			DefaultAction: actionPtr(configv1.CallPolicy_ALLOW),
 			Rules: []*configv1.CallPolicyRule{
-				configv1.CallPolicyRule_builder{
-					Action:    configv1.CallPolicy_DENY.Enum(),
+				{
+					Action:    actionPtr(configv1.CallPolicy_DENY),
 					NameRegex: proto.String(".*test-tool"),
-				}.Build(),
+				},
 			},
-		}.Build()
+		}
 
 		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
 
@@ -147,15 +151,15 @@ func TestCallPolicyMiddleware(t *testing.T) {
 	})
 
 	t.Run("argument regex deny -> blocked", func(t *testing.T) {
-		policy := configv1.CallPolicy_builder{
-			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+		policy := &configv1.CallPolicy{
+			DefaultAction: actionPtr(configv1.CallPolicy_ALLOW),
 			Rules: []*configv1.CallPolicyRule{
-				configv1.CallPolicyRule_builder{
-					Action:        configv1.CallPolicy_DENY.Enum(),
+				{
+					Action:        actionPtr(configv1.CallPolicy_DENY),
 					ArgumentRegex: proto.String(".*dangerous.*"),
-				}.Build(),
+				},
 			},
-		}.Build()
+		}
 
 		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
 
@@ -175,15 +179,15 @@ func TestCallPolicyMiddleware(t *testing.T) {
 	})
 
 	t.Run("argument regex mismatch -> allowed", func(t *testing.T) {
-		policy := configv1.CallPolicy_builder{
-			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+		policy := &configv1.CallPolicy{
+			DefaultAction: actionPtr(configv1.CallPolicy_ALLOW),
 			Rules: []*configv1.CallPolicyRule{
-				configv1.CallPolicyRule_builder{
-					Action:        configv1.CallPolicy_DENY.Enum(),
+				{
+					Action:        actionPtr(configv1.CallPolicy_DENY),
 					ArgumentRegex: proto.String(".*dangerous.*"),
-				}.Build(),
+				},
 			},
-		}.Build()
+		}
 
 		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
 
@@ -206,9 +210,9 @@ func TestCallPolicyMiddleware(t *testing.T) {
 	})
 
 	t.Run("default deny -> blocked", func(t *testing.T) {
-		policy := configv1.CallPolicy_builder{
-			DefaultAction: configv1.CallPolicy_DENY.Enum(),
-		}.Build()
+		policy := &configv1.CallPolicy{
+			DefaultAction: actionPtr(configv1.CallPolicy_DENY),
+		}
 
 		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
 
@@ -228,15 +232,15 @@ func TestCallPolicyMiddleware(t *testing.T) {
 	})
 
 	t.Run("default deny but allowed by rule -> allowed", func(t *testing.T) {
-		policy := configv1.CallPolicy_builder{
-			DefaultAction: configv1.CallPolicy_DENY.Enum(),
+		policy := &configv1.CallPolicy{
+			DefaultAction: actionPtr(configv1.CallPolicy_DENY),
 			Rules: []*configv1.CallPolicyRule{
-				configv1.CallPolicyRule_builder{
-					Action:    configv1.CallPolicy_ALLOW.Enum(),
+				{
+					Action:    actionPtr(configv1.CallPolicy_ALLOW),
 					NameRegex: proto.String(".*test-tool"),
-				}.Build(),
+				},
 			},
-		}.Build()
+		}
 
 		cpMiddleware, _, mockTool := setup([]*configv1.CallPolicy{policy})
 

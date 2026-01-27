@@ -216,19 +216,23 @@ func TestRegister(t *testing.T) {
 	// Test failure when config is nil
 	u := NewUpstream()
 	name := "test-vector"
-	cfg := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(name),
-	}.Build()
+	cfg := &configv1.UpstreamServiceConfig{
+		Name: &name,
+	}
 	// Missing VectorService config (assuming GetVectorService returns nil if not set or we set it to nil)
 	_, _, _, err := u.Register(context.Background(), cfg, &MockToolManager{}, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "vector service config is nil")
 
 	// Test failure with unsupported type (using default factory)
-	cfgWithService := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(name),
-		VectorService: configv1.VectorUpstreamService_builder{}.Build(),
-	}.Build()
+	cfgWithService := &configv1.UpstreamServiceConfig{
+		Name: &name,
+		ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
+			VectorService: &configv1.VectorUpstreamService{
+				VectorDbType: nil, // Intentionally nil/unknown
+			},
+		},
+	}
 	_, _, _, err = u.Register(context.Background(), cfgWithService, &MockToolManager{}, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "unsupported vector database type")
@@ -248,15 +252,20 @@ func TestRegister(t *testing.T) {
 
 	// Configure valid service config
 	validName := "valid-vector-service"
-	validCfg := configv1.UpstreamServiceConfig_builder{
-		Name: proto.String(validName),
-		VectorService: configv1.VectorUpstreamService_builder{
-			Pinecone: configv1.PineconeVectorDB_builder{
-				ApiKey:    proto.String("key"),
-				IndexName: proto.String("index"),
-			}.Build(),
-		}.Build(),
-	}.Build()
+	validCfg := &configv1.UpstreamServiceConfig{
+		Name: &validName,
+		ServiceConfig: &configv1.UpstreamServiceConfig_VectorService{
+			VectorService: &configv1.VectorUpstreamService{
+				VectorDbType: &configv1.VectorUpstreamService_Pinecone{
+					Pinecone: &configv1.PineconeVectorDB{
+						ApiKey:      proto.String("key"),
+						Environment: proto.String("env"),
+						IndexName:   proto.String("index"),
+					},
+				},
+			},
+		},
+	}
 
 	serviceID, tools, _, err := uRefactored.Register(context.Background(), validCfg, mockToolManager, nil, nil, false)
 	assert.NoError(t, err)

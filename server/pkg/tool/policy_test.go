@@ -9,7 +9,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func actionPtr(a configv1.ExportPolicy_Action) *configv1.ExportPolicy_Action {
@@ -33,91 +32,91 @@ func TestShouldExport(t *testing.T) {
 		{
 			name:     "Default Action Unspecified",
 			toolName: "any",
-			policy:   configv1.ExportPolicy_builder{}.Build(),
+			policy:   &configv1.ExportPolicy{},
 			want:     true,
 		},
 		{
 			name:     "Default Action Export",
 			toolName: "any",
-			policy: configv1.ExportPolicy_builder{
-				DefaultAction: configv1.ExportPolicy_EXPORT.Enum(),
-			}.Build(),
+			policy: &configv1.ExportPolicy{
+				DefaultAction: actionPtr(configv1.ExportPolicy_EXPORT),
+			},
 			want: true,
 		},
 		{
 			name:     "Default Action Unexport",
 			toolName: "any",
-			policy: configv1.ExportPolicy_builder{
-				DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
-			}.Build(),
+			policy: &configv1.ExportPolicy{
+				DefaultAction: actionPtr(configv1.ExportPolicy_UNEXPORT),
+			},
 			want: false,
 		},
 		{
 			name:     "Rule Match Export",
 			toolName: "allowed_tool",
-			policy: configv1.ExportPolicy_builder{
-				DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
+			policy: &configv1.ExportPolicy{
+				DefaultAction: actionPtr(configv1.ExportPolicy_UNEXPORT),
 				Rules: []*configv1.ExportRule{
-					configv1.ExportRule_builder{
-						NameRegex: proto.String("^allowed_.*"),
-						Action:    configv1.ExportPolicy_EXPORT.Enum(),
-					}.Build(),
+					{
+						NameRegex: strPtr("^allowed_.*"),
+						Action:    actionPtr(configv1.ExportPolicy_EXPORT),
+					},
 				},
-			}.Build(),
+			},
 			want: true,
 		},
 		{
 			name:     "Rule Match Unexport",
 			toolName: "hidden_tool",
-			policy: configv1.ExportPolicy_builder{
-				DefaultAction: configv1.ExportPolicy_EXPORT.Enum(),
+			policy: &configv1.ExportPolicy{
+				DefaultAction: actionPtr(configv1.ExportPolicy_EXPORT),
 				Rules: []*configv1.ExportRule{
-					configv1.ExportRule_builder{
-						NameRegex: proto.String("^hidden_.*"),
-						Action:    configv1.ExportPolicy_UNEXPORT.Enum(),
-					}.Build(),
+					{
+						NameRegex: strPtr("^hidden_.*"),
+						Action:    actionPtr(configv1.ExportPolicy_UNEXPORT),
+					},
 				},
-			}.Build(),
+			},
 			want: false,
 		},
 		{
 			name:     "Rule No Match Fallthrough",
 			toolName: "other_tool",
-			policy: configv1.ExportPolicy_builder{
-				DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
+			policy: &configv1.ExportPolicy{
+				DefaultAction: actionPtr(configv1.ExportPolicy_UNEXPORT),
 				Rules: []*configv1.ExportRule{
-					configv1.ExportRule_builder{
-						NameRegex: proto.String("^allowed_.*"),
-						Action:    configv1.ExportPolicy_EXPORT.Enum(),
-					}.Build(),
+					{
+						NameRegex: strPtr("^allowed_.*"),
+						Action:    actionPtr(configv1.ExportPolicy_EXPORT),
+					},
 				},
-			}.Build(),
+			},
 			want: false,
 		},
 		{
 			name:     "Invalid Regex",
 			toolName: "any",
-			policy: configv1.ExportPolicy_builder{
+			policy: &configv1.ExportPolicy{
 				Rules: []*configv1.ExportRule{
-					configv1.ExportRule_builder{
-						NameRegex: proto.String("["), // Invalid regex
-						Action:    configv1.ExportPolicy_UNEXPORT.Enum(),
-					}.Build(),
+					{
+						NameRegex: strPtr("["), // Invalid regex
+						Action:    actionPtr(configv1.ExportPolicy_UNEXPORT),
+					},
 				},
-			}.Build(),
+			},
 			want: true, // Should continue and use default (true)
 		},
 		{
 			name:     "Empty Regex",
 			toolName: "any",
-			policy: configv1.ExportPolicy_builder{
+			policy: &configv1.ExportPolicy{
 				Rules: []*configv1.ExportRule{
-					configv1.ExportRule_builder{
-						NameRegex: proto.String(""),
-						Action:    configv1.ExportPolicy_UNEXPORT.Enum(),
-					}.Build(),
+					{
+						NameRegex: strPtr(""),
+						Action:    actionPtr(configv1.ExportPolicy_UNEXPORT),
+					},
 				},
-			}.Build(),
+			},
 			want: true, // Should skipped empty regex
 		},
 	}
@@ -155,7 +154,7 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "Default Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_DENY.Enum()}.Build(),
+				{DefaultAction: callActionPtr(configv1.CallPolicy_DENY)},
 			},
 			toolName: "any",
 			want:     false,
@@ -163,7 +162,7 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "Default Allow",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_ALLOW.Enum()}.Build(),
+				{DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW)},
 			},
 			toolName: "any",
 			want:     true,
@@ -171,15 +170,15 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "Name Regex Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
 					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							NameRegex: proto.String("^dangerous_.*"),
-							Action:    configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
+						{
+							NameRegex: strPtr("^dangerous_.*"),
+							Action:    callActionPtr(configv1.CallPolicy_DENY),
+						},
 					},
-				}.Build(),
+				},
 			},
 			toolName: "dangerous_tool",
 			want:     false,
@@ -187,15 +186,15 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "Argument Regex Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
 					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							ArgumentRegex: proto.String(`.*"secret".*`),
-							Action:        configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
+						{
+							ArgumentRegex: strPtr(`.*"secret".*`),
+							Action:        callActionPtr(configv1.CallPolicy_DENY),
+						},
 					},
-				}.Build(),
+				},
 			},
 			toolName:  "any",
 			arguments: json.RawMessage(`{"key": "secret"}`),
@@ -204,15 +203,15 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "Argument Regex Static Check (Nil Args)",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
 					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							ArgumentRegex: proto.String(`.*`),
-							Action:        configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
+						{
+							ArgumentRegex: strPtr(`.*`),
+							Action:        callActionPtr(configv1.CallPolicy_DENY),
+						},
 					},
-				}.Build(),
+				},
 			},
 			toolName:  "any",
 			arguments: nil,
@@ -221,15 +220,15 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "CallID Regex Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
 					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							CallIdRegex: proto.String("call_123"),
-							Action:      configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
+						{
+							CallIdRegex: strPtr("call_123"),
+							Action:      callActionPtr(configv1.CallPolicy_DENY),
+						},
 					},
-				}.Build(),
+				},
 			},
 			toolName: "any",
 			callID:   "call_123",
@@ -238,8 +237,8 @@ func TestEvaluateCallPolicy(t *testing.T) {
 		{
 			name: "Multiple Policies (One blocks)",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_ALLOW.Enum()}.Build(),
-				configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_DENY.Enum()}.Build(),
+				{DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW)},
+				{DefaultAction: callActionPtr(configv1.CallPolicy_DENY)},
 			},
 			toolName: "any",
 			want:     false,
@@ -274,7 +273,7 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 		{
 			name: "Default Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_DENY.Enum()}.Build(),
+				{DefaultAction: callActionPtr(configv1.CallPolicy_DENY)},
 			},
 			toolName: "any",
 			want:     false,
@@ -282,7 +281,7 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 		{
 			name: "Default Allow",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_ALLOW.Enum()}.Build(),
+				{DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW)},
 			},
 			toolName: "any",
 			want:     true,
@@ -290,15 +289,15 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 		{
 			name: "Name Regex Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
 					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							NameRegex: proto.String("^dangerous_.*"),
-							Action:    configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
+						{
+							NameRegex: strPtr("^dangerous_.*"),
+							Action:    callActionPtr(configv1.CallPolicy_DENY),
+						},
 					},
-				}.Build(),
+				},
 			},
 			toolName: "dangerous_tool",
 			want:     false,
@@ -306,15 +305,15 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 		{
 			name: "Argument Regex Deny",
 			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+				{
+					DefaultAction: callActionPtr(configv1.CallPolicy_ALLOW),
 					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							ArgumentRegex: proto.String(".*secret.*"),
-							Action:        configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
+						{
+							ArgumentRegex: strPtr(".*secret.*"),
+							Action:        callActionPtr(configv1.CallPolicy_DENY),
+						},
 					},
-				}.Build(),
+				},
 			},
 			toolName:  "any",
 			arguments: json.RawMessage("{\"key\": \"secret\"}"),
@@ -336,11 +335,11 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 func TestCompileCallPolicies_InvalidRegex(t *testing.T) {
 	t.Parallel()
 	policies := []*configv1.CallPolicy{
-		configv1.CallPolicy_builder{
+		{
 			Rules: []*configv1.CallPolicyRule{
-				configv1.CallPolicyRule_builder{NameRegex: proto.String("[")}.Build(),
+				{NameRegex: strPtr("[")},
 			},
-		}.Build(),
+		},
 	}
 	_, err := CompileCallPolicies(policies)
 	assert.Error(t, err)

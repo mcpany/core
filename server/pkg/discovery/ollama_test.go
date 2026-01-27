@@ -95,7 +95,7 @@ func TestOllamaProvider_Discover(t *testing.T) {
 					assert.Equal(t, "Local Ollama", svc.GetName())
 					assert.Equal(t, "v1", svc.GetVersion())
 					assert.Equal(t, server.URL+"/v1", svc.GetHttpService().GetAddress())
-					assert.Contains(t, svc.GetTags(), "local-llm")
+					assert.Contains(t, svc.Tags, "local-llm")
 				}
 			}
 		})

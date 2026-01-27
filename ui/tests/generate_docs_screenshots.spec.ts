@@ -207,87 +207,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Increased wait time
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_config.png'), fullPage: true });
-
-    // Diff Feature Screenshot
-    // Navigate to the Service Detail page which uses RegisterServiceDialog for editing
-    await page.goto('/service/postgres-primary');
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
-
-    // Click Edit Config
-    const editBtn = page.getByRole('button', { name: 'Edit Config' });
-    await expect(editBtn).toBeVisible({ timeout: 10000 });
-    await editBtn.click();
-    await expect(page.getByText('Edit Service')).toBeVisible({ timeout: 10000 });
-    // Verify we are editing the HTTP service
-    // Note: 'HTTP' might be in a select value or text.
-    await page.getByLabel('Address / URL').waitFor({ state: 'visible', timeout: 10000 });
-
-    // Make a change to trigger diff
-    // We need to change a field. Let's change the address.
-    // Assuming 'http' type service from mock.
-    // The dialog should populate with 'grpc://postgres:5432' as per mock?
-    // Mock says type: 'remote' (which might be 'mcp' in frontend?) or 'grpc'.
-    // Let's verify mock content in beforeEach.
-    // Mock: type: 'remote', endpoint: ...
-    // RegisterServiceDialog handles 'mcp' via 'other'? Or maybe 'grpc'?
-    // Let's force a simpler service mock for this test or assume 'http' fallback?
-    // Actually, let's just create a new service in the dialog to be safe, OR use a known editable mocked service.
-    // The 'postgres-primary' mock has type 'remote'.
-    // RegisterServiceDialog might treat 'remote' as 'other'?
-
-    // Let's modify the mock for postgres-primary to be HTTP for this test if needed, OR just type in a field.
-    // If we type in 'address', it should work.
-    // Check if 'Address / URL' input is visible.
-    // trace-detail.tsx uses RegisterServiceDialog.
-
-    // Let's try to type into 'Address / URL' input.
-    // And verify 'Review Changes' button appears or we click it.
-
-    // Changing the mock temporarily for this test might be complex.
-    // Let's try to edit 'postgres-primary'.
-
-    // Wait for dialog to be stable
-
-    // Since mock type is 'remote', constructConfig might treat it as 'other' or logic might fail?
-    // Let's check RegisterServiceDialog logic again?
-    // It maps types.
-
-    // Simplification: trigger 'Add Service' (already tested above), fill it, then finding 'Review Changes' is hard because it's not editing.
-    // But we can simulate "Edit" by navigating to a page that opens it.
-
-    // Let's UPDATE the mock for this specific test block to return type 'http' so editing is easy.
-    await page.route('**/api/v1/services/postgres-primary', async route => {
-        await route.fulfill({
-            json: {
-                service: {
-                    id: 'postgres-primary',
-                    name: 'Primary DB',
-                    type: 'http',
-                    httpService: { address: 'https://api.example.com' },
-                    status: 'healthy',
-                }
-            }
-        });
-    });
-
-    await page.reload(); // Reload to get new mock
-    await page.waitForTimeout(1000);
-    await page.getByRole('button', { name: 'Edit Config' }).click();
-    await page.waitForTimeout(500);
-
-    // Change address
-    await page.getByLabel('Address / URL').fill('https://api.example.org');
-
-    // Click Review Changes
-    await page.getByRole('button', { name: 'Review Changes' }).click();
-    await page.waitForTimeout(1000);
-
-    await expect(page.getByText('Review Changes')).toBeVisible();
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diff-feature.png') });
-
-    // Close dialog
-    await page.keyboard.press('Escape');
   });
 
   test('Playground Screenshots', async ({ page }) => {
@@ -603,26 +522,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials_list.png'), fullPage: true });
-
-    // Verification Screenshot (Test Connection)
-    await page.getByRole('button', { name: 'New Credential' }).click();
-    await expect(page.getByText('Create Credential', { exact: true })).toBeVisible({ timeout: 10000 });
-    await page.waitForTimeout(500);
-
-    await page.getByLabel('Name').fill('Test Credential');
-    // Test Connection section
-    await page.getByPlaceholder('https://api.example.com/test').fill('https://api.example.com/status');
-    const testBtn = page.getByRole('button', { name: 'Test', exact: true });
-
-    // Mock testAuth response
-    await page.route('**/api/v1/auth/test', async route => {
-         await route.fulfill({ status: 200, json: { status: 200, status_text: 'OK' } });
-    });
-
-    await testBtn.click();
-    await expect(page.getByText('Test passed: 200 OK')).toBeVisible();
-
-    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'verification.png') });
   });
 
   test('Stats Screenshots', async ({ page }) => {
@@ -743,7 +642,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.getByRole('button', { name: 'Start Diagnostics' }).click();
 
       // Wait for run to finish (look for "Rerun Diagnostics")
-      await page.getByText('Rerun Diagnostics').waitFor({ timeout: 10000 });
+      await page.getByText('Rerun Diagnostics', { timeout: 10000 }).waitFor();
 
       // Take screenshot of the modal
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });

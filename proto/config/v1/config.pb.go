@@ -7,13 +7,14 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/config.proto
 
+//go:build !protoopaque
+
 package v1
 
 import (
 	bus "github.com/mcpany/core/proto/bus"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -177,13 +178,17 @@ func (x AuditConfig_StorageType) Number() protoreflect.EnumNumber {
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
 type McpAnyServerConfig struct {
-	state                       protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_GlobalSettings   *GlobalSettings           `protobuf:"bytes,1,opt,name=global_settings"`
-	xxx_hidden_UpstreamServices *[]*UpstreamServiceConfig `protobuf:"bytes,2,rep,name=upstream_services"`
-	xxx_hidden_Collections      *[]*Collection            `protobuf:"bytes,3,rep,name=collections"`
-	xxx_hidden_Users            *[]*User                  `protobuf:"bytes,4,rep,name=users"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Server-wide operational parameters.
+	GlobalSettings *GlobalSettings `protobuf:"bytes,1,opt,name=global_settings" json:"global_settings,omitempty"`
+	// A list of all configured upstream services that MCP Any can proxy to.
+	UpstreamServices []*UpstreamServiceConfig `protobuf:"bytes,2,rep,name=upstream_services" json:"upstream_services,omitempty"`
+	// A list of upstream service collections to load from.
+	Collections []*Collection `protobuf:"bytes,3,rep,name=collections" json:"collections,omitempty"`
+	// A list of users authorized to access the server.
+	Users         []*User `protobuf:"bytes,4,rep,name=users" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *McpAnyServerConfig) Reset() {
@@ -213,63 +218,57 @@ func (x *McpAnyServerConfig) ProtoReflect() protoreflect.Message {
 
 func (x *McpAnyServerConfig) GetGlobalSettings() *GlobalSettings {
 	if x != nil {
-		return x.xxx_hidden_GlobalSettings
+		return x.GlobalSettings
 	}
 	return nil
 }
 
 func (x *McpAnyServerConfig) GetUpstreamServices() []*UpstreamServiceConfig {
 	if x != nil {
-		if x.xxx_hidden_UpstreamServices != nil {
-			return *x.xxx_hidden_UpstreamServices
-		}
+		return x.UpstreamServices
 	}
 	return nil
 }
 
 func (x *McpAnyServerConfig) GetCollections() []*Collection {
 	if x != nil {
-		if x.xxx_hidden_Collections != nil {
-			return *x.xxx_hidden_Collections
-		}
+		return x.Collections
 	}
 	return nil
 }
 
 func (x *McpAnyServerConfig) GetUsers() []*User {
 	if x != nil {
-		if x.xxx_hidden_Users != nil {
-			return *x.xxx_hidden_Users
-		}
+		return x.Users
 	}
 	return nil
 }
 
 func (x *McpAnyServerConfig) SetGlobalSettings(v *GlobalSettings) {
-	x.xxx_hidden_GlobalSettings = v
+	x.GlobalSettings = v
 }
 
 func (x *McpAnyServerConfig) SetUpstreamServices(v []*UpstreamServiceConfig) {
-	x.xxx_hidden_UpstreamServices = &v
+	x.UpstreamServices = v
 }
 
 func (x *McpAnyServerConfig) SetCollections(v []*Collection) {
-	x.xxx_hidden_Collections = &v
+	x.Collections = v
 }
 
 func (x *McpAnyServerConfig) SetUsers(v []*User) {
-	x.xxx_hidden_Users = &v
+	x.Users = v
 }
 
 func (x *McpAnyServerConfig) HasGlobalSettings() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_GlobalSettings != nil
+	return x.GlobalSettings != nil
 }
 
 func (x *McpAnyServerConfig) ClearGlobalSettings() {
-	x.xxx_hidden_GlobalSettings = nil
+	x.GlobalSettings = nil
 }
 
 type McpAnyServerConfig_builder struct {
@@ -289,27 +288,32 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	m0 := &McpAnyServerConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_GlobalSettings = b.GlobalSettings
-	x.xxx_hidden_UpstreamServices = &b.UpstreamServices
-	x.xxx_hidden_Collections = &b.Collections
-	x.xxx_hidden_Users = &b.Users
+	x.GlobalSettings = b.GlobalSettings
+	x.UpstreamServices = b.UpstreamServices
+	x.Collections = b.Collections
+	x.Users = b.Users
 	return m0
 }
 
 // Secret defines a secret value.
 type Secret struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,2,opt,name=id"`
-	xxx_hidden_Key         *string                `protobuf:"bytes,3,opt,name=key"`
-	xxx_hidden_Value       *string                `protobuf:"bytes,4,opt,name=value"`
-	xxx_hidden_Provider    *string                `protobuf:"bytes,5,opt,name=provider"`
-	xxx_hidden_LastUsed    *string                `protobuf:"bytes,6,opt,name=last_used,json=lastUsed"`
-	xxx_hidden_CreatedAt   *string                `protobuf:"bytes,7,opt,name=created_at,json=createdAt"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// name is the human-readable name of the secret.
+	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// id is the unique identifier for the secret.
+	Id *string `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"`
+	// key is the key used to reference the secret (e.g. env var name).
+	Key *string `protobuf:"bytes,3,opt,name=key" json:"key,omitempty"`
+	// value is the secret value (encrypted or raw depending on context).
+	Value *string `protobuf:"bytes,4,opt,name=value" json:"value,omitempty"`
+	// provider is the source of the secret (e.g. "openai", "aws").
+	Provider *string `protobuf:"bytes,5,opt,name=provider" json:"provider,omitempty"`
+	// last_used is the timestamp when the secret was last used using RFC3339 format.
+	LastUsed *string `protobuf:"bytes,6,opt,name=last_used,json=lastUsed" json:"last_used,omitempty"`
+	// created_at is the timestamp when the secret was created using RFC3339 format.
+	CreatedAt     *string `protobuf:"bytes,7,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Secret) Reset() {
@@ -338,192 +342,157 @@ func (x *Secret) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Secret) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
 func (x *Secret) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
+	if x != nil && x.Id != nil {
+		return *x.Id
 	}
 	return ""
 }
 
 func (x *Secret) GetKey() string {
-	if x != nil {
-		if x.xxx_hidden_Key != nil {
-			return *x.xxx_hidden_Key
-		}
-		return ""
+	if x != nil && x.Key != nil {
+		return *x.Key
 	}
 	return ""
 }
 
 func (x *Secret) GetValue() string {
-	if x != nil {
-		if x.xxx_hidden_Value != nil {
-			return *x.xxx_hidden_Value
-		}
-		return ""
+	if x != nil && x.Value != nil {
+		return *x.Value
 	}
 	return ""
 }
 
 func (x *Secret) GetProvider() string {
-	if x != nil {
-		if x.xxx_hidden_Provider != nil {
-			return *x.xxx_hidden_Provider
-		}
-		return ""
+	if x != nil && x.Provider != nil {
+		return *x.Provider
 	}
 	return ""
 }
 
 func (x *Secret) GetLastUsed() string {
-	if x != nil {
-		if x.xxx_hidden_LastUsed != nil {
-			return *x.xxx_hidden_LastUsed
-		}
-		return ""
+	if x != nil && x.LastUsed != nil {
+		return *x.LastUsed
 	}
 	return ""
 }
 
 func (x *Secret) GetCreatedAt() string {
-	if x != nil {
-		if x.xxx_hidden_CreatedAt != nil {
-			return *x.xxx_hidden_CreatedAt
-		}
-		return ""
+	if x != nil && x.CreatedAt != nil {
+		return *x.CreatedAt
 	}
 	return ""
 }
 
 func (x *Secret) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	x.Name = &v
 }
 
 func (x *Secret) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	x.Id = &v
 }
 
 func (x *Secret) SetKey(v string) {
-	x.xxx_hidden_Key = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+	x.Key = &v
 }
 
 func (x *Secret) SetValue(v string) {
-	x.xxx_hidden_Value = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
+	x.Value = &v
 }
 
 func (x *Secret) SetProvider(v string) {
-	x.xxx_hidden_Provider = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
+	x.Provider = &v
 }
 
 func (x *Secret) SetLastUsed(v string) {
-	x.xxx_hidden_LastUsed = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
+	x.LastUsed = &v
 }
 
 func (x *Secret) SetCreatedAt(v string) {
-	x.xxx_hidden_CreatedAt = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
+	x.CreatedAt = &v
 }
 
 func (x *Secret) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Name != nil
 }
 
 func (x *Secret) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Id != nil
 }
 
 func (x *Secret) HasKey() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Key != nil
 }
 
 func (x *Secret) HasValue() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.Value != nil
 }
 
 func (x *Secret) HasProvider() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.Provider != nil
 }
 
 func (x *Secret) HasLastUsed() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.LastUsed != nil
 }
 
 func (x *Secret) HasCreatedAt() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+	return x.CreatedAt != nil
 }
 
 func (x *Secret) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *Secret) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Id = nil
+	x.Id = nil
 }
 
 func (x *Secret) ClearKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Key = nil
+	x.Key = nil
 }
 
 func (x *Secret) ClearValue() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Value = nil
+	x.Value = nil
 }
 
 func (x *Secret) ClearProvider() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Provider = nil
+	x.Provider = nil
 }
 
 func (x *Secret) ClearLastUsed() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_LastUsed = nil
+	x.LastUsed = nil
 }
 
 func (x *Secret) ClearCreatedAt() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
-	x.xxx_hidden_CreatedAt = nil
+	x.CreatedAt = nil
 }
 
 type Secret_builder struct {
@@ -549,42 +518,21 @@ func (b0 Secret_builder) Build() *Secret {
 	m0 := &Secret{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
-		x.xxx_hidden_Id = b.Id
-	}
-	if b.Key != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
-		x.xxx_hidden_Key = b.Key
-	}
-	if b.Value != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
-		x.xxx_hidden_Value = b.Value
-	}
-	if b.Provider != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
-		x.xxx_hidden_Provider = b.Provider
-	}
-	if b.LastUsed != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
-		x.xxx_hidden_LastUsed = b.LastUsed
-	}
-	if b.CreatedAt != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 7)
-		x.xxx_hidden_CreatedAt = b.CreatedAt
-	}
+	x.Name = b.Name
+	x.Id = b.Id
+	x.Key = b.Key
+	x.Value = b.Value
+	x.Provider = b.Provider
+	x.LastUsed = b.LastUsed
+	x.CreatedAt = b.CreatedAt
 	return m0
 }
 
 type SecretList struct {
-	state              protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Secrets *[]*Secret             `protobuf:"bytes,1,rep,name=secrets"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Secrets       []*Secret              `protobuf:"bytes,1,rep,name=secrets" json:"secrets,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SecretList) Reset() {
@@ -614,15 +562,13 @@ func (x *SecretList) ProtoReflect() protoreflect.Message {
 
 func (x *SecretList) GetSecrets() []*Secret {
 	if x != nil {
-		if x.xxx_hidden_Secrets != nil {
-			return *x.xxx_hidden_Secrets
-		}
+		return x.Secrets
 	}
 	return nil
 }
 
 func (x *SecretList) SetSecrets(v []*Secret) {
-	x.xxx_hidden_Secrets = &v
+	x.Secrets = v
 }
 
 type SecretList_builder struct {
@@ -635,43 +581,69 @@ func (b0 SecretList_builder) Build() *SecretList {
 	m0 := &SecretList{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Secrets = &b.Secrets
+	x.Secrets = b.Secrets
 	return m0
 }
 
 type GlobalSettings struct {
-	state                         protoimpl.MessageState   `protogen:"opaque.v1"`
-	xxx_hidden_McpListenAddress   *string                  `protobuf:"bytes,1,opt,name=mcp_listen_address"`
-	xxx_hidden_LogLevel           GlobalSettings_LogLevel  `protobuf:"varint,2,opt,name=log_level,enum=mcpany.config.v1.GlobalSettings_LogLevel"`
-	xxx_hidden_ApiKey             *string                  `protobuf:"bytes,3,opt,name=api_key"`
-	xxx_hidden_LogFormat          GlobalSettings_LogFormat `protobuf:"varint,4,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat"`
-	xxx_hidden_DbPath             *string                  `protobuf:"bytes,5,opt,name=db_path"`
-	xxx_hidden_DbDsn              *string                  `protobuf:"bytes,6,opt,name=db_dsn"`
-	xxx_hidden_DbDriver           *string                  `protobuf:"bytes,7,opt,name=db_driver"`
-	xxx_hidden_GithubApiUrl       *string                  `protobuf:"bytes,8,opt,name=github_api_url"`
-	xxx_hidden_UseSudoForDocker   bool                     `protobuf:"varint,9,opt,name=use_sudo_for_docker"`
-	xxx_hidden_MessageBus         *bus.MessageBus          `protobuf:"bytes,10,opt,name=message_bus"`
-	xxx_hidden_Audit              *AuditConfig             `protobuf:"bytes,11,opt,name=audit"`
-	xxx_hidden_Dlp                *DLPConfig               `protobuf:"bytes,12,opt,name=dlp"`
-	xxx_hidden_GcSettings         *GCSettings              `protobuf:"bytes,13,opt,name=gc_settings"`
-	xxx_hidden_Oidc               *OIDCConfig              `protobuf:"bytes,14,opt,name=oidc"`
-	xxx_hidden_RateLimit          *RateLimitConfig         `protobuf:"bytes,15,opt,name=rate_limit"`
-	xxx_hidden_Telemetry          *TelemetryConfig         `protobuf:"bytes,16,opt,name=telemetry"`
-	xxx_hidden_Profiles           []string                 `protobuf:"bytes,17,rep,name=profiles"`
-	xxx_hidden_AllowedIps         []string                 `protobuf:"bytes,18,rep,name=allowed_ips"`
-	xxx_hidden_ProfileDefinitions *[]*ProfileDefinition    `protobuf:"bytes,19,rep,name=profile_definitions"`
-	xxx_hidden_Middlewares        *[]*Middleware           `protobuf:"bytes,20,rep,name=middlewares"`
-	xxx_hidden_AllowedFilePaths   []string                 `protobuf:"bytes,21,rep,name=allowed_file_paths"`
-	xxx_hidden_AllowedOrigins     []string                 `protobuf:"bytes,22,rep,name=allowed_origins"`
-	xxx_hidden_ContextOptimizer   *ContextOptimizerConfig  `protobuf:"bytes,23,opt,name=context_optimizer"`
-	xxx_hidden_Debugger           *DebuggerConfig          `protobuf:"bytes,24,opt,name=debugger"`
-	xxx_hidden_ReadOnly           bool                     `protobuf:"varint,25,opt,name=read_only"`
-	xxx_hidden_AutoDiscoverLocal  bool                     `protobuf:"varint,26,opt,name=auto_discover_local"`
-	xxx_hidden_Alerts             *AlertConfig             `protobuf:"bytes,27,opt,name=alerts"`
-	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
-	XXX_presence                  [1]uint32
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The address the MCP server listens on.
+	McpListenAddress *string `protobuf:"bytes,1,opt,name=mcp_listen_address" json:"mcp_listen_address,omitempty"`
+	// The log level for the server.
+	LogLevel *GlobalSettings_LogLevel `protobuf:"varint,2,opt,name=log_level,enum=mcpany.config.v1.GlobalSettings_LogLevel" json:"log_level,omitempty"`
+	// The API key used for authentication.
+	ApiKey *string `protobuf:"bytes,3,opt,name=api_key" json:"api_key,omitempty"`
+	// The log format for the server.
+	LogFormat *GlobalSettings_LogFormat `protobuf:"varint,4,opt,name=log_format,enum=mcpany.config.v1.GlobalSettings_LogFormat" json:"log_format,omitempty"`
+	// The path to the database file.
+	DbPath *string `protobuf:"bytes,5,opt,name=db_path" json:"db_path,omitempty"`
+	// The database connection string (DSN).
+	DbDsn *string `protobuf:"bytes,6,opt,name=db_dsn" json:"db_dsn,omitempty"`
+	// The database driver (sqlite, postgres).
+	DbDriver *string `protobuf:"bytes,7,opt,name=db_driver" json:"db_driver,omitempty"`
+	// GitHub API URL for self-updates (optional).
+	GithubApiUrl *string `protobuf:"bytes,8,opt,name=github_api_url" json:"github_api_url,omitempty"`
+	// Whether to use sudo for Docker commands.
+	UseSudoForDocker *bool `protobuf:"varint,9,opt,name=use_sudo_for_docker" json:"use_sudo_for_docker,omitempty"`
+	// The message bus configuration.
+	MessageBus *bus.MessageBus `protobuf:"bytes,10,opt,name=message_bus" json:"message_bus,omitempty"`
+	// Audit logging configuration.
+	Audit *AuditConfig `protobuf:"bytes,11,opt,name=audit" json:"audit,omitempty"`
+	// DLP configuration.
+	Dlp *DLPConfig `protobuf:"bytes,12,opt,name=dlp" json:"dlp,omitempty"`
+	// Garbage Collection configuration.
+	GcSettings *GCSettings `protobuf:"bytes,13,opt,name=gc_settings" json:"gc_settings,omitempty"`
+	// OIDC Configuration.
+	Oidc *OIDCConfig `protobuf:"bytes,14,opt,name=oidc" json:"oidc,omitempty"`
+	// Rate limiting configuration for the server.
+	RateLimit *RateLimitConfig `protobuf:"bytes,15,opt,name=rate_limit" json:"rate_limit,omitempty"`
+	// Telemetry configuration.
+	Telemetry *TelemetryConfig `protobuf:"bytes,16,opt,name=telemetry" json:"telemetry,omitempty"`
+	// The profiles to enable.
+	Profiles []string `protobuf:"bytes,17,rep,name=profiles" json:"profiles,omitempty"`
+	// The allowed IPs to access the server.
+	AllowedIps []string `protobuf:"bytes,18,rep,name=allowed_ips" json:"allowed_ips,omitempty"`
+	// The definitions of profiles.
+	ProfileDefinitions []*ProfileDefinition `protobuf:"bytes,19,rep,name=profile_definitions" json:"profile_definitions,omitempty"`
+	// The list of middlewares to enable and their configuration.
+	Middlewares []*Middleware `protobuf:"bytes,20,rep,name=middlewares" json:"middlewares,omitempty"`
+	// Allowed file paths for validation.
+	AllowedFilePaths []string `protobuf:"bytes,21,rep,name=allowed_file_paths" json:"allowed_file_paths,omitempty"`
+	// Allowed origins for CORS.
+	AllowedOrigins []string `protobuf:"bytes,22,rep,name=allowed_origins" json:"allowed_origins,omitempty"`
+	// Context Optimizer configuration.
+	ContextOptimizer *ContextOptimizerConfig `protobuf:"bytes,23,opt,name=context_optimizer" json:"context_optimizer,omitempty"`
+	// Debugger configuration.
+	Debugger *DebuggerConfig `protobuf:"bytes,24,opt,name=debugger" json:"debugger,omitempty"`
+	// If true, the configuration is read-only (e.g., loaded from a file).
+	// @inject_tag: yaml:"-"
+	ReadOnly *bool `protobuf:"varint,25,opt,name=read_only" json:"read_only,omitempty"`
+	// Whether to auto-discover local services (e.g. Ollama).
+	AutoDiscoverLocal *bool `protobuf:"varint,26,opt,name=auto_discover_local" json:"auto_discover_local,omitempty"`
+	// Alert configuration.
+	Alerts        *AlertConfig `protobuf:"bytes,27,opt,name=alerts" json:"alerts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GlobalSettings) Reset() {
@@ -700,579 +672,531 @@ func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GlobalSettings) GetMcpListenAddress() string {
-	if x != nil {
-		if x.xxx_hidden_McpListenAddress != nil {
-			return *x.xxx_hidden_McpListenAddress
-		}
-		return ""
+	if x != nil && x.McpListenAddress != nil {
+		return *x.McpListenAddress
 	}
 	return ""
 }
 
 func (x *GlobalSettings) GetLogLevel() GlobalSettings_LogLevel {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
-			return x.xxx_hidden_LogLevel
-		}
+	if x != nil && x.LogLevel != nil {
+		return *x.LogLevel
 	}
 	return GlobalSettings_LOG_LEVEL_UNSPECIFIED
 }
 
 func (x *GlobalSettings) GetApiKey() string {
-	if x != nil {
-		if x.xxx_hidden_ApiKey != nil {
-			return *x.xxx_hidden_ApiKey
-		}
-		return ""
+	if x != nil && x.ApiKey != nil {
+		return *x.ApiKey
 	}
 	return ""
 }
 
 func (x *GlobalSettings) GetLogFormat() GlobalSettings_LogFormat {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 3) {
-			return x.xxx_hidden_LogFormat
-		}
+	if x != nil && x.LogFormat != nil {
+		return *x.LogFormat
 	}
 	return GlobalSettings_LOG_FORMAT_UNSPECIFIED
 }
 
 func (x *GlobalSettings) GetDbPath() string {
-	if x != nil {
-		if x.xxx_hidden_DbPath != nil {
-			return *x.xxx_hidden_DbPath
-		}
-		return ""
+	if x != nil && x.DbPath != nil {
+		return *x.DbPath
 	}
 	return ""
 }
 
 func (x *GlobalSettings) GetDbDsn() string {
-	if x != nil {
-		if x.xxx_hidden_DbDsn != nil {
-			return *x.xxx_hidden_DbDsn
-		}
-		return ""
+	if x != nil && x.DbDsn != nil {
+		return *x.DbDsn
 	}
 	return ""
 }
 
 func (x *GlobalSettings) GetDbDriver() string {
-	if x != nil {
-		if x.xxx_hidden_DbDriver != nil {
-			return *x.xxx_hidden_DbDriver
-		}
-		return ""
+	if x != nil && x.DbDriver != nil {
+		return *x.DbDriver
 	}
 	return ""
 }
 
 func (x *GlobalSettings) GetGithubApiUrl() string {
-	if x != nil {
-		if x.xxx_hidden_GithubApiUrl != nil {
-			return *x.xxx_hidden_GithubApiUrl
-		}
-		return ""
+	if x != nil && x.GithubApiUrl != nil {
+		return *x.GithubApiUrl
 	}
 	return ""
 }
 
 func (x *GlobalSettings) GetUseSudoForDocker() bool {
-	if x != nil {
-		return x.xxx_hidden_UseSudoForDocker
+	if x != nil && x.UseSudoForDocker != nil {
+		return *x.UseSudoForDocker
 	}
 	return false
 }
 
 func (x *GlobalSettings) GetMessageBus() *bus.MessageBus {
 	if x != nil {
-		return x.xxx_hidden_MessageBus
+		return x.MessageBus
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetAudit() *AuditConfig {
 	if x != nil {
-		return x.xxx_hidden_Audit
+		return x.Audit
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetDlp() *DLPConfig {
 	if x != nil {
-		return x.xxx_hidden_Dlp
+		return x.Dlp
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetGcSettings() *GCSettings {
 	if x != nil {
-		return x.xxx_hidden_GcSettings
+		return x.GcSettings
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetOidc() *OIDCConfig {
 	if x != nil {
-		return x.xxx_hidden_Oidc
+		return x.Oidc
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetRateLimit() *RateLimitConfig {
 	if x != nil {
-		return x.xxx_hidden_RateLimit
+		return x.RateLimit
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetTelemetry() *TelemetryConfig {
 	if x != nil {
-		return x.xxx_hidden_Telemetry
+		return x.Telemetry
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetProfiles() []string {
 	if x != nil {
-		return x.xxx_hidden_Profiles
+		return x.Profiles
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetAllowedIps() []string {
 	if x != nil {
-		return x.xxx_hidden_AllowedIps
+		return x.AllowedIps
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetProfileDefinitions() []*ProfileDefinition {
 	if x != nil {
-		if x.xxx_hidden_ProfileDefinitions != nil {
-			return *x.xxx_hidden_ProfileDefinitions
-		}
+		return x.ProfileDefinitions
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetMiddlewares() []*Middleware {
 	if x != nil {
-		if x.xxx_hidden_Middlewares != nil {
-			return *x.xxx_hidden_Middlewares
-		}
+		return x.Middlewares
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetAllowedFilePaths() []string {
 	if x != nil {
-		return x.xxx_hidden_AllowedFilePaths
+		return x.AllowedFilePaths
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetAllowedOrigins() []string {
 	if x != nil {
-		return x.xxx_hidden_AllowedOrigins
+		return x.AllowedOrigins
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetContextOptimizer() *ContextOptimizerConfig {
 	if x != nil {
-		return x.xxx_hidden_ContextOptimizer
+		return x.ContextOptimizer
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetDebugger() *DebuggerConfig {
 	if x != nil {
-		return x.xxx_hidden_Debugger
+		return x.Debugger
 	}
 	return nil
 }
 
 func (x *GlobalSettings) GetReadOnly() bool {
-	if x != nil {
-		return x.xxx_hidden_ReadOnly
+	if x != nil && x.ReadOnly != nil {
+		return *x.ReadOnly
 	}
 	return false
 }
 
 func (x *GlobalSettings) GetAutoDiscoverLocal() bool {
-	if x != nil {
-		return x.xxx_hidden_AutoDiscoverLocal
+	if x != nil && x.AutoDiscoverLocal != nil {
+		return *x.AutoDiscoverLocal
 	}
 	return false
 }
 
 func (x *GlobalSettings) GetAlerts() *AlertConfig {
 	if x != nil {
-		return x.xxx_hidden_Alerts
+		return x.Alerts
 	}
 	return nil
 }
 
 func (x *GlobalSettings) SetMcpListenAddress(v string) {
-	x.xxx_hidden_McpListenAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 27)
+	x.McpListenAddress = &v
 }
 
 func (x *GlobalSettings) SetLogLevel(v GlobalSettings_LogLevel) {
-	x.xxx_hidden_LogLevel = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 27)
+	x.LogLevel = &v
 }
 
 func (x *GlobalSettings) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 27)
+	x.ApiKey = &v
 }
 
 func (x *GlobalSettings) SetLogFormat(v GlobalSettings_LogFormat) {
-	x.xxx_hidden_LogFormat = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 27)
+	x.LogFormat = &v
 }
 
 func (x *GlobalSettings) SetDbPath(v string) {
-	x.xxx_hidden_DbPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 27)
+	x.DbPath = &v
 }
 
 func (x *GlobalSettings) SetDbDsn(v string) {
-	x.xxx_hidden_DbDsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 27)
+	x.DbDsn = &v
 }
 
 func (x *GlobalSettings) SetDbDriver(v string) {
-	x.xxx_hidden_DbDriver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 27)
+	x.DbDriver = &v
 }
 
 func (x *GlobalSettings) SetGithubApiUrl(v string) {
-	x.xxx_hidden_GithubApiUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 27)
+	x.GithubApiUrl = &v
 }
 
 func (x *GlobalSettings) SetUseSudoForDocker(v bool) {
-	x.xxx_hidden_UseSudoForDocker = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 27)
+	x.UseSudoForDocker = &v
 }
 
 func (x *GlobalSettings) SetMessageBus(v *bus.MessageBus) {
-	x.xxx_hidden_MessageBus = v
+	x.MessageBus = v
 }
 
 func (x *GlobalSettings) SetAudit(v *AuditConfig) {
-	x.xxx_hidden_Audit = v
+	x.Audit = v
 }
 
 func (x *GlobalSettings) SetDlp(v *DLPConfig) {
-	x.xxx_hidden_Dlp = v
+	x.Dlp = v
 }
 
 func (x *GlobalSettings) SetGcSettings(v *GCSettings) {
-	x.xxx_hidden_GcSettings = v
+	x.GcSettings = v
 }
 
 func (x *GlobalSettings) SetOidc(v *OIDCConfig) {
-	x.xxx_hidden_Oidc = v
+	x.Oidc = v
 }
 
 func (x *GlobalSettings) SetRateLimit(v *RateLimitConfig) {
-	x.xxx_hidden_RateLimit = v
+	x.RateLimit = v
 }
 
 func (x *GlobalSettings) SetTelemetry(v *TelemetryConfig) {
-	x.xxx_hidden_Telemetry = v
+	x.Telemetry = v
 }
 
 func (x *GlobalSettings) SetProfiles(v []string) {
-	x.xxx_hidden_Profiles = v
+	x.Profiles = v
 }
 
 func (x *GlobalSettings) SetAllowedIps(v []string) {
-	x.xxx_hidden_AllowedIps = v
+	x.AllowedIps = v
 }
 
 func (x *GlobalSettings) SetProfileDefinitions(v []*ProfileDefinition) {
-	x.xxx_hidden_ProfileDefinitions = &v
+	x.ProfileDefinitions = v
 }
 
 func (x *GlobalSettings) SetMiddlewares(v []*Middleware) {
-	x.xxx_hidden_Middlewares = &v
+	x.Middlewares = v
 }
 
 func (x *GlobalSettings) SetAllowedFilePaths(v []string) {
-	x.xxx_hidden_AllowedFilePaths = v
+	x.AllowedFilePaths = v
 }
 
 func (x *GlobalSettings) SetAllowedOrigins(v []string) {
-	x.xxx_hidden_AllowedOrigins = v
+	x.AllowedOrigins = v
 }
 
 func (x *GlobalSettings) SetContextOptimizer(v *ContextOptimizerConfig) {
-	x.xxx_hidden_ContextOptimizer = v
+	x.ContextOptimizer = v
 }
 
 func (x *GlobalSettings) SetDebugger(v *DebuggerConfig) {
-	x.xxx_hidden_Debugger = v
+	x.Debugger = v
 }
 
 func (x *GlobalSettings) SetReadOnly(v bool) {
-	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 24, 27)
+	x.ReadOnly = &v
 }
 
 func (x *GlobalSettings) SetAutoDiscoverLocal(v bool) {
-	x.xxx_hidden_AutoDiscoverLocal = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 25, 27)
+	x.AutoDiscoverLocal = &v
 }
 
 func (x *GlobalSettings) SetAlerts(v *AlertConfig) {
-	x.xxx_hidden_Alerts = v
+	x.Alerts = v
 }
 
 func (x *GlobalSettings) HasMcpListenAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.McpListenAddress != nil
 }
 
 func (x *GlobalSettings) HasLogLevel() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.LogLevel != nil
 }
 
 func (x *GlobalSettings) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.ApiKey != nil
 }
 
 func (x *GlobalSettings) HasLogFormat() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.LogFormat != nil
 }
 
 func (x *GlobalSettings) HasDbPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.DbPath != nil
 }
 
 func (x *GlobalSettings) HasDbDsn() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.DbDsn != nil
 }
 
 func (x *GlobalSettings) HasDbDriver() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+	return x.DbDriver != nil
 }
 
 func (x *GlobalSettings) HasGithubApiUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+	return x.GithubApiUrl != nil
 }
 
 func (x *GlobalSettings) HasUseSudoForDocker() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+	return x.UseSudoForDocker != nil
 }
 
 func (x *GlobalSettings) HasMessageBus() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_MessageBus != nil
+	return x.MessageBus != nil
 }
 
 func (x *GlobalSettings) HasAudit() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Audit != nil
+	return x.Audit != nil
 }
 
 func (x *GlobalSettings) HasDlp() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Dlp != nil
+	return x.Dlp != nil
 }
 
 func (x *GlobalSettings) HasGcSettings() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_GcSettings != nil
+	return x.GcSettings != nil
 }
 
 func (x *GlobalSettings) HasOidc() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Oidc != nil
+	return x.Oidc != nil
 }
 
 func (x *GlobalSettings) HasRateLimit() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_RateLimit != nil
+	return x.RateLimit != nil
 }
 
 func (x *GlobalSettings) HasTelemetry() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Telemetry != nil
+	return x.Telemetry != nil
 }
 
 func (x *GlobalSettings) HasContextOptimizer() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ContextOptimizer != nil
+	return x.ContextOptimizer != nil
 }
 
 func (x *GlobalSettings) HasDebugger() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Debugger != nil
+	return x.Debugger != nil
 }
 
 func (x *GlobalSettings) HasReadOnly() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 24)
+	return x.ReadOnly != nil
 }
 
 func (x *GlobalSettings) HasAutoDiscoverLocal() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 25)
+	return x.AutoDiscoverLocal != nil
 }
 
 func (x *GlobalSettings) HasAlerts() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Alerts != nil
+	return x.Alerts != nil
 }
 
 func (x *GlobalSettings) ClearMcpListenAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_McpListenAddress = nil
+	x.McpListenAddress = nil
 }
 
 func (x *GlobalSettings) ClearLogLevel() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_LogLevel = GlobalSettings_LOG_LEVEL_UNSPECIFIED
+	x.LogLevel = nil
 }
 
 func (x *GlobalSettings) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_ApiKey = nil
+	x.ApiKey = nil
 }
 
 func (x *GlobalSettings) ClearLogFormat() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_LogFormat = GlobalSettings_LOG_FORMAT_UNSPECIFIED
+	x.LogFormat = nil
 }
 
 func (x *GlobalSettings) ClearDbPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_DbPath = nil
+	x.DbPath = nil
 }
 
 func (x *GlobalSettings) ClearDbDsn() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_DbDsn = nil
+	x.DbDsn = nil
 }
 
 func (x *GlobalSettings) ClearDbDriver() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
-	x.xxx_hidden_DbDriver = nil
+	x.DbDriver = nil
 }
 
 func (x *GlobalSettings) ClearGithubApiUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
-	x.xxx_hidden_GithubApiUrl = nil
+	x.GithubApiUrl = nil
 }
 
 func (x *GlobalSettings) ClearUseSudoForDocker() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
-	x.xxx_hidden_UseSudoForDocker = false
+	x.UseSudoForDocker = nil
 }
 
 func (x *GlobalSettings) ClearMessageBus() {
-	x.xxx_hidden_MessageBus = nil
+	x.MessageBus = nil
 }
 
 func (x *GlobalSettings) ClearAudit() {
-	x.xxx_hidden_Audit = nil
+	x.Audit = nil
 }
 
 func (x *GlobalSettings) ClearDlp() {
-	x.xxx_hidden_Dlp = nil
+	x.Dlp = nil
 }
 
 func (x *GlobalSettings) ClearGcSettings() {
-	x.xxx_hidden_GcSettings = nil
+	x.GcSettings = nil
 }
 
 func (x *GlobalSettings) ClearOidc() {
-	x.xxx_hidden_Oidc = nil
+	x.Oidc = nil
 }
 
 func (x *GlobalSettings) ClearRateLimit() {
-	x.xxx_hidden_RateLimit = nil
+	x.RateLimit = nil
 }
 
 func (x *GlobalSettings) ClearTelemetry() {
-	x.xxx_hidden_Telemetry = nil
+	x.Telemetry = nil
 }
 
 func (x *GlobalSettings) ClearContextOptimizer() {
-	x.xxx_hidden_ContextOptimizer = nil
+	x.ContextOptimizer = nil
 }
 
 func (x *GlobalSettings) ClearDebugger() {
-	x.xxx_hidden_Debugger = nil
+	x.Debugger = nil
 }
 
 func (x *GlobalSettings) ClearReadOnly() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 24)
-	x.xxx_hidden_ReadOnly = false
+	x.ReadOnly = nil
 }
 
 func (x *GlobalSettings) ClearAutoDiscoverLocal() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 25)
-	x.xxx_hidden_AutoDiscoverLocal = false
+	x.AutoDiscoverLocal = nil
 }
 
 func (x *GlobalSettings) ClearAlerts() {
-	x.xxx_hidden_Alerts = nil
+	x.Alerts = nil
 }
 
 type GlobalSettings_builder struct {
@@ -1339,77 +1263,44 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	m0 := &GlobalSettings{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.McpListenAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 27)
-		x.xxx_hidden_McpListenAddress = b.McpListenAddress
-	}
-	if b.LogLevel != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 27)
-		x.xxx_hidden_LogLevel = *b.LogLevel
-	}
-	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 27)
-		x.xxx_hidden_ApiKey = b.ApiKey
-	}
-	if b.LogFormat != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 27)
-		x.xxx_hidden_LogFormat = *b.LogFormat
-	}
-	if b.DbPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 27)
-		x.xxx_hidden_DbPath = b.DbPath
-	}
-	if b.DbDsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 27)
-		x.xxx_hidden_DbDsn = b.DbDsn
-	}
-	if b.DbDriver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 27)
-		x.xxx_hidden_DbDriver = b.DbDriver
-	}
-	if b.GithubApiUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 27)
-		x.xxx_hidden_GithubApiUrl = b.GithubApiUrl
-	}
-	if b.UseSudoForDocker != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 27)
-		x.xxx_hidden_UseSudoForDocker = *b.UseSudoForDocker
-	}
-	x.xxx_hidden_MessageBus = b.MessageBus
-	x.xxx_hidden_Audit = b.Audit
-	x.xxx_hidden_Dlp = b.Dlp
-	x.xxx_hidden_GcSettings = b.GcSettings
-	x.xxx_hidden_Oidc = b.Oidc
-	x.xxx_hidden_RateLimit = b.RateLimit
-	x.xxx_hidden_Telemetry = b.Telemetry
-	x.xxx_hidden_Profiles = b.Profiles
-	x.xxx_hidden_AllowedIps = b.AllowedIps
-	x.xxx_hidden_ProfileDefinitions = &b.ProfileDefinitions
-	x.xxx_hidden_Middlewares = &b.Middlewares
-	x.xxx_hidden_AllowedFilePaths = b.AllowedFilePaths
-	x.xxx_hidden_AllowedOrigins = b.AllowedOrigins
-	x.xxx_hidden_ContextOptimizer = b.ContextOptimizer
-	x.xxx_hidden_Debugger = b.Debugger
-	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 24, 27)
-		x.xxx_hidden_ReadOnly = *b.ReadOnly
-	}
-	if b.AutoDiscoverLocal != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 25, 27)
-		x.xxx_hidden_AutoDiscoverLocal = *b.AutoDiscoverLocal
-	}
-	x.xxx_hidden_Alerts = b.Alerts
+	x.McpListenAddress = b.McpListenAddress
+	x.LogLevel = b.LogLevel
+	x.ApiKey = b.ApiKey
+	x.LogFormat = b.LogFormat
+	x.DbPath = b.DbPath
+	x.DbDsn = b.DbDsn
+	x.DbDriver = b.DbDriver
+	x.GithubApiUrl = b.GithubApiUrl
+	x.UseSudoForDocker = b.UseSudoForDocker
+	x.MessageBus = b.MessageBus
+	x.Audit = b.Audit
+	x.Dlp = b.Dlp
+	x.GcSettings = b.GcSettings
+	x.Oidc = b.Oidc
+	x.RateLimit = b.RateLimit
+	x.Telemetry = b.Telemetry
+	x.Profiles = b.Profiles
+	x.AllowedIps = b.AllowedIps
+	x.ProfileDefinitions = b.ProfileDefinitions
+	x.Middlewares = b.Middlewares
+	x.AllowedFilePaths = b.AllowedFilePaths
+	x.AllowedOrigins = b.AllowedOrigins
+	x.ContextOptimizer = b.ContextOptimizer
+	x.Debugger = b.Debugger
+	x.ReadOnly = b.ReadOnly
+	x.AutoDiscoverLocal = b.AutoDiscoverLocal
+	x.Alerts = b.Alerts
 	return m0
 }
 
 type AlertConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_WebhookUrl  *string                `protobuf:"bytes,2,opt,name=webhook_url"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Whether alerts are enabled.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled" json:"enabled,omitempty"`
+	// The webhook URL to send alerts to.
+	WebhookUrl    *string `protobuf:"bytes,2,opt,name=webhook_url" json:"webhook_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AlertConfig) Reset() {
@@ -1438,54 +1329,47 @@ func (x *AlertConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AlertConfig) GetEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Enabled
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
 	}
 	return false
 }
 
 func (x *AlertConfig) GetWebhookUrl() string {
-	if x != nil {
-		if x.xxx_hidden_WebhookUrl != nil {
-			return *x.xxx_hidden_WebhookUrl
-		}
-		return ""
+	if x != nil && x.WebhookUrl != nil {
+		return *x.WebhookUrl
 	}
 	return ""
 }
 
 func (x *AlertConfig) SetEnabled(v bool) {
-	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.Enabled = &v
 }
 
 func (x *AlertConfig) SetWebhookUrl(v string) {
-	x.xxx_hidden_WebhookUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+	x.WebhookUrl = &v
 }
 
 func (x *AlertConfig) HasEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Enabled != nil
 }
 
 func (x *AlertConfig) HasWebhookUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.WebhookUrl != nil
 }
 
 func (x *AlertConfig) ClearEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Enabled = false
+	x.Enabled = nil
 }
 
 func (x *AlertConfig) ClearWebhookUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_WebhookUrl = nil
+	x.WebhookUrl = nil
 }
 
 type AlertConfig_builder struct {
@@ -1501,24 +1385,16 @@ func (b0 AlertConfig_builder) Build() *AlertConfig {
 	m0 := &AlertConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Enabled = *b.Enabled
-	}
-	if b.WebhookUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_WebhookUrl = b.WebhookUrl
-	}
+	x.Enabled = b.Enabled
+	x.WebhookUrl = b.WebhookUrl
 	return m0
 }
 
 type ContextOptimizerConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_MaxChars    int32                  `protobuf:"varint,1,opt,name=max_chars"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	MaxChars      *int32                 `protobuf:"varint,1,opt,name=max_chars" json:"max_chars,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ContextOptimizerConfig) Reset() {
@@ -1547,27 +1423,25 @@ func (x *ContextOptimizerConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ContextOptimizerConfig) GetMaxChars() int32 {
-	if x != nil {
-		return x.xxx_hidden_MaxChars
+	if x != nil && x.MaxChars != nil {
+		return *x.MaxChars
 	}
 	return 0
 }
 
 func (x *ContextOptimizerConfig) SetMaxChars(v int32) {
-	x.xxx_hidden_MaxChars = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	x.MaxChars = &v
 }
 
 func (x *ContextOptimizerConfig) HasMaxChars() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.MaxChars != nil
 }
 
 func (x *ContextOptimizerConfig) ClearMaxChars() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_MaxChars = 0
+	x.MaxChars = nil
 }
 
 type ContextOptimizerConfig_builder struct {
@@ -1580,21 +1454,16 @@ func (b0 ContextOptimizerConfig_builder) Build() *ContextOptimizerConfig {
 	m0 := &ContextOptimizerConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.MaxChars != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_MaxChars = *b.MaxChars
-	}
+	x.MaxChars = b.MaxChars
 	return m0
 }
 
 type DebuggerConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_Size        int32                  `protobuf:"varint,2,opt,name=size"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Enabled       *bool                  `protobuf:"varint,1,opt,name=enabled" json:"enabled,omitempty"`
+	Size          *int32                 `protobuf:"varint,2,opt,name=size" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DebuggerConfig) Reset() {
@@ -1623,51 +1492,47 @@ func (x *DebuggerConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DebuggerConfig) GetEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Enabled
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
 	}
 	return false
 }
 
 func (x *DebuggerConfig) GetSize() int32 {
-	if x != nil {
-		return x.xxx_hidden_Size
+	if x != nil && x.Size != nil {
+		return *x.Size
 	}
 	return 0
 }
 
 func (x *DebuggerConfig) SetEnabled(v bool) {
-	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.Enabled = &v
 }
 
 func (x *DebuggerConfig) SetSize(v int32) {
-	x.xxx_hidden_Size = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+	x.Size = &v
 }
 
 func (x *DebuggerConfig) HasEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Enabled != nil
 }
 
 func (x *DebuggerConfig) HasSize() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Size != nil
 }
 
 func (x *DebuggerConfig) ClearEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Enabled = false
+	x.Enabled = nil
 }
 
 func (x *DebuggerConfig) ClearSize() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Size = 0
+	x.Size = nil
 }
 
 type DebuggerConfig_builder struct {
@@ -1681,27 +1546,23 @@ func (b0 DebuggerConfig_builder) Build() *DebuggerConfig {
 	m0 := &DebuggerConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Enabled = *b.Enabled
-	}
-	if b.Size != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_Size = *b.Size
-	}
+	x.Enabled = b.Enabled
+	x.Size = b.Size
 	return m0
 }
 
 type TelemetryConfig struct {
-	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_TracesExporter  *string                `protobuf:"bytes,1,opt,name=traces_exporter"`
-	xxx_hidden_MetricsExporter *string                `protobuf:"bytes,2,opt,name=metrics_exporter"`
-	xxx_hidden_OtlpEndpoint    *string                `protobuf:"bytes,3,opt,name=otlp_endpoint"`
-	xxx_hidden_ServiceName     *string                `protobuf:"bytes,4,opt,name=service_name"`
-	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
-	XXX_presence               [1]uint32
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Tracing configuration
+	TracesExporter *string `protobuf:"bytes,1,opt,name=traces_exporter" json:"traces_exporter,omitempty"` // "otlp", "stdout", "none"
+	// Metrics configuration
+	MetricsExporter *string `protobuf:"bytes,2,opt,name=metrics_exporter" json:"metrics_exporter,omitempty"` // "otlp", "stdout", "none"
+	// OTLP endpoint (shared for now, or can be split)
+	OtlpEndpoint *string `protobuf:"bytes,3,opt,name=otlp_endpoint" json:"otlp_endpoint,omitempty"`
+	// Service name override (optional)
+	ServiceName   *string `protobuf:"bytes,4,opt,name=service_name" json:"service_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *TelemetryConfig) Reset() {
@@ -1730,111 +1591,91 @@ func (x *TelemetryConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *TelemetryConfig) GetTracesExporter() string {
-	if x != nil {
-		if x.xxx_hidden_TracesExporter != nil {
-			return *x.xxx_hidden_TracesExporter
-		}
-		return ""
+	if x != nil && x.TracesExporter != nil {
+		return *x.TracesExporter
 	}
 	return ""
 }
 
 func (x *TelemetryConfig) GetMetricsExporter() string {
-	if x != nil {
-		if x.xxx_hidden_MetricsExporter != nil {
-			return *x.xxx_hidden_MetricsExporter
-		}
-		return ""
+	if x != nil && x.MetricsExporter != nil {
+		return *x.MetricsExporter
 	}
 	return ""
 }
 
 func (x *TelemetryConfig) GetOtlpEndpoint() string {
-	if x != nil {
-		if x.xxx_hidden_OtlpEndpoint != nil {
-			return *x.xxx_hidden_OtlpEndpoint
-		}
-		return ""
+	if x != nil && x.OtlpEndpoint != nil {
+		return *x.OtlpEndpoint
 	}
 	return ""
 }
 
 func (x *TelemetryConfig) GetServiceName() string {
-	if x != nil {
-		if x.xxx_hidden_ServiceName != nil {
-			return *x.xxx_hidden_ServiceName
-		}
-		return ""
+	if x != nil && x.ServiceName != nil {
+		return *x.ServiceName
 	}
 	return ""
 }
 
 func (x *TelemetryConfig) SetTracesExporter(v string) {
-	x.xxx_hidden_TracesExporter = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.TracesExporter = &v
 }
 
 func (x *TelemetryConfig) SetMetricsExporter(v string) {
-	x.xxx_hidden_MetricsExporter = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.MetricsExporter = &v
 }
 
 func (x *TelemetryConfig) SetOtlpEndpoint(v string) {
-	x.xxx_hidden_OtlpEndpoint = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	x.OtlpEndpoint = &v
 }
 
 func (x *TelemetryConfig) SetServiceName(v string) {
-	x.xxx_hidden_ServiceName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	x.ServiceName = &v
 }
 
 func (x *TelemetryConfig) HasTracesExporter() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.TracesExporter != nil
 }
 
 func (x *TelemetryConfig) HasMetricsExporter() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.MetricsExporter != nil
 }
 
 func (x *TelemetryConfig) HasOtlpEndpoint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.OtlpEndpoint != nil
 }
 
 func (x *TelemetryConfig) HasServiceName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.ServiceName != nil
 }
 
 func (x *TelemetryConfig) ClearTracesExporter() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_TracesExporter = nil
+	x.TracesExporter = nil
 }
 
 func (x *TelemetryConfig) ClearMetricsExporter() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_MetricsExporter = nil
+	x.MetricsExporter = nil
 }
 
 func (x *TelemetryConfig) ClearOtlpEndpoint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_OtlpEndpoint = nil
+	x.OtlpEndpoint = nil
 }
 
 func (x *TelemetryConfig) ClearServiceName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_ServiceName = nil
+	x.ServiceName = nil
 }
 
 type TelemetryConfig_builder struct {
@@ -1854,35 +1695,21 @@ func (b0 TelemetryConfig_builder) Build() *TelemetryConfig {
 	m0 := &TelemetryConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.TracesExporter != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_TracesExporter = b.TracesExporter
-	}
-	if b.MetricsExporter != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_MetricsExporter = b.MetricsExporter
-	}
-	if b.OtlpEndpoint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_OtlpEndpoint = b.OtlpEndpoint
-	}
-	if b.ServiceName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_ServiceName = b.ServiceName
-	}
+	x.TracesExporter = b.TracesExporter
+	x.MetricsExporter = b.MetricsExporter
+	x.OtlpEndpoint = b.OtlpEndpoint
+	x.ServiceName = b.ServiceName
 	return m0
 }
 
 type OIDCConfig struct {
-	state                   protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Issuer       *string                `protobuf:"bytes,1,opt,name=issuer"`
-	xxx_hidden_ClientId     *string                `protobuf:"bytes,2,opt,name=client_id"`
-	xxx_hidden_ClientSecret *string                `protobuf:"bytes,3,opt,name=client_secret"`
-	xxx_hidden_RedirectUrl  *string                `protobuf:"bytes,4,opt,name=redirect_url"`
-	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
-	XXX_presence            [1]uint32
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Issuer        *string                `protobuf:"bytes,1,opt,name=issuer" json:"issuer,omitempty"`
+	ClientId      *string                `protobuf:"bytes,2,opt,name=client_id" json:"client_id,omitempty"`
+	ClientSecret  *string                `protobuf:"bytes,3,opt,name=client_secret" json:"client_secret,omitempty"`
+	RedirectUrl   *string                `protobuf:"bytes,4,opt,name=redirect_url" json:"redirect_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OIDCConfig) Reset() {
@@ -1911,111 +1738,91 @@ func (x *OIDCConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OIDCConfig) GetIssuer() string {
-	if x != nil {
-		if x.xxx_hidden_Issuer != nil {
-			return *x.xxx_hidden_Issuer
-		}
-		return ""
+	if x != nil && x.Issuer != nil {
+		return *x.Issuer
 	}
 	return ""
 }
 
 func (x *OIDCConfig) GetClientId() string {
-	if x != nil {
-		if x.xxx_hidden_ClientId != nil {
-			return *x.xxx_hidden_ClientId
-		}
-		return ""
+	if x != nil && x.ClientId != nil {
+		return *x.ClientId
 	}
 	return ""
 }
 
 func (x *OIDCConfig) GetClientSecret() string {
-	if x != nil {
-		if x.xxx_hidden_ClientSecret != nil {
-			return *x.xxx_hidden_ClientSecret
-		}
-		return ""
+	if x != nil && x.ClientSecret != nil {
+		return *x.ClientSecret
 	}
 	return ""
 }
 
 func (x *OIDCConfig) GetRedirectUrl() string {
-	if x != nil {
-		if x.xxx_hidden_RedirectUrl != nil {
-			return *x.xxx_hidden_RedirectUrl
-		}
-		return ""
+	if x != nil && x.RedirectUrl != nil {
+		return *x.RedirectUrl
 	}
 	return ""
 }
 
 func (x *OIDCConfig) SetIssuer(v string) {
-	x.xxx_hidden_Issuer = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.Issuer = &v
 }
 
 func (x *OIDCConfig) SetClientId(v string) {
-	x.xxx_hidden_ClientId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.ClientId = &v
 }
 
 func (x *OIDCConfig) SetClientSecret(v string) {
-	x.xxx_hidden_ClientSecret = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	x.ClientSecret = &v
 }
 
 func (x *OIDCConfig) SetRedirectUrl(v string) {
-	x.xxx_hidden_RedirectUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	x.RedirectUrl = &v
 }
 
 func (x *OIDCConfig) HasIssuer() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Issuer != nil
 }
 
 func (x *OIDCConfig) HasClientId() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.ClientId != nil
 }
 
 func (x *OIDCConfig) HasClientSecret() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.ClientSecret != nil
 }
 
 func (x *OIDCConfig) HasRedirectUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.RedirectUrl != nil
 }
 
 func (x *OIDCConfig) ClearIssuer() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Issuer = nil
+	x.Issuer = nil
 }
 
 func (x *OIDCConfig) ClearClientId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ClientId = nil
+	x.ClientId = nil
 }
 
 func (x *OIDCConfig) ClearClientSecret() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_ClientSecret = nil
+	x.ClientSecret = nil
 }
 
 func (x *OIDCConfig) ClearRedirectUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_RedirectUrl = nil
+	x.RedirectUrl = nil
 }
 
 type OIDCConfig_builder struct {
@@ -2031,35 +1838,27 @@ func (b0 OIDCConfig_builder) Build() *OIDCConfig {
 	m0 := &OIDCConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Issuer != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_Issuer = b.Issuer
-	}
-	if b.ClientId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_ClientId = b.ClientId
-	}
-	if b.ClientSecret != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_ClientSecret = b.ClientSecret
-	}
-	if b.RedirectUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_RedirectUrl = b.RedirectUrl
-	}
+	x.Issuer = b.Issuer
+	x.ClientId = b.ClientId
+	x.ClientSecret = b.ClientSecret
+	x.RedirectUrl = b.RedirectUrl
 	return m0
 }
 
 type GCSettings struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_Interval    *string                `protobuf:"bytes,2,opt,name=interval"`
-	xxx_hidden_Ttl         *string                `protobuf:"bytes,3,opt,name=ttl"`
-	xxx_hidden_Paths       []string               `protobuf:"bytes,4,rep,name=paths"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Whether the global GC worker is enabled.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled" json:"enabled,omitempty"`
+	// How often the GC worker runs (e.g., "1h", "10m").
+	Interval *string `protobuf:"bytes,2,opt,name=interval" json:"interval,omitempty"`
+	// The time-to-live for temporary files (e.g., "24h").
+	// Files older than this duration will be deleted.
+	Ttl *string `protobuf:"bytes,3,opt,name=ttl" json:"ttl,omitempty"`
+	// A list of absolute paths to directories that should be scanned for cleanup.
+	// The worker will not traverse outside these directories.
+	Paths         []string `protobuf:"bytes,4,rep,name=paths" json:"paths,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GCSettings) Reset() {
@@ -2088,92 +1887,80 @@ func (x *GCSettings) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GCSettings) GetEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Enabled
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
 	}
 	return false
 }
 
 func (x *GCSettings) GetInterval() string {
-	if x != nil {
-		if x.xxx_hidden_Interval != nil {
-			return *x.xxx_hidden_Interval
-		}
-		return ""
+	if x != nil && x.Interval != nil {
+		return *x.Interval
 	}
 	return ""
 }
 
 func (x *GCSettings) GetTtl() string {
-	if x != nil {
-		if x.xxx_hidden_Ttl != nil {
-			return *x.xxx_hidden_Ttl
-		}
-		return ""
+	if x != nil && x.Ttl != nil {
+		return *x.Ttl
 	}
 	return ""
 }
 
 func (x *GCSettings) GetPaths() []string {
 	if x != nil {
-		return x.xxx_hidden_Paths
+		return x.Paths
 	}
 	return nil
 }
 
 func (x *GCSettings) SetEnabled(v bool) {
-	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.Enabled = &v
 }
 
 func (x *GCSettings) SetInterval(v string) {
-	x.xxx_hidden_Interval = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.Interval = &v
 }
 
 func (x *GCSettings) SetTtl(v string) {
-	x.xxx_hidden_Ttl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	x.Ttl = &v
 }
 
 func (x *GCSettings) SetPaths(v []string) {
-	x.xxx_hidden_Paths = v
+	x.Paths = v
 }
 
 func (x *GCSettings) HasEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Enabled != nil
 }
 
 func (x *GCSettings) HasInterval() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Interval != nil
 }
 
 func (x *GCSettings) HasTtl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Ttl != nil
 }
 
 func (x *GCSettings) ClearEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Enabled = false
+	x.Enabled = nil
 }
 
 func (x *GCSettings) ClearInterval() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Interval = nil
+	x.Interval = nil
 }
 
 func (x *GCSettings) ClearTtl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Ttl = nil
+	x.Ttl = nil
 }
 
 type GCSettings_builder struct {
@@ -2195,30 +1982,22 @@ func (b0 GCSettings_builder) Build() *GCSettings {
 	m0 := &GCSettings{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_Enabled = *b.Enabled
-	}
-	if b.Interval != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Interval = b.Interval
-	}
-	if b.Ttl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_Ttl = b.Ttl
-	}
-	x.xxx_hidden_Paths = b.Paths
+	x.Enabled = b.Enabled
+	x.Interval = b.Interval
+	x.Ttl = b.Ttl
+	x.Paths = b.Paths
 	return m0
 }
 
 type DLPConfig struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Enabled        bool                   `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_CustomPatterns []string               `protobuf:"bytes,2,rep,name=custom_patterns"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Whether DLP is enabled.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled" json:"enabled,omitempty"`
+	// Additional regex patterns to redact.
+	// Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+	CustomPatterns []string `protobuf:"bytes,2,rep,name=custom_patterns" json:"custom_patterns,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DLPConfig) Reset() {
@@ -2247,38 +2026,36 @@ func (x *DLPConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DLPConfig) GetEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Enabled
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
 	}
 	return false
 }
 
 func (x *DLPConfig) GetCustomPatterns() []string {
 	if x != nil {
-		return x.xxx_hidden_CustomPatterns
+		return x.CustomPatterns
 	}
 	return nil
 }
 
 func (x *DLPConfig) SetEnabled(v bool) {
-	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.Enabled = &v
 }
 
 func (x *DLPConfig) SetCustomPatterns(v []string) {
-	x.xxx_hidden_CustomPatterns = v
+	x.CustomPatterns = v
 }
 
 func (x *DLPConfig) HasEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Enabled != nil
 }
 
 func (x *DLPConfig) ClearEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Enabled = false
+	x.Enabled = nil
 }
 
 type DLPConfig_builder struct {
@@ -2295,29 +2072,33 @@ func (b0 DLPConfig_builder) Build() *DLPConfig {
 	m0 := &DLPConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Enabled = *b.Enabled
-	}
-	x.xxx_hidden_CustomPatterns = b.CustomPatterns
+	x.Enabled = b.Enabled
+	x.CustomPatterns = b.CustomPatterns
 	return m0
 }
 
 type AuditConfig struct {
-	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Enabled        bool                    `protobuf:"varint,1,opt,name=enabled"`
-	xxx_hidden_OutputPath     *string                 `protobuf:"bytes,2,opt,name=output_path"`
-	xxx_hidden_LogArguments   bool                    `protobuf:"varint,3,opt,name=log_arguments"`
-	xxx_hidden_LogResults     bool                    `protobuf:"varint,4,opt,name=log_results"`
-	xxx_hidden_StorageType    AuditConfig_StorageType `protobuf:"varint,5,opt,name=storage_type,enum=mcpany.config.v1.AuditConfig_StorageType"`
-	xxx_hidden_WebhookUrl     *string                 `protobuf:"bytes,6,opt,name=webhook_url"`
-	xxx_hidden_WebhookHeaders map[string]string       `protobuf:"bytes,7,rep,name=webhook_headers" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Splunk         *SplunkConfig           `protobuf:"bytes,8,opt,name=splunk"`
-	xxx_hidden_Datadog        *DatadogConfig          `protobuf:"bytes,9,opt,name=datadog"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Whether audit logging is enabled.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled" json:"enabled,omitempty"`
+	// The file path to write audit logs to.
+	OutputPath *string `protobuf:"bytes,2,opt,name=output_path" json:"output_path,omitempty"`
+	// Whether to log input arguments (caution: might contain secrets).
+	LogArguments *bool `protobuf:"varint,3,opt,name=log_arguments" json:"log_arguments,omitempty"`
+	// Whether to log output results (caution: might contain sensitive data).
+	LogResults *bool `protobuf:"varint,4,opt,name=log_results" json:"log_results,omitempty"`
+	// The storage type to use.
+	StorageType *AuditConfig_StorageType `protobuf:"varint,5,opt,name=storage_type,enum=mcpany.config.v1.AuditConfig_StorageType" json:"storage_type,omitempty"`
+	// The webhook URL for STORAGE_TYPE_WEBHOOK.
+	WebhookUrl *string `protobuf:"bytes,6,opt,name=webhook_url" json:"webhook_url,omitempty"`
+	// Additional headers to send with the webhook.
+	WebhookHeaders map[string]string `protobuf:"bytes,7,rep,name=webhook_headers" json:"webhook_headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Splunk configuration.
+	Splunk *SplunkConfig `protobuf:"bytes,8,opt,name=splunk" json:"splunk,omitempty"`
+	// Datadog configuration.
+	Datadog       *DatadogConfig `protobuf:"bytes,9,opt,name=datadog" json:"datadog,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AuditConfig) Reset() {
@@ -2346,210 +2127,190 @@ func (x *AuditConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AuditConfig) GetEnabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Enabled
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
 	}
 	return false
 }
 
 func (x *AuditConfig) GetOutputPath() string {
-	if x != nil {
-		if x.xxx_hidden_OutputPath != nil {
-			return *x.xxx_hidden_OutputPath
-		}
-		return ""
+	if x != nil && x.OutputPath != nil {
+		return *x.OutputPath
 	}
 	return ""
 }
 
 func (x *AuditConfig) GetLogArguments() bool {
-	if x != nil {
-		return x.xxx_hidden_LogArguments
+	if x != nil && x.LogArguments != nil {
+		return *x.LogArguments
 	}
 	return false
 }
 
 func (x *AuditConfig) GetLogResults() bool {
-	if x != nil {
-		return x.xxx_hidden_LogResults
+	if x != nil && x.LogResults != nil {
+		return *x.LogResults
 	}
 	return false
 }
 
 func (x *AuditConfig) GetStorageType() AuditConfig_StorageType {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 4) {
-			return x.xxx_hidden_StorageType
-		}
+	if x != nil && x.StorageType != nil {
+		return *x.StorageType
 	}
 	return AuditConfig_STORAGE_TYPE_UNSPECIFIED
 }
 
 func (x *AuditConfig) GetWebhookUrl() string {
-	if x != nil {
-		if x.xxx_hidden_WebhookUrl != nil {
-			return *x.xxx_hidden_WebhookUrl
-		}
-		return ""
+	if x != nil && x.WebhookUrl != nil {
+		return *x.WebhookUrl
 	}
 	return ""
 }
 
 func (x *AuditConfig) GetWebhookHeaders() map[string]string {
 	if x != nil {
-		return x.xxx_hidden_WebhookHeaders
+		return x.WebhookHeaders
 	}
 	return nil
 }
 
 func (x *AuditConfig) GetSplunk() *SplunkConfig {
 	if x != nil {
-		return x.xxx_hidden_Splunk
+		return x.Splunk
 	}
 	return nil
 }
 
 func (x *AuditConfig) GetDatadog() *DatadogConfig {
 	if x != nil {
-		return x.xxx_hidden_Datadog
+		return x.Datadog
 	}
 	return nil
 }
 
 func (x *AuditConfig) SetEnabled(v bool) {
-	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+	x.Enabled = &v
 }
 
 func (x *AuditConfig) SetOutputPath(v string) {
-	x.xxx_hidden_OutputPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+	x.OutputPath = &v
 }
 
 func (x *AuditConfig) SetLogArguments(v bool) {
-	x.xxx_hidden_LogArguments = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
+	x.LogArguments = &v
 }
 
 func (x *AuditConfig) SetLogResults(v bool) {
-	x.xxx_hidden_LogResults = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+	x.LogResults = &v
 }
 
 func (x *AuditConfig) SetStorageType(v AuditConfig_StorageType) {
-	x.xxx_hidden_StorageType = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+	x.StorageType = &v
 }
 
 func (x *AuditConfig) SetWebhookUrl(v string) {
-	x.xxx_hidden_WebhookUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+	x.WebhookUrl = &v
 }
 
 func (x *AuditConfig) SetWebhookHeaders(v map[string]string) {
-	x.xxx_hidden_WebhookHeaders = v
+	x.WebhookHeaders = v
 }
 
 func (x *AuditConfig) SetSplunk(v *SplunkConfig) {
-	x.xxx_hidden_Splunk = v
+	x.Splunk = v
 }
 
 func (x *AuditConfig) SetDatadog(v *DatadogConfig) {
-	x.xxx_hidden_Datadog = v
+	x.Datadog = v
 }
 
 func (x *AuditConfig) HasEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Enabled != nil
 }
 
 func (x *AuditConfig) HasOutputPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.OutputPath != nil
 }
 
 func (x *AuditConfig) HasLogArguments() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.LogArguments != nil
 }
 
 func (x *AuditConfig) HasLogResults() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.LogResults != nil
 }
 
 func (x *AuditConfig) HasStorageType() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.StorageType != nil
 }
 
 func (x *AuditConfig) HasWebhookUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.WebhookUrl != nil
 }
 
 func (x *AuditConfig) HasSplunk() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Splunk != nil
+	return x.Splunk != nil
 }
 
 func (x *AuditConfig) HasDatadog() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Datadog != nil
+	return x.Datadog != nil
 }
 
 func (x *AuditConfig) ClearEnabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Enabled = false
+	x.Enabled = nil
 }
 
 func (x *AuditConfig) ClearOutputPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_OutputPath = nil
+	x.OutputPath = nil
 }
 
 func (x *AuditConfig) ClearLogArguments() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_LogArguments = false
+	x.LogArguments = nil
 }
 
 func (x *AuditConfig) ClearLogResults() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_LogResults = false
+	x.LogResults = nil
 }
 
 func (x *AuditConfig) ClearStorageType() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_StorageType = AuditConfig_STORAGE_TYPE_UNSPECIFIED
+	x.StorageType = nil
 }
 
 func (x *AuditConfig) ClearWebhookUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_WebhookUrl = nil
+	x.WebhookUrl = nil
 }
 
 func (x *AuditConfig) ClearSplunk() {
-	x.xxx_hidden_Splunk = nil
+	x.Splunk = nil
 }
 
 func (x *AuditConfig) ClearDatadog() {
-	x.xxx_hidden_Datadog = nil
+	x.Datadog = nil
 }
 
 type AuditConfig_builder struct {
@@ -2579,47 +2340,27 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	m0 := &AuditConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
-		x.xxx_hidden_Enabled = *b.Enabled
-	}
-	if b.OutputPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
-		x.xxx_hidden_OutputPath = b.OutputPath
-	}
-	if b.LogArguments != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
-		x.xxx_hidden_LogArguments = *b.LogArguments
-	}
-	if b.LogResults != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
-		x.xxx_hidden_LogResults = *b.LogResults
-	}
-	if b.StorageType != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
-		x.xxx_hidden_StorageType = *b.StorageType
-	}
-	if b.WebhookUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
-		x.xxx_hidden_WebhookUrl = b.WebhookUrl
-	}
-	x.xxx_hidden_WebhookHeaders = b.WebhookHeaders
-	x.xxx_hidden_Splunk = b.Splunk
-	x.xxx_hidden_Datadog = b.Datadog
+	x.Enabled = b.Enabled
+	x.OutputPath = b.OutputPath
+	x.LogArguments = b.LogArguments
+	x.LogResults = b.LogResults
+	x.StorageType = b.StorageType
+	x.WebhookUrl = b.WebhookUrl
+	x.WebhookHeaders = b.WebhookHeaders
+	x.Splunk = b.Splunk
+	x.Datadog = b.Datadog
 	return m0
 }
 
 type SplunkConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HecUrl      *string                `protobuf:"bytes,1,opt,name=hec_url"`
-	xxx_hidden_Token       *string                `protobuf:"bytes,2,opt,name=token"`
-	xxx_hidden_Index       *string                `protobuf:"bytes,3,opt,name=index"`
-	xxx_hidden_Source      *string                `protobuf:"bytes,4,opt,name=source"`
-	xxx_hidden_Sourcetype  *string                `protobuf:"bytes,5,opt,name=sourcetype"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	HecUrl        *string                `protobuf:"bytes,1,opt,name=hec_url" json:"hec_url,omitempty"`
+	Token         *string                `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
+	Index         *string                `protobuf:"bytes,3,opt,name=index" json:"index,omitempty"`
+	Source        *string                `protobuf:"bytes,4,opt,name=source" json:"source,omitempty"`
+	Sourcetype    *string                `protobuf:"bytes,5,opt,name=sourcetype" json:"sourcetype,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SplunkConfig) Reset() {
@@ -2648,138 +2389,113 @@ func (x *SplunkConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *SplunkConfig) GetHecUrl() string {
-	if x != nil {
-		if x.xxx_hidden_HecUrl != nil {
-			return *x.xxx_hidden_HecUrl
-		}
-		return ""
+	if x != nil && x.HecUrl != nil {
+		return *x.HecUrl
 	}
 	return ""
 }
 
 func (x *SplunkConfig) GetToken() string {
-	if x != nil {
-		if x.xxx_hidden_Token != nil {
-			return *x.xxx_hidden_Token
-		}
-		return ""
+	if x != nil && x.Token != nil {
+		return *x.Token
 	}
 	return ""
 }
 
 func (x *SplunkConfig) GetIndex() string {
-	if x != nil {
-		if x.xxx_hidden_Index != nil {
-			return *x.xxx_hidden_Index
-		}
-		return ""
+	if x != nil && x.Index != nil {
+		return *x.Index
 	}
 	return ""
 }
 
 func (x *SplunkConfig) GetSource() string {
-	if x != nil {
-		if x.xxx_hidden_Source != nil {
-			return *x.xxx_hidden_Source
-		}
-		return ""
+	if x != nil && x.Source != nil {
+		return *x.Source
 	}
 	return ""
 }
 
 func (x *SplunkConfig) GetSourcetype() string {
-	if x != nil {
-		if x.xxx_hidden_Sourcetype != nil {
-			return *x.xxx_hidden_Sourcetype
-		}
-		return ""
+	if x != nil && x.Sourcetype != nil {
+		return *x.Sourcetype
 	}
 	return ""
 }
 
 func (x *SplunkConfig) SetHecUrl(v string) {
-	x.xxx_hidden_HecUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	x.HecUrl = &v
 }
 
 func (x *SplunkConfig) SetToken(v string) {
-	x.xxx_hidden_Token = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	x.Token = &v
 }
 
 func (x *SplunkConfig) SetIndex(v string) {
-	x.xxx_hidden_Index = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	x.Index = &v
 }
 
 func (x *SplunkConfig) SetSource(v string) {
-	x.xxx_hidden_Source = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	x.Source = &v
 }
 
 func (x *SplunkConfig) SetSourcetype(v string) {
-	x.xxx_hidden_Sourcetype = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	x.Sourcetype = &v
 }
 
 func (x *SplunkConfig) HasHecUrl() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.HecUrl != nil
 }
 
 func (x *SplunkConfig) HasToken() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Token != nil
 }
 
 func (x *SplunkConfig) HasIndex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Index != nil
 }
 
 func (x *SplunkConfig) HasSource() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.Source != nil
 }
 
 func (x *SplunkConfig) HasSourcetype() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.Sourcetype != nil
 }
 
 func (x *SplunkConfig) ClearHecUrl() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HecUrl = nil
+	x.HecUrl = nil
 }
 
 func (x *SplunkConfig) ClearToken() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Token = nil
+	x.Token = nil
 }
 
 func (x *SplunkConfig) ClearIndex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Index = nil
+	x.Index = nil
 }
 
 func (x *SplunkConfig) ClearSource() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Source = nil
+	x.Source = nil
 }
 
 func (x *SplunkConfig) ClearSourcetype() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Sourcetype = nil
+	x.Sourcetype = nil
 }
 
 type SplunkConfig_builder struct {
@@ -2796,39 +2512,22 @@ func (b0 SplunkConfig_builder) Build() *SplunkConfig {
 	m0 := &SplunkConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.HecUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_HecUrl = b.HecUrl
-	}
-	if b.Token != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_Token = b.Token
-	}
-	if b.Index != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_Index = b.Index
-	}
-	if b.Source != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_Source = b.Source
-	}
-	if b.Sourcetype != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Sourcetype = b.Sourcetype
-	}
+	x.HecUrl = b.HecUrl
+	x.Token = b.Token
+	x.Index = b.Index
+	x.Source = b.Source
+	x.Sourcetype = b.Sourcetype
 	return m0
 }
 
 type DatadogConfig struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key"`
-	xxx_hidden_Site        *string                `protobuf:"bytes,2,opt,name=site"`
-	xxx_hidden_Service     *string                `protobuf:"bytes,3,opt,name=service"`
-	xxx_hidden_Tags        *string                `protobuf:"bytes,4,opt,name=tags"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	ApiKey        *string                `protobuf:"bytes,1,opt,name=api_key" json:"api_key,omitempty"`
+	Site          *string                `protobuf:"bytes,2,opt,name=site" json:"site,omitempty"`
+	Service       *string                `protobuf:"bytes,3,opt,name=service" json:"service,omitempty"`
+	Tags          *string                `protobuf:"bytes,4,opt,name=tags" json:"tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DatadogConfig) Reset() {
@@ -2857,111 +2556,91 @@ func (x *DatadogConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DatadogConfig) GetApiKey() string {
-	if x != nil {
-		if x.xxx_hidden_ApiKey != nil {
-			return *x.xxx_hidden_ApiKey
-		}
-		return ""
+	if x != nil && x.ApiKey != nil {
+		return *x.ApiKey
 	}
 	return ""
 }
 
 func (x *DatadogConfig) GetSite() string {
-	if x != nil {
-		if x.xxx_hidden_Site != nil {
-			return *x.xxx_hidden_Site
-		}
-		return ""
+	if x != nil && x.Site != nil {
+		return *x.Site
 	}
 	return ""
 }
 
 func (x *DatadogConfig) GetService() string {
-	if x != nil {
-		if x.xxx_hidden_Service != nil {
-			return *x.xxx_hidden_Service
-		}
-		return ""
+	if x != nil && x.Service != nil {
+		return *x.Service
 	}
 	return ""
 }
 
 func (x *DatadogConfig) GetTags() string {
-	if x != nil {
-		if x.xxx_hidden_Tags != nil {
-			return *x.xxx_hidden_Tags
-		}
-		return ""
+	if x != nil && x.Tags != nil {
+		return *x.Tags
 	}
 	return ""
 }
 
 func (x *DatadogConfig) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.ApiKey = &v
 }
 
 func (x *DatadogConfig) SetSite(v string) {
-	x.xxx_hidden_Site = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.Site = &v
 }
 
 func (x *DatadogConfig) SetService(v string) {
-	x.xxx_hidden_Service = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	x.Service = &v
 }
 
 func (x *DatadogConfig) SetTags(v string) {
-	x.xxx_hidden_Tags = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	x.Tags = &v
 }
 
 func (x *DatadogConfig) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.ApiKey != nil
 }
 
 func (x *DatadogConfig) HasSite() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Site != nil
 }
 
 func (x *DatadogConfig) HasService() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Service != nil
 }
 
 func (x *DatadogConfig) HasTags() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.Tags != nil
 }
 
 func (x *DatadogConfig) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ApiKey = nil
+	x.ApiKey = nil
 }
 
 func (x *DatadogConfig) ClearSite() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Site = nil
+	x.Site = nil
 }
 
 func (x *DatadogConfig) ClearService() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Service = nil
+	x.Service = nil
 }
 
 func (x *DatadogConfig) ClearTags() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Tags = nil
+	x.Tags = nil
 }
 
 type DatadogConfig_builder struct {
@@ -2977,37 +2656,27 @@ func (b0 DatadogConfig_builder) Build() *DatadogConfig {
 	m0 := &DatadogConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_ApiKey = b.ApiKey
-	}
-	if b.Site != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Site = b.Site
-	}
-	if b.Service != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_Service = b.Service
-	}
-	if b.Tags != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_Tags = b.Tags
-	}
+	x.ApiKey = b.ApiKey
+	x.Site = b.Site
+	x.Service = b.Service
+	x.Tags = b.Tags
 	return m0
 }
 
 type ProfileDefinition struct {
-	state                       protoimpl.MessageState           `protogen:"opaque.v1"`
-	xxx_hidden_Name             *string                          `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Selector         *ProfileSelector                 `protobuf:"bytes,2,opt,name=selector"`
-	xxx_hidden_RequiredRoles    []string                         `protobuf:"bytes,3,rep,name=required_roles"`
-	xxx_hidden_ParentProfileIds []string                         `protobuf:"bytes,4,rep,name=parent_profile_ids"`
-	xxx_hidden_ServiceConfig    map[string]*ProfileServiceConfig `protobuf:"bytes,5,rep,name=service_config" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Secrets          map[string]*SecretValue          `protobuf:"bytes,6,rep,name=secrets" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state    protoimpl.MessageState `protogen:"hybrid.v1"`
+	Name     *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Selector *ProfileSelector       `protobuf:"bytes,2,opt,name=selector" json:"selector,omitempty"`
+	// List of roles required to access this profile.
+	RequiredRoles []string `protobuf:"bytes,3,rep,name=required_roles" json:"required_roles,omitempty"`
+	// Parent profile IDs for inheritance.
+	ParentProfileIds []string `protobuf:"bytes,4,rep,name=parent_profile_ids" json:"parent_profile_ids,omitempty"`
+	// Service-specific configurations for this profile.
+	ServiceConfig map[string]*ProfileServiceConfig `protobuf:"bytes,5,rep,name=service_config" json:"service_config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Secrets available to services in this profile.
+	Secrets       map[string]*SecretValue `protobuf:"bytes,6,rep,name=secrets" json:"secrets,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ProfileDefinition) Reset() {
@@ -3036,96 +2705,91 @@ func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProfileDefinition) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
 func (x *ProfileDefinition) GetSelector() *ProfileSelector {
 	if x != nil {
-		return x.xxx_hidden_Selector
+		return x.Selector
 	}
 	return nil
 }
 
 func (x *ProfileDefinition) GetRequiredRoles() []string {
 	if x != nil {
-		return x.xxx_hidden_RequiredRoles
+		return x.RequiredRoles
 	}
 	return nil
 }
 
 func (x *ProfileDefinition) GetParentProfileIds() []string {
 	if x != nil {
-		return x.xxx_hidden_ParentProfileIds
+		return x.ParentProfileIds
 	}
 	return nil
 }
 
 func (x *ProfileDefinition) GetServiceConfig() map[string]*ProfileServiceConfig {
 	if x != nil {
-		return x.xxx_hidden_ServiceConfig
+		return x.ServiceConfig
 	}
 	return nil
 }
 
 func (x *ProfileDefinition) GetSecrets() map[string]*SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Secrets
+		return x.Secrets
 	}
 	return nil
 }
 
 func (x *ProfileDefinition) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+	x.Name = &v
 }
 
 func (x *ProfileDefinition) SetSelector(v *ProfileSelector) {
-	x.xxx_hidden_Selector = v
+	x.Selector = v
 }
 
 func (x *ProfileDefinition) SetRequiredRoles(v []string) {
-	x.xxx_hidden_RequiredRoles = v
+	x.RequiredRoles = v
 }
 
 func (x *ProfileDefinition) SetParentProfileIds(v []string) {
-	x.xxx_hidden_ParentProfileIds = v
+	x.ParentProfileIds = v
 }
 
 func (x *ProfileDefinition) SetServiceConfig(v map[string]*ProfileServiceConfig) {
-	x.xxx_hidden_ServiceConfig = v
+	x.ServiceConfig = v
 }
 
 func (x *ProfileDefinition) SetSecrets(v map[string]*SecretValue) {
-	x.xxx_hidden_Secrets = v
+	x.Secrets = v
 }
 
 func (x *ProfileDefinition) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Name != nil
 }
 
 func (x *ProfileDefinition) HasSelector() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Selector != nil
+	return x.Selector != nil
 }
 
 func (x *ProfileDefinition) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *ProfileDefinition) ClearSelector() {
-	x.xxx_hidden_Selector = nil
+	x.Selector = nil
 }
 
 type ProfileDefinition_builder struct {
@@ -3147,24 +2811,21 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	m0 := &ProfileDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
-		x.xxx_hidden_Name = b.Name
-	}
-	x.xxx_hidden_Selector = b.Selector
-	x.xxx_hidden_RequiredRoles = b.RequiredRoles
-	x.xxx_hidden_ParentProfileIds = b.ParentProfileIds
-	x.xxx_hidden_ServiceConfig = b.ServiceConfig
-	x.xxx_hidden_Secrets = b.Secrets
+	x.Name = b.Name
+	x.Selector = b.Selector
+	x.RequiredRoles = b.RequiredRoles
+	x.ParentProfileIds = b.ParentProfileIds
+	x.ServiceConfig = b.ServiceConfig
+	x.Secrets = b.Secrets
 	return m0
 }
 
 type ProfileSelector struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Tags           []string               `protobuf:"bytes,1,rep,name=tags"`
-	xxx_hidden_ToolProperties map[string]string      `protobuf:"bytes,2,rep,name=tool_properties" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"hybrid.v1"`
+	Tags           []string               `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
+	ToolProperties map[string]string      `protobuf:"bytes,2,rep,name=tool_properties" json:"tool_properties,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ProfileSelector) Reset() {
@@ -3194,24 +2855,24 @@ func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
 
 func (x *ProfileSelector) GetTags() []string {
 	if x != nil {
-		return x.xxx_hidden_Tags
+		return x.Tags
 	}
 	return nil
 }
 
 func (x *ProfileSelector) GetToolProperties() map[string]string {
 	if x != nil {
-		return x.xxx_hidden_ToolProperties
+		return x.ToolProperties
 	}
 	return nil
 }
 
 func (x *ProfileSelector) SetTags(v []string) {
-	x.xxx_hidden_Tags = v
+	x.Tags = v
 }
 
 func (x *ProfileSelector) SetToolProperties(v map[string]string) {
-	x.xxx_hidden_ToolProperties = v
+	x.ToolProperties = v
 }
 
 type ProfileSelector_builder struct {
@@ -3225,20 +2886,21 @@ func (b0 ProfileSelector_builder) Build() *ProfileSelector {
 	m0 := &ProfileSelector{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_Tags = b.Tags
-	x.xxx_hidden_ToolProperties = b.ToolProperties
+	x.Tags = b.Tags
+	x.ToolProperties = b.ToolProperties
 	return m0
 }
 
 type Middleware struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Priority    int32                  `protobuf:"varint,2,opt,name=priority"`
-	xxx_hidden_Disabled    bool                   `protobuf:"varint,3,opt,name=disabled"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name of the middleware (e.g., "logging", "auth", "ratelimit").
+	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The priority of the middleware. Lower values run first (outermost).
+	Priority *int32 `protobuf:"varint,2,opt,name=priority" json:"priority,omitempty"`
+	// Whether this middleware is disabled.
+	Disabled      *bool `protobuf:"varint,3,opt,name=disabled" json:"disabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Middleware) Reset() {
@@ -3267,78 +2929,69 @@ func (x *Middleware) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Middleware) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
 func (x *Middleware) GetPriority() int32 {
-	if x != nil {
-		return x.xxx_hidden_Priority
+	if x != nil && x.Priority != nil {
+		return *x.Priority
 	}
 	return 0
 }
 
 func (x *Middleware) GetDisabled() bool {
-	if x != nil {
-		return x.xxx_hidden_Disabled
+	if x != nil && x.Disabled != nil {
+		return *x.Disabled
 	}
 	return false
 }
 
 func (x *Middleware) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.Name = &v
 }
 
 func (x *Middleware) SetPriority(v int32) {
-	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.Priority = &v
 }
 
 func (x *Middleware) SetDisabled(v bool) {
-	x.xxx_hidden_Disabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	x.Disabled = &v
 }
 
 func (x *Middleware) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Name != nil
 }
 
 func (x *Middleware) HasPriority() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Priority != nil
 }
 
 func (x *Middleware) HasDisabled() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Disabled != nil
 }
 
 func (x *Middleware) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *Middleware) ClearPriority() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Priority = 0
+	x.Priority = nil
 }
 
 func (x *Middleware) ClearDisabled() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Disabled = false
+	x.Disabled = nil
 }
 
 type Middleware_builder struct {
@@ -3356,18 +3009,9 @@ func (b0 Middleware_builder) Build() *Middleware {
 	m0 := &Middleware{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Priority = *b.Priority
-	}
-	if b.Disabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_Disabled = *b.Disabled
-	}
+	x.Name = b.Name
+	x.Priority = b.Priority
+	x.Disabled = b.Disabled
 	return m0
 }
 
@@ -3375,7 +3019,7 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a\x1aproto/config/v1/user.proto\"\xa5\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a\x1aproto/config/v1/user.proto\"\xa5\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12>\n" +
@@ -3521,7 +3165,7 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"Middleware\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
 	"\bpriority\x18\x02 \x01(\x05R\bpriority\x12\x1a\n" +
-	"\bdisabled\x18\x03 \x01(\bR\bdisabledB=B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\bdisabled\x18\x03 \x01(\bR\bdisabledB5B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 21)

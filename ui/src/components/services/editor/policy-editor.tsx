@@ -20,17 +20,6 @@ interface PolicyEditorProps {
     onChange: (policy: ExportPolicy) => void;
 }
 
-/**
- * A component for editing export policies (allow/deny rules).
- * Allows setting a default action and adding specific exception rules based on regex.
- *
- * @param props - The component props.
- * @param props.title - The title of the policy editor section.
- * @param props.description - A description of what this policy controls.
- * @param props.policy - The current policy object.
- * @param props.onChange - Callback invoked when the policy is modified.
- * @returns The rendered policy editor component.
- */
 export function PolicyEditor({ title, description, policy, onChange }: PolicyEditorProps) {
     // Default to empty policy if undefined
     const currentPolicy: ExportPolicy = policy || {

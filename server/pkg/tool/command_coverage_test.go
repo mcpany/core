@@ -21,16 +21,16 @@ import (
 
 func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("echo"),
 		Timeout: durationpb.New(2 * time.Second),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-n"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build()}.Build(),
+			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
 		},
-	}.Build()
+	}
 
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -43,7 +43,7 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 	}
 
 	tool := NewLocalCommandTool(
-		pb.Tool_builder{Name: proto.String("echo-tool"), InputSchema: inputSchema}.Build(),
+		&pb.Tool{Name: proto.String("echo-tool"), InputSchema: inputSchema},
 		svc,
 		callDef,
 		nil,
@@ -67,15 +67,15 @@ func TestLocalCommandTool_Execute_Echo(t *testing.T) {
 
 func TestLocalCommandTool_Execute_JSON(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command:               proto.String("cat"), // cat echoes stdin to stdout
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
 		Timeout:               durationpb.New(2 * time.Second),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	}
+	callDef := &configv1.CommandLineCallDefinition{}
 
 	tool := NewLocalCommandTool(
-		pb.Tool_builder{Name: proto.String("json-tool")}.Build(),
+		&pb.Tool{Name: proto.String("json-tool")},
 		svc,
 		callDef,
 		nil,
@@ -99,13 +99,13 @@ func TestLocalCommandTool_Execute_JSON(t *testing.T) {
 
 func TestLocalCommandTool_Execute_Error(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("false"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	}
+	callDef := &configv1.CommandLineCallDefinition{}
 
 	tool := NewLocalCommandTool(
-		pb.Tool_builder{Name: proto.String("fail-tool")}.Build(),
+		&pb.Tool{Name: proto.String("fail-tool")},
 		svc,
 		callDef,
 		nil,
@@ -126,13 +126,13 @@ func TestLocalCommandTool_Execute_Error(t *testing.T) {
 
 func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("nonexistentcommand_xyz"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	}
+	callDef := &configv1.CommandLineCallDefinition{}
 
 	tool := NewLocalCommandTool(
-		pb.Tool_builder{Name: proto.String("bad-tool")}.Build(),
+		&pb.Tool{Name: proto.String("bad-tool")},
 		svc,
 		callDef,
 		nil,
@@ -147,16 +147,16 @@ func TestLocalCommandTool_Execute_NonExistent(t *testing.T) {
 
 func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sleep"),
 		Timeout: durationpb.New(100 * time.Millisecond),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"1"}, // Sleep 1 second
-	}.Build()
+	}
 
 	tool := NewLocalCommandTool(
-		pb.Tool_builder{Name: proto.String("timeout-tool")}.Build(),
+		&pb.Tool{Name: proto.String("timeout-tool")},
 		svc,
 		callDef,
 		nil,
@@ -178,8 +178,8 @@ func TestLocalCommandTool_Execute_Timeout(t *testing.T) {
 
 func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{Command: proto.String("echo")}.Build()
-	tool := NewLocalCommandTool(pb.Tool_builder{Name: proto.String("t")}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
+	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
+	tool := NewLocalCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})
@@ -194,17 +194,17 @@ func TestLocalCommandTool_Execute_InvalidArgs(t *testing.T) {
 
 func TestCommandTool_Execute_Echo(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("echo"),
 		Timeout: durationpb.New(2 * time.Second),
 		// ContainerEnvironment nil -> uses LocalExecutor
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-n"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build()}.Build(),
+			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
 		},
-	}.Build()
+	}
 
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -217,7 +217,7 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 	}
 
 	tool := NewCommandTool(
-		pb.Tool_builder{Name: proto.String("echo-tool"), InputSchema: inputSchema}.Build(),
+		&pb.Tool{Name: proto.String("echo-tool"), InputSchema: inputSchema},
 		svc,
 		callDef,
 		nil,
@@ -239,15 +239,15 @@ func TestCommandTool_Execute_Echo(t *testing.T) {
 
 func TestCommandTool_Execute_JSON(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command:               proto.String("cat"),
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
 		Timeout:               durationpb.New(2 * time.Second),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	}
+	callDef := &configv1.CommandLineCallDefinition{}
 
 	tool := NewCommandTool(
-		pb.Tool_builder{Name: proto.String("json-command-tool")}.Build(),
+		&pb.Tool{Name: proto.String("json-command-tool")},
 		svc,
 		callDef,
 		nil,
@@ -269,13 +269,13 @@ func TestCommandTool_Execute_JSON(t *testing.T) {
 
 func TestCommandTool_Execute_Error(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{
+	svc := &configv1.CommandLineUpstreamService{
 		Command: proto.String("false"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	}
+	callDef := &configv1.CommandLineCallDefinition{}
 
 	tool := NewCommandTool(
-		pb.Tool_builder{Name: proto.String("fail-command-tool")}.Build(),
+		&pb.Tool{Name: proto.String("fail-command-tool")},
 		svc,
 		callDef,
 		nil,
@@ -293,8 +293,8 @@ func TestCommandTool_Execute_Error(t *testing.T) {
 
 func TestCommandTool_Execute_InvalidArgs(t *testing.T) {
 	t.Parallel()
-	svc := configv1.CommandLineUpstreamService_builder{Command: proto.String("echo")}.Build()
-	tool := NewCommandTool(pb.Tool_builder{Name: proto.String("t")}.Build(), svc, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
+	svc := &configv1.CommandLineUpstreamService{Command: proto.String("echo")}
+	tool := NewCommandTool(&pb.Tool{Name: proto.String("t")}, svc, &configv1.CommandLineCallDefinition{}, nil, "call-id")
 
 	// args is not array
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"args": "not-array"}`)})

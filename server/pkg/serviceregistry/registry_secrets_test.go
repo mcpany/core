@@ -55,13 +55,13 @@ func TestServiceRegistry_SecretsLeak(t *testing.T) {
 
 	serviceConfig := &configv1.UpstreamServiceConfig{}
 	serviceConfig.SetName("secret-service")
-	serviceConfig.SetAuthentication(&configv1.Authentication{
+	serviceConfig.Authentication = &configv1.Authentication{
 		AuthMethod: &configv1.Authentication_ApiKey{
 			ApiKey: &configv1.APIKeyAuth{
 				VerificationValue: proto.String("SUPER_SECRET_VALUE"),
 			},
 		},
-	})
+	}
 
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)

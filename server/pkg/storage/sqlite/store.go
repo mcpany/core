@@ -72,9 +72,9 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
 
-	return configv1.McpAnyServerConfig_builder{
+	return &configv1.McpAnyServerConfig{
 		UpstreamServices: services,
-	}.Build(), nil
+	}, nil
 }
 
 // SaveService saves an upstream service configuration.
@@ -150,7 +150,7 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 	if err != nil {
 		return nil, err
 	}
-	return cfg.GetUpstreamServices(), nil
+	return cfg.UpstreamServices, nil
 }
 
 // DeleteService deletes an upstream service configuration by name.

@@ -28,15 +28,24 @@ func TestStdioTransport_EnvironmentSecurity(t *testing.T) {
 	defer cancel()
 
 	// Configure a command that prints environment variables
-	stdio := configv1.McpStdioConnection_builder{
+	// Use "env" or "printenv"
+	stdio := &configv1.McpStdioConnection{
 		Command: proto.String("env"),
 		Args:    []string{},
+		// Add an explicit env var to ensure it is passed
 		Env: map[string]*configv1.SecretValue{
-			"EXPLICIT_VAR": configv1.SecretValue_builder{
-				PlainText: proto.String("explicit_value"),
-			}.Build(),
+			"EXPLICIT_VAR": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "explicit_value",
+				},
+			},
 		},
-	}.Build()
+	}
+
+	// Use buildCommandFromStdioConfig directly since we want to inspect the generated command
+	// or run it and check output.
+	// Since buildCommandFromStdioConfig returns *exec.Cmd, we can run it.
+	// Note: We are testing the internal function buildCommandFromStdioConfig which is available in package mcp
 
 	cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
 	require.NoError(t, err)

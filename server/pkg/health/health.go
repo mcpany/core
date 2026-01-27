@@ -10,10 +10,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 	"net/http"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/alexliesenfeld/health"
@@ -448,14 +448,11 @@ func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.
 			// which are harder to implement here without the provider instance.
 			// So we focus on Local FS for now which is the most common use case for "health" of FS.
 			isLocal := false
-
-			// Opaque FS check:
-			// If Os is set, OR if no other known remote type is set (fallback default).
-			if c.GetOs() != nil {
+			switch c.FilesystemType.(type) {
+			case *configv1.FilesystemUpstreamService_Os:
 				isLocal = true
-			} else if c.GetS3() == nil && c.GetGcs() == nil && c.GetSftp() == nil && c.GetHttp() == nil && c.GetTmpfs() == nil && c.GetZip() == nil {
-				// No remote type explicitly set (and no Os explicitly set), assuming default local OS.
-				// This matches "case nil".
+			case nil:
+				// Fallback behavior matches provider logic
 				isLocal = true
 			}
 

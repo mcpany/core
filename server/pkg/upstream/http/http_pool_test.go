@@ -26,7 +26,7 @@ func TestHTTPPool_New(t *testing.T) {
 		defer server.Close()
 
 		configJSON := `{"http_service": {"address": "` + strings.TrimPrefix(server.URL, "http://") + `"}}`
-		config := configv1.UpstreamServiceConfig_builder{}.Build()
+		config := &configv1.UpstreamServiceConfig{}
 		require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 		p, err := NewHTTPPool(1, 5, 100, config)
@@ -46,7 +46,7 @@ func TestHTTPPool_New(t *testing.T) {
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
-		_, err := NewHTTPPool(5, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
+		_, err := NewHTTPPool(5, 1, 10, &configv1.UpstreamServiceConfig{})
 		assert.Error(t, err)
 	})
 }
@@ -58,7 +58,7 @@ func TestHTTPPool_GetPut(t *testing.T) {
 	defer server.Close()
 
 	configJSON := `{"http_service": {"address": "` + strings.TrimPrefix(server.URL, "http://") + `"}}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	p, err := NewHTTPPool(1, 1, 10, config)
@@ -83,7 +83,7 @@ func TestHTTPPool_GetPut(t *testing.T) {
 }
 
 func TestHTTPPool_SharedClients(t *testing.T) {
-	p, err := NewHTTPPool(2, 2, 10, configv1.UpstreamServiceConfig_builder{}.Build())
+	p, err := NewHTTPPool(2, 2, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer func() { _ = p.Close() }()
@@ -101,7 +101,7 @@ func TestHTTPPool_SharedClients(t *testing.T) {
 }
 
 func TestHTTPPool_Close(t *testing.T) {
-	p, err := NewHTTPPool(1, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
+	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -113,7 +113,7 @@ func TestHTTPPool_Close(t *testing.T) {
 }
 
 func TestHTTPPool_PoolFull(t *testing.T) {
-	p, err := NewHTTPPool(1, 1, 1, configv1.UpstreamServiceConfig_builder{}.Build())
+	p, err := NewHTTPPool(1, 1, 1, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 
@@ -129,7 +129,7 @@ func TestHTTPPool_PoolFull(t *testing.T) {
 }
 
 func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
-	p, err := NewHTTPPool(1, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
+	p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 	require.NoError(t, err)
 	require.NotNil(t, p)
 	defer func() { _ = p.Close() }()
@@ -151,7 +151,7 @@ func TestHTTPPool_KeepAliveEnabled(t *testing.T) {
 
 func TestHTTPPool_TimeoutConfiguration(t *testing.T) {
 	t.Run("default timeout", func(t *testing.T) {
-		p, err := NewHTTPPool(1, 1, 10, configv1.UpstreamServiceConfig_builder{}.Build())
+		p, err := NewHTTPPool(1, 1, 10, &configv1.UpstreamServiceConfig{})
 		require.NoError(t, err)
 		defer func() { _ = p.Close() }()
 
@@ -162,11 +162,11 @@ func TestHTTPPool_TimeoutConfiguration(t *testing.T) {
 	})
 
 	t.Run("configured timeout", func(t *testing.T) {
-		config := configv1.UpstreamServiceConfig_builder{
-			Resilience: configv1.ResilienceConfig_builder{
+		config := &configv1.UpstreamServiceConfig{
+			Resilience: &configv1.ResilienceConfig{
 				Timeout: durationpb.New(10 * time.Second),
-			}.Build(),
-		}.Build()
+			},
+		}
 		p, err := NewHTTPPool(1, 1, 10, config)
 		require.NoError(t, err)
 		defer func() { _ = p.Close() }()

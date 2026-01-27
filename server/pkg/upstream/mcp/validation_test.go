@@ -16,17 +16,17 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Validation passed", func(t *testing.T) {
-		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
+		stdio := &configv1.McpStdioConnection{
+			Command: strPtr("echo"),
 			Env: map[string]*configv1.SecretValue{
-				"REQUIRED_VAR": configv1.SecretValue_builder{
-					PlainText: proto.String("present"),
-				}.Build(),
+				"REQUIRED_VAR": {
+					Value: &configv1.SecretValue_PlainText{PlainText: "present"},
+				},
 			},
-			Validation: configv1.EnvValidation_builder{
+			Validation: &configv1.EnvValidation{
 				RequiredEnv: []string{"REQUIRED_VAR"},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
@@ -35,13 +35,13 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	})
 
 	t.Run("Validation failed - missing var", func(t *testing.T) {
-		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
+		stdio := &configv1.McpStdioConnection{
+			Command: strPtr("echo"),
 			Env:     map[string]*configv1.SecretValue{},
-			Validation: configv1.EnvValidation_builder{
+			Validation: &configv1.EnvValidation{
 				RequiredEnv: []string{"MISSING_VAR"},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.Error(t, err)
@@ -50,17 +50,19 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	})
 
 	t.Run("Validation passed - inherited var", func(t *testing.T) {
+		// Use an allowed variable (LANG) to test inheritance
 		t.Setenv("LANG", "C.UTF-8")
-		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
-			Validation: configv1.EnvValidation_builder{
+		stdio := &configv1.McpStdioConnection{
+			Command: strPtr("echo"),
+			Validation: &configv1.EnvValidation{
 				RequiredEnv: []string{"LANG"},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
 		assert.NotNil(t, cmd)
+		// Env should contain inherited var (filtered from os.Environ)
 		found := false
 		for _, e := range cmd.Env {
 			if e == "LANG=C.UTF-8" {
@@ -72,12 +74,12 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	})
 
 	t.Run("Validation failed - multiple missing", func(t *testing.T) {
-		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
-			Validation: configv1.EnvValidation_builder{
+		stdio := &configv1.McpStdioConnection{
+			Command: strPtr("echo"),
+			Validation: &configv1.EnvValidation{
 				RequiredEnv: []string{"MISSING_1", "MISSING_2"},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		_, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.Error(t, err)
@@ -85,18 +87,19 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	})
 
 	t.Run("Validation with Docker command", func(t *testing.T) {
-		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("docker"),
+		// Test that validation works for docker path as well
+		stdio := &configv1.McpStdioConnection{
+			Command: strPtr("docker"),
 			Args:    []string{"run", "ubuntu"},
 			Env: map[string]*configv1.SecretValue{
-				"DOCKER_ENV": configv1.SecretValue_builder{
-					PlainText: proto.String("val"),
-				}.Build(),
+				"DOCKER_ENV": {
+					Value: &configv1.SecretValue_PlainText{PlainText: "val"},
+				},
 			},
-			Validation: configv1.EnvValidation_builder{
+			Validation: &configv1.EnvValidation{
 				RequiredEnv: []string{"DOCKER_ENV"},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		cmd, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.NoError(t, err)
@@ -105,13 +108,13 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	})
 
 	t.Run("Validation failed with Docker command", func(t *testing.T) {
-		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("docker"),
+		stdio := &configv1.McpStdioConnection{
+			Command: strPtr("docker"),
 			Args:    []string{"run", "ubuntu"},
-			Validation: configv1.EnvValidation_builder{
+			Validation: &configv1.EnvValidation{
 				RequiredEnv: []string{"MISSING_DOCKER_VAR"},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		_, err := buildCommandFromStdioConfig(ctx, stdio, false)
 		assert.Error(t, err)

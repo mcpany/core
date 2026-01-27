@@ -14,7 +14,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func strPtr(s string) *string {
@@ -33,29 +32,35 @@ func TestRunChecks_Http(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-http"),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: strPtr(ts.URL),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: strPtr(ts.URL),
+					},
+				},
+			},
+			{
 				Name: strPtr("invalid-http"),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: strPtr("http://127.0.0.1:12345/nonexistent"),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: strPtr("http://127.0.0.1:12345/nonexistent"),
+					},
+				},
+			},
+			{
 				Name:    strPtr("disabled-service"),
 				Disable: boolPtr(true),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: strPtr(ts.URL),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: strPtr(ts.URL),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -83,22 +88,26 @@ func TestRunChecks_Grpc(t *testing.T) {
 	// Extract host:port from ts.URL (http://127.0.0.1:xxxxx)
 	addr := ts.Listener.Addr().String()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-grpc"),
-				GrpcService: configv1.GrpcUpstreamService_builder{
-					Address: strPtr(addr),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
+					GrpcService: &configv1.GrpcUpstreamService{
+						Address: strPtr(addr),
+					},
+				},
+			},
+			{
 				Name: strPtr("invalid-grpc"),
-				GrpcService: configv1.GrpcUpstreamService_builder{
-					Address: strPtr("127.0.0.1:1"), // Unlikely port
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
+					GrpcService: &configv1.GrpcUpstreamService{
+						Address: strPtr("127.0.0.1:1"), // Unlikely port
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -114,22 +123,30 @@ func TestRunChecks_OpenAPI(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-openapi"),
-				OpenapiService: configv1.OpenapiUpstreamService_builder{
-					SpecUrl: proto.String(ts.URL),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
+					OpenapiService: &configv1.OpenapiUpstreamService{
+						SpecSource: &configv1.OpenapiUpstreamService_SpecUrl{
+							SpecUrl: ts.URL,
+						},
+					},
+				},
+			},
+			{
 				Name: strPtr("invalid-openapi"),
-				OpenapiService: configv1.OpenapiUpstreamService_builder{
-					SpecUrl: proto.String("http://127.0.0.1:12345/nonexistent"),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
+					OpenapiService: &configv1.OpenapiUpstreamService{
+						SpecSource: &configv1.OpenapiUpstreamService_SpecUrl{
+							SpecUrl: "http://127.0.0.1:12345/nonexistent",
+						},
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -162,55 +179,75 @@ func TestRunChecks_Authentication_OAuth2(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("auth-ok"),
-				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(), // Dummy service URL
-				UpstreamAuth: configv1.Authentication_builder{
-					Oauth2: configv1.OAuth2Auth_builder{
-						TokenUrl: strPtr(ts.URL + "/token-ok"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)}, // Dummy service URL
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-ok"),
+						},
+					},
+				},
+			},
+			{
 				Name: strPtr("auth-400"),
-				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					Oauth2: configv1.OAuth2Auth_builder{
-						TokenUrl: strPtr(ts.URL + "/token-400"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-400"),
+						},
+					},
+				},
+			},
+			{
 				Name: strPtr("auth-401"),
-				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					Oauth2: configv1.OAuth2Auth_builder{
-						TokenUrl: strPtr(ts.URL + "/token-401"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-401"),
+						},
+					},
+				},
+			},
+			{
 				Name: strPtr("auth-404"),
-				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					Oauth2: configv1.OAuth2Auth_builder{
-						TokenUrl: strPtr(ts.URL + "/token-404"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-404"),
+						},
+					},
+				},
+			},
+			{
 				Name: strPtr("auth-500"),
-				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					Oauth2: configv1.OAuth2Auth_builder{
-						TokenUrl: strPtr(ts.URL + "/token-500"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oauth2{
+						Oauth2: &configv1.OAuth2Auth{
+							TokenUrl: strPtr(ts.URL + "/token-500"),
+						},
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -247,29 +284,30 @@ func TestRunChecks_Filesystem(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-fs"),
-				FilesystemService: configv1.FilesystemUpstreamService_builder{
-					// RootPaths is a map, direct set or use builder if it has map field. Usually yes.
-					// Repeated/Map fields in builder?
-					// Usually exposed as field.
-					RootPaths: map[string]string{
-						"/data": tmpDir,
+				ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+					FilesystemService: &configv1.FilesystemUpstreamService{
+						RootPaths: map[string]string{
+							"/data": tmpDir,
+						},
 					},
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				},
+			},
+			{
 				Name: strPtr("invalid-fs"),
-				FilesystemService: configv1.FilesystemUpstreamService_builder{
-					RootPaths: map[string]string{
-						"/data": filepath.Join(tmpDir, "nonexistent"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+					FilesystemService: &configv1.FilesystemUpstreamService{
+						RootPaths: map[string]string{
+							"/data": filepath.Join(tmpDir, "nonexistent"),
+						},
 					},
-				}.Build(),
-			}.Build(),
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -281,22 +319,26 @@ func TestRunChecks_Filesystem(t *testing.T) {
 func TestRunChecks_CommandLine(t *testing.T) {
 	// Assume "ls" (or "dir" on windows) exists. Docker env is linux.
 	cmd := "ls"
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-cmd"),
-				CommandLineService: configv1.CommandLineUpstreamService_builder{
-					Command: strPtr(cmd),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+					CommandLineService: &configv1.CommandLineUpstreamService{
+						Command: strPtr(cmd),
+					},
+				},
+			},
+			{
 				Name: strPtr("invalid-cmd"),
-				CommandLineService: configv1.CommandLineUpstreamService_builder{
-					Command: strPtr("nonexistentcommand12345"),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+					CommandLineService: &configv1.CommandLineUpstreamService{
+						Command: strPtr("nonexistentcommand12345"),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -312,26 +354,34 @@ func TestRunChecks_MCP(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-mcp-http"),
-				McpService: configv1.McpUpstreamService_builder{
-					HttpConnection: configv1.McpStreamableHttpConnection_builder{
-						HttpAddress: strPtr(ts.URL),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_HttpConnection{
+							HttpConnection: &configv1.McpStreamableHttpConnection{
+								HttpAddress: strPtr(ts.URL),
+							},
+						},
+					},
+				},
+			},
+			{
 				Name: strPtr("valid-mcp-stdio"),
-				McpService: configv1.McpUpstreamService_builder{
-					StdioConnection: configv1.McpStdioConnection_builder{
-						Command: strPtr("ls"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command: strPtr("ls"),
+							},
+						},
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -350,16 +400,18 @@ func TestRunChecks_WebSocket(t *testing.T) {
 	// Convert http:// to ws://
 	wsURL := "ws" + ts.URL[4:]
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("valid-ws"),
-				WebsocketService: configv1.WebsocketUpstreamService_builder{
-					Address: strPtr(wsURL),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
+					WebsocketService: &configv1.WebsocketUpstreamService{
+						Address: strPtr(wsURL),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 
@@ -378,19 +430,23 @@ func TestRunChecks_OIDC(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("oidc-service"),
-				HttpService: configv1.HttpUpstreamService_builder{Address: strPtr(ts.URL)}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					Oidc: configv1.OIDCAuth_builder{
-						Issuer: strPtr(ts.URL),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{Address: strPtr(ts.URL)},
+				},
+				UpstreamAuth: &configv1.Authentication{
+					AuthMethod: &configv1.Authentication_Oidc{
+						Oidc: &configv1.OIDCAuth{
+							Issuer: strPtr(ts.URL),
+						},
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 	assert.Len(t, results, 1)
@@ -404,16 +460,18 @@ func TestRunChecks_GraphQL(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("graphql-service"),
-				GraphqlService: configv1.GraphQLUpstreamService_builder{
-					Address: strPtr(ts.URL),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
+					GraphqlService: &configv1.GraphQLUpstreamService{
+						Address: strPtr(ts.URL),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 	assert.Len(t, results, 1)
@@ -427,16 +485,18 @@ func TestRunChecks_WebRTC(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("webrtc-service"),
-				WebrtcService: configv1.WebrtcUpstreamService_builder{
-					Address: strPtr(ts.URL),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+					WebrtcService: &configv1.WebrtcUpstreamService{
+						Address: strPtr(ts.URL),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 	assert.Len(t, results, 1)
@@ -445,24 +505,28 @@ func TestRunChecks_WebRTC(t *testing.T) {
 
 func TestRunChecks_SQL(t *testing.T) {
 	// DSN: ":memory:" for sqlite
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: strPtr("sql-service"),
-				SqlService: configv1.SqlUpstreamService_builder{
-					Driver: strPtr("sqlite"),
-					Dsn:    strPtr(":memory:"),
-				}.Build(),
-			}.Build(),
-			configv1.UpstreamServiceConfig_builder{
+				ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+					SqlService: &configv1.SqlUpstreamService{
+						Driver: strPtr("sqlite"),
+						Dsn:    strPtr(":memory:"),
+					},
+				},
+			},
+			{
 				Name: strPtr("invalid-sql-driver"),
-				SqlService: configv1.SqlUpstreamService_builder{
-					Driver: strPtr("invalid-driver"),
-					Dsn:    strPtr(":memory:"),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+					SqlService: &configv1.SqlUpstreamService{
+						Driver: strPtr("invalid-driver"),
+						Dsn:    strPtr(":memory:"),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := RunChecks(context.Background(), config)
 	assert.Len(t, results, 2)

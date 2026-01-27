@@ -6,15 +6,15 @@ package tool
 import (
 	"context"
 	"encoding/json"
-	"reflect"
+	reflect "reflect"
 	"testing"
 	"time"
 
 	"unsafe"
 
+	"github.com/mcpany/core/server/pkg/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -37,12 +37,10 @@ func (m *mockToolSimple) Execute(ctx context.Context, req *ExecutionRequest) (an
 
 func (m *mockToolSimple) Tool() *routerv1.Tool {
 	if m.toolDef == nil {
-		inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
-		return routerv1.Tool_builder{
-			Name:        proto.String("mock-tool"),
-			ServiceId:   proto.String(m.serviceID),
-			InputSchema: inputSchema,
-		}.Build()
+		return &routerv1.Tool{
+			Name:      proto.String("mock-tool"),
+			ServiceId: proto.String(m.serviceID),
+		}
 	}
 	return m.toolDef
 }
@@ -97,18 +95,17 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
-	inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
 	mt := &mockToolSimple{
 		serviceID: "s1",
-		toolDef: routerv1.Tool_builder{
-			Name:        proto.String("mock-tool"),
-			ServiceId:   proto.String("s1"),
-			InputSchema: inputSchema,
-		}.Build(),
+		toolDef: &routerv1.Tool{
+			Name:      proto.String("mock-tool"),
+			ServiceId: proto.String("s1"),
+		},
 	}
 	_ = m.AddTool(mt)
 
 	// Case: PreHook Error (via Policy)
+	// We can use PolicyHook with ActionDeny
 	callPolicy := configv1.CallPolicy_builder{
 		DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
 		Rules: []*configv1.CallPolicyRule{
@@ -120,11 +117,10 @@ func TestManager_ExecuteTool_Hooks_Coverage(t *testing.T) {
 	}.Build()
 
 	// Setup ServiceInfo with Config
-	svcConfig := configv1.UpstreamServiceConfig_builder{
-		Id:           proto.String("s1"),
+	svcConfig := &configv1.UpstreamServiceConfig{
 		Name:         proto.String("s1"),
 		CallPolicies: []*configv1.CallPolicy{callPolicy},
-	}.Build()
+	}
 
 	m.AddServiceInfo("s1", &ServiceInfo{Config: svcConfig})
 
@@ -140,10 +136,9 @@ func TestManager_ClearToolsForService_Coverage(t *testing.T) {
 	b, _ := bus.NewProvider(nil)
 	m := NewManager(b)
 
-	inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
-	t1 := &mockToolSimple{serviceID: "s1", toolDef: routerv1.Tool_builder{Name: proto.String("t1"), ServiceId: proto.String("s1"), InputSchema: inputSchema}.Build()}
-	t2 := &mockToolSimple{serviceID: "s2", toolDef: routerv1.Tool_builder{Name: proto.String("t2"), ServiceId: proto.String("s2"), InputSchema: inputSchema}.Build()}
-	t3 := &mockToolSimple{serviceID: "s1", toolDef: routerv1.Tool_builder{Name: proto.String("t3"), ServiceId: proto.String("s1"), InputSchema: inputSchema}.Build()}
+	t1 := &mockToolSimple{serviceID: "s1", toolDef: &routerv1.Tool{Name: proto.String("t1"), ServiceId: proto.String("s1")}}
+	t2 := &mockToolSimple{serviceID: "s2", toolDef: &routerv1.Tool{Name: proto.String("t2"), ServiceId: proto.String("s2")}}
+	t3 := &mockToolSimple{serviceID: "s1", toolDef: &routerv1.Tool{Name: proto.String("t3"), ServiceId: proto.String("s1")}}
 
 	_ = m.AddTool(t1)
 	_ = m.AddTool(t2)
@@ -185,7 +180,7 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 
 	mt := &mockToolSimple{
 		serviceID: "s1",
-		toolDef: routerv1.Tool_builder{
+		toolDef: &routerv1.Tool{
 			Name:      proto.String("mock-tool"),
 			ServiceId: proto.String("s1"),
 			InputSchema: &structpb.Struct{
@@ -198,33 +193,31 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 					}}},
 				},
 			},
-		}.Build(),
+		},
 	}
 
 	err := m.AddTool(mt)
 	assert.NoError(t, err)
 
-	// Coverage: OutputSchema
-	inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
-	mt.toolDef = routerv1.Tool_builder{
-		Name:      proto.String("mock-tool"),
-		ServiceId: proto.String("s1"),
-		InputSchema: inputSchema,
-		OutputSchema: &structpb.Struct{Fields: map[string]*structpb.Value{
-			"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
-		}},
-	}.Build()
-
+	// Coverage: InputSchema marshaling. InputSchema is set above.
+	// Coverage: OutputSchema?
+	mt.toolDef.OutputSchema = &structpb.Struct{Fields: map[string]*structpb.Value{
+		"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+	}}
+	// Re-add? Manager allows overwriting?
+	// AddTool calls Store.
 	err = m.AddTool(mt)
 	assert.NoError(t, err)
 
 	// Use reflection to get the handler and call it!
+
+	// Server -> tools (*featureSet[*serverTool]) -> features (map[string]*serverTool) -> "s1.mock-tool" -> handler (ToolHandler)
 	srvVal := reflect.ValueOf(mcpServer).Elem()
-	toolsFieldSet := srvVal.FieldByName("tools")
+	toolsFieldSet := srvVal.FieldByName("tools") // *featureSet
 	if !toolsFieldSet.IsValid() {
 		t.Fatalf("Could not find tools field in mcp.Server")
 	}
-	toolsMap := toolsFieldSet.Elem().FieldByName("features")
+	toolsMap := toolsFieldSet.Elem().FieldByName("features") // map[string]*serverTool
 	if !toolsMap.IsValid() {
 		t.Fatalf("Could not find features field in featureSet")
 	}
@@ -233,11 +226,14 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 	if !toolHandlerVal.IsValid() {
 		t.Fatalf("Could not find tool handler for s1.mock-tool")
 	}
+	// toolHandlerVal is *serverTool. get handler field.
 	handlerField := toolHandlerVal.Elem().FieldByName("handler")
 	if !handlerField.IsValid() {
 		t.Fatalf("Could not find handler field in serverTool")
 	}
 
+	// Bypass unexported check. FieldByName returns a Value that is addressable if struct is addressable.
+	// toolHandlerVal is *serverTool, so Elem() is addressable.
 	handlerAccessible := reflect.NewAt(handlerField.Type(), unsafe.Pointer(handlerField.UnsafeAddr())).Elem() //nolint:gosec
 
 	// Prepare request
@@ -268,6 +264,8 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 	select {
 	case req := <-reqChan:
 		assert.Equal(t, "s1.mock-tool", req.ToolName)
+		// We should also publish a result to unblock the handler if we wanted to check return value.
+		// Sending success result
 		resJSON, _ := json.Marshal(map[string]any{"result": "ok"})
 
 		resBus, err := bus.GetBus[*bus.ToolExecutionResult](b, "tool_execution_results")

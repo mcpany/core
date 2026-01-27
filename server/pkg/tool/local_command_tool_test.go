@@ -26,21 +26,19 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 			}),
 		},
 	}
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name:        proto.String("test-tool"),
 		Description: proto.String("A test tool"),
 		InputSchema: inputSchema,
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("echo"),
-		Local:   proto.Bool(true),
-	}.Build()
-
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{}
+	service.Command = proto.String("echo")
+	service.Local = proto.Bool(true)
+	callDef := &configv1.CommandLineCallDefinition{
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build()}.Build(),
+			{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
 		},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
@@ -66,22 +64,24 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 
 func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name: proto.String("test-tool-env"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
 		Env: map[string]*configv1.SecretValue{
-			"MY_ENV": configv1.SecretValue_builder{
-				PlainText: proto.String("secret_value"),
-			}.Build(),
+			"MY_ENV": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "secret_value",
+				},
+			},
 		},
-	}.Build()
+	}
 	// Verify environment variable is passed correctly without leaking it in the output (if we were to echo it)
-	callDef := configv1.CommandLineCallDefinition_builder{
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "if [ \"$MY_ENV\" = \"secret_value\" ]; then echo -n match; else echo -n mismatch; fi"},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
@@ -101,21 +101,23 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 
 func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name: proto.String("test-tool-redact"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
 		Env: map[string]*configv1.SecretValue{
-			"MY_SECRET": configv1.SecretValue_builder{
-				PlainText: proto.String("SuperSecret123"),
-			}.Build(),
+			"MY_SECRET": {
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "SuperSecret123",
+				},
+			},
 		},
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "echo -n $MY_SECRET"},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
@@ -135,20 +137,20 @@ func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 
 func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name:        proto.String("test-tool-blocked"),
 		Description: proto.String("A test tool"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("echo"),
-		Local:   proto.Bool(true),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+	}
+	service := &configv1.CommandLineUpstreamService{}
+	service.Command = proto.String("echo")
+	service.Local = proto.Bool(true)
+	callDef := &configv1.CommandLineCallDefinition{}
 
+	action := configv1.CallPolicy_DENY
 	policies := []*configv1.CallPolicy{
-		configv1.CallPolicy_builder{
-			DefaultAction: configv1.CallPolicy_DENY.Enum(),
-		}.Build(),
+		{
+			DefaultAction: &action,
+		},
 	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, policies, "blocked-call-id")
@@ -172,20 +174,20 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 
 func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name:        proto.String("test-tool-json-stderr"),
 		Description: proto.String("A test tool that fails"),
-	}.Build()
+	}
 	// Command that writes to stderr and exits with error, producing invalid JSON (empty stdout)
-	service := configv1.CommandLineUpstreamService_builder{
+	service := &configv1.CommandLineUpstreamService{
 		Command:               proto.String("sh"),
 		Local:                 proto.Bool(true),
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
-	}.Build()
+	}
 
-	callDef := configv1.CommandLineCallDefinition_builder{
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "echo 'something went wrong' >&2; exit 1"},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 

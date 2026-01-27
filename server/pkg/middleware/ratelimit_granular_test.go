@@ -79,21 +79,21 @@ func TestRateLimitMiddleware_Granular(t *testing.T) {
 	// Setup Config
 	// Service Limit: 100 RPS
 	// Tool Limit: 1 RPS (Burst 1)
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String(serviceID),
-		RateLimit: configv1.RateLimitConfig_builder{
+		RateLimit: &configv1.RateLimitConfig{
 			IsEnabled:         true,
-			RequestsPerSecond: 100.0,
+			RequestsPerSecond: 100,
 			Burst:             100,
 			ToolLimits: map[string]*configv1.RateLimitConfig{
-				toolName: configv1.RateLimitConfig_builder{
+				toolName: {
 					IsEnabled:         true,
-					RequestsPerSecond: 1.0,
+					RequestsPerSecond: 1,
 					Burst:             1,
-				}.Build(),
+				},
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	tm.On("GetTool", toolName).Return(&MockTool{name: toolName, serviceID: serviceID}, true)
 	tm.On("GetTool", otherToolName).Return(&MockTool{name: otherToolName, serviceID: serviceID}, true)
@@ -132,14 +132,14 @@ func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
 	toolName := "normal-tool"
 
 	// Service Limit: 1 RPS
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String(serviceID),
-		RateLimit: configv1.RateLimitConfig_builder{
+		RateLimit: &configv1.RateLimitConfig{
 			IsEnabled:         true,
-			RequestsPerSecond: 1.0,
+			RequestsPerSecond: 1,
 			Burst:             1,
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	tm.On("GetTool", toolName).Return(&MockTool{name: toolName, serviceID: serviceID}, true)
 	tm.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{Name: serviceID, Config: config}, true)

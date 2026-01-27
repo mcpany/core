@@ -12,10 +12,10 @@ import (
 
 func BenchmarkRedactor_RedactJSON(b *testing.B) {
 	enabled := true
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}.Build()
+	}
 	r := NewRedactor(cfg, slog.Default())
 
 	input := []byte(`{
@@ -41,10 +41,10 @@ func BenchmarkRedactor_RedactJSON(b *testing.B) {
 
 func BenchmarkRedactor_RedactJSON_NoCustomPatterns(b *testing.B) {
 	enabled := true
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled: &enabled,
 		// No custom patterns
-	}.Build()
+	}
 	r := NewRedactor(cfg, slog.Default())
 
 	input := []byte(`{
@@ -70,9 +70,9 @@ func BenchmarkRedactor_RedactJSON_NoCustomPatterns(b *testing.B) {
 
 func BenchmarkRedactor_RedactJSON_NoCustomPatterns_Large(b *testing.B) {
 	enabled := true
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled: &enabled,
-	}.Build()
+	}
 	r := NewRedactor(cfg, slog.Default())
 
 	// Construct a larger JSON payload
@@ -99,9 +99,9 @@ func BenchmarkRedactor_RedactJSON_NoCustomPatterns_Large(b *testing.B) {
 
 func BenchmarkRedactor_RedactJSON_AllSafe(b *testing.B) {
 	enabled := true
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled: &enabled,
-	}.Build()
+	}
 	r := NewRedactor(cfg, slog.Default())
 
 	input := []byte(`{
@@ -122,12 +122,11 @@ func BenchmarkRedactor_RedactJSON_AllSafe(b *testing.B) {
 
 func BenchmarkRedactor_RedactJSON_Large(b *testing.B) {
 	enabled := true
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}.Build()
+	}
 	r := NewRedactor(cfg, slog.Default())
-
 
 	// Construct a larger JSON payload
 	input := []byte(`{

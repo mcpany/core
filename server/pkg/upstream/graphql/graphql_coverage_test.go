@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -44,9 +44,9 @@ func TestGraphQLUpstream_Register_MissingConfig(t *testing.T) {
 	u := NewGraphQLUpstream()
 	tm := tool.NewManager(nil)
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
+	serviceConfig := &configv1.UpstreamServiceConfig{
 		Name: proto.String("missing-config"),
-	}.Build()
+	}
 
 	_, _, _, err := u.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.Error(t, err)

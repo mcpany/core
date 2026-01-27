@@ -12,7 +12,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestPostgresStore_Load_Errors(t *testing.T) {
@@ -125,7 +124,7 @@ func TestPostgresStore_SaveGlobalSettings_Errors(t *testing.T) {
 		mock.ExpectExec("INSERT INTO global_settings").
 			WillReturnError(errors.New("exec error"))
 
-		err := store.SaveGlobalSettings(context.Background(), configv1.GlobalSettings_builder{}.Build())
+		err := store.SaveGlobalSettings(context.Background(), &configv1.GlobalSettings{})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to save global settings")
 	})
@@ -164,19 +163,19 @@ func TestPostgresStore_User_Errors(t *testing.T) {
 
 	t.Run("CreateUser_ExecError", func(t *testing.T) {
 		mock.ExpectExec("INSERT INTO users").WillReturnError(errors.New("exec error"))
-		err := store.CreateUser(context.Background(), configv1.User_builder{Id: proto.String("u1")}.Build())
+		err := store.CreateUser(context.Background(), &configv1.User{Id: stringPtr("u1")})
 		assert.Error(t, err)
 	})
 
 	t.Run("UpdateUser_ExecError", func(t *testing.T) {
 		mock.ExpectExec("UPDATE users").WillReturnError(errors.New("exec error"))
-		err := store.UpdateUser(context.Background(), configv1.User_builder{Id: proto.String("u1")}.Build())
+		err := store.UpdateUser(context.Background(), &configv1.User{Id: stringPtr("u1")})
 		assert.Error(t, err)
 	})
 
 	t.Run("UpdateUser_RowsAffectedError", func(t *testing.T) {
 		mock.ExpectExec("UPDATE users").WillReturnResult(sqlmock.NewErrorResult(errors.New("rows affected error")))
-		err := store.UpdateUser(context.Background(), configv1.User_builder{Id: proto.String("u1")}.Build())
+		err := store.UpdateUser(context.Background(), &configv1.User{Id: stringPtr("u1")})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to get rows affected")
 	})
@@ -218,7 +217,7 @@ func TestPostgresStore_Secret_Errors(t *testing.T) {
 
 	t.Run("SaveSecret_ExecError", func(t *testing.T) {
 		mock.ExpectExec("INSERT INTO secrets").WillReturnError(errors.New("err"))
-		err := store.SaveSecret(context.Background(), configv1.Secret_builder{Id: proto.String("s1")}.Build())
+		err := store.SaveSecret(context.Background(), &configv1.Secret{Id: stringPtr("s1")})
 		assert.Error(t, err)
 	})
 
@@ -259,7 +258,7 @@ func TestPostgresStore_Profile_Errors(t *testing.T) {
 
 	t.Run("SaveProfile_ExecError", func(t *testing.T) {
 		mock.ExpectExec("INSERT INTO profile_definitions").WillReturnError(errors.New("err"))
-		err := store.SaveProfile(context.Background(), configv1.ProfileDefinition_builder{Name: proto.String("p1")}.Build())
+		err := store.SaveProfile(context.Background(), &configv1.ProfileDefinition{Name: stringPtr("p1")})
 		assert.Error(t, err)
 	})
 
@@ -300,7 +299,7 @@ func TestPostgresStore_Collection_Errors(t *testing.T) {
 
 	t.Run("SaveCollection_ExecError", func(t *testing.T) {
 		mock.ExpectExec("INSERT INTO service_collections").WillReturnError(errors.New("err"))
-		err := store.SaveServiceCollection(context.Background(), configv1.Collection_builder{Name: proto.String("c1")}.Build())
+		err := store.SaveServiceCollection(context.Background(), &configv1.Collection{Name: stringPtr("c1")})
 		assert.Error(t, err)
 	})
 
@@ -328,7 +327,7 @@ func TestPostgresStore_Token_Errors(t *testing.T) {
 
 	t.Run("SaveToken_ExecError", func(t *testing.T) {
 		mock.ExpectExec("INSERT INTO user_tokens").WillReturnError(errors.New("err"))
-		err := store.SaveToken(context.Background(), configv1.UserToken_builder{UserId: proto.String("u1"), ServiceId: proto.String("s1")}.Build())
+		err := store.SaveToken(context.Background(), &configv1.UserToken{UserId: stringPtr("u1"), ServiceId: stringPtr("s1")})
 		assert.Error(t, err)
 	})
 

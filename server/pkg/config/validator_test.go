@@ -53,58 +53,72 @@ func TestValidateSecretValue(t *testing.T) {
 		},
 		{
 			name: "Valid file path",
-			secret: configv1.SecretValue_builder{
-				FilePath: proto.String("secrets.txt"),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "secrets.txt",
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Invalid file path (absolute)",
-			secret: configv1.SecretValue_builder{
-				FilePath: proto.String("/etc/passwd"),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "/etc/passwd",
+				},
+			},
 			expectErr: true,
 			errMsg:    "invalid secret file path",
 		},
 		{
 			name: "Missing file path",
-			secret: configv1.SecretValue_builder{
-				FilePath: proto.String("missing.txt"),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_FilePath{
+					FilePath: "missing.txt",
+				},
+			},
 			expectErr: true,
 			errMsg:    "secret file \"missing.txt\" does not exist",
 		},
 		{
 			name: "Valid env var",
-			secret: configv1.SecretValue_builder{
-				EnvironmentVariable: proto.String("TEST_ENV_VAR"),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "TEST_ENV_VAR",
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Missing env var",
-			secret: configv1.SecretValue_builder{
-				EnvironmentVariable: proto.String("MISSING_ENV_VAR"),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: "MISSING_ENV_VAR",
+				},
+			},
 			expectErr: true,
 			errMsg:    "environment variable \"MISSING_ENV_VAR\" is not set",
 		},
 		{
 			name: "Valid remote content",
-			secret: configv1.SecretValue_builder{
-				RemoteContent: configv1.RemoteContent_builder{
-					HttpUrl: proto.String("https://example.com/secret"),
-				}.Build(),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_RemoteContent{
+					RemoteContent: &configv1.RemoteContent{
+						HttpUrl: strPtr("https://example.com/secret"),
+					},
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Remote content empty URL",
-			secret: configv1.SecretValue_builder{
-				RemoteContent: configv1.RemoteContent_builder{
-					HttpUrl: proto.String(""),
-				}.Build(),
-			}.Build(),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_RemoteContent{
+					RemoteContent: &configv1.RemoteContent{
+						HttpUrl: strPtr(""),
+					},
+				},
+			},
 			expectErr: true,
 			errMsg:    "remote secret has empty http_url",
 		},
@@ -134,18 +148,22 @@ func TestValidateSecretValue(t *testing.T) {
 		},
 		{
 			name: "Valid regex match (plain_text)",
-			secret: configv1.SecretValue_builder{
-				PlainText:       proto.String("sk-1234567890"),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "sk-1234567890",
+				},
 				ValidationRegex: proto.String(`^sk-[a-zA-Z0-9]{10}$`),
-			}.Build(),
+			},
 			expectErr: false,
 		},
 		{
 			name: "Invalid regex match (plain_text)",
-			secret: configv1.SecretValue_builder{
-				PlainText:       proto.String("invalid-key"),
+			secret: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{
+					PlainText: "invalid-key",
+				},
 				ValidationRegex: proto.String(`^sk-[a-zA-Z0-9]{10}$`),
-			}.Build(),
+			},
 			expectErr: true,
 			errMsg:    "secret value does not match validation regex",
 		},
@@ -209,19 +227,23 @@ func TestValidateMcpStdioConnection_RelativeCommandWithWorkingDir(t *testing.T) 
 	require.NoError(t, err)
 
 	// Config with relative command and working directory
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: proto.String("test-service"),
-				McpService: configv1.McpUpstreamService_builder{
-					StdioConnection: configv1.McpStdioConnection_builder{
-						Command:          proto.String("./start.sh"),
-						WorkingDirectory: proto.String(tempDir),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command:          proto.String("./start.sh"),
+								WorkingDirectory: proto.String(tempDir),
+							},
+						},
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	// Validate should PASS now because it checks inside WorkingDirectory
 	errors := Validate(context.Background(), config, Server)
@@ -236,19 +258,23 @@ func TestValidateMcpStdioConnection_RelativeCommandMissing(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Config with relative command that DOES NOT exist
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
+			{
 				Name: proto.String("test-service-missing"),
-				McpService: configv1.McpUpstreamService_builder{
-					StdioConnection: configv1.McpStdioConnection_builder{
-						Command:          proto.String("./missing_script.sh"),
-						WorkingDirectory: proto.String(tempDir),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+					McpService: &configv1.McpUpstreamService{
+						ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+							StdioConnection: &configv1.McpStdioConnection{
+								Command:          proto.String("./missing_script.sh"),
+								WorkingDirectory: proto.String(tempDir),
+							},
+						},
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	// Validate should FAIL
 	errors := Validate(context.Background(), config, Server)
@@ -336,20 +362,24 @@ func TestValidateMcpStdioConnection_ArgsValidation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := configv1.McpAnyServerConfig_builder{
+			config := &configv1.McpAnyServerConfig{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					configv1.UpstreamServiceConfig_builder{
+					{
 						Name: proto.String("test-service"),
-						McpService: configv1.McpUpstreamService_builder{
-							StdioConnection: configv1.McpStdioConnection_builder{
-								Command:          proto.String(tt.command),
-								Args:             tt.args,
-								WorkingDirectory: proto.String(tt.workingDir),
-							}.Build(),
-						}.Build(),
-					}.Build(),
+						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+							McpService: &configv1.McpUpstreamService{
+								ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+									StdioConnection: &configv1.McpStdioConnection{
+										Command:          proto.String(tt.command),
+										Args:             tt.args,
+										WorkingDirectory: proto.String(tt.workingDir),
+									},
+								},
+							},
+						},
+					},
 				},
-			}.Build()
+			}
 
 			// We need to mock execLookPath to allow "python3" to pass command validation
 			oldLookPath := execLookPath
@@ -397,23 +427,23 @@ func TestValidateSecretMap(t *testing.T) {
 		{
 			name: "Valid secrets",
 			secrets: map[string]*configv1.SecretValue{
-				"KEY1": configv1.SecretValue_builder{
-					FilePath: proto.String("secret1.txt"),
-				}.Build(),
-				"KEY2": configv1.SecretValue_builder{
-					RemoteContent: configv1.RemoteContent_builder{
-						HttpUrl: proto.String("https://example.com"),
-					}.Build(),
-				}.Build(),
+				"KEY1": {
+					Value: &configv1.SecretValue_FilePath{FilePath: "secret1.txt"},
+				},
+				"KEY2": {
+					Value: &configv1.SecretValue_RemoteContent{
+						RemoteContent: &configv1.RemoteContent{HttpUrl: strPtr("https://example.com")},
+					},
+				},
 			},
 			expectErr: false,
 		},
 		{
 			name: "Invalid secret",
 			secrets: map[string]*configv1.SecretValue{
-				"KEY1": configv1.SecretValue_builder{
-					FilePath: proto.String("/abs/path"),
-				}.Build(),
+				"KEY1": {
+					Value: &configv1.SecretValue_FilePath{FilePath: "/abs/path"},
+				},
 			},
 			expectErr: true,
 		},
@@ -440,55 +470,55 @@ func TestValidateContainerEnvironment_Volumes(t *testing.T) {
 	}{
 		{
 			name: "Valid volume",
-			env: configv1.ContainerEnvironment_builder{
-				Image: proto.String("alpine"),
+			env: &configv1.ContainerEnvironment{
+				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"./data": "/data",
 				},
-			}.Build(),
+			},
 			expectErr: false,
 		},
 		{
 			name: "Empty host path",
-			env: configv1.ContainerEnvironment_builder{
-				Image: proto.String("alpine"),
+			env: &configv1.ContainerEnvironment{
+				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"": "/data",
 				},
-			}.Build(),
+			},
 			expectErr: true,
 			errMsg:    "container environment volume host path is empty",
 		},
 		{
 			name: "Empty container path",
-			env: configv1.ContainerEnvironment_builder{
-				Image: proto.String("alpine"),
+			env: &configv1.ContainerEnvironment{
+				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"./data": "",
 				},
-			}.Build(),
+			},
 			expectErr: true,
 			errMsg:    "container environment volume container path is empty",
 		},
 		{
 			name: "Insecure host path",
-			env: configv1.ContainerEnvironment_builder{
-				Image: proto.String("alpine"),
+			env: &configv1.ContainerEnvironment{
+				Image: strPtr("alpine"),
 				Volumes: map[string]string{
 					"/etc": "/data",
 				},
-			}.Build(),
+			},
 			expectErr: true,
 			errMsg:    "not a secure path",
 		},
 		{
 			name: "No image (skip validation)",
-			env: configv1.ContainerEnvironment_builder{
-				Image: proto.String(""), // No image
+			env: &configv1.ContainerEnvironment{
+				Image: strPtr(""), // No image
 				Volumes: map[string]string{
 					"/etc": "/data", // Would be invalid if image was set
 				},
-			}.Build(),
+			},
 			expectErr: false,
 		},
 	}
@@ -540,56 +570,52 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	}{
 		{
 			name: "Valid Stdio",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpStdioConnection{}
-				conn.SetCommand("ls")
-				s.SetStdioConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+					StdioConnection: &configv1.McpStdioConnection{
+						Command: strPtr("ls"),
+					},
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Empty Command",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpStdioConnection{}
-				conn.SetCommand("")
-				s.SetStdioConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+					StdioConnection: &configv1.McpStdioConnection{
+						Command: strPtr(""),
+					},
+				},
+			},
 			expectErr: true,
 			errMsg:    "has empty command",
 		},
 		{
 			name: "Insecure Working Directory",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpStdioConnection{}
-				conn.SetCommand("ls")
-				conn.SetWorkingDirectory("/etc")
-				s.SetStdioConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+					StdioConnection: &configv1.McpStdioConnection{
+						Command:          strPtr("ls"),
+						WorkingDirectory: strPtr("/etc"),
+					},
+				},
+			},
 			expectErr: true,
 			errMsg:    "insecure working_directory",
 		},
 		{
 			name: "Invalid Env",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpStdioConnection{}
-				conn.SetCommand("ls")
-				conn.SetEnv(map[string]*configv1.SecretValue{
-					"BAD": func() *configv1.SecretValue {
-						sv := &configv1.SecretValue{}
-						sv.SetFilePath("/bad")
-						return sv
-					}(),
-				})
-				s.SetStdioConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_StdioConnection{
+					StdioConnection: &configv1.McpStdioConnection{
+						Command: strPtr("ls"),
+						Env: map[string]*configv1.SecretValue{
+							"BAD": {Value: &configv1.SecretValue_FilePath{FilePath: "/bad"}},
+						},
+					},
+				},
+			},
 			expectErr: true,
 			errMsg:    "invalid secret environment variable",
 		},
@@ -760,36 +786,36 @@ func TestValidateMcpService_BundleConnection(t *testing.T) {
 	}{
 		{
 			name: "Valid Bundle",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpBundleConnection{}
-				conn.SetBundlePath("bundle.tar.gz")
-				s.SetBundleConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
+					BundleConnection: &configv1.McpBundleConnection{
+						BundlePath: strPtr("bundle.tar.gz"),
+					},
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Empty Bundle Path",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpBundleConnection{}
-				conn.SetBundlePath("")
-				s.SetBundleConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
+					BundleConnection: &configv1.McpBundleConnection{
+						BundlePath: strPtr(""),
+					},
+				},
+			},
 			expectErr: true,
 			errMsg:    "empty bundle_path",
 		},
 		{
 			name: "Insecure Bundle Path",
-			service: func() *configv1.McpUpstreamService {
-				s := &configv1.McpUpstreamService{}
-				conn := &configv1.McpBundleConnection{}
-				conn.SetBundlePath("/etc/passwd")
-				s.SetBundleConnection(conn)
-				return s
-			}(),
+			service: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
+					BundleConnection: &configv1.McpBundleConnection{
+						BundlePath: strPtr("/etc/passwd"),
+					},
+				},
+			},
 			expectErr: true,
 			errMsg:    "insecure bundle_path",
 		},
@@ -833,11 +859,14 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 			return nil
 		}
 
-		mtls := &configv1.Authentication{}
-		m := &configv1.MTLSAuth{}
-		m.SetClientCertPath("cert.pem")
-		m.SetClientKeyPath("key.pem")
-		mtls.SetMtls(m)
+		mtls := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Mtls{
+				Mtls: &configv1.MTLSAuth{
+					ClientCertPath: strPtr("cert.pem"),
+					ClientKeyPath:  strPtr("key.pem"),
+				},
+			},
+		}
 		err := validateAuthentication(ctx, mtls, AuthValidationContextOutgoing)
 		require.NoError(t, err)
 
@@ -864,14 +893,16 @@ func TestValidate_ExtraServices(t *testing.T) {
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				// Use struct construction
-				svc := &configv1.UpstreamServiceConfig{}
-				svc.SetName("graphql-valid")
-
-				glSvc := &configv1.GraphQLUpstreamService{}
-				glSvc.SetAddress("http://example.com/graphql")
-				svc.SetGraphqlService(glSvc)
-
-				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("graphql-valid"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
+							GraphqlService: &configv1.GraphQLUpstreamService{
+								Address: proto.String("http://example.com/graphql"),
+							},
+						},
+					},
+				}
 				return cfg
 			}(),
 			expectedErrorCount: 0,
@@ -900,14 +931,16 @@ func TestValidate_ExtraServices(t *testing.T) {
 			config: func() *configv1.McpAnyServerConfig {
 				cfg := &configv1.McpAnyServerConfig{}
 				// Use struct construction
-				svc := &configv1.UpstreamServiceConfig{}
-				svc.SetName("webrtc-valid")
-
-				wbSvc := &configv1.WebrtcUpstreamService{}
-				wbSvc.SetAddress("http://example.com/webrtc")
-				svc.SetWebrtcService(wbSvc)
-
-				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				cfg.UpstreamServices = []*configv1.UpstreamServiceConfig{
+					{
+						Name: proto.String("webrtc-valid"),
+						ServiceConfig: &configv1.UpstreamServiceConfig_WebrtcService{
+							WebrtcService: &configv1.WebrtcUpstreamService{
+								Address: proto.String("http://example.com/webrtc"),
+							},
+						},
+					},
+				}
 				return cfg
 			}(),
 			expectedErrorCount: 0,
@@ -1099,77 +1132,77 @@ func TestValidateUsers(t *testing.T) {
 	}{
 		{
 			name: "Valid User",
-			users: func() []*configv1.User {
-				u := &configv1.User{}
-				u.SetId("user1")
-				auth := &configv1.Authentication{}
-				apiKey := &configv1.APIKeyAuth{}
-				apiKey.SetParamName("key")
-				apiKey.SetVerificationValue("secret")
-				auth.SetApiKey(apiKey)
-				u.SetAuthentication(auth)
-				return []*configv1.User{u}
-			}(),
+			users: []*configv1.User{
+				{
+					Id: strPtr("user1"),
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_ApiKey{
+							ApiKey: &configv1.APIKeyAuth{
+								ParamName:         strPtr("key"),
+								VerificationValue: strPtr("secret"),
+							},
+						},
+					},
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Missing ID",
-			users: func() []*configv1.User {
-				u := &configv1.User{}
-				// Id empty
-				u.SetId("")
-				return []*configv1.User{u}
-			}(),
+			users: []*configv1.User{
+				{
+					Id: strPtr(""), // Empty string pointer
+				},
+			},
 			expectErr:    true,
 			errSubstring: "user has empty id",
 		},
 		{
 			name: "Duplicate ID",
-			users: func() []*configv1.User {
-				u1 := &configv1.User{}
-				u1.SetId("user1")
-				auth1 := &configv1.Authentication{}
-				ak1 := &configv1.APIKeyAuth{}
-				ak1.SetParamName("k")
-				ak1.SetVerificationValue("v")
-				auth1.SetApiKey(ak1)
-				u1.SetAuthentication(auth1)
-
-				u2 := &configv1.User{}
-				u2.SetId("user1") // Duplicate
-				auth2 := &configv1.Authentication{}
-				ak2 := &configv1.APIKeyAuth{}
-				ak2.SetParamName("k")
-				ak2.SetVerificationValue("v")
-				auth2.SetApiKey(ak2)
-				u2.SetAuthentication(auth2)
-
-				return []*configv1.User{u1, u2}
-			}(),
+			users: []*configv1.User{
+				{
+					Id: strPtr("user1"),
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_ApiKey{
+							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), VerificationValue: strPtr("v")},
+						},
+					},
+				},
+				{
+					Id: strPtr("user1"), // Duplicate
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_ApiKey{
+							ApiKey: &configv1.APIKeyAuth{ParamName: strPtr("k"), VerificationValue: strPtr("v")},
+						},
+					},
+				},
+			},
 			expectErr:    true,
 			errSubstring: "duplicate user id",
 		},
 		{
 			name: "Missing Authentication",
-			users: func() []*configv1.User {
-				u := &configv1.User{}
-				u.SetId("user1")
-				return []*configv1.User{u}
-			}(),
+			users: []*configv1.User{
+				{
+					Id: strPtr("user1"),
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Invalid OAuth2",
-			users: func() []*configv1.User {
-				u := &configv1.User{}
-				u.SetId("user1")
-				auth := &configv1.Authentication{}
-				oauth := &configv1.OAuth2Auth{}
-				oauth.SetTokenUrl("invalid-url")
-				auth.SetOauth2(oauth)
-				u.SetAuthentication(auth)
-				return []*configv1.User{u}
-			}(),
+			users: []*configv1.User{
+				{
+					Id: strPtr("user1"),
+					Authentication: &configv1.Authentication{
+						AuthMethod: &configv1.Authentication_Oauth2{
+							Oauth2: &configv1.OAuth2Auth{
+								TokenUrl: strPtr("invalid-url"),
+							},
+						},
+					},
+				},
+			},
 			expectErr:    true,
 			errSubstring: "invalid oauth2 token_url",
 		},
@@ -1177,11 +1210,9 @@ func TestValidateUsers(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := func() *configv1.McpAnyServerConfig {
-				c := &configv1.McpAnyServerConfig{}
-				c.SetUsers(tt.users)
-				return c
-			}()
+			config := &configv1.McpAnyServerConfig{
+				Users: tt.users,
+			}
 			errs := Validate(ctx, config, Server)
 			if tt.expectErr {
 				assert.NotEmpty(t, errs)
@@ -1215,107 +1246,90 @@ func TestValidateGlobalSettings_Extended(t *testing.T) {
 	}{
 		{
 			name: "Valid Audit File",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				ac := &configv1.AuditConfig{}
-				ac.SetEnabled(true)
-				ac.SetStorageType(configv1.AuditConfig_STORAGE_TYPE_FILE)
-				ac.SetOutputPath("/var/log/audit.log")
-				gs.SetAudit(ac)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				Audit: &configv1.AuditConfig{
+					Enabled:     boolPtr(true),
+					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_FILE),
+					OutputPath:  strPtr("/var/log/audit.log"),
+				},
+			},
 			expectErr: false,
 		},
 		{
 			name: "Audit File Missing Path",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				ac := &configv1.AuditConfig{}
-				ac.SetEnabled(true)
-				ac.SetStorageType(configv1.AuditConfig_STORAGE_TYPE_FILE)
-				gs.SetAudit(ac)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				Audit: &configv1.AuditConfig{
+					Enabled:     boolPtr(true),
+					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_FILE),
+				},
+			},
 			expectErr:    true,
 			errSubstring: "output_path is required",
 		},
 		{
 			name: "Audit Webhook Invalid URL",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				ac := &configv1.AuditConfig{}
-				ac.SetEnabled(true)
-				ac.SetStorageType(configv1.AuditConfig_STORAGE_TYPE_WEBHOOK)
-				ac.SetWebhookUrl("not-a-url")
-				gs.SetAudit(ac)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				Audit: &configv1.AuditConfig{
+					Enabled:     boolPtr(true),
+					StorageType: storageTypePtr(configv1.AuditConfig_STORAGE_TYPE_WEBHOOK),
+					WebhookUrl:  strPtr("not-a-url"),
+				},
+			},
 			expectErr:    true,
 			errSubstring: "invalid webhook_url",
 		},
 		{
 			name: "DLP Invalid Regex",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				dlp := &configv1.DLPConfig{}
-				dlp.SetEnabled(true)
-				dlp.SetCustomPatterns([]string{"["})
-				gs.SetDlp(dlp)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				Dlp: &configv1.DLPConfig{
+					Enabled:        boolPtr(true),
+					CustomPatterns: []string{"["}, // Invalid regex
+				},
+			},
 			expectErr:    true,
 			errSubstring: "invalid regex pattern",
 		},
 		{
 			name: "GC Invalid Interval",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				gcs := &configv1.GCSettings{}
-				gcs.SetEnabled(true)
-				gcs.SetInterval("not-a-duration")
-				gs.SetGcSettings(gcs)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				GcSettings: &configv1.GCSettings{
+					Enabled:  boolPtr(true),
+					Interval: strPtr("not-a-duration"),
+				},
+			},
 			expectErr:    true,
 			errSubstring: "invalid interval",
 		},
 		{
 			name: "GC Insecure Path",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				gcs := &configv1.GCSettings{}
-				gcs.SetEnabled(true)
-				gcs.SetPaths([]string{"../etc"})
-				gs.SetGcSettings(gcs)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				GcSettings: &configv1.GCSettings{
+					Enabled: boolPtr(true),
+					Paths:   []string{"../etc"},
+				},
+			},
 			expectErr:    true,
 			errSubstring: "not secure",
 		},
 		{
 			name: "GC Relative Path (Not Allowed)",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				gcs := &configv1.GCSettings{}
-				gcs.SetEnabled(true)
-				gcs.SetPaths([]string{"relative/path"})
-				gs.SetGcSettings(gcs)
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				GcSettings: &configv1.GCSettings{
+					Enabled: boolPtr(true),
+					Paths:   []string{"relative/path"},
+				},
+			},
 			expectErr:    true,
 			errSubstring: "must be absolute",
 		},
 		{
 			name: "Duplicate Profile Name",
-			gs: func() *configv1.GlobalSettings {
-				gs := &configv1.GlobalSettings{}
-				p1 := &configv1.ProfileDefinition{}
-				p1.SetName("p1")
-				p2 := &configv1.ProfileDefinition{}
-				p2.SetName("p1")
-				gs.SetProfileDefinitions([]*configv1.ProfileDefinition{p1, p2})
-				return gs
-			}(),
+			gs: &configv1.GlobalSettings{
+				ProfileDefinitions: []*configv1.ProfileDefinition{
+					{Name: strPtr("p1")},
+					{Name: strPtr("p1")},
+				},
+			},
 			expectErr:    true,
 			errSubstring: "duplicate profile definition name",
 		},
@@ -1323,11 +1337,9 @@ func TestValidateGlobalSettings_Extended(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := func() *configv1.McpAnyServerConfig {
-				c := &configv1.McpAnyServerConfig{}
-				c.SetGlobalSettings(tt.gs)
-				return c
-			}()
+			config := &configv1.McpAnyServerConfig{
+				GlobalSettings: tt.gs,
+			}
 			errs := Validate(ctx, config, Server)
 			if tt.expectErr {
 				assert.NotEmpty(t, errs)

@@ -114,12 +114,10 @@ func TestHandleTopology(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		// Setup mock data
-		s1 := &configv1.UpstreamServiceConfig{}
-		s1.SetName("service-1")
-		s2 := &configv1.UpstreamServiceConfig{}
-		s2.SetName("service-2")
-		s2.SetDisable(true)
-		services := []*configv1.UpstreamServiceConfig{s1, s2}
+		services := []*configv1.UpstreamServiceConfig{
+			{Name: proto.String("service-1")},
+			{Name: proto.String("service-2"), Disable: proto.Bool(true)},
+		}
 		mockRegistry.On("GetAllServices").Return(services, nil).Once()
 
 		tools := []tool.Tool{

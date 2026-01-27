@@ -7,13 +7,14 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/upstream_service.proto
 
+//go:build !protoopaque
+
 package v1
 
 import (
 	_ "github.com/mcpany/core/proto/bus"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/gofeaturespb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -260,38 +261,84 @@ func (x FilesystemUpstreamService_SymlinkMode) Number() protoreflect.EnumNumber 
 // that mcpany will proxy. It defines the service's identity, how to connect to it,
 // and policies like authentication, caching, rate limiting, and load balancing.
 type UpstreamServiceConfig struct {
-	state                            protoimpl.MessageState                `protogen:"opaque.v1"`
-	xxx_hidden_Name                  *string                               `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Id                    *string                               `protobuf:"bytes,2,opt,name=id"`
-	xxx_hidden_SanitizedName         *string                               `protobuf:"bytes,3,opt,name=sanitized_name"`
-	xxx_hidden_Version               *string                               `protobuf:"bytes,4,opt,name=version"`
-	xxx_hidden_Priority              int32                                 `protobuf:"varint,5,opt,name=priority"`
-	xxx_hidden_Disable               bool                                  `protobuf:"varint,6,opt,name=disable"`
-	xxx_hidden_AutoDiscoverTool      bool                                  `protobuf:"varint,7,opt,name=auto_discover_tool"`
-	xxx_hidden_ConfigError           *string                               `protobuf:"bytes,8,opt,name=config_error"`
-	xxx_hidden_ReadOnly              bool                                  `protobuf:"varint,35,opt,name=read_only"`
-	xxx_hidden_LastError             *string                               `protobuf:"bytes,36,opt,name=last_error"`
-	xxx_hidden_ToolCount             int32                                 `protobuf:"varint,37,opt,name=tool_count"`
-	xxx_hidden_ConnectionPool        *ConnectionPoolConfig                 `protobuf:"bytes,9,opt,name=connection_pool"`
-	xxx_hidden_UpstreamAuth          *Authentication                       `protobuf:"bytes,10,opt,name=upstream_auth"`
-	xxx_hidden_Cache                 *CacheConfig                          `protobuf:"bytes,11,opt,name=cache"`
-	xxx_hidden_RateLimit             *RateLimitConfig                      `protobuf:"bytes,12,opt,name=rate_limit"`
-	xxx_hidden_LoadBalancingStrategy LoadBalancingStrategy                 `protobuf:"varint,13,opt,name=load_balancing_strategy,enum=mcpany.config.v1.LoadBalancingStrategy"`
-	xxx_hidden_Resilience            *ResilienceConfig                     `protobuf:"bytes,14,opt,name=resilience"`
-	xxx_hidden_Authentication        *Authentication                       `protobuf:"bytes,15,opt,name=authentication"`
-	xxx_hidden_ToolExportPolicy      *ExportPolicy                         `protobuf:"bytes,16,opt,name=tool_export_policy"`
-	xxx_hidden_PromptExportPolicy    *ExportPolicy                         `protobuf:"bytes,17,opt,name=prompt_export_policy"`
-	xxx_hidden_ResourceExportPolicy  *ExportPolicy                         `protobuf:"bytes,18,opt,name=resource_export_policy"`
-	xxx_hidden_ServiceConfig         isUpstreamServiceConfig_ServiceConfig `protobuf_oneof:"service_config"`
-	xxx_hidden_CallPolicies          *[]*CallPolicy                        `protobuf:"bytes,30,rep,name=call_policies"`
-	xxx_hidden_PreCallHooks          *[]*CallHook                          `protobuf:"bytes,31,rep,name=pre_call_hooks"`
-	xxx_hidden_PostCallHooks         *[]*CallHook                          `protobuf:"bytes,32,rep,name=post_call_hooks"`
-	xxx_hidden_Prompts               *[]*PromptDefinition                  `protobuf:"bytes,33,rep,name=prompts"`
-	xxx_hidden_Tags                  []string                              `protobuf:"bytes,34,rep,name=tags"`
-	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
-	XXX_presence                     [1]uint32
-	unknownFields                    protoimpl.UnknownFields
-	sizeCache                        protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The original user-provided name for the upstream service.
+	// This name is used for identification, logging, and metrics.
+	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The full SHA256 hash of the service name, used as a unique identifier.
+	// This ensures that for the same service name, the ID is always the same.
+	Id *string `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"`
+	// A sanitized version of the service name, conforming to identifier rules.
+	// @inject_tag: yaml:"-"
+	//
+	// This field is managed internally and should not be set by the user.
+	SanitizedName *string `protobuf:"bytes,3,opt,name=sanitized_name" json:"sanitized_name,omitempty"`
+	// The version of the upstream service, if known (e.g., "v1.2.3").
+	Version *string `protobuf:"bytes,4,opt,name=version" json:"version,omitempty"`
+	// The priority of the service. Lower numbers have higher priority.
+	Priority *int32 `protobuf:"varint,5,opt,name=priority" json:"priority,omitempty"`
+	// If true, this upstream service is disabled.
+	Disable *bool `protobuf:"varint,6,opt,name=disable" json:"disable,omitempty"`
+	// If true, automatically convert all API calls to tools.
+	AutoDiscoverTool *bool `protobuf:"varint,7,opt,name=auto_discover_tool" json:"auto_discover_tool,omitempty"`
+	// The configuration error if the service failed validation.
+	// @inject_tag: yaml:"-"
+	ConfigError *string `protobuf:"bytes,8,opt,name=config_error" json:"config_error,omitempty"`
+	// If true, this service configuration is read-only (e.g., loaded from a file).
+	// @inject_tag: yaml:"-"
+	ReadOnly *bool `protobuf:"varint,35,opt,name=read_only" json:"read_only,omitempty"`
+	// The last error message encountered by the service (e.g. health check failure).
+	// @inject_tag: yaml:"-"
+	LastError *string `protobuf:"bytes,36,opt,name=last_error" json:"last_error,omitempty"`
+	// The number of tools registered for this service.
+	// @inject_tag: yaml:"-"
+	ToolCount *int32 `protobuf:"varint,37,opt,name=tool_count" json:"tool_count,omitempty"`
+	// Configuration for the pool of connections to the upstream service.
+	ConnectionPool *ConnectionPoolConfig `protobuf:"bytes,9,opt,name=connection_pool" json:"connection_pool,omitempty"`
+	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
+	UpstreamAuth *Authentication `protobuf:"bytes,10,opt,name=upstream_auth" json:"upstream_auth,omitempty"`
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig `protobuf:"bytes,11,opt,name=cache" json:"cache,omitempty"`
+	// Rate limiting to protect the upstream service from being overwhelmed.
+	RateLimit *RateLimitConfig `protobuf:"bytes,12,opt,name=rate_limit" json:"rate_limit,omitempty"`
+	// Strategy for distributing requests among multiple instances of the service.
+	LoadBalancingStrategy *LoadBalancingStrategy `protobuf:"varint,13,opt,name=load_balancing_strategy,enum=mcpany.config.v1.LoadBalancingStrategy" json:"load_balancing_strategy,omitempty"`
+	// Advanced resiliency features to handle failures gracefully.
+	Resilience *ResilienceConfig `protobuf:"bytes,14,opt,name=resilience" json:"resilience,omitempty"`
+	// Authentication configuration for securing access to this service (incoming).
+	Authentication *Authentication `protobuf:"bytes,15,opt,name=authentication" json:"authentication,omitempty"`
+	// Policies to control what is exported to the client.
+	ToolExportPolicy     *ExportPolicy `protobuf:"bytes,16,opt,name=tool_export_policy" json:"tool_export_policy,omitempty"`
+	PromptExportPolicy   *ExportPolicy `protobuf:"bytes,17,opt,name=prompt_export_policy" json:"prompt_export_policy,omitempty"`
+	ResourceExportPolicy *ExportPolicy `protobuf:"bytes,18,opt,name=resource_export_policy" json:"resource_export_policy,omitempty"`
+	// The specific configuration for the type of upstream service.
+	//
+	// Types that are valid to be assigned to ServiceConfig:
+	//
+	//	*UpstreamServiceConfig_McpService
+	//	*UpstreamServiceConfig_HttpService
+	//	*UpstreamServiceConfig_GrpcService
+	//	*UpstreamServiceConfig_OpenapiService
+	//	*UpstreamServiceConfig_CommandLineService
+	//	*UpstreamServiceConfig_WebsocketService
+	//	*UpstreamServiceConfig_WebrtcService
+	//	*UpstreamServiceConfig_GraphqlService
+	//	*UpstreamServiceConfig_SqlService
+	//	*UpstreamServiceConfig_FilesystemService
+	//	*UpstreamServiceConfig_VectorService
+	ServiceConfig isUpstreamServiceConfig_ServiceConfig `protobuf_oneof:"service_config"`
+	// Policy to control which calls can be made.
+	CallPolicies []*CallPolicy `protobuf:"bytes,30,rep,name=call_policies" json:"call_policies,omitempty"`
+	// List of hooks to execute before the call.
+	PreCallHooks []*CallHook `protobuf:"bytes,31,rep,name=pre_call_hooks" json:"pre_call_hooks,omitempty"`
+	// List of hooks to execute after the call.
+	PostCallHooks []*CallHook `protobuf:"bytes,32,rep,name=post_call_hooks" json:"post_call_hooks,omitempty"`
+	// The prompts provided by this upstream service.
+	Prompts []*PromptDefinition `protobuf:"bytes,33,rep,name=prompts" json:"prompts,omitempty"`
+	// Tags for organizing and filtering services.
+	Tags          []string `protobuf:"bytes,34,rep,name=tags" json:"tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpstreamServiceConfig) Reset() {
@@ -320,175 +367,162 @@ func (x *UpstreamServiceConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *UpstreamServiceConfig) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
 func (x *UpstreamServiceConfig) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
+	if x != nil && x.Id != nil {
+		return *x.Id
 	}
 	return ""
 }
 
 func (x *UpstreamServiceConfig) GetSanitizedName() string {
-	if x != nil {
-		if x.xxx_hidden_SanitizedName != nil {
-			return *x.xxx_hidden_SanitizedName
-		}
-		return ""
+	if x != nil && x.SanitizedName != nil {
+		return *x.SanitizedName
 	}
 	return ""
 }
 
 func (x *UpstreamServiceConfig) GetVersion() string {
-	if x != nil {
-		if x.xxx_hidden_Version != nil {
-			return *x.xxx_hidden_Version
-		}
-		return ""
+	if x != nil && x.Version != nil {
+		return *x.Version
 	}
 	return ""
 }
 
 func (x *UpstreamServiceConfig) GetPriority() int32 {
-	if x != nil {
-		return x.xxx_hidden_Priority
+	if x != nil && x.Priority != nil {
+		return *x.Priority
 	}
 	return 0
 }
 
 func (x *UpstreamServiceConfig) GetDisable() bool {
-	if x != nil {
-		return x.xxx_hidden_Disable
+	if x != nil && x.Disable != nil {
+		return *x.Disable
 	}
 	return false
 }
 
 func (x *UpstreamServiceConfig) GetAutoDiscoverTool() bool {
-	if x != nil {
-		return x.xxx_hidden_AutoDiscoverTool
+	if x != nil && x.AutoDiscoverTool != nil {
+		return *x.AutoDiscoverTool
 	}
 	return false
 }
 
 func (x *UpstreamServiceConfig) GetConfigError() string {
-	if x != nil {
-		if x.xxx_hidden_ConfigError != nil {
-			return *x.xxx_hidden_ConfigError
-		}
-		return ""
+	if x != nil && x.ConfigError != nil {
+		return *x.ConfigError
 	}
 	return ""
 }
 
 func (x *UpstreamServiceConfig) GetReadOnly() bool {
-	if x != nil {
-		return x.xxx_hidden_ReadOnly
+	if x != nil && x.ReadOnly != nil {
+		return *x.ReadOnly
 	}
 	return false
 }
 
 func (x *UpstreamServiceConfig) GetLastError() string {
-	if x != nil {
-		if x.xxx_hidden_LastError != nil {
-			return *x.xxx_hidden_LastError
-		}
-		return ""
+	if x != nil && x.LastError != nil {
+		return *x.LastError
 	}
 	return ""
 }
 
 func (x *UpstreamServiceConfig) GetToolCount() int32 {
-	if x != nil {
-		return x.xxx_hidden_ToolCount
+	if x != nil && x.ToolCount != nil {
+		return *x.ToolCount
 	}
 	return 0
 }
 
 func (x *UpstreamServiceConfig) GetConnectionPool() *ConnectionPoolConfig {
 	if x != nil {
-		return x.xxx_hidden_ConnectionPool
+		return x.ConnectionPool
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetUpstreamAuth() *Authentication {
 	if x != nil {
-		return x.xxx_hidden_UpstreamAuth
+		return x.UpstreamAuth
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetCache() *CacheConfig {
 	if x != nil {
-		return x.xxx_hidden_Cache
+		return x.Cache
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetRateLimit() *RateLimitConfig {
 	if x != nil {
-		return x.xxx_hidden_RateLimit
+		return x.RateLimit
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetLoadBalancingStrategy() LoadBalancingStrategy {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 15) {
-			return x.xxx_hidden_LoadBalancingStrategy
-		}
+	if x != nil && x.LoadBalancingStrategy != nil {
+		return *x.LoadBalancingStrategy
 	}
 	return LoadBalancingStrategy_ROUND_ROBIN
 }
 
 func (x *UpstreamServiceConfig) GetResilience() *ResilienceConfig {
 	if x != nil {
-		return x.xxx_hidden_Resilience
+		return x.Resilience
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetAuthentication() *Authentication {
 	if x != nil {
-		return x.xxx_hidden_Authentication
+		return x.Authentication
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetToolExportPolicy() *ExportPolicy {
 	if x != nil {
-		return x.xxx_hidden_ToolExportPolicy
+		return x.ToolExportPolicy
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetPromptExportPolicy() *ExportPolicy {
 	if x != nil {
-		return x.xxx_hidden_PromptExportPolicy
+		return x.PromptExportPolicy
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetResourceExportPolicy() *ExportPolicy {
 	if x != nil {
-		return x.xxx_hidden_ResourceExportPolicy
+		return x.ResourceExportPolicy
+	}
+	return nil
+}
+
+func (x *UpstreamServiceConfig) GetServiceConfig() isUpstreamServiceConfig_ServiceConfig {
+	if x != nil {
+		return x.ServiceConfig
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetMcpService() *McpUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_McpService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_McpService); ok {
 			return x.McpService
 		}
 	}
@@ -497,7 +531,7 @@ func (x *UpstreamServiceConfig) GetMcpService() *McpUpstreamService {
 
 func (x *UpstreamServiceConfig) GetHttpService() *HttpUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_HttpService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_HttpService); ok {
 			return x.HttpService
 		}
 	}
@@ -506,7 +540,7 @@ func (x *UpstreamServiceConfig) GetHttpService() *HttpUpstreamService {
 
 func (x *UpstreamServiceConfig) GetGrpcService() *GrpcUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_GrpcService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_GrpcService); ok {
 			return x.GrpcService
 		}
 	}
@@ -515,7 +549,7 @@ func (x *UpstreamServiceConfig) GetGrpcService() *GrpcUpstreamService {
 
 func (x *UpstreamServiceConfig) GetOpenapiService() *OpenapiUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_OpenapiService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_OpenapiService); ok {
 			return x.OpenapiService
 		}
 	}
@@ -524,7 +558,7 @@ func (x *UpstreamServiceConfig) GetOpenapiService() *OpenapiUpstreamService {
 
 func (x *UpstreamServiceConfig) GetCommandLineService() *CommandLineUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_CommandLineService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_CommandLineService); ok {
 			return x.CommandLineService
 		}
 	}
@@ -533,7 +567,7 @@ func (x *UpstreamServiceConfig) GetCommandLineService() *CommandLineUpstreamServ
 
 func (x *UpstreamServiceConfig) GetWebsocketService() *WebsocketUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_WebsocketService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_WebsocketService); ok {
 			return x.WebsocketService
 		}
 	}
@@ -542,7 +576,7 @@ func (x *UpstreamServiceConfig) GetWebsocketService() *WebsocketUpstreamService 
 
 func (x *UpstreamServiceConfig) GetWebrtcService() *WebrtcUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_WebrtcService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_WebrtcService); ok {
 			return x.WebrtcService
 		}
 	}
@@ -551,7 +585,7 @@ func (x *UpstreamServiceConfig) GetWebrtcService() *WebrtcUpstreamService {
 
 func (x *UpstreamServiceConfig) GetGraphqlService() *GraphQLUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_GraphqlService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_GraphqlService); ok {
 			return x.GraphqlService
 		}
 	}
@@ -560,7 +594,7 @@ func (x *UpstreamServiceConfig) GetGraphqlService() *GraphQLUpstreamService {
 
 func (x *UpstreamServiceConfig) GetSqlService() *SqlUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_SqlService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_SqlService); ok {
 			return x.SqlService
 		}
 	}
@@ -569,7 +603,7 @@ func (x *UpstreamServiceConfig) GetSqlService() *SqlUpstreamService {
 
 func (x *UpstreamServiceConfig) GetFilesystemService() *FilesystemUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_FilesystemService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_FilesystemService); ok {
 			return x.FilesystemService
 		}
 	}
@@ -578,7 +612,7 @@ func (x *UpstreamServiceConfig) GetFilesystemService() *FilesystemUpstreamServic
 
 func (x *UpstreamServiceConfig) GetVectorService() *VectorUpstreamService {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_VectorService); ok {
+		if x, ok := x.ServiceConfig.(*UpstreamServiceConfig_VectorService); ok {
 			return x.VectorService
 		}
 	}
@@ -587,410 +621,390 @@ func (x *UpstreamServiceConfig) GetVectorService() *VectorUpstreamService {
 
 func (x *UpstreamServiceConfig) GetCallPolicies() []*CallPolicy {
 	if x != nil {
-		if x.xxx_hidden_CallPolicies != nil {
-			return *x.xxx_hidden_CallPolicies
-		}
+		return x.CallPolicies
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetPreCallHooks() []*CallHook {
 	if x != nil {
-		if x.xxx_hidden_PreCallHooks != nil {
-			return *x.xxx_hidden_PreCallHooks
-		}
+		return x.PreCallHooks
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetPostCallHooks() []*CallHook {
 	if x != nil {
-		if x.xxx_hidden_PostCallHooks != nil {
-			return *x.xxx_hidden_PostCallHooks
-		}
+		return x.PostCallHooks
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) GetTags() []string {
 	if x != nil {
-		return x.xxx_hidden_Tags
+		return x.Tags
 	}
 	return nil
 }
 
 func (x *UpstreamServiceConfig) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 27)
+	x.Name = &v
 }
 
 func (x *UpstreamServiceConfig) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 27)
+	x.Id = &v
 }
 
 func (x *UpstreamServiceConfig) SetSanitizedName(v string) {
-	x.xxx_hidden_SanitizedName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 27)
+	x.SanitizedName = &v
 }
 
 func (x *UpstreamServiceConfig) SetVersion(v string) {
-	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 27)
+	x.Version = &v
 }
 
 func (x *UpstreamServiceConfig) SetPriority(v int32) {
-	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 27)
+	x.Priority = &v
 }
 
 func (x *UpstreamServiceConfig) SetDisable(v bool) {
-	x.xxx_hidden_Disable = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 27)
+	x.Disable = &v
 }
 
 func (x *UpstreamServiceConfig) SetAutoDiscoverTool(v bool) {
-	x.xxx_hidden_AutoDiscoverTool = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 27)
+	x.AutoDiscoverTool = &v
 }
 
 func (x *UpstreamServiceConfig) SetConfigError(v string) {
-	x.xxx_hidden_ConfigError = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 27)
+	x.ConfigError = &v
 }
 
 func (x *UpstreamServiceConfig) SetReadOnly(v bool) {
-	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 27)
+	x.ReadOnly = &v
 }
 
 func (x *UpstreamServiceConfig) SetLastError(v string) {
-	x.xxx_hidden_LastError = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 27)
+	x.LastError = &v
 }
 
 func (x *UpstreamServiceConfig) SetToolCount(v int32) {
-	x.xxx_hidden_ToolCount = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 27)
+	x.ToolCount = &v
 }
 
 func (x *UpstreamServiceConfig) SetConnectionPool(v *ConnectionPoolConfig) {
-	x.xxx_hidden_ConnectionPool = v
+	x.ConnectionPool = v
 }
 
 func (x *UpstreamServiceConfig) SetUpstreamAuth(v *Authentication) {
-	x.xxx_hidden_UpstreamAuth = v
+	x.UpstreamAuth = v
 }
 
 func (x *UpstreamServiceConfig) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
+	x.Cache = v
 }
 
 func (x *UpstreamServiceConfig) SetRateLimit(v *RateLimitConfig) {
-	x.xxx_hidden_RateLimit = v
+	x.RateLimit = v
 }
 
 func (x *UpstreamServiceConfig) SetLoadBalancingStrategy(v LoadBalancingStrategy) {
-	x.xxx_hidden_LoadBalancingStrategy = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 27)
+	x.LoadBalancingStrategy = &v
 }
 
 func (x *UpstreamServiceConfig) SetResilience(v *ResilienceConfig) {
-	x.xxx_hidden_Resilience = v
+	x.Resilience = v
 }
 
 func (x *UpstreamServiceConfig) SetAuthentication(v *Authentication) {
-	x.xxx_hidden_Authentication = v
+	x.Authentication = v
 }
 
 func (x *UpstreamServiceConfig) SetToolExportPolicy(v *ExportPolicy) {
-	x.xxx_hidden_ToolExportPolicy = v
+	x.ToolExportPolicy = v
 }
 
 func (x *UpstreamServiceConfig) SetPromptExportPolicy(v *ExportPolicy) {
-	x.xxx_hidden_PromptExportPolicy = v
+	x.PromptExportPolicy = v
 }
 
 func (x *UpstreamServiceConfig) SetResourceExportPolicy(v *ExportPolicy) {
-	x.xxx_hidden_ResourceExportPolicy = v
+	x.ResourceExportPolicy = v
 }
 
 func (x *UpstreamServiceConfig) SetMcpService(v *McpUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_McpService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_McpService{v}
 }
 
 func (x *UpstreamServiceConfig) SetHttpService(v *HttpUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_HttpService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_HttpService{v}
 }
 
 func (x *UpstreamServiceConfig) SetGrpcService(v *GrpcUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_GrpcService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_GrpcService{v}
 }
 
 func (x *UpstreamServiceConfig) SetOpenapiService(v *OpenapiUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_OpenapiService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_OpenapiService{v}
 }
 
 func (x *UpstreamServiceConfig) SetCommandLineService(v *CommandLineUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_CommandLineService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_CommandLineService{v}
 }
 
 func (x *UpstreamServiceConfig) SetWebsocketService(v *WebsocketUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_WebsocketService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_WebsocketService{v}
 }
 
 func (x *UpstreamServiceConfig) SetWebrtcService(v *WebrtcUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_WebrtcService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_WebrtcService{v}
 }
 
 func (x *UpstreamServiceConfig) SetGraphqlService(v *GraphQLUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_GraphqlService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_GraphqlService{v}
 }
 
 func (x *UpstreamServiceConfig) SetSqlService(v *SqlUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_SqlService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_SqlService{v}
 }
 
 func (x *UpstreamServiceConfig) SetFilesystemService(v *FilesystemUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_FilesystemService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_FilesystemService{v}
 }
 
 func (x *UpstreamServiceConfig) SetVectorService(v *VectorUpstreamService) {
 	if v == nil {
-		x.xxx_hidden_ServiceConfig = nil
+		x.ServiceConfig = nil
 		return
 	}
-	x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_VectorService{v}
+	x.ServiceConfig = &UpstreamServiceConfig_VectorService{v}
 }
 
 func (x *UpstreamServiceConfig) SetCallPolicies(v []*CallPolicy) {
-	x.xxx_hidden_CallPolicies = &v
+	x.CallPolicies = v
 }
 
 func (x *UpstreamServiceConfig) SetPreCallHooks(v []*CallHook) {
-	x.xxx_hidden_PreCallHooks = &v
+	x.PreCallHooks = v
 }
 
 func (x *UpstreamServiceConfig) SetPostCallHooks(v []*CallHook) {
-	x.xxx_hidden_PostCallHooks = &v
+	x.PostCallHooks = v
 }
 
 func (x *UpstreamServiceConfig) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *UpstreamServiceConfig) SetTags(v []string) {
-	x.xxx_hidden_Tags = v
+	x.Tags = v
 }
 
 func (x *UpstreamServiceConfig) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Name != nil
 }
 
 func (x *UpstreamServiceConfig) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Id != nil
 }
 
 func (x *UpstreamServiceConfig) HasSanitizedName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.SanitizedName != nil
 }
 
 func (x *UpstreamServiceConfig) HasVersion() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.Version != nil
 }
 
 func (x *UpstreamServiceConfig) HasPriority() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.Priority != nil
 }
 
 func (x *UpstreamServiceConfig) HasDisable() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.Disable != nil
 }
 
 func (x *UpstreamServiceConfig) HasAutoDiscoverTool() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+	return x.AutoDiscoverTool != nil
 }
 
 func (x *UpstreamServiceConfig) HasConfigError() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+	return x.ConfigError != nil
 }
 
 func (x *UpstreamServiceConfig) HasReadOnly() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+	return x.ReadOnly != nil
 }
 
 func (x *UpstreamServiceConfig) HasLastError() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+	return x.LastError != nil
 }
 
 func (x *UpstreamServiceConfig) HasToolCount() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+	return x.ToolCount != nil
 }
 
 func (x *UpstreamServiceConfig) HasConnectionPool() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ConnectionPool != nil
+	return x.ConnectionPool != nil
 }
 
 func (x *UpstreamServiceConfig) HasUpstreamAuth() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_UpstreamAuth != nil
+	return x.UpstreamAuth != nil
 }
 
 func (x *UpstreamServiceConfig) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Cache != nil
+	return x.Cache != nil
 }
 
 func (x *UpstreamServiceConfig) HasRateLimit() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_RateLimit != nil
+	return x.RateLimit != nil
 }
 
 func (x *UpstreamServiceConfig) HasLoadBalancingStrategy() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 15)
+	return x.LoadBalancingStrategy != nil
 }
 
 func (x *UpstreamServiceConfig) HasResilience() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Resilience != nil
+	return x.Resilience != nil
 }
 
 func (x *UpstreamServiceConfig) HasAuthentication() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Authentication != nil
+	return x.Authentication != nil
 }
 
 func (x *UpstreamServiceConfig) HasToolExportPolicy() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ToolExportPolicy != nil
+	return x.ToolExportPolicy != nil
 }
 
 func (x *UpstreamServiceConfig) HasPromptExportPolicy() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_PromptExportPolicy != nil
+	return x.PromptExportPolicy != nil
 }
 
 func (x *UpstreamServiceConfig) HasResourceExportPolicy() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ResourceExportPolicy != nil
+	return x.ResourceExportPolicy != nil
 }
 
 func (x *UpstreamServiceConfig) HasServiceConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ServiceConfig != nil
+	return x.ServiceConfig != nil
 }
 
 func (x *UpstreamServiceConfig) HasMcpService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_McpService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_McpService)
 	return ok
 }
 
@@ -998,7 +1012,7 @@ func (x *UpstreamServiceConfig) HasHttpService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_HttpService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_HttpService)
 	return ok
 }
 
@@ -1006,7 +1020,7 @@ func (x *UpstreamServiceConfig) HasGrpcService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_GrpcService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_GrpcService)
 	return ok
 }
 
@@ -1014,7 +1028,7 @@ func (x *UpstreamServiceConfig) HasOpenapiService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_OpenapiService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_OpenapiService)
 	return ok
 }
 
@@ -1022,7 +1036,7 @@ func (x *UpstreamServiceConfig) HasCommandLineService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_CommandLineService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_CommandLineService)
 	return ok
 }
 
@@ -1030,7 +1044,7 @@ func (x *UpstreamServiceConfig) HasWebsocketService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_WebsocketService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_WebsocketService)
 	return ok
 }
 
@@ -1038,7 +1052,7 @@ func (x *UpstreamServiceConfig) HasWebrtcService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_WebrtcService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_WebrtcService)
 	return ok
 }
 
@@ -1046,7 +1060,7 @@ func (x *UpstreamServiceConfig) HasGraphqlService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_GraphqlService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_GraphqlService)
 	return ok
 }
 
@@ -1054,7 +1068,7 @@ func (x *UpstreamServiceConfig) HasSqlService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_SqlService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_SqlService)
 	return ok
 }
 
@@ -1062,7 +1076,7 @@ func (x *UpstreamServiceConfig) HasFilesystemService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_FilesystemService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_FilesystemService)
 	return ok
 }
 
@@ -1070,173 +1084,161 @@ func (x *UpstreamServiceConfig) HasVectorService() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_VectorService)
+	_, ok := x.ServiceConfig.(*UpstreamServiceConfig_VectorService)
 	return ok
 }
 
 func (x *UpstreamServiceConfig) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *UpstreamServiceConfig) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Id = nil
+	x.Id = nil
 }
 
 func (x *UpstreamServiceConfig) ClearSanitizedName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_SanitizedName = nil
+	x.SanitizedName = nil
 }
 
 func (x *UpstreamServiceConfig) ClearVersion() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_Version = nil
+	x.Version = nil
 }
 
 func (x *UpstreamServiceConfig) ClearPriority() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Priority = 0
+	x.Priority = nil
 }
 
 func (x *UpstreamServiceConfig) ClearDisable() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_Disable = false
+	x.Disable = nil
 }
 
 func (x *UpstreamServiceConfig) ClearAutoDiscoverTool() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
-	x.xxx_hidden_AutoDiscoverTool = false
+	x.AutoDiscoverTool = nil
 }
 
 func (x *UpstreamServiceConfig) ClearConfigError() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
-	x.xxx_hidden_ConfigError = nil
+	x.ConfigError = nil
 }
 
 func (x *UpstreamServiceConfig) ClearReadOnly() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
-	x.xxx_hidden_ReadOnly = false
+	x.ReadOnly = nil
 }
 
 func (x *UpstreamServiceConfig) ClearLastError() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
-	x.xxx_hidden_LastError = nil
+	x.LastError = nil
 }
 
 func (x *UpstreamServiceConfig) ClearToolCount() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
-	x.xxx_hidden_ToolCount = 0
+	x.ToolCount = nil
 }
 
 func (x *UpstreamServiceConfig) ClearConnectionPool() {
-	x.xxx_hidden_ConnectionPool = nil
+	x.ConnectionPool = nil
 }
 
 func (x *UpstreamServiceConfig) ClearUpstreamAuth() {
-	x.xxx_hidden_UpstreamAuth = nil
+	x.UpstreamAuth = nil
 }
 
 func (x *UpstreamServiceConfig) ClearCache() {
-	x.xxx_hidden_Cache = nil
+	x.Cache = nil
 }
 
 func (x *UpstreamServiceConfig) ClearRateLimit() {
-	x.xxx_hidden_RateLimit = nil
+	x.RateLimit = nil
 }
 
 func (x *UpstreamServiceConfig) ClearLoadBalancingStrategy() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 15)
-	x.xxx_hidden_LoadBalancingStrategy = LoadBalancingStrategy_ROUND_ROBIN
+	x.LoadBalancingStrategy = nil
 }
 
 func (x *UpstreamServiceConfig) ClearResilience() {
-	x.xxx_hidden_Resilience = nil
+	x.Resilience = nil
 }
 
 func (x *UpstreamServiceConfig) ClearAuthentication() {
-	x.xxx_hidden_Authentication = nil
+	x.Authentication = nil
 }
 
 func (x *UpstreamServiceConfig) ClearToolExportPolicy() {
-	x.xxx_hidden_ToolExportPolicy = nil
+	x.ToolExportPolicy = nil
 }
 
 func (x *UpstreamServiceConfig) ClearPromptExportPolicy() {
-	x.xxx_hidden_PromptExportPolicy = nil
+	x.PromptExportPolicy = nil
 }
 
 func (x *UpstreamServiceConfig) ClearResourceExportPolicy() {
-	x.xxx_hidden_ResourceExportPolicy = nil
+	x.ResourceExportPolicy = nil
 }
 
 func (x *UpstreamServiceConfig) ClearServiceConfig() {
-	x.xxx_hidden_ServiceConfig = nil
+	x.ServiceConfig = nil
 }
 
 func (x *UpstreamServiceConfig) ClearMcpService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_McpService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_McpService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearHttpService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_HttpService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_HttpService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearGrpcService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_GrpcService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_GrpcService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearOpenapiService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_OpenapiService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_OpenapiService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearCommandLineService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_CommandLineService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_CommandLineService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearWebsocketService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_WebsocketService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_WebsocketService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearWebrtcService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_WebrtcService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_WebrtcService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearGraphqlService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_GraphqlService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_GraphqlService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearSqlService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_SqlService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_SqlService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearFilesystemService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_FilesystemService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_FilesystemService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
 func (x *UpstreamServiceConfig) ClearVectorService() {
-	if _, ok := x.xxx_hidden_ServiceConfig.(*upstreamServiceConfig_VectorService); ok {
-		x.xxx_hidden_ServiceConfig = nil
+	if _, ok := x.ServiceConfig.(*UpstreamServiceConfig_VectorService); ok {
+		x.ServiceConfig = nil
 	}
 }
 
@@ -1257,28 +1259,28 @@ func (x *UpstreamServiceConfig) WhichServiceConfig() case_UpstreamServiceConfig_
 	if x == nil {
 		return UpstreamServiceConfig_ServiceConfig_not_set_case
 	}
-	switch x.xxx_hidden_ServiceConfig.(type) {
-	case *upstreamServiceConfig_McpService:
+	switch x.ServiceConfig.(type) {
+	case *UpstreamServiceConfig_McpService:
 		return UpstreamServiceConfig_McpService_case
-	case *upstreamServiceConfig_HttpService:
+	case *UpstreamServiceConfig_HttpService:
 		return UpstreamServiceConfig_HttpService_case
-	case *upstreamServiceConfig_GrpcService:
+	case *UpstreamServiceConfig_GrpcService:
 		return UpstreamServiceConfig_GrpcService_case
-	case *upstreamServiceConfig_OpenapiService:
+	case *UpstreamServiceConfig_OpenapiService:
 		return UpstreamServiceConfig_OpenapiService_case
-	case *upstreamServiceConfig_CommandLineService:
+	case *UpstreamServiceConfig_CommandLineService:
 		return UpstreamServiceConfig_CommandLineService_case
-	case *upstreamServiceConfig_WebsocketService:
+	case *UpstreamServiceConfig_WebsocketService:
 		return UpstreamServiceConfig_WebsocketService_case
-	case *upstreamServiceConfig_WebrtcService:
+	case *UpstreamServiceConfig_WebrtcService:
 		return UpstreamServiceConfig_WebrtcService_case
-	case *upstreamServiceConfig_GraphqlService:
+	case *UpstreamServiceConfig_GraphqlService:
 		return UpstreamServiceConfig_GraphqlService_case
-	case *upstreamServiceConfig_SqlService:
+	case *UpstreamServiceConfig_SqlService:
 		return UpstreamServiceConfig_SqlService_case
-	case *upstreamServiceConfig_FilesystemService:
+	case *UpstreamServiceConfig_FilesystemService:
 		return UpstreamServiceConfig_FilesystemService_case
-	case *upstreamServiceConfig_VectorService:
+	case *UpstreamServiceConfig_VectorService:
 		return UpstreamServiceConfig_VectorService_case
 	default:
 		return UpstreamServiceConfig_ServiceConfig_not_set_case
@@ -1339,7 +1341,7 @@ type UpstreamServiceConfig_builder struct {
 	ResourceExportPolicy *ExportPolicy
 	// The specific configuration for the type of upstream service.
 
-	// Fields of oneof xxx_hidden_ServiceConfig:
+	// Fields of oneof ServiceConfig:
 	McpService         *McpUpstreamService
 	HttpService        *HttpUpstreamService
 	GrpcService        *GrpcUpstreamService
@@ -1351,7 +1353,7 @@ type UpstreamServiceConfig_builder struct {
 	SqlService         *SqlUpstreamService
 	FilesystemService  *FilesystemUpstreamService
 	VectorService      *VectorUpstreamService
-	// -- end of xxx_hidden_ServiceConfig
+	// -- end of ServiceConfig
 	// Policy to control which calls can be made.
 	CallPolicies []*CallPolicy
 	// List of hooks to execute before the call.
@@ -1368,101 +1370,65 @@ func (b0 UpstreamServiceConfig_builder) Build() *UpstreamServiceConfig {
 	m0 := &UpstreamServiceConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 27)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 27)
-		x.xxx_hidden_Id = b.Id
-	}
-	if b.SanitizedName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 27)
-		x.xxx_hidden_SanitizedName = b.SanitizedName
-	}
-	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 27)
-		x.xxx_hidden_Version = b.Version
-	}
-	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 27)
-		x.xxx_hidden_Priority = *b.Priority
-	}
-	if b.Disable != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 27)
-		x.xxx_hidden_Disable = *b.Disable
-	}
-	if b.AutoDiscoverTool != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 27)
-		x.xxx_hidden_AutoDiscoverTool = *b.AutoDiscoverTool
-	}
-	if b.ConfigError != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 27)
-		x.xxx_hidden_ConfigError = b.ConfigError
-	}
-	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 27)
-		x.xxx_hidden_ReadOnly = *b.ReadOnly
-	}
-	if b.LastError != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 27)
-		x.xxx_hidden_LastError = b.LastError
-	}
-	if b.ToolCount != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 27)
-		x.xxx_hidden_ToolCount = *b.ToolCount
-	}
-	x.xxx_hidden_ConnectionPool = b.ConnectionPool
-	x.xxx_hidden_UpstreamAuth = b.UpstreamAuth
-	x.xxx_hidden_Cache = b.Cache
-	x.xxx_hidden_RateLimit = b.RateLimit
-	if b.LoadBalancingStrategy != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 27)
-		x.xxx_hidden_LoadBalancingStrategy = *b.LoadBalancingStrategy
-	}
-	x.xxx_hidden_Resilience = b.Resilience
-	x.xxx_hidden_Authentication = b.Authentication
-	x.xxx_hidden_ToolExportPolicy = b.ToolExportPolicy
-	x.xxx_hidden_PromptExportPolicy = b.PromptExportPolicy
-	x.xxx_hidden_ResourceExportPolicy = b.ResourceExportPolicy
+	x.Name = b.Name
+	x.Id = b.Id
+	x.SanitizedName = b.SanitizedName
+	x.Version = b.Version
+	x.Priority = b.Priority
+	x.Disable = b.Disable
+	x.AutoDiscoverTool = b.AutoDiscoverTool
+	x.ConfigError = b.ConfigError
+	x.ReadOnly = b.ReadOnly
+	x.LastError = b.LastError
+	x.ToolCount = b.ToolCount
+	x.ConnectionPool = b.ConnectionPool
+	x.UpstreamAuth = b.UpstreamAuth
+	x.Cache = b.Cache
+	x.RateLimit = b.RateLimit
+	x.LoadBalancingStrategy = b.LoadBalancingStrategy
+	x.Resilience = b.Resilience
+	x.Authentication = b.Authentication
+	x.ToolExportPolicy = b.ToolExportPolicy
+	x.PromptExportPolicy = b.PromptExportPolicy
+	x.ResourceExportPolicy = b.ResourceExportPolicy
 	if b.McpService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_McpService{b.McpService}
+		x.ServiceConfig = &UpstreamServiceConfig_McpService{b.McpService}
 	}
 	if b.HttpService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_HttpService{b.HttpService}
+		x.ServiceConfig = &UpstreamServiceConfig_HttpService{b.HttpService}
 	}
 	if b.GrpcService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_GrpcService{b.GrpcService}
+		x.ServiceConfig = &UpstreamServiceConfig_GrpcService{b.GrpcService}
 	}
 	if b.OpenapiService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_OpenapiService{b.OpenapiService}
+		x.ServiceConfig = &UpstreamServiceConfig_OpenapiService{b.OpenapiService}
 	}
 	if b.CommandLineService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_CommandLineService{b.CommandLineService}
+		x.ServiceConfig = &UpstreamServiceConfig_CommandLineService{b.CommandLineService}
 	}
 	if b.WebsocketService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_WebsocketService{b.WebsocketService}
+		x.ServiceConfig = &UpstreamServiceConfig_WebsocketService{b.WebsocketService}
 	}
 	if b.WebrtcService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_WebrtcService{b.WebrtcService}
+		x.ServiceConfig = &UpstreamServiceConfig_WebrtcService{b.WebrtcService}
 	}
 	if b.GraphqlService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_GraphqlService{b.GraphqlService}
+		x.ServiceConfig = &UpstreamServiceConfig_GraphqlService{b.GraphqlService}
 	}
 	if b.SqlService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_SqlService{b.SqlService}
+		x.ServiceConfig = &UpstreamServiceConfig_SqlService{b.SqlService}
 	}
 	if b.FilesystemService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_FilesystemService{b.FilesystemService}
+		x.ServiceConfig = &UpstreamServiceConfig_FilesystemService{b.FilesystemService}
 	}
 	if b.VectorService != nil {
-		x.xxx_hidden_ServiceConfig = &upstreamServiceConfig_VectorService{b.VectorService}
+		x.ServiceConfig = &UpstreamServiceConfig_VectorService{b.VectorService}
 	}
-	x.xxx_hidden_CallPolicies = &b.CallPolicies
-	x.xxx_hidden_PreCallHooks = &b.PreCallHooks
-	x.xxx_hidden_PostCallHooks = &b.PostCallHooks
-	x.xxx_hidden_Prompts = &b.Prompts
-	x.xxx_hidden_Tags = b.Tags
+	x.CallPolicies = b.CallPolicies
+	x.PreCallHooks = b.PreCallHooks
+	x.PostCallHooks = b.PostCallHooks
+	x.Prompts = b.Prompts
+	x.Tags = b.Tags
 	return m0
 }
 
@@ -1480,80 +1446,80 @@ type isUpstreamServiceConfig_ServiceConfig interface {
 	isUpstreamServiceConfig_ServiceConfig()
 }
 
-type upstreamServiceConfig_McpService struct {
+type UpstreamServiceConfig_McpService struct {
 	McpService *McpUpstreamService `protobuf:"bytes,19,opt,name=mcp_service,oneof"`
 }
 
-type upstreamServiceConfig_HttpService struct {
+type UpstreamServiceConfig_HttpService struct {
 	HttpService *HttpUpstreamService `protobuf:"bytes,20,opt,name=http_service,oneof"`
 }
 
-type upstreamServiceConfig_GrpcService struct {
+type UpstreamServiceConfig_GrpcService struct {
 	GrpcService *GrpcUpstreamService `protobuf:"bytes,21,opt,name=grpc_service,oneof"`
 }
 
-type upstreamServiceConfig_OpenapiService struct {
+type UpstreamServiceConfig_OpenapiService struct {
 	OpenapiService *OpenapiUpstreamService `protobuf:"bytes,22,opt,name=openapi_service,oneof"`
 }
 
-type upstreamServiceConfig_CommandLineService struct {
+type UpstreamServiceConfig_CommandLineService struct {
 	CommandLineService *CommandLineUpstreamService `protobuf:"bytes,23,opt,name=command_line_service,oneof"`
 }
 
-type upstreamServiceConfig_WebsocketService struct {
+type UpstreamServiceConfig_WebsocketService struct {
 	WebsocketService *WebsocketUpstreamService `protobuf:"bytes,24,opt,name=websocket_service,oneof"`
 }
 
-type upstreamServiceConfig_WebrtcService struct {
+type UpstreamServiceConfig_WebrtcService struct {
 	WebrtcService *WebrtcUpstreamService `protobuf:"bytes,25,opt,name=webrtc_service,oneof"`
 }
 
-type upstreamServiceConfig_GraphqlService struct {
+type UpstreamServiceConfig_GraphqlService struct {
 	GraphqlService *GraphQLUpstreamService `protobuf:"bytes,26,opt,name=graphql_service,oneof"`
 }
 
-type upstreamServiceConfig_SqlService struct {
+type UpstreamServiceConfig_SqlService struct {
 	SqlService *SqlUpstreamService `protobuf:"bytes,27,opt,name=sql_service,oneof"`
 }
 
-type upstreamServiceConfig_FilesystemService struct {
+type UpstreamServiceConfig_FilesystemService struct {
 	FilesystemService *FilesystemUpstreamService `protobuf:"bytes,28,opt,name=filesystem_service,oneof"`
 }
 
-type upstreamServiceConfig_VectorService struct {
+type UpstreamServiceConfig_VectorService struct {
 	VectorService *VectorUpstreamService `protobuf:"bytes,29,opt,name=vector_service,oneof"`
 }
 
-func (*upstreamServiceConfig_McpService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_McpService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_HttpService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_HttpService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_GrpcService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_GrpcService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_OpenapiService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_OpenapiService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_CommandLineService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_CommandLineService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_WebsocketService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_WebsocketService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_WebrtcService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_WebrtcService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_GraphqlService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_GraphqlService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_SqlService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_SqlService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_FilesystemService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_FilesystemService) isUpstreamServiceConfig_ServiceConfig() {}
 
-func (*upstreamServiceConfig_VectorService) isUpstreamServiceConfig_ServiceConfig() {}
+func (*UpstreamServiceConfig_VectorService) isUpstreamServiceConfig_ServiceConfig() {}
 
 type CallPolicy struct {
-	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_DefaultAction CallPolicy_Action      `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.CallPolicy_Action"`
-	xxx_hidden_Rules         *[]*CallPolicyRule     `protobuf:"bytes,2,rep,name=rules"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Default action if no rules match.
+	DefaultAction *CallPolicy_Action `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.CallPolicy_Action" json:"default_action,omitempty"`
+	// List of rules to apply. First match wins.
+	Rules         []*CallPolicyRule `protobuf:"bytes,2,rep,name=rules" json:"rules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CallPolicy) Reset() {
@@ -1582,42 +1548,36 @@ func (x *CallPolicy) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CallPolicy) GetDefaultAction() CallPolicy_Action {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
-			return x.xxx_hidden_DefaultAction
-		}
+	if x != nil && x.DefaultAction != nil {
+		return *x.DefaultAction
 	}
 	return CallPolicy_ALLOW
 }
 
 func (x *CallPolicy) GetRules() []*CallPolicyRule {
 	if x != nil {
-		if x.xxx_hidden_Rules != nil {
-			return *x.xxx_hidden_Rules
-		}
+		return x.Rules
 	}
 	return nil
 }
 
 func (x *CallPolicy) SetDefaultAction(v CallPolicy_Action) {
-	x.xxx_hidden_DefaultAction = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.DefaultAction = &v
 }
 
 func (x *CallPolicy) SetRules(v []*CallPolicyRule) {
-	x.xxx_hidden_Rules = &v
+	x.Rules = v
 }
 
 func (x *CallPolicy) HasDefaultAction() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.DefaultAction != nil
 }
 
 func (x *CallPolicy) ClearDefaultAction() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_DefaultAction = CallPolicy_ALLOW
+	x.DefaultAction = nil
 }
 
 type CallPolicy_builder struct {
@@ -1633,25 +1593,25 @@ func (b0 CallPolicy_builder) Build() *CallPolicy {
 	m0 := &CallPolicy{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.DefaultAction != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_DefaultAction = *b.DefaultAction
-	}
-	x.xxx_hidden_Rules = &b.Rules
+	x.DefaultAction = b.DefaultAction
+	x.Rules = b.Rules
 	return m0
 }
 
 type CallPolicyRule struct {
-	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Action        CallPolicy_Action      `protobuf:"varint,1,opt,name=action,enum=mcpany.config.v1.CallPolicy_Action"`
-	xxx_hidden_NameRegex     *string                `protobuf:"bytes,2,opt,name=name_regex"`
-	xxx_hidden_ArgumentRegex *string                `protobuf:"bytes,3,opt,name=argument_regex,json=argumentRegex"`
-	xxx_hidden_UrlRegex      *string                `protobuf:"bytes,4,opt,name=url_regex"`
-	xxx_hidden_CallIdRegex   *string                `protobuf:"bytes,5,opt,name=call_id_regex"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state  protoimpl.MessageState `protogen:"hybrid.v1"`
+	Action *CallPolicy_Action     `protobuf:"varint,1,opt,name=action,enum=mcpany.config.v1.CallPolicy_Action" json:"action,omitempty"`
+	// Regex to match the call name. Empty means match all.
+	NameRegex *string `protobuf:"bytes,2,opt,name=name_regex" json:"name_regex,omitempty"`
+	// Regex to match request arguments (JSON stringified). Empty means match all.
+	// This is a simple regex match on the JSON representation of arguments.
+	ArgumentRegex *string `protobuf:"bytes,3,opt,name=argument_regex,json=argumentRegex" json:"argument_regex,omitempty"`
+	// Regex to match endpoint path or URL.
+	UrlRegex *string `protobuf:"bytes,4,opt,name=url_regex" json:"url_regex,omitempty"`
+	// Regex to match call ID. Empty means match all.
+	CallIdRegex   *string `protobuf:"bytes,5,opt,name=call_id_regex" json:"call_id_regex,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CallPolicyRule) Reset() {
@@ -1680,137 +1640,113 @@ func (x *CallPolicyRule) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CallPolicyRule) GetAction() CallPolicy_Action {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
-			return x.xxx_hidden_Action
-		}
+	if x != nil && x.Action != nil {
+		return *x.Action
 	}
 	return CallPolicy_ALLOW
 }
 
 func (x *CallPolicyRule) GetNameRegex() string {
-	if x != nil {
-		if x.xxx_hidden_NameRegex != nil {
-			return *x.xxx_hidden_NameRegex
-		}
-		return ""
+	if x != nil && x.NameRegex != nil {
+		return *x.NameRegex
 	}
 	return ""
 }
 
 func (x *CallPolicyRule) GetArgumentRegex() string {
-	if x != nil {
-		if x.xxx_hidden_ArgumentRegex != nil {
-			return *x.xxx_hidden_ArgumentRegex
-		}
-		return ""
+	if x != nil && x.ArgumentRegex != nil {
+		return *x.ArgumentRegex
 	}
 	return ""
 }
 
 func (x *CallPolicyRule) GetUrlRegex() string {
-	if x != nil {
-		if x.xxx_hidden_UrlRegex != nil {
-			return *x.xxx_hidden_UrlRegex
-		}
-		return ""
+	if x != nil && x.UrlRegex != nil {
+		return *x.UrlRegex
 	}
 	return ""
 }
 
 func (x *CallPolicyRule) GetCallIdRegex() string {
-	if x != nil {
-		if x.xxx_hidden_CallIdRegex != nil {
-			return *x.xxx_hidden_CallIdRegex
-		}
-		return ""
+	if x != nil && x.CallIdRegex != nil {
+		return *x.CallIdRegex
 	}
 	return ""
 }
 
 func (x *CallPolicyRule) SetAction(v CallPolicy_Action) {
-	x.xxx_hidden_Action = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	x.Action = &v
 }
 
 func (x *CallPolicyRule) SetNameRegex(v string) {
-	x.xxx_hidden_NameRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	x.NameRegex = &v
 }
 
 func (x *CallPolicyRule) SetArgumentRegex(v string) {
-	x.xxx_hidden_ArgumentRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	x.ArgumentRegex = &v
 }
 
 func (x *CallPolicyRule) SetUrlRegex(v string) {
-	x.xxx_hidden_UrlRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	x.UrlRegex = &v
 }
 
 func (x *CallPolicyRule) SetCallIdRegex(v string) {
-	x.xxx_hidden_CallIdRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	x.CallIdRegex = &v
 }
 
 func (x *CallPolicyRule) HasAction() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Action != nil
 }
 
 func (x *CallPolicyRule) HasNameRegex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.NameRegex != nil
 }
 
 func (x *CallPolicyRule) HasArgumentRegex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.ArgumentRegex != nil
 }
 
 func (x *CallPolicyRule) HasUrlRegex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.UrlRegex != nil
 }
 
 func (x *CallPolicyRule) HasCallIdRegex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.CallIdRegex != nil
 }
 
 func (x *CallPolicyRule) ClearAction() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Action = CallPolicy_ALLOW
+	x.Action = nil
 }
 
 func (x *CallPolicyRule) ClearNameRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_NameRegex = nil
+	x.NameRegex = nil
 }
 
 func (x *CallPolicyRule) ClearArgumentRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_ArgumentRegex = nil
+	x.ArgumentRegex = nil
 }
 
 func (x *CallPolicyRule) ClearUrlRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_UrlRegex = nil
+	x.UrlRegex = nil
 }
 
 func (x *CallPolicyRule) ClearCallIdRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_CallIdRegex = nil
+	x.CallIdRegex = nil
 }
 
 type CallPolicyRule_builder struct {
@@ -1832,37 +1768,20 @@ func (b0 CallPolicyRule_builder) Build() *CallPolicyRule {
 	m0 := &CallPolicyRule{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Action != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_Action = *b.Action
-	}
-	if b.NameRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_NameRegex = b.NameRegex
-	}
-	if b.ArgumentRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_ArgumentRegex = b.ArgumentRegex
-	}
-	if b.UrlRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_UrlRegex = b.UrlRegex
-	}
-	if b.CallIdRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_CallIdRegex = b.CallIdRegex
-	}
+	x.Action = b.Action
+	x.NameRegex = b.NameRegex
+	x.ArgumentRegex = b.ArgumentRegex
+	x.UrlRegex = b.UrlRegex
+	x.CallIdRegex = b.CallIdRegex
 	return m0
 }
 
 type ExportPolicy struct {
-	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_DefaultAction ExportPolicy_Action    `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.ExportPolicy_Action"`
-	xxx_hidden_Rules         *[]*ExportRule         `protobuf:"bytes,2,rep,name=rules"`
-	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
-	XXX_presence             [1]uint32
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	DefaultAction *ExportPolicy_Action   `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.ExportPolicy_Action" json:"default_action,omitempty"`
+	Rules         []*ExportRule          `protobuf:"bytes,2,rep,name=rules" json:"rules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ExportPolicy) Reset() {
@@ -1891,42 +1810,36 @@ func (x *ExportPolicy) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ExportPolicy) GetDefaultAction() ExportPolicy_Action {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
-			return x.xxx_hidden_DefaultAction
-		}
+	if x != nil && x.DefaultAction != nil {
+		return *x.DefaultAction
 	}
 	return ExportPolicy_EXPORT_ACTION_UNSPECIFIED
 }
 
 func (x *ExportPolicy) GetRules() []*ExportRule {
 	if x != nil {
-		if x.xxx_hidden_Rules != nil {
-			return *x.xxx_hidden_Rules
-		}
+		return x.Rules
 	}
 	return nil
 }
 
 func (x *ExportPolicy) SetDefaultAction(v ExportPolicy_Action) {
-	x.xxx_hidden_DefaultAction = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.DefaultAction = &v
 }
 
 func (x *ExportPolicy) SetRules(v []*ExportRule) {
-	x.xxx_hidden_Rules = &v
+	x.Rules = v
 }
 
 func (x *ExportPolicy) HasDefaultAction() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.DefaultAction != nil
 }
 
 func (x *ExportPolicy) ClearDefaultAction() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_DefaultAction = ExportPolicy_EXPORT_ACTION_UNSPECIFIED
+	x.DefaultAction = nil
 }
 
 type ExportPolicy_builder struct {
@@ -1940,22 +1853,18 @@ func (b0 ExportPolicy_builder) Build() *ExportPolicy {
 	m0 := &ExportPolicy{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.DefaultAction != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_DefaultAction = *b.DefaultAction
-	}
-	x.xxx_hidden_Rules = &b.Rules
+	x.DefaultAction = b.DefaultAction
+	x.Rules = b.Rules
 	return m0
 }
 
 type ExportRule struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_NameRegex   *string                `protobuf:"bytes,1,opt,name=name_regex"`
-	xxx_hidden_Action      ExportPolicy_Action    `protobuf:"varint,2,opt,name=action,enum=mcpany.config.v1.ExportPolicy_Action"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Regex to match the name (tool, prompt, or resource).
+	NameRegex     *string              `protobuf:"bytes,1,opt,name=name_regex" json:"name_regex,omitempty"`
+	Action        *ExportPolicy_Action `protobuf:"varint,2,opt,name=action,enum=mcpany.config.v1.ExportPolicy_Action" json:"action,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ExportRule) Reset() {
@@ -1984,56 +1893,47 @@ func (x *ExportRule) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ExportRule) GetNameRegex() string {
-	if x != nil {
-		if x.xxx_hidden_NameRegex != nil {
-			return *x.xxx_hidden_NameRegex
-		}
-		return ""
+	if x != nil && x.NameRegex != nil {
+		return *x.NameRegex
 	}
 	return ""
 }
 
 func (x *ExportRule) GetAction() ExportPolicy_Action {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 1) {
-			return x.xxx_hidden_Action
-		}
+	if x != nil && x.Action != nil {
+		return *x.Action
 	}
 	return ExportPolicy_EXPORT_ACTION_UNSPECIFIED
 }
 
 func (x *ExportRule) SetNameRegex(v string) {
-	x.xxx_hidden_NameRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.NameRegex = &v
 }
 
 func (x *ExportRule) SetAction(v ExportPolicy_Action) {
-	x.xxx_hidden_Action = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+	x.Action = &v
 }
 
 func (x *ExportRule) HasNameRegex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.NameRegex != nil
 }
 
 func (x *ExportRule) HasAction() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Action != nil
 }
 
 func (x *ExportRule) ClearNameRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_NameRegex = nil
+	x.NameRegex = nil
 }
 
 func (x *ExportRule) ClearAction() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Action = ExportPolicy_EXPORT_ACTION_UNSPECIFIED
+	x.Action = nil
 }
 
 type ExportRule_builder struct {
@@ -2048,25 +1948,21 @@ func (b0 ExportRule_builder) Build() *ExportRule {
 	m0 := &ExportRule{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.NameRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_NameRegex = b.NameRegex
-	}
-	if b.Action != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_Action = *b.Action
-	}
+	x.NameRegex = b.NameRegex
+	x.Action = b.Action
 	return m0
 }
 
 type CallHook struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_HookConfig  isCallHook_HookConfig  `protobuf_oneof:"hook_config"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	Name  *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// Types that are valid to be assigned to HookConfig:
+	//
+	//	*CallHook_Webhook
+	//	*CallHook_CallPolicy
+	HookConfig    isCallHook_HookConfig `protobuf_oneof:"hook_config"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CallHook) Reset() {
@@ -2095,18 +1991,22 @@ func (x *CallHook) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CallHook) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
+func (x *CallHook) GetHookConfig() isCallHook_HookConfig {
+	if x != nil {
+		return x.HookConfig
+	}
+	return nil
+}
+
 func (x *CallHook) GetWebhook() *WebhookConfig {
 	if x != nil {
-		if x, ok := x.xxx_hidden_HookConfig.(*callHook_Webhook); ok {
+		if x, ok := x.HookConfig.(*CallHook_Webhook); ok {
 			return x.Webhook
 		}
 	}
@@ -2115,7 +2015,7 @@ func (x *CallHook) GetWebhook() *WebhookConfig {
 
 func (x *CallHook) GetCallPolicy() *CallPolicy {
 	if x != nil {
-		if x, ok := x.xxx_hidden_HookConfig.(*callHook_CallPolicy); ok {
+		if x, ok := x.HookConfig.(*CallHook_CallPolicy); ok {
 			return x.CallPolicy
 		}
 	}
@@ -2123,45 +2023,44 @@ func (x *CallHook) GetCallPolicy() *CallPolicy {
 }
 
 func (x *CallHook) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.Name = &v
 }
 
 func (x *CallHook) SetWebhook(v *WebhookConfig) {
 	if v == nil {
-		x.xxx_hidden_HookConfig = nil
+		x.HookConfig = nil
 		return
 	}
-	x.xxx_hidden_HookConfig = &callHook_Webhook{v}
+	x.HookConfig = &CallHook_Webhook{v}
 }
 
 func (x *CallHook) SetCallPolicy(v *CallPolicy) {
 	if v == nil {
-		x.xxx_hidden_HookConfig = nil
+		x.HookConfig = nil
 		return
 	}
-	x.xxx_hidden_HookConfig = &callHook_CallPolicy{v}
+	x.HookConfig = &CallHook_CallPolicy{v}
 }
 
 func (x *CallHook) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Name != nil
 }
 
 func (x *CallHook) HasHookConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HookConfig != nil
+	return x.HookConfig != nil
 }
 
 func (x *CallHook) HasWebhook() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_HookConfig.(*callHook_Webhook)
+	_, ok := x.HookConfig.(*CallHook_Webhook)
 	return ok
 }
 
@@ -2169,28 +2068,27 @@ func (x *CallHook) HasCallPolicy() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_HookConfig.(*callHook_CallPolicy)
+	_, ok := x.HookConfig.(*CallHook_CallPolicy)
 	return ok
 }
 
 func (x *CallHook) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *CallHook) ClearHookConfig() {
-	x.xxx_hidden_HookConfig = nil
+	x.HookConfig = nil
 }
 
 func (x *CallHook) ClearWebhook() {
-	if _, ok := x.xxx_hidden_HookConfig.(*callHook_Webhook); ok {
-		x.xxx_hidden_HookConfig = nil
+	if _, ok := x.HookConfig.(*CallHook_Webhook); ok {
+		x.HookConfig = nil
 	}
 }
 
 func (x *CallHook) ClearCallPolicy() {
-	if _, ok := x.xxx_hidden_HookConfig.(*callHook_CallPolicy); ok {
-		x.xxx_hidden_HookConfig = nil
+	if _, ok := x.HookConfig.(*CallHook_CallPolicy); ok {
+		x.HookConfig = nil
 	}
 }
 
@@ -2202,10 +2100,10 @@ func (x *CallHook) WhichHookConfig() case_CallHook_HookConfig {
 	if x == nil {
 		return CallHook_HookConfig_not_set_case
 	}
-	switch x.xxx_hidden_HookConfig.(type) {
-	case *callHook_Webhook:
+	switch x.HookConfig.(type) {
+	case *CallHook_Webhook:
 		return CallHook_Webhook_case
-	case *callHook_CallPolicy:
+	case *CallHook_CallPolicy:
 		return CallHook_CallPolicy_case
 	default:
 		return CallHook_HookConfig_not_set_case
@@ -2216,25 +2114,22 @@ type CallHook_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Name *string
-	// Fields of oneof xxx_hidden_HookConfig:
+	// Fields of oneof HookConfig:
 	Webhook    *WebhookConfig
 	CallPolicy *CallPolicy
-	// -- end of xxx_hidden_HookConfig
+	// -- end of HookConfig
 }
 
 func (b0 CallHook_builder) Build() *CallHook {
 	m0 := &CallHook{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Name = b.Name
-	}
+	x.Name = b.Name
 	if b.Webhook != nil {
-		x.xxx_hidden_HookConfig = &callHook_Webhook{b.Webhook}
+		x.HookConfig = &CallHook_Webhook{b.Webhook}
 	}
 	if b.CallPolicy != nil {
-		x.xxx_hidden_HookConfig = &callHook_CallPolicy{b.CallPolicy}
+		x.HookConfig = &CallHook_CallPolicy{b.CallPolicy}
 	}
 	return m0
 }
@@ -2253,35 +2148,43 @@ type isCallHook_HookConfig interface {
 	isCallHook_HookConfig()
 }
 
-type callHook_Webhook struct {
+type CallHook_Webhook struct {
 	Webhook *WebhookConfig `protobuf:"bytes,2,opt,name=webhook,oneof"`
 }
 
-type callHook_CallPolicy struct {
+type CallHook_CallPolicy struct {
 	CallPolicy *CallPolicy `protobuf:"bytes,4,opt,name=call_policy,json=callPolicy,oneof"`
 }
 
-func (*callHook_Webhook) isCallHook_HookConfig() {}
+func (*CallHook_Webhook) isCallHook_HookConfig() {}
 
-func (*callHook_CallPolicy) isCallHook_HookConfig() {}
+func (*CallHook_CallPolicy) isCallHook_HookConfig() {}
 
 // GrpcUpstreamService defines an upstream service that speaks gRPC.
 type GrpcUpstreamService struct {
-	state                       protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_Address          *string                        `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_UseReflection    bool                           `protobuf:"varint,2,opt,name=use_reflection"`
-	xxx_hidden_TlsConfig        *TLSConfig                     `protobuf:"bytes,3,opt,name=tls_config"`
-	xxx_hidden_Tools            *[]*ToolDefinition             `protobuf:"bytes,4,rep,name=tools"`
-	xxx_hidden_HealthCheck      *GrpcHealthCheck               `protobuf:"bytes,5,opt,name=health_check"`
-	xxx_hidden_ProtoDefinitions *[]*ProtoDefinition            `protobuf:"bytes,6,rep,name=proto_definitions"`
-	xxx_hidden_ProtoCollection  *[]*ProtoCollection            `protobuf:"bytes,7,rep,name=proto_collection"`
-	xxx_hidden_Resources        *[]*ResourceDefinition         `protobuf:"bytes,8,rep,name=resources"`
-	xxx_hidden_Calls            map[string]*GrpcCallDefinition `protobuf:"bytes,9,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Prompts          *[]*PromptDefinition           `protobuf:"bytes,19,rep,name=prompts"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The address of the gRPC server (e.g., "localhost:50051").
+	Address *string `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	// If true, mcpany will use gRPC reflection to discover services and methods.
+	UseReflection *bool `protobuf:"varint,2,opt,name=use_reflection" json:"use_reflection,omitempty"`
+	// TLS configuration for the gRPC connection.
+	TlsConfig *TLSConfig `protobuf:"bytes,3,opt,name=tls_config" json:"tls_config,omitempty"`
+	// Manually defined mappings from MCP tools to gRPC calls.
+	Tools []*ToolDefinition `protobuf:"bytes,4,rep,name=tools" json:"tools,omitempty"`
+	// Health check configuration.
+	HealthCheck *GrpcHealthCheck `protobuf:"bytes,5,opt,name=health_check" json:"health_check,omitempty"`
+	// A list of protobuf definitions for the gRPC service.
+	ProtoDefinitions []*ProtoDefinition `protobuf:"bytes,6,rep,name=proto_definitions" json:"proto_definitions,omitempty"`
+	// A collection of protobuf files to be discovered.
+	ProtoCollection []*ProtoCollection `protobuf:"bytes,7,rep,name=proto_collection" json:"proto_collection,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,8,rep,name=resources" json:"resources,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*GrpcCallDefinition `protobuf:"bytes,9,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// The prompts provided by this upstream service.
+	Prompts       []*PromptDefinition `protobuf:"bytes,19,rep,name=prompts" json:"prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GrpcUpstreamService) Reset() {
@@ -2310,174 +2213,157 @@ func (x *GrpcUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GrpcUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *GrpcUpstreamService) GetUseReflection() bool {
-	if x != nil {
-		return x.xxx_hidden_UseReflection
+	if x != nil && x.UseReflection != nil {
+		return *x.UseReflection
 	}
 	return false
 }
 
 func (x *GrpcUpstreamService) GetTlsConfig() *TLSConfig {
 	if x != nil {
-		return x.xxx_hidden_TlsConfig
+		return x.TlsConfig
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetHealthCheck() *GrpcHealthCheck {
 	if x != nil {
-		return x.xxx_hidden_HealthCheck
+		return x.HealthCheck
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetProtoDefinitions() []*ProtoDefinition {
 	if x != nil {
-		if x.xxx_hidden_ProtoDefinitions != nil {
-			return *x.xxx_hidden_ProtoDefinitions
-		}
+		return x.ProtoDefinitions
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetProtoCollection() []*ProtoCollection {
 	if x != nil {
-		if x.xxx_hidden_ProtoCollection != nil {
-			return *x.xxx_hidden_ProtoCollection
-		}
+		return x.ProtoCollection
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetCalls() map[string]*GrpcCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *GrpcUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
+	x.Address = &v
 }
 
 func (x *GrpcUpstreamService) SetUseReflection(v bool) {
-	x.xxx_hidden_UseReflection = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 10)
+	x.UseReflection = &v
 }
 
 func (x *GrpcUpstreamService) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
+	x.TlsConfig = v
 }
 
 func (x *GrpcUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *GrpcUpstreamService) SetHealthCheck(v *GrpcHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
+	x.HealthCheck = v
 }
 
 func (x *GrpcUpstreamService) SetProtoDefinitions(v []*ProtoDefinition) {
-	x.xxx_hidden_ProtoDefinitions = &v
+	x.ProtoDefinitions = v
 }
 
 func (x *GrpcUpstreamService) SetProtoCollection(v []*ProtoCollection) {
-	x.xxx_hidden_ProtoCollection = &v
+	x.ProtoCollection = v
 }
 
 func (x *GrpcUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *GrpcUpstreamService) SetCalls(v map[string]*GrpcCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *GrpcUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *GrpcUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *GrpcUpstreamService) HasUseReflection() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.UseReflection != nil
 }
 
 func (x *GrpcUpstreamService) HasTlsConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_TlsConfig != nil
+	return x.TlsConfig != nil
 }
 
 func (x *GrpcUpstreamService) HasHealthCheck() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HealthCheck != nil
+	return x.HealthCheck != nil
 }
 
 func (x *GrpcUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *GrpcUpstreamService) ClearUseReflection() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_UseReflection = false
+	x.UseReflection = nil
 }
 
 func (x *GrpcUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
+	x.TlsConfig = nil
 }
 
 func (x *GrpcUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
+	x.HealthCheck = nil
 }
 
 type GrpcUpstreamService_builder struct {
@@ -2509,30 +2395,28 @@ func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
 	m0 := &GrpcUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
-		x.xxx_hidden_Address = b.Address
-	}
-	if b.UseReflection != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 10)
-		x.xxx_hidden_UseReflection = *b.UseReflection
-	}
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_HealthCheck = b.HealthCheck
-	x.xxx_hidden_ProtoDefinitions = &b.ProtoDefinitions
-	x.xxx_hidden_ProtoCollection = &b.ProtoCollection
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_Prompts = &b.Prompts
+	x.Address = b.Address
+	x.UseReflection = b.UseReflection
+	x.TlsConfig = b.TlsConfig
+	x.Tools = b.Tools
+	x.HealthCheck = b.HealthCheck
+	x.ProtoDefinitions = b.ProtoDefinitions
+	x.ProtoCollection = b.ProtoCollection
+	x.Resources = b.Resources
+	x.Calls = b.Calls
+	x.Prompts = b.Prompts
 	return m0
 }
 
 type ProtoDefinition struct {
-	state               protoimpl.MessageState     `protogen:"opaque.v1"`
-	xxx_hidden_ProtoRef isProtoDefinition_ProtoRef `protobuf_oneof:"proto_ref"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Types that are valid to be assigned to ProtoRef:
+	//
+	//	*ProtoDefinition_ProtoFile
+	//	*ProtoDefinition_ProtoDescriptor
+	ProtoRef      isProtoDefinition_ProtoRef `protobuf_oneof:"proto_ref"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ProtoDefinition) Reset() {
@@ -2560,9 +2444,16 @@ func (x *ProtoDefinition) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *ProtoDefinition) GetProtoRef() isProtoDefinition_ProtoRef {
+	if x != nil {
+		return x.ProtoRef
+	}
+	return nil
+}
+
 func (x *ProtoDefinition) GetProtoFile() *ProtoFile {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile); ok {
+		if x, ok := x.ProtoRef.(*ProtoDefinition_ProtoFile); ok {
 			return x.ProtoFile
 		}
 	}
@@ -2571,7 +2462,7 @@ func (x *ProtoDefinition) GetProtoFile() *ProtoFile {
 
 func (x *ProtoDefinition) GetProtoDescriptor() *ProtoDescriptor {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor); ok {
+		if x, ok := x.ProtoRef.(*ProtoDefinition_ProtoDescriptor); ok {
 			return x.ProtoDescriptor
 		}
 	}
@@ -2580,32 +2471,32 @@ func (x *ProtoDefinition) GetProtoDescriptor() *ProtoDescriptor {
 
 func (x *ProtoDefinition) SetProtoFile(v *ProtoFile) {
 	if v == nil {
-		x.xxx_hidden_ProtoRef = nil
+		x.ProtoRef = nil
 		return
 	}
-	x.xxx_hidden_ProtoRef = &protoDefinition_ProtoFile{v}
+	x.ProtoRef = &ProtoDefinition_ProtoFile{v}
 }
 
 func (x *ProtoDefinition) SetProtoDescriptor(v *ProtoDescriptor) {
 	if v == nil {
-		x.xxx_hidden_ProtoRef = nil
+		x.ProtoRef = nil
 		return
 	}
-	x.xxx_hidden_ProtoRef = &protoDefinition_ProtoDescriptor{v}
+	x.ProtoRef = &ProtoDefinition_ProtoDescriptor{v}
 }
 
 func (x *ProtoDefinition) HasProtoRef() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ProtoRef != nil
+	return x.ProtoRef != nil
 }
 
 func (x *ProtoDefinition) HasProtoFile() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile)
+	_, ok := x.ProtoRef.(*ProtoDefinition_ProtoFile)
 	return ok
 }
 
@@ -2613,23 +2504,23 @@ func (x *ProtoDefinition) HasProtoDescriptor() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor)
+	_, ok := x.ProtoRef.(*ProtoDefinition_ProtoDescriptor)
 	return ok
 }
 
 func (x *ProtoDefinition) ClearProtoRef() {
-	x.xxx_hidden_ProtoRef = nil
+	x.ProtoRef = nil
 }
 
 func (x *ProtoDefinition) ClearProtoFile() {
-	if _, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoFile); ok {
-		x.xxx_hidden_ProtoRef = nil
+	if _, ok := x.ProtoRef.(*ProtoDefinition_ProtoFile); ok {
+		x.ProtoRef = nil
 	}
 }
 
 func (x *ProtoDefinition) ClearProtoDescriptor() {
-	if _, ok := x.xxx_hidden_ProtoRef.(*protoDefinition_ProtoDescriptor); ok {
-		x.xxx_hidden_ProtoRef = nil
+	if _, ok := x.ProtoRef.(*ProtoDefinition_ProtoDescriptor); ok {
+		x.ProtoRef = nil
 	}
 }
 
@@ -2641,10 +2532,10 @@ func (x *ProtoDefinition) WhichProtoRef() case_ProtoDefinition_ProtoRef {
 	if x == nil {
 		return ProtoDefinition_ProtoRef_not_set_case
 	}
-	switch x.xxx_hidden_ProtoRef.(type) {
-	case *protoDefinition_ProtoFile:
+	switch x.ProtoRef.(type) {
+	case *ProtoDefinition_ProtoFile:
 		return ProtoDefinition_ProtoFile_case
-	case *protoDefinition_ProtoDescriptor:
+	case *ProtoDefinition_ProtoDescriptor:
 		return ProtoDefinition_ProtoDescriptor_case
 	default:
 		return ProtoDefinition_ProtoRef_not_set_case
@@ -2654,10 +2545,10 @@ func (x *ProtoDefinition) WhichProtoRef() case_ProtoDefinition_ProtoRef {
 type ProtoDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof xxx_hidden_ProtoRef:
+	// Fields of oneof ProtoRef:
 	ProtoFile       *ProtoFile
 	ProtoDescriptor *ProtoDescriptor
-	// -- end of xxx_hidden_ProtoRef
+	// -- end of ProtoRef
 }
 
 func (b0 ProtoDefinition_builder) Build() *ProtoDefinition {
@@ -2665,10 +2556,10 @@ func (b0 ProtoDefinition_builder) Build() *ProtoDefinition {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.ProtoFile != nil {
-		x.xxx_hidden_ProtoRef = &protoDefinition_ProtoFile{b.ProtoFile}
+		x.ProtoRef = &ProtoDefinition_ProtoFile{b.ProtoFile}
 	}
 	if b.ProtoDescriptor != nil {
-		x.xxx_hidden_ProtoRef = &protoDefinition_ProtoDescriptor{b.ProtoDescriptor}
+		x.ProtoRef = &ProtoDefinition_ProtoDescriptor{b.ProtoDescriptor}
 	}
 	return m0
 }
@@ -2687,26 +2578,28 @@ type isProtoDefinition_ProtoRef interface {
 	isProtoDefinition_ProtoRef()
 }
 
-type protoDefinition_ProtoFile struct {
+type ProtoDefinition_ProtoFile struct {
 	ProtoFile *ProtoFile `protobuf:"bytes,1,opt,name=proto_file,oneof"`
 }
 
-type protoDefinition_ProtoDescriptor struct {
+type ProtoDefinition_ProtoDescriptor struct {
 	ProtoDescriptor *ProtoDescriptor `protobuf:"bytes,2,opt,name=proto_descriptor,oneof"`
 }
 
-func (*protoDefinition_ProtoFile) isProtoDefinition_ProtoRef() {}
+func (*ProtoDefinition_ProtoFile) isProtoDefinition_ProtoRef() {}
 
-func (*protoDefinition_ProtoDescriptor) isProtoDefinition_ProtoRef() {}
+func (*ProtoDefinition_ProtoDescriptor) isProtoDefinition_ProtoRef() {}
 
 type ProtoFile struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_FileName    *string                `protobuf:"bytes,1,opt,name=file_name"`
-	xxx_hidden_FileRef     isProtoFile_FileRef    `protobuf_oneof:"file_ref"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state    protoimpl.MessageState `protogen:"hybrid.v1"`
+	FileName *string                `protobuf:"bytes,1,opt,name=file_name" json:"file_name,omitempty"`
+	// Types that are valid to be assigned to FileRef:
+	//
+	//	*ProtoFile_FileContent
+	//	*ProtoFile_FilePath
+	FileRef       isProtoFile_FileRef `protobuf_oneof:"file_ref"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ProtoFile) Reset() {
@@ -2735,18 +2628,22 @@ func (x *ProtoFile) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProtoFile) GetFileName() string {
-	if x != nil {
-		if x.xxx_hidden_FileName != nil {
-			return *x.xxx_hidden_FileName
-		}
-		return ""
+	if x != nil && x.FileName != nil {
+		return *x.FileName
 	}
 	return ""
 }
 
+func (x *ProtoFile) GetFileRef() isProtoFile_FileRef {
+	if x != nil {
+		return x.FileRef
+	}
+	return nil
+}
+
 func (x *ProtoFile) GetFileContent() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent); ok {
+		if x, ok := x.FileRef.(*ProtoFile_FileContent); ok {
 			return x.FileContent
 		}
 	}
@@ -2755,7 +2652,7 @@ func (x *ProtoFile) GetFileContent() string {
 
 func (x *ProtoFile) GetFilePath() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath); ok {
+		if x, ok := x.FileRef.(*ProtoFile_FilePath); ok {
 			return x.FilePath
 		}
 	}
@@ -2763,37 +2660,36 @@ func (x *ProtoFile) GetFilePath() string {
 }
 
 func (x *ProtoFile) SetFileName(v string) {
-	x.xxx_hidden_FileName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.FileName = &v
 }
 
 func (x *ProtoFile) SetFileContent(v string) {
-	x.xxx_hidden_FileRef = &protoFile_FileContent{v}
+	x.FileRef = &ProtoFile_FileContent{v}
 }
 
 func (x *ProtoFile) SetFilePath(v string) {
-	x.xxx_hidden_FileRef = &protoFile_FilePath{v}
+	x.FileRef = &ProtoFile_FilePath{v}
 }
 
 func (x *ProtoFile) HasFileName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.FileName != nil
 }
 
 func (x *ProtoFile) HasFileRef() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_FileRef != nil
+	return x.FileRef != nil
 }
 
 func (x *ProtoFile) HasFileContent() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent)
+	_, ok := x.FileRef.(*ProtoFile_FileContent)
 	return ok
 }
 
@@ -2801,28 +2697,27 @@ func (x *ProtoFile) HasFilePath() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath)
+	_, ok := x.FileRef.(*ProtoFile_FilePath)
 	return ok
 }
 
 func (x *ProtoFile) ClearFileName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_FileName = nil
+	x.FileName = nil
 }
 
 func (x *ProtoFile) ClearFileRef() {
-	x.xxx_hidden_FileRef = nil
+	x.FileRef = nil
 }
 
 func (x *ProtoFile) ClearFileContent() {
-	if _, ok := x.xxx_hidden_FileRef.(*protoFile_FileContent); ok {
-		x.xxx_hidden_FileRef = nil
+	if _, ok := x.FileRef.(*ProtoFile_FileContent); ok {
+		x.FileRef = nil
 	}
 }
 
 func (x *ProtoFile) ClearFilePath() {
-	if _, ok := x.xxx_hidden_FileRef.(*protoFile_FilePath); ok {
-		x.xxx_hidden_FileRef = nil
+	if _, ok := x.FileRef.(*ProtoFile_FilePath); ok {
+		x.FileRef = nil
 	}
 }
 
@@ -2834,10 +2729,10 @@ func (x *ProtoFile) WhichFileRef() case_ProtoFile_FileRef {
 	if x == nil {
 		return ProtoFile_FileRef_not_set_case
 	}
-	switch x.xxx_hidden_FileRef.(type) {
-	case *protoFile_FileContent:
+	switch x.FileRef.(type) {
+	case *ProtoFile_FileContent:
 		return ProtoFile_FileContent_case
-	case *protoFile_FilePath:
+	case *ProtoFile_FilePath:
 		return ProtoFile_FilePath_case
 	default:
 		return ProtoFile_FileRef_not_set_case
@@ -2848,25 +2743,22 @@ type ProtoFile_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	FileName *string
-	// Fields of oneof xxx_hidden_FileRef:
+	// Fields of oneof FileRef:
 	FileContent *string
 	FilePath    *string
-	// -- end of xxx_hidden_FileRef
+	// -- end of FileRef
 }
 
 func (b0 ProtoFile_builder) Build() *ProtoFile {
 	m0 := &ProtoFile{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.FileName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_FileName = b.FileName
-	}
+	x.FileName = b.FileName
 	if b.FileContent != nil {
-		x.xxx_hidden_FileRef = &protoFile_FileContent{*b.FileContent}
+		x.FileRef = &ProtoFile_FileContent{*b.FileContent}
 	}
 	if b.FilePath != nil {
-		x.xxx_hidden_FileRef = &protoFile_FilePath{*b.FilePath}
+		x.FileRef = &ProtoFile_FilePath{*b.FilePath}
 	}
 	return m0
 }
@@ -2885,26 +2777,27 @@ type isProtoFile_FileRef interface {
 	isProtoFile_FileRef()
 }
 
-type protoFile_FileContent struct {
+type ProtoFile_FileContent struct {
 	FileContent string `protobuf:"bytes,2,opt,name=file_content,oneof"`
 }
 
-type protoFile_FilePath struct {
+type ProtoFile_FilePath struct {
 	FilePath string `protobuf:"bytes,3,opt,name=file_path,oneof"`
 }
 
-func (*protoFile_FileContent) isProtoFile_FileRef() {}
+func (*ProtoFile_FileContent) isProtoFile_FileRef() {}
 
-func (*protoFile_FilePath) isProtoFile_FileRef() {}
+func (*ProtoFile_FilePath) isProtoFile_FileRef() {}
 
 type ProtoDescriptor struct {
-	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
-	xxx_hidden_FileName    *string                   `protobuf:"bytes,1,opt,name=file_name"`
-	xxx_hidden_FileRef     isProtoDescriptor_FileRef `protobuf_oneof:"file_ref"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state    protoimpl.MessageState `protogen:"hybrid.v1"`
+	FileName *string                `protobuf:"bytes,1,opt,name=file_name" json:"file_name,omitempty"`
+	// Types that are valid to be assigned to FileRef:
+	//
+	//	*ProtoDescriptor_FilePath
+	FileRef       isProtoDescriptor_FileRef `protobuf_oneof:"file_ref"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ProtoDescriptor) Reset() {
@@ -2933,18 +2826,22 @@ func (x *ProtoDescriptor) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProtoDescriptor) GetFileName() string {
-	if x != nil {
-		if x.xxx_hidden_FileName != nil {
-			return *x.xxx_hidden_FileName
-		}
-		return ""
+	if x != nil && x.FileName != nil {
+		return *x.FileName
 	}
 	return ""
 }
 
+func (x *ProtoDescriptor) GetFileRef() isProtoDescriptor_FileRef {
+	if x != nil {
+		return x.FileRef
+	}
+	return nil
+}
+
 func (x *ProtoDescriptor) GetFilePath() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath); ok {
+		if x, ok := x.FileRef.(*ProtoDescriptor_FilePath); ok {
 			return x.FilePath
 		}
 	}
@@ -2952,48 +2849,46 @@ func (x *ProtoDescriptor) GetFilePath() string {
 }
 
 func (x *ProtoDescriptor) SetFileName(v string) {
-	x.xxx_hidden_FileName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.FileName = &v
 }
 
 func (x *ProtoDescriptor) SetFilePath(v string) {
-	x.xxx_hidden_FileRef = &protoDescriptor_FilePath{v}
+	x.FileRef = &ProtoDescriptor_FilePath{v}
 }
 
 func (x *ProtoDescriptor) HasFileName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.FileName != nil
 }
 
 func (x *ProtoDescriptor) HasFileRef() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_FileRef != nil
+	return x.FileRef != nil
 }
 
 func (x *ProtoDescriptor) HasFilePath() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath)
+	_, ok := x.FileRef.(*ProtoDescriptor_FilePath)
 	return ok
 }
 
 func (x *ProtoDescriptor) ClearFileName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_FileName = nil
+	x.FileName = nil
 }
 
 func (x *ProtoDescriptor) ClearFileRef() {
-	x.xxx_hidden_FileRef = nil
+	x.FileRef = nil
 }
 
 func (x *ProtoDescriptor) ClearFilePath() {
-	if _, ok := x.xxx_hidden_FileRef.(*protoDescriptor_FilePath); ok {
-		x.xxx_hidden_FileRef = nil
+	if _, ok := x.FileRef.(*ProtoDescriptor_FilePath); ok {
+		x.FileRef = nil
 	}
 }
 
@@ -3004,8 +2899,8 @@ func (x *ProtoDescriptor) WhichFileRef() case_ProtoDescriptor_FileRef {
 	if x == nil {
 		return ProtoDescriptor_FileRef_not_set_case
 	}
-	switch x.xxx_hidden_FileRef.(type) {
-	case *protoDescriptor_FilePath:
+	switch x.FileRef.(type) {
+	case *ProtoDescriptor_FilePath:
 		return ProtoDescriptor_FilePath_case
 	default:
 		return ProtoDescriptor_FileRef_not_set_case
@@ -3016,21 +2911,18 @@ type ProtoDescriptor_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	FileName *string
-	// Fields of oneof xxx_hidden_FileRef:
+	// Fields of oneof FileRef:
 	FilePath *string
-	// -- end of xxx_hidden_FileRef
+	// -- end of FileRef
 }
 
 func (b0 ProtoDescriptor_builder) Build() *ProtoDescriptor {
 	m0 := &ProtoDescriptor{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.FileName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_FileName = b.FileName
-	}
+	x.FileName = b.FileName
 	if b.FilePath != nil {
-		x.xxx_hidden_FileRef = &protoDescriptor_FilePath{*b.FilePath}
+		x.FileRef = &ProtoDescriptor_FilePath{*b.FilePath}
 	}
 	return m0
 }
@@ -3049,21 +2941,19 @@ type isProtoDescriptor_FileRef interface {
 	isProtoDescriptor_FileRef()
 }
 
-type protoDescriptor_FilePath struct {
+type ProtoDescriptor_FilePath struct {
 	FilePath string `protobuf:"bytes,2,opt,name=file_path,oneof"`
 }
 
-func (*protoDescriptor_FilePath) isProtoDescriptor_FileRef() {}
+func (*ProtoDescriptor_FilePath) isProtoDescriptor_FileRef() {}
 
 type ProtoCollection struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_RootPath       *string                `protobuf:"bytes,1,opt,name=root_path"`
-	xxx_hidden_PathMatchRegex *string                `protobuf:"bytes,2,opt,name=path_match_regex"`
-	xxx_hidden_IsRecursive    bool                   `protobuf:"varint,3,opt,name=is_recursive"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"hybrid.v1"`
+	RootPath       *string                `protobuf:"bytes,1,opt,name=root_path" json:"root_path,omitempty"`
+	PathMatchRegex *string                `protobuf:"bytes,2,opt,name=path_match_regex" json:"path_match_regex,omitempty"`
+	IsRecursive    *bool                  `protobuf:"varint,3,opt,name=is_recursive" json:"is_recursive,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ProtoCollection) Reset() {
@@ -3092,81 +2982,69 @@ func (x *ProtoCollection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProtoCollection) GetRootPath() string {
-	if x != nil {
-		if x.xxx_hidden_RootPath != nil {
-			return *x.xxx_hidden_RootPath
-		}
-		return ""
+	if x != nil && x.RootPath != nil {
+		return *x.RootPath
 	}
 	return ""
 }
 
 func (x *ProtoCollection) GetPathMatchRegex() string {
-	if x != nil {
-		if x.xxx_hidden_PathMatchRegex != nil {
-			return *x.xxx_hidden_PathMatchRegex
-		}
-		return ""
+	if x != nil && x.PathMatchRegex != nil {
+		return *x.PathMatchRegex
 	}
 	return ""
 }
 
 func (x *ProtoCollection) GetIsRecursive() bool {
-	if x != nil {
-		return x.xxx_hidden_IsRecursive
+	if x != nil && x.IsRecursive != nil {
+		return *x.IsRecursive
 	}
 	return false
 }
 
 func (x *ProtoCollection) SetRootPath(v string) {
-	x.xxx_hidden_RootPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.RootPath = &v
 }
 
 func (x *ProtoCollection) SetPathMatchRegex(v string) {
-	x.xxx_hidden_PathMatchRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.PathMatchRegex = &v
 }
 
 func (x *ProtoCollection) SetIsRecursive(v bool) {
-	x.xxx_hidden_IsRecursive = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	x.IsRecursive = &v
 }
 
 func (x *ProtoCollection) HasRootPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.RootPath != nil
 }
 
 func (x *ProtoCollection) HasPathMatchRegex() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.PathMatchRegex != nil
 }
 
 func (x *ProtoCollection) HasIsRecursive() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.IsRecursive != nil
 }
 
 func (x *ProtoCollection) ClearRootPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_RootPath = nil
+	x.RootPath = nil
 }
 
 func (x *ProtoCollection) ClearPathMatchRegex() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_PathMatchRegex = nil
+	x.PathMatchRegex = nil
 }
 
 func (x *ProtoCollection) ClearIsRecursive() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_IsRecursive = false
+	x.IsRecursive = nil
 }
 
 type ProtoCollection_builder struct {
@@ -3181,35 +3059,31 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 	m0 := &ProtoCollection{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.RootPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_RootPath = b.RootPath
-	}
-	if b.PathMatchRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_PathMatchRegex = b.PathMatchRegex
-	}
-	if b.IsRecursive != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_IsRecursive = *b.IsRecursive
-	}
+	x.RootPath = b.RootPath
+	x.PathMatchRegex = b.PathMatchRegex
+	x.IsRecursive = b.IsRecursive
 	return m0
 }
 
 // HttpUpstreamService defines an upstream service that speaks HTTP.
 type HttpUpstreamService struct {
-	state                  protoimpl.MessageState         `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                        `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Tools       *[]*ToolDefinition             `protobuf:"bytes,2,rep,name=tools"`
-	xxx_hidden_Calls       map[string]*HttpCallDefinition `protobuf:"bytes,6,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_HealthCheck *HttpHealthCheck               `protobuf:"bytes,3,opt,name=health_check"`
-	xxx_hidden_TlsConfig   *TLSConfig                     `protobuf:"bytes,4,opt,name=tls_config"`
-	xxx_hidden_Resources   *[]*ResourceDefinition         `protobuf:"bytes,5,rep,name=resources"`
-	xxx_hidden_Prompts     *[]*PromptDefinition           `protobuf:"bytes,7,rep,name=prompts"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The base URL of the HTTP service (e.g., "https://api.example.com").
+	Address *string `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	// Manually defined mappings from MCP tools to HTTP calls.
+	Tools []*ToolDefinition `protobuf:"bytes,2,rep,name=tools" json:"tools,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*HttpCallDefinition `protobuf:"bytes,6,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Configuration for checking the health of the HTTP service.
+	HealthCheck *HttpHealthCheck `protobuf:"bytes,3,opt,name=health_check" json:"health_check,omitempty"`
+	// TLS configuration for the HTTP connection.
+	TlsConfig *TLSConfig `protobuf:"bytes,4,opt,name=tls_config" json:"tls_config,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,5,rep,name=resources" json:"resources,omitempty"`
+	// A list of prompts served by this service.
+	Prompts       []*PromptDefinition `protobuf:"bytes,7,rep,name=prompts" json:"prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HttpUpstreamService) Reset() {
@@ -3238,124 +3112,113 @@ func (x *HttpUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *HttpUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *HttpUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *HttpUpstreamService) GetCalls() map[string]*HttpCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *HttpUpstreamService) GetHealthCheck() *HttpHealthCheck {
 	if x != nil {
-		return x.xxx_hidden_HealthCheck
+		return x.HealthCheck
 	}
 	return nil
 }
 
 func (x *HttpUpstreamService) GetTlsConfig() *TLSConfig {
 	if x != nil {
-		return x.xxx_hidden_TlsConfig
+		return x.TlsConfig
 	}
 	return nil
 }
 
 func (x *HttpUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *HttpUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *HttpUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	x.Address = &v
 }
 
 func (x *HttpUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *HttpUpstreamService) SetCalls(v map[string]*HttpCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *HttpUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
+	x.HealthCheck = v
 }
 
 func (x *HttpUpstreamService) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
+	x.TlsConfig = v
 }
 
 func (x *HttpUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *HttpUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *HttpUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *HttpUpstreamService) HasHealthCheck() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HealthCheck != nil
+	return x.HealthCheck != nil
 }
 
 func (x *HttpUpstreamService) HasTlsConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_TlsConfig != nil
+	return x.TlsConfig != nil
 }
 
 func (x *HttpUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *HttpUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
+	x.HealthCheck = nil
 }
 
 func (x *HttpUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
+	x.TlsConfig = nil
 }
 
 type HttpUpstreamService_builder struct {
@@ -3381,33 +3244,35 @@ func (b0 HttpUpstreamService_builder) Build() *HttpUpstreamService {
 	m0 := &HttpUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Address = b.Address
-	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_HealthCheck = b.HealthCheck
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Prompts = &b.Prompts
+	x.Address = b.Address
+	x.Tools = b.Tools
+	x.Calls = b.Calls
+	x.HealthCheck = b.HealthCheck
+	x.TlsConfig = b.TlsConfig
+	x.Resources = b.Resources
+	x.Prompts = b.Prompts
 	return m0
 }
 
 // WebsocketUpstreamService defines an upstream service that communicates over Websocket.
 type WebsocketUpstreamService struct {
-	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Tools       *[]*ToolDefinition                  `protobuf:"bytes,2,rep,name=tools"`
-	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,3,opt,name=tls_config"`
-	xxx_hidden_Resources   *[]*ResourceDefinition              `protobuf:"bytes,4,rep,name=resources"`
-	xxx_hidden_Calls       map[string]*WebsocketCallDefinition `protobuf:"bytes,5,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Prompts     *[]*PromptDefinition                `protobuf:"bytes,6,rep,name=prompts"`
-	xxx_hidden_HealthCheck *WebsocketHealthCheck               `protobuf:"bytes,7,opt,name=health_check"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The URL of the Websocket service (e.g., "ws://api.example.com/ws").
+	Address *string `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	// Manually defined mappings from MCP tools to websocket calls.
+	Tools []*ToolDefinition `protobuf:"bytes,2,rep,name=tools" json:"tools,omitempty"`
+	// TLS configuration for the Websocket connection.
+	TlsConfig *TLSConfig `protobuf:"bytes,3,opt,name=tls_config" json:"tls_config,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,4,rep,name=resources" json:"resources,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*WebsocketCallDefinition `protobuf:"bytes,5,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// A list of prompts served by this service.
+	Prompts []*PromptDefinition `protobuf:"bytes,6,rep,name=prompts" json:"prompts,omitempty"`
+	// Health check configuration.
+	HealthCheck   *WebsocketHealthCheck `protobuf:"bytes,7,opt,name=health_check" json:"health_check,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *WebsocketUpstreamService) Reset() {
@@ -3436,124 +3301,113 @@ func (x *WebsocketUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *WebsocketUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *WebsocketUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *WebsocketUpstreamService) GetTlsConfig() *TLSConfig {
 	if x != nil {
-		return x.xxx_hidden_TlsConfig
+		return x.TlsConfig
 	}
 	return nil
 }
 
 func (x *WebsocketUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *WebsocketUpstreamService) GetCalls() map[string]*WebsocketCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *WebsocketUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *WebsocketUpstreamService) GetHealthCheck() *WebsocketHealthCheck {
 	if x != nil {
-		return x.xxx_hidden_HealthCheck
+		return x.HealthCheck
 	}
 	return nil
 }
 
 func (x *WebsocketUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	x.Address = &v
 }
 
 func (x *WebsocketUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *WebsocketUpstreamService) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
+	x.TlsConfig = v
 }
 
 func (x *WebsocketUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *WebsocketUpstreamService) SetCalls(v map[string]*WebsocketCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *WebsocketUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *WebsocketUpstreamService) SetHealthCheck(v *WebsocketHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
+	x.HealthCheck = v
 }
 
 func (x *WebsocketUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *WebsocketUpstreamService) HasTlsConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_TlsConfig != nil
+	return x.TlsConfig != nil
 }
 
 func (x *WebsocketUpstreamService) HasHealthCheck() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HealthCheck != nil
+	return x.HealthCheck != nil
 }
 
 func (x *WebsocketUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *WebsocketUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
+	x.TlsConfig = nil
 }
 
 func (x *WebsocketUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
+	x.HealthCheck = nil
 }
 
 type WebsocketUpstreamService_builder struct {
@@ -3579,33 +3433,35 @@ func (b0 WebsocketUpstreamService_builder) Build() *WebsocketUpstreamService {
 	m0 := &WebsocketUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Address = b.Address
-	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_Prompts = &b.Prompts
-	x.xxx_hidden_HealthCheck = b.HealthCheck
+	x.Address = b.Address
+	x.Tools = b.Tools
+	x.TlsConfig = b.TlsConfig
+	x.Resources = b.Resources
+	x.Calls = b.Calls
+	x.Prompts = b.Prompts
+	x.HealthCheck = b.HealthCheck
 	return m0
 }
 
 // WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
 type WebrtcUpstreamService struct {
-	state                  protoimpl.MessageState           `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                          `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Tools       *[]*ToolDefinition               `protobuf:"bytes,2,rep,name=tools"`
-	xxx_hidden_TlsConfig   *TLSConfig                       `protobuf:"bytes,3,opt,name=tls_config"`
-	xxx_hidden_Resources   *[]*ResourceDefinition           `protobuf:"bytes,4,rep,name=resources"`
-	xxx_hidden_Calls       map[string]*WebrtcCallDefinition `protobuf:"bytes,5,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Prompts     *[]*PromptDefinition             `protobuf:"bytes,6,rep,name=prompts"`
-	xxx_hidden_HealthCheck *WebRTCHealthCheck               `protobuf:"bytes,7,opt,name=health_check"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
+	Address *string `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	// Manually defined mappings from MCP tools to webrtc calls.
+	Tools []*ToolDefinition `protobuf:"bytes,2,rep,name=tools" json:"tools,omitempty"`
+	// TLS configuration for the signaling connection.
+	TlsConfig *TLSConfig `protobuf:"bytes,3,opt,name=tls_config" json:"tls_config,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,4,rep,name=resources" json:"resources,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*WebrtcCallDefinition `protobuf:"bytes,5,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// A list of prompts served by this service.
+	Prompts []*PromptDefinition `protobuf:"bytes,6,rep,name=prompts" json:"prompts,omitempty"`
+	// Health check configuration.
+	HealthCheck   *WebRTCHealthCheck `protobuf:"bytes,7,opt,name=health_check" json:"health_check,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *WebrtcUpstreamService) Reset() {
@@ -3634,124 +3490,113 @@ func (x *WebrtcUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *WebrtcUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *WebrtcUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *WebrtcUpstreamService) GetTlsConfig() *TLSConfig {
 	if x != nil {
-		return x.xxx_hidden_TlsConfig
+		return x.TlsConfig
 	}
 	return nil
 }
 
 func (x *WebrtcUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *WebrtcUpstreamService) GetCalls() map[string]*WebrtcCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *WebrtcUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *WebrtcUpstreamService) GetHealthCheck() *WebRTCHealthCheck {
 	if x != nil {
-		return x.xxx_hidden_HealthCheck
+		return x.HealthCheck
 	}
 	return nil
 }
 
 func (x *WebrtcUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	x.Address = &v
 }
 
 func (x *WebrtcUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *WebrtcUpstreamService) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
+	x.TlsConfig = v
 }
 
 func (x *WebrtcUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *WebrtcUpstreamService) SetCalls(v map[string]*WebrtcCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *WebrtcUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *WebrtcUpstreamService) SetHealthCheck(v *WebRTCHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
+	x.HealthCheck = v
 }
 
 func (x *WebrtcUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *WebrtcUpstreamService) HasTlsConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_TlsConfig != nil
+	return x.TlsConfig != nil
 }
 
 func (x *WebrtcUpstreamService) HasHealthCheck() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HealthCheck != nil
+	return x.HealthCheck != nil
 }
 
 func (x *WebrtcUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *WebrtcUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
+	x.TlsConfig = nil
 }
 
 func (x *WebrtcUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
+	x.HealthCheck = nil
 }
 
 type WebrtcUpstreamService_builder struct {
@@ -3777,34 +3622,40 @@ func (b0 WebrtcUpstreamService_builder) Build() *WebrtcUpstreamService {
 	m0 := &WebrtcUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Address = b.Address
-	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_Prompts = &b.Prompts
-	x.xxx_hidden_HealthCheck = b.HealthCheck
+	x.Address = b.Address
+	x.Tools = b.Tools
+	x.TlsConfig = b.TlsConfig
+	x.Resources = b.Resources
+	x.Calls = b.Calls
+	x.Prompts = b.Prompts
+	x.HealthCheck = b.HealthCheck
 	return m0
 }
 
 // OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
 type OpenapiUpstreamService struct {
-	state                  protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                             `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_SpecSource  isOpenapiUpstreamService_SpecSource `protobuf_oneof:"spec_source"`
-	xxx_hidden_HealthCheck *HttpHealthCheck                    `protobuf:"bytes,3,opt,name=health_check"`
-	xxx_hidden_TlsConfig   *TLSConfig                          `protobuf:"bytes,4,opt,name=tls_config"`
-	xxx_hidden_Tools       *[]*ToolDefinition                  `protobuf:"bytes,5,rep,name=tools"`
-	xxx_hidden_Resources   *[]*ResourceDefinition              `protobuf:"bytes,6,rep,name=resources"`
-	xxx_hidden_Calls       map[string]*OpenAPICallDefinition   `protobuf:"bytes,7,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Prompts     *[]*PromptDefinition                `protobuf:"bytes,8,rep,name=prompts"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The base URL of the API.
+	Address *string `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	// Types that are valid to be assigned to SpecSource:
+	//
+	//	*OpenapiUpstreamService_SpecContent
+	//	*OpenapiUpstreamService_SpecUrl
+	SpecSource isOpenapiUpstreamService_SpecSource `protobuf_oneof:"spec_source"`
+	// Health check configuration.
+	HealthCheck *HttpHealthCheck `protobuf:"bytes,3,opt,name=health_check" json:"health_check,omitempty"`
+	// TLS configuration for the connection.
+	TlsConfig *TLSConfig `protobuf:"bytes,4,opt,name=tls_config" json:"tls_config,omitempty"`
+	// Optional: Overrides or specific configurations for calls discovered from the spec.
+	Tools []*ToolDefinition `protobuf:"bytes,5,rep,name=tools" json:"tools,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,6,rep,name=resources" json:"resources,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*OpenAPICallDefinition `protobuf:"bytes,7,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// A list of prompts served by this service.
+	Prompts       []*PromptDefinition `protobuf:"bytes,8,rep,name=prompts" json:"prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OpenapiUpstreamService) Reset() {
@@ -3833,18 +3684,22 @@ func (x *OpenapiUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OpenapiUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
+func (x *OpenapiUpstreamService) GetSpecSource() isOpenapiUpstreamService_SpecSource {
+	if x != nil {
+		return x.SpecSource
+	}
+	return nil
+}
+
 func (x *OpenapiUpstreamService) GetSpecContent() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_SpecContent); ok {
+		if x, ok := x.SpecSource.(*OpenapiUpstreamService_SpecContent); ok {
 			return x.SpecContent
 		}
 	}
@@ -3853,7 +3708,7 @@ func (x *OpenapiUpstreamService) GetSpecContent() string {
 
 func (x *OpenapiUpstreamService) GetSpecUrl() string {
 	if x != nil {
-		if x, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_SpecUrl); ok {
+		if x, ok := x.SpecSource.(*OpenapiUpstreamService_SpecUrl); ok {
 			return x.SpecUrl
 		}
 	}
@@ -3862,108 +3717,101 @@ func (x *OpenapiUpstreamService) GetSpecUrl() string {
 
 func (x *OpenapiUpstreamService) GetHealthCheck() *HttpHealthCheck {
 	if x != nil {
-		return x.xxx_hidden_HealthCheck
+		return x.HealthCheck
 	}
 	return nil
 }
 
 func (x *OpenapiUpstreamService) GetTlsConfig() *TLSConfig {
 	if x != nil {
-		return x.xxx_hidden_TlsConfig
+		return x.TlsConfig
 	}
 	return nil
 }
 
 func (x *OpenapiUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *OpenapiUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *OpenapiUpstreamService) GetCalls() map[string]*OpenAPICallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *OpenapiUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *OpenapiUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+	x.Address = &v
 }
 
 func (x *OpenapiUpstreamService) SetSpecContent(v string) {
-	x.xxx_hidden_SpecSource = &openapiUpstreamService_SpecContent{v}
+	x.SpecSource = &OpenapiUpstreamService_SpecContent{v}
 }
 
 func (x *OpenapiUpstreamService) SetSpecUrl(v string) {
-	x.xxx_hidden_SpecSource = &openapiUpstreamService_SpecUrl{v}
+	x.SpecSource = &OpenapiUpstreamService_SpecUrl{v}
 }
 
 func (x *OpenapiUpstreamService) SetHealthCheck(v *HttpHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
+	x.HealthCheck = v
 }
 
 func (x *OpenapiUpstreamService) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
+	x.TlsConfig = v
 }
 
 func (x *OpenapiUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *OpenapiUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *OpenapiUpstreamService) SetCalls(v map[string]*OpenAPICallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *OpenapiUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *OpenapiUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *OpenapiUpstreamService) HasSpecSource() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_SpecSource != nil
+	return x.SpecSource != nil
 }
 
 func (x *OpenapiUpstreamService) HasSpecContent() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_SpecContent)
+	_, ok := x.SpecSource.(*OpenapiUpstreamService_SpecContent)
 	return ok
 }
 
@@ -3971,7 +3819,7 @@ func (x *OpenapiUpstreamService) HasSpecUrl() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_SpecUrl)
+	_, ok := x.SpecSource.(*OpenapiUpstreamService_SpecUrl)
 	return ok
 }
 
@@ -3979,43 +3827,42 @@ func (x *OpenapiUpstreamService) HasHealthCheck() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HealthCheck != nil
+	return x.HealthCheck != nil
 }
 
 func (x *OpenapiUpstreamService) HasTlsConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_TlsConfig != nil
+	return x.TlsConfig != nil
 }
 
 func (x *OpenapiUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *OpenapiUpstreamService) ClearSpecSource() {
-	x.xxx_hidden_SpecSource = nil
+	x.SpecSource = nil
 }
 
 func (x *OpenapiUpstreamService) ClearSpecContent() {
-	if _, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_SpecContent); ok {
-		x.xxx_hidden_SpecSource = nil
+	if _, ok := x.SpecSource.(*OpenapiUpstreamService_SpecContent); ok {
+		x.SpecSource = nil
 	}
 }
 
 func (x *OpenapiUpstreamService) ClearSpecUrl() {
-	if _, ok := x.xxx_hidden_SpecSource.(*openapiUpstreamService_SpecUrl); ok {
-		x.xxx_hidden_SpecSource = nil
+	if _, ok := x.SpecSource.(*OpenapiUpstreamService_SpecUrl); ok {
+		x.SpecSource = nil
 	}
 }
 
 func (x *OpenapiUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
+	x.HealthCheck = nil
 }
 
 func (x *OpenapiUpstreamService) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
+	x.TlsConfig = nil
 }
 
 const OpenapiUpstreamService_SpecSource_not_set_case case_OpenapiUpstreamService_SpecSource = 0
@@ -4026,10 +3873,10 @@ func (x *OpenapiUpstreamService) WhichSpecSource() case_OpenapiUpstreamService_S
 	if x == nil {
 		return OpenapiUpstreamService_SpecSource_not_set_case
 	}
-	switch x.xxx_hidden_SpecSource.(type) {
-	case *openapiUpstreamService_SpecContent:
+	switch x.SpecSource.(type) {
+	case *OpenapiUpstreamService_SpecContent:
 		return OpenapiUpstreamService_SpecContent_case
-	case *openapiUpstreamService_SpecUrl:
+	case *OpenapiUpstreamService_SpecUrl:
 		return OpenapiUpstreamService_SpecUrl_case
 	default:
 		return OpenapiUpstreamService_SpecSource_not_set_case
@@ -4041,12 +3888,12 @@ type OpenapiUpstreamService_builder struct {
 
 	// The base URL of the API.
 	Address *string
-	// Fields of oneof xxx_hidden_SpecSource:
+	// Fields of oneof SpecSource:
 	// The OpenAPI specification content (JSON or YAML).
 	SpecContent *string
 	// The URL to fetch the OpenAPI specification from.
 	SpecUrl *string
-	// -- end of xxx_hidden_SpecSource
+	// -- end of SpecSource
 	// Health check configuration.
 	HealthCheck *HttpHealthCheck
 	// TLS configuration for the connection.
@@ -4065,22 +3912,19 @@ func (b0 OpenapiUpstreamService_builder) Build() *OpenapiUpstreamService {
 	m0 := &OpenapiUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
-		x.xxx_hidden_Address = b.Address
-	}
+	x.Address = b.Address
 	if b.SpecContent != nil {
-		x.xxx_hidden_SpecSource = &openapiUpstreamService_SpecContent{*b.SpecContent}
+		x.SpecSource = &OpenapiUpstreamService_SpecContent{*b.SpecContent}
 	}
 	if b.SpecUrl != nil {
-		x.xxx_hidden_SpecSource = &openapiUpstreamService_SpecUrl{*b.SpecUrl}
+		x.SpecSource = &OpenapiUpstreamService_SpecUrl{*b.SpecUrl}
 	}
-	x.xxx_hidden_HealthCheck = b.HealthCheck
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_Prompts = &b.Prompts
+	x.HealthCheck = b.HealthCheck
+	x.TlsConfig = b.TlsConfig
+	x.Tools = b.Tools
+	x.Resources = b.Resources
+	x.Calls = b.Calls
+	x.Prompts = b.Prompts
 	return m0
 }
 
@@ -4098,40 +3942,50 @@ type isOpenapiUpstreamService_SpecSource interface {
 	isOpenapiUpstreamService_SpecSource()
 }
 
-type openapiUpstreamService_SpecContent struct {
+type OpenapiUpstreamService_SpecContent struct {
 	// The OpenAPI specification content (JSON or YAML).
 	SpecContent string `protobuf:"bytes,2,opt,name=spec_content,oneof"`
 }
 
-type openapiUpstreamService_SpecUrl struct {
+type OpenapiUpstreamService_SpecUrl struct {
 	// The URL to fetch the OpenAPI specification from.
 	SpecUrl string `protobuf:"bytes,9,opt,name=spec_url,oneof"`
 }
 
-func (*openapiUpstreamService_SpecContent) isOpenapiUpstreamService_SpecSource() {}
+func (*OpenapiUpstreamService_SpecContent) isOpenapiUpstreamService_SpecSource() {}
 
-func (*openapiUpstreamService_SpecUrl) isOpenapiUpstreamService_SpecSource() {}
+func (*OpenapiUpstreamService_SpecUrl) isOpenapiUpstreamService_SpecSource() {}
 
 // CommandLineUpstreamService defines a service that communicates over standard I/O.
 type CommandLineUpstreamService struct {
-	state                            protoimpl.MessageState                           `protogen:"opaque.v1"`
-	xxx_hidden_Command               *string                                          `protobuf:"bytes,1,opt,name=command"`
-	xxx_hidden_WorkingDirectory      *string                                          `protobuf:"bytes,3,opt,name=working_directory"`
-	xxx_hidden_Tools                 *[]*ToolDefinition                               `protobuf:"bytes,4,rep,name=tools"`
-	xxx_hidden_HealthCheck           *CommandLineHealthCheck                          `protobuf:"bytes,5,opt,name=health_check"`
-	xxx_hidden_Cache                 *CacheConfig                                     `protobuf:"bytes,6,opt,name=cache"`
-	xxx_hidden_ContainerEnvironment  *ContainerEnvironment                            `protobuf:"bytes,7,opt,name=container_environment"`
-	xxx_hidden_Timeout               *durationpb.Duration                             `protobuf:"bytes,8,opt,name=timeout"`
-	xxx_hidden_Resources             *[]*ResourceDefinition                           `protobuf:"bytes,9,rep,name=resources"`
-	xxx_hidden_Calls                 map[string]*CommandLineCallDefinition            `protobuf:"bytes,10,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Prompts               *[]*PromptDefinition                             `protobuf:"bytes,11,rep,name=prompts"`
-	xxx_hidden_CommunicationProtocol CommandLineUpstreamService_CommunicationProtocol `protobuf:"varint,12,opt,name=communication_protocol,enum=mcpany.config.v1.CommandLineUpstreamService_CommunicationProtocol"`
-	xxx_hidden_Local                 bool                                             `protobuf:"varint,13,opt,name=local"`
-	xxx_hidden_Env                   map[string]*SecretValue                          `protobuf:"bytes,14,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	XXX_raceDetectHookData           protoimpl.RaceDetectHookData
-	XXX_presence                     [1]uint32
-	unknownFields                    protoimpl.UnknownFields
-	sizeCache                        protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The command to execute the service.
+	Command *string `protobuf:"bytes,1,opt,name=command" json:"command,omitempty"`
+	// The working directory for the command.
+	WorkingDirectory *string `protobuf:"bytes,3,opt,name=working_directory" json:"working_directory,omitempty"`
+	// Manually defined mappings from MCP tools to command line commands.
+	Tools []*ToolDefinition `protobuf:"bytes,4,rep,name=tools" json:"tools,omitempty"`
+	// Health check configuration.
+	HealthCheck *CommandLineHealthCheck `protobuf:"bytes,5,opt,name=health_check" json:"health_check,omitempty"`
+	// Caching configuration to improve performance and reduce load on the upstream.
+	Cache *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
+	// Container environment to run the command in.
+	ContainerEnvironment *ContainerEnvironment `protobuf:"bytes,7,opt,name=container_environment" json:"container_environment,omitempty"`
+	// Timeout for the command execution.
+	Timeout *durationpb.Duration `protobuf:"bytes,8,opt,name=timeout" json:"timeout,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,9,rep,name=resources" json:"resources,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*CommandLineCallDefinition `protobuf:"bytes,10,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// A list of prompts served by this service.
+	Prompts               []*PromptDefinition                               `protobuf:"bytes,11,rep,name=prompts" json:"prompts,omitempty"`
+	CommunicationProtocol *CommandLineUpstreamService_CommunicationProtocol `protobuf:"varint,12,opt,name=communication_protocol,enum=mcpany.config.v1.CommandLineUpstreamService_CommunicationProtocol" json:"communication_protocol,omitempty"`
+	// If true, the command will be executed on the local filesystem.
+	Local *bool `protobuf:"varint,13,opt,name=local" json:"local,omitempty"`
+	// Environment variables to set for the command (supports secrets).
+	Env           map[string]*SecretValue `protobuf:"bytes,14,rep,name=env" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CommandLineUpstreamService) Reset() {
@@ -4160,256 +4014,234 @@ func (x *CommandLineUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CommandLineUpstreamService) GetCommand() string {
-	if x != nil {
-		if x.xxx_hidden_Command != nil {
-			return *x.xxx_hidden_Command
-		}
-		return ""
+	if x != nil && x.Command != nil {
+		return *x.Command
 	}
 	return ""
 }
 
 func (x *CommandLineUpstreamService) GetWorkingDirectory() string {
-	if x != nil {
-		if x.xxx_hidden_WorkingDirectory != nil {
-			return *x.xxx_hidden_WorkingDirectory
-		}
-		return ""
+	if x != nil && x.WorkingDirectory != nil {
+		return *x.WorkingDirectory
 	}
 	return ""
 }
 
 func (x *CommandLineUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetHealthCheck() *CommandLineHealthCheck {
 	if x != nil {
-		return x.xxx_hidden_HealthCheck
+		return x.HealthCheck
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetCache() *CacheConfig {
 	if x != nil {
-		return x.xxx_hidden_Cache
+		return x.Cache
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetContainerEnvironment() *ContainerEnvironment {
 	if x != nil {
-		return x.xxx_hidden_ContainerEnvironment
+		return x.ContainerEnvironment
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_Timeout
+		return x.Timeout
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetCalls() map[string]*CommandLineCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) GetCommunicationProtocol() CommandLineUpstreamService_CommunicationProtocol {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 10) {
-			return x.xxx_hidden_CommunicationProtocol
-		}
+	if x != nil && x.CommunicationProtocol != nil {
+		return *x.CommunicationProtocol
 	}
 	return CommandLineUpstreamService_COMMUNICATION_PROTOCOL_UNSPECIFIED
 }
 
 func (x *CommandLineUpstreamService) GetLocal() bool {
-	if x != nil {
-		return x.xxx_hidden_Local
+	if x != nil && x.Local != nil {
+		return *x.Local
 	}
 	return false
 }
 
 func (x *CommandLineUpstreamService) GetEnv() map[string]*SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Env
+		return x.Env
 	}
 	return nil
 }
 
 func (x *CommandLineUpstreamService) SetCommand(v string) {
-	x.xxx_hidden_Command = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 13)
+	x.Command = &v
 }
 
 func (x *CommandLineUpstreamService) SetWorkingDirectory(v string) {
-	x.xxx_hidden_WorkingDirectory = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 13)
+	x.WorkingDirectory = &v
 }
 
 func (x *CommandLineUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *CommandLineUpstreamService) SetHealthCheck(v *CommandLineHealthCheck) {
-	x.xxx_hidden_HealthCheck = v
+	x.HealthCheck = v
 }
 
 func (x *CommandLineUpstreamService) SetCache(v *CacheConfig) {
-	x.xxx_hidden_Cache = v
+	x.Cache = v
 }
 
 func (x *CommandLineUpstreamService) SetContainerEnvironment(v *ContainerEnvironment) {
-	x.xxx_hidden_ContainerEnvironment = v
+	x.ContainerEnvironment = v
 }
 
 func (x *CommandLineUpstreamService) SetTimeout(v *durationpb.Duration) {
-	x.xxx_hidden_Timeout = v
+	x.Timeout = v
 }
 
 func (x *CommandLineUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *CommandLineUpstreamService) SetCalls(v map[string]*CommandLineCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *CommandLineUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *CommandLineUpstreamService) SetCommunicationProtocol(v CommandLineUpstreamService_CommunicationProtocol) {
-	x.xxx_hidden_CommunicationProtocol = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 13)
+	x.CommunicationProtocol = &v
 }
 
 func (x *CommandLineUpstreamService) SetLocal(v bool) {
-	x.xxx_hidden_Local = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 13)
+	x.Local = &v
 }
 
 func (x *CommandLineUpstreamService) SetEnv(v map[string]*SecretValue) {
-	x.xxx_hidden_Env = v
+	x.Env = v
 }
 
 func (x *CommandLineUpstreamService) HasCommand() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Command != nil
 }
 
 func (x *CommandLineUpstreamService) HasWorkingDirectory() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.WorkingDirectory != nil
 }
 
 func (x *CommandLineUpstreamService) HasHealthCheck() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_HealthCheck != nil
+	return x.HealthCheck != nil
 }
 
 func (x *CommandLineUpstreamService) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Cache != nil
+	return x.Cache != nil
 }
 
 func (x *CommandLineUpstreamService) HasContainerEnvironment() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ContainerEnvironment != nil
+	return x.ContainerEnvironment != nil
 }
 
 func (x *CommandLineUpstreamService) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Timeout != nil
+	return x.Timeout != nil
 }
 
 func (x *CommandLineUpstreamService) HasCommunicationProtocol() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+	return x.CommunicationProtocol != nil
 }
 
 func (x *CommandLineUpstreamService) HasLocal() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+	return x.Local != nil
 }
 
 func (x *CommandLineUpstreamService) ClearCommand() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Command = nil
+	x.Command = nil
 }
 
 func (x *CommandLineUpstreamService) ClearWorkingDirectory() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_WorkingDirectory = nil
+	x.WorkingDirectory = nil
 }
 
 func (x *CommandLineUpstreamService) ClearHealthCheck() {
-	x.xxx_hidden_HealthCheck = nil
+	x.HealthCheck = nil
 }
 
 func (x *CommandLineUpstreamService) ClearCache() {
-	x.xxx_hidden_Cache = nil
+	x.Cache = nil
 }
 
 func (x *CommandLineUpstreamService) ClearContainerEnvironment() {
-	x.xxx_hidden_ContainerEnvironment = nil
+	x.ContainerEnvironment = nil
 }
 
 func (x *CommandLineUpstreamService) ClearTimeout() {
-	x.xxx_hidden_Timeout = nil
+	x.Timeout = nil
 }
 
 func (x *CommandLineUpstreamService) ClearCommunicationProtocol() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
-	x.xxx_hidden_CommunicationProtocol = CommandLineUpstreamService_COMMUNICATION_PROTOCOL_UNSPECIFIED
+	x.CommunicationProtocol = nil
 }
 
 func (x *CommandLineUpstreamService) ClearLocal() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
-	x.xxx_hidden_Local = false
+	x.Local = nil
 }
 
 type CommandLineUpstreamService_builder struct {
@@ -4446,43 +4278,31 @@ func (b0 CommandLineUpstreamService_builder) Build() *CommandLineUpstreamService
 	m0 := &CommandLineUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Command != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 13)
-		x.xxx_hidden_Command = b.Command
-	}
-	if b.WorkingDirectory != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 13)
-		x.xxx_hidden_WorkingDirectory = b.WorkingDirectory
-	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_HealthCheck = b.HealthCheck
-	x.xxx_hidden_Cache = b.Cache
-	x.xxx_hidden_ContainerEnvironment = b.ContainerEnvironment
-	x.xxx_hidden_Timeout = b.Timeout
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_Prompts = &b.Prompts
-	if b.CommunicationProtocol != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 13)
-		x.xxx_hidden_CommunicationProtocol = *b.CommunicationProtocol
-	}
-	if b.Local != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 13)
-		x.xxx_hidden_Local = *b.Local
-	}
-	x.xxx_hidden_Env = b.Env
+	x.Command = b.Command
+	x.WorkingDirectory = b.WorkingDirectory
+	x.Tools = b.Tools
+	x.HealthCheck = b.HealthCheck
+	x.Cache = b.Cache
+	x.ContainerEnvironment = b.ContainerEnvironment
+	x.Timeout = b.Timeout
+	x.Resources = b.Resources
+	x.Calls = b.Calls
+	x.Prompts = b.Prompts
+	x.CommunicationProtocol = b.CommunicationProtocol
+	x.Local = b.Local
+	x.Env = b.Env
 	return m0
 }
 
 // GraphQLUpstreamService defines an upstream service that speaks GraphQL.
 type GraphQLUpstreamService struct {
-	state                  protoimpl.MessageState            `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                           `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Calls       map[string]*GraphQLCallDefinition `protobuf:"bytes,2,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The URL of the GraphQL endpoint (e.g., "http://api.example.com/graphql").
+	Address *string `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls         map[string]*GraphQLCallDefinition `protobuf:"bytes,2,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GraphQLUpstreamService) Reset() {
@@ -4511,41 +4331,36 @@ func (x *GraphQLUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GraphQLUpstreamService) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *GraphQLUpstreamService) GetCalls() map[string]*GraphQLCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *GraphQLUpstreamService) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	x.Address = &v
 }
 
 func (x *GraphQLUpstreamService) SetCalls(v map[string]*GraphQLCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *GraphQLUpstreamService) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *GraphQLUpstreamService) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 type GraphQLUpstreamService_builder struct {
@@ -4561,24 +4376,22 @@ func (b0 GraphQLUpstreamService_builder) Build() *GraphQLUpstreamService {
 	m0 := &GraphQLUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Address = b.Address
-	}
-	x.xxx_hidden_Calls = b.Calls
+	x.Address = b.Address
+	x.Calls = b.Calls
 	return m0
 }
 
 // SqlUpstreamService defines an upstream service that speaks SQL.
 type SqlUpstreamService struct {
-	state                  protoimpl.MessageState        `protogen:"opaque.v1"`
-	xxx_hidden_Driver      *string                       `protobuf:"bytes,1,opt,name=driver"`
-	xxx_hidden_Dsn         *string                       `protobuf:"bytes,2,opt,name=dsn"`
-	xxx_hidden_Calls       map[string]*SqlCallDefinition `protobuf:"bytes,3,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The driver name (e.g., "postgres", "mysql", "sqlite").
+	Driver *string `protobuf:"bytes,1,opt,name=driver" json:"driver,omitempty"`
+	// The data source name (DSN) for connecting to the database.
+	Dsn *string `protobuf:"bytes,2,opt,name=dsn" json:"dsn,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls         map[string]*SqlCallDefinition `protobuf:"bytes,3,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlUpstreamService) Reset() {
@@ -4607,68 +4420,58 @@ func (x *SqlUpstreamService) ProtoReflect() protoreflect.Message {
 }
 
 func (x *SqlUpstreamService) GetDriver() string {
-	if x != nil {
-		if x.xxx_hidden_Driver != nil {
-			return *x.xxx_hidden_Driver
-		}
-		return ""
+	if x != nil && x.Driver != nil {
+		return *x.Driver
 	}
 	return ""
 }
 
 func (x *SqlUpstreamService) GetDsn() string {
-	if x != nil {
-		if x.xxx_hidden_Dsn != nil {
-			return *x.xxx_hidden_Dsn
-		}
-		return ""
+	if x != nil && x.Dsn != nil {
+		return *x.Dsn
 	}
 	return ""
 }
 
 func (x *SqlUpstreamService) GetCalls() map[string]*SqlCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *SqlUpstreamService) SetDriver(v string) {
-	x.xxx_hidden_Driver = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.Driver = &v
 }
 
 func (x *SqlUpstreamService) SetDsn(v string) {
-	x.xxx_hidden_Dsn = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.Dsn = &v
 }
 
 func (x *SqlUpstreamService) SetCalls(v map[string]*SqlCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *SqlUpstreamService) HasDriver() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Driver != nil
 }
 
 func (x *SqlUpstreamService) HasDsn() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Dsn != nil
 }
 
 func (x *SqlUpstreamService) ClearDriver() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Driver = nil
+	x.Driver = nil
 }
 
 func (x *SqlUpstreamService) ClearDsn() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Dsn = nil
+	x.Dsn = nil
 }
 
 type SqlUpstreamService_builder struct {
@@ -4686,34 +4489,47 @@ func (b0 SqlUpstreamService_builder) Build() *SqlUpstreamService {
 	m0 := &SqlUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Driver != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_Driver = b.Driver
-	}
-	if b.Dsn != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Dsn = b.Dsn
-	}
-	x.xxx_hidden_Calls = b.Calls
+	x.Driver = b.Driver
+	x.Dsn = b.Dsn
+	x.Calls = b.Calls
 	return m0
 }
 
 // FilesystemUpstreamService defines a service that exposes a local filesystem safely.
 type FilesystemUpstreamService struct {
-	state                     protoimpl.MessageState                     `protogen:"opaque.v1"`
-	xxx_hidden_RootPaths      map[string]string                          `protobuf:"bytes,1,rep,name=root_paths" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_ReadOnly       bool                                       `protobuf:"varint,2,opt,name=read_only"`
-	xxx_hidden_Tools          *[]*ToolDefinition                         `protobuf:"bytes,3,rep,name=tools"`
-	xxx_hidden_Resources      *[]*ResourceDefinition                     `protobuf:"bytes,4,rep,name=resources"`
-	xxx_hidden_Prompts        *[]*PromptDefinition                       `protobuf:"bytes,5,rep,name=prompts"`
-	xxx_hidden_AllowedPaths   []string                                   `protobuf:"bytes,6,rep,name=allowed_paths"`
-	xxx_hidden_DeniedPaths    []string                                   `protobuf:"bytes,7,rep,name=denied_paths"`
-	xxx_hidden_SymlinkMode    FilesystemUpstreamService_SymlinkMode      `protobuf:"varint,8,opt,name=symlink_mode,enum=mcpany.config.v1.FilesystemUpstreamService_SymlinkMode"`
-	xxx_hidden_FilesystemType isFilesystemUpstreamService_FilesystemType `protobuf_oneof:"filesystem_type"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The root directories that are allowed to be accessed.
+	// The key is the virtual path (how it appears to the LLM) and the value is the actual local path.
+	// Example: {"/workspace": "/home/user/projects/myproject"}
+	RootPaths map[string]string `protobuf:"bytes,1,rep,name=root_paths" json:"root_paths,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// If true, file operations are read-only.
+	ReadOnly *bool `protobuf:"varint,2,opt,name=read_only" json:"read_only,omitempty"`
+	// Manually defined mappings (usually not needed as we auto-register FS tools).
+	Tools []*ToolDefinition `protobuf:"bytes,3,rep,name=tools" json:"tools,omitempty"`
+	// Resources (files) that are statically or dynamically exposed.
+	Resources []*ResourceDefinition `protobuf:"bytes,4,rep,name=resources" json:"resources,omitempty"`
+	// Prompts that are exposed.
+	Prompts []*PromptDefinition `protobuf:"bytes,5,rep,name=prompts" json:"prompts,omitempty"`
+	// List of glob patterns for allowed paths. If empty, all paths under roots are allowed.
+	AllowedPaths []string `protobuf:"bytes,6,rep,name=allowed_paths" json:"allowed_paths,omitempty"`
+	// List of glob patterns for denied paths. Checked after allowed_paths.
+	DeniedPaths []string `protobuf:"bytes,7,rep,name=denied_paths" json:"denied_paths,omitempty"`
+	// The policy for following symlinks.
+	SymlinkMode *FilesystemUpstreamService_SymlinkMode `protobuf:"varint,8,opt,name=symlink_mode,enum=mcpany.config.v1.FilesystemUpstreamService_SymlinkMode" json:"symlink_mode,omitempty"`
+	// The specific configuration for the filesystem type.
+	//
+	// Types that are valid to be assigned to FilesystemType:
+	//
+	//	*FilesystemUpstreamService_Os
+	//	*FilesystemUpstreamService_Tmpfs
+	//	*FilesystemUpstreamService_Http
+	//	*FilesystemUpstreamService_Zip
+	//	*FilesystemUpstreamService_Gcs
+	//	*FilesystemUpstreamService_Sftp
+	//	*FilesystemUpstreamService_S3
+	FilesystemType isFilesystemUpstreamService_FilesystemType `protobuf_oneof:"filesystem_type"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *FilesystemUpstreamService) Reset() {
@@ -4743,71 +4559,70 @@ func (x *FilesystemUpstreamService) ProtoReflect() protoreflect.Message {
 
 func (x *FilesystemUpstreamService) GetRootPaths() map[string]string {
 	if x != nil {
-		return x.xxx_hidden_RootPaths
+		return x.RootPaths
 	}
 	return nil
 }
 
 func (x *FilesystemUpstreamService) GetReadOnly() bool {
-	if x != nil {
-		return x.xxx_hidden_ReadOnly
+	if x != nil && x.ReadOnly != nil {
+		return *x.ReadOnly
 	}
 	return false
 }
 
 func (x *FilesystemUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *FilesystemUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *FilesystemUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *FilesystemUpstreamService) GetAllowedPaths() []string {
 	if x != nil {
-		return x.xxx_hidden_AllowedPaths
+		return x.AllowedPaths
 	}
 	return nil
 }
 
 func (x *FilesystemUpstreamService) GetDeniedPaths() []string {
 	if x != nil {
-		return x.xxx_hidden_DeniedPaths
+		return x.DeniedPaths
 	}
 	return nil
 }
 
 func (x *FilesystemUpstreamService) GetSymlinkMode() FilesystemUpstreamService_SymlinkMode {
-	if x != nil {
-		if protoimpl.X.Present(&(x.XXX_presence[0]), 7) {
-			return x.xxx_hidden_SymlinkMode
-		}
+	if x != nil && x.SymlinkMode != nil {
+		return *x.SymlinkMode
 	}
 	return FilesystemUpstreamService_SYMLINK_MODE_UNSPECIFIED
 }
 
+func (x *FilesystemUpstreamService) GetFilesystemType() isFilesystemUpstreamService_FilesystemType {
+	if x != nil {
+		return x.FilesystemType
+	}
+	return nil
+}
+
 func (x *FilesystemUpstreamService) GetOs() *OsFs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Os); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_Os); ok {
 			return x.Os
 		}
 	}
@@ -4816,7 +4631,7 @@ func (x *FilesystemUpstreamService) GetOs() *OsFs {
 
 func (x *FilesystemUpstreamService) GetTmpfs() *MemMapFs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Tmpfs); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_Tmpfs); ok {
 			return x.Tmpfs
 		}
 	}
@@ -4825,7 +4640,7 @@ func (x *FilesystemUpstreamService) GetTmpfs() *MemMapFs {
 
 func (x *FilesystemUpstreamService) GetHttp() *HttpFs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Http); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_Http); ok {
 			return x.Http
 		}
 	}
@@ -4834,7 +4649,7 @@ func (x *FilesystemUpstreamService) GetHttp() *HttpFs {
 
 func (x *FilesystemUpstreamService) GetZip() *ZipFs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Zip); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_Zip); ok {
 			return x.Zip
 		}
 	}
@@ -4843,7 +4658,7 @@ func (x *FilesystemUpstreamService) GetZip() *ZipFs {
 
 func (x *FilesystemUpstreamService) GetGcs() *GcsFs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Gcs); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_Gcs); ok {
 			return x.Gcs
 		}
 	}
@@ -4852,7 +4667,7 @@ func (x *FilesystemUpstreamService) GetGcs() *GcsFs {
 
 func (x *FilesystemUpstreamService) GetSftp() *SftpFs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Sftp); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_Sftp); ok {
 			return x.Sftp
 		}
 	}
@@ -4861,7 +4676,7 @@ func (x *FilesystemUpstreamService) GetSftp() *SftpFs {
 
 func (x *FilesystemUpstreamService) GetS3() *S3Fs {
 	if x != nil {
-		if x, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_S3); ok {
+		if x, ok := x.FilesystemType.(*FilesystemUpstreamService_S3); ok {
 			return x.S3
 		}
 	}
@@ -4869,121 +4684,119 @@ func (x *FilesystemUpstreamService) GetS3() *S3Fs {
 }
 
 func (x *FilesystemUpstreamService) SetRootPaths(v map[string]string) {
-	x.xxx_hidden_RootPaths = v
+	x.RootPaths = v
 }
 
 func (x *FilesystemUpstreamService) SetReadOnly(v bool) {
-	x.xxx_hidden_ReadOnly = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+	x.ReadOnly = &v
 }
 
 func (x *FilesystemUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *FilesystemUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *FilesystemUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *FilesystemUpstreamService) SetAllowedPaths(v []string) {
-	x.xxx_hidden_AllowedPaths = v
+	x.AllowedPaths = v
 }
 
 func (x *FilesystemUpstreamService) SetDeniedPaths(v []string) {
-	x.xxx_hidden_DeniedPaths = v
+	x.DeniedPaths = v
 }
 
 func (x *FilesystemUpstreamService) SetSymlinkMode(v FilesystemUpstreamService_SymlinkMode) {
-	x.xxx_hidden_SymlinkMode = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
+	x.SymlinkMode = &v
 }
 
 func (x *FilesystemUpstreamService) SetOs(v *OsFs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Os{v}
+	x.FilesystemType = &FilesystemUpstreamService_Os{v}
 }
 
 func (x *FilesystemUpstreamService) SetTmpfs(v *MemMapFs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Tmpfs{v}
+	x.FilesystemType = &FilesystemUpstreamService_Tmpfs{v}
 }
 
 func (x *FilesystemUpstreamService) SetHttp(v *HttpFs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Http{v}
+	x.FilesystemType = &FilesystemUpstreamService_Http{v}
 }
 
 func (x *FilesystemUpstreamService) SetZip(v *ZipFs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Zip{v}
+	x.FilesystemType = &FilesystemUpstreamService_Zip{v}
 }
 
 func (x *FilesystemUpstreamService) SetGcs(v *GcsFs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Gcs{v}
+	x.FilesystemType = &FilesystemUpstreamService_Gcs{v}
 }
 
 func (x *FilesystemUpstreamService) SetSftp(v *SftpFs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Sftp{v}
+	x.FilesystemType = &FilesystemUpstreamService_Sftp{v}
 }
 
 func (x *FilesystemUpstreamService) SetS3(v *S3Fs) {
 	if v == nil {
-		x.xxx_hidden_FilesystemType = nil
+		x.FilesystemType = nil
 		return
 	}
-	x.xxx_hidden_FilesystemType = &filesystemUpstreamService_S3{v}
+	x.FilesystemType = &FilesystemUpstreamService_S3{v}
 }
 
 func (x *FilesystemUpstreamService) HasReadOnly() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.ReadOnly != nil
 }
 
 func (x *FilesystemUpstreamService) HasSymlinkMode() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+	return x.SymlinkMode != nil
 }
 
 func (x *FilesystemUpstreamService) HasFilesystemType() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_FilesystemType != nil
+	return x.FilesystemType != nil
 }
 
 func (x *FilesystemUpstreamService) HasOs() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Os)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_Os)
 	return ok
 }
 
@@ -4991,7 +4804,7 @@ func (x *FilesystemUpstreamService) HasTmpfs() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Tmpfs)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_Tmpfs)
 	return ok
 }
 
@@ -4999,7 +4812,7 @@ func (x *FilesystemUpstreamService) HasHttp() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Http)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_Http)
 	return ok
 }
 
@@ -5007,7 +4820,7 @@ func (x *FilesystemUpstreamService) HasZip() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Zip)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_Zip)
 	return ok
 }
 
@@ -5015,7 +4828,7 @@ func (x *FilesystemUpstreamService) HasGcs() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Gcs)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_Gcs)
 	return ok
 }
 
@@ -5023,7 +4836,7 @@ func (x *FilesystemUpstreamService) HasSftp() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Sftp)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_Sftp)
 	return ok
 }
 
@@ -5031,63 +4844,61 @@ func (x *FilesystemUpstreamService) HasS3() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_S3)
+	_, ok := x.FilesystemType.(*FilesystemUpstreamService_S3)
 	return ok
 }
 
 func (x *FilesystemUpstreamService) ClearReadOnly() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ReadOnly = false
+	x.ReadOnly = nil
 }
 
 func (x *FilesystemUpstreamService) ClearSymlinkMode() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
-	x.xxx_hidden_SymlinkMode = FilesystemUpstreamService_SYMLINK_MODE_UNSPECIFIED
+	x.SymlinkMode = nil
 }
 
 func (x *FilesystemUpstreamService) ClearFilesystemType() {
-	x.xxx_hidden_FilesystemType = nil
+	x.FilesystemType = nil
 }
 
 func (x *FilesystemUpstreamService) ClearOs() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Os); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_Os); ok {
+		x.FilesystemType = nil
 	}
 }
 
 func (x *FilesystemUpstreamService) ClearTmpfs() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Tmpfs); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_Tmpfs); ok {
+		x.FilesystemType = nil
 	}
 }
 
 func (x *FilesystemUpstreamService) ClearHttp() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Http); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_Http); ok {
+		x.FilesystemType = nil
 	}
 }
 
 func (x *FilesystemUpstreamService) ClearZip() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Zip); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_Zip); ok {
+		x.FilesystemType = nil
 	}
 }
 
 func (x *FilesystemUpstreamService) ClearGcs() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Gcs); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_Gcs); ok {
+		x.FilesystemType = nil
 	}
 }
 
 func (x *FilesystemUpstreamService) ClearSftp() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_Sftp); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_Sftp); ok {
+		x.FilesystemType = nil
 	}
 }
 
 func (x *FilesystemUpstreamService) ClearS3() {
-	if _, ok := x.xxx_hidden_FilesystemType.(*filesystemUpstreamService_S3); ok {
-		x.xxx_hidden_FilesystemType = nil
+	if _, ok := x.FilesystemType.(*FilesystemUpstreamService_S3); ok {
+		x.FilesystemType = nil
 	}
 }
 
@@ -5104,20 +4915,20 @@ func (x *FilesystemUpstreamService) WhichFilesystemType() case_FilesystemUpstrea
 	if x == nil {
 		return FilesystemUpstreamService_FilesystemType_not_set_case
 	}
-	switch x.xxx_hidden_FilesystemType.(type) {
-	case *filesystemUpstreamService_Os:
+	switch x.FilesystemType.(type) {
+	case *FilesystemUpstreamService_Os:
 		return FilesystemUpstreamService_Os_case
-	case *filesystemUpstreamService_Tmpfs:
+	case *FilesystemUpstreamService_Tmpfs:
 		return FilesystemUpstreamService_Tmpfs_case
-	case *filesystemUpstreamService_Http:
+	case *FilesystemUpstreamService_Http:
 		return FilesystemUpstreamService_Http_case
-	case *filesystemUpstreamService_Zip:
+	case *FilesystemUpstreamService_Zip:
 		return FilesystemUpstreamService_Zip_case
-	case *filesystemUpstreamService_Gcs:
+	case *FilesystemUpstreamService_Gcs:
 		return FilesystemUpstreamService_Gcs_case
-	case *filesystemUpstreamService_Sftp:
+	case *FilesystemUpstreamService_Sftp:
 		return FilesystemUpstreamService_Sftp_case
-	case *filesystemUpstreamService_S3:
+	case *FilesystemUpstreamService_S3:
 		return FilesystemUpstreamService_S3_case
 	default:
 		return FilesystemUpstreamService_FilesystemType_not_set_case
@@ -5147,7 +4958,7 @@ type FilesystemUpstreamService_builder struct {
 	SymlinkMode *FilesystemUpstreamService_SymlinkMode
 	// The specific configuration for the filesystem type.
 
-	// Fields of oneof xxx_hidden_FilesystemType:
+	// Fields of oneof FilesystemType:
 	Os    *OsFs
 	Tmpfs *MemMapFs
 	Http  *HttpFs
@@ -5155,47 +4966,41 @@ type FilesystemUpstreamService_builder struct {
 	Gcs   *GcsFs
 	Sftp  *SftpFs
 	S3    *S3Fs
-	// -- end of xxx_hidden_FilesystemType
+	// -- end of FilesystemType
 }
 
 func (b0 FilesystemUpstreamService_builder) Build() *FilesystemUpstreamService {
 	m0 := &FilesystemUpstreamService{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_RootPaths = b.RootPaths
-	if b.ReadOnly != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
-		x.xxx_hidden_ReadOnly = *b.ReadOnly
-	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Prompts = &b.Prompts
-	x.xxx_hidden_AllowedPaths = b.AllowedPaths
-	x.xxx_hidden_DeniedPaths = b.DeniedPaths
-	if b.SymlinkMode != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
-		x.xxx_hidden_SymlinkMode = *b.SymlinkMode
-	}
+	x.RootPaths = b.RootPaths
+	x.ReadOnly = b.ReadOnly
+	x.Tools = b.Tools
+	x.Resources = b.Resources
+	x.Prompts = b.Prompts
+	x.AllowedPaths = b.AllowedPaths
+	x.DeniedPaths = b.DeniedPaths
+	x.SymlinkMode = b.SymlinkMode
 	if b.Os != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Os{b.Os}
+		x.FilesystemType = &FilesystemUpstreamService_Os{b.Os}
 	}
 	if b.Tmpfs != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Tmpfs{b.Tmpfs}
+		x.FilesystemType = &FilesystemUpstreamService_Tmpfs{b.Tmpfs}
 	}
 	if b.Http != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Http{b.Http}
+		x.FilesystemType = &FilesystemUpstreamService_Http{b.Http}
 	}
 	if b.Zip != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Zip{b.Zip}
+		x.FilesystemType = &FilesystemUpstreamService_Zip{b.Zip}
 	}
 	if b.Gcs != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Gcs{b.Gcs}
+		x.FilesystemType = &FilesystemUpstreamService_Gcs{b.Gcs}
 	}
 	if b.Sftp != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_Sftp{b.Sftp}
+		x.FilesystemType = &FilesystemUpstreamService_Sftp{b.Sftp}
 	}
 	if b.S3 != nil {
-		x.xxx_hidden_FilesystemType = &filesystemUpstreamService_S3{b.S3}
+		x.FilesystemType = &FilesystemUpstreamService_S3{b.S3}
 	}
 	return m0
 }
@@ -5214,50 +5019,50 @@ type isFilesystemUpstreamService_FilesystemType interface {
 	isFilesystemUpstreamService_FilesystemType()
 }
 
-type filesystemUpstreamService_Os struct {
+type FilesystemUpstreamService_Os struct {
 	Os *OsFs `protobuf:"bytes,10,opt,name=os,oneof"`
 }
 
-type filesystemUpstreamService_Tmpfs struct {
+type FilesystemUpstreamService_Tmpfs struct {
 	Tmpfs *MemMapFs `protobuf:"bytes,11,opt,name=tmpfs,oneof"`
 }
 
-type filesystemUpstreamService_Http struct {
+type FilesystemUpstreamService_Http struct {
 	Http *HttpFs `protobuf:"bytes,12,opt,name=http,oneof"`
 }
 
-type filesystemUpstreamService_Zip struct {
+type FilesystemUpstreamService_Zip struct {
 	Zip *ZipFs `protobuf:"bytes,13,opt,name=zip,oneof"`
 }
 
-type filesystemUpstreamService_Gcs struct {
+type FilesystemUpstreamService_Gcs struct {
 	Gcs *GcsFs `protobuf:"bytes,14,opt,name=gcs,oneof"`
 }
 
-type filesystemUpstreamService_Sftp struct {
+type FilesystemUpstreamService_Sftp struct {
 	Sftp *SftpFs `protobuf:"bytes,15,opt,name=sftp,oneof"`
 }
 
-type filesystemUpstreamService_S3 struct {
+type FilesystemUpstreamService_S3 struct {
 	S3 *S3Fs `protobuf:"bytes,16,opt,name=s3,oneof"`
 }
 
-func (*filesystemUpstreamService_Os) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_Os) isFilesystemUpstreamService_FilesystemType() {}
 
-func (*filesystemUpstreamService_Tmpfs) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_Tmpfs) isFilesystemUpstreamService_FilesystemType() {}
 
-func (*filesystemUpstreamService_Http) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_Http) isFilesystemUpstreamService_FilesystemType() {}
 
-func (*filesystemUpstreamService_Zip) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_Zip) isFilesystemUpstreamService_FilesystemType() {}
 
-func (*filesystemUpstreamService_Gcs) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_Gcs) isFilesystemUpstreamService_FilesystemType() {}
 
-func (*filesystemUpstreamService_Sftp) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_Sftp) isFilesystemUpstreamService_FilesystemType() {}
 
-func (*filesystemUpstreamService_S3) isFilesystemUpstreamService_FilesystemType() {}
+func (*FilesystemUpstreamService_S3) isFilesystemUpstreamService_FilesystemType() {}
 
 type OsFs struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5300,7 +5105,7 @@ func (b0 OsFs_builder) Build() *OsFs {
 }
 
 type MemMapFs struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5343,12 +5148,10 @@ func (b0 MemMapFs_builder) Build() *MemMapFs {
 }
 
 type HttpFs struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Endpoint    *string                `protobuf:"bytes,1,opt,name=endpoint"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Endpoint      *string                `protobuf:"bytes,1,opt,name=endpoint" json:"endpoint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *HttpFs) Reset() {
@@ -5377,30 +5180,25 @@ func (x *HttpFs) ProtoReflect() protoreflect.Message {
 }
 
 func (x *HttpFs) GetEndpoint() string {
-	if x != nil {
-		if x.xxx_hidden_Endpoint != nil {
-			return *x.xxx_hidden_Endpoint
-		}
-		return ""
+	if x != nil && x.Endpoint != nil {
+		return *x.Endpoint
 	}
 	return ""
 }
 
 func (x *HttpFs) SetEndpoint(v string) {
-	x.xxx_hidden_Endpoint = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	x.Endpoint = &v
 }
 
 func (x *HttpFs) HasEndpoint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Endpoint != nil
 }
 
 func (x *HttpFs) ClearEndpoint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Endpoint = nil
+	x.Endpoint = nil
 }
 
 type HttpFs_builder struct {
@@ -5413,20 +5211,15 @@ func (b0 HttpFs_builder) Build() *HttpFs {
 	m0 := &HttpFs{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Endpoint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Endpoint = b.Endpoint
-	}
+	x.Endpoint = b.Endpoint
 	return m0
 }
 
 type ZipFs struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_FilePath    *string                `protobuf:"bytes,1,opt,name=file_path,json=filePath"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	FilePath      *string                `protobuf:"bytes,1,opt,name=file_path,json=filePath" json:"file_path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ZipFs) Reset() {
@@ -5455,30 +5248,25 @@ func (x *ZipFs) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ZipFs) GetFilePath() string {
-	if x != nil {
-		if x.xxx_hidden_FilePath != nil {
-			return *x.xxx_hidden_FilePath
-		}
-		return ""
+	if x != nil && x.FilePath != nil {
+		return *x.FilePath
 	}
 	return ""
 }
 
 func (x *ZipFs) SetFilePath(v string) {
-	x.xxx_hidden_FilePath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	x.FilePath = &v
 }
 
 func (x *ZipFs) HasFilePath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.FilePath != nil
 }
 
 func (x *ZipFs) ClearFilePath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_FilePath = nil
+	x.FilePath = nil
 }
 
 type ZipFs_builder struct {
@@ -5491,20 +5279,15 @@ func (b0 ZipFs_builder) Build() *ZipFs {
 	m0 := &ZipFs{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.FilePath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_FilePath = b.FilePath
-	}
+	x.FilePath = b.FilePath
 	return m0
 }
 
 type GcsFs struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Bucket      *string                `protobuf:"bytes,1,opt,name=bucket"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Bucket        *string                `protobuf:"bytes,1,opt,name=bucket" json:"bucket,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GcsFs) Reset() {
@@ -5533,30 +5316,25 @@ func (x *GcsFs) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GcsFs) GetBucket() string {
-	if x != nil {
-		if x.xxx_hidden_Bucket != nil {
-			return *x.xxx_hidden_Bucket
-		}
-		return ""
+	if x != nil && x.Bucket != nil {
+		return *x.Bucket
 	}
 	return ""
 }
 
 func (x *GcsFs) SetBucket(v string) {
-	x.xxx_hidden_Bucket = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	x.Bucket = &v
 }
 
 func (x *GcsFs) HasBucket() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Bucket != nil
 }
 
 func (x *GcsFs) ClearBucket() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Bucket = nil
+	x.Bucket = nil
 }
 
 type GcsFs_builder struct {
@@ -5569,25 +5347,20 @@ func (b0 GcsFs_builder) Build() *GcsFs {
 	m0 := &GcsFs{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Bucket != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Bucket = b.Bucket
-	}
+	x.Bucket = b.Bucket
 	return m0
 }
 
 type S3Fs struct {
-	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Bucket          *string                `protobuf:"bytes,1,opt,name=bucket"`
-	xxx_hidden_Region          *string                `protobuf:"bytes,2,opt,name=region"`
-	xxx_hidden_AccessKeyId     *string                `protobuf:"bytes,3,opt,name=access_key_id,json=accessKeyId"`
-	xxx_hidden_SecretAccessKey *string                `protobuf:"bytes,4,opt,name=secret_access_key,json=secretAccessKey"`
-	xxx_hidden_SessionToken    *string                `protobuf:"bytes,5,opt,name=session_token,json=sessionToken"`
-	xxx_hidden_Endpoint        *string                `protobuf:"bytes,6,opt,name=endpoint"`
-	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
-	XXX_presence               [1]uint32
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"hybrid.v1"`
+	Bucket          *string                `protobuf:"bytes,1,opt,name=bucket" json:"bucket,omitempty"`
+	Region          *string                `protobuf:"bytes,2,opt,name=region" json:"region,omitempty"`
+	AccessKeyId     *string                `protobuf:"bytes,3,opt,name=access_key_id,json=accessKeyId" json:"access_key_id,omitempty"`
+	SecretAccessKey *string                `protobuf:"bytes,4,opt,name=secret_access_key,json=secretAccessKey" json:"secret_access_key,omitempty"`
+	SessionToken    *string                `protobuf:"bytes,5,opt,name=session_token,json=sessionToken" json:"session_token,omitempty"`
+	Endpoint        *string                `protobuf:"bytes,6,opt,name=endpoint" json:"endpoint,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *S3Fs) Reset() {
@@ -5616,165 +5389,135 @@ func (x *S3Fs) ProtoReflect() protoreflect.Message {
 }
 
 func (x *S3Fs) GetBucket() string {
-	if x != nil {
-		if x.xxx_hidden_Bucket != nil {
-			return *x.xxx_hidden_Bucket
-		}
-		return ""
+	if x != nil && x.Bucket != nil {
+		return *x.Bucket
 	}
 	return ""
 }
 
 func (x *S3Fs) GetRegion() string {
-	if x != nil {
-		if x.xxx_hidden_Region != nil {
-			return *x.xxx_hidden_Region
-		}
-		return ""
+	if x != nil && x.Region != nil {
+		return *x.Region
 	}
 	return ""
 }
 
 func (x *S3Fs) GetAccessKeyId() string {
-	if x != nil {
-		if x.xxx_hidden_AccessKeyId != nil {
-			return *x.xxx_hidden_AccessKeyId
-		}
-		return ""
+	if x != nil && x.AccessKeyId != nil {
+		return *x.AccessKeyId
 	}
 	return ""
 }
 
 func (x *S3Fs) GetSecretAccessKey() string {
-	if x != nil {
-		if x.xxx_hidden_SecretAccessKey != nil {
-			return *x.xxx_hidden_SecretAccessKey
-		}
-		return ""
+	if x != nil && x.SecretAccessKey != nil {
+		return *x.SecretAccessKey
 	}
 	return ""
 }
 
 func (x *S3Fs) GetSessionToken() string {
-	if x != nil {
-		if x.xxx_hidden_SessionToken != nil {
-			return *x.xxx_hidden_SessionToken
-		}
-		return ""
+	if x != nil && x.SessionToken != nil {
+		return *x.SessionToken
 	}
 	return ""
 }
 
 func (x *S3Fs) GetEndpoint() string {
-	if x != nil {
-		if x.xxx_hidden_Endpoint != nil {
-			return *x.xxx_hidden_Endpoint
-		}
-		return ""
+	if x != nil && x.Endpoint != nil {
+		return *x.Endpoint
 	}
 	return ""
 }
 
 func (x *S3Fs) SetBucket(v string) {
-	x.xxx_hidden_Bucket = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+	x.Bucket = &v
 }
 
 func (x *S3Fs) SetRegion(v string) {
-	x.xxx_hidden_Region = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+	x.Region = &v
 }
 
 func (x *S3Fs) SetAccessKeyId(v string) {
-	x.xxx_hidden_AccessKeyId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+	x.AccessKeyId = &v
 }
 
 func (x *S3Fs) SetSecretAccessKey(v string) {
-	x.xxx_hidden_SecretAccessKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
+	x.SecretAccessKey = &v
 }
 
 func (x *S3Fs) SetSessionToken(v string) {
-	x.xxx_hidden_SessionToken = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+	x.SessionToken = &v
 }
 
 func (x *S3Fs) SetEndpoint(v string) {
-	x.xxx_hidden_Endpoint = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+	x.Endpoint = &v
 }
 
 func (x *S3Fs) HasBucket() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Bucket != nil
 }
 
 func (x *S3Fs) HasRegion() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Region != nil
 }
 
 func (x *S3Fs) HasAccessKeyId() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.AccessKeyId != nil
 }
 
 func (x *S3Fs) HasSecretAccessKey() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.SecretAccessKey != nil
 }
 
 func (x *S3Fs) HasSessionToken() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.SessionToken != nil
 }
 
 func (x *S3Fs) HasEndpoint() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.Endpoint != nil
 }
 
 func (x *S3Fs) ClearBucket() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Bucket = nil
+	x.Bucket = nil
 }
 
 func (x *S3Fs) ClearRegion() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Region = nil
+	x.Region = nil
 }
 
 func (x *S3Fs) ClearAccessKeyId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_AccessKeyId = nil
+	x.AccessKeyId = nil
 }
 
 func (x *S3Fs) ClearSecretAccessKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_SecretAccessKey = nil
+	x.SecretAccessKey = nil
 }
 
 func (x *S3Fs) ClearSessionToken() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_SessionToken = nil
+	x.SessionToken = nil
 }
 
 func (x *S3Fs) ClearEndpoint() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_Endpoint = nil
+	x.Endpoint = nil
 }
 
 type S3Fs_builder struct {
@@ -5792,43 +5535,23 @@ func (b0 S3Fs_builder) Build() *S3Fs {
 	m0 := &S3Fs{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Bucket != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
-		x.xxx_hidden_Bucket = b.Bucket
-	}
-	if b.Region != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
-		x.xxx_hidden_Region = b.Region
-	}
-	if b.AccessKeyId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
-		x.xxx_hidden_AccessKeyId = b.AccessKeyId
-	}
-	if b.SecretAccessKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
-		x.xxx_hidden_SecretAccessKey = b.SecretAccessKey
-	}
-	if b.SessionToken != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
-		x.xxx_hidden_SessionToken = b.SessionToken
-	}
-	if b.Endpoint != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
-		x.xxx_hidden_Endpoint = b.Endpoint
-	}
+	x.Bucket = b.Bucket
+	x.Region = b.Region
+	x.AccessKeyId = b.AccessKeyId
+	x.SecretAccessKey = b.SecretAccessKey
+	x.SessionToken = b.SessionToken
+	x.Endpoint = b.Endpoint
 	return m0
 }
 
 type SftpFs struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Username    *string                `protobuf:"bytes,2,opt,name=username"`
-	xxx_hidden_Password    *string                `protobuf:"bytes,3,opt,name=password"`
-	xxx_hidden_KeyPath     *string                `protobuf:"bytes,4,opt,name=key_path,json=keyPath"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	Address       *string                `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`
+	Username      *string                `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"`
+	Password      *string                `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
+	KeyPath       *string                `protobuf:"bytes,4,opt,name=key_path,json=keyPath" json:"key_path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SftpFs) Reset() {
@@ -5857,111 +5580,91 @@ func (x *SftpFs) ProtoReflect() protoreflect.Message {
 }
 
 func (x *SftpFs) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *SftpFs) GetUsername() string {
-	if x != nil {
-		if x.xxx_hidden_Username != nil {
-			return *x.xxx_hidden_Username
-		}
-		return ""
+	if x != nil && x.Username != nil {
+		return *x.Username
 	}
 	return ""
 }
 
 func (x *SftpFs) GetPassword() string {
-	if x != nil {
-		if x.xxx_hidden_Password != nil {
-			return *x.xxx_hidden_Password
-		}
-		return ""
+	if x != nil && x.Password != nil {
+		return *x.Password
 	}
 	return ""
 }
 
 func (x *SftpFs) GetKeyPath() string {
-	if x != nil {
-		if x.xxx_hidden_KeyPath != nil {
-			return *x.xxx_hidden_KeyPath
-		}
-		return ""
+	if x != nil && x.KeyPath != nil {
+		return *x.KeyPath
 	}
 	return ""
 }
 
 func (x *SftpFs) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.Address = &v
 }
 
 func (x *SftpFs) SetUsername(v string) {
-	x.xxx_hidden_Username = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.Username = &v
 }
 
 func (x *SftpFs) SetPassword(v string) {
-	x.xxx_hidden_Password = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	x.Password = &v
 }
 
 func (x *SftpFs) SetKeyPath(v string) {
-	x.xxx_hidden_KeyPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	x.KeyPath = &v
 }
 
 func (x *SftpFs) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *SftpFs) HasUsername() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Username != nil
 }
 
 func (x *SftpFs) HasPassword() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Password != nil
 }
 
 func (x *SftpFs) HasKeyPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.KeyPath != nil
 }
 
 func (x *SftpFs) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *SftpFs) ClearUsername() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Username = nil
+	x.Username = nil
 }
 
 func (x *SftpFs) ClearPassword() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Password = nil
+	x.Password = nil
 }
 
 func (x *SftpFs) ClearKeyPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_KeyPath = nil
+	x.KeyPath = nil
 }
 
 type SftpFs_builder struct {
@@ -5977,34 +5680,31 @@ func (b0 SftpFs_builder) Build() *SftpFs {
 	m0 := &SftpFs{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_Address = b.Address
-	}
-	if b.Username != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Username = b.Username
-	}
-	if b.Password != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
-		x.xxx_hidden_Password = b.Password
-	}
-	if b.KeyPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_KeyPath = b.KeyPath
-	}
+	x.Address = b.Address
+	x.Username = b.Username
+	x.Password = b.Password
+	x.KeyPath = b.KeyPath
 	return m0
 }
 
 // VectorUpstreamService defines a service that connects to a vector database.
 type VectorUpstreamService struct {
-	state                   protoimpl.MessageState               `protogen:"opaque.v1"`
-	xxx_hidden_VectorDbType isVectorUpstreamService_VectorDbType `protobuf_oneof:"vector_db_type"`
-	xxx_hidden_Tools        *[]*ToolDefinition                   `protobuf:"bytes,2,rep,name=tools"`
-	xxx_hidden_Resources    *[]*ResourceDefinition               `protobuf:"bytes,3,rep,name=resources"`
-	xxx_hidden_Prompts      *[]*PromptDefinition                 `protobuf:"bytes,4,rep,name=prompts"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The specific configuration for the vector database type.
+	//
+	// Types that are valid to be assigned to VectorDbType:
+	//
+	//	*VectorUpstreamService_Pinecone
+	//	*VectorUpstreamService_Milvus
+	VectorDbType isVectorUpstreamService_VectorDbType `protobuf_oneof:"vector_db_type"`
+	// Manually defined mappings (usually not needed as we auto-register Vector tools).
+	Tools []*ToolDefinition `protobuf:"bytes,2,rep,name=tools" json:"tools,omitempty"`
+	// Resources that are exposed.
+	Resources []*ResourceDefinition `protobuf:"bytes,3,rep,name=resources" json:"resources,omitempty"`
+	// Prompts that are exposed.
+	Prompts       []*PromptDefinition `protobuf:"bytes,4,rep,name=prompts" json:"prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *VectorUpstreamService) Reset() {
@@ -6032,9 +5732,16 @@ func (x *VectorUpstreamService) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *VectorUpstreamService) GetVectorDbType() isVectorUpstreamService_VectorDbType {
+	if x != nil {
+		return x.VectorDbType
+	}
+	return nil
+}
+
 func (x *VectorUpstreamService) GetPinecone() *PineconeVectorDB {
 	if x != nil {
-		if x, ok := x.xxx_hidden_VectorDbType.(*vectorUpstreamService_Pinecone); ok {
+		if x, ok := x.VectorDbType.(*VectorUpstreamService_Pinecone); ok {
 			return x.Pinecone
 		}
 	}
@@ -6043,7 +5750,7 @@ func (x *VectorUpstreamService) GetPinecone() *PineconeVectorDB {
 
 func (x *VectorUpstreamService) GetMilvus() *MilvusVectorDB {
 	if x != nil {
-		if x, ok := x.xxx_hidden_VectorDbType.(*vectorUpstreamService_Milvus); ok {
+		if x, ok := x.VectorDbType.(*VectorUpstreamService_Milvus); ok {
 			return x.Milvus
 		}
 	}
@@ -6052,71 +5759,65 @@ func (x *VectorUpstreamService) GetMilvus() *MilvusVectorDB {
 
 func (x *VectorUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *VectorUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *VectorUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *VectorUpstreamService) SetPinecone(v *PineconeVectorDB) {
 	if v == nil {
-		x.xxx_hidden_VectorDbType = nil
+		x.VectorDbType = nil
 		return
 	}
-	x.xxx_hidden_VectorDbType = &vectorUpstreamService_Pinecone{v}
+	x.VectorDbType = &VectorUpstreamService_Pinecone{v}
 }
 
 func (x *VectorUpstreamService) SetMilvus(v *MilvusVectorDB) {
 	if v == nil {
-		x.xxx_hidden_VectorDbType = nil
+		x.VectorDbType = nil
 		return
 	}
-	x.xxx_hidden_VectorDbType = &vectorUpstreamService_Milvus{v}
+	x.VectorDbType = &VectorUpstreamService_Milvus{v}
 }
 
 func (x *VectorUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *VectorUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *VectorUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *VectorUpstreamService) HasVectorDbType() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_VectorDbType != nil
+	return x.VectorDbType != nil
 }
 
 func (x *VectorUpstreamService) HasPinecone() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_VectorDbType.(*vectorUpstreamService_Pinecone)
+	_, ok := x.VectorDbType.(*VectorUpstreamService_Pinecone)
 	return ok
 }
 
@@ -6124,23 +5825,23 @@ func (x *VectorUpstreamService) HasMilvus() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_VectorDbType.(*vectorUpstreamService_Milvus)
+	_, ok := x.VectorDbType.(*VectorUpstreamService_Milvus)
 	return ok
 }
 
 func (x *VectorUpstreamService) ClearVectorDbType() {
-	x.xxx_hidden_VectorDbType = nil
+	x.VectorDbType = nil
 }
 
 func (x *VectorUpstreamService) ClearPinecone() {
-	if _, ok := x.xxx_hidden_VectorDbType.(*vectorUpstreamService_Pinecone); ok {
-		x.xxx_hidden_VectorDbType = nil
+	if _, ok := x.VectorDbType.(*VectorUpstreamService_Pinecone); ok {
+		x.VectorDbType = nil
 	}
 }
 
 func (x *VectorUpstreamService) ClearMilvus() {
-	if _, ok := x.xxx_hidden_VectorDbType.(*vectorUpstreamService_Milvus); ok {
-		x.xxx_hidden_VectorDbType = nil
+	if _, ok := x.VectorDbType.(*VectorUpstreamService_Milvus); ok {
+		x.VectorDbType = nil
 	}
 }
 
@@ -6152,10 +5853,10 @@ func (x *VectorUpstreamService) WhichVectorDbType() case_VectorUpstreamService_V
 	if x == nil {
 		return VectorUpstreamService_VectorDbType_not_set_case
 	}
-	switch x.xxx_hidden_VectorDbType.(type) {
-	case *vectorUpstreamService_Pinecone:
+	switch x.VectorDbType.(type) {
+	case *VectorUpstreamService_Pinecone:
 		return VectorUpstreamService_Pinecone_case
-	case *vectorUpstreamService_Milvus:
+	case *VectorUpstreamService_Milvus:
 		return VectorUpstreamService_Milvus_case
 	default:
 		return VectorUpstreamService_VectorDbType_not_set_case
@@ -6167,10 +5868,10 @@ type VectorUpstreamService_builder struct {
 
 	// The specific configuration for the vector database type.
 
-	// Fields of oneof xxx_hidden_VectorDbType:
+	// Fields of oneof VectorDbType:
 	Pinecone *PineconeVectorDB
 	Milvus   *MilvusVectorDB
-	// -- end of xxx_hidden_VectorDbType
+	// -- end of VectorDbType
 	// Manually defined mappings (usually not needed as we auto-register Vector tools).
 	Tools []*ToolDefinition
 	// Resources that are exposed.
@@ -6184,14 +5885,14 @@ func (b0 VectorUpstreamService_builder) Build() *VectorUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Pinecone != nil {
-		x.xxx_hidden_VectorDbType = &vectorUpstreamService_Pinecone{b.Pinecone}
+		x.VectorDbType = &VectorUpstreamService_Pinecone{b.Pinecone}
 	}
 	if b.Milvus != nil {
-		x.xxx_hidden_VectorDbType = &vectorUpstreamService_Milvus{b.Milvus}
+		x.VectorDbType = &VectorUpstreamService_Milvus{b.Milvus}
 	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Prompts = &b.Prompts
+	x.Tools = b.Tools
+	x.Resources = b.Resources
+	x.Prompts = b.Prompts
 	return m0
 }
 
@@ -6209,29 +5910,27 @@ type isVectorUpstreamService_VectorDbType interface {
 	isVectorUpstreamService_VectorDbType()
 }
 
-type vectorUpstreamService_Pinecone struct {
+type VectorUpstreamService_Pinecone struct {
 	Pinecone *PineconeVectorDB `protobuf:"bytes,1,opt,name=pinecone,oneof"`
 }
 
-type vectorUpstreamService_Milvus struct {
+type VectorUpstreamService_Milvus struct {
 	Milvus *MilvusVectorDB `protobuf:"bytes,5,opt,name=milvus,oneof"`
 }
 
-func (*vectorUpstreamService_Pinecone) isVectorUpstreamService_VectorDbType() {}
+func (*VectorUpstreamService_Pinecone) isVectorUpstreamService_VectorDbType() {}
 
-func (*vectorUpstreamService_Milvus) isVectorUpstreamService_VectorDbType() {}
+func (*VectorUpstreamService_Milvus) isVectorUpstreamService_VectorDbType() {}
 
 type PineconeVectorDB struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key"`
-	xxx_hidden_Environment *string                `protobuf:"bytes,2,opt,name=environment"`
-	xxx_hidden_IndexName   *string                `protobuf:"bytes,3,opt,name=index_name"`
-	xxx_hidden_ProjectId   *string                `protobuf:"bytes,4,opt,name=project_id"`
-	xxx_hidden_Host        *string                `protobuf:"bytes,5,opt,name=host"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	ApiKey        *string                `protobuf:"bytes,1,opt,name=api_key" json:"api_key,omitempty"`
+	Environment   *string                `protobuf:"bytes,2,opt,name=environment" json:"environment,omitempty"` // e.g., "us-west1-gcp-free" (Legacy) or empty for serverless
+	IndexName     *string                `protobuf:"bytes,3,opt,name=index_name" json:"index_name,omitempty"`
+	ProjectId     *string                `protobuf:"bytes,4,opt,name=project_id" json:"project_id,omitempty"` // Optional, might be needed for URL construction
+	Host          *string                `protobuf:"bytes,5,opt,name=host" json:"host,omitempty"`             // Optional: The full host URL (https://index-project.svc.pinecone.io)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PineconeVectorDB) Reset() {
@@ -6260,138 +5959,113 @@ func (x *PineconeVectorDB) ProtoReflect() protoreflect.Message {
 }
 
 func (x *PineconeVectorDB) GetApiKey() string {
-	if x != nil {
-		if x.xxx_hidden_ApiKey != nil {
-			return *x.xxx_hidden_ApiKey
-		}
-		return ""
+	if x != nil && x.ApiKey != nil {
+		return *x.ApiKey
 	}
 	return ""
 }
 
 func (x *PineconeVectorDB) GetEnvironment() string {
-	if x != nil {
-		if x.xxx_hidden_Environment != nil {
-			return *x.xxx_hidden_Environment
-		}
-		return ""
+	if x != nil && x.Environment != nil {
+		return *x.Environment
 	}
 	return ""
 }
 
 func (x *PineconeVectorDB) GetIndexName() string {
-	if x != nil {
-		if x.xxx_hidden_IndexName != nil {
-			return *x.xxx_hidden_IndexName
-		}
-		return ""
+	if x != nil && x.IndexName != nil {
+		return *x.IndexName
 	}
 	return ""
 }
 
 func (x *PineconeVectorDB) GetProjectId() string {
-	if x != nil {
-		if x.xxx_hidden_ProjectId != nil {
-			return *x.xxx_hidden_ProjectId
-		}
-		return ""
+	if x != nil && x.ProjectId != nil {
+		return *x.ProjectId
 	}
 	return ""
 }
 
 func (x *PineconeVectorDB) GetHost() string {
-	if x != nil {
-		if x.xxx_hidden_Host != nil {
-			return *x.xxx_hidden_Host
-		}
-		return ""
+	if x != nil && x.Host != nil {
+		return *x.Host
 	}
 	return ""
 }
 
 func (x *PineconeVectorDB) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	x.ApiKey = &v
 }
 
 func (x *PineconeVectorDB) SetEnvironment(v string) {
-	x.xxx_hidden_Environment = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	x.Environment = &v
 }
 
 func (x *PineconeVectorDB) SetIndexName(v string) {
-	x.xxx_hidden_IndexName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	x.IndexName = &v
 }
 
 func (x *PineconeVectorDB) SetProjectId(v string) {
-	x.xxx_hidden_ProjectId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	x.ProjectId = &v
 }
 
 func (x *PineconeVectorDB) SetHost(v string) {
-	x.xxx_hidden_Host = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	x.Host = &v
 }
 
 func (x *PineconeVectorDB) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.ApiKey != nil
 }
 
 func (x *PineconeVectorDB) HasEnvironment() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Environment != nil
 }
 
 func (x *PineconeVectorDB) HasIndexName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.IndexName != nil
 }
 
 func (x *PineconeVectorDB) HasProjectId() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.ProjectId != nil
 }
 
 func (x *PineconeVectorDB) HasHost() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.Host != nil
 }
 
 func (x *PineconeVectorDB) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ApiKey = nil
+	x.ApiKey = nil
 }
 
 func (x *PineconeVectorDB) ClearEnvironment() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Environment = nil
+	x.Environment = nil
 }
 
 func (x *PineconeVectorDB) ClearIndexName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_IndexName = nil
+	x.IndexName = nil
 }
 
 func (x *PineconeVectorDB) ClearProjectId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_ProjectId = nil
+	x.ProjectId = nil
 }
 
 func (x *PineconeVectorDB) ClearHost() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_Host = nil
+	x.Host = nil
 }
 
 type PineconeVectorDB_builder struct {
@@ -6408,42 +6082,25 @@ func (b0 PineconeVectorDB_builder) Build() *PineconeVectorDB {
 	m0 := &PineconeVectorDB{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_ApiKey = b.ApiKey
-	}
-	if b.Environment != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_Environment = b.Environment
-	}
-	if b.IndexName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_IndexName = b.IndexName
-	}
-	if b.ProjectId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_ProjectId = b.ProjectId
-	}
-	if b.Host != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_Host = b.Host
-	}
+	x.ApiKey = b.ApiKey
+	x.Environment = b.Environment
+	x.IndexName = b.IndexName
+	x.ProjectId = b.ProjectId
+	x.Host = b.Host
 	return m0
 }
 
 type MilvusVectorDB struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Address        *string                `protobuf:"bytes,1,opt,name=address"`
-	xxx_hidden_Username       *string                `protobuf:"bytes,2,opt,name=username"`
-	xxx_hidden_Password       *string                `protobuf:"bytes,3,opt,name=password"`
-	xxx_hidden_CollectionName *string                `protobuf:"bytes,4,opt,name=collection_name"`
-	xxx_hidden_DatabaseName   *string                `protobuf:"bytes,5,opt,name=database_name"`
-	xxx_hidden_UseTls         bool                   `protobuf:"varint,6,opt,name=use_tls"`
-	xxx_hidden_ApiKey         *string                `protobuf:"bytes,7,opt,name=api_key"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"hybrid.v1"`
+	Address        *string                `protobuf:"bytes,1,opt,name=address" json:"address,omitempty"`   // e.g., "localhost:19530"
+	Username       *string                `protobuf:"bytes,2,opt,name=username" json:"username,omitempty"` // Optional
+	Password       *string                `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"` // Optional
+	CollectionName *string                `protobuf:"bytes,4,opt,name=collection_name" json:"collection_name,omitempty"`
+	DatabaseName   *string                `protobuf:"bytes,5,opt,name=database_name" json:"database_name,omitempty"` // Defaults to "default"
+	UseTls         *bool                  `protobuf:"varint,6,opt,name=use_tls" json:"use_tls,omitempty"`
+	ApiKey         *string                `protobuf:"bytes,7,opt,name=api_key" json:"api_key,omitempty"` // For Zilliz Cloud
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *MilvusVectorDB) Reset() {
@@ -6472,189 +6129,157 @@ func (x *MilvusVectorDB) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MilvusVectorDB) GetAddress() string {
-	if x != nil {
-		if x.xxx_hidden_Address != nil {
-			return *x.xxx_hidden_Address
-		}
-		return ""
+	if x != nil && x.Address != nil {
+		return *x.Address
 	}
 	return ""
 }
 
 func (x *MilvusVectorDB) GetUsername() string {
-	if x != nil {
-		if x.xxx_hidden_Username != nil {
-			return *x.xxx_hidden_Username
-		}
-		return ""
+	if x != nil && x.Username != nil {
+		return *x.Username
 	}
 	return ""
 }
 
 func (x *MilvusVectorDB) GetPassword() string {
-	if x != nil {
-		if x.xxx_hidden_Password != nil {
-			return *x.xxx_hidden_Password
-		}
-		return ""
+	if x != nil && x.Password != nil {
+		return *x.Password
 	}
 	return ""
 }
 
 func (x *MilvusVectorDB) GetCollectionName() string {
-	if x != nil {
-		if x.xxx_hidden_CollectionName != nil {
-			return *x.xxx_hidden_CollectionName
-		}
-		return ""
+	if x != nil && x.CollectionName != nil {
+		return *x.CollectionName
 	}
 	return ""
 }
 
 func (x *MilvusVectorDB) GetDatabaseName() string {
-	if x != nil {
-		if x.xxx_hidden_DatabaseName != nil {
-			return *x.xxx_hidden_DatabaseName
-		}
-		return ""
+	if x != nil && x.DatabaseName != nil {
+		return *x.DatabaseName
 	}
 	return ""
 }
 
 func (x *MilvusVectorDB) GetUseTls() bool {
-	if x != nil {
-		return x.xxx_hidden_UseTls
+	if x != nil && x.UseTls != nil {
+		return *x.UseTls
 	}
 	return false
 }
 
 func (x *MilvusVectorDB) GetApiKey() string {
-	if x != nil {
-		if x.xxx_hidden_ApiKey != nil {
-			return *x.xxx_hidden_ApiKey
-		}
-		return ""
+	if x != nil && x.ApiKey != nil {
+		return *x.ApiKey
 	}
 	return ""
 }
 
 func (x *MilvusVectorDB) SetAddress(v string) {
-	x.xxx_hidden_Address = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	x.Address = &v
 }
 
 func (x *MilvusVectorDB) SetUsername(v string) {
-	x.xxx_hidden_Username = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	x.Username = &v
 }
 
 func (x *MilvusVectorDB) SetPassword(v string) {
-	x.xxx_hidden_Password = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+	x.Password = &v
 }
 
 func (x *MilvusVectorDB) SetCollectionName(v string) {
-	x.xxx_hidden_CollectionName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
+	x.CollectionName = &v
 }
 
 func (x *MilvusVectorDB) SetDatabaseName(v string) {
-	x.xxx_hidden_DatabaseName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
+	x.DatabaseName = &v
 }
 
 func (x *MilvusVectorDB) SetUseTls(v bool) {
-	x.xxx_hidden_UseTls = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
+	x.UseTls = &v
 }
 
 func (x *MilvusVectorDB) SetApiKey(v string) {
-	x.xxx_hidden_ApiKey = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
+	x.ApiKey = &v
 }
 
 func (x *MilvusVectorDB) HasAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Address != nil
 }
 
 func (x *MilvusVectorDB) HasUsername() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Username != nil
 }
 
 func (x *MilvusVectorDB) HasPassword() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.Password != nil
 }
 
 func (x *MilvusVectorDB) HasCollectionName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.CollectionName != nil
 }
 
 func (x *MilvusVectorDB) HasDatabaseName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.DatabaseName != nil
 }
 
 func (x *MilvusVectorDB) HasUseTls() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+	return x.UseTls != nil
 }
 
 func (x *MilvusVectorDB) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+	return x.ApiKey != nil
 }
 
 func (x *MilvusVectorDB) ClearAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Address = nil
+	x.Address = nil
 }
 
 func (x *MilvusVectorDB) ClearUsername() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Username = nil
+	x.Username = nil
 }
 
 func (x *MilvusVectorDB) ClearPassword() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_Password = nil
+	x.Password = nil
 }
 
 func (x *MilvusVectorDB) ClearCollectionName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_CollectionName = nil
+	x.CollectionName = nil
 }
 
 func (x *MilvusVectorDB) ClearDatabaseName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_DatabaseName = nil
+	x.DatabaseName = nil
 }
 
 func (x *MilvusVectorDB) ClearUseTls() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
-	x.xxx_hidden_UseTls = false
+	x.UseTls = nil
 }
 
 func (x *MilvusVectorDB) ClearApiKey() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
-	x.xxx_hidden_ApiKey = nil
+	x.ApiKey = nil
 }
 
 type MilvusVectorDB_builder struct {
@@ -6673,50 +6298,39 @@ func (b0 MilvusVectorDB_builder) Build() *MilvusVectorDB {
 	m0 := &MilvusVectorDB{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Address != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Address = b.Address
-	}
-	if b.Username != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
-		x.xxx_hidden_Username = b.Username
-	}
-	if b.Password != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
-		x.xxx_hidden_Password = b.Password
-	}
-	if b.CollectionName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
-		x.xxx_hidden_CollectionName = b.CollectionName
-	}
-	if b.DatabaseName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
-		x.xxx_hidden_DatabaseName = b.DatabaseName
-	}
-	if b.UseTls != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
-		x.xxx_hidden_UseTls = *b.UseTls
-	}
-	if b.ApiKey != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 7)
-		x.xxx_hidden_ApiKey = b.ApiKey
-	}
+	x.Address = b.Address
+	x.Username = b.Username
+	x.Password = b.Password
+	x.CollectionName = b.CollectionName
+	x.DatabaseName = b.DatabaseName
+	x.UseTls = b.UseTls
+	x.ApiKey = b.ApiKey
 	return m0
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
 type McpUpstreamService struct {
-	state                        protoimpl.MessageState              `protogen:"opaque.v1"`
-	xxx_hidden_ConnectionType    isMcpUpstreamService_ConnectionType `protobuf_oneof:"connection_type"`
-	xxx_hidden_ToolAutoDiscovery bool                                `protobuf:"varint,3,opt,name=tool_auto_discovery"`
-	xxx_hidden_Tools             *[]*ToolDefinition                  `protobuf:"bytes,6,rep,name=tools"`
-	xxx_hidden_Resources         *[]*ResourceDefinition              `protobuf:"bytes,7,rep,name=resources"`
-	xxx_hidden_Calls             map[string]*MCPCallDefinition       `protobuf:"bytes,8,rep,name=calls" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Prompts           *[]*PromptDefinition                `protobuf:"bytes,9,rep,name=prompts"`
-	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
-	XXX_presence                 [1]uint32
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The connection details for the upstream MCP service.
+	//
+	// Types that are valid to be assigned to ConnectionType:
+	//
+	//	*McpUpstreamService_HttpConnection
+	//	*McpUpstreamService_StdioConnection
+	//	*McpUpstreamService_BundleConnection
+	ConnectionType isMcpUpstreamService_ConnectionType `protobuf_oneof:"connection_type"`
+	// If true, mcpany will automatically discover and proxy all tools from the upstream.
+	ToolAutoDiscovery *bool `protobuf:"varint,3,opt,name=tool_auto_discovery" json:"tool_auto_discovery,omitempty"`
+	// Optional: Overrides or specific configurations for calls discovered from the service.
+	Tools []*ToolDefinition `protobuf:"bytes,6,rep,name=tools" json:"tools,omitempty"`
+	// A list of resources served by this service.
+	Resources []*ResourceDefinition `protobuf:"bytes,7,rep,name=resources" json:"resources,omitempty"`
+	// A map of call definitions, keyed by their unique ID.
+	Calls map[string]*MCPCallDefinition `protobuf:"bytes,8,rep,name=calls" json:"calls,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// A list of prompts served by this service.
+	Prompts       []*PromptDefinition `protobuf:"bytes,9,rep,name=prompts" json:"prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *McpUpstreamService) Reset() {
@@ -6744,9 +6358,16 @@ func (x *McpUpstreamService) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *McpUpstreamService) GetConnectionType() isMcpUpstreamService_ConnectionType {
+	if x != nil {
+		return x.ConnectionType
+	}
+	return nil
+}
+
 func (x *McpUpstreamService) GetHttpConnection() *McpStreamableHttpConnection {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_HttpConnection); ok {
+		if x, ok := x.ConnectionType.(*McpUpstreamService_HttpConnection); ok {
 			return x.HttpConnection
 		}
 	}
@@ -6755,7 +6376,7 @@ func (x *McpUpstreamService) GetHttpConnection() *McpStreamableHttpConnection {
 
 func (x *McpUpstreamService) GetStdioConnection() *McpStdioConnection {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_StdioConnection); ok {
+		if x, ok := x.ConnectionType.(*McpUpstreamService_StdioConnection); ok {
 			return x.StdioConnection
 		}
 	}
@@ -6764,7 +6385,7 @@ func (x *McpUpstreamService) GetStdioConnection() *McpStdioConnection {
 
 func (x *McpUpstreamService) GetBundleConnection() *McpBundleConnection {
 	if x != nil {
-		if x, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_BundleConnection); ok {
+		if x, ok := x.ConnectionType.(*McpUpstreamService_BundleConnection); ok {
 			return x.BundleConnection
 		}
 	}
@@ -6772,103 +6393,96 @@ func (x *McpUpstreamService) GetBundleConnection() *McpBundleConnection {
 }
 
 func (x *McpUpstreamService) GetToolAutoDiscovery() bool {
-	if x != nil {
-		return x.xxx_hidden_ToolAutoDiscovery
+	if x != nil && x.ToolAutoDiscovery != nil {
+		return *x.ToolAutoDiscovery
 	}
 	return false
 }
 
 func (x *McpUpstreamService) GetTools() []*ToolDefinition {
 	if x != nil {
-		if x.xxx_hidden_Tools != nil {
-			return *x.xxx_hidden_Tools
-		}
+		return x.Tools
 	}
 	return nil
 }
 
 func (x *McpUpstreamService) GetResources() []*ResourceDefinition {
 	if x != nil {
-		if x.xxx_hidden_Resources != nil {
-			return *x.xxx_hidden_Resources
-		}
+		return x.Resources
 	}
 	return nil
 }
 
 func (x *McpUpstreamService) GetCalls() map[string]*MCPCallDefinition {
 	if x != nil {
-		return x.xxx_hidden_Calls
+		return x.Calls
 	}
 	return nil
 }
 
 func (x *McpUpstreamService) GetPrompts() []*PromptDefinition {
 	if x != nil {
-		if x.xxx_hidden_Prompts != nil {
-			return *x.xxx_hidden_Prompts
-		}
+		return x.Prompts
 	}
 	return nil
 }
 
 func (x *McpUpstreamService) SetHttpConnection(v *McpStreamableHttpConnection) {
 	if v == nil {
-		x.xxx_hidden_ConnectionType = nil
+		x.ConnectionType = nil
 		return
 	}
-	x.xxx_hidden_ConnectionType = &mcpUpstreamService_HttpConnection{v}
+	x.ConnectionType = &McpUpstreamService_HttpConnection{v}
 }
 
 func (x *McpUpstreamService) SetStdioConnection(v *McpStdioConnection) {
 	if v == nil {
-		x.xxx_hidden_ConnectionType = nil
+		x.ConnectionType = nil
 		return
 	}
-	x.xxx_hidden_ConnectionType = &mcpUpstreamService_StdioConnection{v}
+	x.ConnectionType = &McpUpstreamService_StdioConnection{v}
 }
 
 func (x *McpUpstreamService) SetBundleConnection(v *McpBundleConnection) {
 	if v == nil {
-		x.xxx_hidden_ConnectionType = nil
+		x.ConnectionType = nil
 		return
 	}
-	x.xxx_hidden_ConnectionType = &mcpUpstreamService_BundleConnection{v}
+	x.ConnectionType = &McpUpstreamService_BundleConnection{v}
 }
 
 func (x *McpUpstreamService) SetToolAutoDiscovery(v bool) {
-	x.xxx_hidden_ToolAutoDiscovery = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+	x.ToolAutoDiscovery = &v
 }
 
 func (x *McpUpstreamService) SetTools(v []*ToolDefinition) {
-	x.xxx_hidden_Tools = &v
+	x.Tools = v
 }
 
 func (x *McpUpstreamService) SetResources(v []*ResourceDefinition) {
-	x.xxx_hidden_Resources = &v
+	x.Resources = v
 }
 
 func (x *McpUpstreamService) SetCalls(v map[string]*MCPCallDefinition) {
-	x.xxx_hidden_Calls = v
+	x.Calls = v
 }
 
 func (x *McpUpstreamService) SetPrompts(v []*PromptDefinition) {
-	x.xxx_hidden_Prompts = &v
+	x.Prompts = v
 }
 
 func (x *McpUpstreamService) HasConnectionType() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_ConnectionType != nil
+	return x.ConnectionType != nil
 }
 
 func (x *McpUpstreamService) HasHttpConnection() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_HttpConnection)
+	_, ok := x.ConnectionType.(*McpUpstreamService_HttpConnection)
 	return ok
 }
 
@@ -6876,7 +6490,7 @@ func (x *McpUpstreamService) HasStdioConnection() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_StdioConnection)
+	_, ok := x.ConnectionType.(*McpUpstreamService_StdioConnection)
 	return ok
 }
 
@@ -6884,7 +6498,7 @@ func (x *McpUpstreamService) HasBundleConnection() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_BundleConnection)
+	_, ok := x.ConnectionType.(*McpUpstreamService_BundleConnection)
 	return ok
 }
 
@@ -6892,34 +6506,33 @@ func (x *McpUpstreamService) HasToolAutoDiscovery() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.ToolAutoDiscovery != nil
 }
 
 func (x *McpUpstreamService) ClearConnectionType() {
-	x.xxx_hidden_ConnectionType = nil
+	x.ConnectionType = nil
 }
 
 func (x *McpUpstreamService) ClearHttpConnection() {
-	if _, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_HttpConnection); ok {
-		x.xxx_hidden_ConnectionType = nil
+	if _, ok := x.ConnectionType.(*McpUpstreamService_HttpConnection); ok {
+		x.ConnectionType = nil
 	}
 }
 
 func (x *McpUpstreamService) ClearStdioConnection() {
-	if _, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_StdioConnection); ok {
-		x.xxx_hidden_ConnectionType = nil
+	if _, ok := x.ConnectionType.(*McpUpstreamService_StdioConnection); ok {
+		x.ConnectionType = nil
 	}
 }
 
 func (x *McpUpstreamService) ClearBundleConnection() {
-	if _, ok := x.xxx_hidden_ConnectionType.(*mcpUpstreamService_BundleConnection); ok {
-		x.xxx_hidden_ConnectionType = nil
+	if _, ok := x.ConnectionType.(*McpUpstreamService_BundleConnection); ok {
+		x.ConnectionType = nil
 	}
 }
 
 func (x *McpUpstreamService) ClearToolAutoDiscovery() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ToolAutoDiscovery = false
+	x.ToolAutoDiscovery = nil
 }
 
 const McpUpstreamService_ConnectionType_not_set_case case_McpUpstreamService_ConnectionType = 0
@@ -6931,12 +6544,12 @@ func (x *McpUpstreamService) WhichConnectionType() case_McpUpstreamService_Conne
 	if x == nil {
 		return McpUpstreamService_ConnectionType_not_set_case
 	}
-	switch x.xxx_hidden_ConnectionType.(type) {
-	case *mcpUpstreamService_HttpConnection:
+	switch x.ConnectionType.(type) {
+	case *McpUpstreamService_HttpConnection:
 		return McpUpstreamService_HttpConnection_case
-	case *mcpUpstreamService_StdioConnection:
+	case *McpUpstreamService_StdioConnection:
 		return McpUpstreamService_StdioConnection_case
-	case *mcpUpstreamService_BundleConnection:
+	case *McpUpstreamService_BundleConnection:
 		return McpUpstreamService_BundleConnection_case
 	default:
 		return McpUpstreamService_ConnectionType_not_set_case
@@ -6948,13 +6561,13 @@ type McpUpstreamService_builder struct {
 
 	// The connection details for the upstream MCP service.
 
-	// Fields of oneof xxx_hidden_ConnectionType:
+	// Fields of oneof ConnectionType:
 	HttpConnection *McpStreamableHttpConnection
 	// Connect via a stdio process.
 	StdioConnection *McpStdioConnection
 	// Connect via a bundle.
 	BundleConnection *McpBundleConnection
-	// -- end of xxx_hidden_ConnectionType
+	// -- end of ConnectionType
 	// If true, mcpany will automatically discover and proxy all tools from the upstream.
 	ToolAutoDiscovery *bool
 	// Optional: Overrides or specific configurations for calls discovered from the service.
@@ -6972,22 +6585,19 @@ func (b0 McpUpstreamService_builder) Build() *McpUpstreamService {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.HttpConnection != nil {
-		x.xxx_hidden_ConnectionType = &mcpUpstreamService_HttpConnection{b.HttpConnection}
+		x.ConnectionType = &McpUpstreamService_HttpConnection{b.HttpConnection}
 	}
 	if b.StdioConnection != nil {
-		x.xxx_hidden_ConnectionType = &mcpUpstreamService_StdioConnection{b.StdioConnection}
+		x.ConnectionType = &McpUpstreamService_StdioConnection{b.StdioConnection}
 	}
 	if b.BundleConnection != nil {
-		x.xxx_hidden_ConnectionType = &mcpUpstreamService_BundleConnection{b.BundleConnection}
+		x.ConnectionType = &McpUpstreamService_BundleConnection{b.BundleConnection}
 	}
-	if b.ToolAutoDiscovery != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
-		x.xxx_hidden_ToolAutoDiscovery = *b.ToolAutoDiscovery
-	}
-	x.xxx_hidden_Tools = &b.Tools
-	x.xxx_hidden_Resources = &b.Resources
-	x.xxx_hidden_Calls = b.Calls
-	x.xxx_hidden_Prompts = &b.Prompts
+	x.ToolAutoDiscovery = b.ToolAutoDiscovery
+	x.Tools = b.Tools
+	x.Resources = b.Resources
+	x.Calls = b.Calls
+	x.Prompts = b.Prompts
 	return m0
 }
 
@@ -7005,40 +6615,46 @@ type isMcpUpstreamService_ConnectionType interface {
 	isMcpUpstreamService_ConnectionType()
 }
 
-type mcpUpstreamService_HttpConnection struct {
+type McpUpstreamService_HttpConnection struct {
 	HttpConnection *McpStreamableHttpConnection `protobuf:"bytes,1,opt,name=http_connection,oneof"`
 }
 
-type mcpUpstreamService_StdioConnection struct {
+type McpUpstreamService_StdioConnection struct {
 	// Connect via a stdio process.
 	StdioConnection *McpStdioConnection `protobuf:"bytes,2,opt,name=stdio_connection,oneof"`
 }
 
-type mcpUpstreamService_BundleConnection struct {
+type McpUpstreamService_BundleConnection struct {
 	// Connect via a bundle.
 	BundleConnection *McpBundleConnection `protobuf:"bytes,4,opt,name=bundle_connection,oneof"`
 }
 
-func (*mcpUpstreamService_HttpConnection) isMcpUpstreamService_ConnectionType() {}
+func (*McpUpstreamService_HttpConnection) isMcpUpstreamService_ConnectionType() {}
 
-func (*mcpUpstreamService_StdioConnection) isMcpUpstreamService_ConnectionType() {}
+func (*McpUpstreamService_StdioConnection) isMcpUpstreamService_ConnectionType() {}
 
-func (*mcpUpstreamService_BundleConnection) isMcpUpstreamService_ConnectionType() {}
+func (*McpUpstreamService_BundleConnection) isMcpUpstreamService_ConnectionType() {}
 
 // McpStdioConnection defines the parameters for a stdio-based connection.
 type McpStdioConnection struct {
-	state                       protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Command          *string                 `protobuf:"bytes,1,opt,name=command"`
-	xxx_hidden_WorkingDirectory *string                 `protobuf:"bytes,2,opt,name=working_directory"`
-	xxx_hidden_ContainerImage   *string                 `protobuf:"bytes,3,opt,name=container_image"`
-	xxx_hidden_Args             []string                `protobuf:"bytes,4,rep,name=args"`
-	xxx_hidden_SetupCommands    []string                `protobuf:"bytes,5,rep,name=setup_commands"`
-	xxx_hidden_Env              map[string]*SecretValue `protobuf:"bytes,7,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Validation       *EnvValidation          `protobuf:"bytes,8,opt,name=validation"`
-	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
-	XXX_presence                [1]uint32
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The command and arguments to execute the service.
+	Command *string `protobuf:"bytes,1,opt,name=command" json:"command,omitempty"`
+	// The working directory for the command.
+	WorkingDirectory *string `protobuf:"bytes,2,opt,name=working_directory" json:"working_directory,omitempty"`
+	// Optional: The container image to use. If not provided, an image will be
+	// selected based on the command.
+	ContainerImage *string `protobuf:"bytes,3,opt,name=container_image" json:"container_image,omitempty"`
+	// Arguments to the command.
+	Args []string `protobuf:"bytes,4,rep,name=args" json:"args,omitempty"`
+	// Optional: A list of commands to run as setup before the main command.
+	SetupCommands []string `protobuf:"bytes,5,rep,name=setup_commands" json:"setup_commands,omitempty"`
+	// Optional: Environment variables to set in the container.
+	Env map[string]*SecretValue `protobuf:"bytes,7,rep,name=env" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional: Validation rules for the environment.
+	Validation    *EnvValidation `protobuf:"bytes,8,opt,name=validation" json:"validation,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *McpStdioConnection) Reset() {
@@ -7067,139 +6683,124 @@ func (x *McpStdioConnection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *McpStdioConnection) GetCommand() string {
-	if x != nil {
-		if x.xxx_hidden_Command != nil {
-			return *x.xxx_hidden_Command
-		}
-		return ""
+	if x != nil && x.Command != nil {
+		return *x.Command
 	}
 	return ""
 }
 
 func (x *McpStdioConnection) GetWorkingDirectory() string {
-	if x != nil {
-		if x.xxx_hidden_WorkingDirectory != nil {
-			return *x.xxx_hidden_WorkingDirectory
-		}
-		return ""
+	if x != nil && x.WorkingDirectory != nil {
+		return *x.WorkingDirectory
 	}
 	return ""
 }
 
 func (x *McpStdioConnection) GetContainerImage() string {
-	if x != nil {
-		if x.xxx_hidden_ContainerImage != nil {
-			return *x.xxx_hidden_ContainerImage
-		}
-		return ""
+	if x != nil && x.ContainerImage != nil {
+		return *x.ContainerImage
 	}
 	return ""
 }
 
 func (x *McpStdioConnection) GetArgs() []string {
 	if x != nil {
-		return x.xxx_hidden_Args
+		return x.Args
 	}
 	return nil
 }
 
 func (x *McpStdioConnection) GetSetupCommands() []string {
 	if x != nil {
-		return x.xxx_hidden_SetupCommands
+		return x.SetupCommands
 	}
 	return nil
 }
 
 func (x *McpStdioConnection) GetEnv() map[string]*SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Env
+		return x.Env
 	}
 	return nil
 }
 
 func (x *McpStdioConnection) GetValidation() *EnvValidation {
 	if x != nil {
-		return x.xxx_hidden_Validation
+		return x.Validation
 	}
 	return nil
 }
 
 func (x *McpStdioConnection) SetCommand(v string) {
-	x.xxx_hidden_Command = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+	x.Command = &v
 }
 
 func (x *McpStdioConnection) SetWorkingDirectory(v string) {
-	x.xxx_hidden_WorkingDirectory = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+	x.WorkingDirectory = &v
 }
 
 func (x *McpStdioConnection) SetContainerImage(v string) {
-	x.xxx_hidden_ContainerImage = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+	x.ContainerImage = &v
 }
 
 func (x *McpStdioConnection) SetArgs(v []string) {
-	x.xxx_hidden_Args = v
+	x.Args = v
 }
 
 func (x *McpStdioConnection) SetSetupCommands(v []string) {
-	x.xxx_hidden_SetupCommands = v
+	x.SetupCommands = v
 }
 
 func (x *McpStdioConnection) SetEnv(v map[string]*SecretValue) {
-	x.xxx_hidden_Env = v
+	x.Env = v
 }
 
 func (x *McpStdioConnection) SetValidation(v *EnvValidation) {
-	x.xxx_hidden_Validation = v
+	x.Validation = v
 }
 
 func (x *McpStdioConnection) HasCommand() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Command != nil
 }
 
 func (x *McpStdioConnection) HasWorkingDirectory() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.WorkingDirectory != nil
 }
 
 func (x *McpStdioConnection) HasContainerImage() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.ContainerImage != nil
 }
 
 func (x *McpStdioConnection) HasValidation() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Validation != nil
+	return x.Validation != nil
 }
 
 func (x *McpStdioConnection) ClearCommand() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Command = nil
+	x.Command = nil
 }
 
 func (x *McpStdioConnection) ClearWorkingDirectory() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_WorkingDirectory = nil
+	x.WorkingDirectory = nil
 }
 
 func (x *McpStdioConnection) ClearContainerImage() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_ContainerImage = nil
+	x.ContainerImage = nil
 }
 
 func (x *McpStdioConnection) ClearValidation() {
-	x.xxx_hidden_Validation = nil
+	x.Validation = nil
 }
 
 type McpStdioConnection_builder struct {
@@ -7226,30 +6827,22 @@ func (b0 McpStdioConnection_builder) Build() *McpStdioConnection {
 	m0 := &McpStdioConnection{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Command != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
-		x.xxx_hidden_Command = b.Command
-	}
-	if b.WorkingDirectory != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
-		x.xxx_hidden_WorkingDirectory = b.WorkingDirectory
-	}
-	if b.ContainerImage != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
-		x.xxx_hidden_ContainerImage = b.ContainerImage
-	}
-	x.xxx_hidden_Args = b.Args
-	x.xxx_hidden_SetupCommands = b.SetupCommands
-	x.xxx_hidden_Env = b.Env
-	x.xxx_hidden_Validation = b.Validation
+	x.Command = b.Command
+	x.WorkingDirectory = b.WorkingDirectory
+	x.ContainerImage = b.ContainerImage
+	x.Args = b.Args
+	x.SetupCommands = b.SetupCommands
+	x.Env = b.Env
+	x.Validation = b.Validation
 	return m0
 }
 
 type EnvValidation struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_RequiredEnv []string               `protobuf:"bytes,1,rep,name=required_env"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// A list of environment variables that MUST be set (either inherited or explicit).
+	RequiredEnv   []string `protobuf:"bytes,1,rep,name=required_env" json:"required_env,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EnvValidation) Reset() {
@@ -7279,13 +6872,13 @@ func (x *EnvValidation) ProtoReflect() protoreflect.Message {
 
 func (x *EnvValidation) GetRequiredEnv() []string {
 	if x != nil {
-		return x.xxx_hidden_RequiredEnv
+		return x.RequiredEnv
 	}
 	return nil
 }
 
 func (x *EnvValidation) SetRequiredEnv(v []string) {
-	x.xxx_hidden_RequiredEnv = v
+	x.RequiredEnv = v
 }
 
 type EnvValidation_builder struct {
@@ -7299,19 +6892,20 @@ func (b0 EnvValidation_builder) Build() *EnvValidation {
 	m0 := &EnvValidation{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_RequiredEnv = b.RequiredEnv
+	x.RequiredEnv = b.RequiredEnv
 	return m0
 }
 
 type McpStreamableHttpConnection struct {
-	state                        protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_HttpAddress       *string                `protobuf:"bytes,1,opt,name=http_address"`
-	xxx_hidden_TlsConfig         *TLSConfig             `protobuf:"bytes,5,opt,name=tls_config"`
-	xxx_hidden_AllowHttpRedirect bool                   `protobuf:"varint,6,opt,name=allow_http_redirect"`
-	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
-	XXX_presence                 [1]uint32
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Connect via HTTP.
+	HttpAddress *string `protobuf:"bytes,1,opt,name=http_address" json:"http_address,omitempty"`
+	// TLS configuration, applicable if using an http_address.
+	TlsConfig *TLSConfig `protobuf:"bytes,5,opt,name=tls_config" json:"tls_config,omitempty"`
+	// If true, the client will follow HTTP redirects. Default is false (security hardening).
+	AllowHttpRedirect *bool `protobuf:"varint,6,opt,name=allow_http_redirect" json:"allow_http_redirect,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *McpStreamableHttpConnection) Reset() {
@@ -7340,76 +6934,69 @@ func (x *McpStreamableHttpConnection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *McpStreamableHttpConnection) GetHttpAddress() string {
-	if x != nil {
-		if x.xxx_hidden_HttpAddress != nil {
-			return *x.xxx_hidden_HttpAddress
-		}
-		return ""
+	if x != nil && x.HttpAddress != nil {
+		return *x.HttpAddress
 	}
 	return ""
 }
 
 func (x *McpStreamableHttpConnection) GetTlsConfig() *TLSConfig {
 	if x != nil {
-		return x.xxx_hidden_TlsConfig
+		return x.TlsConfig
 	}
 	return nil
 }
 
 func (x *McpStreamableHttpConnection) GetAllowHttpRedirect() bool {
-	if x != nil {
-		return x.xxx_hidden_AllowHttpRedirect
+	if x != nil && x.AllowHttpRedirect != nil {
+		return *x.AllowHttpRedirect
 	}
 	return false
 }
 
 func (x *McpStreamableHttpConnection) SetHttpAddress(v string) {
-	x.xxx_hidden_HttpAddress = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.HttpAddress = &v
 }
 
 func (x *McpStreamableHttpConnection) SetTlsConfig(v *TLSConfig) {
-	x.xxx_hidden_TlsConfig = v
+	x.TlsConfig = v
 }
 
 func (x *McpStreamableHttpConnection) SetAllowHttpRedirect(v bool) {
-	x.xxx_hidden_AllowHttpRedirect = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+	x.AllowHttpRedirect = &v
 }
 
 func (x *McpStreamableHttpConnection) HasHttpAddress() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.HttpAddress != nil
 }
 
 func (x *McpStreamableHttpConnection) HasTlsConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_TlsConfig != nil
+	return x.TlsConfig != nil
 }
 
 func (x *McpStreamableHttpConnection) HasAllowHttpRedirect() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.AllowHttpRedirect != nil
 }
 
 func (x *McpStreamableHttpConnection) ClearHttpAddress() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_HttpAddress = nil
+	x.HttpAddress = nil
 }
 
 func (x *McpStreamableHttpConnection) ClearTlsConfig() {
-	x.xxx_hidden_TlsConfig = nil
+	x.TlsConfig = nil
 }
 
 func (x *McpStreamableHttpConnection) ClearAllowHttpRedirect() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_AllowHttpRedirect = false
+	x.AllowHttpRedirect = nil
 }
 
 type McpStreamableHttpConnection_builder struct {
@@ -7427,28 +7014,23 @@ func (b0 McpStreamableHttpConnection_builder) Build() *McpStreamableHttpConnecti
 	m0 := &McpStreamableHttpConnection{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.HttpAddress != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_HttpAddress = b.HttpAddress
-	}
-	x.xxx_hidden_TlsConfig = b.TlsConfig
-	if b.AllowHttpRedirect != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_AllowHttpRedirect = *b.AllowHttpRedirect
-	}
+	x.HttpAddress = b.HttpAddress
+	x.TlsConfig = b.TlsConfig
+	x.AllowHttpRedirect = b.AllowHttpRedirect
 	return m0
 }
 
 // McpBundleConnection defines the parameters for a bundle-based connection.
 type McpBundleConnection struct {
-	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_BundlePath     *string                 `protobuf:"bytes,1,opt,name=bundle_path"`
-	xxx_hidden_ContainerImage *string                 `protobuf:"bytes,2,opt,name=container_image"`
-	xxx_hidden_Env            map[string]*SecretValue `protobuf:"bytes,3,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
-	XXX_presence              [1]uint32
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The path to the bundle file.
+	BundlePath *string `protobuf:"bytes,1,opt,name=bundle_path" json:"bundle_path,omitempty"`
+	// Optional: The container image to use. If not provided, a default image will be used.
+	ContainerImage *string `protobuf:"bytes,2,opt,name=container_image" json:"container_image,omitempty"`
+	// Optional: Environment variables to pass to the container.
+	Env           map[string]*SecretValue `protobuf:"bytes,3,rep,name=env" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *McpBundleConnection) Reset() {
@@ -7477,68 +7059,58 @@ func (x *McpBundleConnection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *McpBundleConnection) GetBundlePath() string {
-	if x != nil {
-		if x.xxx_hidden_BundlePath != nil {
-			return *x.xxx_hidden_BundlePath
-		}
-		return ""
+	if x != nil && x.BundlePath != nil {
+		return *x.BundlePath
 	}
 	return ""
 }
 
 func (x *McpBundleConnection) GetContainerImage() string {
-	if x != nil {
-		if x.xxx_hidden_ContainerImage != nil {
-			return *x.xxx_hidden_ContainerImage
-		}
-		return ""
+	if x != nil && x.ContainerImage != nil {
+		return *x.ContainerImage
 	}
 	return ""
 }
 
 func (x *McpBundleConnection) GetEnv() map[string]*SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Env
+		return x.Env
 	}
 	return nil
 }
 
 func (x *McpBundleConnection) SetBundlePath(v string) {
-	x.xxx_hidden_BundlePath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.BundlePath = &v
 }
 
 func (x *McpBundleConnection) SetContainerImage(v string) {
-	x.xxx_hidden_ContainerImage = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.ContainerImage = &v
 }
 
 func (x *McpBundleConnection) SetEnv(v map[string]*SecretValue) {
-	x.xxx_hidden_Env = v
+	x.Env = v
 }
 
 func (x *McpBundleConnection) HasBundlePath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.BundlePath != nil
 }
 
 func (x *McpBundleConnection) HasContainerImage() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.ContainerImage != nil
 }
 
 func (x *McpBundleConnection) ClearBundlePath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_BundlePath = nil
+	x.BundlePath = nil
 }
 
 func (x *McpBundleConnection) ClearContainerImage() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ContainerImage = nil
+	x.ContainerImage = nil
 }
 
 type McpBundleConnection_builder struct {
@@ -7556,28 +7128,23 @@ func (b0 McpBundleConnection_builder) Build() *McpBundleConnection {
 	m0 := &McpBundleConnection{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.BundlePath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_BundlePath = b.BundlePath
-	}
-	if b.ContainerImage != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_ContainerImage = b.ContainerImage
-	}
-	x.xxx_hidden_Env = b.Env
+	x.BundlePath = b.BundlePath
+	x.ContainerImage = b.ContainerImage
+	x.Env = b.Env
 	return m0
 }
 
 // ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
 type ConnectionPoolConfig struct {
-	state                         protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_MaxConnections     int32                  `protobuf:"varint,1,opt,name=max_connections"`
-	xxx_hidden_MaxIdleConnections int32                  `protobuf:"varint,2,opt,name=max_idle_connections"`
-	xxx_hidden_IdleTimeout        *durationpb.Duration   `protobuf:"bytes,3,opt,name=idle_timeout"`
-	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
-	XXX_presence                  [1]uint32
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The maximum number of simultaneous connections to allow to the upstream service.
+	MaxConnections *int32 `protobuf:"varint,1,opt,name=max_connections" json:"max_connections,omitempty"`
+	// The maximum number of idle connections to keep in the pool.
+	MaxIdleConnections *int32 `protobuf:"varint,2,opt,name=max_idle_connections" json:"max_idle_connections,omitempty"`
+	// The duration a connection can remain idle in the pool before being closed.
+	IdleTimeout   *durationpb.Duration `protobuf:"bytes,3,opt,name=idle_timeout" json:"idle_timeout,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ConnectionPoolConfig) Reset() {
@@ -7606,73 +7173,69 @@ func (x *ConnectionPoolConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConnectionPoolConfig) GetMaxConnections() int32 {
-	if x != nil {
-		return x.xxx_hidden_MaxConnections
+	if x != nil && x.MaxConnections != nil {
+		return *x.MaxConnections
 	}
 	return 0
 }
 
 func (x *ConnectionPoolConfig) GetMaxIdleConnections() int32 {
-	if x != nil {
-		return x.xxx_hidden_MaxIdleConnections
+	if x != nil && x.MaxIdleConnections != nil {
+		return *x.MaxIdleConnections
 	}
 	return 0
 }
 
 func (x *ConnectionPoolConfig) GetIdleTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_IdleTimeout
+		return x.IdleTimeout
 	}
 	return nil
 }
 
 func (x *ConnectionPoolConfig) SetMaxConnections(v int32) {
-	x.xxx_hidden_MaxConnections = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	x.MaxConnections = &v
 }
 
 func (x *ConnectionPoolConfig) SetMaxIdleConnections(v int32) {
-	x.xxx_hidden_MaxIdleConnections = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	x.MaxIdleConnections = &v
 }
 
 func (x *ConnectionPoolConfig) SetIdleTimeout(v *durationpb.Duration) {
-	x.xxx_hidden_IdleTimeout = v
+	x.IdleTimeout = v
 }
 
 func (x *ConnectionPoolConfig) HasMaxConnections() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.MaxConnections != nil
 }
 
 func (x *ConnectionPoolConfig) HasMaxIdleConnections() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.MaxIdleConnections != nil
 }
 
 func (x *ConnectionPoolConfig) HasIdleTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_IdleTimeout != nil
+	return x.IdleTimeout != nil
 }
 
 func (x *ConnectionPoolConfig) ClearMaxConnections() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_MaxConnections = 0
+	x.MaxConnections = nil
 }
 
 func (x *ConnectionPoolConfig) ClearMaxIdleConnections() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_MaxIdleConnections = 0
+	x.MaxIdleConnections = nil
 }
 
 func (x *ConnectionPoolConfig) ClearIdleTimeout() {
-	x.xxx_hidden_IdleTimeout = nil
+	x.IdleTimeout = nil
 }
 
 type ConnectionPoolConfig_builder struct {
@@ -7690,29 +7253,25 @@ func (b0 ConnectionPoolConfig_builder) Build() *ConnectionPoolConfig {
 	m0 := &ConnectionPoolConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.MaxConnections != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
-		x.xxx_hidden_MaxConnections = *b.MaxConnections
-	}
-	if b.MaxIdleConnections != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_MaxIdleConnections = *b.MaxIdleConnections
-	}
-	x.xxx_hidden_IdleTimeout = b.IdleTimeout
+	x.MaxConnections = b.MaxConnections
+	x.MaxIdleConnections = b.MaxIdleConnections
+	x.IdleTimeout = b.IdleTimeout
 	return m0
 }
 
 // Defines the container environment for running a command.
 type ContainerEnvironment struct {
-	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                 `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Image       *string                 `protobuf:"bytes,2,opt,name=image"`
-	xxx_hidden_Volumes     map[string]string       `protobuf:"bytes,3,rep,name=volumes" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	xxx_hidden_Env         map[string]*SecretValue `protobuf:"bytes,4,rep,name=env" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name of the container.
+	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// The image to use for the container.
+	Image *string `protobuf:"bytes,2,opt,name=image" json:"image,omitempty"`
+	// The volumes to mount into the container, with destination as key and source as value.
+	Volumes map[string]string `protobuf:"bytes,3,rep,name=volumes" json:"volumes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Environment variables to set in the container (supports secrets).
+	Env           map[string]*SecretValue `protobuf:"bytes,4,rep,name=env" json:"env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ContainerEnvironment) Reset() {
@@ -7741,79 +7300,69 @@ func (x *ContainerEnvironment) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ContainerEnvironment) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
+	if x != nil && x.Name != nil {
+		return *x.Name
 	}
 	return ""
 }
 
 func (x *ContainerEnvironment) GetImage() string {
-	if x != nil {
-		if x.xxx_hidden_Image != nil {
-			return *x.xxx_hidden_Image
-		}
-		return ""
+	if x != nil && x.Image != nil {
+		return *x.Image
 	}
 	return ""
 }
 
 func (x *ContainerEnvironment) GetVolumes() map[string]string {
 	if x != nil {
-		return x.xxx_hidden_Volumes
+		return x.Volumes
 	}
 	return nil
 }
 
 func (x *ContainerEnvironment) GetEnv() map[string]*SecretValue {
 	if x != nil {
-		return x.xxx_hidden_Env
+		return x.Env
 	}
 	return nil
 }
 
 func (x *ContainerEnvironment) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.Name = &v
 }
 
 func (x *ContainerEnvironment) SetImage(v string) {
-	x.xxx_hidden_Image = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.Image = &v
 }
 
 func (x *ContainerEnvironment) SetVolumes(v map[string]string) {
-	x.xxx_hidden_Volumes = v
+	x.Volumes = v
 }
 
 func (x *ContainerEnvironment) SetEnv(v map[string]*SecretValue) {
-	x.xxx_hidden_Env = v
+	x.Env = v
 }
 
 func (x *ContainerEnvironment) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.Name != nil
 }
 
 func (x *ContainerEnvironment) HasImage() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.Image != nil
 }
 
 func (x *ContainerEnvironment) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
+	x.Name = nil
 }
 
 func (x *ContainerEnvironment) ClearImage() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Image = nil
+	x.Image = nil
 }
 
 type ContainerEnvironment_builder struct {
@@ -7833,27 +7382,24 @@ func (b0 ContainerEnvironment_builder) Build() *ContainerEnvironment {
 	m0 := &ContainerEnvironment{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Image != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_Image = b.Image
-	}
-	x.xxx_hidden_Volumes = b.Volumes
-	x.xxx_hidden_Env = b.Env
+	x.Name = b.Name
+	x.Image = b.Image
+	x.Volumes = b.Volumes
+	x.Env = b.Env
 	return m0
 }
 
 // Configuration for service resilience features like circuit breakers and retries.
 type ResilienceConfig struct {
-	state                     protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_CircuitBreaker *CircuitBreakerConfig  `protobuf:"bytes,1,opt,name=circuit_breaker"`
-	xxx_hidden_RetryPolicy    *RetryConfig           `protobuf:"bytes,2,opt,name=retry_policy"`
-	xxx_hidden_Timeout        *durationpb.Duration   `protobuf:"bytes,3,opt,name=timeout"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// Circuit breaker configuration to prevent repeated calls to a failing service.
+	CircuitBreaker *CircuitBreakerConfig `protobuf:"bytes,1,opt,name=circuit_breaker" json:"circuit_breaker,omitempty"`
+	// Retry policy for failed requests.
+	RetryPolicy *RetryConfig `protobuf:"bytes,2,opt,name=retry_policy" json:"retry_policy,omitempty"`
+	// The maximum duration for a request before it is cancelled.
+	Timeout       *durationpb.Duration `protobuf:"bytes,3,opt,name=timeout" json:"timeout,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ResilienceConfig) Reset() {
@@ -7883,68 +7429,68 @@ func (x *ResilienceConfig) ProtoReflect() protoreflect.Message {
 
 func (x *ResilienceConfig) GetCircuitBreaker() *CircuitBreakerConfig {
 	if x != nil {
-		return x.xxx_hidden_CircuitBreaker
+		return x.CircuitBreaker
 	}
 	return nil
 }
 
 func (x *ResilienceConfig) GetRetryPolicy() *RetryConfig {
 	if x != nil {
-		return x.xxx_hidden_RetryPolicy
+		return x.RetryPolicy
 	}
 	return nil
 }
 
 func (x *ResilienceConfig) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_Timeout
+		return x.Timeout
 	}
 	return nil
 }
 
 func (x *ResilienceConfig) SetCircuitBreaker(v *CircuitBreakerConfig) {
-	x.xxx_hidden_CircuitBreaker = v
+	x.CircuitBreaker = v
 }
 
 func (x *ResilienceConfig) SetRetryPolicy(v *RetryConfig) {
-	x.xxx_hidden_RetryPolicy = v
+	x.RetryPolicy = v
 }
 
 func (x *ResilienceConfig) SetTimeout(v *durationpb.Duration) {
-	x.xxx_hidden_Timeout = v
+	x.Timeout = v
 }
 
 func (x *ResilienceConfig) HasCircuitBreaker() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_CircuitBreaker != nil
+	return x.CircuitBreaker != nil
 }
 
 func (x *ResilienceConfig) HasRetryPolicy() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_RetryPolicy != nil
+	return x.RetryPolicy != nil
 }
 
 func (x *ResilienceConfig) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_Timeout != nil
+	return x.Timeout != nil
 }
 
 func (x *ResilienceConfig) ClearCircuitBreaker() {
-	x.xxx_hidden_CircuitBreaker = nil
+	x.CircuitBreaker = nil
 }
 
 func (x *ResilienceConfig) ClearRetryPolicy() {
-	x.xxx_hidden_RetryPolicy = nil
+	x.RetryPolicy = nil
 }
 
 func (x *ResilienceConfig) ClearTimeout() {
-	x.xxx_hidden_Timeout = nil
+	x.Timeout = nil
 }
 
 type ResilienceConfig_builder struct {
@@ -7962,23 +7508,25 @@ func (b0 ResilienceConfig_builder) Build() *ResilienceConfig {
 	m0 := &ResilienceConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_CircuitBreaker = b.CircuitBreaker
-	x.xxx_hidden_RetryPolicy = b.RetryPolicy
-	x.xxx_hidden_Timeout = b.Timeout
+	x.CircuitBreaker = b.CircuitBreaker
+	x.RetryPolicy = b.RetryPolicy
+	x.Timeout = b.Timeout
 	return m0
 }
 
 // CircuitBreakerConfig defines the parameters for the circuit breaker pattern.
 type CircuitBreakerConfig struct {
-	state                           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_FailureRateThreshold float64                `protobuf:"fixed64,1,opt,name=failure_rate_threshold"`
-	xxx_hidden_ConsecutiveFailures  int32                  `protobuf:"varint,2,opt,name=consecutive_failures"`
-	xxx_hidden_OpenDuration         *durationpb.Duration   `protobuf:"bytes,3,opt,name=open_duration"`
-	xxx_hidden_HalfOpenRequests     int32                  `protobuf:"varint,4,opt,name=half_open_requests"`
-	XXX_raceDetectHookData          protoimpl.RaceDetectHookData
-	XXX_presence                    [1]uint32
-	unknownFields                   protoimpl.UnknownFields
-	sizeCache                       protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// If the failure rate exceeds this threshold, the circuit opens. (e.g., 0.5 for 50%)
+	FailureRateThreshold *float64 `protobuf:"fixed64,1,opt,name=failure_rate_threshold" json:"failure_rate_threshold,omitempty"`
+	// The number of consecutive failures required to open the circuit.
+	ConsecutiveFailures *int32 `protobuf:"varint,2,opt,name=consecutive_failures" json:"consecutive_failures,omitempty"`
+	// The duration the circuit remains open before transitioning to half-open.
+	OpenDuration *durationpb.Duration `protobuf:"bytes,3,opt,name=open_duration" json:"open_duration,omitempty"`
+	// The number of requests to allow in the half-open state to test for recovery.
+	HalfOpenRequests *int32 `protobuf:"varint,4,opt,name=half_open_requests" json:"half_open_requests,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CircuitBreakerConfig) Reset() {
@@ -8007,97 +7555,91 @@ func (x *CircuitBreakerConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CircuitBreakerConfig) GetFailureRateThreshold() float64 {
-	if x != nil {
-		return x.xxx_hidden_FailureRateThreshold
+	if x != nil && x.FailureRateThreshold != nil {
+		return *x.FailureRateThreshold
 	}
 	return 0
 }
 
 func (x *CircuitBreakerConfig) GetConsecutiveFailures() int32 {
-	if x != nil {
-		return x.xxx_hidden_ConsecutiveFailures
+	if x != nil && x.ConsecutiveFailures != nil {
+		return *x.ConsecutiveFailures
 	}
 	return 0
 }
 
 func (x *CircuitBreakerConfig) GetOpenDuration() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_OpenDuration
+		return x.OpenDuration
 	}
 	return nil
 }
 
 func (x *CircuitBreakerConfig) GetHalfOpenRequests() int32 {
-	if x != nil {
-		return x.xxx_hidden_HalfOpenRequests
+	if x != nil && x.HalfOpenRequests != nil {
+		return *x.HalfOpenRequests
 	}
 	return 0
 }
 
 func (x *CircuitBreakerConfig) SetFailureRateThreshold(v float64) {
-	x.xxx_hidden_FailureRateThreshold = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.FailureRateThreshold = &v
 }
 
 func (x *CircuitBreakerConfig) SetConsecutiveFailures(v int32) {
-	x.xxx_hidden_ConsecutiveFailures = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	x.ConsecutiveFailures = &v
 }
 
 func (x *CircuitBreakerConfig) SetOpenDuration(v *durationpb.Duration) {
-	x.xxx_hidden_OpenDuration = v
+	x.OpenDuration = v
 }
 
 func (x *CircuitBreakerConfig) SetHalfOpenRequests(v int32) {
-	x.xxx_hidden_HalfOpenRequests = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+	x.HalfOpenRequests = &v
 }
 
 func (x *CircuitBreakerConfig) HasFailureRateThreshold() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.FailureRateThreshold != nil
 }
 
 func (x *CircuitBreakerConfig) HasConsecutiveFailures() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.ConsecutiveFailures != nil
 }
 
 func (x *CircuitBreakerConfig) HasOpenDuration() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_OpenDuration != nil
+	return x.OpenDuration != nil
 }
 
 func (x *CircuitBreakerConfig) HasHalfOpenRequests() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.HalfOpenRequests != nil
 }
 
 func (x *CircuitBreakerConfig) ClearFailureRateThreshold() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_FailureRateThreshold = 0
+	x.FailureRateThreshold = nil
 }
 
 func (x *CircuitBreakerConfig) ClearConsecutiveFailures() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ConsecutiveFailures = 0
+	x.ConsecutiveFailures = nil
 }
 
 func (x *CircuitBreakerConfig) ClearOpenDuration() {
-	x.xxx_hidden_OpenDuration = nil
+	x.OpenDuration = nil
 }
 
 func (x *CircuitBreakerConfig) ClearHalfOpenRequests() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_HalfOpenRequests = 0
+	x.HalfOpenRequests = nil
 }
 
 type CircuitBreakerConfig_builder struct {
@@ -8117,33 +7659,26 @@ func (b0 CircuitBreakerConfig_builder) Build() *CircuitBreakerConfig {
 	m0 := &CircuitBreakerConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.FailureRateThreshold != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_FailureRateThreshold = *b.FailureRateThreshold
-	}
-	if b.ConsecutiveFailures != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
-		x.xxx_hidden_ConsecutiveFailures = *b.ConsecutiveFailures
-	}
-	x.xxx_hidden_OpenDuration = b.OpenDuration
-	if b.HalfOpenRequests != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
-		x.xxx_hidden_HalfOpenRequests = *b.HalfOpenRequests
-	}
+	x.FailureRateThreshold = b.FailureRateThreshold
+	x.ConsecutiveFailures = b.ConsecutiveFailures
+	x.OpenDuration = b.OpenDuration
+	x.HalfOpenRequests = b.HalfOpenRequests
 	return m0
 }
 
 // RetryConfig defines the parameters for retrying failed requests.
 type RetryConfig struct {
-	state                      protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_NumberOfRetries int32                  `protobuf:"varint,1,opt,name=number_of_retries"`
-	xxx_hidden_BaseBackoff     *durationpb.Duration   `protobuf:"bytes,2,opt,name=base_backoff"`
-	xxx_hidden_MaxBackoff      *durationpb.Duration   `protobuf:"bytes,3,opt,name=max_backoff"`
-	xxx_hidden_MaxElapsedTime  *durationpb.Duration   `protobuf:"bytes,4,opt,name=max_elapsed_time"`
-	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
-	XXX_presence               [1]uint32
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The number of times to retry a failed request.
+	NumberOfRetries *int32 `protobuf:"varint,1,opt,name=number_of_retries" json:"number_of_retries,omitempty"`
+	// The base duration for the backoff between retries.
+	BaseBackoff *durationpb.Duration `protobuf:"bytes,2,opt,name=base_backoff" json:"base_backoff,omitempty"`
+	// The maximum duration for the backoff.
+	MaxBackoff *durationpb.Duration `protobuf:"bytes,3,opt,name=max_backoff" json:"max_backoff,omitempty"`
+	// The maximum total time to spend retrying.
+	MaxElapsedTime *durationpb.Duration `protobuf:"bytes,4,opt,name=max_elapsed_time" json:"max_elapsed_time,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *RetryConfig) Reset() {
@@ -8172,93 +7707,91 @@ func (x *RetryConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *RetryConfig) GetNumberOfRetries() int32 {
-	if x != nil {
-		return x.xxx_hidden_NumberOfRetries
+	if x != nil && x.NumberOfRetries != nil {
+		return *x.NumberOfRetries
 	}
 	return 0
 }
 
 func (x *RetryConfig) GetBaseBackoff() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_BaseBackoff
+		return x.BaseBackoff
 	}
 	return nil
 }
 
 func (x *RetryConfig) GetMaxBackoff() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_MaxBackoff
+		return x.MaxBackoff
 	}
 	return nil
 }
 
 func (x *RetryConfig) GetMaxElapsedTime() *durationpb.Duration {
 	if x != nil {
-		return x.xxx_hidden_MaxElapsedTime
+		return x.MaxElapsedTime
 	}
 	return nil
 }
 
 func (x *RetryConfig) SetNumberOfRetries(v int32) {
-	x.xxx_hidden_NumberOfRetries = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	x.NumberOfRetries = &v
 }
 
 func (x *RetryConfig) SetBaseBackoff(v *durationpb.Duration) {
-	x.xxx_hidden_BaseBackoff = v
+	x.BaseBackoff = v
 }
 
 func (x *RetryConfig) SetMaxBackoff(v *durationpb.Duration) {
-	x.xxx_hidden_MaxBackoff = v
+	x.MaxBackoff = v
 }
 
 func (x *RetryConfig) SetMaxElapsedTime(v *durationpb.Duration) {
-	x.xxx_hidden_MaxElapsedTime = v
+	x.MaxElapsedTime = v
 }
 
 func (x *RetryConfig) HasNumberOfRetries() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.NumberOfRetries != nil
 }
 
 func (x *RetryConfig) HasBaseBackoff() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_BaseBackoff != nil
+	return x.BaseBackoff != nil
 }
 
 func (x *RetryConfig) HasMaxBackoff() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_MaxBackoff != nil
+	return x.MaxBackoff != nil
 }
 
 func (x *RetryConfig) HasMaxElapsedTime() bool {
 	if x == nil {
 		return false
 	}
-	return x.xxx_hidden_MaxElapsedTime != nil
+	return x.MaxElapsedTime != nil
 }
 
 func (x *RetryConfig) ClearNumberOfRetries() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_NumberOfRetries = 0
+	x.NumberOfRetries = nil
 }
 
 func (x *RetryConfig) ClearBaseBackoff() {
-	x.xxx_hidden_BaseBackoff = nil
+	x.BaseBackoff = nil
 }
 
 func (x *RetryConfig) ClearMaxBackoff() {
-	x.xxx_hidden_MaxBackoff = nil
+	x.MaxBackoff = nil
 }
 
 func (x *RetryConfig) ClearMaxElapsedTime() {
-	x.xxx_hidden_MaxElapsedTime = nil
+	x.MaxElapsedTime = nil
 }
 
 type RetryConfig_builder struct {
@@ -8278,28 +7811,28 @@ func (b0 RetryConfig_builder) Build() *RetryConfig {
 	m0 := &RetryConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.NumberOfRetries != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
-		x.xxx_hidden_NumberOfRetries = *b.NumberOfRetries
-	}
-	x.xxx_hidden_BaseBackoff = b.BaseBackoff
-	x.xxx_hidden_MaxBackoff = b.MaxBackoff
-	x.xxx_hidden_MaxElapsedTime = b.MaxElapsedTime
+	x.NumberOfRetries = b.NumberOfRetries
+	x.BaseBackoff = b.BaseBackoff
+	x.MaxBackoff = b.MaxBackoff
+	x.MaxElapsedTime = b.MaxElapsedTime
 	return m0
 }
 
 // TLSConfig defines the TLS settings for connecting to an upstream service.
 type TLSConfig struct {
-	state                         protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_ServerName         *string                `protobuf:"bytes,1,opt,name=server_name"`
-	xxx_hidden_CaCertPath         *string                `protobuf:"bytes,2,opt,name=ca_cert_path"`
-	xxx_hidden_ClientCertPath     *string                `protobuf:"bytes,3,opt,name=client_cert_path"`
-	xxx_hidden_ClientKeyPath      *string                `protobuf:"bytes,4,opt,name=client_key_path"`
-	xxx_hidden_InsecureSkipVerify bool                   `protobuf:"varint,5,opt,name=insecure_skip_verify"`
-	XXX_raceDetectHookData        protoimpl.RaceDetectHookData
-	XXX_presence                  [1]uint32
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The server name to use for SNI.
+	ServerName *string `protobuf:"bytes,1,opt,name=server_name" json:"server_name,omitempty"`
+	// Path to the CA certificate file for verifying the server's certificate.
+	CaCertPath *string `protobuf:"bytes,2,opt,name=ca_cert_path" json:"ca_cert_path,omitempty"`
+	// Path to the client certificate file for mTLS.
+	ClientCertPath *string `protobuf:"bytes,3,opt,name=client_cert_path" json:"client_cert_path,omitempty"`
+	// Path to the client private key file for mTLS.
+	ClientKeyPath *string `protobuf:"bytes,4,opt,name=client_key_path" json:"client_key_path,omitempty"`
+	// If true, the client will not verify the server's certificate chain. Use with caution.
+	InsecureSkipVerify *bool `protobuf:"varint,5,opt,name=insecure_skip_verify" json:"insecure_skip_verify,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *TLSConfig) Reset() {
@@ -8328,135 +7861,113 @@ func (x *TLSConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *TLSConfig) GetServerName() string {
-	if x != nil {
-		if x.xxx_hidden_ServerName != nil {
-			return *x.xxx_hidden_ServerName
-		}
-		return ""
+	if x != nil && x.ServerName != nil {
+		return *x.ServerName
 	}
 	return ""
 }
 
 func (x *TLSConfig) GetCaCertPath() string {
-	if x != nil {
-		if x.xxx_hidden_CaCertPath != nil {
-			return *x.xxx_hidden_CaCertPath
-		}
-		return ""
+	if x != nil && x.CaCertPath != nil {
+		return *x.CaCertPath
 	}
 	return ""
 }
 
 func (x *TLSConfig) GetClientCertPath() string {
-	if x != nil {
-		if x.xxx_hidden_ClientCertPath != nil {
-			return *x.xxx_hidden_ClientCertPath
-		}
-		return ""
+	if x != nil && x.ClientCertPath != nil {
+		return *x.ClientCertPath
 	}
 	return ""
 }
 
 func (x *TLSConfig) GetClientKeyPath() string {
-	if x != nil {
-		if x.xxx_hidden_ClientKeyPath != nil {
-			return *x.xxx_hidden_ClientKeyPath
-		}
-		return ""
+	if x != nil && x.ClientKeyPath != nil {
+		return *x.ClientKeyPath
 	}
 	return ""
 }
 
 func (x *TLSConfig) GetInsecureSkipVerify() bool {
-	if x != nil {
-		return x.xxx_hidden_InsecureSkipVerify
+	if x != nil && x.InsecureSkipVerify != nil {
+		return *x.InsecureSkipVerify
 	}
 	return false
 }
 
 func (x *TLSConfig) SetServerName(v string) {
-	x.xxx_hidden_ServerName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	x.ServerName = &v
 }
 
 func (x *TLSConfig) SetCaCertPath(v string) {
-	x.xxx_hidden_CaCertPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	x.CaCertPath = &v
 }
 
 func (x *TLSConfig) SetClientCertPath(v string) {
-	x.xxx_hidden_ClientCertPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	x.ClientCertPath = &v
 }
 
 func (x *TLSConfig) SetClientKeyPath(v string) {
-	x.xxx_hidden_ClientKeyPath = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	x.ClientKeyPath = &v
 }
 
 func (x *TLSConfig) SetInsecureSkipVerify(v bool) {
-	x.xxx_hidden_InsecureSkipVerify = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	x.InsecureSkipVerify = &v
 }
 
 func (x *TLSConfig) HasServerName() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+	return x.ServerName != nil
 }
 
 func (x *TLSConfig) HasCaCertPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+	return x.CaCertPath != nil
 }
 
 func (x *TLSConfig) HasClientCertPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+	return x.ClientCertPath != nil
 }
 
 func (x *TLSConfig) HasClientKeyPath() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+	return x.ClientKeyPath != nil
 }
 
 func (x *TLSConfig) HasInsecureSkipVerify() bool {
 	if x == nil {
 		return false
 	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+	return x.InsecureSkipVerify != nil
 }
 
 func (x *TLSConfig) ClearServerName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_ServerName = nil
+	x.ServerName = nil
 }
 
 func (x *TLSConfig) ClearCaCertPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_CaCertPath = nil
+	x.CaCertPath = nil
 }
 
 func (x *TLSConfig) ClearClientCertPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_ClientCertPath = nil
+	x.ClientCertPath = nil
 }
 
 func (x *TLSConfig) ClearClientKeyPath() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
-	x.xxx_hidden_ClientKeyPath = nil
+	x.ClientKeyPath = nil
 }
 
 func (x *TLSConfig) ClearInsecureSkipVerify() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
-	x.xxx_hidden_InsecureSkipVerify = false
+	x.InsecureSkipVerify = nil
 }
 
 type TLSConfig_builder struct {
@@ -8478,26 +7989,11 @@ func (b0 TLSConfig_builder) Build() *TLSConfig {
 	m0 := &TLSConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	if b.ServerName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
-		x.xxx_hidden_ServerName = b.ServerName
-	}
-	if b.CaCertPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
-		x.xxx_hidden_CaCertPath = b.CaCertPath
-	}
-	if b.ClientCertPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
-		x.xxx_hidden_ClientCertPath = b.ClientCertPath
-	}
-	if b.ClientKeyPath != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
-		x.xxx_hidden_ClientKeyPath = b.ClientKeyPath
-	}
-	if b.InsecureSkipVerify != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
-		x.xxx_hidden_InsecureSkipVerify = *b.InsecureSkipVerify
-	}
+	x.ServerName = b.ServerName
+	x.CaCertPath = b.CaCertPath
+	x.ClientCertPath = b.ClientCertPath
+	x.ClientKeyPath = b.ClientKeyPath
+	x.InsecureSkipVerify = b.InsecureSkipVerify
 	return m0
 }
 
@@ -8505,7 +8001,7 @@ var File_proto_config_v1_upstream_service_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\n" +
-	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb5\x12\n" +
+	"&proto/config/v1/upstream_service.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13proto/bus/bus.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1aproto/config/v1/call.proto\x1a\"proto/config/v1/health_check.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1cproto/config/v1/prompt.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a\x1dproto/config/v1/webhook.proto\"\xb5\x12\n" +
 	"\x15UpstreamServiceConfig\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12&\n" +
@@ -8884,7 +8380,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\vROUND_ROBIN\x10\x00\x12\x15\n" +
 	"\x11LEAST_CONNECTIONS\x10\x01\x12\n" +
 	"\n" +
-	"\x06RANDOM\x10\x02BFB\x14UpstreamServiceProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\x06RANDOM\x10\x02B>B\x14UpstreamServiceProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_upstream_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
 var file_proto_config_v1_upstream_service_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
@@ -9125,54 +8621,54 @@ func file_proto_config_v1_upstream_service_proto_init() {
 	file_proto_config_v1_tool_proto_init()
 	file_proto_config_v1_webhook_proto_init()
 	file_proto_config_v1_upstream_service_proto_msgTypes[0].OneofWrappers = []any{
-		(*upstreamServiceConfig_McpService)(nil),
-		(*upstreamServiceConfig_HttpService)(nil),
-		(*upstreamServiceConfig_GrpcService)(nil),
-		(*upstreamServiceConfig_OpenapiService)(nil),
-		(*upstreamServiceConfig_CommandLineService)(nil),
-		(*upstreamServiceConfig_WebsocketService)(nil),
-		(*upstreamServiceConfig_WebrtcService)(nil),
-		(*upstreamServiceConfig_GraphqlService)(nil),
-		(*upstreamServiceConfig_SqlService)(nil),
-		(*upstreamServiceConfig_FilesystemService)(nil),
-		(*upstreamServiceConfig_VectorService)(nil),
+		(*UpstreamServiceConfig_McpService)(nil),
+		(*UpstreamServiceConfig_HttpService)(nil),
+		(*UpstreamServiceConfig_GrpcService)(nil),
+		(*UpstreamServiceConfig_OpenapiService)(nil),
+		(*UpstreamServiceConfig_CommandLineService)(nil),
+		(*UpstreamServiceConfig_WebsocketService)(nil),
+		(*UpstreamServiceConfig_WebrtcService)(nil),
+		(*UpstreamServiceConfig_GraphqlService)(nil),
+		(*UpstreamServiceConfig_SqlService)(nil),
+		(*UpstreamServiceConfig_FilesystemService)(nil),
+		(*UpstreamServiceConfig_VectorService)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[5].OneofWrappers = []any{
-		(*callHook_Webhook)(nil),
-		(*callHook_CallPolicy)(nil),
+		(*CallHook_Webhook)(nil),
+		(*CallHook_CallPolicy)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[7].OneofWrappers = []any{
-		(*protoDefinition_ProtoFile)(nil),
-		(*protoDefinition_ProtoDescriptor)(nil),
+		(*ProtoDefinition_ProtoFile)(nil),
+		(*ProtoDefinition_ProtoDescriptor)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[8].OneofWrappers = []any{
-		(*protoFile_FileContent)(nil),
-		(*protoFile_FilePath)(nil),
+		(*ProtoFile_FileContent)(nil),
+		(*ProtoFile_FilePath)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[9].OneofWrappers = []any{
-		(*protoDescriptor_FilePath)(nil),
+		(*ProtoDescriptor_FilePath)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[14].OneofWrappers = []any{
-		(*openapiUpstreamService_SpecContent)(nil),
-		(*openapiUpstreamService_SpecUrl)(nil),
+		(*OpenapiUpstreamService_SpecContent)(nil),
+		(*OpenapiUpstreamService_SpecUrl)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[18].OneofWrappers = []any{
-		(*filesystemUpstreamService_Os)(nil),
-		(*filesystemUpstreamService_Tmpfs)(nil),
-		(*filesystemUpstreamService_Http)(nil),
-		(*filesystemUpstreamService_Zip)(nil),
-		(*filesystemUpstreamService_Gcs)(nil),
-		(*filesystemUpstreamService_Sftp)(nil),
-		(*filesystemUpstreamService_S3)(nil),
+		(*FilesystemUpstreamService_Os)(nil),
+		(*FilesystemUpstreamService_Tmpfs)(nil),
+		(*FilesystemUpstreamService_Http)(nil),
+		(*FilesystemUpstreamService_Zip)(nil),
+		(*FilesystemUpstreamService_Gcs)(nil),
+		(*FilesystemUpstreamService_Sftp)(nil),
+		(*FilesystemUpstreamService_S3)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[26].OneofWrappers = []any{
-		(*vectorUpstreamService_Pinecone)(nil),
-		(*vectorUpstreamService_Milvus)(nil),
+		(*VectorUpstreamService_Pinecone)(nil),
+		(*VectorUpstreamService_Milvus)(nil),
 	}
 	file_proto_config_v1_upstream_service_proto_msgTypes[29].OneofWrappers = []any{
-		(*mcpUpstreamService_HttpConnection)(nil),
-		(*mcpUpstreamService_StdioConnection)(nil),
-		(*mcpUpstreamService_BundleConnection)(nil),
+		(*McpUpstreamService_HttpConnection)(nil),
+		(*McpUpstreamService_StdioConnection)(nil),
+		(*McpUpstreamService_BundleConnection)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

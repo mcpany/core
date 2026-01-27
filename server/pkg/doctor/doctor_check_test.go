@@ -18,12 +18,14 @@ func TestCheckService_HTTP_Unreachable(t *testing.T) {
 	ctx := context.Background()
 
 	// Configure a service pointing to an invalid port (assuming nothing runs on 54321)
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("http://127.0.0.1:54321"),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Address: proto.String("http://127.0.0.1:54321"),
+			},
+		},
+	}
 
 	// Run check
 	result := doctor.CheckService(ctx, svc)
@@ -35,12 +37,14 @@ func TestCheckService_HTTP_Unreachable(t *testing.T) {
 
 func TestCheckService_HTTP_InvalidURL(t *testing.T) {
 	ctx := context.Background()
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			Address: proto.String("::invalid-url::"),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				Address: proto.String("::invalid-url::"),
+			},
+		},
+	}
 
 	result := doctor.CheckService(ctx, svc)
 

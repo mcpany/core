@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestServer_SecretLeakage(t *testing.T) {
@@ -22,19 +23,21 @@ func TestServer_SecretLeakage(t *testing.T) {
 	tm := tool.NewMockManagerInterface(ctrl)
 
 	// Create a service with a secret
-	secretVal := &configv1.SecretValue{}
-	secretVal.SetPlainText("SUPER_SECRET_KEY")
-
-	apiKeyAuth := &configv1.APIKeyAuth{}
-	apiKeyAuth.SetValue(secretVal)
-
-	auth := &configv1.Authentication{}
-	auth.SetApiKey(apiKeyAuth)
-
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("secret-service")
-	svc.SetId("secret-service")
-	svc.SetUpstreamAuth(auth)
+	svc := &configv1.UpstreamServiceConfig{
+		Name: proto.String("secret-service"),
+		Id:   proto.String("secret-service"),
+		UpstreamAuth: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{
+					Value: &configv1.SecretValue{
+						Value: &configv1.SecretValue_PlainText{
+							PlainText: "SUPER_SECRET_KEY",
+						},
+					},
+				},
+			},
+		},
+	}
 
 	sr := &MockServiceRegistry{
 		services: []*configv1.UpstreamServiceConfig{svc},
@@ -49,9 +52,9 @@ func TestServer_SecretLeakage(t *testing.T) {
 	require.Len(t, listResp.Services, 1)
 
 	// Check if secret is leaked
-	gotAuth := listResp.Services[0].GetUpstreamAuth()
-	require.NotNil(t, gotAuth)
-	apiKey := gotAuth.GetApiKey()
+	auth := listResp.Services[0].GetUpstreamAuth()
+	require.NotNil(t, auth)
+	apiKey := auth.GetApiKey()
 	require.NotNil(t, apiKey)
 
 	// This confirms the vulnerability is fixed

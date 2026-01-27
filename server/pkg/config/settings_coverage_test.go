@@ -21,16 +21,13 @@ func ptr[T any](v T) *T {
 
 func TestSettings_Getters(t *testing.T) {
 	s := &Settings{
-		proto: func() *configv1.GlobalSettings {
-			gs := &configv1.GlobalSettings{}
-			gs.SetDbDsn("postgres://user:pass@127.0.0.1:5432/db")
-			gs.SetDbDriver("postgres")
-
-			dlp := &configv1.DLPConfig{}
-			dlp.SetEnabled(true)
-			gs.SetDlp(dlp)
-			return gs
-		}(),
+		proto: &configv1.GlobalSettings{
+			DbDsn:    ptr("postgres://user:pass@127.0.0.1:5432/db"),
+			DbDriver: ptr("postgres"),
+			Dlp: &configv1.DLPConfig{
+				Enabled: ptr(true),
+			},
+		},
 	}
 
 	assert.Equal(t, "postgres://user:pass@127.0.0.1:5432/db", s.GetDbDsn())
@@ -148,21 +145,8 @@ upstream_services: {
 	defer os.Remove(tmpLog.Name())
 	viper.Set("logfile", tmpLog.Name())
 
-	middlewares := []*configv1.Middleware{
-		func() *configv1.Middleware {
-			m := &configv1.Middleware{}
-			m.SetName("test-middleware")
-			return m
-		}(),
-	}
-
 	settings := &Settings{
-		dbPath: "/path/to/db.sqlite",
-		proto: func() *configv1.GlobalSettings {
-			gs := &configv1.GlobalSettings{}
-			gs.SetMiddlewares(middlewares)
-			return gs
-		}(),
+		proto: &configv1.GlobalSettings{},
 	}
 
 	err = settings.Load(cmd, fs)

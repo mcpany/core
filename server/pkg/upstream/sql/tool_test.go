@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -24,12 +24,12 @@ func TestTool_Execute(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	callDef := configv1.SqlCallDefinition_builder{
+	callDef := &configv1.SqlCallDefinition{
 		Query:          proto.String("SELECT id, name FROM users WHERE age > ?"),
 		ParameterOrder: []string{"age"},
-	}.Build()
+	}
 
-	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("get_users")}.Build(), db, callDef, nil, "get_users_call")
+	toolInstance := NewTool(&v1.Tool{Name: proto.String("get_users")}, db, callDef, nil, "get_users_call")
 
 	t.Run("success", func(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "name"}).
@@ -99,27 +99,27 @@ func TestTool_Execute(t *testing.T) {
 		assert.Nil(t, toolInstance.GetCacheConfig())
 
 		// Test with cache config
-		cachedCallDef := configv1.SqlCallDefinition_builder{
-			Cache: configv1.CacheConfig_builder{
+		cachedCallDef := &configv1.SqlCallDefinition{
+			Cache: &configv1.CacheConfig{
 				Ttl: durationpb.New(60 * time.Second),
-			}.Build(),
-		}.Build()
-		cachedTool := NewTool(v1.Tool_builder{Name: proto.String("cached_tool")}.Build(), db, cachedCallDef, nil, "cached_tool_call")
+			},
+		}
+		cachedTool := NewTool(&v1.Tool{Name: proto.String("cached_tool")}, db, cachedCallDef, nil, "cached_tool_call")
 		assert.NotNil(t, cachedTool.GetCacheConfig())
 		assert.Equal(t, int64(60), cachedTool.GetCacheConfig().GetTtl().GetSeconds())
 	})
 
 	t.Run("policy blocked", func(t *testing.T) {
-		policy := configv1.CallPolicy_builder{
+		policy := &configv1.CallPolicy{
 			Rules: []*configv1.CallPolicyRule{
-				configv1.CallPolicyRule_builder{
+				{
 					Action: configv1.CallPolicy_DENY.Enum(),
-				}.Build(),
+				},
 			},
 			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
-		}.Build()
+		}
 
-		blockedTool := NewTool(v1.Tool_builder{Name: proto.String("blocked_tool")}.Build(), db, callDef, []*configv1.CallPolicy{policy}, "blocked_tool_call")
+		blockedTool := NewTool(&v1.Tool{Name: proto.String("blocked_tool")}, db, callDef, []*configv1.CallPolicy{policy}, "blocked_tool_call")
 
 		inputs := map[string]interface{}{
 			"age": 20,

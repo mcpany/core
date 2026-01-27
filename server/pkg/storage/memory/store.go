@@ -99,54 +99,50 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-// Load retrieves the full server configuration.
-//
-// _ is an unused parameter.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	// 1. Collect Upstream Services
-	upstreamServices := make([]*configv1.UpstreamServiceConfig, 0, len(s.services))
+	cfg := &configv1.McpAnyServerConfig{}
+	// Pre-allocate slice if we knew the size, but here we iterate map.
+	// We can count map keys.
+	cfg.UpstreamServices = make([]*configv1.UpstreamServiceConfig, 0, len(s.services))
+
 	for _, svc := range s.services {
-		upstreamServices = append(upstreamServices, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
+		cfg.UpstreamServices = append(cfg.UpstreamServices, proto.Clone(svc).(*configv1.UpstreamServiceConfig))
 	}
 
-	// 2. Prepare Global Settings
-	var gs *configv1.GlobalSettings
-	if s.globalSettings != nil {
-		gs = proto.Clone(s.globalSettings).(*configv1.GlobalSettings)
-	} else {
-		// Start empty if nil, but if we have profiles we need a base object.
-		// Builder{}.Build() returns a valid opaque object (pointer).
-		gs = configv1.GlobalSettings_builder{}.Build()
-	}
-
-	// 3. Merge Profiles into Global Settings
 	if len(s.profileDefinitions) > 0 {
-		profiles := make([]*configv1.ProfileDefinition, 0, len(s.profileDefinitions))
-		for _, p := range s.profileDefinitions {
-			profiles = append(profiles, proto.Clone(p).(*configv1.ProfileDefinition))
-		}
-
-		// Create a temporary GlobalSettings object containing just the profiles
-		profilesGS := configv1.GlobalSettings_builder{
-			ProfileDefinitions: profiles,
-		}.Build()
-
-		// Merge it into the main GlobalSettings object
-		// proto.Merge appends repeated fields, which matches the original logic
-		proto.Merge(gs, profilesGS)
+		cfg.GlobalSettings = &configv1.GlobalSettings{} // Ensure GlobalSettings structure exists if we have profiles?
+		// But s.globalSettings might override it.
+		// Wait, profiles are inside GlobalSettings.
+		// So if s.globalSettings is nil, we should create it if we have profiles?
+		// Or just assume s.globalSettings tracks everything?
+		// In memory store, we separated `profileDefinitions` map.
+		// So we should merge them into `cfg`.
 	}
 
-	// 4. Build final ServerConfig
-	cfg := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: upstreamServices,
-		GlobalSettings:   gs,
-	}.Build()
+	if s.globalSettings != nil {
+		cfg.GlobalSettings = proto.Clone(s.globalSettings).(*configv1.GlobalSettings)
+	} else if len(s.profileDefinitions) > 0 {
+		cfg.GlobalSettings = &configv1.GlobalSettings{}
+	}
+
+	if cfg.GlobalSettings != nil {
+		// Populate profiles from separate map if not already in GlobalSettings?
+		// Memory store usually keeps source of truth in maps.
+		// But SaveGlobalSettings saves the whole blob.
+		// If we use separate map for profiles, we should inject them.
+		// But SaveGlobalSettings might overwrite profiles if it contains them?
+		// The design of MemoryStore:
+		// Logic: `SaveProfile` updates `profileDefinitions`. `SaveGlobalSettings` updates `globalSettings`.
+		// If `GlobalSettings` contains `ProfileDefinitions`, they are duplicated?
+		// Ideally `Load` should combine them.
+		// Let's append `profileDefinitions` map to `cfg.GlobalSettings.ProfileDefinitions`.
+		for _, p := range s.profileDefinitions {
+			cfg.GlobalSettings.ProfileDefinitions = append(cfg.GlobalSettings.ProfileDefinitions, proto.Clone(p).(*configv1.ProfileDefinition))
+		}
+	}
 
 	return cfg, nil
 }

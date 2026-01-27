@@ -27,27 +27,26 @@ func TestValidate_InvalidJsonSchema(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-
 	name := "test-service"
 	address := "http://example.com"
 
-	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName(name)
-
-		httpSvc := &configv1.HttpUpstreamService{}
-		httpSvc.SetAddress(address)
-		httpSvc.SetCalls(map[string]*configv1.HttpCallDefinition{
-			"test-call": {
-				InputSchema: invalidSchema,
+	config := &configv1.McpAnyServerConfig{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			{
+				Name: &name,
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: &address,
+						Calls: map[string]*configv1.HttpCallDefinition{
+							"test-call": {
+								InputSchema: invalidSchema,
+							},
+						},
+					},
+				},
 			},
-		})
-		svc.SetHttpService(httpSvc)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
-	}()
+		},
+	}
 
 	// Validate should return errors because the schema is invalid
 	errs := Validate(context.Background(), config, Server)

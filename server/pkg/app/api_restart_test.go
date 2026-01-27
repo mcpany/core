@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // SpyServiceRegistry captures calls
@@ -46,10 +47,8 @@ func TestHandleServiceRestart_Success(t *testing.T) {
 	registry := &SpyServiceRegistry{}
 	app.ServiceRegistry = registry
 
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("test-service")
 	store := &MockStoreWithGet{
-		service: svc,
+		service: &configv1.UpstreamServiceConfig{Name: proto.String("test-service")},
 	}
 
 	req := httptest.NewRequest(http.MethodPost, "/services/test-service/restart", nil)

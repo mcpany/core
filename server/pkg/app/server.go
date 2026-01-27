@@ -372,7 +372,7 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}
 	if cfg == nil {
-		cfg = config_v1.McpAnyServerConfig_builder{}.Build()
+		cfg = &config_v1.McpAnyServerConfig{}
 	}
 	a.lastReloadTime = time.Now()
 
@@ -636,8 +636,7 @@ func (a *Application) Run(opts RunOptions) error {
 		discovered := a.DiscoveryManager.Run(opts.Ctx)
 		for _, svc := range discovered {
 			log.Info("Auto-discovered local service", "name", svc.GetName())
-			// Use the getter for UpstreamServices
-			cfg.SetUpstreamServices(append(cfg.GetUpstreamServices(), svc))
+			cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
 		}
 	}
 	a.standardMiddlewares = standardMiddlewares
@@ -648,52 +647,32 @@ func (a *Application) Run(opts RunOptions) error {
 			}
 		}()
 	}
+
 	// Get configured middlewares
 	middlewares := config.GlobalSettings().Middlewares()
 	if len(middlewares) == 0 {
 		// Default chain if none configured
 		middlewares = []*config_v1.Middleware{
-			config_v1.Middleware_builder{
-				Name:     proto.String("debug"),
-				Priority: proto.Int32(10),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String(authMiddlewareName),
-				Priority: proto.Int32(20),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("logging"),
-				Priority: proto.Int32(30),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("audit"),
-				Priority: proto.Int32(40),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("dlp"),
-				Priority: proto.Int32(42),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("global_ratelimit"),
-				Priority: proto.Int32(45),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("call_policy"),
-				Priority: proto.Int32(50),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("caching"),
-				Priority: proto.Int32(60),
-			}.Build(),
-			config_v1.Middleware_builder{
-				Name:     proto.String("ratelimit"),
-				Priority: proto.Int32(70),
-			}.Build(),
-			// CORS
-			config_v1.Middleware_builder{
-				Name:     proto.String("cors"),
-				Priority: proto.Int32(0),
-			}.Build(),
+			{Name: proto.String("debug"), Priority: proto.Int32(10)},
+			{Name: proto.String(authMiddlewareName), Priority: proto.Int32(20)},
+			{Name: proto.String("logging"), Priority: proto.Int32(30)},
+			{Name: proto.String("audit"), Priority: proto.Int32(40)},
+			{Name: proto.String("dlp"), Priority: proto.Int32(42)},
+			{Name: proto.String("global_ratelimit"), Priority: proto.Int32(45)},
+			{Name: proto.String("call_policy"), Priority: proto.Int32(50)},
+			{Name: proto.String("caching"), Priority: proto.Int32(60)},
+			{Name: proto.String("ratelimit"), Priority: proto.Int32(70)},
+			// CORS is typically 0 or negative to be outermost, but AddReceivingMiddleware adds in order.
+			// The SDK executes them in reverse order of addition?
+			// Wait, mcp.Server implementation:
+			// "Middleware is called in the order it was added." -> First added = First called?
+			// Usually middleware "wraps" the handler. first(second(handler)).
+			// If I add A then B.
+			// Chain = A(B(handler)).
+			// Helper `AddReceivingMiddleware` usually appends.
+			// Let's assume standard "wrap" logic.
+			// We want CORS outer.
+			{Name: proto.String("cors"), Priority: proto.Int32(0)},
 		}
 	}
 
@@ -726,10 +705,10 @@ func (a *Application) Run(opts RunOptions) error {
 		}
 		if !hasAuth {
 			logging.GetLogger().Warn("Auth middleware not found in config, injecting it")
-			middlewares = append(middlewares, config_v1.Middleware_builder{
+			middlewares = append(middlewares, &config_v1.Middleware{
 				Name:     proto.String(authMiddlewareName),
 				Priority: proto.Int32(20), // Default priority
-			}.Build())
+			})
 		}
 	}
 
@@ -954,7 +933,7 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 		} else {
 			for _, svc := range discovered {
 				log.Info("Auto-discovered local service during reload", "name", svc.GetName())
-				cfg.SetUpstreamServices(append(cfg.GetUpstreamServices(), svc))
+				cfg.UpstreamServices = append(cfg.UpstreamServices, svc)
 			}
 		}
 	}
@@ -993,10 +972,10 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 			// Compare configs
 			newSvcCopy := proto.Clone(newSvc).(*config_v1.UpstreamServiceConfig)
 			if newSvcCopy.GetId() == "" {
-				newSvcCopy.SetId(oldConfig.GetId())
+				newSvcCopy.Id = oldConfig.Id
 			}
 			if newSvcCopy.GetSanitizedName() == "" {
-				newSvcCopy.SetSanitizedName(oldConfig.GetSanitizedName())
+				newSvcCopy.SanitizedName = oldConfig.SanitizedName
 			}
 
 			if !proto.Equal(oldConfig, newSvcCopy) {
@@ -1621,10 +1600,10 @@ func (a *Application) runServerMode(
 
 		// RBAC Check: Check if profile requires specific roles
 		// Dynamic Profile Lookup
-		if def, ok := a.ProfileManager.GetProfileDefinition(profileID); ok && len(def.GetRequiredRoles()) > 0 {
+		if def, ok := a.ProfileManager.GetProfileDefinition(profileID); ok && len(def.RequiredRoles) > 0 {
 			hasRole := false
 			// Check if user has any of the required roles
-			for _, requiredRole := range def.GetRequiredRoles() {
+			for _, requiredRole := range def.RequiredRoles {
 				for _, userRole := range user.GetRoles() {
 					if userRole == requiredRole {
 						hasRole = true
@@ -1637,7 +1616,7 @@ func (a *Application) runServerMode(
 			}
 			if !hasRole {
 				// Don't leak required roles to the client
-				logging.GetLogger().Warn("Forbidden access to profile", "profile", profileID, "required_roles", def.GetRequiredRoles(), "user_roles", user.GetRoles())
+				logging.GetLogger().Warn("Forbidden access to profile", "profile", profileID, "user", uid, "required_roles", def.RequiredRoles, "user_roles", user.GetRoles())
 				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
 			}

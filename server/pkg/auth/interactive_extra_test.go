@@ -36,17 +36,19 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 
 	// Test case 1: Successful OAuth callback with Credential
 	t.Run("SuccessWithCredential", func(t *testing.T) {
-		cred := configv1.Credential_builder{
-			Id: proto.String("test-cred"),
-			Authentication: configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientId:     configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-					ClientSecret: configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-					TokenUrl:     proto.String(server.URL + "/token"),
-					Scopes:       proto.String("read"),
-				}.Build(),
-			}.Build(),
-		}.Build()
+		cred := &configv1.Credential{
+			Id:   proto.String("test-cred"),
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: &configv1.OAuth2Auth{
+						ClientId: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+						ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+						TokenUrl: proto.String(server.URL + "/token"),
+						Scopes: proto.String("read"),
+					},
+				},
+			},
+		}
 		require.NoError(t, store.SaveCredential(ctx, cred))
 
 		err := manager.HandleOAuthCallback(ctx, "user1", "", "test-cred", "auth-code", "http://127.0.0.1/cb")
@@ -54,23 +56,25 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 
 		updatedCred, err := store.GetCredential(ctx, "test-cred")
 		require.NoError(t, err)
-		assert.NotNil(t, updatedCred.GetToken())
-		assert.Equal(t, "mock_access_token", updatedCred.GetToken().GetAccessToken())
-		assert.Equal(t, "read", updatedCred.GetToken().GetScope())
+		assert.NotNil(t, updatedCred.Token)
+		assert.Equal(t, "mock_access_token", updatedCred.Token.GetAccessToken())
+		assert.Equal(t, "read", updatedCred.Token.GetScope())
 	})
 
 	// Test case 2: Successful OAuth callback with Service (UserToken storage)
 	t.Run("SuccessWithService", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("test-service"),
-			UpstreamAuth: configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientId:     configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-					ClientSecret: configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-					TokenUrl:     proto.String(server.URL + "/token"),
-				}.Build(),
-			}.Build(),
-		}.Build()
+			UpstreamAuth: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: &configv1.OAuth2Auth{
+						ClientId: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+						ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+						TokenUrl: proto.String(server.URL + "/token"),
+					},
+				},
+			},
+		}
 		require.NoError(t, store.SaveService(ctx, svc))
 
 		err := manager.HandleOAuthCallback(ctx, "user1", "test-service", "", "auth-code", "http://127.0.0.1/cb")
@@ -90,14 +94,14 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 
 	// Test case 5: Credential not configured for OAuth2
 	t.Run("CredentialNoOAuth", func(t *testing.T) {
-		cred := configv1.Credential_builder{
+		cred := &configv1.Credential{
 			Id: proto.String("api-key-cred"),
-			Authentication: configv1.Authentication_builder{
-				ApiKey: configv1.APIKeyAuth_builder{
-					Value: configv1.SecretValue_builder{PlainText: proto.String("key")}.Build(),
-				}.Build(),
-			}.Build(),
-		}.Build()
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: &configv1.APIKeyAuth{Value: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "key"}}},
+				},
+			},
+		}
 		require.NoError(t, store.SaveCredential(ctx, cred))
 		err := manager.HandleOAuthCallback(ctx, "u", "", "api-key-cred", "code", "url")
 		assert.ErrorContains(t, err, "not configured for OAuth2")
@@ -111,9 +115,9 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 
 	// Test case 7: Service has no upstream auth
 	t.Run("ServiceNoAuth", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("no-auth-svc"),
-		}.Build()
+		}
 		require.NoError(t, store.SaveService(ctx, svc))
 		err := manager.HandleOAuthCallback(ctx, "u", "no-auth-svc", "", "code", "url")
 		assert.ErrorContains(t, err, "no upstream auth configuration")
@@ -121,12 +125,12 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 
 	// Test case 8: Service not OAuth2
 	t.Run("ServiceNotOAuth", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			Name: proto.String("apikey-svc"),
-			UpstreamAuth: configv1.Authentication_builder{
-				ApiKey: configv1.APIKeyAuth_builder{}.Build(),
-			}.Build(),
-		}.Build()
+			UpstreamAuth: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{},
+			},
+		}
 		require.NoError(t, store.SaveService(ctx, svc))
 		err := manager.HandleOAuthCallback(ctx, "u", "apikey-svc", "", "code", "url")
 		assert.ErrorContains(t, err, "not configured for OAuth2")
@@ -140,16 +144,18 @@ func TestHandleOAuthCallbackExtra(t *testing.T) {
 
 	// Test case 10: Exchange failure
 	t.Run("ExchangeFailure", func(t *testing.T) {
-		cred := configv1.Credential_builder{
-			Id: proto.String("fail-cred"),
-			Authentication: configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientId:     configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-					ClientSecret: configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-					TokenUrl:     proto.String(server.URL + "/404"), // Invalid endpoint
-				}.Build(),
-			}.Build(),
-		}.Build()
+		cred := &configv1.Credential{
+			Id:   proto.String("fail-cred"),
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: &configv1.OAuth2Auth{
+						ClientId: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+						ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+						TokenUrl: proto.String(server.URL + "/404"), // Invalid endpoint
+					},
+				},
+			},
+		}
 		require.NoError(t, store.SaveCredential(ctx, cred))
 		err := manager.HandleOAuthCallback(ctx, "u", "", "fail-cred", "code", "url")
 		assert.ErrorContains(t, err, "failed to exchange code")
@@ -163,30 +169,34 @@ func TestInitiateOAuthExtra(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("NoAuthUrl", func(t *testing.T) {
-		cred := configv1.Credential_builder{
-			Id: proto.String("bad-cred"),
-			Authentication: configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					ClientId: configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-					// Missing Auth URL
-					TokenUrl: proto.String("http://token.com"),
-				}.Build(),
-			}.Build(),
-		}.Build()
+		cred := &configv1.Credential{
+			Id:   proto.String("bad-cred"),
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: &configv1.OAuth2Auth{
+						ClientId: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+						// Missing Auth URL
+						TokenUrl: proto.String("http://token.com"),
+					},
+				},
+			},
+		}
 		require.NoError(t, store.SaveCredential(ctx, cred))
 		_, _, err := manager.InitiateOAuth(ctx, "u", "", "bad-cred", "cb")
 		assert.ErrorContains(t, err, "authorization_url is required")
 	})
 
 	t.Run("OIDCNotImplemented", func(t *testing.T) {
-		cred := configv1.Credential_builder{
-			Id: proto.String("oidc-cred"),
-			Authentication: configv1.Authentication_builder{
-				Oauth2: configv1.OAuth2Auth_builder{
-					IssuerUrl: proto.String("http://issuer.com"),
-				}.Build(),
-			}.Build(),
-		}.Build()
+		cred := &configv1.Credential{
+			Id:   proto.String("oidc-cred"),
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_Oauth2{
+					Oauth2: &configv1.OAuth2Auth{
+						IssuerUrl: proto.String("http://issuer.com"),
+					},
+				},
+			},
+		}
 		require.NoError(t, store.SaveCredential(ctx, cred))
 		_, _, err := manager.InitiateOAuth(ctx, "u", "", "oidc-cred", "cb")
 		assert.ErrorContains(t, err, "OIDC discovery not implemented")
@@ -195,10 +205,10 @@ func TestInitiateOAuthExtra(t *testing.T) {
 
 // Helper for testing expiration
 func tokenWithExpiry(d time.Duration) *configv1.UserToken {
-	return configv1.UserToken_builder{
+	return &configv1.UserToken{
 		AccessToken: proto.String("access"),
 		Expiry:      proto.String(time.Now().Add(d).Format(time.RFC3339)),
-	}.Build()
+	}
 }
 
 func TestOAuth2AuthenticateExtra(t *testing.T) {

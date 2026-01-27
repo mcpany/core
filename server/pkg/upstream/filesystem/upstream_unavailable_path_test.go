@@ -29,17 +29,21 @@ func TestFilesystemUpstream_UnavailablePath_Repro(t *testing.T) {
 	invalidPath := filepath.Join(tempDir, "does_not_exist")
 
 	// Configure the upstream with mixed paths
-	config := configv1.UpstreamServiceConfig_builder{
+	config := &configv1.UpstreamServiceConfig{
 		Name: proto.String("test_fs_mixed"),
-		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{
-				"/valid":   tempDir,
-				"/invalid": invalidPath,
+		ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+			FilesystemService: &configv1.FilesystemUpstreamService{
+				RootPaths: map[string]string{
+					"/valid":   tempDir,
+					"/invalid": invalidPath,
+				},
+				ReadOnly: proto.Bool(false),
+				FilesystemType: &configv1.FilesystemUpstreamService_Os{
+					Os: &configv1.OsFs{},
+				},
 			},
-			ReadOnly: proto.Bool(false),
-			Os:       configv1.OsFs_builder{}.Build(),
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	u := NewUpstream()
 	b, _ := bus.NewProvider(nil)
@@ -50,7 +54,7 @@ func TestFilesystemUpstream_UnavailablePath_Repro(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEmpty(t, id)
 
-	// Verify that the invalid path is preserved in config
+	// Verify that the invalid path is preserved in config (New Behavior)
 	fsService := config.GetFilesystemService()
 	roots := fsService.GetRootPaths()
 
@@ -97,4 +101,8 @@ func TestFilesystemUpstream_UnavailablePath_Repro(t *testing.T) {
 
 	result := checker.Check(context.Background())
 	assert.Equal(t, health.StatusDown, result.Status, "Health check status should be Down")
+
+	// Check details for error message if available
+	// Usually result.Details contains the error info or result.Error if it exists in this version
+	// Let's assume StatusDown is enough for verification.
 }

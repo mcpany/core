@@ -18,19 +18,19 @@ func TestLocalCommandTool_ArgumentInjection_Prevention(t *testing.T) {
 	t.Parallel()
 	// This test verifies that argument injection via placeholders is prevented.
 
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name:        proto.String("test-tool-cat"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("cat"),
 		Local:   proto.Bool(true),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("file")}.Build()}.Build(),
+			{Schema: &configv1.ParameterSchema{Name: proto.String("file")}},
 		},
 		Args: []string{"{{file}}"},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
@@ -84,17 +84,17 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 	t.Parallel()
 	// Test Case 1: Unquoted Placeholder (Vulnerable configuration)
 	t.Run("Unquoted Placeholder", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-sh")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
+		tool := &v1.Tool{Name: proto.String("test-tool-sh")}
+		service := &configv1.CommandLineUpstreamService{
 			Command: proto.String("sh"),
 			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
+		}
+		callDef := &configv1.CommandLineCallDefinition{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
+				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
 			},
 			Args: []string{"-c", "echo {{msg}}"},
-		}.Build()
+		}
 		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Injection attempt
@@ -127,17 +127,17 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 
 	// Test Case 2: Single Quoted Placeholder (Safer configuration)
 	t.Run("Single Quoted Placeholder", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-sh-quoted")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
+		tool := &v1.Tool{Name: proto.String("test-tool-sh-quoted")}
+		service := &configv1.CommandLineUpstreamService{
 			Command: proto.String("sh"),
 			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
+		}
+		callDef := &configv1.CommandLineCallDefinition{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
+				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
 			},
 			Args: []string{"-c", "echo '{{msg}}'"},
-		}.Build()
+		}
 		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Safe input with special chars
@@ -170,17 +170,17 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 
 	// Test Case 3: Double Quoted Placeholder
 	t.Run("Double Quoted Placeholder", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-sh-dquoted")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
+		tool := &v1.Tool{Name: proto.String("test-tool-sh-dquoted")}
+		service := &configv1.CommandLineUpstreamService{
 			Command: proto.String("sh"),
 			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
+		}
+		callDef := &configv1.CommandLineCallDefinition{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
+				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
 			},
 			Args: []string{"-c", "echo \"{{msg}}\""},
-		}.Build()
+		}
 		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Safe input
@@ -241,17 +241,17 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 
 	// Test Case 4: Non-Shell Command
 	t.Run("Non-Shell Command", func(t *testing.T) {
-		tool := v1.Tool_builder{Name: proto.String("test-tool-echo")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
+		tool := &v1.Tool{Name: proto.String("test-tool-echo")}
+		service := &configv1.CommandLineUpstreamService{
 			Command: proto.String("echo"), // Not a shell
 			Local:   proto.Bool(true),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
+		}
+		callDef := &configv1.CommandLineCallDefinition{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("msg")}.Build()}.Build(),
+				{Schema: &configv1.ParameterSchema{Name: proto.String("msg")}},
 			},
 			Args: []string{"{{msg}}"},
-		}.Build()
+		}
 		localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 		// Input with shell chars - should be allowed for non-shell command
@@ -271,24 +271,24 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 	// This test demonstrates that python is not currently treated as a shell command,
 	// allowing code injection via argument substitution.
 
-	toolDef := v1.Tool_builder{
+	toolDef := &v1.Tool{
 		Name: proto.String("python_tool"),
-	}.Build()
+	}
 
-	service := configv1.CommandLineUpstreamService_builder{
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("python3"),
-	}.Build()
+	}
 
-	callDef := configv1.CommandLineCallDefinition_builder{
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "print('{{msg}}')"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
+			{
+				Schema: &configv1.ParameterSchema{
 					Name: proto.String("msg"),
-				}.Build(),
-			}.Build(),
+				},
+			},
 		},
-	}.Build()
+	}
 
 	ct := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call-id")
 
@@ -317,19 +317,19 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 
 func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name: proto.String("test-tool-shell-control"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sh"), // This triggers shell injection checks
 		Local:   proto.Bool(true),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "echo {{arg}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build()}.Build(),
+			{Schema: &configv1.ParameterSchema{Name: proto.String("arg")}},
 		},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 

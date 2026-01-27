@@ -22,17 +22,17 @@ func TestLocalCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	os.Setenv(secretKey, secretValue)
 	defer os.Unsetenv(secretKey)
 
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name: proto.String("test-env-leak"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
-	}.Build()
+	}
 	// Try to echo the secret environment variable
-	callDef := configv1.CommandLineCallDefinition_builder{
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "echo $" + secretKey},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
@@ -62,17 +62,17 @@ func TestCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	os.Setenv(secretKey, secretValue)
 	defer os.Unsetenv(secretKey)
 
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name: proto.String("test-env-leak-2"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
-	}.Build()
+	}
 	// Try to echo the secret environment variable
-	callDef := configv1.CommandLineCallDefinition_builder{
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "echo $" + secretKey},
-	}.Build()
+	}
 
 	// Create CommandTool instead of LocalCommandTool
 	cmdTool := NewCommandTool(tool, service, callDef, nil, "call-id-2")

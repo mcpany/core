@@ -17,9 +17,9 @@ import (
 )
 
 func TestDLPMiddleware_GetPrompt(t *testing.T) {
-	config := configv1.DLPConfig_builder{
+	config := &configv1.DLPConfig{
 		Enabled: proto.Bool(true),
-	}.Build()
+	}
 	logger := logging.GetLogger()
 	mw := middleware.DLPMiddleware(config, logger)
 
@@ -71,9 +71,9 @@ func TestDLPMiddleware_GetPrompt(t *testing.T) {
 }
 
 func TestDLPMiddleware_ReadResource(t *testing.T) {
-	config := configv1.DLPConfig_builder{
+	config := &configv1.DLPConfig{
 		Enabled: proto.Bool(true),
-	}.Build()
+	}
 	logger := logging.GetLogger()
 	mw := middleware.DLPMiddleware(config, logger)
 

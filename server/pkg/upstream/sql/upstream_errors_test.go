@@ -10,13 +10,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -29,40 +28,44 @@ func TestSQLUpstream_Register_Errors(t *testing.T) {
 	defer u.Shutdown(context.Background())
 
 	// Case 1: Nil SQL config
-	config := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("test-service"),
+	config := &configv1.UpstreamServiceConfig{
+		Id: ptrTest("test-service"),
 		// Missing SqlService
-	}.Build()
+	}
 	_, _, _, err := u.Register(context.Background(), config, mockToolManager, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "sql service config is nil")
 
 	// Case 2: Invalid Driver
-	config = configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("test-service"),
-		SqlService: configv1.SqlUpstreamService_builder{
-			Driver: proto.String("unknown-driver"),
-			Dsn:    proto.String("dsn"),
-		}.Build(),
-	}.Build()
+	config = &configv1.UpstreamServiceConfig{
+		Id: ptrTest("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+			SqlService: &configv1.SqlUpstreamService{
+				Driver: ptrTest("unknown-driver"),
+				Dsn:    ptrTest("dsn"),
+			},
+		},
+	}
 	_, _, _, err = u.Register(context.Background(), config, mockToolManager, nil, nil, false)
 	assert.Error(t, err)
 	// sql.Open itself might succeed, but Ping should fail or Open might fail for unknown driver
 	assert.Contains(t, err.Error(), "failed to open database")
 
 	// Case 3: Invalid Tool Name (Empty)
-	config = configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("test-service"),
-		SqlService: configv1.SqlUpstreamService_builder{
-			Driver: proto.String("sqlite"),
-			Dsn:    proto.String("file::memory:?cache=shared"),
-			Calls: map[string]*configv1.SqlCallDefinition{
-				"": configv1.SqlCallDefinition_builder{ // Empty name triggers validation error
-					Query: proto.String("SELECT 1"),
-				}.Build(),
+	config = &configv1.UpstreamServiceConfig{
+		Id: ptrTest("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+			SqlService: &configv1.SqlUpstreamService{
+				Driver: ptrTest("sqlite"),
+				Dsn:    ptrTest("file::memory:?cache=shared"),
+				Calls: map[string]*configv1.SqlCallDefinition{
+					"": { // Empty name triggers validation error
+						Query: ptrTest("SELECT 1"),
+					},
+				},
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 	// Note: Register iterates map, so order is random if multiple. Here only one.
 	_, _, _, err = u.Register(context.Background(), config, mockToolManager, nil, nil, false)
 	assert.Error(t, err)
@@ -72,18 +75,20 @@ func TestSQLUpstream_Register_Errors(t *testing.T) {
 	// We need a valid config that passes until AddTool
 	mockToolManager.EXPECT().AddTool(gomock.Any()).Return(assert.AnError)
 
-	config = configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("test-service"),
-		SqlService: configv1.SqlUpstreamService_builder{
-			Driver: proto.String("sqlite"),
-			Dsn:    proto.String("file::memory:?cache=shared"),
-			Calls: map[string]*configv1.SqlCallDefinition{
-				"tool1": configv1.SqlCallDefinition_builder{
-					Query: proto.String("SELECT 1"),
-				}.Build(),
+	config = &configv1.UpstreamServiceConfig{
+		Id: ptrTest("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+			SqlService: &configv1.SqlUpstreamService{
+				Driver: ptrTest("sqlite"),
+				Dsn:    ptrTest("file::memory:?cache=shared"),
+				Calls: map[string]*configv1.SqlCallDefinition{
+					"tool1": {
+						Query: ptrTest("SELECT 1"),
+					},
+				},
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 	_, _, _, err = u.Register(context.Background(), config, mockToolManager, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to add tool")
@@ -97,13 +102,15 @@ func TestSQLUpstream_Register_Twice(t *testing.T) {
 	u := NewUpstream()
 	defer u.Shutdown(context.Background())
 
-	config := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("test-service"),
-		SqlService: configv1.SqlUpstreamService_builder{
-			Driver: proto.String("sqlite"),
-			Dsn:    proto.String("file::memory:?cache=shared"),
-		}.Build(),
-	}.Build()
+	config := &configv1.UpstreamServiceConfig{
+		Id: ptrTest("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+			SqlService: &configv1.SqlUpstreamService{
+				Driver: ptrTest("sqlite"),
+				Dsn:    ptrTest("file::memory:?cache=shared"),
+			},
+		},
+	}
 
 	// First Register
 	_, _, _, err := u.Register(context.Background(), config, mockToolManager, nil, nil, false)
@@ -123,14 +130,16 @@ func TestSQLUpstream_Register_PingFailure(t *testing.T) {
 	defer u.Shutdown(context.Background())
 
 	// Use postgres driver with invalid DSN to force Ping failure
-	config := configv1.UpstreamServiceConfig_builder{
-		Id: proto.String("test-service"),
-		SqlService: configv1.SqlUpstreamService_builder{
-			Driver: proto.String("postgres"),
-			// Use short timeout
-			Dsn: proto.String("postgres://invalid_host:5432/db?sslmode=disable&connect_timeout=1"),
-		}.Build(),
-	}.Build()
+	config := &configv1.UpstreamServiceConfig{
+		Id: ptrTest("test-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
+			SqlService: &configv1.SqlUpstreamService{
+				Driver: ptrTest("postgres"),
+				// Use short timeout
+				Dsn: ptrTest("postgres://invalid_host:5432/db?sslmode=disable&connect_timeout=1"),
+			},
+		},
+	}
 	_, _, _, err := u.Register(context.Background(), config, mockToolManager, nil, nil, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to ping database")
@@ -142,11 +151,11 @@ func TestSQLUpstream_Execute_Errors(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	callDef := configv1.SqlCallDefinition_builder{
-		Query: proto.String("SELECT * FROM non_existent_table"),
-	}.Build()
+	callDef := &configv1.SqlCallDefinition{
+		Query: ptrTest("SELECT * FROM non_existent_table"),
+	}
 
-	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("test")}.Build(), db, callDef, nil, "test_call")
+	toolInstance := NewTool(&v1.Tool{Name: ptrTest("test")}, db, callDef, nil, "test_call")
 
 	// Case 1: Invalid Input JSON
 	req := &tool.ExecutionRequest{
@@ -180,11 +189,11 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 
 	// Case 1: Missing parameter passed as NULL
 	// Query: SELECT ? IS NULL as is_null
-	callDef := configv1.SqlCallDefinition_builder{
-		Query:          proto.String("SELECT ? IS NULL as is_null"),
+	callDef := &configv1.SqlCallDefinition{
+		Query:          ptrTest("SELECT ? IS NULL as is_null"),
 		ParameterOrder: []string{"missing_param"},
-	}.Build()
-	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("test_null")}.Build(), db, callDef, nil, "test_null_call")
+	}
+	toolInstance := NewTool(&v1.Tool{Name: ptrTest("test_null")}, db, callDef, nil, "test_null_call")
 
 	req := &tool.ExecutionRequest{
 		ToolName:   "test_null",
@@ -198,10 +207,10 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 	assert.EqualValues(t, 1, resSlice[0]["is_null"])
 
 	// Case 2: BLOB handling
-	callDefBlob := configv1.SqlCallDefinition_builder{
-		Query: proto.String("SELECT data FROM edge_cases WHERE id = 1"),
-	}.Build()
-	toolInstanceBlob := NewTool(v1.Tool_builder{Name: proto.String("test_blob")}.Build(), db, callDefBlob, nil, "test_blob_call")
+	callDefBlob := &configv1.SqlCallDefinition{
+		Query: ptrTest("SELECT data FROM edge_cases WHERE id = 1"),
+	}
+	toolInstanceBlob := NewTool(&v1.Tool{Name: ptrTest("test_blob")}, db, callDefBlob, nil, "test_blob_call")
 	reqBlob := &tool.ExecutionRequest{
 		ToolName:   "test_blob",
 		ToolInputs: json.RawMessage(`{}`),
@@ -219,15 +228,15 @@ func TestSQLTool_Methods(t *testing.T) {
 	require.NoError(t, err)
 	defer db.Close()
 
-	callDef := configv1.SqlCallDefinition_builder{Query: proto.String("SELECT 1")}.Build()
+	callDef := &configv1.SqlCallDefinition{Query: ptrTest("SELECT 1")}
 	// Provide ServiceId to ensure correct naming in MCPTool
-	toolInstance := NewTool(v1.Tool_builder{
-		Name:      proto.String("test_tool"),
-		ServiceId: proto.String("service"),
-	}.Build(), db, callDef, nil, "test_tool_call")
+	toolInstance := NewTool(&v1.Tool{
+		Name:      ptrTest("test_tool"),
+		ServiceId: ptrTest("service"),
+	}, db, callDef, nil, "test_tool_call")
 
 	assert.NotNil(t, toolInstance.Tool())
-	assert.Equal(t, "test_tool", toolInstance.Tool().GetName())
+	assert.Equal(t, "test_tool", *toolInstance.Tool().Name)
 
 	assert.NotNil(t, toolInstance.MCPTool())
 	assert.Equal(t, "service.test_tool", toolInstance.MCPTool().Name)
@@ -238,14 +247,14 @@ func TestSQLTool_Methods(t *testing.T) {
 
 func TestSQLTool_GetCacheConfig(t *testing.T) {
 	t.Run("Returns Config", func(t *testing.T) {
-		callDef := configv1.SqlCallDefinition_builder{
-			Cache: configv1.CacheConfig_builder{
+		callDef := &configv1.SqlCallDefinition{
+			Cache: &configv1.CacheConfig{
 				Ttl: durationpb.New(time.Second * 60),
-			}.Build(),
-		}.Build()
+			},
+		}
 		toolInstance := NewTool(nil, nil, callDef, nil, "")
 		assert.NotNil(t, toolInstance.GetCacheConfig())
-		assert.Equal(t, int64(60), toolInstance.GetCacheConfig().GetTtl().GetSeconds())
+		assert.Equal(t, int64(60), toolInstance.GetCacheConfig().GetTtl().Seconds)
 	})
 
 	t.Run("Returns Nil when CallDef is Nil", func(t *testing.T) {

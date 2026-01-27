@@ -5,6 +5,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // StripSecretsFromService removes sensitive information from the service configuration.
@@ -13,47 +14,50 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
 	}
-	if svc.GetUpstreamAuth() != nil {
-		StripSecretsFromAuth(svc.GetUpstreamAuth())
+	if svc.UpstreamAuth != nil {
+		StripSecretsFromAuth(svc.UpstreamAuth)
 	}
-	if svc.GetAuthentication() != nil {
-		StripSecretsFromAuth(svc.GetAuthentication())
+	if svc.Authentication != nil {
+		StripSecretsFromAuth(svc.Authentication)
 	}
 
 	// Service specific config
-	// Service specific config
-	if s := svc.GetCommandLineService(); s != nil {
-		stripSecretsFromCommandLineService(s)
-	} else if s := svc.GetHttpService(); s != nil {
-		stripSecretsFromHTTPService(s)
-	} else if s := svc.GetMcpService(); s != nil {
-		stripSecretsFromMcpService(s)
-	} else if s := svc.GetFilesystemService(); s != nil {
-		stripSecretsFromFilesystemService(s)
-	} else if s := svc.GetVectorService(); s != nil {
-		stripSecretsFromVectorService(s)
-	} else if s := svc.GetWebsocketService(); s != nil {
-		stripSecretsFromWebsocketService(s)
-	} else if s := svc.GetWebrtcService(); s != nil {
-		stripSecretsFromWebrtcService(s)
-	} else if s := svc.GetGrpcService(); s != nil {
-		stripSecretsFromGrpcService(s)
-	} else if s := svc.GetOpenapiService(); s != nil {
-		stripSecretsFromOpenapiService(s)
+	switch s := svc.ServiceConfig.(type) {
+	case *configv1.UpstreamServiceConfig_CommandLineService:
+		stripSecretsFromCommandLineService(s.CommandLineService)
+	case *configv1.UpstreamServiceConfig_HttpService:
+		stripSecretsFromHTTPService(s.HttpService)
+	case *configv1.UpstreamServiceConfig_McpService:
+		stripSecretsFromMcpService(s.McpService)
+	case *configv1.UpstreamServiceConfig_FilesystemService:
+		stripSecretsFromFilesystemService(s.FilesystemService)
+	case *configv1.UpstreamServiceConfig_VectorService:
+		stripSecretsFromVectorService(s.VectorService)
+	case *configv1.UpstreamServiceConfig_WebsocketService:
+		stripSecretsFromWebsocketService(s.WebsocketService)
+	case *configv1.UpstreamServiceConfig_WebrtcService:
+		stripSecretsFromWebrtcService(s.WebrtcService)
+	case *configv1.UpstreamServiceConfig_GrpcService:
+		stripSecretsFromGrpcService(s.GrpcService)
+	case *configv1.UpstreamServiceConfig_OpenapiService:
+		stripSecretsFromOpenapiService(s.OpenapiService)
+	case *configv1.UpstreamServiceConfig_GraphqlService:
+		// No explicit secrets in GraphQL service definition yet, but checking calls might be good if added later.
+	case *configv1.UpstreamServiceConfig_SqlService:
+		// No explicit secrets in SQL service definition yet.
 	}
-	// GraphQL and SQL services have no secrets to strip currently
 
 	// Hooks
-	for _, hook := range svc.GetPreCallHooks() {
+	for _, hook := range svc.PreCallHooks {
 		stripSecretsFromHook(hook)
 	}
-	for _, hook := range svc.GetPostCallHooks() {
+	for _, hook := range svc.PostCallHooks {
 		stripSecretsFromHook(hook)
 	}
 
 	// Cache
-	if svc.GetCache() != nil {
-		stripSecretsFromCacheConfig(svc.GetCache())
+	if svc.Cache != nil {
+		stripSecretsFromCacheConfig(svc.Cache)
 	}
 }
 
@@ -64,7 +68,7 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
 	}
-	for _, secret := range profile.GetSecrets() {
+	for _, secret := range profile.Secrets {
 		scrubSecretValue(secret)
 	}
 }
@@ -76,7 +80,7 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
 	}
-	for _, svc := range collection.GetServices() {
+	for _, svc := range collection.Services {
 		StripSecretsFromService(svc)
 	}
 }
@@ -90,28 +94,21 @@ func StripSecretsFromAuth(auth *configv1.Authentication) {
 	}
 
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		scrubSecretValue(apiKey.GetValue())
-		if apiKey.GetVerificationValue() != "" {
-			// verification_value is just a string field in Opaque object (not unexported?).
-			// Wait, verify if we can set fields directly on Opaque object?
-			// NO. Opaque objects have unexported fields.
-			// We cannot set apiKey.VerificationValue = proto.String("")
-			// We MUST use a Setter or Builder.
-			// DOES THE OPAQUE API HAVE SETTERS?
-			// Usually yes, SetXxx.
-			apiKey.SetVerificationValue("")
+		scrubSecretValue(apiKey.Value)
+		if apiKey.VerificationValue != nil {
+			apiKey.VerificationValue = proto.String("")
 		}
 	}
 	if bearer := auth.GetBearerToken(); bearer != nil {
-		scrubSecretValue(bearer.GetToken())
+		scrubSecretValue(bearer.Token)
 	}
 	if basic := auth.GetBasicAuth(); basic != nil {
-		scrubSecretValue(basic.GetPassword())
+		scrubSecretValue(basic.Password)
 		// Username is usually safe
 	}
 	if oauth := auth.GetOauth2(); oauth != nil {
-		scrubSecretValue(oauth.GetClientSecret())
-		scrubSecretValue(oauth.GetClientId())
+		scrubSecretValue(oauth.ClientSecret)
+		scrubSecretValue(oauth.ClientId)
 	}
 	// Add other auth types as needed
 }
@@ -120,8 +117,8 @@ func stripSecretsFromCommandLineService(s *configv1.CommandLineUpstreamService) 
 	if s == nil {
 		return
 	}
-	stripSecretsFromSecretMap(s.GetEnv())
-	for _, call := range s.GetCalls() {
+	stripSecretsFromSecretMap(s.Env)
+	for _, call := range s.Calls {
 		stripSecretsFromCommandLineCall(call)
 	}
 }
@@ -130,7 +127,7 @@ func stripSecretsFromHTTPService(s *configv1.HttpUpstreamService) {
 	if s == nil {
 		return
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		stripSecretsFromHTTPCall(call)
 	}
 }
@@ -139,12 +136,13 @@ func stripSecretsFromMcpService(s *configv1.McpUpstreamService) {
 	if s == nil {
 		return
 	}
-	if conn := s.GetStdioConnection(); conn != nil {
-		stripSecretsFromSecretMap(conn.GetEnv())
-	} else if conn := s.GetBundleConnection(); conn != nil {
-		stripSecretsFromSecretMap(conn.GetEnv())
+	switch conn := s.ConnectionType.(type) {
+	case *configv1.McpUpstreamService_StdioConnection:
+		stripSecretsFromSecretMap(conn.StdioConnection.Env)
+	case *configv1.McpUpstreamService_BundleConnection:
+		stripSecretsFromSecretMap(conn.BundleConnection.Env)
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		stripSecretsFromMcpCall(call)
 	}
 }
@@ -153,18 +151,17 @@ func stripSecretsFromFilesystemService(s *configv1.FilesystemUpstreamService) {
 	if s == nil {
 		return
 	}
-	if fs := s.GetS3(); fs != nil { // GetS3() ? The oneof is filesystem_type.
-		// Need to check names of getters for FilesystemService oneof.
-		// Assuming named based on field names: s3, sftp, etc.
-		if fs.GetSecretAccessKey() != "" {
-			fs.SetSecretAccessKey("")
+	switch fs := s.FilesystemType.(type) {
+	case *configv1.FilesystemUpstreamService_S3:
+		if fs.S3.SecretAccessKey != nil {
+			fs.S3.SecretAccessKey = proto.String("")
 		}
-		if fs.GetSessionToken() != "" {
-			fs.SetSessionToken("")
+		if fs.S3.SessionToken != nil {
+			fs.S3.SessionToken = proto.String("")
 		}
-	} else if fs := s.GetSftp(); fs != nil {
-		if fs.GetPassword() != "" {
-			fs.SetPassword("")
+	case *configv1.FilesystemUpstreamService_Sftp:
+		if fs.Sftp.Password != nil {
+			fs.Sftp.Password = proto.String("")
 		}
 	}
 }
@@ -173,17 +170,17 @@ func stripSecretsFromVectorService(s *configv1.VectorUpstreamService) {
 	if s == nil {
 		return
 	}
-	// Oneof vector_db_type
-	if db := s.GetPinecone(); db != nil {
-		if db.GetApiKey() != "" {
-			db.SetApiKey("")
+	switch db := s.VectorDbType.(type) {
+	case *configv1.VectorUpstreamService_Pinecone:
+		if db.Pinecone.ApiKey != nil {
+			db.Pinecone.ApiKey = proto.String("")
 		}
-	} else if db := s.GetMilvus(); db != nil {
-		if db.GetApiKey() != "" {
-			db.SetApiKey("")
+	case *configv1.VectorUpstreamService_Milvus:
+		if db.Milvus.ApiKey != nil {
+			db.Milvus.ApiKey = proto.String("")
 		}
-		if db.GetPassword() != "" {
-			db.SetPassword("")
+		if db.Milvus.Password != nil {
+			db.Milvus.Password = proto.String("")
 		}
 	}
 }
@@ -192,7 +189,7 @@ func stripSecretsFromWebsocketService(s *configv1.WebsocketUpstreamService) {
 	if s == nil {
 		return
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		stripSecretsFromWebsocketCall(call)
 	}
 }
@@ -201,7 +198,7 @@ func stripSecretsFromWebrtcService(s *configv1.WebrtcUpstreamService) {
 	if s == nil {
 		return
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		stripSecretsFromWebrtcCall(call)
 	}
 }
@@ -222,7 +219,7 @@ func stripSecretsFromHook(h *configv1.CallHook) {
 	}
 	if wh := h.GetWebhook(); wh != nil {
 		// WebhookSecret is a string, clear it.
-		wh.SetWebhookSecret("")
+		wh.WebhookSecret = ""
 	}
 }
 
@@ -231,11 +228,11 @@ func stripSecretsFromCacheConfig(c *configv1.CacheConfig) {
 		return
 	}
 	// Deprecated ApiKey
-	scrubSecretValue(c.GetSemanticConfig().GetApiKey())
+	scrubSecretValue(c.SemanticConfig.ApiKey)
 
 	// Provider specific configs
-	if openai := c.GetSemanticConfig().GetOpenai(); openai != nil {
-		scrubSecretValue(openai.GetApiKey())
+	if openai := c.SemanticConfig.GetOpenai(); openai != nil {
+		scrubSecretValue(openai.ApiKey)
 	}
 	// Add other providers if they have secrets
 }
@@ -244,8 +241,8 @@ func stripSecretsFromCommandLineCall(c *configv1.CommandLineCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.GetParameters() {
-		scrubSecretValue(param.GetSecret())
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
 	}
 }
 
@@ -253,8 +250,8 @@ func stripSecretsFromHTTPCall(c *configv1.HttpCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.GetParameters() {
-		scrubSecretValue(param.GetSecret())
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
 	}
 }
 
@@ -262,8 +259,8 @@ func stripSecretsFromWebsocketCall(c *configv1.WebsocketCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.GetParameters() {
-		scrubSecretValue(param.GetSecret())
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
 	}
 }
 
@@ -271,8 +268,8 @@ func stripSecretsFromWebrtcCall(c *configv1.WebrtcCallDefinition) {
 	if c == nil {
 		return
 	}
-	for _, param := range c.GetParameters() {
-		scrubSecretValue(param.GetSecret())
+	for _, param := range c.Parameters {
+		scrubSecretValue(param.Secret)
 	}
 }
 
@@ -292,9 +289,8 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 		return
 	}
 	// If it is a PLAIN value, we must remove it.
-	// Opaque API: Value is a oneof.
-	if sv.HasPlainText() {
-		sv.ClearValue() // Scrub it.
+	if _, ok := sv.Value.(*configv1.SecretValue_PlainText); ok {
+		sv.Value = nil
 	}
 }
 
@@ -307,29 +303,38 @@ func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[st
 		return
 	}
 
-	if auth := svc.GetUpstreamAuth(); auth != nil {
+	if auth := svc.UpstreamAuth; auth != nil {
 		hydrateSecretsInAuth(auth, secrets)
 	}
 
 	// Hydrate other places if needed (e.g. Env vars in command line service)
-	// Hydrate other places if needed (e.g. Env vars in command line service)
-	if s := svc.GetCommandLineService(); s != nil {
-		hydrateSecretsInEnv(s.GetEnv(), secrets)
-		if ce := s.GetContainerEnvironment(); ce != nil {
-			hydrateSecretsInEnv(ce.GetEnv(), secrets)
+	switch s := svc.ServiceConfig.(type) {
+	case *configv1.UpstreamServiceConfig_CommandLineService:
+		if cmd := s.CommandLineService; cmd != nil {
+			hydrateSecretsInEnv(cmd.Env, secrets)
+			if ce := cmd.ContainerEnvironment; ce != nil {
+				hydrateSecretsInEnv(ce.Env, secrets)
+			}
 		}
-	} else if s := svc.GetMcpService(); s != nil {
-		if conn := s.GetStdioConnection(); conn != nil {
-			hydrateSecretsInEnv(conn.GetEnv(), secrets)
-		} else if conn := s.GetBundleConnection(); conn != nil {
-			hydrateSecretsInEnv(conn.GetEnv(), secrets)
+	case *configv1.UpstreamServiceConfig_McpService:
+		if mcp := s.McpService; mcp != nil {
+			switch conn := mcp.ConnectionType.(type) {
+			case *configv1.McpUpstreamService_StdioConnection:
+				if stdio := conn.StdioConnection; stdio != nil {
+					hydrateSecretsInEnv(stdio.Env, secrets)
+				}
+			case *configv1.McpUpstreamService_BundleConnection:
+				if bundle := conn.BundleConnection; bundle != nil {
+					hydrateSecretsInEnv(bundle.Env, secrets)
+				}
+			}
 		}
-	} else if s := svc.GetHttpService(); s != nil {
-		hydrateSecretsInHTTPService(s, secrets)
-	} else if s := svc.GetWebsocketService(); s != nil {
-		hydrateSecretsInWebsocketService(s, secrets)
-	} else if s := svc.GetWebrtcService(); s != nil {
-		hydrateSecretsInWebrtcService(s, secrets)
+	case *configv1.UpstreamServiceConfig_HttpService:
+		hydrateSecretsInHTTPService(s.HttpService, secrets)
+	case *configv1.UpstreamServiceConfig_WebsocketService:
+		hydrateSecretsInWebsocketService(s.WebsocketService, secrets)
+	case *configv1.UpstreamServiceConfig_WebrtcService:
+		hydrateSecretsInWebrtcService(s.WebrtcService, secrets)
 	}
 }
 
@@ -337,7 +342,7 @@ func hydrateSecretsInHTTPService(s *configv1.HttpUpstreamService, secrets map[st
 	if s == nil {
 		return
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		if call == nil {
 			continue
 		}
@@ -351,7 +356,7 @@ func hydrateSecretsInWebsocketService(s *configv1.WebsocketUpstreamService, secr
 	if s == nil {
 		return
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		if call == nil {
 			continue
 		}
@@ -365,7 +370,7 @@ func hydrateSecretsInWebrtcService(s *configv1.WebrtcUpstreamService, secrets ma
 	if s == nil {
 		return
 	}
-	for _, call := range s.GetCalls() {
+	for _, call := range s.Calls {
 		if call == nil {
 			continue
 		}
@@ -383,17 +388,17 @@ func hydrateSecretsInEnv(env map[string]*configv1.SecretValue, secrets map[strin
 
 func hydrateSecretsInAuth(auth *configv1.Authentication, secrets map[string]*configv1.SecretValue) {
 	if apiKey := auth.GetApiKey(); apiKey != nil {
-		hydrateSecretValue(apiKey.GetValue(), secrets)
+		hydrateSecretValue(apiKey.Value, secrets)
 	}
 	if bearer := auth.GetBearerToken(); bearer != nil {
-		hydrateSecretValue(bearer.GetToken(), secrets)
+		hydrateSecretValue(bearer.Token, secrets)
 	}
 	if basic := auth.GetBasicAuth(); basic != nil {
-		hydrateSecretValue(basic.GetPassword(), secrets)
+		hydrateSecretValue(basic.Password, secrets)
 	}
 	if oauth := auth.GetOauth2(); oauth != nil {
-		hydrateSecretValue(oauth.GetClientId(), secrets)
-		hydrateSecretValue(oauth.GetClientSecret(), secrets)
+		hydrateSecretValue(oauth.ClientId, secrets)
+		hydrateSecretValue(oauth.ClientSecret, secrets)
 	}
 }
 
@@ -402,24 +407,12 @@ func hydrateSecretValue(sv *configv1.SecretValue, secrets map[string]*configv1.S
 		return
 	}
 	// Check if it's an environment variable reference
-	// Opaque: Check GetEnvironmentVariable().
-	if key := sv.GetEnvironmentVariable(); key != "" {
+	if envVar, ok := sv.Value.(*configv1.SecretValue_EnvironmentVariable); ok {
+		key := envVar.EnvironmentVariable
 		if secret, exists := secrets[key]; exists {
 			// Replace with the secret from profile
-			// We need to set the value.
-			// secret.GetValue() is oneof.
-			// Opaque API does not allow direct assignment of oneof field.
-			// We MUST check what type secret has, and set that on sv.
-			// Or if we can clone the whole SecretValue and assume wrapper compatibility?
-			// sv is *SecretValue.
-			// proto.Merge(sv, secret) ?
-			// But we only want to copy the Value oneof.
-
-			// If secret has PlainText, set PlainText.
-			if secret.HasPlainText() {
-				sv.SetPlainText(secret.GetPlainText())
-			}
-			// If other types are supported in SecretValue (usually just PlainText or EnvVar).
+			// We clone it to avoid shared state issues if we mutate later (though we shouldn't)
+			sv.Value = proto.Clone(secret).(*configv1.SecretValue).Value
 		}
 	}
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 type mockHealthCheckerUpstream struct {
@@ -51,8 +52,7 @@ func TestHealthCheck(t *testing.T) {
 	tm := &mockToolManager{}
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("unhealthy-service")
+	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String("unhealthy-service")}
 
 	// Register service
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)

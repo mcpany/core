@@ -22,18 +22,20 @@ func TestInitiateOAuth(t *testing.T) {
 
 	// Seed Service with OAuth
 	svcID := "github-service"
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String(svcID),
-		UpstreamAuth: configv1.Authentication_builder{
-			Oauth2: configv1.OAuth2Auth_builder{
-				ClientId:         configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-				ClientSecret:     configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-				AuthorizationUrl: proto.String("https://github.com/login/oauth/authorize"),
-				TokenUrl:         proto.String("https://github.com/login/oauth/access_token"),
-				Scopes:           proto.String("read:user"),
-			}.Build(),
-		}.Build(),
-	}.Build()
+		UpstreamAuth: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					ClientId:         &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+					ClientSecret:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+					AuthorizationUrl: proto.String("https://github.com/login/oauth/authorize"),
+					TokenUrl:         proto.String("https://github.com/login/oauth/access_token"),
+					Scopes:           proto.String("read:user"),
+				},
+			},
+		},
+	}
 	err := store.SaveService(ctx, svc)
 	require.NoError(t, err)
 
@@ -64,18 +66,20 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 
 	// Seed Credential with OAuth
 	credID := "cred-1"
-	cred := configv1.Credential_builder{
+	cred := &configv1.Credential{
 		Id: proto.String(credID),
-		Authentication: configv1.Authentication_builder{
-			Oauth2: configv1.OAuth2Auth_builder{
-				ClientId:         configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-				ClientSecret:     configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-				AuthorizationUrl: proto.String("https://provider.com/auth"),
-				TokenUrl:         proto.String("https://provider.com/token"),
-				Scopes:           proto.String("scope1"),
-			}.Build(),
-		}.Build(),
-	}.Build()
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					ClientId:         &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+					ClientSecret:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+					AuthorizationUrl: proto.String("https://provider.com/auth"),
+					TokenUrl:         proto.String("https://provider.com/token"),
+					Scopes:           proto.String("scope1"),
+				},
+			},
+		},
+	}
 	err := store.SaveCredential(ctx, cred)
 	require.NoError(t, err)
 
@@ -90,7 +94,7 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 	assert.Error(t, err)
 
 	// Test credential without Auth config
-	credNoAuth := configv1.Credential_builder{Id: proto.String("no-auth")}.Build()
+	credNoAuth := &configv1.Credential{Id: proto.String("no-auth")}
 	err = store.SaveCredential(ctx, credNoAuth)
 	require.NoError(t, err)
 	_, _, err = am.InitiateOAuth(ctx, "user1", "", "no-auth", "http://127.0.0.1/cb")
@@ -117,17 +121,19 @@ func TestHandleOAuthCallback_Validation(t *testing.T) {
 
 	// Seed Service
 	svcID := "github-service"
-	svc := configv1.UpstreamServiceConfig_builder{
+	svc := &configv1.UpstreamServiceConfig{
 		Name: proto.String(svcID),
-		UpstreamAuth: configv1.Authentication_builder{
-			Oauth2: configv1.OAuth2Auth_builder{
-				ClientId:         configv1.SecretValue_builder{PlainText: proto.String("client-id")}.Build(),
-				ClientSecret:     configv1.SecretValue_builder{PlainText: proto.String("client-secret")}.Build(),
-				AuthorizationUrl: proto.String("https://github.com/login/oauth/authorize"),
-				TokenUrl:         proto.String("https://github.com/login/oauth/access_token"),
-			}.Build(),
-		}.Build(),
-	}.Build()
+		UpstreamAuth: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					ClientId:         &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-id"}},
+					ClientSecret:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"}},
+					AuthorizationUrl: proto.String("https://github.com/login/oauth/authorize"),
+					TokenUrl:         proto.String("https://github.com/login/oauth/access_token"),
+				},
+			},
+		},
+	}
 	err := store.SaveService(ctx, svc)
 	require.NoError(t, err)
 

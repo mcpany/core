@@ -20,19 +20,19 @@ func TestLocalCommandTool_VimInjection_Prevention(t *testing.T) {
 	// This test verifies that editors like vim are treated as shells
 	// because they allow command execution.
 
-	tool := v1.Tool_builder{
+	tool := &v1.Tool{
 		Name: proto.String("test-tool-vim"),
-	}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("vim"),
 		Local:   proto.Bool(true),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("file")}.Build()}.Build(),
+			{Schema: &configv1.ParameterSchema{Name: proto.String("file")}},
 		},
 		Args: []string{"{{file}}"},
-	}.Build()
+	}
 
 	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 

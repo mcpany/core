@@ -74,10 +74,10 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 
 	// Validate config syntax
 	if err := config.ValidateOrError(ctx, req.GetConfig()); err != nil {
-		return v1.ValidateServiceResponse_builder{
+		return &v1.ValidateServiceResponse{
 			Valid:   false,
 			Message: fmt.Sprintf("Invalid configuration: %v", err),
-		}.Build(), nil
+		}, nil
 	}
 
 	// Create temporary factory
@@ -90,10 +90,10 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 
 	u, err := upstreamFactory.NewUpstream(req.GetConfig())
 	if err != nil {
-		return v1.ValidateServiceResponse_builder{
+		return &v1.ValidateServiceResponse{
 			Valid:   false,
 			Message: fmt.Sprintf("Failed to create upstream: %v", err),
-		}.Build(), nil
+		}, nil
 	}
 	defer func() {
 		_ = u.Shutdown(ctx)
@@ -106,18 +106,18 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 
 	_, tools, resources, err := u.Register(ctx, req.GetConfig(), toolManager, promptManager, resourceManager, false)
 	if err != nil {
-		return v1.ValidateServiceResponse_builder{
+		return &v1.ValidateServiceResponse{
 			Valid:   false,
 			Message: fmt.Sprintf("Validation failed: %v", err),
-		}.Build(), nil
+		}, nil
 	}
 
-	return v1.ValidateServiceResponse_builder{
+	return &v1.ValidateServiceResponse{
 		Valid:               true,
 		Message:             "Service configuration is valid and reachable.",
 		DiscoveredTools:     tools,
 		DiscoveredResources: resources,
-	}.Build(), nil
+	}, nil
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
@@ -191,7 +191,7 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 		}
 
 		msg := fmt.Sprintf("service %s registered successfully with key %s", req.GetConfig().GetName(), result.ServiceKey)
-		resp := v1.RegisterServiceResponse_builder{}.Build()
+		resp := &v1.RegisterServiceResponse{}
 		resp.SetMessage(msg)
 		resp.SetDiscoveredTools(result.DiscoveredTools)
 		resp.SetServiceKey(result.ServiceKey)
@@ -250,10 +250,10 @@ func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.Ini
 		return nil, status.Errorf(codes.Internal, "failed to initiate oauth: %v", err)
 	}
 
-	return v1.InitiateOAuth2FlowResponse_builder{
+	return &v1.InitiateOAuth2FlowResponse{
 		AuthorizationUrl: url,
 		State:            state,
-	}.Build(), nil
+	}, nil
 }
 
 // RegisterTools is not yet implemented. It is intended to handle the
@@ -322,7 +322,7 @@ func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceR
 		if result.Service == nil {
 			return nil, status.Errorf(codes.NotFound, "service not found")
 		}
-		resp := v1.GetServiceResponse_builder{}.Build()
+		resp := &v1.GetServiceResponse{}
 		resp.SetService(result.Service)
 		return resp, nil
 	case <-ctx.Done():
@@ -363,7 +363,7 @@ func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListService
 		if result.Error != nil {
 			return nil, status.Errorf(codes.Internal, "failed to list services: %v", result.Error)
 		}
-		resp := v1.ListServicesResponse_builder{}.Build()
+		resp := &v1.ListServicesResponse{}
 		resp.SetServices(result.Services)
 		return resp, nil
 	case <-ctx.Done():

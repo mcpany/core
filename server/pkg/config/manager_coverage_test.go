@@ -9,6 +9,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestUnmarshalServices_JSON(t *testing.T) {
@@ -101,12 +102,13 @@ func TestAddService_Overrides(t *testing.T) {
 	m := NewUpstreamServiceManager([]string{"prod"})
 	// Setup overrides manually
 	enabled := false
-	override := &configv1.ProfileServiceConfig{}
-	override.SetEnabled(enabled)
-	m.profileServiceOverrides["s1"] = override
+	m.profileServiceOverrides["s1"] = &configv1.ProfileServiceConfig{
+		Enabled: &enabled,
+	}
 
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("s1")
+	svc := &configv1.UpstreamServiceConfig{
+		Name: proto.String("s1"),
+	}
 	err := m.addService(svc, 0)
 	require.NoError(t, err)
 
@@ -116,9 +118,10 @@ func TestAddService_Overrides(t *testing.T) {
 
 func TestAddService_ConfigError(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("s1")
-	svc.SetConfigError("some error")
+	svc := &configv1.UpstreamServiceConfig{
+		Name:        proto.String("s1"),
+		ConfigError: proto.String("some error"),
+	}
 	err := m.addService(svc, 0)
 	require.NoError(t, err)
 
@@ -130,10 +133,8 @@ func TestAddService_ConfigError(t *testing.T) {
 
 func TestAddService_Duplicate(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
-	svc1 := &configv1.UpstreamServiceConfig{}
-	svc1.SetName("s1")
-	svc2 := &configv1.UpstreamServiceConfig{}
-	svc2.SetName("s1")
+	svc1 := &configv1.UpstreamServiceConfig{Name: proto.String("s1")}
+	svc2 := &configv1.UpstreamServiceConfig{Name: proto.String("s1")} // Duplicate
 
 	err := m.addService(svc1, 10)
 	require.NoError(t, err)
@@ -144,8 +145,7 @@ func TestAddService_Duplicate(t *testing.T) {
 	require.NoError(t, err)
 
 	// Lower priority, ignored
-	svc3 := &configv1.UpstreamServiceConfig{}
-	svc3.SetName("s1")
+	svc3 := &configv1.UpstreamServiceConfig{Name: proto.String("s1")}
 	err = m.addService(svc3, 20) // Higher number = Lower priority?
 	// Logic says:
 	// case priority < existingPriority: Replace
@@ -168,8 +168,7 @@ func TestAddService_Duplicate(t *testing.T) {
 	assert.Equal(t, int32(10), m.servicePriorities["s1"])
 
 	// Higher priority (lower number), replace
-	svc4 := &configv1.UpstreamServiceConfig{}
-	svc4.SetName("s1")
+	svc4 := &configv1.UpstreamServiceConfig{Name: proto.String("s1")}
 	err = m.addService(svc4, 5)
 	require.NoError(t, err)
 	assert.Equal(t, int32(5), m.servicePriorities["s1"])

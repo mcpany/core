@@ -13,10 +13,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
-
+// stringPtr returns a pointer to the passed string.
+func stringPtr(s string) *string {
+	return &s
+}
 
 func TestPostgresStore(t *testing.T) {
 	// Create a new mock database
@@ -29,10 +31,10 @@ func TestPostgresStore(t *testing.T) {
 	store := NewStore(pgDB)
 
 	t.Run("SaveService", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service"),
-			Id:   proto.String("test-id"),
-		}.Build()
+		svc := &configv1.UpstreamServiceConfig{
+			Name: stringPtr("test-service"),
+			Id:   stringPtr("test-id"),
+		}
 
 		mock.ExpectExec("INSERT INTO upstream_services").
 			WithArgs("test-id", "test-service", sqlmock.AnyArg()).
@@ -45,10 +47,10 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveService_Error", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service"),
-			Id:   proto.String("test-id"),
-		}.Build()
+		svc := &configv1.UpstreamServiceConfig{
+			Name: stringPtr("test-service"),
+			Id:   stringPtr("test-id"),
+		}
 
 		mock.ExpectExec("INSERT INTO upstream_services").
 			WithArgs("test-id", "test-service", sqlmock.AnyArg()).
@@ -65,20 +67,20 @@ func TestPostgresStore(t *testing.T) {
 		// Just pass something that might cause issues, although with protojson it's hard to trigger marshal error with valid struct.
 		// However, we can't easily inject marshal error here without mocking protojson.
 		// But we can test validations.
-		svc := configv1.UpstreamServiceConfig_builder{
+		svc := &configv1.UpstreamServiceConfig{
 			// Missing Name
-			Id: proto.String("test-id"),
-		}.Build()
+			Id: stringPtr("test-id"),
+		}
 		err := store.SaveService(context.Background(), svc)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service name is required")
 	})
 
 	t.Run("GetService", func(t *testing.T) {
-		svc := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-service"),
-			Id:   proto.String("test-id"),
-		}.Build()
+		svc := &configv1.UpstreamServiceConfig{
+			Name: stringPtr("test-service"),
+			Id:   stringPtr("test-id"),
+		}
 
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow(`{"name":"test-service","id":"test-id"}`)
@@ -159,9 +161,9 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveGlobalSettings", func(t *testing.T) {
-		settings := configv1.GlobalSettings_builder{
-			McpListenAddress: proto.String(":8080"),
-		}.Build()
+		settings := &configv1.GlobalSettings{
+			McpListenAddress: stringPtr(":8080"),
+		}
 
 		mock.ExpectExec("INSERT INTO global_settings").
 			WithArgs(sqlmock.AnyArg()).
@@ -175,10 +177,10 @@ func TestPostgresStore(t *testing.T) {
 
 	// User Tests
 	t.Run("CreateUser", func(t *testing.T) {
-		user := configv1.User_builder{
-			Id:    proto.String("user-1"),
+		user := &configv1.User{
+			Id:    stringPtr("user-1"),
 			Roles: []string{"admin"},
-		}.Build()
+		}
 
 		mock.ExpectExec("INSERT INTO users").
 			WithArgs("user-1", sqlmock.AnyArg()).
@@ -191,9 +193,9 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("CreateUser_NoID", func(t *testing.T) {
-		user := configv1.User_builder{
+		user := &configv1.User{
 			Roles: []string{"admin"},
-		}.Build()
+		}
 		err := store.CreateUser(context.Background(), user)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "user ID is required")
@@ -243,10 +245,10 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("UpdateUser", func(t *testing.T) {
-		user := configv1.User_builder{
-			Id:    proto.String("user-1"),
+		user := &configv1.User{
+			Id:    stringPtr("user-1"),
 			Roles: []string{"editor"},
-		}.Build()
+		}
 
 		mock.ExpectExec("UPDATE users").
 			WithArgs("user-1", sqlmock.AnyArg()).
@@ -259,10 +261,10 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("UpdateUser_NotFound", func(t *testing.T) {
-		user := configv1.User_builder{
-			Id:    proto.String("user-1"),
+		user := &configv1.User{
+			Id:    stringPtr("user-1"),
 			Roles: []string{"editor"},
-		}.Build()
+		}
 
 		mock.ExpectExec("UPDATE users").
 			WithArgs("user-1", sqlmock.AnyArg()).
@@ -318,11 +320,11 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveSecret", func(t *testing.T) {
-		secret := configv1.Secret_builder{
-			Id:   proto.String("sec-1"),
-			Name: proto.String("secret1"),
-			Key:  proto.String("key1"),
-		}.Build()
+		secret := &configv1.Secret{
+			Id:   stringPtr("sec-1"),
+			Name: stringPtr("secret1"),
+			Key:  stringPtr("key1"),
+		}
 
 		mock.ExpectExec("INSERT INTO secrets").
 			WithArgs("sec-1", "secret1", "key1", sqlmock.AnyArg()).
@@ -335,9 +337,9 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveSecret_NoID", func(t *testing.T) {
-		secret := configv1.Secret_builder{
-			Name: proto.String("secret1"),
-		}.Build()
+		secret := &configv1.Secret{
+			Name: stringPtr("secret1"),
+		}
 		err := store.SaveSecret(context.Background(), secret)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "secret id is required")
@@ -386,9 +388,9 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveProfile", func(t *testing.T) {
-		profile := configv1.ProfileDefinition_builder{
-			Name: proto.String("profile1"),
-		}.Build()
+		profile := &configv1.ProfileDefinition{
+			Name: stringPtr("profile1"),
+		}
 
 		mock.ExpectExec("INSERT INTO profile_definitions").
 			WithArgs("profile1", "profile1", sqlmock.AnyArg()).
@@ -443,9 +445,9 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveServiceCollection", func(t *testing.T) {
-		col := configv1.Collection_builder{
-			Name: proto.String("col1"),
-		}.Build()
+		col := &configv1.Collection{
+			Name: stringPtr("col1"),
+		}
 
 		mock.ExpectExec("INSERT INTO service_collections").
 			WithArgs("col1", "col1", sqlmock.AnyArg()).
@@ -470,10 +472,10 @@ func TestPostgresStore(t *testing.T) {
 
 	// Token Tests
 	t.Run("SaveToken", func(t *testing.T) {
-		token := configv1.UserToken_builder{
-			UserId:    proto.String("user1"),
-			ServiceId: proto.String("svc1"),
-		}.Build()
+		token := &configv1.UserToken{
+			UserId:    stringPtr("user1"),
+			ServiceId: stringPtr("svc1"),
+		}
 
 		mock.ExpectExec("INSERT INTO user_tokens").
 			WithArgs("user1", "svc1", sqlmock.AnyArg()).
@@ -486,10 +488,10 @@ func TestPostgresStore(t *testing.T) {
 	})
 
 	t.Run("SaveToken_MissingID", func(t *testing.T) {
-		token := configv1.UserToken_builder{
-			UserId: proto.String("user1"),
+		token := &configv1.UserToken{
+			UserId: stringPtr("user1"),
 			// ServiceId missing
-		}.Build()
+		}
 		err := store.SaveToken(context.Background(), token)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "user ID and service ID are required")

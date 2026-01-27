@@ -66,14 +66,18 @@ func TestRegisterDynamicResources(t *testing.T) {
 		}
 
 		resources := []*configv1.ResourceDefinition{
-			configv1.ResourceDefinition_builder{
+			{
 				Name: proto.String("myResource"),
-				Dynamic: configv1.DynamicResource_builder{
-					HttpCall: configv1.HttpCallDefinition_builder{
-						Id: proto.String("call1"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ResourceType: &configv1.ResourceDefinition_Dynamic{
+					Dynamic: &configv1.DynamicResource{
+						CallDefinition: &configv1.DynamicResource_HttpCall{
+							HttpCall: &configv1.HttpCallDefinition{
+								Id: proto.String("call1"),
+							},
+						},
+					},
+				},
+			},
 		}
 
 		mockToolManager.On("GetTool", "test-service.myTool").Return(new(MockTool), true)
@@ -97,15 +101,19 @@ func TestRegisterDynamicResources(t *testing.T) {
 		}
 
 		resources := []*configv1.ResourceDefinition{
-			configv1.ResourceDefinition_builder{
+			{
 				Name:    proto.String("myResource"),
 				Disable: proto.Bool(true),
-				Dynamic: configv1.DynamicResource_builder{
-					HttpCall: configv1.HttpCallDefinition_builder{
-						Id: proto.String("call1"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ResourceType: &configv1.ResourceDefinition_Dynamic{
+					Dynamic: &configv1.DynamicResource{
+						CallDefinition: &configv1.DynamicResource_HttpCall{
+							HttpCall: &configv1.HttpCallDefinition{
+								Id: proto.String("call1"),
+							},
+						},
+					},
+				},
+			},
 		}
 
 		u.registerDynamicResources(serviceID, definitions, resources, mockResourceManager, mockToolManager)
@@ -123,14 +131,18 @@ func TestRegisterDynamicResources(t *testing.T) {
 		}
 
 		resources := []*configv1.ResourceDefinition{
-			configv1.ResourceDefinition_builder{
+			{
 				Name: proto.String("myResource"),
-				Dynamic: configv1.DynamicResource_builder{
-					HttpCall: configv1.HttpCallDefinition_builder{
-						Id: proto.String("call1"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ResourceType: &configv1.ResourceDefinition_Dynamic{
+					Dynamic: &configv1.DynamicResource{
+						CallDefinition: &configv1.DynamicResource_HttpCall{
+							HttpCall: &configv1.HttpCallDefinition{
+								Id: proto.String("call1"),
+							},
+						},
+					},
+				},
+			},
 		}
 
 		u.registerDynamicResources(serviceID, definitions, resources, mockResourceManager, mockToolManager)
@@ -151,14 +163,18 @@ func TestRegisterDynamicResources(t *testing.T) {
 		}
 
 		resources := []*configv1.ResourceDefinition{
-			configv1.ResourceDefinition_builder{
+			{
 				Name: proto.String("myResource"),
-				Dynamic: configv1.DynamicResource_builder{
-					HttpCall: configv1.HttpCallDefinition_builder{
-						Id: proto.String("call1"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ResourceType: &configv1.ResourceDefinition_Dynamic{
+					Dynamic: &configv1.DynamicResource{
+						CallDefinition: &configv1.DynamicResource_HttpCall{
+							HttpCall: &configv1.HttpCallDefinition{
+								Id: proto.String("call1"),
+							},
+						},
+					},
+				},
+			},
 		}
 
 		mockToolManager.On("GetTool", "test-service.myTool").Return(nil, false)
@@ -174,12 +190,14 @@ func TestRegisterDynamicResources(t *testing.T) {
 		mockResourceManager := new(MockResourceManager)
 
 		resources := []*configv1.ResourceDefinition{
-			configv1.ResourceDefinition_builder{
+			{
 				Name: proto.String("myResource"),
-				Dynamic: configv1.DynamicResource_builder{
-					// Missing CallDefinition
-				}.Build(),
-			}.Build(),
+				ResourceType: &configv1.ResourceDefinition_Dynamic{
+					Dynamic: &configv1.DynamicResource{
+						// Missing CallDefinition
+					},
+				},
+			},
 		}
 
 		u.registerDynamicResources(serviceID, nil, resources, mockResourceManager, mockToolManager)
@@ -200,14 +218,18 @@ func TestRegisterDynamicResources(t *testing.T) {
 		}
 
 		resources := []*configv1.ResourceDefinition{
-			configv1.ResourceDefinition_builder{
+			{
 				Name: proto.String("myResource"),
-				Dynamic: configv1.DynamicResource_builder{
-					HttpCall: configv1.HttpCallDefinition_builder{
-						Id: proto.String("call1"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
+				ResourceType: &configv1.ResourceDefinition_Dynamic{
+					Dynamic: &configv1.DynamicResource{
+						CallDefinition: &configv1.DynamicResource_HttpCall{
+							HttpCall: &configv1.HttpCallDefinition{
+								Id: proto.String("call1"),
+							},
+						},
+					},
+				},
+			},
 		}
 
 		// Return nil tool but true to trigger error in NewDynamicResource

@@ -10,23 +10,26 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/doctor"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
+
+func ptr(s string) *string { return &s }
 
 func TestDoctorRedaction_HTTP_URL_Leak(t *testing.T) {
 	// configured URL triggers fallback regex (invalid scheme space) and has colon in password
 	urlStr := "post gres://user:pass:word@localhost:5432/db"
 
-	cfg := configv1.McpAnyServerConfig_builder{
+	cfg := &configv1.McpAnyServerConfig{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{
-			configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("http-leak-test"),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: proto.String(urlStr),
-				}.Build(),
-			}.Build(),
+			{
+				Name: ptr("http-leak-test"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: ptr(urlStr),
+					},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	results := doctor.RunChecks(context.Background(), cfg)
 	assert.Len(t, results, 1)

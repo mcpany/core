@@ -38,13 +38,11 @@ func TestGlobalSettings_InvalidBindAddress(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := func() *configv1.McpAnyServerConfig {
-				c := &configv1.McpAnyServerConfig{}
-				gs := &configv1.GlobalSettings{}
-				gs.SetMcpListenAddress(tc.bindAddress)
-				c.SetGlobalSettings(gs)
-				return c
-			}()
+			cfg := &configv1.McpAnyServerConfig{
+				GlobalSettings: &configv1.GlobalSettings{
+					McpListenAddress: &tc.bindAddress,
+				},
+			}
 
 			// We use Server binary type to trigger the bind address validation
 			errs := Validate(context.Background(), cfg, Server)

@@ -44,22 +44,24 @@ func TestOAuth2Auth_Authenticate_Discovery(t *testing.T) {
 	serverURL = server.URL
 
 	ctx := context.Background()
-	clientID := configv1.SecretValue_builder{
-		PlainText: proto.String("id"),
-	}.Build()
-	clientSecret := configv1.SecretValue_builder{
-		PlainText: proto.String("secret"),
-	}.Build()
+	clientID := &configv1.SecretValue{
+		Value: &configv1.SecretValue_PlainText{PlainText: "id"},
+	}
+	clientSecret := &configv1.SecretValue{
+		Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+	}
 
 	// Create authenticator with IssuerURL only
-	authConfig := configv1.Authentication_builder{
-		Oauth2: configv1.OAuth2Auth_builder{
-			ClientId:     clientID,
-			ClientSecret: clientSecret,
-			IssuerUrl:    proto.String(server.URL),
-			// TokenUrl is intentionally missing
-		}.Build(),
-	}.Build()
+	authConfig := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Oauth2{
+			Oauth2: &configv1.OAuth2Auth{
+				ClientId:     clientID,
+				ClientSecret: clientSecret,
+				IssuerUrl:    proto.String(server.URL),
+				// TokenUrl is intentionally missing
+			},
+		},
+	}
 
 	auth, err := NewUpstreamAuthenticator(authConfig)
 	require.NoError(t, err)
@@ -89,20 +91,22 @@ func TestOAuth2Auth_Authenticate_Discovery_Fail(t *testing.T) {
 	defer server.Close()
 
 	ctx := context.Background()
-	clientID := configv1.SecretValue_builder{
-		PlainText: proto.String("id"),
-	}.Build()
-	clientSecret := configv1.SecretValue_builder{
-		PlainText: proto.String("secret"),
-	}.Build()
+	clientID := &configv1.SecretValue{
+		Value: &configv1.SecretValue_PlainText{PlainText: "id"},
+	}
+	clientSecret := &configv1.SecretValue{
+		Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+	}
 
-	authConfig := configv1.Authentication_builder{
-		Oauth2: configv1.OAuth2Auth_builder{
-			ClientId:     clientID,
-			ClientSecret: clientSecret,
-			IssuerUrl:    proto.String(server.URL),
-		}.Build(),
-	}.Build()
+	authConfig := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Oauth2{
+			Oauth2: &configv1.OAuth2Auth{
+				ClientId:     clientID,
+				ClientSecret: clientSecret,
+				IssuerUrl:    proto.String(server.URL),
+			},
+		},
+	}
 
 	auth, err := NewUpstreamAuthenticator(authConfig)
 	require.NoError(t, err)

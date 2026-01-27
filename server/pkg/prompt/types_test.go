@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -67,7 +67,7 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 }
 
 func TestTemplatedPrompt_Get_UnmarshalError(t *testing.T) {
-	definition := configv1.PromptDefinition_builder{}.Build()
+	definition := &configv1.PromptDefinition{}
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 
 	_, err := templatedPrompt.Get(context.Background(), []byte("invalid json"))
@@ -127,7 +127,7 @@ func TestTemplatedPrompt_Prompt(t *testing.T) {
 }
 
 func TestTemplatedPrompt_Service(t *testing.T) {
-	definition := configv1.PromptDefinition_builder{}.Build()
+	definition := &configv1.PromptDefinition{}
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 	assert.Equal(t, "test-service", templatedPrompt.Service())
 }

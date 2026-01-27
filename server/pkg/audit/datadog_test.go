@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestDatadogAuditStore(t *testing.T) {
@@ -46,11 +47,12 @@ func TestDatadogAuditStore(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &configv1.DatadogConfig{}
-	config.SetApiKey("my-api-key")
-	config.SetSite("datadoghq.com")
-	config.SetService("my-service")
-	config.SetTags("env:prod")
+	config := &configv1.DatadogConfig{
+		ApiKey:  proto.String("my-api-key"),
+		Site:    proto.String("datadoghq.com"),
+		Service: proto.String("my-service"),
+		Tags:    proto.String("env:prod"),
+	}
 
 	store := NewDatadogAuditStore(config)
 	store.url = ts.URL
@@ -95,8 +97,9 @@ func TestDatadogAuditStore_Batch(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &configv1.DatadogConfig{}
-	config.SetApiKey("key")
+	config := &configv1.DatadogConfig{
+		ApiKey: proto.String("key"),
+	}
 	store := NewDatadogAuditStore(config)
 	store.url = ts.URL
 

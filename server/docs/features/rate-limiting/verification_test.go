@@ -26,14 +26,14 @@ func TestRateLimitConfig(t *testing.T) {
 	err = protojson.Unmarshal(jsonContent, cfg)
 	require.NoError(t, err)
 
-	require.Len(t, cfg.GetUpstreamServices(), 1)
-	service := cfg.GetUpstreamServices()[0]
+	require.Len(t, cfg.UpstreamServices, 1)
+	service := cfg.UpstreamServices[0]
 
 	require.Equal(t, "rate-limited-service", service.GetName())
-	require.NotNil(t, service.GetRateLimit())
-	require.True(t, service.GetRateLimit().GetIsEnabled())
-	require.Equal(t, 50.0, service.GetRateLimit().GetRequestsPerSecond())
-	require.Equal(t, int64(100), service.GetRateLimit().GetBurst())
+	require.NotNil(t, service.RateLimit)
+	require.True(t, service.RateLimit.GetIsEnabled())
+	require.Equal(t, 50.0, service.RateLimit.GetRequestsPerSecond())
+	require.Equal(t, int64(100), service.RateLimit.GetBurst())
 
 	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)

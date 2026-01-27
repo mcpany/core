@@ -9,35 +9,33 @@ import (
 	"sync"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/util"
-	mcp_sdk "github.com/modelcontextprotocol/go-sdk/mcp"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type TestMCPServerProvider struct {
-	server *mcp_sdk.Server
+	server *mcp.Server
 }
 
-func (p *TestMCPServerProvider) Server() *mcp_sdk.Server {
+func (p *TestMCPServerProvider) Server() *mcp.Server {
 	return p.server
 }
-
-// ptr is already defined in hooks_test.go in the same package.
 
 func TestToolManager_AddAndGetTool(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("test-service"),
 				Name:      proto.String("test-tool"),
-			}.Build()
+			}
 		},
 	}
 
@@ -55,19 +53,19 @@ func TestToolManager_ListTools(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("test-service"),
 				Name:      proto.String("test-tool-1"),
-			}.Build()
+			}
 		},
 	}
 	mockTool2 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("test-service"),
 				Name:      proto.String("test-tool-2"),
-			}.Build()
+			}
 		},
 	}
 
@@ -82,27 +80,27 @@ func TestToolManager_ClearToolsForService(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("service-a"),
 				Name:      proto.String("tool-1"),
-			}.Build()
+			}
 		},
 	}
 	mockTool2 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("service-b"),
 				Name:      proto.String("tool-2"),
-			}.Build()
+			}
 		},
 	}
 	mockTool3 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("service-a"),
 				Name:      proto.String("tool-3"),
-			}.Build()
+			}
 		},
 	}
 
@@ -127,11 +125,11 @@ func TestToolManager_ExecuteTool(t *testing.T) {
 	execReq := &ExecutionRequest{ToolName: toolID, ToolInputs: []byte(`{"arg":"value"}`)}
 
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("exec-service"),
 				Name:      proto.String("exec-tool"),
-			}.Build()
+			}
 		},
 		ExecuteFunc: func(_ context.Context, req *ExecutionRequest) (any, error) {
 			assert.Equal(t, execReq, req)
@@ -166,11 +164,11 @@ func TestToolManager_ConcurrentAccess(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 			mockTool := &MockTool{
-				ToolFunc: func() *mcp_router_v1.Tool {
-					return mcp_router_v1.Tool_builder{
+				ToolFunc: func() *v1.Tool {
+					return &v1.Tool{
 						ServiceId: proto.String("concurrent-service"),
 						Name:      proto.String(fmt.Sprintf("tool-%d", i)),
-					}.Build()
+					}
 				},
 			}
 			err := tm.AddTool(mockTool)
@@ -197,11 +195,11 @@ func TestToolManager_AddTool_NoServiceID(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String(""), // Empty service ID
 				Name:      proto.String("test-tool"),
-			}.Build()
+			}
 		},
 	}
 
@@ -214,11 +212,11 @@ func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("test-service"),
 				Name:      proto.String(""), // Empty tool name
-			}.Build()
+			}
 		},
 	}
 
@@ -230,7 +228,7 @@ func TestToolManager_AddTool_EmptyToolName(t *testing.T) {
 func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
-	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
 
@@ -240,15 +238,15 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId:   proto.String("test-service"),
 				Name:        proto.String("test-tool"),
 				Description: proto.String("A test tool"),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{
+				Annotations: &v1.ToolAnnotations{
 					InputSchema: inputSchema,
-				}.Build(),
-			}.Build()
+				},
+			}
 		},
 	}
 
@@ -257,14 +255,14 @@ func TestToolManager_AddTool_WithMCPServer(t *testing.T) {
 
 	// Test case where the handler returns an error
 	mockTool2 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("test-service"),
 				Name:      proto.String("error-tool"),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{
+				Annotations: &v1.ToolAnnotations{
 					InputSchema: inputSchema,
-				}.Build(),
-			}.Build()
+				},
+			}
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return nil, fmt.Errorf("tool error")
@@ -295,11 +293,11 @@ func TestToolManager_AddAndExecuteWithMiddleware(t *testing.T) {
 	execReq := &ExecutionRequest{ToolName: toolID}
 
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("exec-service"),
 				Name:      proto.String("exec-tool"),
-			}.Build()
+			}
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return "tool success", nil
@@ -340,11 +338,8 @@ func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
-				ServiceId: proto.String("service-a"),
-				Name:      proto.String("tool-1"),
-			}.Build()
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{ServiceId: proto.String("service-a"), Name: proto.String("tool-1")}
 		},
 	}
 	_ = tm.AddTool(mockTool1)
@@ -356,22 +351,30 @@ func TestToolManager_ClearToolsForService_NoDeletions(t *testing.T) {
 func TestToolManager_AddTool_MCPServerAddToolError(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
-	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
+	// Mock the mcp.Server's AddTool method to return an error.
+	// We can't directly do this, so we'll rely on the fact that a tool
+	// with an empty name will cause an error.
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
 
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
+		ToolFunc: func() *v1.Tool {
+			// This tool is valid for the Manager, but will fail in the MCP server
+			// because the sanitized name is different from the original name, and we
+			// are passing a tool with an empty name to the MCP server.
 			inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
-			return mcp_router_v1.Tool_builder{
+			return &v1.Tool{
 				ServiceId: proto.String("test"),
 				Name:      proto.String(" "),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{
+				Annotations: &v1.ToolAnnotations{
 					InputSchema: inputSchema,
-				}.Build(),
-			}.Build()
+				},
+			}
 		},
 	}
+	// The error is not propagated up from mcpServer.AddTool, but it should log an error.
+	// This test is limited in what it can assert, but it covers the code path.
 	err := tm.AddTool(mockTool)
 	assert.NoError(t, err)
 }
@@ -381,7 +384,7 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 	busProvider, _ := bus.NewProvider(nil)
 	tm := NewManager(busProvider)
 
-	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
 
@@ -394,12 +397,12 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 	assert.NoError(t, err)
 
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId:   proto.String("test-service"),
 				Name:        proto.String("bus-tool"),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{InputSchema: inputSchema}.Build(),
-			}.Build()
+				Annotations: &v1.ToolAnnotations{InputSchema: inputSchema},
+			}
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return map[string]string{"status": "ok from tool"}, nil
@@ -408,6 +411,8 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 	err = tm.AddTool(mockTool)
 	assert.NoError(t, err)
 
+	// This part is tricky to test without a running worker,
+	// but we can at least ensure the handler is registered and doesn't panic.
 	sanitizedToolName, _ := util.SanitizeToolName("bus-tool")
 	toolID := "test-service" + "." + sanitizedToolName
 	assert.NotNil(t, toolID)
@@ -416,31 +421,31 @@ func TestToolManager_AddTool_WithMCPServerAndBus(t *testing.T) {
 func TestToolManager_AddTool_WithMCPServer_ErrorCases(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
-	mcpServer := mcp_sdk.NewServer(&mcp_sdk.Implementation{}, nil)
+	mcpServer := mcp.NewServer(&mcp.Implementation{}, nil)
 	provider := &TestMCPServerProvider{server: mcpServer}
 	tm.SetMCPServer(provider)
 
 	// Case 1: Error converting proto tool to mcp tool (empty name)
 	mockTool1 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{ServiceId: proto.String("test"), Name: proto.String("")}.Build()
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{ServiceId: proto.String("test"), Name: proto.String("")}
 		},
 	}
 	err := tm.AddTool(mockTool1)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to sanitize tool name")
 
-	// Case 2: Good tool
+	// Case 2: Good tool for subsequent tests
 	inputSchema, err := structpb.NewStruct(map[string]interface{}{"type": "object"})
 	assert.NoError(t, err)
 
 	mockTool2 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId:   proto.String("test"),
 				Name:        proto.String("good-tool"),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{InputSchema: inputSchema}.Build(),
-			}.Build()
+				Annotations: &v1.ToolAnnotations{InputSchema: inputSchema},
+			}
 		},
 	}
 	err = tm.AddTool(mockTool2)
@@ -482,11 +487,11 @@ func TestToolManager_ExecuteTool_ExecutionError(t *testing.T) {
 	expectedError := fmt.Errorf("execution failed")
 
 	mockTool := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("exec-service"),
 				Name:      proto.String("exec-tool"),
-			}.Build()
+			}
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return nil, expectedError
@@ -504,34 +509,35 @@ func TestToolManager_ListTools_Caching(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 	mockTool1 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("t1")}.Build()
-		},
+		ToolFunc: func() *v1.Tool { return &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t1")} },
 	}
 	_ = tm.AddTool(mockTool1)
 
+	// First call populates cache
 	list1 := tm.ListTools()
 	assert.Len(t, list1, 1)
 
+	// Second call should return cached slice
 	list2 := tm.ListTools()
 	assert.Len(t, list2, 1)
+	// Compare pointers of the first elements to check if it's the same slice
 	if len(list1) > 0 && len(list2) > 0 {
 		assert.Same(t, list1[0], list2[0])
 	}
 
+	// Invalidate cache by adding a new tool
 	mockTool2 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("t2")}.Build()
-		},
+		ToolFunc: func() *v1.Tool { return &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t2")} },
 	}
 	_ = tm.AddTool(mockTool2)
 
 	list3 := tm.ListTools()
-	assert.Len(t, list3, 2)
+	assert.Len(t, list3, 2, "Cache should be invalidated and list repopulated")
 
+	// Invalidate cache by clearing tools
 	tm.ClearToolsForService("s1")
 	list4 := tm.ListTools()
-	assert.Len(t, list4, 0)
+	assert.Len(t, list4, 0, "Cache should be invalidated and list cleared")
 }
 
 func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
@@ -539,21 +545,26 @@ func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
 	tm := NewManager(nil)
 	serviceID := "test-service-config"
 
-	config := configv1.UpstreamServiceConfig_builder{
+	// Create a ServiceInfo with Config
+	config := &configv1.UpstreamServiceConfig{
 		CallPolicies: []*configv1.CallPolicy{
-			configv1.CallPolicy_builder{DefaultAction: configv1.CallPolicy_ALLOW.Enum()}.Build(),
+			{DefaultAction: ptr(configv1.CallPolicy_ALLOW)},
 		},
 		PreCallHooks: []*configv1.CallHook{
-			configv1.CallHook_builder{
-				Webhook: configv1.WebhookConfig_builder{Url: "http://pre.com"}.Build(),
-			}.Build(),
+			{
+				HookConfig: &configv1.CallHook_Webhook{
+					Webhook: &configv1.WebhookConfig{Url: "http://pre.com"},
+				},
+			},
 		},
 		PostCallHooks: []*configv1.CallHook{
-			configv1.CallHook_builder{
-				Webhook: configv1.WebhookConfig_builder{Url: "http://post.com"}.Build(),
-			}.Build(),
+			{
+				HookConfig: &configv1.CallHook_Webhook{
+					Webhook: &configv1.WebhookConfig{Url: "http://post.com"},
+				},
+			},
 		},
-	}.Build()
+	}
 
 	serviceInfo := &ServiceInfo{
 		Name:   "Test Service Config",
@@ -566,6 +577,7 @@ func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, serviceInfo, retrievedInfo)
 
+	// Check if hooks were populated (PreHooks: 1 policy + 1 webhook = 2, PostHooks: 1 webhook = 1)
 	assert.Len(t, retrievedInfo.PreHooks, 2)
 	assert.Len(t, retrievedInfo.PostHooks, 1)
 }
@@ -574,50 +586,56 @@ func TestToolManager_ProfileFiltering(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 
-	profileDef := configv1.ProfileDefinition_builder{
-		Name: proto.String("secure-profile"),
-		Selector: configv1.ProfileSelector_builder{
+	// Define a profile that selects tools with tag "secure"
+	profileDef := &configv1.ProfileDefinition{
+		Name: ptr("secure-profile"),
+		Selector: &configv1.ProfileSelector{
 			Tags: []string{"secure"},
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	tm.SetProfiles([]string{"secure-profile"}, []*configv1.ProfileDefinition{profileDef})
 
+	// Tool 1: Matches tag
 	tool1 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("s1"),
 				Name:      proto.String("t1"),
 				Tags:      []string{"secure", "other"},
-			}.Build()
+			}
 		},
 	}
 
+	// Tool 2: Does not match
 	tool2 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("s1"),
 				Name:      proto.String("t2"),
 				Tags:      []string{"public"},
-			}.Build()
+			}
 		},
 	}
 
+	// Tool 3: Explicitly assigned to profile
 	tool3 := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("s1"),
 				Name:      proto.String("t3"),
 				Profiles:  []string{"secure-profile"},
-			}.Build()
+			}
 		},
 	}
 
+	// Add tools
 	_ = tm.AddTool(tool1)
 	_ = tm.AddTool(tool2)
 	_ = tm.AddTool(tool3)
 
 	tools := tm.ListTools()
+	// Expect tool1 and tool3
 	assert.Len(t, tools, 2)
 
 	foundT1 := false
@@ -629,6 +647,9 @@ func TestToolManager_ProfileFiltering(t *testing.T) {
 		if tool.Tool().GetName() == "t3" {
 			foundT3 = true
 		}
+		if tool.Tool().GetName() == "t2" {
+			t.Error("t2 should have been filtered out")
+		}
 	}
 	assert.True(t, foundT1)
 	assert.True(t, foundT3)
@@ -638,38 +659,39 @@ func TestToolManager_ProfileFiltering_Properties(t *testing.T) {
 	t.Parallel()
 	tm := NewManager(nil)
 
-	profileDef := configv1.ProfileDefinition_builder{
-		Name: proto.String("readonly-profile"),
-		Selector: configv1.ProfileSelector_builder{
+	// Profile selecting read_only=true
+	profileDef := &configv1.ProfileDefinition{
+		Name: ptr("readonly-profile"),
+		Selector: &configv1.ProfileSelector{
 			ToolProperties: map[string]string{
 				"read_only": "true",
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	tm.SetProfiles([]string{"readonly-profile"}, []*configv1.ProfileDefinition{profileDef})
 
 	toolRO := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("s1"),
 				Name:      proto.String("ro"),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{
+				Annotations: &v1.ToolAnnotations{
 					ReadOnlyHint: proto.Bool(true),
-				}.Build(),
-			}.Build()
+				},
+			}
 		},
 	}
 
 	toolRW := &MockTool{
-		ToolFunc: func() *mcp_router_v1.Tool {
-			return mcp_router_v1.Tool_builder{
+		ToolFunc: func() *v1.Tool {
+			return &v1.Tool{
 				ServiceId: proto.String("s1"),
 				Name:      proto.String("rw"),
-				Annotations: mcp_router_v1.ToolAnnotations_builder{
+				Annotations: &v1.ToolAnnotations{
 					ReadOnlyHint: proto.Bool(false),
-				}.Build(),
-			}.Build()
+				},
+			}
 		},
 	}
 

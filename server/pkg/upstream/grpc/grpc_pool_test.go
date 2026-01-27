@@ -38,7 +38,7 @@ func TestGrpcPool_New(t *testing.T) {
 	}
 
 	configJSON := `{"grpc_service": {"address": "bufnet"}}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config, true)
@@ -69,7 +69,7 @@ func TestGrpcPool_New_MtlsFailure(t *testing.T) {
 			}
 		}
 	}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	// minSize=1 forces connection creation immediately, triggering factory error
@@ -79,11 +79,10 @@ func TestGrpcPool_New_MtlsFailure(t *testing.T) {
 }
 
 func TestGrpcPool_New_InvalidTarget(t *testing.T) {
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		GrpcService: configv1.GrpcUpstreamService_builder{
-			Address: proto.String(""), // Empty address
-		}.Build(),
-	}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetGrpcService(&configv1.GrpcUpstreamService{
+		Address: proto.String(""), // Empty address
+	})
 
 	// minSize=1 to force factory usage
 	_, err := NewGrpcPool(1, 5, 100, nil, nil, serviceConfig, false)
@@ -103,7 +102,7 @@ func TestGrpcPool_Get_ContextCancelled(t *testing.T) {
 	}
 
 	configJSON := `{"grpc_service": {"address": "bufnet"}}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	p, err := NewGrpcPool(1, 1, 100, dialer, nil, config, true)
@@ -129,7 +128,7 @@ func TestGrpcPool_Close_StopsChecker(t *testing.T) {
 	}
 
 	configJSON := `{"grpc_service": {"address": "bufnet"}}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	p, err := NewGrpcPool(1, 5, 100, dialer, nil, config, true)

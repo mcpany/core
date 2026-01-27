@@ -13,14 +13,14 @@ import (
 )
 
 func TestValidate_Collection_InvalidURL(t *testing.T) {
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		Collections: []*configv1.Collection{
-			configv1.Collection_builder{
+			{
 				Name:    proto.String("invalid-collection"),
 				HttpUrl: proto.String("not-a-url"),
-			}.Build(),
+			},
 		},
-	}.Build()
+	}
 
 	errs := Validate(context.Background(), config, Server)
 
@@ -29,14 +29,14 @@ func TestValidate_Collection_InvalidURL(t *testing.T) {
 }
 
 func TestValidate_Collection_EmptyURL(t *testing.T) {
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		Collections: []*configv1.Collection{
-			configv1.Collection_builder{
+			{
 				Name:    proto.String("empty-url-collection"),
 				HttpUrl: proto.String(""),
-			}.Build(),
+			},
 		},
-	}.Build()
+	}
 
 	errs := Validate(context.Background(), config, Server)
 
@@ -46,14 +46,14 @@ func TestValidate_Collection_EmptyURL(t *testing.T) {
 }
 
 func TestValidate_Collection_InlineWithSkills(t *testing.T) {
-	config := configv1.McpAnyServerConfig_builder{
+	config := &configv1.McpAnyServerConfig{
 		Collections: []*configv1.Collection{
-			configv1.Collection_builder{
+			{
 				Name:   proto.String("skills-collection"),
 				Skills: []string{"test-skill"},
-			}.Build(),
+			},
 		},
-	}.Build()
+	}
 
 	errs := Validate(context.Background(), config, Server)
 	assert.Empty(t, errs, "Expected no validation error for inline collection with skills")

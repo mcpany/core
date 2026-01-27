@@ -17,19 +17,19 @@ func TestManager_Profiles(t *testing.T) {
 	tm := NewManager(nil)
 
 	// Define profiles
-	p1 := configv1.ProfileDefinition_builder{
+	p1 := &configv1.ProfileDefinition{
 		Name: proto.String("p1"),
 		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-			"s1": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
-			"s2": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(false)}.Build(),
+			"s1": {Enabled: proto.Bool(true)},
+			"s2": {Enabled: proto.Bool(false)},
 		},
-	}.Build()
-	p2 := configv1.ProfileDefinition_builder{
+	}
+	p2 := &configv1.ProfileDefinition{
 		Name: proto.String("p2"),
-		Selector: configv1.ProfileSelector_builder{
+		Selector: &configv1.ProfileSelector{
 			Tags: []string{"allowed"},
-		}.Build(),
-	}.Build()
+		},
+	}
 
 	tm.SetProfiles([]string{"p1", "p2"}, []*configv1.ProfileDefinition{p1, p2})
 
@@ -80,14 +80,14 @@ func TestManager_Profiles(t *testing.T) {
 	assert.False(t, tm.ToolMatchesProfile(mTool3, "p2"))
 
     // Test matchesProperties
-    p3 := configv1.ProfileDefinition_builder{
+    p3 := &configv1.ProfileDefinition{
 		Name: proto.String("p3"),
-		Selector: configv1.ProfileSelector_builder{
+		Selector: &configv1.ProfileSelector{
 			ToolProperties: map[string]string{
                 "read_only": "true",
             },
-		}.Build(),
-	}.Build()
+		},
+	}
     // Update profiles
     tm.SetProfiles([]string{"p1", "p2", "p3"}, []*configv1.ProfileDefinition{p1, p2, p3})
 
@@ -112,12 +112,12 @@ func TestManager_Profiles(t *testing.T) {
 func TestManager_IsToolAllowed_Indirect(t *testing.T) {
      tm := NewManager(nil)
 
-     p1 := configv1.ProfileDefinition_builder{
+     p1 := &configv1.ProfileDefinition{
 		Name: proto.String("p1"),
         ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-			"s1": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
+			"s1": {Enabled: proto.Bool(true)},
 		},
-	}.Build()
+	}
     tm.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{p1})
 
     // Tool allowed

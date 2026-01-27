@@ -10,35 +10,37 @@ import (
 	"testing"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/consts"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
-	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
-		"properties": map[string]interface{}{
-			"args": map[string]interface{}{},
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
 		},
-	})
-	toolDef := mcp_router_v1.Tool_builder{
+	}
+	tool := &v1.Tool{
 		Name:        proto.String("test-tool-large"),
 		InputSchema: inputSchema,
-	}.Build()
-
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("python3"),
-		Local:   proto.Bool(true),
-	}.Build()
-
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{}
+	// Use python3 to print 10MB of data
+	service.Command = proto.String("python3")
+	service.Local = proto.Bool(true)
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "print('a' * 10 * 1024 * 1024)"},
-	}.Build()
+	}
 
-	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-large",
@@ -54,34 +56,38 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	assert.True(t, ok)
 	stdout := resultMap["stdout"].(string)
 
+	// Default limit is 10MB. The command outputs 10MB + 1 byte (newline).
+	// So it should be truncated to exactly 10MB.
 	assert.Equal(t, consts.DefaultMaxCommandOutputBytes, len(stdout))
 	t.Logf("Execution took %v, output size: %d", time.Since(start), len(stdout))
 }
 
 func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
+	// Set the env var to limit output to 1KB
 	os.Setenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE", "1024")
 	defer os.Unsetenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
 
-	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
-		"properties": map[string]interface{}{
-			"args": map[string]interface{}{},
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"args": structpb.NewStructValue(&structpb.Struct{}),
+				},
+			}),
 		},
-	})
-	toolDef := mcp_router_v1.Tool_builder{
+	}
+	tool := &v1.Tool{
 		Name:        proto.String("test-tool-large-truncated"),
 		InputSchema: inputSchema,
-	}.Build()
-
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("python3"),
-		Local:   proto.Bool(true),
-	}.Build()
-
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	service := &configv1.CommandLineUpstreamService{}
+	service.Command = proto.String("python3")
+	service.Local = proto.Bool(true)
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "print('a' * 2048)"},
-	}.Build()
+	}
 
-	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
 
 	req := &ExecutionRequest{
 		ToolName:  "test-tool-large-truncated",
@@ -96,5 +102,6 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	assert.True(t, ok)
 	stdout := resultMap["stdout"].(string)
 
+	// Should be truncated to 1024
 	assert.Equal(t, 1024, len(stdout))
 }

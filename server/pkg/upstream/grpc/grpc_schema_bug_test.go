@@ -28,28 +28,28 @@ func TestGRPCUpstream_SchemaBug_ExplicitConfig(t *testing.T) {
 	tm := NewMockToolManager()
 
 	// Use config-based tool definition (not reflection auto-discovery)
-	grpcService := configv1.GrpcUpstreamService_builder{
-		Address:      proto.String(addr),
-		UseReflection: proto.Bool(true), // Reflection used to fetch descriptors, but we define tools explicitly
-		Tools: []*configv1.ToolDefinition{
-			configv1.ToolDefinition_builder{
-				Name:   proto.String("GetWeatherConfig"),
-				CallId: proto.String("weather_call"),
-			}.Build(),
-		},
-		Calls: map[string]*configv1.GrpcCallDefinition{
-			"weather_call": configv1.GrpcCallDefinition_builder{
-				Id:      proto.String("weather_call"),
-				Service: proto.String("examples.weather.v1.WeatherService"),
-				Method:  proto.String("GetWeather"),
-			}.Build(),
-		},
-	}.Build()
+	grpcService := &configv1.GrpcUpstreamService{}
+	grpcService.SetAddress(addr)
+	grpcService.SetUseReflection(true) // Reflection used to fetch descriptors, but we define tools explicitly
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		Name:        proto.String("weather-service-bug"),
-		GrpcService: grpcService,
-	}.Build()
+	// Explicitly define tool and call
+	grpcService.Tools = []*configv1.ToolDefinition{
+		{
+			Name:   proto.String("GetWeatherConfig"),
+			CallId: proto.String("weather_call"),
+		},
+	}
+	grpcService.Calls = map[string]*configv1.GrpcCallDefinition{
+		"weather_call": {
+			Id:      proto.String("weather_call"),
+			Service: proto.String("examples.weather.v1.WeatherService"),
+			Method:  proto.String("GetWeather"),
+		},
+	}
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("weather-service-bug")
+	serviceConfig.SetGrpcService(grpcService)
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)
 	require.NoError(t, err)

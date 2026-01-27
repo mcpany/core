@@ -41,7 +41,7 @@ func TestHTTPUpstream_Register_CallPolicyCompileError(t *testing.T) {
 	}`
 	// "(" is invalid regex.
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -70,7 +70,7 @@ func TestHTTPUpstream_Register_UnsupportedMethod(t *testing.T) {
 	}`
 	// UNSPECIFIED -> httpMethodToString returns error.
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -102,7 +102,7 @@ func TestHTTPUpstream_Register_DoubleSlashParseFailure(t *testing.T) {
 	}`
 	// "//:invalid" might fail Parse?
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	// If recovery works, it becomes "///:invalid" which is valid path.
@@ -158,7 +158,7 @@ func TestHTTPUpstream_Register_InputSchema_PropertiesNotStruct(t *testing.T) {
 		}
 	}`
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -182,7 +182,7 @@ func TestNewHTTPPool_PoolNewError(t *testing.T) {
 			"tls_config": {}
 		}
 	}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	// MinSize > MaxSize causes pool.New to fail.
@@ -201,7 +201,7 @@ func TestHTTPUpstream_Register_EmptyAddress(t *testing.T) {
 			"address": ""
 		}
 	}`
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -229,7 +229,7 @@ func TestHTTPUpstream_Register_DoubleSlashPath(t *testing.T) {
 		}
 	}`
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -282,7 +282,7 @@ func TestHTTPUpstream_Register_ExplicitInputSchema_Merging(t *testing.T) {
 		}
 	}`
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -336,7 +336,7 @@ func TestHTTPUpstream_Register_EndpointParseFailure(t *testing.T) {
 	// ":/..." usually parses as scheme ":" which is invalid? Or valid scheme empty?
 	// url.Parse(":/foo") -> err "first path segment in URL cannot contain colon"
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -395,7 +395,7 @@ func TestNewHTTPPool_MTLS_CertError(t *testing.T) {
 			"tls_config": {}
 		}
 	}`
-	config := configv1.UpstreamServiceConfig_builder{}.Build()
+	config := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), config))
 
 	_, err := NewHTTPPool(1, 1, 0, config)

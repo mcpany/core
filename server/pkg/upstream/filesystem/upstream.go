@@ -208,37 +208,44 @@ func (u *Upstream) createProvider(ctx context.Context, config *configv1.Filesyst
 	var err error
 
 	// Determine the backend filesystem
-	if config.GetTmpfs() != nil {
+	switch config.FilesystemType.(type) {
+	case *configv1.FilesystemUpstreamService_Tmpfs:
 		prov = provider.NewTmpfsProvider()
-	} else if config.GetHttp() != nil {
+
+	case *configv1.FilesystemUpstreamService_Http:
 		return nil, fmt.Errorf("http filesystem is not yet supported")
-	} else if zip := config.GetZip(); zip != nil {
-		prov, err = provider.NewZipProvider(zip)
+
+	case *configv1.FilesystemUpstreamService_Zip:
+		prov, err = provider.NewZipProvider(config.GetZip())
 		if err != nil {
 			return nil, err
 		}
-	} else if gcs := config.GetGcs(); gcs != nil {
-		prov, err = provider.NewGcsProvider(ctx, gcs)
+
+	case *configv1.FilesystemUpstreamService_Gcs:
+		prov, err = provider.NewGcsProvider(ctx, config.GetGcs())
 		if err != nil {
 			return nil, err
 		}
-	} else if sftp := config.GetSftp(); sftp != nil {
-		prov, err = provider.NewSftpProvider(sftp)
+
+	case *configv1.FilesystemUpstreamService_Sftp:
+		prov, err = provider.NewSftpProvider(config.GetSftp())
 		if err != nil {
 			return nil, err
 		}
-	} else if s3 := config.GetS3(); s3 != nil {
-		prov, err = provider.NewS3Provider(s3)
+
+	case *configv1.FilesystemUpstreamService_S3:
+		prov, err = provider.NewS3Provider(config.GetS3())
 		if err != nil {
 			return nil, err
 		}
-	} else if os := config.GetOs(); os != nil {
-		prov = provider.NewLocalProvider(os, config.GetRootPaths(), config.GetAllowedPaths(), config.GetDeniedPaths(), config.GetSymlinkMode())
-	} else {
+
+	case *configv1.FilesystemUpstreamService_Os:
+		prov = provider.NewLocalProvider(config.GetOs(), config.RootPaths, config.AllowedPaths, config.DeniedPaths, config.GetSymlinkMode())
+
+	default:
 		// Fallback to OsFs for backward compatibility if root_paths is set?
 		// Or defaulting to OsFs.
-		// Use nil for OsFs config, effectively default.
-		prov = provider.NewLocalProvider(nil, config.GetRootPaths(), config.GetAllowedPaths(), config.GetDeniedPaths(), config.GetSymlinkMode())
+		prov = provider.NewLocalProvider(nil, config.RootPaths, config.AllowedPaths, config.DeniedPaths, config.GetSymlinkMode())
 	}
 
 	// Wrap with ReadOnly if requested.
@@ -264,5 +271,5 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 		fs = afero.NewReadOnlyFs(fs)
 	}
 
-	return getTools(prov, fs, fsService.GetReadOnly(), fsService.GetRootPaths())
+	return getTools(prov, fs, fsService.GetReadOnly(), fsService.RootPaths)
 }

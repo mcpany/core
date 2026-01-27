@@ -14,8 +14,11 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
 	"golang.org/x/oauth2"
-	"google.golang.org/protobuf/proto"
 )
+
+func ptr(s string) *string {
+	return &s
+}
 
 // InitiateOAuth starts the OAuth2 flow for a given service or credential.
 // It returns the authorization URL and the state parameter.
@@ -118,6 +121,15 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 }
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
+//
+// ctx is the context for the request.
+// userID is the userID.
+// serviceID is the serviceID.
+// credentialID is the credentialID.
+// code is the code.
+// redirectURL is the redirectURL.
+//
+// Returns an error if the operation fails.
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage
@@ -187,20 +199,30 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 		return fmt.Errorf("failed to exchange code: %w", err)
 	}
 
-	userToken := configv1.UserToken_builder{
-		UserId:       proto.String(userID),
-		ServiceId:    proto.String(serviceID),
-		AccessToken:  proto.String(token.AccessToken),
-		RefreshToken: proto.String(token.RefreshToken),
-		TokenType:    proto.String(token.TokenType),
-		Expiry:       proto.String(token.Expiry.Format(time.RFC3339)),
-		Scope:        proto.String(oauthConfig.GetScopes()),
-		UpdatedAt:    proto.String(time.Now().Format(time.RFC3339)),
-	}.Build()
+	// TODO: Fetch user info (email) if possible using token?
+	// For now we don't know the user info endpoint unless we infer it or add it to config.
+	// But the feature request says "remember details fetched from process like email/scope".
+	// Scope is in token. extra.
+	// Email usually requires a call to /userinfo or similar.
+	// If OIDC, it might be in ID Token.
+	// For generic OAuth2, we'd need a userinfo endpoint.
+	// I'll add "Email" to UserToken but I won't populate it yet unless I know how.
+	// Maybe I can try to extract email if it's an ID token.
+
+	userToken := &configv1.UserToken{
+		UserId:       ptr(userID),
+		ServiceId:    ptr(serviceID),
+		AccessToken:  ptr(token.AccessToken),
+		RefreshToken: ptr(token.RefreshToken),
+		TokenType:    ptr(token.TokenType),
+		Expiry:       ptr(token.Expiry.Format(time.RFC3339)),
+		Scope:        ptr(oauthConfig.GetScopes()), // This might need to be actual scopes granted?
+		UpdatedAt:    ptr(time.Now().Format(time.RFC3339)),
+	}
 
 	// If extra has "scope", use it
 	if sc, ok := token.Extra("scope").(string); ok && sc != "" {
-		userToken.SetScope(sc)
+		userToken.Scope = ptr(sc)
 	}
 
 	if credentialID != "" {

@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,16 +30,16 @@ func TestEnvVarRepeatedMessage(t *testing.T) {
 			name:     "JSON Array",
 			envValue: `[{"name": "service1", "http_service": {"address": "http://example.com"}}]`,
 			verify: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
-				require.Len(t, cfg.GetUpstreamServices(), 1)
-				assert.Equal(t, "service1", cfg.GetUpstreamServices()[0].GetName())
+				require.Len(t, cfg.UpstreamServices, 1)
+				assert.Equal(t, "service1", *cfg.UpstreamServices[0].Name)
 			},
 		},
 		{
 			name:     "JSON Object (Single)",
 			envValue: `{"name": "service2", "http_service": {"address": "http://example.org"}}`,
 			verify: func(t *testing.T, cfg *configv1.McpAnyServerConfig) {
-				require.Len(t, cfg.GetUpstreamServices(), 1)
-				assert.Equal(t, "service2", cfg.GetUpstreamServices()[0].GetName())
+				require.Len(t, cfg.UpstreamServices, 1)
+				assert.Equal(t, "service2", *cfg.UpstreamServices[0].Name)
 			},
 		},
 		{
@@ -84,7 +84,7 @@ func TestEnvVarRepeatedMessageCSVWithJSON(t *testing.T) {
 	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
 
-    require.Len(t, cfg.GetUpstreamServices(), 2)
-    assert.Equal(t, "s1", cfg.GetUpstreamServices()[0].GetName())
-    assert.Equal(t, "s2", cfg.GetUpstreamServices()[1].GetName())
+    require.Len(t, cfg.UpstreamServices, 2)
+    assert.Equal(t, "s1", *cfg.UpstreamServices[0].Name)
+    assert.Equal(t, "s2", *cfg.UpstreamServices[1].Name)
 }

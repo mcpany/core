@@ -126,20 +126,18 @@ func TestUpstream_Register_DisabledTool(t *testing.T) {
 		Disable:     proto.Bool(true),
 	}.Build()
 
-	websocketService := configv1.WebsocketUpstreamService_builder{
-		Address: proto.String("ws://127.0.0.1:8080/echo"),
-		Tools:   []*configv1.ToolDefinition{toolDef},
-		Calls: map[string]*configv1.WebsocketCallDefinition{
-			"echo-call": configv1.WebsocketCallDefinition_builder{
-				Id: proto.String("echo-call"),
-			}.Build(),
-		},
+	websocketService := &configv1.WebsocketUpstreamService{}
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+	calls := make(map[string]*configv1.WebsocketCallDefinition)
+	calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
+		Id: proto.String("echo-call"),
 	}.Build()
+	websocketService.SetCalls(calls)
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		Name:             proto.String("test-websocket-service"),
-		WebsocketService: websocketService,
-	}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-websocket-service")
+	serviceConfig.SetWebsocketService(websocketService)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 	require.NoError(t, err)
@@ -170,20 +168,18 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 			CallId:      proto.String("echo-call"),
 		}.Build()
 
-		websocketService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://127.0.0.1:8080/echo"),
-			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"echo-call": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("echo-call"),
-				}.Build(),
-			},
+		websocketService := &configv1.WebsocketUpstreamService{}
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+		websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("echo-call"),
 		}.Build()
+		websocketService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("test-websocket-service"),
-			WebsocketService: websocketService,
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-websocket-service")
+		serviceConfig.SetWebsocketService(websocketService)
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -216,9 +212,9 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 		var resourceManager resource.ManagerInterface
 		upstream := NewUpstream(poolManager)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("test-websocket-service"),
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-websocket-service")
+		serviceConfig.SetWebsocketService(nil)
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.Error(t, err)
@@ -238,20 +234,18 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 			CallId: proto.String("echo-call"),
 		}.Build()
 
-		websocketService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://127.0.0.1:8080/echo"),
-			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"echo-call": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("echo-call"),
-				}.Build(),
-			},
+		websocketService := &configv1.WebsocketUpstreamService{}
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+		websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("echo-call"),
 		}.Build()
+		websocketService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("test-websocket-service"),
-			WebsocketService: websocketService,
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-websocket-service")
+		serviceConfig.SetWebsocketService(websocketService)
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -270,23 +264,25 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 			CallId: proto.String("echo-call"),
 		}.Build()
 
-		websocketService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://127.0.0.1:8080/echo"),
-			Tools:   []*configv1.ToolDefinition{toolDef},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"echo-call": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("echo-call"),
-				}.Build(),
-			},
+		websocketService := &configv1.WebsocketUpstreamService{}
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+		websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("echo-call"),
 		}.Build()
+		websocketService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("auth-fail-service"),
-			WebsocketService: websocketService,
-			UpstreamAuth: configv1.Authentication_builder{
-				ApiKey: configv1.APIKeyAuth_builder{}.Build(),
-			}.Build(),
-		}.Build()
+		authConfig := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: &configv1.APIKeyAuth{},
+			},
+		}
+
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("auth-fail-service")
+		serviceConfig.SetWebsocketService(websocketService)
+		serviceConfig.SetUpstreamAuth(authConfig)
 
 		_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -311,23 +307,21 @@ func TestUpstream_Register_Mocked(t *testing.T) {
 			CallId:      proto.String("call2"),
 		}.Build()
 
-		websocketService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String("ws://127.0.0.1:8080/echo"),
-			Tools:   []*configv1.ToolDefinition{toolDef1, toolDef2},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"call1": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("call1"),
-				}.Build(),
-				"call2": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("call2"),
-				}.Build(),
-			},
+		websocketService := &configv1.WebsocketUpstreamService{}
+		websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+		websocketService.SetTools([]*configv1.ToolDefinition{toolDef1, toolDef2})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["call1"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("call1"),
 		}.Build()
+		calls["call2"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("call2"),
+		}.Build()
+		websocketService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("test-service-fallback"),
-			WebsocketService: websocketService,
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-service-fallback")
+		serviceConfig.SetWebsocketService(websocketService)
 
 		serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
 		require.NoError(t, err)
@@ -429,16 +423,18 @@ func TestUpstream_Register_Integration(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
 		upstream := NewUpstream(poolManager)
 
-		apiKeyAuth := configv1.APIKeyAuth_builder{
+		apiKeyAuth := &configv1.APIKeyAuth{
 			ParamName: proto.String("X-API-Key"),
-			Value: configv1.SecretValue_builder{
-				PlainText: proto.String("test-key"),
-			}.Build(),
-		}.Build()
+			Value: &configv1.SecretValue{
+				Value: &configv1.SecretValue_PlainText{PlainText: "test-key"},
+			},
+		}
 
-		authConfig := configv1.Authentication_builder{
-			ApiKey: apiKeyAuth,
-		}.Build()
+		authConfig := &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_ApiKey{
+				ApiKey: apiKeyAuth,
+			},
+		}
 
 		tool1 := configv1.ToolDefinition_builder{
 			Name:        proto.String("test-op"),
@@ -451,24 +447,22 @@ func TestUpstream_Register_Integration(t *testing.T) {
 			CallId:      proto.String("call2"),
 		}.Build()
 
-		wsService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String(wsURL),
-			Tools:   []*configv1.ToolDefinition{tool1, tool2},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"call1": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("call1"),
-				}.Build(),
-				"call2": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("call2"),
-				}.Build(),
-			},
+		wsService := &configv1.WebsocketUpstreamService{}
+		wsService.SetAddress(wsURL)
+		wsService.SetTools([]*configv1.ToolDefinition{tool1, tool2})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["call1"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("call1"),
 		}.Build()
+		calls["call2"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("call2"),
+		}.Build()
+		wsService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("test-service"),
-			WebsocketService: wsService,
-			UpstreamAuth:     authConfig,
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("test-service")
+		serviceConfig.SetUpstreamAuth(authConfig)
+		serviceConfig.SetWebsocketService(wsService)
 
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
@@ -481,9 +475,8 @@ func TestUpstream_Register_Integration(t *testing.T) {
 
 	t.Run("nil websocket service config", func(t *testing.T) {
 		upstream := NewUpstream(poolManager)
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("nil-config-service"),
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("nil-config-service")
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.Error(t, err)
@@ -492,10 +485,9 @@ func TestUpstream_Register_Integration(t *testing.T) {
 
 	t.Run("invalid service name", func(t *testing.T) {
 		upstream := NewUpstream(poolManager)
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String(""),
-			WebsocketService: configv1.WebsocketUpstreamService_builder{}.Build(),
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("")
+		serviceConfig.SetWebsocketService(&configv1.WebsocketUpstreamService{})
 
 		_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.Error(t, err)
@@ -510,21 +502,20 @@ func TestUpstream_Register_Integration(t *testing.T) {
 			CallId: proto.String("test-call"),
 		}.Build()
 
-		wsService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String(wsURL),
-			Tools:   []*configv1.ToolDefinition{tool1},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"test-call": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("test-call"),
-				}.Build(),
-			},
+		wsService := &configv1.WebsocketUpstreamService{}
+		wsService.SetAddress(wsURL)
+		wsService.SetTools([]*configv1.ToolDefinition{tool1})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["test-call"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("test-call"),
 		}.Build()
+		wsService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("auth-fail-service"),
-			WebsocketService: wsService,
-			UpstreamAuth:     configv1.Authentication_builder{}.Build(),
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("auth-fail-service")
+		// Intentionally not setting auth method on Authentication, which is a valid scenario (no auth).
+		serviceConfig.SetUpstreamAuth(&configv1.Authentication{})
+		serviceConfig.SetWebsocketService(wsService)
 
 		serviceID, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
@@ -547,23 +538,21 @@ func TestUpstream_Register_Integration(t *testing.T) {
 			CallId:      proto.String("call2"),
 		}.Build()
 
-		wsService := configv1.WebsocketUpstreamService_builder{
-			Address: proto.String(wsURL),
-			Tools:   []*configv1.ToolDefinition{tool1, tool2},
-			Calls: map[string]*configv1.WebsocketCallDefinition{
-				"call1": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("call1"),
-				}.Build(),
-				"call2": configv1.WebsocketCallDefinition_builder{
-					Id: proto.String("call2"),
-				}.Build(),
-			},
+		wsService := &configv1.WebsocketUpstreamService{}
+		wsService.SetAddress(wsURL)
+		wsService.SetTools([]*configv1.ToolDefinition{tool1, tool2})
+		calls := make(map[string]*configv1.WebsocketCallDefinition)
+		calls["call1"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("call1"),
 		}.Build()
+		calls["call2"] = configv1.WebsocketCallDefinition_builder{
+			Id: proto.String("call2"),
+		}.Build()
+		wsService.SetCalls(calls)
 
-		serviceConfig := configv1.UpstreamServiceConfig_builder{
-			Name:             proto.String("fallback-op-id"),
-			WebsocketService: wsService,
-		}.Build()
+		serviceConfig := &configv1.UpstreamServiceConfig{}
+		serviceConfig.SetName("fallback-op-id")
+		serviceConfig.SetWebsocketService(wsService)
 
 		serviceID, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 		require.NoError(t, err)
@@ -588,20 +577,18 @@ func TestUpstream_Register_WithReload(t *testing.T) {
 		CallId: proto.String("test-call"),
 	}.Build()
 
-	wsService := configv1.WebsocketUpstreamService_builder{
-		Address: proto.String(wsURL),
-		Tools:   []*configv1.ToolDefinition{tool1},
-		Calls: map[string]*configv1.WebsocketCallDefinition{
-			"test-call": configv1.WebsocketCallDefinition_builder{
-				Id: proto.String("test-call"),
-			}.Build(),
-		},
+	wsService := &configv1.WebsocketUpstreamService{}
+	wsService.SetAddress(wsURL)
+	wsService.SetTools([]*configv1.ToolDefinition{tool1})
+	calls := make(map[string]*configv1.WebsocketCallDefinition)
+	calls["test-call"] = configv1.WebsocketCallDefinition_builder{
+		Id: proto.String("test-call"),
 	}.Build()
+	wsService.SetCalls(calls)
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		Name:             proto.String("reload-test"),
-		WebsocketService: wsService,
-	}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("reload-test")
+	serviceConfig.SetWebsocketService(wsService)
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -639,28 +626,24 @@ func TestUpstream_Register_DisabledItems(t *testing.T) {
 		Disable: proto.Bool(true),
 	}.Build()
 
-	enabledPrompt := configv1.PromptDefinition_builder{
-		Name: proto.String("enabled-prompt"),
-	}.Build()
-	disabledPrompt := configv1.PromptDefinition_builder{
-		Name:    proto.String("disabled-prompt"),
-		Disable: proto.Bool(true),
-	}.Build()
+	enabledPrompt := &configv1.PromptDefinition{}
+	enabledPrompt.SetName("enabled-prompt")
+	disabledPrompt := &configv1.PromptDefinition{}
+	disabledPrompt.SetName("disabled-prompt")
+	disabledPrompt.SetDisable(true)
 
-	wsService := configv1.WebsocketUpstreamService_builder{
-		Address: proto.String(wsURL),
-		Tools:   []*configv1.ToolDefinition{enabledTool, disabledTool},
-		Calls: map[string]*configv1.WebsocketCallDefinition{
-			"enabled-call":  configv1.WebsocketCallDefinition_builder{Id: proto.String("enabled-call")}.Build(),
-			"disabled-call": configv1.WebsocketCallDefinition_builder{Id: proto.String("disabled-call")}.Build(),
-		},
-		Prompts: []*configv1.PromptDefinition{enabledPrompt, disabledPrompt},
-	}.Build()
+	wsService := &configv1.WebsocketUpstreamService{}
+	wsService.SetAddress(wsURL)
+	wsService.SetTools([]*configv1.ToolDefinition{enabledTool, disabledTool})
+	wsService.SetCalls(map[string]*configv1.WebsocketCallDefinition{
+		"enabled-call":  configv1.WebsocketCallDefinition_builder{Id: proto.String("enabled-call")}.Build(),
+		"disabled-call": configv1.WebsocketCallDefinition_builder{Id: proto.String("disabled-call")}.Build(),
+	})
+	wsService.SetPrompts([]*configv1.PromptDefinition{enabledPrompt, disabledPrompt})
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		Name:             proto.String("disabled-items-test"),
-		WebsocketService: wsService,
-	}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("disabled-items-test")
+	serviceConfig.SetWebsocketService(wsService)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, pm, rm, false)
 	require.NoError(t, err)
@@ -683,19 +666,110 @@ func TestUpstream_Register_MissingCallDefinition(t *testing.T) {
 		CallId: proto.String("missing-call"),
 	}.Build()
 
-	wsService := configv1.WebsocketUpstreamService_builder{
-		Address: proto.String(wsURL),
-		Tools:   []*configv1.ToolDefinition{toolWithMissingCall},
-	}.Build()
+	wsService := &configv1.WebsocketUpstreamService{}
+	wsService.SetAddress(wsURL)
+	wsService.SetTools([]*configv1.ToolDefinition{toolWithMissingCall})
+	wsService.SetCalls(map[string]*configv1.WebsocketCallDefinition{})
 
-	serviceConfig := configv1.UpstreamServiceConfig_builder{
-		Name:             proto.String("missing-call-def-test"),
-		WebsocketService: wsService,
-	}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("missing-call-def-test")
+	serviceConfig.SetWebsocketService(wsService)
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
 	assert.Empty(t, tm.ListTools(), "No tools should be registered if call definition is missing")
+}
+
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+func TestUpstream_createAndRegisterWebsocketTools_DisabledTool(t *testing.T) {
+	toolManager := NewMockToolManager(nil)
+	poolManager := pool.NewManager()
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
+
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:        proto.String("echo"),
+		Description: proto.String("Echoes a message"),
+		CallId:      proto.String("echo-call"),
+		Disable:     proto.Bool(true),
+	}.Build()
+
+	websocketService := &configv1.WebsocketUpstreamService{}
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-websocket-service")
+	serviceConfig.SetWebsocketService(websocketService)
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, discoveredTools)
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_MissingCallDefinition(t *testing.T) {
+	toolManager := NewMockToolManager(nil)
+	poolManager := pool.NewManager()
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
+
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:        proto.String("echo"),
+		Description: proto.String("Echoes a message"),
+		CallId:      proto.String("echo-call"),
+	}.Build()
+
+	websocketService := &configv1.WebsocketUpstreamService{}
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-websocket-service")
+	serviceConfig.SetWebsocketService(websocketService)
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, discoveredTools)
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_MissingToolName(t *testing.T) {
+	toolManager := NewMockToolManager(nil)
+	poolManager := pool.NewManager()
+	var promptManager prompt.ManagerInterface
+	var resourceManager resource.ManagerInterface
+
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Description: proto.String("Echoes a message"),
+		CallId:      proto.String("echo-call"),
+	}.Build()
+
+	websocketService := &configv1.WebsocketUpstreamService{}
+	websocketService.SetAddress("ws://127.0.0.1:8080/echo")
+	websocketService.SetTools([]*configv1.ToolDefinition{toolDef})
+	calls := make(map[string]*configv1.WebsocketCallDefinition)
+	calls["echo-call"] = configv1.WebsocketCallDefinition_builder{
+		Id: proto.String("echo-call"),
+	}.Build()
+	websocketService.SetCalls(calls)
+
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("test-websocket-service")
+	serviceConfig.SetWebsocketService(websocketService)
+
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, promptManager, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.NotEmpty(t, discoveredTools)
 }
 
 func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *testing.T) {
@@ -725,7 +799,150 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
 	require.NoError(t, err)
-	assert.Empty(t, resourceManager.ListResources(), "No resources should be registered if tool is missing")
+
+	assert.Empty(t, resourceManager.ListResources())
+}
+
+func TestUpstream_Shutdown(t *testing.T) {
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	// Register a service to set the serviceID
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		WebsocketService: configv1.WebsocketUpstreamService_builder{
+			Address: proto.String("ws://127.0.0.1"),
+		}.Build(),
+	}.Build()
+
+	toolManager := tool.NewManager(nil)
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, nil, false)
+	require.NoError(t, err)
+
+	// Verify pool is registered
+	_, ok := pool.Get[*client.WebsocketClientWrapper](poolManager, serviceID)
+	require.True(t, ok)
+
+	err = upstream.Shutdown(context.Background())
+	require.NoError(t, err)
+
+	// Verify pool is deregistered
+	_, ok = pool.Get[*client.WebsocketClientWrapper](poolManager, serviceID)
+	require.False(t, ok)
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_HappyPath(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("resource-tool"),
+		CallId: proto.String("resource-call"),
+	}.Build()
+
+	dynamicResource := configv1.ResourceDefinition_builder{
+		Name: proto.String("test-resource"),
+		Dynamic: configv1.DynamicResource_builder{
+			WebsocketCall: configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	websocketService := configv1.WebsocketUpstreamService_builder{
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
+		Tools:     []*configv1.ToolDefinition{toolDef},
+		Resources: []*configv1.ResourceDefinition{dynamicResource},
+		Calls: map[string]*configv1.WebsocketCallDefinition{
+			"resource-call": configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:             proto.String("test-websocket-service"),
+		WebsocketService: websocketService,
+	}.Build()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.NotEmpty(t, resourceManager.ListResources())
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_Disabled(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	toolDef := configv1.ToolDefinition_builder{
+		Name:   proto.String("resource-tool"),
+		CallId: proto.String("resource-call"),
+	}.Build()
+
+	dynamicResource := configv1.ResourceDefinition_builder{
+		Name:    proto.String("test-resource"),
+		Disable: proto.Bool(true),
+		Dynamic: configv1.DynamicResource_builder{
+			WebsocketCall: configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	websocketService := configv1.WebsocketUpstreamService_builder{
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
+		Tools:     []*configv1.ToolDefinition{toolDef},
+		Resources: []*configv1.ResourceDefinition{dynamicResource},
+		Calls: map[string]*configv1.WebsocketCallDefinition{
+			"resource-call": configv1.WebsocketCallDefinition_builder{
+				Id: proto.String("resource-call"),
+			}.Build(),
+		},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:             proto.String("test-websocket-service"),
+		WebsocketService: websocketService,
+	}.Build()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, resourceManager.ListResources())
+}
+
+func TestUpstream_createAndRegisterWebsocketTools_DynamicResource_NoCall(t *testing.T) {
+	toolManager := tool.NewManager(nil)
+	resourceManager := resource.NewManager()
+	poolManager := pool.NewManager()
+	upstream := NewUpstream(poolManager)
+
+	dynamicResource := configv1.ResourceDefinition_builder{
+		Name:    proto.String("test-resource"),
+		Dynamic: configv1.DynamicResource_builder{
+			// No WebsocketCall
+		}.Build(),
+	}.Build()
+
+	websocketService := configv1.WebsocketUpstreamService_builder{
+		Address:   proto.String("ws://127.0.0.1:8080/test"),
+		Resources: []*configv1.ResourceDefinition{dynamicResource},
+	}.Build()
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:             proto.String("test-websocket-service"),
+		WebsocketService: websocketService,
+	}.Build()
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, toolManager, nil, resourceManager, false)
+	require.NoError(t, err)
+
+	assert.Empty(t, resourceManager.ListResources())
 }
 
 func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {

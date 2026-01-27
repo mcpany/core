@@ -26,14 +26,14 @@ func TestConnectionPoolConfig(t *testing.T) {
 	err = protojson.Unmarshal(jsonContent, cfg)
 	require.NoError(t, err)
 
-	require.Len(t, cfg.GetUpstreamServices(), 1)
-	service := cfg.GetUpstreamServices()[0]
+	require.Len(t, cfg.UpstreamServices, 1)
+	service := cfg.UpstreamServices[0]
 
 	require.Equal(t, "pooled-service", service.GetName())
-	require.NotNil(t, service.GetConnectionPool())
-	require.Equal(t, int32(50), service.GetConnectionPool().GetMaxConnections())
-	require.Equal(t, int32(5), service.GetConnectionPool().GetMaxIdleConnections())
-	require.Equal(t, int64(60), service.GetConnectionPool().GetIdleTimeout().GetSeconds())
+	require.NotNil(t, service.ConnectionPool)
+	require.Equal(t, int32(50), service.ConnectionPool.GetMaxConnections())
+	require.Equal(t, int32(5), service.ConnectionPool.GetMaxIdleConnections())
+	require.Equal(t, int64(60), service.ConnectionPool.GetIdleTimeout().GetSeconds())
 
 	err = config.ValidateOrError(context.Background(), service)
 	require.NoError(t, err)

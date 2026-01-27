@@ -261,7 +261,7 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
-	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{Id: nil}}, nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)

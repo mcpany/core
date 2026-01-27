@@ -41,11 +41,6 @@ const actions = [
     }
 ];
 
-/**
- * A widget that provides quick access links to common actions and pages.
- *
- * @returns The rendered widget component.
- */
 export function QuickActionsWidget() {
     return (
         <Card className="h-full flex flex-col backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-md transition-all duration-300">

@@ -5,7 +5,6 @@ edition = "2023";
 
 package mcpany.config.v1;
 
-import "google/protobuf/go_features.proto";
 import "proto/bus/bus.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/auth.proto";
@@ -14,7 +13,6 @@ import "proto/config/v1/collection.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ConfigProto";
-option features.(pb.go).api_level = API_OPAQUE;
 
 // ===================================================================
 // Root Server Configuration

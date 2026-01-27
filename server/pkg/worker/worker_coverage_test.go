@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/bus"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -136,9 +136,7 @@ func TestServiceRegistrationWorker_GetServiceConfig(t *testing.T) {
 			// SanitizeID logic: "My Service" -> "MyService" (space removed)
 			// Since length changed, it appends hash: "MyService_<hash>"
 			if len(name) > 10 && name[:10] == "MyService_" {
-				cfg := &configv1.UpstreamServiceConfig{}
-				cfg.SetName(name)
-				return cfg, true
+				return &configv1.UpstreamServiceConfig{Name: &name}, true
 			}
 			return nil, false
 		},

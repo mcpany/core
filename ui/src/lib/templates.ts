@@ -4,7 +4,7 @@
  */
 
 import { UpstreamServiceConfig } from "@/lib/types";
-import { Database, FileText, Github, Globe, Server, Activity, Cloud } from "lucide-react";
+import { Database, FileText, Github, Globe, Server } from "lucide-react";
 
 /**
  * A template for creating a new service configuration.
@@ -40,8 +40,6 @@ export interface ServiceTemplate {
     replaceToken?: string;
     /** Default value for the field. */
     defaultValue?: string;
-    /** Input type (text, password, etc). Defaults to text. */
-    type?: string;
   }[];
 }
 
@@ -127,64 +125,6 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "GitHub Personal Access Token",
         placeholder: "ghp_...",
         key: "commandLineService.env.GITHUB_PERSONAL_ACCESS_TOKEN",
-        type: "password"
-      }
-    ]
-  },
-  {
-    id: "sentry",
-    name: "Sentry",
-    description: "Access Sentry issues and errors.",
-    icon: Activity,
-    config: {
-      name: "sentry",
-      commandLineService: {
-        command: "npx -y @modelcontextprotocol/server-sentry",
-        env: {
-            "SENTRY_AUTH_TOKEN": ""
-        },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-    },
-    fields: [
-      {
-        name: "token",
-        label: "Sentry Auth Token",
-        placeholder: "Enter your Sentry Auth Token",
-        key: "commandLineService.env.SENTRY_AUTH_TOKEN",
-        type: "password"
-      }
-    ]
-  },
-  {
-    id: "cloudflare",
-    name: "Cloudflare",
-    description: "Manage Cloudflare resources.",
-    icon: Cloud,
-    config: {
-      name: "cloudflare",
-      commandLineService: {
-        command: "npx -y @cloudflare/mcp-server-cloudflare",
-        env: {
-            "CLOUDFLARE_API_TOKEN": "",
-            "CLOUDFLARE_ACCOUNT_ID": ""
-        },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-    },
-    fields: [
-      {
-        name: "apiToken",
-        label: "Cloudflare API Token",
-        placeholder: "Enter your Cloudflare API Token",
-        key: "commandLineService.env.CLOUDFLARE_API_TOKEN",
-        type: "password"
-      },
-      {
-        name: "accountId",
-        label: "Cloudflare Account ID",
-        placeholder: "Enter your Cloudflare Account ID",
-        key: "commandLineService.env.CLOUDFLARE_ACCOUNT_ID",
       }
     ]
   },
@@ -209,7 +149,6 @@ export const SERVICE_TEMPLATES: ServiceTemplate[] = [
         label: "Brave API Key",
         placeholder: "BSA...",
         key: "commandLineService.env.BRAVE_API_KEY",
-        type: "password"
       }
     ]
   },

@@ -13,7 +13,6 @@ import (
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -56,36 +55,38 @@ func TestHTTPUpstream_URLConstruction_FlagOverride(t *testing.T) {
 			pm := pool.NewManager()
 			u := NewUpstream(pm)
 
-			cfg := configv1.UpstreamServiceConfig_builder{
+			cfg := &configv1.UpstreamServiceConfig{
 				Name: proto.String("test-service"),
-				HttpService: configv1.HttpUpstreamService_builder{
-					Address: proto.String(tt.baseAddr),
-					Calls: map[string]*configv1.HttpCallDefinition{
-						"test-call": configv1.HttpCallDefinition_builder{
-							EndpointPath: proto.String(tt.endpoint),
-							Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
-						}.Build(),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: proto.String(tt.baseAddr),
+						Calls: map[string]*configv1.HttpCallDefinition{
+							"test-call": {
+								EndpointPath: proto.String(tt.endpoint),
+								Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+							},
+						},
+						Tools: []*configv1.ToolDefinition{
+							{
+								Name:   proto.String("test-tool"),
+								CallId: proto.String("test-call"),
+							},
+						},
 					},
-					Tools: []*configv1.ToolDefinition{
-						configv1.ToolDefinition_builder{
-							Name:   proto.String("test-tool"),
-							CallId: proto.String("test-call"),
-						}.Build(),
-					},
-				}.Build(),
-			}.Build()
+				},
+			}
 
 			tm := tool.NewManager(nil)
 			rm := resource.NewManager()
 			sm := prompt.NewManager()
 
-			id, tools, _, err := u.Register(ctx, cfg, tm, sm, rm, false)
+			_, tools, _, err := u.Register(ctx, cfg, tm, sm, rm, false)
 			assert.NoError(t, err)
 			assert.Len(t, tools, 1)
 
-			// Get the tool using the returned ID
-			registeredTool, ok := tm.GetTool(id + ".test-tool")
-			require.True(t, ok)
+			// Get the tool and check its FQN which contains the URL
+			registeredTool, ok := tm.GetTool("test-service.test-tool")
+			assert.True(t, ok)
 			assert.Contains(t, registeredTool.Tool().GetUnderlyingMethodFqn(), tt.expectedURL)
 		})
 	}

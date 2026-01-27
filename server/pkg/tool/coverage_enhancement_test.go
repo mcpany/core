@@ -40,19 +40,19 @@ func TestLocalCommandTool_SecurityChecks(t *testing.T) {
 	// Test CommandTool security checks directly via Execute or helper methods if exposed (they are not exported)
 	// We use Execute to trigger them.
 
-	svcConfig := configv1.CommandLineUpstreamService_builder{
+	svcConfig := &configv1.CommandLineUpstreamService{
 		Command: proto.String("ls"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"{{arg}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build(),
-			}.Build(),
+			{
+				Schema: &configv1.ParameterSchema{Name: proto.String("arg")},
+			},
 		},
-	}.Build()
+	}
 
-	toolDef := v1.Tool_builder{Name: proto.String("cmd_tool")}.Build()
+	toolDef := &v1.Tool{Name: proto.String("cmd_tool")}
 
 	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 
@@ -120,19 +120,19 @@ func TestLocalCommandTool_SecurityChecks(t *testing.T) {
 
 func TestLocalCommandTool_ShellInjection(t *testing.T) {
 	// Test shell injection checks when command is a shell
-	svcConfig := configv1.CommandLineUpstreamService_builder{
+	svcConfig := &configv1.CommandLineUpstreamService{
 		Command: proto.String("bash"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
+	}
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"-c", "{{script}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("script")}.Build(),
-			}.Build(),
+			{
+				Schema: &configv1.ParameterSchema{Name: proto.String("script")},
+			},
 		},
-	}.Build()
+	}
 
-	toolDef := v1.Tool_builder{Name: proto.String("shell_tool")}.Build()
+	toolDef := &v1.Tool{Name: proto.String("shell_tool")}
 
 	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 
@@ -180,10 +180,10 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 
 func TestLocalCommandTool_ArgsParameter(t *testing.T) {
     // Test the "args" parameter special handling
-	svcConfig := configv1.CommandLineUpstreamService_builder{
+	svcConfig := &configv1.CommandLineUpstreamService{
 		Command: proto.String("ls"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{}.Build() // No defined args, rely on input "args"
+	}
+	callDef := &configv1.CommandLineCallDefinition{} // No defined args, rely on input "args"
 
 	// Tool definition must allow args in input schema
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
@@ -198,10 +198,10 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 	    },
 	})
 
-	toolDef := v1.Tool_builder{
+	toolDef := &v1.Tool{
 	    Name: proto.String("ls_tool"),
 	    InputSchema: inputSchema, // Direct assignment of *structpb.Struct
-	}.Build()
+	}
 
 	cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
 	ctx := context.Background()
@@ -225,19 +225,19 @@ func TestLocalCommandTool_ArgsParameter(t *testing.T) {
 
 func TestLocalCommandTool_DockerEnv(t *testing.T) {
     // Test that checking for absolute path is skipped for Docker
-    svcConfig := configv1.CommandLineUpstreamService_builder{
+    svcConfig := &configv1.CommandLineUpstreamService{
         Command: proto.String("ls"),
-        ContainerEnvironment: configv1.ContainerEnvironment_builder{
+        ContainerEnvironment: &configv1.ContainerEnvironment{
             Image: proto.String("ubuntu"),
-        }.Build(),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{
+        },
+    }
+    callDef := &configv1.CommandLineCallDefinition{
         Args: []string{"{{path}}"},
         Parameters: []*configv1.CommandLineParameterMapping{
-            configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build()}.Build(),
+            {Schema: &configv1.ParameterSchema{Name: proto.String("path")}},
         },
-    }.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("docker_tool")}.Build()
+    }
+    toolDef := &v1.Tool{Name: proto.String("docker_tool")}
 
     cmdTool := NewLocalCommandTool(toolDef, svcConfig, callDef, nil, "call1")
     ctx := context.Background()
@@ -264,16 +264,16 @@ func helperSetupHTTPTool(t *testing.T, toolDef *v1.Tool, callDef *configv1.HttpC
 }
 
 func TestHTTPTool_RootDoubleSlash(t *testing.T) {
-	callDef := configv1.HttpCallDefinition_builder{
+	callDef := &configv1.HttpCallDefinition{
 		Parameters: []*configv1.HttpParameterMapping{
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build(),
+			{
+				Schema: &configv1.ParameterSchema{Name: proto.String("path")},
 				DisableEscape: proto.Bool(true),
-			}.Build(),
+			},
 		},
-	}.Build()
+	}
 	// Note: We use a template that allows us to construct //
-	toolDef := v1.Tool_builder{Name: proto.String("http_tool"), UnderlyingMethodFqn: proto.String("GET http://example.com/{{path}}")}.Build()
+	toolDef := &v1.Tool{Name: proto.String("http_tool"), UnderlyingMethodFqn: proto.String("GET http://example.com/{{path}}")}
 
 	httpTool := helperSetupHTTPTool(t, toolDef, callDef)
 	ctx := context.Background()
@@ -305,16 +305,17 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 		}))
 		defer server.Close()
 
-		toolProto := v1.Tool_builder{}.Build()
+		toolProto := &v1.Tool{}
+		toolProto.SetName("testTool")
 		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 
-		callDef := configv1.OpenAPICallDefinition_builder{
-			InputTransformer: configv1.InputTransformer_builder{
+		callDef := &configv1.OpenAPICallDefinition{
+			InputTransformer: &configv1.InputTransformer{
 				Template: proto.String(`{"name": "{{name}}"}`),
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef)
 
@@ -332,20 +333,22 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 		}))
 		defer server.Close()
 
-		toolProto := v1.Tool_builder{}.Build()
+		toolProto := &v1.Tool{}
+		toolProto.SetName("testTool")
 		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 
-		callDef := configv1.OpenAPICallDefinition_builder{
-			OutputTransformer: configv1.OutputTransformer_builder{
-				Format:   configv1.OutputTransformer_JSON.Enum(),
+		format := configv1.OutputTransformer_JSON
+		callDef := &configv1.OpenAPICallDefinition{
+			OutputTransformer: &configv1.OutputTransformer{
+				Format:   &format,
 				Template: proto.String(`Result: {{data}}`),
 				ExtractionRules: map[string]string{
 					"data": "{.data}",
 				},
-			}.Build(),
-		}.Build()
+			},
+		}
 
 		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
 
@@ -363,12 +366,12 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 
 	t.Run("Init Error", func(t *testing.T) {
 		// NewOpenAPITool with invalid template to trigger initError
-		callDef := configv1.OpenAPICallDefinition_builder{
-			InputTransformer: configv1.InputTransformer_builder{
+		callDef := &configv1.OpenAPICallDefinition{
+			InputTransformer: &configv1.InputTransformer{
 				Template: proto.String("{{unclosed"),
-			}.Build(),
-		}.Build()
-		toolProto := v1.Tool_builder{}.Build()
+			},
+		}
+		toolProto := &v1.Tool{}
 		openAPITool := NewOpenAPITool(toolProto, nil, nil, "POST", "http://example.com", nil, callDef)
 
 		req := &ExecutionRequest{ToolName: "test"}
@@ -399,18 +402,19 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 		}))
 		defer targetServer.Close()
 
-		toolProto := v1.Tool_builder{}.Build()
+		toolProto := &v1.Tool{}
+		toolProto.SetName("testTool")
 		mockClient := &mockHTTPClient{
 			doFunc: targetServer.Client().Do,
 		}
 
-		callDef := configv1.OpenAPICallDefinition_builder{
-			InputTransformer: configv1.InputTransformer_builder{
-				Webhook: configv1.WebhookConfig_builder{
+		callDef := &configv1.OpenAPICallDefinition{
+			InputTransformer: &configv1.InputTransformer{
+				Webhook: &configv1.WebhookConfig{
 					Url: webhookServer.URL,
-				}.Build(),
-			}.Build(),
-		}.Build()
+				},
+			},
+		}
 
 		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef)
 
@@ -462,12 +466,12 @@ func (m *mockExecutorForCoverage) ExecuteWithStdIO(ctx context.Context, name str
 }
 
 func TestLocalCommandTool_JSONProtocol(t *testing.T) {
-    svcConfig := configv1.CommandLineUpstreamService_builder{
+    svcConfig := &configv1.CommandLineUpstreamService{
         Command: proto.String("my-json-tool"),
         CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
-    }.Build()
-    callDef := configv1.CommandLineCallDefinition_builder{}.Build()
-    toolDef := v1.Tool_builder{Name: proto.String("json_tool")}.Build()
+    }
+    callDef := &configv1.CommandLineCallDefinition{}
+    toolDef := &v1.Tool{Name: proto.String("json_tool")}
 
     factory := func(env *configv1.ContainerEnvironment) command.Executor {
         return &mockExecutorForCoverage{

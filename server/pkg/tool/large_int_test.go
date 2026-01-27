@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/command"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/command"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -45,7 +45,7 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 	mockExec := &mockExecutor{}
 
 	// Define tool
-	toolDef := v1.Tool_builder{
+	toolDef := &v1.Tool{
 		Name: proto.String("test-tool"),
 		InputSchema: &structpb.Struct{
 			Fields: map[string]*structpb.Value{
@@ -58,15 +58,15 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 				}),
 			},
 		},
-	}.Build()
+	}
 
-	service := configv1.CommandLineUpstreamService_builder{
+	service := &configv1.CommandLineUpstreamService{
 		Command: proto.String("echo"),
-	}.Build()
+	}
 
-	callDef := configv1.CommandLineCallDefinition_builder{
+	callDef := &configv1.CommandLineCallDefinition{
 		Args: []string{"{{id}}"},
-	}.Build()
+	}
 
 	// Create CommandTool manually
 	ct := &CommandTool{

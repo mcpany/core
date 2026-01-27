@@ -36,8 +36,8 @@ global_settings:
 	require.NoError(t, err)
 
 	// Verify overrides
-	require.NotNil(t, cfg.GetGlobalSettings().GetProfiles())
-	assert.Contains(t, cfg.GetGlobalSettings().GetProfiles(), "admin")
-	assert.Contains(t, cfg.GetGlobalSettings().GetProfiles(), "user")
-    assert.Len(t, cfg.GetGlobalSettings().GetProfiles(), 2)
+	require.NotNil(t, cfg.GlobalSettings.Profiles)
+	assert.Contains(t, cfg.GlobalSettings.Profiles, "admin")
+	assert.Contains(t, cfg.GlobalSettings.Profiles, "user")
+    assert.Len(t, cfg.GlobalSettings.Profiles, 2)
 }

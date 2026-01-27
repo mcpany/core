@@ -17,12 +17,6 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { apiClient } from "@/lib/client";
 import { Filter } from "lucide-react";
 
-/**
- * A dropdown component to filter dashboard views by a specific service.
- * Updates the global dashboard context when a service is selected.
- *
- * @returns The rendered service filter component.
- */
 export function ServiceFilter() {
   const { serviceId, setServiceId } = useDashboard();
   const [services, setServices] = useState<{ id: string; name: string }[]>([]);

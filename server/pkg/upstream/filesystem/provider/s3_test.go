@@ -14,13 +14,13 @@ import (
 
 func TestNewS3Provider(t *testing.T) {
 	t.Run("Valid Config", func(t *testing.T) {
-		config := configv1.S3Fs_builder{
+		config := &configv1.S3Fs{
 			Bucket:          proto.String("my-bucket"),
 			Region:          proto.String("us-east-1"),
 			AccessKeyId:     proto.String("test"),
 			SecretAccessKey: proto.String("test"),
 			Endpoint:        proto.String("http://127.0.0.1:9000"),
-		}.Build()
+		}
 		p, err := NewS3Provider(config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
@@ -30,18 +30,18 @@ func TestNewS3Provider(t *testing.T) {
 
 	t.Run("Missing Bucket", func(t *testing.T) {
 		// afero-s3 doesn't error on missing bucket at creation time usually
-		config := configv1.S3Fs_builder{
+		config := &configv1.S3Fs{
 			Region: proto.String("us-east-1"),
-		}.Build()
+		}
 		p, err := NewS3Provider(config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
 	})
 
 	t.Run("Region Only", func(t *testing.T) {
-		config := configv1.S3Fs_builder{
+		config := &configv1.S3Fs{
 			Region: proto.String("us-west-2"),
-		}.Build()
+		}
 		p, err := NewS3Provider(config)
 		require.NoError(t, err)
 		assert.NotNil(t, p)
@@ -49,10 +49,10 @@ func TestNewS3Provider(t *testing.T) {
 }
 
 func TestS3Provider_ResolvePath(t *testing.T) {
-	config := configv1.S3Fs_builder{
+	config := &configv1.S3Fs{
 		Bucket: proto.String("my-bucket"),
 		Region: proto.String("us-east-1"),
-	}.Build()
+	}
 	p, err := NewS3Provider(config)
 	require.NoError(t, err)
 	defer p.Close()

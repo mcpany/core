@@ -20,8 +20,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/ssh"
-	"google.golang.org/protobuf/proto"
 )
+
+func ptr(s string) *string {
+	return &s
+}
 
 // Helper to start a local SFTP server
 func startSFTPServer(t *testing.T, authorizedKey ssh.PublicKey) (string, *ssh.ServerConfig, func()) {
@@ -118,7 +121,10 @@ func startSFTPServer(t *testing.T, authorizedKey ssh.PublicKey) (string, *ssh.Se
 }
 
 func TestSftpProvider(t *testing.T) {
-	// Create a temporary directory for the SFTP server to serve
+	// Create a temporary directory for the SFTP server to serve (if we could restrict it easily)
+	// Note: pkg/sftp server serves the local filesystem of the process.
+	// So we should operate in a temp dir.
+
 	addr, _, cleanup := startSFTPServer(t, nil)
 	defer cleanup()
 
@@ -127,11 +133,11 @@ func TestSftpProvider(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
-	config := configv1.SftpFs_builder{
-		Address:  proto.String(addr),
-		Username: proto.String("testuser"),
-		Password: proto.String("testpass"),
-	}.Build()
+	config := &configv1.SftpFs{
+		Address:  &addr,
+		Username: ptr("testuser"),
+		Password: ptr("testpass"),
+	}
 
 	provider, err := NewSftpProvider(config)
 	require.NoError(t, err)
@@ -279,10 +285,13 @@ func TestSftpProvider(t *testing.T) {
 		path := filepath.Join(tmpDir, "writeat.txt")
 		f, err := fs.Create(path)
 		require.NoError(t, err)
+		// Don't defer close here, we want to control it
 
 		_, err = f.WriteString("00000")
 		require.NoError(t, err)
 
+		// sftp file must be open for write to call WriteAt
+		// WriteAt is supported by sftp
 		n, err := f.WriteAt([]byte("11"), 1)
 		require.NoError(t, err)
 		assert.Equal(t, 2, n)
@@ -345,11 +354,11 @@ func TestNewSftpProvider_KeyAuth(t *testing.T) {
 	err = os.WriteFile(keyFile, keyPEM, 0600)
 	require.NoError(t, err)
 
-	config := configv1.SftpFs_builder{
-		Address:  proto.String(addr),
-		Username: proto.String("testuser"),
-		KeyPath:  proto.String(keyFile),
-	}.Build()
+	config := &configv1.SftpFs{
+		Address:  &addr,
+		Username: ptr("testuser"),
+		KeyPath:  ptr(keyFile),
+	}
 
 	provider, err := NewSftpProvider(config)
 	require.NoError(t, err)
@@ -368,10 +377,10 @@ func TestNewSftpProvider_Errors(t *testing.T) {
 	})
 
 	t.Run("Missing Key File", func(t *testing.T) {
-		config := configv1.SftpFs_builder{
-			Username: proto.String("user"),
-			KeyPath:  proto.String("/non/existent/key"),
-		}.Build()
+		config := &configv1.SftpFs{
+			Username: ptr("user"),
+			KeyPath:  ptr("/non/existent/key"),
+		}
 		_, err := NewSftpProvider(config)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to read private key")
@@ -386,29 +395,31 @@ func TestNewSftpProvider_Errors(t *testing.T) {
 		err = os.WriteFile(keyFile, []byte("not a key"), 0600)
 		require.NoError(t, err)
 
-		config := configv1.SftpFs_builder{
-			Username: proto.String("user"),
-			KeyPath:  proto.String(keyFile),
-		}.Build()
+		config := &configv1.SftpFs{
+			Username: ptr("user"),
+			KeyPath:  ptr(keyFile),
+		}
 		_, err = NewSftpProvider(config)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to parse private key")
 	})
 
 	t.Run("Dial Error", func(t *testing.T) {
+		config := &configv1.SftpFs{
+			Address:  ptr("127.0.0.1:0"), // Random free port, likely nothing listening or connection refused
+			Username: ptr("user"),
+			Password: ptr("pass"),
+		}
 		// Try to find a free port that is NOT listening
 		l, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)
 		freeAddr := l.Addr().String()
 		l.Close()
 
-		config := configv1.SftpFs_builder{
-			Address:  proto.String(freeAddr),
-			Username: proto.String("user"),
-			Password: proto.String("pass"),
-		}.Build()
+		config.Address = ptr(freeAddr)
 
 		_, err = NewSftpProvider(config)
 		assert.Error(t, err)
+		// Error message depends on OS but usually contains "refused"
 	})
 }

@@ -36,7 +36,7 @@ func TestHTTPUpstream_QueryMerge_InvalidBaseParam_Override(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	serviceConfig := &configv1.UpstreamServiceConfig{}
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)

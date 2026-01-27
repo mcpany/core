@@ -168,12 +168,12 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 		manager := tool.NewManager(nil)
 
 		// Enable profile "secure"
-		profile := configv1.ProfileDefinition_builder{
+		profile := &configv1.ProfileDefinition{
 			Name: proto.String("secure"),
 			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"allowed-svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
+				"allowed-svc": {Enabled: proto.Bool(true)},
 			},
-		}.Build()
+		}
 		manager.SetProfiles([]string{"secure"}, []*configv1.ProfileDefinition{profile})
 
 		// Add tool from blocked service
@@ -191,15 +191,15 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 	t.Run("Tool Matches Profile by Tag", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		profile := configv1.ProfileDefinition_builder{
+		profile := &configv1.ProfileDefinition{
 			Name: proto.String("tagged"),
 			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
+				"svc": {Enabled: proto.Bool(true)},
 			},
-			Selector: configv1.ProfileSelector_builder{
+			Selector: &configv1.ProfileSelector{
 				Tags: []string{"public"},
-			}.Build(),
-		}.Build()
+			},
+		}
 		manager.SetProfiles([]string{"tagged"}, []*configv1.ProfileDefinition{profile})
 
 		toolDef := &v1.Tool{
@@ -219,17 +219,17 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 	t.Run("Tool Matches Profile by Property", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		profile := configv1.ProfileDefinition_builder{
+		profile := &configv1.ProfileDefinition{
 			Name: proto.String("readonly"),
 			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
+				"svc": {Enabled: proto.Bool(true)},
 			},
-			Selector: configv1.ProfileSelector_builder{
+			Selector: &configv1.ProfileSelector{
 				ToolProperties: map[string]string{
 					"read_only": "true",
 				},
-			}.Build(),
-		}.Build()
+			},
+		}
 		manager.SetProfiles([]string{"readonly"}, []*configv1.ProfileDefinition{profile})
 
 		toolDef := &v1.Tool{
@@ -250,13 +250,13 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 
 	t.Run("IsServiceAllowed", func(t *testing.T) {
 		manager := tool.NewManager(nil)
-		profile := configv1.ProfileDefinition_builder{
+		profile := &configv1.ProfileDefinition{
 			Name: proto.String("test-profile"),
 			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"allowed-svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
-				"disabled-svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(false)}.Build(),
+				"allowed-svc": {Enabled: proto.Bool(true)},
+				"disabled-svc": {Enabled: proto.Bool(false)},
 			},
-		}.Build()
+		}
 		manager.SetProfiles([]string{}, []*configv1.ProfileDefinition{profile})
 
 		assert.True(t, manager.IsServiceAllowed("allowed-svc", "test-profile"))
@@ -267,12 +267,12 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 
 	t.Run("GetAllowedServiceIDs", func(t *testing.T) {
 		manager := tool.NewManager(nil)
-		profile := configv1.ProfileDefinition_builder{
+		profile := &configv1.ProfileDefinition{
 			Name: proto.String("test-profile"),
 			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"allowed-svc": configv1.ProfileServiceConfig_builder{Enabled: proto.Bool(true)}.Build(),
+				"allowed-svc": {Enabled: proto.Bool(true)},
 			},
-		}.Build()
+		}
 		manager.SetProfiles([]string{}, []*configv1.ProfileDefinition{profile})
 
 		allowed, found := manager.GetAllowedServiceIDs("test-profile")

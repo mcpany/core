@@ -19,9 +19,9 @@ func TestRedactor_Bug_CommentInKey(t *testing.T) {
 	input := `{"` + cc + `" /* comment */ : "value"}`
 
 	// Config enabling default redactors
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled: proto.Bool(true),
-	}.Build()
+	}
 
 	r := middleware.NewRedactor(cfg, nil)
 
@@ -43,9 +43,9 @@ func TestRedactor_Bug_PlainText(t *testing.T) {
 	input := `This is plain text with "token": "mysecret" embedded.`
 
 	// Config enabling default redactors
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled: proto.Bool(true),
-	}.Build()
+	}
 
 	r := middleware.NewRedactor(cfg, nil)
 
@@ -64,9 +64,9 @@ func TestRedactor_Bug_StringInComment_CorruptsStructure(t *testing.T) {
 	// The comment closer */ is eaten.
 	input := `{"key": /* "user@example.com */ "value"}`
 
-	cfg := configv1.DLPConfig_builder{
+	cfg := &configv1.DLPConfig{
 		Enabled: proto.Bool(true),
-	}.Build()
+	}
 
 	r := middleware.NewRedactor(cfg, nil)
 

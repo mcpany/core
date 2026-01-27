@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestUpstreamServiceManager_LoadAndMergeServices_Errors(t *testing.T) {
@@ -28,14 +29,14 @@ func TestUpstreamServiceManager_LoadAndMergeServices_Errors(t *testing.T) {
 	defer server.Close()
 
 	t.Run("HTTP Non-200 Error", func(t *testing.T) {
-		config := func() *configv1.McpAnyServerConfig {
-			cfg := &configv1.McpAnyServerConfig{}
-			col := &configv1.Collection{}
-			col.SetName("error-collection")
-			col.SetHttpUrl(server.URL + "/error")
-			cfg.SetCollections([]*configv1.Collection{col})
-			return cfg
-		}()
+		config := &configv1.McpAnyServerConfig{
+			Collections: []*configv1.Collection{
+				{
+					Name:    proto.String("error-collection"),
+					HttpUrl: proto.String(server.URL + "/error"),
+				},
+			},
+		}
 		manager := NewUpstreamServiceManager(nil)
 		manager.httpClient = &http.Client{}
 

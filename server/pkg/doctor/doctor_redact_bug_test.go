@@ -20,14 +20,16 @@ func TestCheckService_Redaction_Redis_Bug(t *testing.T) {
 	password := "mysecretpassword"
 	urlStr := "redis://:" + password
 
-	service := configv1.UpstreamServiceConfig_builder{
+	service := &configv1.UpstreamServiceConfig{
 		Name: stringPtr("test-redis-service"),
-		HttpService: configv1.HttpUpstreamService_builder{
-			// Using HttpService to trigger checkURL which calls http.NewRequest
-			// which fails and calls RedactDSN(err.Error())
-			Address: stringPtr(urlStr),
-		}.Build(),
-	}.Build()
+		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+			HttpService: &configv1.HttpUpstreamService{
+				// Using HttpService to trigger checkURL which calls http.NewRequest
+				// which fails and calls RedactDSN(err.Error())
+				Address: stringPtr(urlStr),
+			},
+		},
+	}
 
 	res := CheckService(context.Background(), service)
 

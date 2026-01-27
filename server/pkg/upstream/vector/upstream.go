@@ -38,13 +38,14 @@ func NewUpstream() upstream.Upstream {
 }
 
 func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
-	if t := config.GetPinecone(); t != nil {
-		return NewPineconeClient(t)
+	switch t := config.VectorDbType.(type) {
+	case *configv1.VectorUpstreamService_Pinecone:
+		return NewPineconeClient(t.Pinecone)
+	case *configv1.VectorUpstreamService_Milvus:
+		return NewMilvusClient(t.Milvus)
+	default:
+		return nil, fmt.Errorf("unsupported vector database type")
 	}
-	if t := config.GetMilvus(); t != nil {
-		return NewMilvusClient(t)
-	}
-	return nil, fmt.Errorf("unsupported vector database type")
 }
 
 // Shutdown implements the upstream.Upstream interface.

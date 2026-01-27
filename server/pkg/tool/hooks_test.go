@@ -13,7 +13,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -33,61 +32,61 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 	}{
 		{
 			name: "Default Allow",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
-			}.Build(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
+			},
 			toolName:   "any-tool",
 			wantAction: ActionAllow,
 		},
 		{
 			name: "Default Deny",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_DENY.Enum(),
-			}.Build(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_DENY),
+			},
 			toolName:   "any-tool",
 			wantAction: ActionDeny,
 			wantError:  true,
 		},
 		{
 			name: "Explicit Allow Rule",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_DENY.Enum(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_DENY),
 				Rules: []*configv1.CallPolicyRule{
-					configv1.CallPolicyRule_builder{
-						Action:    configv1.CallPolicy_ALLOW.Enum(),
-						NameRegex: proto.String("^allowed-.*"),
-					}.Build(),
+					{
+						Action:        ptr(configv1.CallPolicy_ALLOW),
+						NameRegex: ptr("^allowed-.*"),
+					},
 				},
-			}.Build(),
+			},
 			toolName:   "allowed-tool",
 			wantAction: ActionAllow,
 		},
 		{
 			name: "Explicit Deny Rule",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
 				Rules: []*configv1.CallPolicyRule{
-					configv1.CallPolicyRule_builder{
-						Action:    configv1.CallPolicy_DENY.Enum(),
-						NameRegex: proto.String("^sensitive-.*"),
-					}.Build(),
+					{
+						Action:        ptr(configv1.CallPolicy_DENY),
+						NameRegex: ptr("^sensitive-.*"),
+					},
 				},
-			}.Build(),
+			},
 			toolName:   "sensitive-tool",
 			wantAction: ActionDeny,
 			wantError:  true,
 		},
 		{
 			name: "Argument Regex Matching",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
 				Rules: []*configv1.CallPolicyRule{
-					configv1.CallPolicyRule_builder{
-						Action:        configv1.CallPolicy_DENY.Enum(),
-						ArgumentRegex: proto.String(".*secret.*"),
-					}.Build(),
+					{
+						Action:        ptr(configv1.CallPolicy_DENY),
+						ArgumentRegex: ptr(".*secret.*"),
+					},
 				},
-			}.Build(),
+			},
 			toolName: "any-tool",
 			inputs: map[string]any{
 				"key": "this contains secret",
@@ -97,15 +96,15 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 		},
 		{
 			name: "Argument Regex Matching Safe",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
 				Rules: []*configv1.CallPolicyRule{
-					configv1.CallPolicyRule_builder{
-						Action:        configv1.CallPolicy_DENY.Enum(),
-						ArgumentRegex: proto.String(".*secret.*"),
-					}.Build(),
+					{
+						Action:        ptr(configv1.CallPolicy_DENY),
+						ArgumentRegex: ptr(".*secret.*"),
+					},
 				},
-			}.Build(),
+			},
 			toolName: "any-tool",
 			inputs: map[string]any{
 				"key": "safe value",
@@ -114,29 +113,29 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 		},
 		{
 			name: "Save Cache Rule",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
 				Rules: []*configv1.CallPolicyRule{
-					configv1.CallPolicyRule_builder{
-						Action:    configv1.CallPolicy_SAVE_CACHE.Enum(),
-						NameRegex: proto.String("^save-tool.*"),
-					}.Build(),
+					{
+						Action:    ptr(configv1.CallPolicy_SAVE_CACHE),
+						NameRegex: ptr("^save-tool.*"),
+					},
 				},
-			}.Build(),
+			},
 			toolName:   "save-tool",
 			wantAction: ActionSaveCache,
 		},
 		{
 			name: "Delete Cache Rule",
-			policy: configv1.CallPolicy_builder{
-				DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
+			policy: &configv1.CallPolicy{
+				DefaultAction: ptr(configv1.CallPolicy_ALLOW),
 				Rules: []*configv1.CallPolicyRule{
-					configv1.CallPolicyRule_builder{
-						Action:    configv1.CallPolicy_DELETE_CACHE.Enum(),
-						NameRegex: proto.String("^delete-tool.*"),
-					}.Build(),
+					{
+						Action:    ptr(configv1.CallPolicy_DELETE_CACHE),
+						NameRegex: ptr("^delete-tool.*"),
+					},
 				},
-			}.Build(),
+			},
 			toolName:   "delete-tool",
 			wantAction: ActionDeleteCache,
 		},
@@ -221,7 +220,7 @@ func TestWebhookHook(t *testing.T) {
 	}))
 	defer server.Close()
 
-	config := configv1.WebhookConfig_builder{Url: server.URL}.Build()
+	config := &configv1.WebhookConfig{Url: server.URL}
 	hook := NewWebhookHook(config)
 
 	t.Run("Pre Allow", func(t *testing.T) {

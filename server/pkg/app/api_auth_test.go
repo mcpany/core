@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
+	"google.golang.org/protobuf/proto"
 )
 
 type mockTransport struct {
@@ -51,24 +52,24 @@ func TestHandleOAuthCallback(t *testing.T) {
 	handler := http.HandlerFunc(app.handleOAuthCallback)
 
 	// Create a service with OAuth2 config
-	clientId := &configv1.SecretValue{}
-	clientId.SetPlainText("client-id")
-	clientSecret := &configv1.SecretValue{}
-	clientSecret.SetPlainText("client-secret")
-
-	oauth2Auth := &configv1.OAuth2Auth{}
-	oauth2Auth.SetClientId(clientId)
-	oauth2Auth.SetClientSecret(clientSecret)
-	oauth2Auth.SetTokenUrl("https://example.com/token")
-	oauth2Auth.SetScopes("read write")
-
-	authMethod := &configv1.Authentication{}
-	authMethod.SetOauth2(oauth2Auth)
-
-	service := &configv1.UpstreamServiceConfig{}
-	service.SetName("test-service")
-	service.SetId("test-service")
-	service.SetUpstreamAuth(authMethod)
+	service := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test-service"),
+		Id:   proto.String("test-service"),
+		UpstreamAuth: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_Oauth2{
+				Oauth2: &configv1.OAuth2Auth{
+					ClientId: &configv1.SecretValue{
+						Value: &configv1.SecretValue_PlainText{PlainText: "client-id"},
+					},
+					ClientSecret: &configv1.SecretValue{
+						Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"},
+					},
+					TokenUrl: proto.String("https://example.com/token"),
+					Scopes:   proto.String("read write"),
+				},
+			},
+		},
+	}
 	require.NoError(t, store.SaveService(context.Background(), service))
 
 	t.Run("Success", func(t *testing.T) {

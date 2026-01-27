@@ -10,13 +10,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func createMockBundle(t *testing.T, path string) {
@@ -76,15 +77,18 @@ func TestBundleCleanup(t *testing.T) {
 	promptManager := prompt.NewManager()
 	resourceManager := resource.NewManager()
 
-	bundleConn := configv1.McpBundleConnection_builder{}.Build()
-	bundleConn.SetBundlePath(bundlePath)
-
-	mcpSvc := configv1.McpUpstreamService_builder{}.Build()
-	mcpSvc.SetBundleConnection(bundleConn)
-
-	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
-	serviceConfig.SetName("test-bundle-service")
-	serviceConfig.SetMcpService(mcpSvc)
+	serviceConfig := &configv1.UpstreamServiceConfig{
+		Name: proto.String("test-bundle-service"),
+		ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
+			McpService: &configv1.McpUpstreamService{
+				ConnectionType: &configv1.McpUpstreamService_BundleConnection{
+					BundleConnection: &configv1.McpBundleConnection{
+						BundlePath: proto.String(bundlePath),
+					},
+				},
+			},
+		},
+	}
 
 	// Set mock connection
 	SetConnectForTesting(func(_ *mcp.Client, _ context.Context, _ mcp.Transport, _ []mcp.Root) (ClientSession, error) {

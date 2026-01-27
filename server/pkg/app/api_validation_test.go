@@ -14,6 +14,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleServiceValidate_Filesystem(t *testing.T) {
@@ -42,12 +43,14 @@ func TestHandleServiceValidate_Filesystem(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsSvc := &configv1.FilesystemUpstreamService{}
-			fsSvc.SetRootPaths(map[string]string{"/": tt.path})
-
-			svc := &configv1.UpstreamServiceConfig{}
-			svc.SetName("fs-service")
-			svc.SetFilesystemService(fsSvc)
+			svc := &configv1.UpstreamServiceConfig{
+				Name: proto.String("fs-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
+					FilesystemService: &configv1.FilesystemUpstreamService{
+						RootPaths: map[string]string{"/": tt.path},
+					},
+				},
+			}
 			body, _ := protojson.Marshal(svc)
 			req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 			w := httptest.NewRecorder()
@@ -103,13 +106,15 @@ func TestHandleServiceValidate_CommandLine(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmdSvc := &configv1.CommandLineUpstreamService{}
-			cmdSvc.SetCommand(tt.command)
-			cmdSvc.SetWorkingDirectory(tt.workDir)
-
-			svc := &configv1.UpstreamServiceConfig{}
-			svc.SetName("cmd-service")
-			svc.SetCommandLineService(cmdSvc)
+			svc := &configv1.UpstreamServiceConfig{
+				Name: proto.String("cmd-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
+					CommandLineService: &configv1.CommandLineUpstreamService{
+						Command:          proto.String(tt.command),
+						WorkingDirectory: proto.String(tt.workDir),
+					},
+				},
+			}
 			body, _ := protojson.Marshal(svc)
 			req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
 			w := httptest.NewRecorder()

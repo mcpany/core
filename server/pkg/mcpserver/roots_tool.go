@@ -7,11 +7,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -25,19 +24,21 @@ type RootsTool struct {
 //
 // Returns the result.
 func NewRootsTool() *RootsTool {
-	inputSchema := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"type": structpb.NewStringValue("object"),
+	name := "mcp:list_roots"
+	displayName := "List Roots"
+	description := "Lists the roots available on the client side."
+	serviceID := "builtin"
+	t := &v1.Tool{
+		Name:        &name,
+		DisplayName: &displayName,
+		Description: &description,
+		InputSchema: &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type": structpb.NewStringValue("object"),
+			},
 		},
+		ServiceId: &serviceID,
 	}
-	t := v1.Tool_builder{
-		Name:        proto.String("mcp:list_roots"),
-		DisplayName: proto.String("List Roots"),
-		Description: proto.String("Lists the roots available on the client side."),
-		InputSchema: inputSchema,
-		ServiceId:   proto.String("builtin"),
-	}.Build()
-
 	mcpTool, _ := tool.ConvertProtoToMCPTool(t)
 	return &RootsTool{
 		tool:    t,

@@ -13,6 +13,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestServiceValidateSSRF(t *testing.T) {
@@ -50,12 +51,14 @@ func TestServiceValidateSSRF(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			httpSvc := &configv1.HttpUpstreamService{}
-			httpSvc.SetAddress(tc.address)
-
-			svc := &configv1.UpstreamServiceConfig{}
-			svc.SetName("test-service")
-			svc.SetHttpService(httpSvc)
+			svc := &configv1.UpstreamServiceConfig{
+				Name: proto.String("test-service"),
+				ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
+					HttpService: &configv1.HttpUpstreamService{
+						Address: proto.String(tc.address),
+					},
+				},
+			}
 
 			body, _ := protojson.Marshal(svc)
 			req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))

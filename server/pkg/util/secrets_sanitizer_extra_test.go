@@ -16,25 +16,25 @@ func TestHydrateSecrets_EdgeCases_Extra(t *testing.T) {
 	hydrateSecretsInWebrtcService(nil, nil)
 
 	// Test nil call in map
-	svc := configv1.HttpUpstreamService_builder{
+	svc := &configv1.HttpUpstreamService{
 		Calls: map[string]*configv1.HttpCallDefinition{
 			"nilcall": nil,
 		},
-	}.Build()
+	}
 	hydrateSecretsInHTTPService(svc, nil)
 
-	wsSvc := configv1.WebsocketUpstreamService_builder{
+	wsSvc := &configv1.WebsocketUpstreamService{
 		Calls: map[string]*configv1.WebsocketCallDefinition{
 			"nilcall": nil,
 		},
-	}.Build()
+	}
 	hydrateSecretsInWebsocketService(wsSvc, nil)
 
-	webrtcSvc := configv1.WebrtcUpstreamService_builder{
+	webrtcSvc := &configv1.WebrtcUpstreamService{
 		Calls: map[string]*configv1.WebrtcCallDefinition{
 			"nilcall": nil,
 		},
-	}.Build()
+	}
 	hydrateSecretsInWebrtcService(webrtcSvc, nil)
 
 	// Test nil secret value in hydrateSecretValue
@@ -63,7 +63,7 @@ func TestStripSecrets_EdgeCases_Extra(t *testing.T) {
 
 	// Test nil secrets map
 	HydrateSecretsInService(nil, nil)
-	HydrateSecretsInService(configv1.UpstreamServiceConfig_builder{}.Build(), nil) // empty secrets
+	HydrateSecretsInService(&configv1.UpstreamServiceConfig{}, nil) // empty secrets
 
 	// Test nil sv
 	scrubSecretValue(nil)

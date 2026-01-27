@@ -50,17 +50,19 @@ func TestCredentialCRUD(t *testing.T) {
 	// 2. Create
 	var createdID string
 	t.Run("create credential", func(t *testing.T) {
-		cred := configv1.Credential_builder{
+		cred := &configv1.Credential{
 			Name: proto.String("Test API Key"),
-			Authentication: configv1.Authentication_builder{
-				ApiKey: configv1.APIKeyAuth_builder{
-					ParamName: proto.String("Authorization"),
-					Value: configv1.SecretValue_builder{
-						PlainText: proto.String("secret"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-		}.Build()
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_ApiKey{
+					ApiKey: &configv1.APIKeyAuth{
+						ParamName: proto.String("Authorization"),
+						Value: &configv1.SecretValue{
+							Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+						},
+					},
+				},
+			},
+		}
 		body, _ := protojson.Marshal(cred)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/credentials", bytes.NewReader(body))
 		rr := httptest.NewRecorder()
@@ -90,10 +92,10 @@ func TestCredentialCRUD(t *testing.T) {
 
 	// 4. Update
 	t.Run("update credential", func(t *testing.T) {
-		cred := configv1.Credential_builder{
+		cred := &configv1.Credential{
 			Id:   proto.String(createdID),
 			Name: proto.String("Updated Name"),
-		}.Build()
+		}
 		body, _ := protojson.Marshal(cred)
 		req := httptest.NewRequest(http.MethodPut, "/api/v1/credentials/"+createdID, bytes.NewReader(body))
 		rr := httptest.NewRecorder()
@@ -145,9 +147,9 @@ func TestAuthTestEndpoint(t *testing.T) {
 	t.Run("test with inline user token", func(t *testing.T) {
 		reqData := TestAuthRequest{
 			TargetURL: upstream.URL,
-			UserToken: configv1.UserToken_builder{
+			UserToken: &configv1.UserToken{
 				AccessToken: proto.String("my-token"),
-			}.Build(),
+			},
 		}
 		body, _ := json.Marshal(reqData)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
@@ -166,17 +168,19 @@ func TestAuthTestEndpoint(t *testing.T) {
 	// 2. Test with Saved Credential
 	t.Run("test with saved credential", func(t *testing.T) {
 		// Create credential first
-		cred := configv1.Credential_builder{
+		cred := &configv1.Credential{
 			Id:   proto.String("cred-test"),
 			Name: proto.String("Test Token"),
-			Authentication: configv1.Authentication_builder{
-				BearerToken: configv1.BearerTokenAuth_builder{
-					Token: configv1.SecretValue_builder{
-						PlainText: proto.String("my-token"),
-					}.Build(),
-				}.Build(),
-			}.Build(),
-		}.Build()
+			Authentication: &configv1.Authentication{
+				AuthMethod: &configv1.Authentication_BearerToken{
+					BearerToken: &configv1.BearerTokenAuth{
+						Token: &configv1.SecretValue{
+							Value: &configv1.SecretValue_PlainText{PlainText: "my-token"},
+						},
+					},
+				},
+			},
+		}
 		err := app.Storage.SaveCredential(ctx, cred)
 		require.NoError(t, err)
 
@@ -201,9 +205,9 @@ func TestAuthTestEndpoint(t *testing.T) {
 	t.Run("test auth failure", func(t *testing.T) {
 		reqData := TestAuthRequest{
 			TargetURL: upstream.URL,
-			UserToken: configv1.UserToken_builder{
+			UserToken: &configv1.UserToken{
 				AccessToken: proto.String("wrong-token"),
-			}.Build(),
+			},
 		}
 		body, _ := json.Marshal(reqData)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
@@ -259,7 +263,7 @@ func TestWriteError(t *testing.T) {
 func TestWriteJSON(t *testing.T) {
 	t.Run("ProtoMessage", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		msg := configv1.Credential_builder{Id: proto.String("test-id")}.Build()
+		msg := &configv1.Credential{Id: proto.String("test-id")}
 		writeJSON(w, http.StatusOK, msg)
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), `"id":"test-id"`)
@@ -286,10 +290,10 @@ func TestCredentialHandlers(t *testing.T) {
 	app := &Application{Storage: store}
 
 	// Create a credential to test with
-	cred := configv1.Credential_builder{
+	cred := &configv1.Credential{
 		Id:   proto.String("test-cred"),
 		Name: proto.String("Test Credential"),
-	}.Build()
+	}
 	require.NoError(t, store.SaveCredential(context.Background(), cred))
 
 	t.Run("ListCredentials", func(t *testing.T) {
@@ -339,10 +343,10 @@ func TestCredentialHandlers(t *testing.T) {
 	})
 
 	t.Run("UpdateCredential", func(t *testing.T) {
-		updatedCred := configv1.Credential_builder{
+		updatedCred := &configv1.Credential{
 			Id:   proto.String("test-cred"),
 			Name: proto.String("Updated Name"),
-		}.Build()
+		}
 		body, _ := json.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -354,10 +358,10 @@ func TestCredentialHandlers(t *testing.T) {
 	})
 
 	t.Run("UpdateCredential_MismatchID", func(t *testing.T) {
-		updatedCred := configv1.Credential_builder{
+		updatedCred := &configv1.Credential{
 			Id:   proto.String("other-id"),
 			Name: proto.String("Updated Name"),
-		}.Build()
+		}
 		body, _ := json.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
 		w := httptest.NewRecorder()
@@ -396,21 +400,25 @@ func TestHandleCredentials_Security_Redaction(t *testing.T) {
 	app.Storage = store
 
 	// Create credential with sensitive data
-	cred := configv1.Credential_builder{
+	cred := &configv1.Credential{
 		Id:   proto.String("cred1"),
 		Name: proto.String("Test Cred"),
-		Authentication: configv1.Authentication_builder{
-			BearerToken: configv1.BearerTokenAuth_builder{
-				Token: configv1.SecretValue_builder{
-					PlainText: proto.String("my-secret-token"),
-				}.Build(),
-			}.Build(),
-		}.Build(),
-		Token: configv1.UserToken_builder{
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BearerToken{
+				BearerToken: &configv1.BearerTokenAuth{
+					Token: &configv1.SecretValue{
+						Value: &configv1.SecretValue_PlainText{
+							PlainText: "my-secret-token",
+						},
+					},
+				},
+			},
+		},
+		Token: &configv1.UserToken{
 			AccessToken:  proto.String("access-token-123"),
 			RefreshToken: proto.String("refresh-token-456"),
-		}.Build(),
-	}.Build()
+		},
+	}
 	require.NoError(t, store.SaveCredential(context.Background(), cred))
 
 	t.Run("ListCredentials_ShouldNotLeakSecrets", func(t *testing.T) {
