@@ -914,7 +914,7 @@ func TestHTTPUpstream_CheckHealth(t *testing.T) {
 	// Test with no address (should fail)
 	err := checker.CheckHealth(context.Background())
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "no address configured")
+	assert.Contains(t, err.Error(), "upstream not registered")
 
 	// Register with bad address
 	configJSON := `{"name": "health-test", "http_service": {"address": "http://localhost:54321"}}`

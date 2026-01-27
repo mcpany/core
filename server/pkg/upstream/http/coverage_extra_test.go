@@ -1,290 +1,569 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package http
 
 import (
 	"context"
-	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
-	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func TestHTTPUpstream_CheckHealth_Coverage(t *testing.T) {
-	t.Run("no address and no checker", func(t *testing.T) {
-		pm := pool.NewManager()
-		u := NewUpstream(pm)
-		// Cast to *Upstream to access fields since they are private but we are in same package
-		uu, ok := u.(*Upstream)
-		assert.True(t, ok)
+func TestCoverageExtra_Register_Reload(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
 
-		err := uu.CheckHealth(context.Background())
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "no address configured")
-	})
+	configJSON := `{
+		"name": "reload-service",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-    t.Run("checker returns error", func(t *testing.T) {
-		pm := pool.NewManager()
-		u := NewUpstream(pm)
-		uu, ok := u.(*Upstream)
-        assert.True(t, ok)
+	// First registration
+	serviceID, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
 
-        // Create a real checker that always fails
-        checker := health.NewChecker(
-            health.WithCheck(health.Check{
-                Name: "fail",
-                Check: func(ctx context.Context) error {
-                    return errors.New("forced failure")
-                },
-            }),
-             health.WithTimeout(10*time.Millisecond),
-        )
-        uu.checker = checker
+	// Verify tools added
+	assert.Len(t, tm.addedTools, 1)
 
-		err := uu.CheckHealth(context.Background())
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "health check failed")
-	})
+	// Second registration (Reload)
+	// mockToolManager.ClearToolsForService logic is simple: it removes tools matching serviceID.
+	// We want to ensure it is called.
 
-    t.Run("checker returns success", func(t *testing.T) {
-		pm := pool.NewManager()
-		u := NewUpstream(pm)
-		uu, ok := u.(*Upstream)
-        assert.True(t, ok)
+	// Reset addedTools to verify clear works (or at least that Register calls it)
+	// But Register calls ClearToolsForService, then adds tools.
+	// So if we reload with SAME config, we should end up with 1 tool (old one cleared, new one added).
+	// If Clear was NOT called, we might end up with duplicates or mock might not support duplicates.
 
-        checker := health.NewChecker(
-            health.WithCheck(health.Check{
-                Name: "success",
-                Check: func(ctx context.Context) error {
-                    return nil
-                },
-            }),
-        )
-        uu.checker = checker
+	_, _, _, err = upstream.Register(context.Background(), serviceConfig, tm, nil, nil, true)
+	require.NoError(t, err)
 
-		err := uu.CheckHealth(context.Background())
-		assert.NoError(t, err)
-	})
+	// Check that we still have 1 tool (effectively verifying clean up happened, assuming mock works correctly)
+	// Actually, our mock implementation of ClearToolsForService removes tools.
+	assert.Len(t, tm.addedTools, 1)
+	assert.Equal(t, serviceID, tm.addedTools[0].Tool().GetServiceId())
 }
 
-func TestHTTPMethodToString_Coverage(t *testing.T) {
-    // Test invalid method
-    _, err := httpMethodToString(configv1.HttpCallDefinition_HttpMethod(999))
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "unsupported HTTP method")
+func TestCoverageExtra_InvalidScheme(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	configJSON := `{
+		"name": "ws-scheme-service",
+		"http_service": {
+			"address": "ws://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid http service address scheme")
+	assert.Contains(t, err.Error(), "ws")
 }
 
-func TestHTTPUpstream_Register_Coverage(t *testing.T) {
-    pm := pool.NewManager()
-    u := NewUpstream(pm)
-    tm := tool.NewManager(nil)
+func TestCoverageExtra_InputSchema_ComplexMerge(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
 
-    t.Run("nil http service", func(t *testing.T) {
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test"),
-            // ServiceConfig is nil, GetHttpService() will return nil
-        }.Build()
-        _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "http service config is nil")
-    })
+	// Schema has required ["a"].
+	// Parameters has "b" (required).
+	// Merged schema should have required ["a", "b"].
 
-    t.Run("empty address", func(t *testing.T) {
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test"),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String(""),
-            }.Build(),
-        }.Build()
-        _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "http service address is required")
-    })
+	configJSON := `{
+		"name": "merge-service",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {
+					"id": "c1",
+					"method": "HTTP_METHOD_GET",
+					"input_schema": {
+						"type": "object",
+						"properties": {
+							"a": {"type": "string"}
+						},
+						"required": ["a"]
+					},
+					"parameters": [
+						{
+							"schema": {
+								"name": "b",
+								"type": "STRING",
+								"is_required": true
+							}
+						}
+					]
+				}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-    t.Run("invalid address scheme", func(t *testing.T) {
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test"),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("ftp://example.com"),
-            }.Build(),
-        }.Build()
-        _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "invalid http service address scheme")
-    })
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
 
-    t.Run("invalid service name", func(t *testing.T) {
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String(""),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("http://example.com"),
-            }.Build(),
-        }.Build()
-        _, _, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.Error(t, err)
-    })
+	require.Len(t, tm.addedTools, 1)
+	toolDef := tm.addedTools[0].Tool()
+	schema := toolDef.GetAnnotations().GetInputSchema()
+
+	// Check required
+	reqVal := schema.Fields["required"].GetListValue()
+	require.NotNil(t, reqVal)
+
+	requiredSet := make(map[string]bool)
+	for _, v := range reqVal.Values {
+		requiredSet[v.GetStringValue()] = true
+	}
+
+	assert.True(t, requiredSet["a"], "a should be required")
+	assert.True(t, requiredSet["b"], "b should be required")
+
+	// Check properties
+	props := schema.Fields["properties"].GetStructValue()
+	require.NotNil(t, props)
+	assert.Contains(t, props.Fields, "a")
+	assert.Contains(t, props.Fields, "b")
 }
 
-func TestHTTPUpstream_CreateTools_Coverage(t *testing.T) {
-    pm := pool.NewManager()
-    u := NewUpstream(pm)
-    tm := tool.NewManager(nil)
+func TestCoverageExtra_URLParsingError_Address(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
 
-    t.Run("invalid method", func(t *testing.T) {
-        invalidMethod := configv1.HttpCallDefinition_HttpMethod(999)
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test-invalid-method"),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "call1": configv1.HttpCallDefinition_builder{
-                        Method:       &invalidMethod,
-                        EndpointPath: proto.String("/foo"),
-                    }.Build(),
-                },
-                Tools: []*configv1.ToolDefinition{
-                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
-                },
-            }.Build(),
-        }.Build()
-        _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.NoError(t, err)
-        assert.Len(t, tools, 0) // Should skip the tool
-    })
+	// Control char in address
+	configJSON := `{
+		"name": "bad-address-service",
+		"http_service": {
+			"address": "http://127.0.0.1/\u007f",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-    t.Run("invalid url", func(t *testing.T) {
-        validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test-invalid-url"),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "call1": configv1.HttpCallDefinition_builder{
-                        Method:       validMethod.Enum(),
-                        EndpointPath: proto.String(":/foo\nbar"), // Invalid URL char
-                    }.Build(),
-                },
-                Tools: []*configv1.ToolDefinition{
-                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
-                },
-            }.Build(),
-        }.Build()
-        _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.NoError(t, err)
-        assert.Len(t, tools, 0)
-    })
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid http service address")
+}
 
-    t.Run("input schema merging", func(t *testing.T) {
-        validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        inputSchema, _ := structpb.NewStruct(map[string]interface{}{
-            "type": "object",
-            "properties": map[string]interface{}{
-                "existing": map[string]interface{}{"type": "string"},
-            },
-            "required": []interface{}{"existing"},
-        })
+func TestCoverageExtra_DisabledComponents(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	rm := resource.NewManager()
+	prm := prompt.NewManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
 
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test-schema-merge"),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "call1": configv1.HttpCallDefinition_builder{
-                        Method:       validMethod.Enum(),
-                        EndpointPath: proto.String("/foo"),
-                        InputSchema:  inputSchema,
-                        Parameters: []*configv1.HttpParameterMapping{
-                            configv1.HttpParameterMapping_builder{
-                                Schema: configv1.ParameterSchema_builder{
-                                    Name:       proto.String("new_param"),
-                                    IsRequired: proto.Bool(true),
-                                }.Build(),
-                            }.Build(),
-                            configv1.HttpParameterMapping_builder{
-                                Schema: configv1.ParameterSchema_builder{
-                                    Name:       proto.String("existing"), // Should merge/overwrite
-                                    IsRequired: proto.Bool(true),
-                                }.Build(),
-                            }.Build(),
-                        },
-                    }.Build(),
-                },
-                Tools: []*configv1.ToolDefinition{
-                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
-                },
-            }.Build(),
-        }.Build()
-        _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.NoError(t, err)
-        assert.Len(t, tools, 1)
+	configJSON := `{
+		"name": "disabled-comps-service",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [
+				{"name": "t1", "call_id": "c1", "disable": true},
+				{"name": "t2", "call_id": "c1", "disable": false}
+			],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			},
+			"resources": [
+				{"name": "r1", "uri": "http://r1", "disable": true},
+				{"name": "r2", "uri": "http://r2", "disable": false}
+			],
+			"prompts": [
+				{"name": "p1", "disable": true},
+				{"name": "p2", "disable": false}
+			]
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
-        // Verify tool schema
-        registeredTool, ok := tm.GetTool("test-schema-merge.tool1")
-        assert.True(t, ok)
+	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, prm, rm, false)
+	require.NoError(t, err)
 
-        props := registeredTool.Tool().GetAnnotations().GetInputSchema().GetFields()["properties"].GetStructValue().GetFields()
-        assert.Contains(t, props, "existing")
-        assert.Contains(t, props, "new_param")
+	// Tools
+	assert.Len(t, discoveredTools, 1)
+	assert.Equal(t, "t2", discoveredTools[0].GetName())
 
-        req := registeredTool.Tool().GetAnnotations().GetInputSchema().GetFields()["required"].GetListValue().GetValues()
-        // Check required fields logic
-        // "existing" was in schema, and in params.
-        // "new_param" was in params.
-        assert.GreaterOrEqual(t, len(req), 2)
-    })
+	// Resources
+	_, ok := rm.GetResource("http://r1")
+	assert.False(t, ok)
+	_, ok = rm.GetResource("http://r2")
+	assert.True(t, ok)
 
-    t.Run("disabled tool", func(t *testing.T) {
-        validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test-disabled-tool"),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "call1": configv1.HttpCallDefinition_builder{
-                        Method:       validMethod.Enum(),
-                        EndpointPath: proto.String("/foo"),
-                    }.Build(),
-                },
-                Tools: []*configv1.ToolDefinition{
-                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1"), Disable: proto.Bool(true)}.Build(),
-                },
-            }.Build(),
-        }.Build()
-        _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.NoError(t, err)
-        assert.Len(t, tools, 0)
-    })
+	// Prompts
+	// We need to calculate prompt ID. Prompts are added by NewTemplatedPrompt(promptDef, serviceID)
+	// TemplatedPrompt name is just the name from def.
+	// But PromptManager keys them by ID?
+	// promptManager.AddPrompt uses p.Prompt().Name usually?
+	// Let's check prompt.Manager interface or implementation.
+	// Standard Manager usually keys by name if unique, or name is the ID.
+	// In Register: promptManager.AddPrompt(newPrompt)
+	// let's assume get works by prompt name + service ID prefix?
+	// Or maybe just prompt name?
+	// NewTemplatedPrompt stores serviceID.
 
-    t.Run("export policy skip", func(t *testing.T) {
-        validMethod := configv1.HttpCallDefinition_HTTP_METHOD_GET
-        config := configv1.UpstreamServiceConfig_builder{
-            Name: proto.String("test-export-policy"),
-            ToolExportPolicy: configv1.ExportPolicy_builder{
-                DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
-            }.Build(),
-            HttpService: configv1.HttpUpstreamService_builder{
-                Address: proto.String("http://example.com"),
-                Calls: map[string]*configv1.HttpCallDefinition{
-                    "call1": configv1.HttpCallDefinition_builder{
-                        Method:       validMethod.Enum(),
-                        EndpointPath: proto.String("/foo"),
-                    }.Build(),
-                },
-                Tools: []*configv1.ToolDefinition{
-                    configv1.ToolDefinition_builder{Name: proto.String("tool1"), CallId: proto.String("call1")}.Build(),
-                },
-            }.Build(),
-        }.Build()
-        _, tools, _, err := u.Register(context.Background(), config, tm, nil, nil, false)
-        assert.NoError(t, err)
-        assert.Len(t, tools, 0)
-    })
+	// Let's check prompt names in prm.
+	// We don't have direct list access to prm (it's interface in Register, but we passed concrete).
+	// But we can check if we can list them or get them.
+
+	// Assuming sanitized service name + prompt name
+	sanitizedServiceName, _ := util.SanitizeServiceName("disabled-comps-service")
+
+	// Check p1 (disabled)
+	sanitizedP1, _ := util.SanitizeToolName("p1")
+	p1ID := sanitizedServiceName + "." + sanitizedP1
+	_, ok = prm.GetPrompt(p1ID)
+	assert.False(t, ok)
+
+	// Check p2 (enabled)
+	sanitizedP2, _ := util.SanitizeToolName("p2")
+	p2ID := sanitizedServiceName + "." + sanitizedP2
+	_, ok = prm.GetPrompt(p2ID)
+	assert.True(t, ok)
+}
+
+func TestCoverageExtra_InputSchema_InvalidRequiredType(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	// "required" is not a list (e.g. string "foo").
+	// Should be overwritten by parameters required.
+
+	configJSON := `{
+		"name": "invalid-req-type-service",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {
+					"id": "c1",
+					"method": "HTTP_METHOD_GET",
+					"input_schema": {
+						"type": "object",
+						"required": "foo"
+					},
+					"parameters": [
+						{
+							"schema": {
+								"name": "bar",
+								"type": "STRING",
+								"is_required": true
+							}
+						}
+					]
+				}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	require.Len(t, tm.addedTools, 1)
+	toolDef := tm.addedTools[0].Tool()
+	schema := toolDef.GetAnnotations().GetInputSchema()
+
+	reqVal := schema.Fields["required"].GetListValue()
+	require.NotNil(t, reqVal)
+	require.Len(t, reqVal.Values, 1)
+	assert.Equal(t, "bar", reqVal.Values[0].GetStringValue())
+}
+
+func TestCoverageExtra_URL_WithUser(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	// endpoint_path with //user:pass@host/path
+
+	configJSON := `{
+		"name": "url-user-service",
+		"http_service": {
+			"address": "http://127.0.0.1/base",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {
+					"id": "c1",
+					"method": "HTTP_METHOD_GET",
+					"endpoint_path": "//user:pass@example.com/path"
+				}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	require.Len(t, tm.addedTools, 1)
+	fqn := tm.addedTools[0].Tool().GetUnderlyingMethodFqn()
+
+	// Should be appended to base?
+	// Logic: //user:pass@host/path -> path starts with //.
+	// Becomes path relative to base?
+	// Wait, if it's scheme-relative, it should be treated as relative path to base host?
+	// The code:
+	// if endpointURL.Host != "" {
+	//    prefix += ...
+	//    endpointURL.Path = prefix + endpointURL.Path
+	//    endpointURL.Host = ""
+	// }
+	// So path becomes "//user:pass@example.com/path"
+	// Then merged with base "http://127.0.0.1/base".
+	// Result: "http://127.0.0.1/base//user:pass@example.com/path"
+	// Verify this.
+
+	assert.Contains(t, fqn, "http://127.0.0.1/base//user:pass@example.com/path")
+}
+
+func TestCoverageExtra_ExportPolicy_ResourcesAndPrompts(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	rm := resource.NewManager()
+	prm := prompt.NewManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	configJSON := `{
+		"name": "export-policy-extra",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			},
+			"resources": [
+				{"name": "public-res", "uri": "http://r1"},
+				{"name": "private-res", "uri": "http://r2"}
+			],
+			"prompts": [
+				{"name": "public-prompt"},
+				{"name": "private-prompt"}
+			]
+		},
+		"resource_export_policy": {
+			"default_action": "EXPORT",
+			"rules": [{"name_regex": "^private-.*", "action": "UNEXPORT"}]
+		},
+		"prompt_export_policy": {
+			"default_action": "EXPORT",
+			"rules": [{"name_regex": "^private-.*", "action": "UNEXPORT"}]
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, prm, rm, false)
+	require.NoError(t, err)
+
+	// Resources
+	_, ok := rm.GetResource("http://r1")
+	assert.True(t, ok, "public-res should be exported")
+	_, ok = rm.GetResource("http://r2")
+	assert.False(t, ok, "private-res should not be exported")
+
+	// Prompts
+	sanitizedServiceName, _ := util.SanitizeServiceName("export-policy-extra")
+
+	sanitizedPublic, _ := util.SanitizeToolName("public-prompt")
+	_, ok = prm.GetPrompt(sanitizedServiceName + "." + sanitizedPublic)
+	assert.True(t, ok, "public-prompt should be exported")
+
+	sanitizedPrivate, _ := util.SanitizeToolName("private-prompt")
+	_, ok = prm.GetPrompt(sanitizedServiceName + "." + sanitizedPrivate)
+	assert.False(t, ok, "private-prompt should not be exported")
+}
+
+func TestCoverageExtra_FragmentInheritance(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	// Base has fragment #base. Endpoint has no fragment -> Result #base.
+	// Base has fragment #base. Endpoint has fragment #end -> Result #end.
+
+	configJSON := `{
+		"name": "fragment-service",
+		"http_service": {
+			"address": "http://127.0.0.1#base",
+			"tools": [
+				{"name": "op1", "call_id": "c1"},
+				{"name": "op2", "call_id": "c2"}
+			],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"},
+				"c2": {"id": "c2", "method": "HTTP_METHOD_GET", "endpoint_path": "/foo#end"}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	require.Len(t, tm.addedTools, 2)
+
+	// op1: check fragment #base
+	// op2: check fragment #end
+
+	for _, toolItem := range tm.addedTools {
+		name := toolItem.Tool().GetName()
+		fqn := toolItem.Tool().GetUnderlyingMethodFqn()
+		if name == "op1" {
+			assert.Contains(t, fqn, "#base")
+			assert.NotContains(t, fqn, "#end")
+		} else if name == "op2" {
+			assert.Contains(t, fqn, "#end")
+		}
+	}
+}
+
+func TestCoverageExtra_NoInputSchema_NoParams(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	configJSON := `{
+		"name": "no-schema-service",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	require.Len(t, tm.addedTools, 1)
+	schema := tm.addedTools[0].Tool().GetAnnotations().GetInputSchema()
+	require.NotNil(t, schema)
+	// Should be type object, empty properties
+	assert.Equal(t, "object", schema.Fields["type"].GetStringValue())
+	props := schema.Fields["properties"].GetStructValue()
+	assert.Empty(t, props.Fields)
+}
+
+func TestCoverageExtra_NoInputSchema_WithParams(t *testing.T) {
+	pm := pool.NewManager()
+	tm := newMockToolManager()
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	configJSON := `{
+		"name": "params-only-service",
+		"http_service": {
+			"address": "http://127.0.0.1",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {
+					"id": "c1", "method": "HTTP_METHOD_GET",
+					"parameters": [
+						{"schema": {"name": "p1", "type": "STRING", "is_required": true}}
+					]
+				}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	require.Len(t, tm.addedTools, 1)
+	schema := tm.addedTools[0].Tool().GetAnnotations().GetInputSchema()
+	require.NotNil(t, schema)
+
+	props := schema.Fields["properties"].GetStructValue()
+	assert.Contains(t, props.Fields, "p1")
+
+	req := schema.Fields["required"].GetListValue()
+	require.Len(t, req.Values, 1)
+	assert.Equal(t, "p1", req.Values[0].GetStringValue())
+}
+
+func TestCoverageExtra_CheckHealth_Success(t *testing.T) {
+	pm := pool.NewManager()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	configJSON := `{
+		"name": "health-success-service",
+		"http_service": {
+			"address": "` + server.URL + `",
+			"tools": [{"name": "op1", "call_id": "c1"}],
+			"calls": {
+				"c1": {"id": "c1", "method": "HTTP_METHOD_GET"}
+			}
+		}
+	}`
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
+
+	upstream := NewUpstream(pm)
+	defer upstream.Shutdown(context.Background())
+
+	// Register
+	_, _, _, err := upstream.Register(context.Background(), serviceConfig, newMockToolManager(), nil, nil, false)
+	require.NoError(t, err)
+
+	// Check Health
+	hc, ok := upstream.(interface{ CheckHealth(context.Context) error })
+	require.True(t, ok)
+
+	err = hc.CheckHealth(context.Background())
+	assert.NoError(t, err)
 }

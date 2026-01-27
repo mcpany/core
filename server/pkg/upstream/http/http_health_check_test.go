@@ -24,5 +24,5 @@ func TestHTTPUpstream_CheckHealth_BeforeRegister(t *testing.T) {
 
 	err := hc.CheckHealth(context.Background())
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "no address configured")
+	assert.Contains(t, err.Error(), "upstream not registered")
 }

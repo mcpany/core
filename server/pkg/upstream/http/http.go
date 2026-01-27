@@ -71,10 +71,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 		}
 		return nil
 	}
-	if u.address == "" {
-		return fmt.Errorf("no address configured")
-	}
-	return util.CheckConnection(ctx, u.address)
+	return fmt.Errorf("upstream not registered")
 }
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
@@ -149,7 +146,7 @@ func (u *Upstream) Register(
 	}
 	u.address = address
 
-	uURL, err := url.ParseRequestURI(address)
+	uURL, err := url.Parse(address)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("invalid http service address: %w", err)
 	}

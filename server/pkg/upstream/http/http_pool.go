@@ -103,7 +103,7 @@ var NewHTTPPool = func(
 		MaxIdleConns:        maxSize,
 		MaxIdleConnsPerHost: maxSize,
 		// Bolt: Optimize connection reuse and timeouts
-		IdleConnTimeout:       90 * time.Second,
+		IdleConnTimeout:       idleTimeout,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
 		ForceAttemptHTTP2:     true,
