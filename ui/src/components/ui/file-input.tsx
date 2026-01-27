@@ -196,7 +196,7 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
         )}
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
-      {previewUrl && (
+      {previewUrl && previewUrl.startsWith('blob:') && (
         <div className="relative mt-2 rounded-md overflow-hidden border bg-muted/50 max-w-[200px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={previewUrl} alt="Preview" className="w-full h-auto object-contain max-h-48" />
