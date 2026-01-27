@@ -103,6 +103,7 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		// For simplicity and standard library limits, we just read.
 		// Sentinel Security Update: Use bounded read to prevent DoS.
 		// Use absolute path for opening
+		//nolint:gosec // Path is validated by IsAllowedPath above, which checks strict allowlist or CWD confinement.
 		f, err := os.Open(absPath)
 		if err != nil {
 			return "", fmt.Errorf("failed to open secret file %q: %w", secret.GetFilePath(), err)
