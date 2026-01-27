@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Trace, SpanStatus } from "@/types/trace";
 import {
   Table,
@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
 import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance } from "date-fns";
 
 /**
  * Props for the InspectorTable component.
@@ -54,6 +54,44 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
     }
 }
 
+// ⚡ Bolt Optimization: Memoize InspectorRow to prevent re-renders of existing rows when new traces are added.
+// We pass `now` to control when the relative time updates (every 30s instead of every render).
+const InspectorRow = memo(({ trace, now, onClick }: { trace: Trace, now: Date, onClick: (trace: Trace) => void }) => {
+  return (
+    <TableRow
+      className="cursor-pointer hover:bg-muted/50"
+      onClick={() => onClick(trace)}
+    >
+      <TableCell className="font-mono text-xs text-muted-foreground">
+        {new Date(trace.timestamp).toLocaleTimeString()}
+        <br />
+        <span className="opacity-50 text-[10px]">
+           {formatDistance(new Date(trace.timestamp), now, { addSuffix: true })}
+        </span>
+      </TableCell>
+      <TableCell>
+          <TypeIcon type={trace.rootSpan.type} className="h-4 w-4 text-muted-foreground" />
+      </TableCell>
+      <TableCell>
+          <div className="flex flex-col">
+              <span className="font-medium">{trace.rootSpan.name}</span>
+              <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
+          </div>
+      </TableCell>
+      <TableCell>
+         <Badge variant={trace.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
+            <StatusIcon status={trace.status} className="h-3 w-3" />
+            {trace.status}
+         </Badge>
+      </TableCell>
+      <TableCell className="text-right font-mono text-xs">
+          {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
+      </TableCell>
+    </TableRow>
+  );
+});
+InspectorRow.displayName = "InspectorRow";
+
 /**
  * A table component for displaying and inspecting traces.
  * Allows clicking on a row to view detailed trace information in a sheet.
@@ -65,6 +103,15 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
  */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
+  const [now, setNow] = useState(new Date());
+
+  // Optimization: Update relative time every 30 seconds instead of every render
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -95,37 +142,12 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                   </TableRow>
             )}
             {traces.map((trace) => (
-              <TableRow
+              <InspectorRow
                 key={trace.id}
-                className="cursor-pointer hover:bg-muted/50"
-                onClick={() => setSelectedTrace(trace)}
-              >
-                <TableCell className="font-mono text-xs text-muted-foreground">
-                  {new Date(trace.timestamp).toLocaleTimeString()}
-                  <br />
-                  <span className="opacity-50 text-[10px]">
-                     {formatDistanceToNow(new Date(trace.timestamp), { addSuffix: true })}
-                  </span>
-                </TableCell>
-                <TableCell>
-                    <TypeIcon type={trace.rootSpan.type} className="h-4 w-4 text-muted-foreground" />
-                </TableCell>
-                <TableCell>
-                    <div className="flex flex-col">
-                        <span className="font-medium">{trace.rootSpan.name}</span>
-                        <span className="text-xs text-muted-foreground font-mono">{trace.id}</span>
-                    </div>
-                </TableCell>
-                <TableCell>
-                   <Badge variant={trace.status === 'success' ? 'outline' : 'destructive'} className="gap-1">
-                      <StatusIcon status={trace.status} className="h-3 w-3" />
-                      {trace.status}
-                   </Badge>
-                </TableCell>
-                <TableCell className="text-right font-mono text-xs">
-                    {trace.totalDuration < 1000 ? `${trace.totalDuration}ms` : `${(trace.totalDuration / 1000).toFixed(2)}s`}
-                </TableCell>
-              </TableRow>
+                trace={trace}
+                now={now}
+                onClick={setSelectedTrace}
+              />
             ))}
           </TableBody>
         </Table>
