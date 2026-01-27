@@ -204,15 +204,11 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr || os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
+		// Typically allowing local IPs implies allowing private IPs too, but let's be explicit
 		dialer.AllowPrivate = true
 	}
-
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
-		dialer.AllowLoopback = true
-	}
-
 	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
 		dialer.AllowPrivate = true
 	}

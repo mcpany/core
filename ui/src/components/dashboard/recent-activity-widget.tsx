@@ -11,27 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2 } from "lucide-react";
-import { apiClient } from "@/lib/client";
+import { Trace } from "@/app/api/traces/route";
 import { cn } from "@/lib/utils";
-
-const formatTime = (timestamp: string) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-
-  if (diffSec < 60) return "Just now";
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour}h ago`;
-  return date.toLocaleDateString();
-};
-
-const getDurationColor = (ms: number) => {
-  if (ms > 1000) return "text-amber-500";
-  return "text-muted-foreground";
-};
 
 /**
  * RecentActivityWidget component.
@@ -39,13 +20,17 @@ const getDurationColor = (ms: number) => {
  * @returns The rendered component.
  */
 export function RecentActivityWidget() {
-  const [traces, setTraces] = useState<any[]>([]);
+  const [traces, setTraces] = useState<Trace[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTraces = async () => {
     try {
-      const data = await apiClient.getTraces();
+      const res = await fetch('/api/traces');
+      if (!res.ok) {
+          throw new Error(`Failed to fetch traces: ${res.status}`);
+      }
+      const data = await res.json();
       // Take top 5
       setTraces(data.slice(0, 5));
       setError(null);
