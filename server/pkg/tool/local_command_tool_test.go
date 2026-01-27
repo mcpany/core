@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package tool
+package tool_test
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -26,7 +27,7 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 			}),
 		},
 	}
-	tool := v1.Tool_builder{
+	toolProto := v1.Tool_builder{
 		Name:        proto.String("test-tool"),
 		Description: proto.String("A test tool"),
 		InputSchema: inputSchema,
@@ -42,9 +43,9 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 		},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := tool.NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
-	req := &ExecutionRequest{
+	req := &tool.ExecutionRequest{
 		ToolName: "test-tool",
 		Arguments: map[string]interface{}{
 			"args": []interface{}{"hello", "world"},
@@ -60,13 +61,13 @@ func TestLocalCommandTool_Execute(t *testing.T) {
 	assert.Equal(t, "hello world\n", resultMap["stdout"])
 
 	assert.NotNil(t, localTool.Tool())
-	assert.Equal(t, tool, localTool.Tool())
+	assert.Equal(t, toolProto, localTool.Tool())
 	assert.Nil(t, localTool.GetCacheConfig())
 }
 
 func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	toolProto := v1.Tool_builder{
 		Name: proto.String("test-tool-env"),
 	}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
@@ -83,9 +84,9 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 		Args: []string{"-c", "if [ \"$MY_ENV\" = \"secret_value\" ]; then echo -n match; else echo -n mismatch; fi"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := tool.NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
-	req := &ExecutionRequest{
+	req := &tool.ExecutionRequest{
 		ToolName:  "test-tool-env",
 		Arguments: map[string]interface{}{},
 	}
@@ -101,7 +102,7 @@ func TestLocalCommandTool_Execute_WithEnv(t *testing.T) {
 
 func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	toolProto := v1.Tool_builder{
 		Name: proto.String("test-tool-redact"),
 	}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
@@ -117,9 +118,9 @@ func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 		Args: []string{"-c", "echo -n $MY_SECRET"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := tool.NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
-	req := &ExecutionRequest{
+	req := &tool.ExecutionRequest{
 		ToolName:  "test-tool-redact",
 		Arguments: map[string]interface{}{},
 	}
@@ -135,7 +136,7 @@ func TestLocalCommandTool_Execute_RedactsSecrets(t *testing.T) {
 
 func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	toolProto := v1.Tool_builder{
 		Name:        proto.String("test-tool-blocked"),
 		Description: proto.String("A test tool"),
 	}.Build()
@@ -151,9 +152,9 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 		}.Build(),
 	}
 
-	localTool := NewLocalCommandTool(tool, service, callDef, policies, "blocked-call-id")
+	localTool := tool.NewLocalCommandTool(toolProto, service, callDef, policies, "blocked-call-id")
 
-	req := &ExecutionRequest{
+	req := &tool.ExecutionRequest{
 		ToolName: "test-tool-blocked",
 		Arguments: map[string]interface{}{
 			"args": []interface{}{"should", "not", "run"},
@@ -172,7 +173,7 @@ func TestLocalCommandTool_Execute_BlockedByPolicy(t *testing.T) {
 
 func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	t.Parallel()
-	tool := v1.Tool_builder{
+	toolProto := v1.Tool_builder{
 		Name:        proto.String("test-tool-json-stderr"),
 		Description: proto.String("A test tool that fails"),
 	}.Build()
@@ -187,9 +188,9 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 		Args: []string{"-c", "echo 'something went wrong' >&2; exit 1"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+	localTool := tool.NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
-	req := &ExecutionRequest{
+	req := &tool.ExecutionRequest{
 		ToolName:  "test-tool-json-stderr",
 		Arguments: map[string]interface{}{},
 	}
@@ -210,7 +211,7 @@ func TestLocalCommandTool_ShellInjection_OverRestrictive(t *testing.T) {
 	// We use 'python' as the command, which is in the isShellCommand list.
 	cmd := "python"
 
-	toolDef := v1.Tool_builder{
+	toolProto := v1.Tool_builder{
 		Name: proto.String("test-python-tool"),
 	}.Build()
 
@@ -231,13 +232,13 @@ func TestLocalCommandTool_ShellInjection_OverRestrictive(t *testing.T) {
 		Args: []string{"script.py", "{{path}}"},
 	}.Build()
 
-	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
+	localTool := tool.NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
 
 	// We attempt to pass a Windows-style path with backslashes.
 	// This should be SAFE because it's just an argument to exec.Command.
 	// However, current logic blocks it.
 	inputs := json.RawMessage(`{"path": "foo\\bar"}`)
-	req := &ExecutionRequest{ToolInputs: inputs}
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
 
 	_, err := localTool.Execute(context.Background(), req)
 
