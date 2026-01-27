@@ -228,6 +228,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		req = req.WithContext(auth.ContextWithRoles(req.Context(), []string{"admin"}))
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
@@ -246,6 +247,7 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		}.Build()
 		body, _ := protojson.Marshal(svc)
 		req := httptest.NewRequest(http.MethodPost, "/services/validate", bytes.NewReader(body))
+		req = req.WithContext(auth.ContextWithRoles(req.Context(), []string{"admin"}))
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
@@ -287,7 +289,7 @@ func TestHandleServiceDetail_Update_Unsafe_NonAdmin(t *testing.T) {
 // MockStorage for failing SaveService
 type MockStorage struct {
 	storage.Storage // Embed interface to fallback
-	failSave bool
+	failSave        bool
 }
 
 func (m *MockStorage) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
