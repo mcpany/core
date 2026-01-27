@@ -178,7 +178,9 @@ export interface Metric {
     subLabel?: string;
 }
 
-
+/**
+ * Represents the current status of the system.
+ */
 export interface SystemStatus {
     uptime_seconds: number;
     active_connections: number;

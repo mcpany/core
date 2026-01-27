@@ -39,12 +39,26 @@ interface InspectorTableProps {
   loading?: boolean;
 }
 
+/**
+ * StatusIcon component.
+ * @param props - The component props.
+ * @param props.status - The current status.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
   if (status === 'success') return <CheckCircle2 className={cn("text-green-500", className)} />;
   return <Clock className={cn("text-muted-foreground", className)} />;
 }
 
+/**
+ * TypeIcon component.
+ * @param props - The component props.
+ * @param props.type - The type definition.
+ * @param props.className - The name of the class.
+ * @returns The rendered component.
+ */
 function TypeIcon({ type, className }: { type: string, className?: string }) {
     switch(type) {
         case 'tool': return <Terminal className={className} />;

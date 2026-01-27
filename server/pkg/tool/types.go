@@ -63,18 +63,29 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - The protobuf representation of the tool configuration.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - The MCP SDK representation of the tool.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the execution.
+	//   - req: The execution request containing inputs.
+	//
+	// Returns:
+	//   - The execution result (any).
+	//   - An error if execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - The cache configuration, or nil if not configured.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -148,20 +159,24 @@ const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool.
 //
-// ctx is the context for the request.
-// t is the t.
+// Parameters:
+//   - ctx: The parent context.
+//   - t: The tool instance to inject.
 //
-// Returns the result.
+// Returns:
+//   - A new context containing the tool.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
 // GetFromContext retrieves a tool from the context.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context to retrieve from.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - The tool instance.
+//   - True if the tool was found in the context, false otherwise.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -202,20 +217,24 @@ const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
-// ctx is the context for the request.
-// cc is the cc.
+// Parameters:
+//   - ctx: The parent context.
+//   - cc: The CacheControl struct to inject.
 //
-// Returns the result.
+// Returns:
+//   - A new context containing the CacheControl.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
 // GetCacheControl retrieves the CacheControl from the context.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context to retrieve from.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - The CacheControl struct.
+//   - True if found, false otherwise.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok

@@ -251,15 +251,18 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: The context for the request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - The loaded `McpAnyServerConfig`.
+	//   - An error if the operation fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - True if the store has configuration sources, false otherwise.
 	HasConfigSources() bool
 }
 
@@ -269,30 +272,42 @@ type ServiceStore interface {
 	// SaveService saves or updates a service configuration.
 	//
 	// Parameters:
+	//   - ctx: The context for the request.
 	//   - service: The service configuration to save.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - An error if the operation fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
 	//
 	// Parameters:
+	//   - ctx: The context for the request.
 	//   - name: The name of the service to retrieve.
 	//
-	// Returns the service configuration, or an error if not found or the operation fails.
+	// Returns:
+	//   - The service configuration.
+	//   - An error if not found or the operation fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
 	//
-	// Returns a slice of service configurations, or an error if the operation fails.
+	// Parameters:
+	//   - ctx: The context for the request.
+	//
+	// Returns:
+	//   - A slice of service configurations.
+	//   - An error if the operation fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
 	//
 	// Parameters:
+	//   - ctx: The context for the request.
 	//   - name: The name of the service to delete.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - An error if the operation fails.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -1056,19 +1071,23 @@ type MultiStore struct {
 
 // NewMultiStore creates a new MultiStore with the given stores.
 //
-// stores is the stores.
+// Parameters:
+//   - stores: A variadic list of `Store` interfaces to merge.
 //
-// Returns the result.
+// Returns:
+//   - A new instance of `MultiStore`.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - The merged `McpAnyServerConfig`.
+//   - An error if the operation fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1189,7 +1208,8 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
-// Returns true if successful.
+// Returns:
+//   - True if any underlying store has configuration sources, false otherwise.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

@@ -29,9 +29,11 @@ var _ resource.Resource = &SkillResource{}
 
 // NewSkillResource creates a new resource for the main SKILL.md.
 //
-// s is the s.
+// Parameters:
+//   - s: The skill definition.
 //
-// Returns the result.
+// Returns:
+//   - A new `SkillResource` instance representing the skill's main documentation.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -40,10 +42,12 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 
 // NewSkillAssetResource creates a new resource for a skill asset.
 //
-// s is the s.
-// assetPath is the assetPath.
+// Parameters:
+//   - s: The skill definition.
+//   - assetPath: The relative path to the asset within the skill directory.
 //
-// Returns the result.
+// Returns:
+//   - A new `SkillResource` instance representing the asset.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -100,10 +104,12 @@ func (r *SkillResource) Resource() *mcp.Resource {
 
 // Read returns the contents of the resource.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - The content of the resource (text or blob).
+//   - An error if the resource cannot be read.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	var content []byte
 	var err error
@@ -221,10 +227,12 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 
 // RegisterSkillResources registers all skills from the manager into the resource manager.
 //
-// rm is the rm.
-// sm is the sm.
+// Parameters:
+//   - rm: The resource manager to register resources with.
+//   - sm: The skill manager to retrieve skills from.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - An error if the operation fails.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

@@ -23,6 +23,13 @@ interface ResourceSafetyTableProps {
     onUpdate?: () => void;
 }
 
+/**
+ * ResourceSafetyTable component.
+ * @param props - The component props.
+ * @param props.resources - The resources property.
+ * @param props.onUpdate - The onUpdate property.
+ * @returns The rendered component.
+ */
 export function ResourceSafetyTable({ resources, onUpdate }: ResourceSafetyTableProps) {
     const { toast } = useToast();
     const [loading, setLoading] = useState<Record<string, boolean>>({});

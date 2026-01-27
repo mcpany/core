@@ -17,6 +17,12 @@ interface ServiceInspectorProps {
     service: UpstreamServiceConfig;
 }
 
+/**
+ * ServiceInspector component.
+ * @param props - The component props.
+ * @param props.service - The service property.
+ * @returns The rendered component.
+ */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {
         traces,

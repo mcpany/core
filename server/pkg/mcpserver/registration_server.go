@@ -62,11 +62,13 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 
 // ValidateService validates a service configuration by attempting to connect and discover tools.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The request containing the service configuration to validate.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Returns:
+//   - A response indicating validity and discovered capabilities.
+//   - An error if the validation process fails significantly (not just invalid config).
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")

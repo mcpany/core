@@ -337,6 +337,10 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 
 // StartHealthChecks starts a background loop to periodically check the health
 // of registered upstream services.
+//
+// Parameters:
+//   - ctx: The context to control the lifecycle of the health check loop.
+//   - interval: The time duration between health checks.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)

@@ -61,11 +61,13 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 
 // Execute executes the tool.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Parameters:
+//   - ctx: The context for the request.
+//   - _ : The execution request (unused).
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - The result of listing roots.
+//   - An error if the operation fails.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

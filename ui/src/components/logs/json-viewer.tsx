@@ -12,6 +12,12 @@ interface JsonViewerProps {
   data: unknown;
 }
 
+/**
+ * JsonViewer component.
+ * @param props - The component props.
+ * @param props.data - The data to display.
+ * @returns The rendered component.
+ */
 export default function JsonViewer({ data }: JsonViewerProps) {
   return (
     <SyntaxHighlighter

@@ -290,9 +290,10 @@ func NewManager() *Manager {
 	}
 }
 
-// SetUsers sets the users.
+// SetUsers updates the manager's user registry.
 //
-// users is the users.
+// Parameters:
+//   - users: A slice of user configurations to set.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -301,21 +302,24 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 	}
 }
 
-// SetStorage sets the storage.
+// SetStorage sets the storage backend for the manager.
 //
-// s is the s.
+// Parameters:
+//   - s: The storage interface.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
 	am.storage = s
 }
 
-// GetUser retrieves a user by ID.
+// GetUser retrieves a user by their ID.
 //
-// id is the unique identifier.
+// Parameters:
+//   - id: The user's unique identifier.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - The user configuration.
+//   - True if the user was found, false otherwise.
 func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
@@ -325,7 +329,8 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 
 // SetAPIKey sets the global API key for the server.
 //
-// apiKey is the apiKey.
+// Parameters:
+//   - apiKey: The global API key string.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
@@ -424,7 +429,8 @@ func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 
 // RemoveAuthenticator removes the authenticator for a given service ID.
 //
-// serviceID is the serviceID.
+// Parameters:
+//   - serviceID: The identifier of the service.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }

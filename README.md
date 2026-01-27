@@ -246,6 +246,19 @@ We welcome contributions to MCP Any! This section provides a brief overview of h
 - **Clean**: `make clean`
     - Removes build artifacts and generated files.
 
+### Verification
+
+Before submitting changes, ensure all checks pass:
+
+1.  **Test**: `make test`
+    -   Runs all unit and integration tests.
+2.  **Lint**: `make lint`
+    -   Runs code linters and formatters.
+3.  **Documentation (Go)**: `go run server/tools/check_doc.go server/`
+    -   Verifies that all exported Go symbols have docstrings.
+4.  **Documentation (TS)**: `python3 server/tools/check_ts_doc.py`
+    -   Verifies that all exported TypeScript symbols have docstrings.
+
 ### Running Locally
 
 After building, you can run the server locally:

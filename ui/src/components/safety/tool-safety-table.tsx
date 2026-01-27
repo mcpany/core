@@ -23,6 +23,13 @@ interface ToolSafetyTableProps {
     onUpdate?: () => void;
 }
 
+/**
+ * ToolSafetyTable component.
+ * @param props - The component props.
+ * @param props.tools - The tools property.
+ * @param props.onUpdate - The onUpdate property.
+ * @returns The rendered component.
+ */
 export function ToolSafetyTable({ tools, onUpdate }: ToolSafetyTableProps) {
     const { toast } = useToast();
     const [loading, setLoading] = useState<Record<string, boolean>>({});

@@ -18,29 +18,35 @@ type MCPSession struct {
 
 // NewMCPSession creates a new MCPSession.
 //
-// session is the session.
+// Parameters:
+//   - session: The underlying MCP server session.
 //
-// Returns the result.
+// Returns:
+//   - A new `MCPSession` wrapper.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
 
 // NewMCPSampler is a deprecated alias for NewMCPSession.
 //
-// session is the session.
+// Parameters:
+//   - session: The underlying MCP server session.
 //
-// Returns the result.
+// Returns:
+//   - A new `MCPSession` wrapper.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
 
 // CreateMessage requests a message creation from the client (sampling).
 //
-// ctx is the context for the request.
-// params is the params.
+// Parameters:
+//   - ctx: The context for the request.
+//   - params: The parameters for creating the message (prompts, etc.).
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - The created message result.
+//   - An error if the sampling operation fails or no session is available.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -50,10 +56,12 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 
 // ListRoots requests the list of roots from the client.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - The list of roots provided by the client.
+//   - An error if the operation fails or no session is available.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")

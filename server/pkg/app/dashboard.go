@@ -10,13 +10,19 @@ import (
 	"time"
 )
 
-// Metric matches the UI interface.
+// Metric represents a single metric data point for the dashboard UI.
 type Metric struct {
-	Label    string `json:"label"`
-	Value    string `json:"value"`
-	Change   string `json:"change"`
-	Trend    string `json:"trend"` // "up" | "down" | "neutral"
-	Icon     string `json:"icon"`
+	// Label is the display name of the metric.
+	Label string `json:"label"`
+	// Value is the current value of the metric.
+	Value string `json:"value"`
+	// Change represents the change from the previous period (e.g., "+5%").
+	Change string `json:"change"`
+	// Trend indicates the direction of the change ("up", "down", "neutral").
+	Trend string `json:"trend"` // "up" | "down" | "neutral"
+	// Icon is the name of the icon to display.
+	Icon string `json:"icon"`
+	// SubLabel provides additional context or subtitle for the metric.
 	SubLabel string `json:"subLabel"`
 }
 

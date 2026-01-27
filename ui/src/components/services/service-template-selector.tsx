@@ -16,6 +16,12 @@ interface ServiceTemplateSelectorProps {
   onSelect: (template: ServiceTemplate) => void;
 }
 
+/**
+ * CATEGORIES component.
+ * @param props - The component props.
+ * @param props.onSelect - The onSelect property.
+ * @returns The rendered component.
+ */
 const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Cloud", "System", "Utility", "Other"];
 
 /**

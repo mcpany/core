@@ -75,6 +75,13 @@ export interface LogEntry {
  */
 // Optimization: Memoize HighlightText to avoid unnecessary re-renders.
 // Accepting a regex instead of string prevents re-compiling the RegExp for every row.
+/**
+ * HighlightText component.
+ * @param props - The component props.
+ * @param props.text - The text property.
+ * @param props.regex - The regex property.
+ * @returns The rendered component.
+ */
 const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
   if (!regex || !text) return <>{text}</>;
 

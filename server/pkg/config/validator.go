@@ -63,7 +63,8 @@ type ValidationError struct {
 
 // Error returns the formatted error message.
 //
-// Returns the result.
+// Returns:
+//   - A formatted string containing the service name and the error message.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }

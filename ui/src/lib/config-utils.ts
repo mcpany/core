@@ -5,6 +5,9 @@
 
 import { UpstreamServiceConfig } from "./client";
 
+/**
+ * Defines the strategy for handling secrets during configuration processing.
+ */
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
