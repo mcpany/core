@@ -234,9 +234,23 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     // Tools alias
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'tools.png'), fullPage: true });
+  });
 
-    // --- Feature: Tool Output Diffing Screenshot ---
-    // We need to execute the tool twice to show the diff button
+  test('Playground Diff Screenshots', async ({ page }) => {
+    await page.goto('/playground');
+    await page.waitForTimeout(1000);
+
+    // Mock Tools
+    await page.route('**/api/v1/tools', async route => {
+         await route.fulfill({
+             json: {
+                 tools: [
+                     { name: 'filesystem.list_dir', description: 'List files in directory', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
+                 ]
+             }
+         });
+    });
+
     // Mock Execution
     let execCount = 0;
     await page.route('**/api/v1/execute', async route => {
@@ -249,7 +263,19 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         });
     });
 
+    // Reload to get tools
+    await page.reload();
+    await page.waitForTimeout(1000);
+
+    // Select Tool
+    const tool = page.getByText('filesystem.list_dir').first();
     if (await tool.isVisible()) {
+        await tool.click();
+        await page.waitForTimeout(500);
+
+        // Fill Form
+        await page.getByLabel('path').fill('/var/log');
+
         // Run once
         await page.getByRole('button', { name: /Build Command/i }).click();
         // Wait for dialog to close
@@ -258,8 +284,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.waitForTimeout(500);
 
         // Run again (same args)
-        // Need to reset form or just re-submit from input?
-        // Let's use the sidebar again to be sure
         await tool.click();
         // Wait for dialog
         await expect(page.getByRole('dialog')).toBeVisible();
