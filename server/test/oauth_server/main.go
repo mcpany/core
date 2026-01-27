@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package main
+package main //nolint:revive,nolintlint // Mock server package
 
 import (
 	"crypto/rand"
@@ -47,16 +47,17 @@ func main() {
 	mux.HandleFunc("/jwks", server.handleJWKS)
 	mux.HandleFunc("/auth", server.handleAuth)
 	mux.HandleFunc("/token", server.handleToken)
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	})
 
 	log.Printf("Starting Mock OAuth Server on port %d...", *port)
+	//nolint:gosec // This is a test server
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), mux))
 }
 
-func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request) {
+func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	config := map[string]interface{}{
 		"issuer":                 s.BaseURL,
@@ -64,16 +65,16 @@ func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request) {
 		"authorization_endpoint": s.BaseURL + "/auth",
 		"token_endpoint":         s.BaseURL + "/token",
 	}
-	json.NewEncoder(w).Encode(config)
+	_ = json.NewEncoder(w).Encode(config)
 }
 
-func (s *OAuthServer) handleJWKS(w http.ResponseWriter, r *http.Request) {
+func (s *OAuthServer) handleJWKS(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	jwk := jose.JSONWebKey{Key: &s.PrivateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 	jwks := map[string]interface{}{
 		"keys": []interface{}{jwk},
 	}
-	json.NewEncoder(w).Encode(jwks)
+	_ = json.NewEncoder(w).Encode(jwks)
 }
 
 func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +87,7 @@ func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 
 	// Create a simple login page for interaction
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
+	_, _ = fmt.Fprintf(w, `
 		<html>
 			<body>
 				<h1>Mock OAuth Login</h1>
@@ -101,7 +102,7 @@ func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 	`, redirectURI, state)
 }
 
-func (s *OAuthServer) handleToken(w http.ResponseWriter, r *http.Request) {
+func (s *OAuthServer) handleToken(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
@@ -118,7 +119,7 @@ func (s *OAuthServer) handleToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"access_token": signedToken,
 		"id_token":     signedToken,
 		"token_type":   "Bearer",
