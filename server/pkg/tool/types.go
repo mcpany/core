@@ -877,11 +877,19 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				if err := checkForPathTraversal(valStr); err != nil {
 					return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q: %w", name, err)
 				}
-				// Also check decoded value just in case the input was already encoded
-				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
-					if err := checkForPathTraversal(decodedVal); err != nil {
-						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", name, err)
+				// Recursively decode and check to prevent double/triple encoding bypasses
+				currentVal := valStr
+				// Limit recursion to avoid infinite loops or DoS
+				for j := 0; j < 5; j++ {
+					decodedVal, err := url.QueryUnescape(currentVal)
+					// If decoding fails or value doesn't change, we are done
+					if err != nil || decodedVal == currentVal {
+						break
 					}
+					if err := checkForPathTraversal(decodedVal); err != nil {
+						return nil, nil, false, fmt.Errorf("path traversal attempt detected in parameter %q (decoded level %d): %w", name, j+1, err)
+					}
+					currentVal = decodedVal
 				}
 			}
 
