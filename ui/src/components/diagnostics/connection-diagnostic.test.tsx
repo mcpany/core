@@ -75,7 +75,8 @@ const mockWebSocketService: UpstreamServiceConfig = {
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
     // Default mock for getService (Operational Verification)
-    (apiClient.getService as any).mockResolvedValue({
+    const mockGetService = apiClient.getService as unknown as ReturnType<typeof vi.fn>;
+    mockGetService.mockResolvedValue({
         service: {
             toolCount: 5,
             lastError: ""
@@ -91,7 +92,7 @@ describe("ConnectionDiagnosticDialog", () => {
                     { id: "test-service", name: "Test Service", status: "healthy", message: "" },
                     { id: "ws-service", name: "WebSocket Service", status: "healthy", message: "" }
                 ]),
-            });
+            } as Response);
         }
         // Mock for Browser Connectivity Check (HTTP Service)
         if (typeof url === 'string' && (url.startsWith("http") || url.startsWith("https"))) {
@@ -100,7 +101,7 @@ describe("ConnectionDiagnosticDialog", () => {
                 type: 'opaque',
                 status: 0,
                 json: () => Promise.reject("Opaque response"),
-            });
+            } as Response);
         }
         return Promise.reject("Unknown URL");
     }) as unknown as typeof fetch;
@@ -279,7 +280,8 @@ describe("ConnectionDiagnosticDialog", () => {
 });
 
   it("warns when no tools are discovered", async () => {
-        (apiClient.getService as any).mockResolvedValue({
+        const mockGetService = apiClient.getService as unknown as ReturnType<typeof vi.fn>;
+        mockGetService.mockResolvedValue({
             service: {
                 toolCount: 0,
                 lastError: ""
@@ -302,7 +304,8 @@ describe("ConnectionDiagnosticDialog", () => {
   });
 
   it("detects and analyzes ZodError in operational check", async () => {
-        (apiClient.getService as any).mockResolvedValue({
+        const mockGetService = apiClient.getService as unknown as ReturnType<typeof vi.fn>;
+        mockGetService.mockResolvedValue({
             service: {
                 toolCount: 0,
                 lastError: "ZodError: Invalid input"

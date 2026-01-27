@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient } from "@/lib/client";
+import { apiClient, ToolDefinition } from "@/lib/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ interface ToolInspectorProps {
 }
 
 export function ToolInspector({ serviceName }: ToolInspectorProps) {
-    const [tools, setTools] = useState<any[]>([]);
+    const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +42,8 @@ export function ToolInspector({ serviceName }: ToolInspectorProps) {
             const res = await apiClient.listTools();
             // Filter tools for this service
             // Note: serviceId usually matches serviceName in simple configs, or we check both
-            const serviceTools = (res.tools || []).filter((t: any) =>
+            // Using type assertion for compatibility if apiClient returns slightly different shapes internally
+            const serviceTools = (res.tools || []).filter((t: ToolDefinition & { service_id?: string }) =>
                 t.serviceId === serviceName || t.service_id === serviceName
             );
             setTools(serviceTools);
@@ -98,11 +99,11 @@ export function ToolInspector({ serviceName }: ToolInspectorProps) {
     );
 }
 
-function ToolRow({ tool }: { tool: any }) {
+function ToolRow({ tool }: { tool: ToolDefinition }) {
     const [isOpen, setIsOpen] = useState(false);
     const [args, setArgs] = useState("{}");
     const [executing, setExecuting] = useState(false);
-    const [result, setResult] = useState<any>(null);
+    const [result, setResult] = useState<{ success: boolean; data?: unknown; error?: string } | null>(null);
 
     const handleRun = async () => {
         setExecuting(true);
@@ -111,7 +112,7 @@ function ToolRow({ tool }: { tool: any }) {
             let parsedArgs = {};
             try {
                 parsedArgs = JSON.parse(args);
-            } catch (e) {
+            } catch {
                 throw new Error("Invalid JSON arguments");
             }
 
@@ -120,8 +121,9 @@ function ToolRow({ tool }: { tool: any }) {
                 arguments: parsedArgs
             });
             setResult({ success: true, data: res });
-        } catch (e: any) {
-            setResult({ success: false, error: e.message });
+        } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : String(e);
+            setResult({ success: false, error: msg });
         } finally {
             setExecuting(false);
         }
