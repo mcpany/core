@@ -6,10 +6,9 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"context"
-	"crypto/rand"
 	"fmt"
 	"math"
-	"math/big"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -256,10 +255,8 @@ func ListenWithRetry(ctx context.Context, network, address string) (net.Listener
 		// We start slightly higher than before (100ms) to give more room.
 		backoff := time.Duration(100*math.Pow(2, float64(i))) * time.Millisecond
 		// Add jitter (up to 50ms)
-		jitter, _ := rand.Int(rand.Reader, big.NewInt(50))
-		if jitter != nil {
-			backoff += time.Duration(jitter.Int64()) * time.Millisecond
-		}
+		// #nosec G404 - weak random is fine for backoff jitter
+		backoff += time.Duration(rand.Intn(50)) * time.Millisecond
 
 		select {
 		case <-ctx.Done():

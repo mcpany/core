@@ -1,41 +1,20 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 package middleware
 
 import (
-	"bytes"
 	"context"
-	"log/slog"
-	"sync"
 	"testing"
 	"time"
+	"bytes"
+	"log/slog"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 )
 
-type threadSafeBuffer struct {
-	b bytes.Buffer
-	m sync.Mutex
-}
-
-func (b *threadSafeBuffer) Write(p []byte) (n int, err error) {
-	b.m.Lock()
-	defer b.m.Unlock()
-	return b.b.Write(p)
-}
-
-func (b *threadSafeBuffer) String() string {
-	b.m.Lock()
-	defer b.m.Unlock()
-	return b.b.String()
-}
-
 func TestInspectorMiddleware(t *testing.T) {
 	// Setup custom logger to capture output
-	var buf threadSafeBuffer
+	var buf bytes.Buffer
 
 	// Reset the logger singleton
 	logging.ForTestsOnlyResetLogger()

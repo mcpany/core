@@ -19,20 +19,16 @@ test.describe('Stack Editor', () => {
 
   test('should load the editor and show initial config', async ({ page }) => {
     await page.goto('/stacks/default-stack');
-    await page.waitForLoadState('networkidle');
     const visualizer = page.locator('.stack-visualizer-container');
-    await expect(visualizer).toBeVisible({ timeout: 30000 });
-    await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible({ timeout: 30000 });
+    await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible({ timeout: 15000 });
   });
 
   test('should update visualizer when template added', async ({ page }) => {
     await page.goto('/stacks/default-stack');
-    await page.waitForLoadState('networkidle');
     const visualizer = page.locator('.stack-visualizer-container');
-    await expect(visualizer).toBeVisible({ timeout: 30000 });
-    await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible({ timeout: 30000 });
+    await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible({ timeout: 15000 });
 
     await page.getByText('Redis').click();
-    await expect(visualizer.getByText('redis-cache', { exact: true })).toBeVisible({ timeout: 30000 });
+    await expect(visualizer.getByText('redis-cache', { exact: true })).toBeVisible();
   });
 });

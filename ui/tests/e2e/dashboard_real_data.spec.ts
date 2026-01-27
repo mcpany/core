@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
@@ -72,8 +72,8 @@ test.describe('Dashboard Real Data', () => {
         // Just wait for non-zero requests
         // We expect around 6,000.
         // Use a more specific locator to debug and allow for potential data propagation delay
-        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+        const totalRequestsLocator = page.locator('.text-2xl.font-bold').first();
+        await expect(totalRequestsLocator).toHaveText(/[1-9][0-9,]{3,}/, { timeout: 30000 });
 
         // Avg Latency: 50ms
         await expect(page.getByText('50ms')).toBeVisible();

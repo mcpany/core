@@ -13,13 +13,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const (
-	metricToolsCallTotal = "mcpany_tools_call_total"
-	labelTool            = "tool"
-	labelServiceID       = "service_id"
-	labelStatus          = "status"
-)
-
 // ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
@@ -50,14 +43,14 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 		toolCounts := make(map[string]*ToolUsageStats)
 
 		for _, mf := range mfs {
-			if mf.GetName() == metricToolsCallTotal {
+			if mf.GetName() == "mcpany_tools_call_total" {
 				for _, m := range mf.GetMetric() {
 					var toolName, serviceID string
 					for _, label := range m.GetLabel() {
-						if label.GetName() == labelTool {
+						if label.GetName() == "tool" {
 							toolName = label.GetValue()
 						}
-						if label.GetName() == labelServiceID {
+						if label.GetName() == "service_id" {
 							serviceID = label.GetValue()
 						}
 					}
@@ -186,17 +179,17 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
-			if mf.GetName() == metricToolsCallTotal {
+			if mf.GetName() == "mcpany_tools_call_total" {
 				for _, m := range mf.GetMetric() {
 					var toolName, serviceID, status string
 					for _, label := range m.GetLabel() {
-						if label.GetName() == labelTool {
+						if label.GetName() == "tool" {
 							toolName = label.GetValue()
 						}
-						if label.GetName() == labelServiceID {
+						if label.GetName() == "service_id" {
 							serviceID = label.GetValue()
 						}
-						if label.GetName() == labelStatus {
+						if label.GetName() == "status" {
 							status = label.GetValue()
 						}
 					}
@@ -289,17 +282,17 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
-			if mf.GetName() == metricToolsCallTotal {
+			if mf.GetName() == "mcpany_tools_call_total" {
 				for _, m := range mf.GetMetric() {
 					var toolName, serviceID, status string
 					for _, label := range m.GetLabel() {
-						if label.GetName() == labelTool {
+						if label.GetName() == "tool" {
 							toolName = label.GetValue()
 						}
-						if label.GetName() == labelServiceID {
+						if label.GetName() == "service_id" {
 							serviceID = label.GetValue()
 						}
-						if label.GetName() == labelStatus {
+						if label.GetName() == "status" {
 							status = label.GetValue()
 						}
 					}

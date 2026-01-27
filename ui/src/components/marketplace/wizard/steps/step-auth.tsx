@@ -53,7 +53,6 @@ export function StepAuth() {
   };
 
   const getServiceType = (c: any) => {
-      if (!c) return "unknown";
       if (c.httpService) return "http";
       if (c.grpcService) return "grpc";
       if (c.commandLineService) return "command_line";

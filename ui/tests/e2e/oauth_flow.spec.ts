@@ -100,13 +100,6 @@ test.describe('OAuth Flow Integration', () => {
     await page.getByRole('button', { name: 'Connect with OAuth' }).click({ force: true });
 
     // Success check in callback page
-    // Check for failure first to provide better error message
-    if (await page.getByText('Authentication Failed').isVisible()) {
-        const errorMsg = await page.getByRole('alert').textContent();
-        console.error(`Authentication Failed visible: ${errorMsg}`);
-        throw new Error(`Authentication Failed: ${errorMsg}`);
-    }
-
     await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 30 * 1000 });
     expect(callbackCalled).toBeTruthy();
 

@@ -22,7 +22,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -112,7 +111,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             <TabsTrigger value="connection">Connection</TabsTrigger>
                             <TabsTrigger value="auth">Authentication</TabsTrigger>
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
-                            <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -443,10 +441,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     </CardContent>
                                 </Card>
                             </div>
-                        </TabsContent>
-
-                        <TabsContent value="diagnostics" className="space-y-4 mt-0">
-                            <ServiceDiagnostics service={service} />
                         </TabsContent>
                     </div>
                 </Tabs>

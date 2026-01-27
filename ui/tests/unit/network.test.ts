@@ -6,9 +6,7 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useNetworkTopology } from '../../src/hooks/use-network-topology';
-import { ServiceHealthProvider } from '../../src/contexts/service-health-context';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import React from 'react';
 
 describe('useNetworkTopology', () => {
     const mockGraph = {
@@ -33,18 +31,13 @@ describe('useNetworkTopology', () => {
         vi.restoreAllMocks();
     });
 
-    // Helper wrapper
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <ServiceHealthProvider>{children}</ServiceHealthProvider>
-    );
-
     it('should initialize with default nodes and edges', async () => {
-        const { result } = renderHook(() => useNetworkTopology(), { wrapper });
+        const { result } = renderHook(() => useNetworkTopology());
 
         // Wait for fetch to complete and state to update
         await waitFor(() => {
             expect(result.current.nodes.length).toBeGreaterThan(0);
-        }, { timeout: 2000 });
+        });
 
         expect(result.current.edges.length).toBe(0); // Only core node, no clients -> no edges?
 
@@ -54,13 +47,17 @@ describe('useNetworkTopology', () => {
     });
 
     it('should update node positions on refresh', async () => {
-        const { result } = renderHook(() => useNetworkTopology(), { wrapper });
+        const { result } = renderHook(() => useNetworkTopology());
 
         await waitFor(() => {
             expect(result.current.nodes.length).toBeGreaterThan(0);
         });
 
+        const initialPosition = result.current.nodes[0].position;
+
         // Mock a change in graph to trigger layout change or just check refresh calls fetch
+
+        // Let's modify the mock to return different data structure to force layout update
         const newMockGraph = {
              ...mockGraph,
              clients: [{ id: 'client-1', type: 'NODE_TYPE_CLIENT', status: 'NODE_STATUS_ACTIVE', label: 'Client 1' }]
@@ -76,14 +73,16 @@ describe('useNetworkTopology', () => {
         });
 
         await waitFor(() => {
+             // We expect more nodes now
              expect(result.current.nodes.length).toBeGreaterThan(1);
-        }, { timeout: 2000 });
+        });
 
+        // Since we added a node, structure changed, so layout should run.
         expect(result.current.edges.length).toBeGreaterThan(0);
     });
 
     it('should reset node positions on auto-layout', async () => {
-         const { result } = renderHook(() => useNetworkTopology(), { wrapper });
+         const { result } = renderHook(() => useNetworkTopology());
 
          await waitFor(() => {
             expect(result.current.nodes.length).toBeGreaterThan(0);
@@ -99,7 +98,7 @@ describe('useNetworkTopology', () => {
     });
 
     it('should not trigger state update if topology data is identical', async () => {
-        const { result } = renderHook(() => useNetworkTopology(), { wrapper });
+        const { result } = renderHook(() => useNetworkTopology());
 
         await waitFor(() => {
             expect(result.current.nodes.length).toBeGreaterThan(0);
@@ -107,21 +106,13 @@ describe('useNetworkTopology', () => {
 
         const initialNodes = result.current.nodes;
 
-        // refreshTopology calls fetchData (in context).
+        // refreshTopology calls fetchData.
         // Mock returns same mockGraph object.
         await act(async () => {
             result.current.refreshTopology();
         });
 
-        // Use waitFor because state update might happen but result in same object reference if optimized
-        await waitFor(() => {
-             // Just ensuring no crash and potentially checking reference equality if the optimization works as intended
-             // However, ServiceHealthProvider updates latestTopology state.
-             // If latestTopology changes (even if deep equal), useNetworkTopology effect runs.
-             // Inside useNetworkTopology, we check structure hash.
-             // So setNodes should NOT be called if structure hash is same.
-        });
-
+        // Should be same reference because setNodes was skipped
         expect(result.current.nodes).toBe(initialNodes);
     });
 });

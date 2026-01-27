@@ -13,8 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import Link from "next/link";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -406,12 +405,6 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                                 </DropdownMenuItem>
                             }
                         />
-                        <DropdownMenuItem asChild>
-                            <Link href={`/logs?source=${encodeURIComponent(service.name)}`}>
-                                <Terminal className="mr-2 h-4 w-4" />
-                                View Logs
-                            </Link>
-                        </DropdownMenuItem>
                         {onRestart && (
                             <DropdownMenuItem onClick={() => onRestart(service.name)}>
                                 <RefreshCw className="mr-2 h-4 w-4" />

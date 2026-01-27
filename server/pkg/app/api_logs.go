@@ -31,8 +31,8 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			}
 		}()
 
-		// Subscribe to logs with history
-		logCh, history := logging.GlobalBroadcaster.SubscribeWithHistory()
+		// Subscribe to logs
+		logCh := logging.GlobalBroadcaster.Subscribe()
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
 		// Set write deadline
@@ -43,18 +43,6 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		conn.SetPongHandler(func(string) error {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 		})
-
-		// Send history
-		for _, msg := range history {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				return
-			}
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-				logging.GetLogger().Error("failed to write history log message to websocket", "error", err)
-				return
-			}
-		}
 
 		// Send ping periodically
 		go func() {
