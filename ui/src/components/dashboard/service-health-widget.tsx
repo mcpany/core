@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
 import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -84,21 +84,23 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
         }
 
         return (
-          <Tooltip key={point.timestamp} delayDuration={0}>
-            <TooltipTrigger asChild>
-                <div
-                  className={cn("w-1.5 h-full rounded-[1px] transition-all cursor-crosshair", colorClass)}
-                />
-            </TooltipTrigger>
-            <TooltipContent className="text-[10px] p-1 px-2">
-              <div className="font-semibold capitalize flex items-center gap-1">
-                  {point.status === 'healthy' && <CheckCircle2 className="h-3 w-3 text-green-500" />}
-                  {point.status === 'unhealthy' && <XCircle className="h-3 w-3 text-red-500" />}
-                  {point.status}
-              </div>
-              <div className="text-muted-foreground">{new Date(point.timestamp).toLocaleTimeString()}</div>
-            </TooltipContent>
-          </Tooltip>
+          <TooltipProvider key={point.timestamp}>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                 <div
+                    className={cn("w-1.5 h-full rounded-[1px] transition-all cursor-crosshair", colorClass)}
+                 />
+              </TooltipTrigger>
+              <TooltipContent className="text-[10px] p-1 px-2">
+                <div className="font-semibold capitalize flex items-center gap-1">
+                    {point.status === 'healthy' && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+                    {point.status === 'unhealthy' && <XCircle className="h-3 w-3 text-red-500" />}
+                    {point.status}
+                </div>
+                <div className="text-muted-foreground">{new Date(point.timestamp).toLocaleTimeString()}</div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         );
       })}
     </div>

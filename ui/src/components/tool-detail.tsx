@@ -35,18 +35,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
       setIsLoading(true);
       setError(null);
       try {
-        // ⚡ Bolt Optimization: Fetch service details and status (metrics) in parallel
-        // This removes the waterfall where we waited for service details before fetching metrics.
-        const [serviceRes, statusRes] = await Promise.allSettled([
-          apiClient.getService(serviceId),
-          apiClient.getServiceStatus(serviceId)
-        ]);
-
-        if (serviceRes.status === 'rejected') {
-          throw serviceRes.reason;
-        }
-
-        const { service: serviceDetails } = serviceRes.value;
+        const { service: serviceDetails } = await apiClient.getService(serviceId);
         setService(serviceDetails || null);
 
         if (!serviceDetails) {
@@ -57,27 +46,21 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
         const serviceData = serviceDetails.grpcService || serviceDetails.httpService || serviceDetails.commandLineService || serviceDetails.openapiService || serviceDetails.websocketService || serviceDetails.webrtcService || serviceDetails.graphqlService || serviceDetails.mcpService;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const foundTool = (serviceData as any)?.tools?.find((t: ToolDefinition) => t.name === toolName);
+        const foundTool = (serviceData as any)?.tools?.find((t: any) => t.name === toolName);
 
         if (foundTool) {
           setTool(foundTool);
-
-          // Only set metrics if the status fetch succeeded
-          if (statusRes.status === 'fulfilled') {
-             setMetrics(statusRes.value.metrics);
-          } else {
-             console.warn("Failed to fetch service metrics", statusRes.reason);
-          }
+          const statusRes = await apiClient.getServiceStatus(serviceId);
+          setMetrics(statusRes.metrics);
         } else {
           throw new Error(`Tool "${toolName}" not found in service "${serviceDetails.name}".`);
         }
-      } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : String(e);
-        setError(errorMessage || "An unknown error occurred.");
+      } catch (e: any) {
+        setError(e.message || "An unknown error occurred.");
         toast({
           variant: "destructive",
           title: "Failed to fetch tool details",
-          description: errorMessage,
+          description: e.message,
         });
       } finally {
         setIsLoading(false);

@@ -270,11 +270,10 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		return 1, true, nil
 	case float64:
 		// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-		// We can safely use simpleTokenizeInt64 for all integer-valued floats because
-		// standard JSON serialization (which this estimates) avoids scientific notation
-		// until 1e21, while strconv.AppendFloat uses it earlier (1e6).
-		// This alignment with JSON behavior also allows us to skip expensive float formatting.
-		if i := int64(val); float64(i) == val {
+		// Only apply this optimization for values where the integer representation
+		// produces the same token count as the string representation (no scientific notation).
+		// Typically |val| < 1000000 avoids scientific notation in default formatting.
+		if i := int64(val); float64(i) == val && i > -1000000 && i < 1000000 {
 			return simpleTokenizeInt64(i), true, nil
 		}
 		// OPTIMIZATION: Use stack buffer to avoid string allocation.
@@ -314,9 +313,8 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		var buf [64]byte
 		for _, item := range val {
 			// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-			// Use simpleTokenizeInt64 for all integer-valued floats to match JSON behavior
-			// and improve performance significantly.
-			if i := int64(item); float64(i) == item {
+			// Same range restriction as for scalar float64.
+			if i := int64(item); float64(i) == item && i > -1000000 && i < 1000000 {
 				count += simpleTokenizeInt64(i)
 				continue
 			}

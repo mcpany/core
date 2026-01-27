@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
@@ -130,22 +130,24 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             {formatTokenCount(estimateTokens(JSON.stringify(message.toolArgs || {})))} tokens
                          </span>
                          {onReplay && message.toolName && (
-                             <Tooltip>
-                                 <TooltipTrigger asChild>
-                                      <Button
-                                         variant="ghost"
-                                         size="icon"
-                                         className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                                         onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
-                                         aria-label="Load into console"
-                                      >
-                                          <RotateCcw className="h-3.5 w-3.5" />
-                                      </Button>
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                     <p>Load into console</p>
-                                 </TooltipContent>
-                             </Tooltip>
+                             <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                         <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                            onClick={() => onReplay(message.toolName!, message.toolArgs || {})}
+                                            aria-label="Load into console"
+                                         >
+                                             <RotateCcw className="h-3.5 w-3.5" />
+                                         </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Load into console</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                             </TooltipProvider>
                          )}
                     </CardHeader>
                     <CardContent className="p-0">
@@ -234,22 +236,24 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             <span className="whitespace-pre-wrap font-mono text-xs break-all">{message.content}</span>
                         </div>
                         {onRetry && message.toolName && (
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 -mt-1 -mr-2 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                                        onClick={() => onRetry(message.toolName!, message.toolArgs || {})}
-                                        aria-label="Retry command"
-                                    >
-                                        <RotateCcw className="h-3.5 w-3.5" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="left">
-                                    <p>Retry this command</p>
-                                </TooltipContent>
-                            </Tooltip>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 -mt-1 -mr-2 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                                            onClick={() => onRetry(message.toolName!, message.toolArgs || {})}
+                                            aria-label="Retry command"
+                                        >
+                                            <RotateCcw className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="left">
+                                        <p>Retry this command</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         )}
                     </div>
 

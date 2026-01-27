@@ -5,7 +5,6 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ChatMessage, Message } from '@/components/playground/pro/chat-message';
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { vi, describe, it, expect } from 'vitest';
 
 describe('ChatMessage', () => {
@@ -30,11 +29,7 @@ describe('ChatMessage', () => {
     };
     const onReplay = vi.fn();
 
-    render(
-      <TooltipProvider>
-        <ChatMessage message={message} onReplay={onReplay} />
-      </TooltipProvider>
-    );
+    render(<ChatMessage message={message} onReplay={onReplay} />);
 
     expect(screen.getByText('my_tool')).toBeInTheDocument();
 

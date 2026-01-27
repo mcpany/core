@@ -355,14 +355,12 @@ func (a *Application) Run(opts RunOptions) error {
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(opts.ConfigPaths) > 0 {
-		// Always load config files if they are explicitly provided
-		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
-		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
-	} else if enableFileConfig {
-		// If enabled but no paths provided, we might still want to load from default locations (if any)
-		// but currently NewFileStore requires paths. We keep this variable if it's used elsewhere,
-		// but for now, we just log that we are enabled but have no paths.
-		log.Info("File configuration enabled via env var, but no config paths provided.")
+		if enableFileConfig {
+			log.Info("File configuration enabled, loading config from files (overrides database)", "paths", opts.ConfigPaths)
+			stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+		} else {
+			log.Warn("File configuration found but MCPANY_ENABLE_FILE_CONFIG is not true. Ignoring file config.", "paths", opts.ConfigPaths)
+		}
 	}
 	multiStore := config.NewMultiStore(stores...)
 

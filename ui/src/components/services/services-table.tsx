@@ -20,6 +20,7 @@ import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, 
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -102,40 +103,42 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                         checked={!service.disable}
                         onCheckedChange={() => onToggle(service)}
                     />
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="flex items-center space-x-1 cursor-help">
-                                {service.disable ? (
-                                    <>
-                                        <CircleOff className="h-4 w-4 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Disabled</span>
-                                    </>
-                                ) : service.lastError ? (
-                                    <>
-                                        <AlertCircle className="h-4 w-4 text-destructive" />
-                                        <span className="text-sm text-destructive font-medium">Error</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                        <span className="text-sm text-green-600 font-medium">Active</span>
-                                    </>
-                                )}
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            {service.disable ? (
-                                <p>Service is explicitly disabled.</p>
-                            ) : service.lastError ? (
-                                <div className="max-w-xs">
-                                    <p className="font-semibold">Error:</p>
-                                    <p className="text-sm break-words">{service.lastError}</p>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className="flex items-center space-x-1 cursor-help">
+                                    {service.disable ? (
+                                        <>
+                                            <CircleOff className="h-4 w-4 text-muted-foreground" />
+                                            <span className="text-sm text-muted-foreground">Disabled</span>
+                                        </>
+                                    ) : service.lastError ? (
+                                        <>
+                                            <AlertCircle className="h-4 w-4 text-destructive" />
+                                            <span className="text-sm text-destructive font-medium">Error</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                            <span className="text-sm text-green-600 font-medium">Active</span>
+                                        </>
+                                    )}
                                 </div>
-                            ) : (
-                                <p>Service is active and healthy.</p>
-                            )}
-                        </TooltipContent>
-                    </Tooltip>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {service.disable ? (
+                                    <p>Service is explicitly disabled.</p>
+                                ) : service.lastError ? (
+                                    <div className="max-w-xs">
+                                        <p className="font-semibold">Error:</p>
+                                        <p className="text-sm break-words">{service.lastError}</p>
+                                    </div>
+                                ) : (
+                                    <p>Service is active and healthy.</p>
+                                )}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
               </TableCell>
               <TableCell>{service.priority || 0}</TableCell>

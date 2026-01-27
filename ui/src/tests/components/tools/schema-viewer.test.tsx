@@ -5,7 +5,6 @@
 
 import { render, screen } from "@testing-library/react";
 import { SchemaViewer, Schema } from "@/components/tools/schema-viewer";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import React from 'react';
 
 // Mock ResizeObserver
@@ -39,22 +38,14 @@ describe("SchemaViewer", () => {
   };
 
   it("renders the root object", () => {
-    render(
-      <TooltipProvider>
-        <SchemaViewer schema={sampleSchema} name="root" />
-      </TooltipProvider>
-    );
+    render(<SchemaViewer schema={sampleSchema} name="root" />);
     expect(screen.getByText("root")).toBeInTheDocument();
     // The text content is lowercase "object", usually styled uppercase via CSS
     expect(screen.getByText("object")).toBeInTheDocument();
   });
 
   it("renders properties", () => {
-    render(
-      <TooltipProvider>
-        <SchemaViewer schema={sampleSchema} />
-      </TooltipProvider>
-    );
+    render(<SchemaViewer schema={sampleSchema} />);
     expect(screen.getByText("name")).toBeInTheDocument();
     // "string" appears multiple times
     expect(screen.getAllByText("string").length).toBeGreaterThan(0);
@@ -63,22 +54,14 @@ describe("SchemaViewer", () => {
   });
 
   it("indicates required fields", () => {
-    render(
-      <TooltipProvider>
-        <SchemaViewer schema={sampleSchema} />
-      </TooltipProvider>
-    );
+    render(<SchemaViewer schema={sampleSchema} />);
     // The asterisk is in a span with title="Required"
     const requiredMarks = screen.getAllByTitle("Required");
     expect(requiredMarks.length).toBeGreaterThan(0);
   });
 
   it("renders array items", () => {
-      render(
-        <TooltipProvider>
-          <SchemaViewer schema={sampleSchema} />
-        </TooltipProvider>
-      );
+      render(<SchemaViewer schema={sampleSchema} />);
       expect(screen.getByText("tags")).toBeInTheDocument();
       expect(screen.getByText("array")).toBeInTheDocument();
       // "Items:" label

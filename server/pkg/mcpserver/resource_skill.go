@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/skill"
 	"github.com/mcpany/core/server/pkg/validation"
@@ -141,17 +140,14 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		realPath, err = filepath.EvalSymlinks(path)
 		if err != nil {
 			if os.IsNotExist(err) {
-				// Don't leak the full path in the error, but preserve error type
-				return nil, fmt.Errorf("asset does not exist: %w", os.ErrNotExist)
+				return nil, fmt.Errorf("asset does not exist: %w", err)
 			}
-			logging.GetLogger().Error("Failed to resolve asset path", "path", path, "error", err)
-			return nil, fmt.Errorf("failed to resolve asset path")
+			return nil, fmt.Errorf("failed to resolve path %q: %w", path, err)
 		}
 
 		realPath, err = filepath.Abs(realPath)
 		if err != nil {
-			logging.GetLogger().Error("Failed to get absolute path", "path", realPath, "error", err)
-			return nil, fmt.Errorf("failed to resolve asset path")
+			return nil, fmt.Errorf("failed to get absolute path: %w", err)
 		}
 
 		// Check if the resolved path is inside the resolved skill path
@@ -163,11 +159,7 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 	}
 
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("skill file does not exist: %w", os.ErrNotExist)
-		}
-		logging.GetLogger().Error("Failed to read skill file", "error", err)
-		return nil, fmt.Errorf("failed to read skill file")
+		return nil, fmt.Errorf("failed to read skill file: %w", err)
 	}
 
 	mimeType := r.Resource().MIMEType

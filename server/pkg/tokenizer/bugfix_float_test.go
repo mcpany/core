@@ -27,13 +27,8 @@ func TestHunter_SimpleTokenizer_FloatOptimization_Bug(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%f", tt.val), func(t *testing.T) {
-			// Updated Expectation: Match JSON serialization (no scientific notation for these ints),
-			// rather than fmt.Sprintf("%v") (which uses scientific notation).
-			// This is an intentional optimization choice.
-
-			// We manually calculate expected tokens based on integer string representation
-			i := int64(tt.val)
-			strRep := fmt.Sprintf("%d", i)
+			// Expected behavior: Matches fmt.Sprintf("%v") tokenization
+			strRep := fmt.Sprintf("%v", tt.val)
 			expectedTokens, _ := st.CountTokens(strRep)
 
 			// Actual behavior
@@ -41,7 +36,7 @@ func TestHunter_SimpleTokenizer_FloatOptimization_Bug(t *testing.T) {
 			assert.NoError(t, err)
 
 			if actualTokens != expectedTokens {
-				t.Errorf("Mismatch for %f (JSON-like string: %s). Expected %d, Got %d",
+				t.Errorf("Mismatch for %f (string: %s). Expected %d, Got %d",
 					tt.val, strRep, expectedTokens, actualTokens)
 			}
 		})
@@ -54,11 +49,9 @@ func TestHunter_SimpleTokenizer_FloatSliceOptimization_Bug(t *testing.T) {
 	// A slice containing problematic floats
 	vals := []float64{10000000.0, 1234567.0}
 
-	// Updated Expectation: Match JSON serialization
 	expectedCount := 0
 	for _, v := range vals {
-		i := int64(v)
-		c, _ := st.CountTokens(fmt.Sprintf("%d", i))
+		c, _ := st.CountTokens(fmt.Sprintf("%v", v))
 		expectedCount += c
 	}
 
