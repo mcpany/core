@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -881,9 +882,15 @@ func (r LazyLogResult) LogValue() slog.Value {
 		return summarizeCallToolResult(v)
 	case map[string]any:
 		// Heuristic: Check if it looks like a CallToolResult
-		if ctr, err := convertMapToCallToolResult(v); err == nil {
-			return summarizeCallToolResult(ctr)
+		// ⚡ Bolt Optimization: Use summarizeMapResult to avoid expensive conversion and base64 decoding
+		_, hasContent := v["content"]
+		_, hasIsError := v["isError"]
+		if hasContent || hasIsError {
+			if val, ok := summarizeMapResult(v); ok {
+				return val
+			}
 		}
+
 		// Otherwise redact it. We marshal it to JSON bytes to use RedactJSON.
 		// Use json-iterator for speed.
 		jsonBytes, _ := fastJSON.Marshal(v)
@@ -892,6 +899,96 @@ func (r LazyLogResult) LogValue() slog.Value {
 		// Fallback for other types
 		return slog.StringValue(util.ToString(v))
 	}
+}
+
+func summarizeMapResult(m map[string]any) (slog.Value, bool) {
+	attrs := make([]slog.Attr, 0, 2)
+
+	if isErrorRaw, ok := m["isError"]; ok {
+		if isError, ok := isErrorRaw.(bool); ok {
+			attrs = append(attrs, slog.Bool("isError", isError))
+		} else {
+			// isError present but not bool -> invalid structure
+			return slog.Value{}, false
+		}
+	}
+
+	contentRaw, ok := m["content"]
+	if !ok {
+		// Just isError? valid.
+		return slog.GroupValue(attrs...), true
+	}
+
+	contentList, ok := contentRaw.([]any)
+	if !ok {
+		// Content is not a list -> invalid structure (security risk if logged raw)
+		return slog.Value{}, false
+	}
+
+	contentSummaries := make([]string, 0, len(contentList))
+	for _, c := range contentList {
+		cMap, ok := c.(map[string]any)
+		if !ok {
+			// Content item is not a map -> invalid structure
+			return slog.Value{}, false
+		}
+
+		typeStr, ok := cMap["type"].(string)
+		if !ok {
+			// Missing or invalid type -> invalid structure
+			return slog.Value{}, false
+		}
+
+		switch typeStr {
+		case "text":
+			text, _ := cMap["text"].(string)
+			origLen := len(text)
+			if origLen > 512 {
+				text = text[:512] + fmt.Sprintf("... (%d chars truncated)", origLen-512)
+			}
+			contentSummaries = append(contentSummaries, fmt.Sprintf("Text(len=%d): %q", origLen, text))
+		case "image":
+			mimeType, _ := cMap["mimeType"].(string)
+			dataStr, _ := cMap["data"].(string)
+			// Estimate size: 3/4 * len(dataStr) - padding
+			size := len(dataStr) * 3 / 4
+			if strings.HasSuffix(dataStr, "==") {
+				size -= 2
+			} else if strings.HasSuffix(dataStr, "=") {
+				size--
+			}
+			contentSummaries = append(contentSummaries, fmt.Sprintf("Image(mime=%s, size=%d bytes)", mimeType, size))
+		case "resource":
+			resMap, ok := cMap["resource"].(map[string]any)
+			if !ok {
+				contentSummaries = append(contentSummaries, "Resource(<nil>)")
+				continue
+			}
+			uri, _ := resMap["uri"].(string)
+			desc := fmt.Sprintf("Resource(uri=%s)", uri)
+
+			if blobStr, ok := resMap["blob"].(string); ok {
+				size := len(blobStr) * 3 / 4
+				if strings.HasSuffix(blobStr, "==") {
+					size -= 2
+				} else if strings.HasSuffix(blobStr, "=") {
+					size--
+				}
+				desc += fmt.Sprintf(" blob=%d bytes", size)
+			} else if blobBytes, ok := resMap["blob"].([]byte); ok {
+				desc += fmt.Sprintf(" blob=%d bytes", len(blobBytes))
+			}
+
+			if txt, ok := resMap["text"].(string); ok {
+				desc += fmt.Sprintf(" text=%d chars", len(txt))
+			}
+			contentSummaries = append(contentSummaries, desc)
+		default:
+			contentSummaries = append(contentSummaries, fmt.Sprintf("Unknown(type=%s)", typeStr))
+		}
+	}
+	attrs = append(attrs, slog.Any("content", contentSummaries))
+	return slog.GroupValue(attrs...), true
 }
 
 func summarizeCallToolResult(ctr *mcp.CallToolResult) slog.Value {
