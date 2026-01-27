@@ -393,6 +393,7 @@ func TestParseProtoFromDefs_Extended(t *testing.T) {
 
 func TestParseProtoByReflection_Extended(t *testing.T) {
 	setupServer := func(t *testing.T) (*mockReflectionServer, *grpc.Server, net.Listener) {
+		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 		server := &mockReflectionServer{streamReady: make(chan struct{})}
 		lis, err := net.Listen("tcp", "127.0.0.1:0")
 		require.NoError(t, err)

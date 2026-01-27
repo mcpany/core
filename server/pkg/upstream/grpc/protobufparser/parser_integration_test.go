@@ -26,6 +26,7 @@ func (s *mockWeatherServer) GetWeather(_ context.Context, _ *v1.GetWeatherReques
 
 func setupMockGRPCServer(t *testing.T) (string, func()) {
 	t.Helper()
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 

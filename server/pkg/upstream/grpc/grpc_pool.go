@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -110,6 +111,13 @@ func NewGrpcPool(
 		opts := []grpc.DialOption{grpc.WithTransportCredentials(transportCreds)}
 		if dialer != nil {
 			opts = append(opts, grpc.WithContextDialer(dialer))
+		} else {
+			// Use SafeDialer to prevent SSRF
+			safeDialer := util.NewConfiguredSafeDialer()
+			opts = append(opts, grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+				// gRPC dialer doesn't pass network, assume tcp
+				return safeDialer.DialContext(ctx, "tcp", addr)
+			}))
 		}
 		if creds != nil {
 			opts = append(opts, grpc.WithPerRPCCredentials(creds))

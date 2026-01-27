@@ -82,20 +82,7 @@ var NewHTTPPool = func(
 		tlsConfig.RootCAs = caCertPool
 	}
 
-	dialer := util.NewSafeDialer()
-	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
-		dialer.AllowLoopback = true
-	}
-
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
-		dialer.AllowPrivate = true
-	}
+	dialer := util.NewConfiguredSafeDialer()
 
 	baseTransport := &http.Transport{
 		TLSClientConfig:     tlsConfig,

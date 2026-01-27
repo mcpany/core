@@ -340,6 +340,7 @@ func (s *mockWeatherServer) GetWeather(_ context.Context, _ *pb.GetWeatherReques
 }
 
 func startMockServer(t *testing.T) (*grpc.Server, string) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	var lis net.Listener
 	var err error
 	// Retry loop to handle rare "address already in use" errors on ephemeral ports

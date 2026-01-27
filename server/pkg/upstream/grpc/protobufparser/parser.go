@@ -7,6 +7,7 @@ package protobufparser
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -24,6 +25,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
@@ -291,7 +293,12 @@ func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.F
 	defer cancel()
 
 	// 1. Connect to the gRPC service
-	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	safeDialer := util.NewConfiguredSafeDialer()
+	dialerOpt := grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+		return safeDialer.DialContext(ctx, "tcp", addr)
+	})
+
+	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(insecure.NewCredentials()), dialerOpt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC service at %s: %w", target, err)
 	}
