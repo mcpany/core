@@ -30,6 +30,13 @@ interface ServiceHealth {
   message?: string;
 }
 
+interface SystemDiagnosticsResponse {
+  os: string;
+  arch: string;
+  docker: boolean;
+  env_vars: Record<string, boolean>;
+}
+
 interface ConnectionDiagnosticDialogProps {
   service: UpstreamServiceConfig;
   trigger?: React.ReactNode;
@@ -49,13 +56,14 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
   const resetSteps = () => {
     const initialSteps: DiagnosticStep[] = [
+      { id: "system_check", name: "System Environment Check", status: "pending", logs: [] },
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
       { id: "operational", name: "Operational Verification", status: "pending", logs: [] },
     ];
 
     if (service.websocketService || service.httpService) {
-        initialSteps.splice(1, 0, { id: "browser_connectivity", name: "Browser Connectivity Check", status: "pending", logs: [] });
+        initialSteps.splice(2, 0, { id: "browser_connectivity", name: "Browser Connectivity Check", status: "pending", logs: [] });
     }
 
     setSteps(initialSteps);
@@ -74,6 +82,34 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     const addLog = (id: string, message: string) => {
       setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, logs: [...s.logs, `[${new Date().toLocaleTimeString()}] ${message}`] } : s)));
     };
+
+    // --- Step 0: System Environment Check ---
+    updateStep("system_check", { status: "running" });
+    let isDocker = false;
+    try {
+        const res = await fetch("/api/v1/system/diagnostics");
+        if (res.ok) {
+            const sys: SystemDiagnosticsResponse = await res.json();
+            addLog("system_check", `Server OS: ${sys.os} (${sys.arch})`);
+            addLog("system_check", `Environment: ${sys.docker ? "Docker Container" : "Native/Host"}`);
+            isDocker = sys.docker;
+
+            const proxyVars = Object.entries(sys.env_vars).filter(([_, v]) => v).map(([k]) => k);
+            if (proxyVars.length > 0) {
+                addLog("system_check", `⚠️ Proxy Environment Variables Detected: ${proxyVars.join(", ")}`);
+                addLog("system_check", "This might interfere with connections to localhost or internal networks if NO_PROXY is not configured correctly.");
+            } else {
+                addLog("system_check", "No proxy environment variables detected.");
+            }
+            updateStep("system_check", { status: "success", detail: "Checked" });
+        } else {
+            addLog("system_check", "Failed to fetch system diagnostics. Skipping check.");
+            updateStep("system_check", { status: "skipped", detail: "API Error" });
+        }
+    } catch (e) {
+        addLog("system_check", `Failed to contact diagnostics API: ${e}`);
+        updateStep("system_check", { status: "skipped", detail: "Network Error" });
+    }
 
     // --- Step 1: Config Validation ---
     updateStep("config", { status: "running" });
@@ -169,8 +205,14 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             // Localhost Warning Heuristic
             if (httpUrl.includes("localhost") || httpUrl.includes("127.0.0.1") || httpUrl.includes("0.0.0.0")) {
                 addLog("browser_connectivity", "⚠️ WARNING: You are using 'localhost' or loopback address.");
-                addLog("browser_connectivity", "If MCP Any is running in Docker, it cannot access 'localhost' of your host machine directly.");
-                addLog("browser_connectivity", "Try using 'host.docker.internal' or your LAN IP address.");
+                if (isDocker) {
+                    addLog("browser_connectivity", "DETECTED: MCP Any is running in Docker.");
+                    addLog("browser_connectivity", "Using 'localhost' inside Docker refers to the container, NOT your host machine.");
+                    addLog("browser_connectivity", "👉 SOLUTION: Use 'host.docker.internal' instead of 'localhost'.");
+                } else {
+                    addLog("browser_connectivity", "If MCP Any is running in Docker, it cannot access 'localhost' of your host machine directly.");
+                    addLog("browser_connectivity", "Try using 'host.docker.internal' or your LAN IP address.");
+                }
             }
 
             addLog("browser_connectivity", "Possible causes: Server down, blocked by firewall, invalid SSL cert, Mixed Content blocking, or CSP (Content Security Policy) restrictions.");

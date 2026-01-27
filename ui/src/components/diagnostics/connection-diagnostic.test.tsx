@@ -84,6 +84,17 @@ describe("ConnectionDiagnosticDialog", () => {
                 ]),
             });
         }
+        if (typeof url === 'string' && url.includes("/api/v1/system/diagnostics")) {
+            return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve({
+                    os: "linux",
+                    arch: "amd64",
+                    docker: false,
+                    env_vars: { "HTTP_PROXY": false }
+                }),
+            });
+        }
         // Mock for Browser Connectivity Check (HTTP Service)
         if (typeof url === 'string' && (url.startsWith("http") || url.startsWith("https"))) {
              return Promise.resolve({
