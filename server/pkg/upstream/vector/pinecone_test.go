@@ -48,6 +48,9 @@ func TestNewPineconeClient(t *testing.T) {
 }
 
 func TestPineconeClient_Operations(t *testing.T) {
+	// Enable local IPs for testing purposes
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Mock Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
@@ -129,6 +132,9 @@ func TestPineconeClient_Operations(t *testing.T) {
 }
 
 func TestPineconeClient_Errors(t *testing.T) {
+	// Enable local IPs for testing purposes
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"error": "bad request"}`))
