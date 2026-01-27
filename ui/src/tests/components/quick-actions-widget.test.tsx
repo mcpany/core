@@ -17,7 +17,7 @@ describe('QuickActionsWidget', () => {
     it('should render all action links', () => {
         render(<QuickActionsWidget />);
 
-        expect(screen.getByText('Register Service')).toBeInTheDocument();
+        expect(screen.getByText('Add Service')).toBeInTheDocument();
         expect(screen.getByText('Playground')).toBeInTheDocument();
         expect(screen.getByText('Manage Secrets')).toBeInTheDocument();
         expect(screen.getByText('Network Map')).toBeInTheDocument();
@@ -26,8 +26,8 @@ describe('QuickActionsWidget', () => {
     it('should have correct hrefs for links', () => {
         render(<QuickActionsWidget />);
 
-        const addServiceLink = screen.getByText('Register Service').closest('a');
-        expect(addServiceLink).toHaveAttribute('href', '/upstream-services');
+        const addServiceLink = screen.getByText('Add Service').closest('a');
+        expect(addServiceLink).toHaveAttribute('href', '/services');
 
         const playgroundLink = screen.getByText('Playground').closest('a');
         expect(playgroundLink).toHaveAttribute('href', '/playground');

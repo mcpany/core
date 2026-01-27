@@ -15,11 +15,11 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
       await seedTraffic(request);
-      await seedUser(request, "e2e-admin");
+      await seedUser(request);
 
       // Login before each test
       await page.goto('/login');
-      await page.fill('input[name="username"]', 'e2e-admin');
+      await page.fill('input[name="username"]', 'admin');
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]');
       await expect(page).toHaveURL('/');
@@ -27,7 +27,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
-      await cleanupUser(request, "e2e-admin");
+      await cleanupUser(request);
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
@@ -44,7 +44,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.skip('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
-    await expect(page.locator('h1')).toContainText('Tools');
+    await expect(page.locator('h2')).toContainText('Tools');
     await expect(page.locator('text=calculator')).toBeVisible();
     await expect(page.locator('text=process_payment')).toBeVisible();
 
@@ -55,7 +55,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Middleware page shows pipeline', async ({ page }) => {
     await page.goto('/middleware');
-    await expect(page.locator('h1')).toContainText('Middleware Pipeline');
+    await expect(page.locator('h2')).toContainText('Middleware Pipeline');
     await expect(page.locator('text=Incoming Request')).toBeVisible();
     await expect(page.locator('text=auth').first()).toBeVisible();
 

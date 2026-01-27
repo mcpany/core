@@ -35,16 +35,11 @@ echo "Created Client ID: $CLIENT_ID"
 echo "Created Client Secret: $CLIENT_SECRET"
 
 # Export these for the test to use (if sourcing) or write to a .env file
-# We'll save it in server/tests/oauth_env.sh so it's close to the integration tests
-mkdir -p server/tests
 {
     echo "TEST_OAUTH_SERVER_URL=http://localhost:5444"
     echo "TEST_OAUTH_CLIENT_ID=$CLIENT_ID"
     echo "TEST_OAUTH_CLIENT_SECRET=$CLIENT_SECRET"
     echo "TEST_OAUTH_TOKEN_URL=http://localhost:5444/oauth2/token"
-} > server/tests/oauth_env.sh
+} > oauth_env.sh
 
-# Cleanup temporary client info
-rm client_info.json
-
-echo "OAuth setup complete. Environment variables written to server/tests/oauth_env.sh"
+echo "OAuth setup complete. Environment variables written to oauth_env.sh"
