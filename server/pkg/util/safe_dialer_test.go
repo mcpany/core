@@ -45,9 +45,16 @@ func TestSafeDialer_MultipleIPs_HappyEyeballs(t *testing.T) {
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
 
-	safeDialer := util.NewSafeDialer()
-	safeDialer.Resolver = resolver
-	safeDialer.Dialer = dialer
+	// Explicitly initialize SafeDialer with mocks
+	// Note: We construct it manually to inject mocks, but NewSafeDialer() sets defaults.
+	// Here we follow the pattern of creating the struct and injecting dependencies.
+	safeDialer := &util.SafeDialer{
+		AllowLoopback:  false,
+		AllowPrivate:   false,
+		AllowLinkLocal: false,
+		Resolver:       resolver,
+		Dialer:         dialer,
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -87,9 +94,10 @@ func TestSafeDialer_AllIPsFail(t *testing.T) {
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
 
-	safeDialer := util.NewSafeDialer()
-	safeDialer.Resolver = resolver
-	safeDialer.Dialer = dialer
+	safeDialer := &util.SafeDialer{
+		Resolver: resolver,
+		Dialer:   dialer,
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -120,9 +128,10 @@ func TestSafeDialer_BlocksUnspecified(t *testing.T) {
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
 
-	safeDialer := util.NewSafeDialer()
-	safeDialer.Resolver = resolver
-	safeDialer.Dialer = dialer
+	safeDialer := &util.SafeDialer{
+		Resolver: resolver,
+		Dialer:   dialer,
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -144,7 +153,7 @@ func TestSafeDialer_BlocksUnspecified(t *testing.T) {
 	require.Error(t, err)
 	assert.Nil(t, conn)
 	assert.Contains(t, err.Error(), "ssrf attempt blocked")
-	// Unspecified IPs (::, 0.0.0.0) resolve to loopback, so they are now blocked by AllowLoopback check
+	// Unspecified IPs (::, 0.0.0.0) resolve to loopback/unspecified, so they are blocked
 	assert.Contains(t, err.Error(), "loopback ip")
 }
 
@@ -153,15 +162,22 @@ func TestSafeDialer_Networks(t *testing.T) {
 	resolver := new(MockIPResolver)
 	dialer := new(MockDialer)
 
-	safeDialer := util.NewSafeDialer()
-	safeDialer.Resolver = resolver
-	safeDialer.Dialer = dialer
+	safeDialer := &util.SafeDialer{
+		Resolver: resolver,
+		Dialer:   dialer,
+	}
 
 	ctx := context.Background()
 	host := "example.com"
 	port := "80"
 	addr := net.JoinHostPort(host, port)
 	ip := net.ParseIP("1.2.3.4")
+
+	// We need fresh mocks for each subtest or reset them, but here we just create expected calls
+	// Since subtests run sequentially, we can reuse objects if we are careful,
+	// but testify mocks accumulate calls.
+	// Best to create fresh mocks inside subtests, but let's stick to existing structure
+	// and use .Once() to sequence them.
 
 	t.Run("tcp4", func(t *testing.T) {
 		resolver.On("LookupIP", ctx, "ip4", host).Return([]net.IP{ip}, nil).Once()
@@ -180,4 +196,48 @@ func TestSafeDialer_Networks(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotNil(t, conn)
 	})
+}
+
+func TestSafeDialer_BlocksReservedIPv6(t *testing.T) {
+	// Setup
+	resolver := new(MockIPResolver)
+	dialer := new(MockDialer)
+
+	safeDialer := &util.SafeDialer{
+		Resolver: resolver,
+		Dialer:   dialer,
+		AllowPrivate: false, // Ensure strict mode
+	}
+
+	ctx := context.Background()
+	port := "80"
+
+	tests := []struct {
+		name string
+		ip   string
+	}{
+		{"Discard-Only", "100::1"},
+		{"Benchmarking", "2001:2::1"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			host := tt.name + ".example.com"
+			addr := net.JoinHostPort(host, port)
+			ip := net.ParseIP(tt.ip)
+			require.NotNil(t, ip)
+
+			// Mock resolver to return the reserved IP
+			resolver.On("LookupIP", ctx, "ip", host).Return([]net.IP{ip}, nil).Once()
+
+			// Execution
+			conn, err := safeDialer.DialContext(ctx, "tcp", addr)
+
+			// Verification
+			require.Error(t, err)
+			assert.Nil(t, conn)
+			assert.Contains(t, err.Error(), "ssrf attempt blocked")
+			assert.Contains(t, err.Error(), "private ip")
+		})
+	}
 }
