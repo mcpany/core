@@ -338,6 +338,21 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
 			if endIdx < len(input) {
 				next := input[endIdx]
 				if next >= 'a' && next <= 'z' {
+					// Check for plural 's'
+					if next == 's' {
+						// Check if 's' is the end of the word.
+						// If the character AFTER 's' is a lowercase letter, it's a continuation (e.g. "token" in "tokenservice").
+						// If it is NOT a lowercase letter (e.g. end of string, uppercase, digit, symbol), it is a plural match (e.g. "cookies", "tokensAuth").
+						nextNextIdx := endIdx + 1
+						if nextNextIdx < len(input) {
+							nextNext := input[nextNextIdx]
+							if nextNext >= 'a' && nextNext <= 'z' {
+								continue
+							}
+						}
+						// 's' is end of word. Match!
+						return true
+					}
 					continue
 				}
 				// Special handling for uppercase keys (e.g. "AUTH" in "AUTHORITY")
