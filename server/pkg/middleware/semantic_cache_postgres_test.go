@@ -106,3 +106,17 @@ func TestPostgresVectorStore_Prune(t *testing.T) {
 	store.Prune(context.Background(), "test_key")
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestPostgresVectorStore_Close(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	store := &PostgresVectorStore{db: db}
+
+	mock.ExpectClose()
+
+	err = store.Close()
+	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
