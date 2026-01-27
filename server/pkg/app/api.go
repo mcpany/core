@@ -433,7 +433,9 @@ func checkFilesystemAccess(path string) error {
 	}
 
 	// Try to open the path to ensure we have read permissions
-	f, err := os.Open(path)
+	// nosemgrep: go.lang.security.audit.path-traversal.path-traversal
+	// nolint:gosec // Validating user-provided path on purpose
+	f, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		return fmt.Errorf("permission denied: failed to open path: %w", err)
 	}
@@ -892,7 +894,6 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			if secret.GetName() == "" && secret.GetId() != "" {
 				secret.SetName(secret.GetId())
 			}
-
 
 			// Force ID
 			secret.SetId(path)

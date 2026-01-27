@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -470,7 +471,9 @@ func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.
 					}
 
 					// Verify read permissions
-					f, err := os.Open(localPath)
+					// nosemgrep: go.lang.security.audit.path-traversal.path-traversal
+					// nolint:gosec // Validating user-provided path on purpose
+					f, err := os.Open(filepath.Clean(localPath))
 					if err != nil {
 						return fmt.Errorf("root path check failed for %s (%s): permission denied (open): %w", virtualPath, localPath, err)
 					}
