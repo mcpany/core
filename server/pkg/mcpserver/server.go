@@ -589,6 +589,28 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		return nil, err
 	}
 
+	finalResult, isStructured, jsonBytes, marshalErr := s.processToolResult(result, req.ToolName)
+
+	// Log the result
+	if logger.Enabled(ctx, slog.LevelInfo) {
+		var logValue slog.Value
+		// If we have a structured result (either directly or converted), use the summarizer.
+		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
+		if !isStructured && jsonBytes != nil && marshalErr == nil {
+			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
+			// This saves a second marshal operation for large maps.
+			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+		} else {
+			logValue = summarizeCallToolResult(finalResult)
+		}
+
+		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
+	}
+
+	return finalResult, nil
+}
+
+func (s *Server) processToolResult(result any, toolName string) (*mcp.CallToolResult, bool, []byte, error) {
 	var finalResult *mcp.CallToolResult
 	var jsonBytes []byte
 	var marshalErr error
@@ -609,7 +631,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 				finalResult = &callToolRes
 				isStructured = true
 			} else {
-				logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult RawMessage, treating as raw data", "toolName", req.ToolName)
+				logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult RawMessage, treating as raw data", "toolName", toolName)
 			}
 		}
 		// If not structured, it will fall through to raw data handling where we use rawMsg directly.
@@ -635,7 +657,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 						isStructured = true
 					} else {
 						// Unmarshal failed
-						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
+						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", toolName)
 						// Fall through to raw data handling
 					}
 				} else {
@@ -690,23 +712,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	// Log the result
-	if logger.Enabled(ctx, slog.LevelInfo) {
-		var logValue slog.Value
-		// If we have a structured result (either directly or converted), use the summarizer.
-		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
-		if !isStructured && jsonBytes != nil && marshalErr == nil {
-			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
-			// This saves a second marshal operation for large maps.
-			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
-		} else {
-			logValue = summarizeCallToolResult(finalResult)
-		}
-
-		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
-	}
-
-	return finalResult, nil
+	return finalResult, isStructured, jsonBytes, marshalErr
 }
 
 // SetMCPServer sets the MCP server provider for the tool manager.
