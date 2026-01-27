@@ -12,6 +12,7 @@ import { SchemaForm } from "./schema-form";
 import { ToolPresets } from "./tool-presets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
 
@@ -30,7 +31,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [jsonInput, setJsonInput] = useState<string>("{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [mode, setMode] = useState<"form" | "json">("form");
+  const [mode, setMode] = useState<"form" | "json" | "schema">("form");
 
   // Initialize AJV and compile schema
   const validate = useMemo(() => {
@@ -119,12 +120,23 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   };
 
   const handleTabChange = (value: string) => {
+      if (value === "schema") {
+          setMode("schema");
+          // Update JSON input from form data if coming from form, so returning to JSON works
+          if (mode === "form") {
+              setJsonInput(JSON.stringify(formData, null, 2));
+          }
+          return;
+      }
+
       if (value === "json") {
-          setJsonInput(JSON.stringify(formData, null, 2));
+          if (mode === "form") {
+              setJsonInput(JSON.stringify(formData, null, 2));
+          }
           setMode("json");
           // Validate immediately on switch
           setErrors(runValidation(formData));
-      } else {
+      } else if (value === "form") {
           try {
               const parsed = JSON.parse(jsonInput);
               setFormData(parsed);
@@ -188,9 +200,10 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
       <Tabs value={mode} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-1 mb-2">
-            <TabsList className="grid w-[200px] grid-cols-2">
+            <TabsList className="grid w-[300px] grid-cols-3">
                 <TabsTrigger value="form">Form</TabsTrigger>
                 <TabsTrigger value="json">JSON</TabsTrigger>
+                <TabsTrigger value="schema">Schema</TabsTrigger>
             </TabsList>
             <ToolPresets
                 toolName={tool.name}
@@ -248,6 +261,12 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
                         </ul>
                     </div>
                 )}
+            </div>
+        </TabsContent>
+
+        <TabsContent value="schema" className="flex-1 overflow-hidden mt-0">
+            <div className="h-full flex flex-col gap-2">
+                <JsonView data={tool.inputSchema} className="h-full overflow-auto" />
             </div>
         </TabsContent>
       </Tabs>

@@ -30,13 +30,13 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
     };
   }
 
-  // Network: Connection Refused
-  if (err.includes("connection refused") || (err.includes("dial tcp") && !err.includes("lookup"))) {
+  // Network: Connection Refused / Fetch Failed
+  if (err.includes("connection refused") || err.includes("fetch failed") || (err.includes("dial tcp") && !err.includes("lookup"))) {
     return {
       category: "network",
-      title: "Connection Refused",
+      title: "Connection Failed",
       description: "The server is unreachable at the specified address/port.",
-      suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. If running in Docker, ensure you are using the correct network alias (e.g., 'host.docker.internal' instead of 'localhost').",
+      suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. Docker Users: 'localhost' refers to the container itself. Use 'host.docker.internal' to reach your host machine.",
       severity: "critical",
     };
   }
@@ -137,6 +137,39 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The upstream server closed the connection unexpectedly.",
       suggestion: "The server might have crashed or rejected the connection immediately. Check server logs.",
       severity: "warning",
+    };
+  }
+
+  // Configuration: Schema Validation (Zod)
+  if (err.includes("zod") || err.includes("validation failed") || err.includes("schema mismatch") || err.includes("invalid input")) {
+    return {
+      category: "configuration",
+      title: "Schema Validation Error",
+      description: "The upstream server returned data that does not match the expected schema.",
+      suggestion: "1. Check if the upstream service API has changed (version mismatch).\n2. If using an adapter (e.g. Linear, Stripe), ensure the configuration matches the required inputs.\n3. Check for required environment variables that might be missing in the upstream service.",
+      severity: "warning",
+    };
+  }
+
+  // Configuration: Filesystem Permissions
+  if (err.includes("access denied") || err.includes("eacces") || err.includes("permission denied")) {
+    return {
+      category: "configuration",
+      title: "Permission Denied",
+      description: "The server does not have permission to access a requested file or resource.",
+      suggestion: "1. Check file system permissions.\n2. Ensure the 'allowed_paths' configuration covers the target directory.\n3. If on Windows, check for administrative privileges or path formatting.",
+      severity: "critical",
+    };
+  }
+
+  // Configuration: Missing Module
+  if (err.includes("module_not_found") || err.includes("cannot find module")) {
+    return {
+      category: "configuration",
+      title: "Missing Dependency",
+      description: "The upstream service failed to load a required module.",
+      suggestion: "1. Re-install dependencies (npm install).\n2. Check if the service requires a specific Node.js version.\n3. Verify the Docker image is built correctly.",
+      severity: "critical",
     };
   }
 

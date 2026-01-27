@@ -590,8 +590,8 @@ func TestManager_ListServices(t *testing.T) {
 	tm := NewManager(nil)
 
 	// Add Service Info
-	service1 := &ServiceInfo{Name: "service-1", Config: &configv1.UpstreamServiceConfig{}}
-	service2 := &ServiceInfo{Name: "service-2", Config: &configv1.UpstreamServiceConfig{}}
+	service1 := &ServiceInfo{Name: "service-1", Config: configv1.UpstreamServiceConfig_builder{}.Build()}
+	service2 := &ServiceInfo{Name: "service-2", Config: configv1.UpstreamServiceConfig_builder{}.Build()}
 
 	tm.AddServiceInfo("id-1", service1)
 	tm.AddServiceInfo("id-2", service2)
@@ -611,15 +611,15 @@ func TestManager_ListServices(t *testing.T) {
 func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	t.Parallel()
 	// Setup command tool with args injection vulnerability
-	toolProto := &v1.Tool{
+	toolProto := v1.Tool_builder{
 		Name: proto.String("cmd-tool"),
-	}
-	service := &configv1.CommandLineUpstreamService{
+	}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
-	}
-	callDef := &configv1.CommandLineCallDefinition{
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"{{arg}}"},
-	}
+	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")
 
@@ -643,25 +643,25 @@ func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
 		},
 	})
 
-	toolProto := &v1.Tool{
+	toolProto := v1.Tool_builder{
 		Name: proto.String("cmd-tool"),
-		Annotations: &v1.ToolAnnotations{
+		Annotations: v1.ToolAnnotations_builder{
 			InputSchema: inputSchema,
-		},
-	}
-	service := &configv1.CommandLineUpstreamService{
+		}.Build(),
+	}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
-	}
+	}.Build()
 
 	// Parameter mapping to env
-	schema := &configv1.ParameterSchema{Name: proto.String("env_var")}
-	mapping := &configv1.CommandLineParameterMapping{
+	schema := configv1.ParameterSchema_builder{Name: proto.String("env_var")}.Build()
+	mapping := configv1.CommandLineParameterMapping_builder{
 		Schema: schema,
-	}
+	}.Build()
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Parameters: []*configv1.CommandLineParameterMapping{mapping},
-	}
+	}.Build()
 
 	cmdTool := NewCommandTool(toolProto, service, callDef, nil, "")
 

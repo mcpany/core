@@ -53,7 +53,7 @@ func TestFrontendReactCollection(t *testing.T) {
 		t.Log("npm not found locally, skipping execution tests")
 	}
 
-	for _, svc := range cfg.UpstreamServices {
+	for _, svc := range cfg.GetUpstreamServices() {
 		if svc.GetName() == "npm-service-wrapper" {
 			foundNpm = true
 			_, tools, _, err := cmdUpstream.Register(ctx, svc, toolManager, promptManager, resourceManager, false)

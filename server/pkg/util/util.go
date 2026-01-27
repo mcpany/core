@@ -478,6 +478,15 @@ func IsNil(i any) bool {
 // Optimization: We manually handle all standard Go numeric types to avoid the overhead
 // of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 func ToString(v any) string {
+	return toStringRecursive(v, 0)
+}
+
+func toStringRecursive(v any, depth int) string {
+	// Prevent infinite recursion due to cycles
+	if depth > 50 {
+		return "<recursion limit reached>"
+	}
+
 	if v == nil {
 		return "<nil>"
 	}
@@ -557,7 +566,7 @@ func ToString(v any) string {
 			if rVal.IsNil() {
 				return "<nil>"
 			}
-			return ToString(rVal.Elem().Interface())
+			return toStringRecursive(rVal.Elem().Interface(), depth+1)
 		}
 		return fmt.Sprintf("%v", v)
 	}

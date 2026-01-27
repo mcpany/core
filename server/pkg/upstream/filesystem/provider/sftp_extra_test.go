@@ -13,6 +13,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestSftpProvider_Extended(t *testing.T) {
@@ -25,11 +26,11 @@ func TestSftpProvider_Extended(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 
-	config := &configv1.SftpFs{
-		Address:  &addr,
-		Username: ptr("testuser"),
-		Password: ptr("testpass"),
-	}
+	config := configv1.SftpFs_builder{
+		Address:  proto.String(addr),
+		Username: proto.String("testuser"),
+		Password: proto.String("testpass"),
+	}.Build()
 
 	provider, err := NewSftpProvider(config)
 	require.NoError(t, err)
@@ -101,16 +102,6 @@ func TestSftpProvider_Extended(t *testing.T) {
 
 		err = fs.Chmod(f, 0600)
 		require.NoError(t, err)
-
-		// Note: Chown might fail if the user doesn't have permissions or if we are not root.
-		// Usually we can't change owner unless root.
-		// But we can check if Chown is called.
-		// sftp server implementation might restrict this.
-		// For now, let's skip Chown or just expect error/success depending on environment.
-		// Since we run in user space, likely can't chown to another user.
-		// But we can chown to current user/group?
-		// err = fs.Chown(f, os.Getuid(), os.Getgid())
-		// require.NoError(t, err)
 
 		now := time.Now()
 		err = fs.Chtimes(f, now, now)

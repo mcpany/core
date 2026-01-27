@@ -30,13 +30,15 @@ func TestGRPCUpstream_Shutdown(t *testing.T) {
 	server, addr := startMockServer(t)
 	defer server.Stop()
 
-	grpcService := &configv1.GrpcUpstreamService{}
-	grpcService.SetAddress(addr)
-	grpcService.SetUseReflection(true) // Enable reflection to avoid "no proto files" error
+	grpcService := configv1.GrpcUpstreamService_builder{
+		Address:      proto.String(addr),
+		UseReflection: proto.Bool(true), // Enable reflection to avoid "no proto files" error
+	}.Build()
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("shutdown-test")
-	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:        proto.String("shutdown-test"),
+		GrpcService: grpcService,
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -59,40 +61,34 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 	})
 
 	t.Run("nil grpc service", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		_, err := NewGrpcPool(1, 1, time.Second, nil, nil, config, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "grpc service config is nil")
 	})
 
 	t.Run("empty address", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{
-			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{},
-			},
-		}
+		config := configv1.UpstreamServiceConfig_builder{
+			GrpcService: configv1.GrpcUpstreamService_builder{}.Build(),
+		}.Build()
 		_, err := NewGrpcPool(1, 1, time.Second, nil, nil, config, false)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "grpc service address is empty")
 	})
 
 	t.Run("mtls config failure - invalid cert", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{
+		config := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("mtls-test"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("127.0.0.1:50051"),
-				},
-			},
-			UpstreamAuth: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_Mtls{
-					Mtls: &configv1.MTLSAuth{
-						ClientCertPath: proto.String("nonexistent.crt"),
-						ClientKeyPath:  proto.String("nonexistent.key"),
-					},
-				},
-			},
-		}
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: proto.String("127.0.0.1:50051"),
+			}.Build(),
+			UpstreamAuth: configv1.Authentication_builder{
+				Mtls: configv1.MTLSAuth_builder{
+					ClientCertPath: proto.String("nonexistent.crt"),
+					ClientKeyPath:  proto.String("nonexistent.key"),
+				}.Build(),
+			}.Build(),
+		}.Build()
 
 		p, err := NewGrpcPool(1, 1, time.Second, nil, nil, config, false)
 		assert.Error(t, err)
@@ -111,23 +107,19 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 		defer os.Remove(keyFile.Name())
 		defer os.Remove(caFile.Name())
 
-		config := &configv1.UpstreamServiceConfig{
+		config := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("mtls-test-success"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("127.0.0.1:50051"),
-				},
-			},
-			UpstreamAuth: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_Mtls{
-					Mtls: &configv1.MTLSAuth{
-						ClientCertPath: proto.String(certFile.Name()),
-						ClientKeyPath:  proto.String(keyFile.Name()),
-						CaCertPath:     proto.String(caFile.Name()),
-					},
-				},
-			},
-		}
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: proto.String("127.0.0.1:50051"),
+			}.Build(),
+			UpstreamAuth: configv1.Authentication_builder{
+				Mtls: configv1.MTLSAuth_builder{
+					ClientCertPath: proto.String(certFile.Name()),
+					ClientKeyPath:  proto.String(keyFile.Name()),
+					CaCertPath:     proto.String(caFile.Name()),
+				}.Build(),
+			}.Build(),
+		}.Build()
 
 		// minSize=1 forces factory execution
 		// It seems NewGrpcPool succeeds even if certs are empty (or tls.LoadX509KeyPair accepts them temporarily/partially?)
@@ -150,13 +142,11 @@ func TestNewGrpcPool_Coverage(t *testing.T) {
 	})
 
 	t.Run("with dialer", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{
-			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{
-					Address: proto.String("127.0.0.1:50051"),
-				},
-			},
-		}
+		config := configv1.UpstreamServiceConfig_builder{
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address: proto.String("127.0.0.1:50051"),
+			}.Build(),
+		}.Build()
 
 		dialer := func(ctx context.Context, addr string) (net.Conn, error) {
 			return nil, nil // Dummy
@@ -179,26 +169,27 @@ func TestGRPCUpstream_Prompts_Coverage(t *testing.T) {
 	server, addr := startMockServer(t)
 	defer server.Stop()
 
-	grpcService := &configv1.GrpcUpstreamService{}
-	grpcService.SetAddress(addr)
-	grpcService.SetUseReflection(true)
-
-	grpcService.Prompts = []*configv1.PromptDefinition{
-		{
-			Name: proto.String("disabled-prompt"),
-			Disable: proto.Bool(true),
+	grpcService := configv1.GrpcUpstreamService_builder{
+		Address:      proto.String(addr),
+		UseReflection: proto.Bool(true),
+		Prompts: []*configv1.PromptDefinition{
+			configv1.PromptDefinition_builder{
+				Name:    proto.String("disabled-prompt"),
+				Disable: proto.Bool(true),
+			}.Build(),
+			configv1.PromptDefinition_builder{
+				Name: proto.String("unexported-prompt"),
+			}.Build(),
 		},
-		{
-			Name: proto.String("unexported-prompt"),
-		},
-	}
+	}.Build()
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("prompts-coverage")
-	serviceConfig.SetGrpcService(grpcService)
-	serviceConfig.PromptExportPolicy = &configv1.ExportPolicy{
-		DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
-	}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:        proto.String("prompts-coverage"),
+		GrpcService: grpcService,
+		PromptExportPolicy: configv1.ExportPolicy_builder{
+			DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
+		}.Build(),
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, nil, false)
 	require.NoError(t, err)
@@ -217,40 +208,35 @@ func TestGRPCUpstream_DynamicResources_Coverage(t *testing.T) {
 	server, addr := startMockServer(t)
 	defer server.Stop()
 
-	grpcService := &configv1.GrpcUpstreamService{}
-	grpcService.SetAddress(addr)
-	grpcService.SetUseReflection(true)
+	grpcService := configv1.GrpcUpstreamService_builder{
+		Address:      proto.String(addr),
+		UseReflection: proto.Bool(true),
+		Resources: []*configv1.ResourceDefinition{
+			configv1.ResourceDefinition_builder{
+				Name: proto.String("bad-resource"),
+				Dynamic: configv1.DynamicResource_builder{
+					GrpcCall: configv1.GrpcCallDefinition_builder{
+						Id: proto.String("unknown-call"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+			configv1.ResourceDefinition_builder{
+				Name:    proto.String("disabled-resource"),
+				Disable: proto.Bool(true),
+			}.Build(),
+		},
+		Tools: []*configv1.ToolDefinition{
+			configv1.ToolDefinition_builder{
+				Name:   proto.String("SomeTool"),
+				CallId: proto.String("some-call"),
+			}.Build(),
+		},
+	}.Build()
 
-	// Resource referencing a call ID that doesn't exist in Tools mapping
-	grpcService.Resources = []*configv1.ResourceDefinition{
-		{
-			Name: proto.String("bad-resource"),
-			ResourceType: &configv1.ResourceDefinition_Dynamic{
-				Dynamic: &configv1.DynamicResource{
-					CallDefinition: &configv1.DynamicResource_GrpcCall{
-						GrpcCall: &configv1.GrpcCallDefinition{
-							Id: proto.String("unknown-call"),
-						},
-					},
-				},
-			},
-		},
-		{
-			Name: proto.String("disabled-resource"),
-			Disable: proto.Bool(true),
-		},
-	}
-	// Tools don't cover unknown-call
-	grpcService.Tools = []*configv1.ToolDefinition{
-		{
-			Name: proto.String("SomeTool"),
-			CallId: proto.String("some-call"),
-		},
-	}
-
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("dynamic-resources-coverage")
-	serviceConfig.SetGrpcService(grpcService)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:        proto.String("dynamic-resources-coverage"),
+		GrpcService: grpcService,
+	}.Build()
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, resourceManager, false)
 	require.NoError(t, err)

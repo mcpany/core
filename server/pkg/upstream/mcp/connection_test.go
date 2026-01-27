@@ -10,7 +10,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -70,13 +69,14 @@ func TestWithMCPClientSession(t *testing.T) {
 	})
 
 	t.Run("Stdio_Command", func(t *testing.T) {
-		conn := &mcpConnection{
-			client: client,
-			stdioConfig: &configv1.McpStdioConnection{
-				Command: lo.ToPtr("echo"),
-				Args:    []string{"hello"},
-			},
-		}
+	stdioConfig := configv1.McpStdioConnection_builder{}.Build()
+	stdioConfig.SetCommand("echo")
+	stdioConfig.SetArgs([]string{"hello"})
+
+	conn := &mcpConnection{
+		client: client,
+		stdioConfig: stdioConfig,
+	}
 		err := conn.withMCPClientSession(ctx, func(cs ClientSession) error {
 			assert.Equal(t, mockSession, cs)
 			return nil

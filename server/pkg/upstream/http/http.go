@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/doctor"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -122,14 +122,21 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	u.serviceID = sanitizedName
-	serviceID := u.serviceID
+	// Store new ID in local variable
+	serviceID := sanitizedName
 
 	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	if isReload {
-		toolManager.ClearToolsForService(serviceID)
+		// Clear tools using the OLD service ID if available
+		idToClear := u.serviceID
+		if idToClear == "" {
+			idToClear = serviceID
+		}
+		toolManager.ClearToolsForService(idToClear)
 	}
+
+	u.serviceID = serviceID
 
 	httpService := serviceConfig.GetHttpService()
 	if httpService == nil {
@@ -238,13 +245,13 @@ func (u *Upstream) Register(
 			}
 			if !exists {
 				// Create a default tool definition
-				newTool := &configv1.ToolDefinition{
+				newTool := configv1.ToolDefinition_builder{
 					Name:        proto.String(callID),
 					CallId:      proto.String(callID),
 					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
-				}
+				}.Build()
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
-				httpService.Tools = append(httpService.Tools, newTool)
+				httpService.SetTools(append(httpService.GetTools(), newTool))
 			}
 		}
 	}
@@ -385,39 +392,16 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				// Restore it to be just Path by prepending "//" + [User@] + Host.
 				// Note: url.Parse treats //user:pass@host/path as scheme-relative too.
 				// We need to preserve User info if present.
-
-				// User.String() returns the encoded user info.
-				// We need both encoded (for RawPath) and decoded (for Path) versions of the prefix.
-				prefixEncoded := "//"
-				prefixDecoded := "//"
+				prefix := "//"
 				if endpointURL.User != nil {
-					userEncoded := endpointURL.User.String()
-					prefixEncoded += userEncoded + "@"
-
-					// Decode user info for Path
-					userDecoded, err := url.PathUnescape(userEncoded)
-					if err != nil {
-						// Fallback to encoded if decoding fails (unlikely for user info)
-						log.Warn("Failed to unescape user info in path fix", "error", err)
-						userDecoded = userEncoded
-					}
-					prefixDecoded += userDecoded + "@"
+					prefix += endpointURL.User.String() + "@"
 				}
-				prefixEncoded += endpointURL.Host
-				prefixDecoded += endpointURL.Host
+				prefix += endpointURL.Host
 
-				// Determine original RawPath part.
-				// If RawPath is empty, it means Path does not contain any special characters that need encoding.
-				// However, since we are prepending a prefix that might have encoded characters,
-				// we MUST construct a valid RawPath that includes the encoded prefix.
-				pathPartEncoded := endpointURL.RawPath
-				if pathPartEncoded == "" {
-					pathPartEncoded = endpointURL.Path
+				endpointURL.Path = prefix + endpointURL.Path
+				if endpointURL.RawPath != "" {
+					endpointURL.RawPath = prefix + endpointURL.RawPath
 				}
-
-				endpointURL.Path = prefixDecoded + endpointURL.Path
-				endpointURL.RawPath = prefixEncoded + pathPartEncoded
-
 				endpointURL.Host = ""
 				endpointURL.User = nil
 			} else if endpointURL.Path == "" {
@@ -545,20 +529,20 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Process base parts
 			for _, bp := range baseParts {
-				if bp.isInvalid {
-					finalParts = append(finalParts, bp.raw)
-					continue
+				// Check override if we have a decoded key
+				if bp.keyDecoded {
+					if parts, ok := endPartsByKey[bp.key]; ok {
+						if !keysOverridden[bp.key] {
+							finalParts = append(finalParts, parts...)
+							keysOverridden[bp.key] = true
+						}
+						// If overridden, we skip adding the base part (even if it was invalid)
+						continue
+					}
 				}
 
-				// Check override
-				if parts, ok := endPartsByKey[bp.key]; ok {
-					if !keysOverridden[bp.key] {
-						finalParts = append(finalParts, parts...)
-						keysOverridden[bp.key] = true
-					}
-				} else {
-					finalParts = append(finalParts, bp.raw)
-				}
+				// If not overridden (or key not decoded), add the base part
+				finalParts = append(finalParts, bp.raw)
 			}
 
 			// Append remaining endpoint parts

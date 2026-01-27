@@ -64,7 +64,7 @@ func TestHTTPUpstream_Register_InvalidConfig(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			serviceConfig := &configv1.UpstreamServiceConfig{}
+			serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 			require.NoError(t, protojson.Unmarshal([]byte(tc.configJSON), serviceConfig))
 
 			_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)

@@ -140,8 +140,8 @@ func (x NodeStatus) Number() protoreflect.EnumNumber {
 // Graph represents the full network topology.
 type Graph struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Clients       []*Node                `protobuf:"bytes,1,rep,name=clients,proto3" json:"clients,omitempty"`
-	Core          *Node                  `protobuf:"bytes,2,opt,name=core,proto3" json:"core,omitempty"`
+	Clients       []*Node                `protobuf:"bytes,1,rep,name=clients" json:"clients,omitempty"`
+	Core          *Node                  `protobuf:"bytes,2,opt,name=core" json:"core,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -223,13 +223,13 @@ func (b0 Graph_builder) Build() *Graph {
 // Node represents a node in the topology graph.
 type Node struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
-	Type          NodeType               `protobuf:"varint,3,opt,name=type,proto3,enum=topology.v1.NodeType" json:"type,omitempty"`
-	Status        NodeStatus             `protobuf:"varint,4,opt,name=status,proto3,enum=topology.v1.NodeStatus" json:"status,omitempty"`
-	Metadata      map[string]string      `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Children      []*Node                `protobuf:"bytes,6,rep,name=children,proto3" json:"children,omitempty"`
-	Metrics       *NodeMetrics           `protobuf:"bytes,7,opt,name=metrics,proto3" json:"metrics,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	Label         string                 `protobuf:"bytes,2,opt,name=label" json:"label,omitempty"`
+	Type          NodeType               `protobuf:"varint,3,opt,name=type,enum=topology.v1.NodeType" json:"type,omitempty"`
+	Status        NodeStatus             `protobuf:"varint,4,opt,name=status,enum=topology.v1.NodeStatus" json:"status,omitempty"`
+	Metadata      map[string]string      `protobuf:"bytes,5,rep,name=metadata" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Children      []*Node                `protobuf:"bytes,6,rep,name=children" json:"children,omitempty"`
+	Metrics       *NodeMetrics           `protobuf:"bytes,7,opt,name=metrics" json:"metrics,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -375,9 +375,9 @@ func (b0 Node_builder) Build() *Node {
 
 type NodeMetrics struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Qps           float64                `protobuf:"fixed64,1,opt,name=qps,proto3" json:"qps,omitempty"`
-	LatencyMs     float64                `protobuf:"fixed64,2,opt,name=latency_ms,json=latencyMs,proto3" json:"latency_ms,omitempty"`
-	ErrorRate     float64                `protobuf:"fixed64,3,opt,name=error_rate,json=errorRate,proto3" json:"error_rate,omitempty"`
+	Qps           float64                `protobuf:"fixed64,1,opt,name=qps" json:"qps,omitempty"`
+	LatencyMs     float64                `protobuf:"fixed64,2,opt,name=latency_ms,json=latencyMs" json:"latency_ms,omitempty"`
+	ErrorRate     float64                `protobuf:"fixed64,3,opt,name=error_rate,json=errorRate" json:"error_rate,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -499,7 +499,7 @@ const file_proto_topology_v1_topology_proto_rawDesc = "" +
 	"\x17NODE_STATUS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12NODE_STATUS_ACTIVE\x10\x01\x12\x18\n" +
 	"\x14NODE_STATUS_INACTIVE\x10\x02\x12\x15\n" +
-	"\x11NODE_STATUS_ERROR\x10\x03B*Z(github.com/mcpany/core/proto/topology/v1b\x06proto3"
+	"\x11NODE_STATUS_ERROR\x10\x03B/Z(github.com/mcpany/core/proto/topology/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_topology_v1_topology_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_proto_topology_v1_topology_proto_msgTypes = make([]protoimpl.MessageInfo, 4)

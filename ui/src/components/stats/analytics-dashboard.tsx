@@ -48,8 +48,9 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { apiClient, ToolDefinition } from "@/lib/client";
+import { apiClient, ToolDefinition, ToolAnalytics } from "@/lib/client";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
+import { OptimizationTab } from "./optimization-tab";
 
 // Tool usage colors
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
@@ -67,16 +68,19 @@ export function AnalyticsDashboard() {
     const [contextTotal, setContextTotal] = useState<number>(0);
     const [contextByService, setContextByService] = useState<any[]>([]);
     const [heaviestTools, setHeaviestTools] = useState<any[]>([]);
+    const [tools, setTools] = useState<ToolDefinition[]>([]);
+    const [toolUsageMap, setToolUsageMap] = useState<Record<string, ToolAnalytics>>({});
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
         const fetchDashboardData = async () => {
             try {
-                const [traffic, topTools, toolsResponse] = await Promise.all([
+                const [traffic, topTools, toolsResponse, toolUsageStats] = await Promise.all([
                     apiClient.getDashboardTraffic(),
                     apiClient.getTopTools(),
-                    apiClient.listTools().catch(() => ({ tools: [] }))
+                    apiClient.listTools().catch(() => ({ tools: [] })),
+                    apiClient.getToolUsage().catch(() => [])
                 ]);
                 setTrafficData(traffic || []);
 
@@ -88,8 +92,15 @@ export function AnalyticsDashboard() {
                 }));
                 setToolUsageData(formattedTools);
 
+                const usageMap: Record<string, ToolAnalytics> = {};
+                (toolUsageStats || []).forEach((s: ToolAnalytics) => {
+                    usageMap[`${s.name}@${s.serviceId}`] = s;
+                });
+                setToolUsageMap(usageMap);
+
                 // Calculate Context Usage
                 const allTools: ToolDefinition[] = toolsResponse.tools || [];
+                setTools(allTools);
                 let totalTokens = 0;
                 const serviceMap: Record<string, number> = {};
                 const toolTokens: { name: string, tokens: number, service: string }[] = [];
@@ -139,13 +150,23 @@ export function AnalyticsDashboard() {
     const durationMinutes = trafficData.length;
     const avgRps = (durationMinutes && totalRequests) ? (totalRequests / (durationMinutes * 60)).toFixed(2) : "0.00";
 
+    const handleToggleTool = async (name: string, disable: boolean) => {
+        try {
+            await apiClient.setToolStatus(name, disable);
+            // Optimistic update
+            setTools(tools.map(t => t.name === name ? { ...t, disable } : t));
+        } catch (error) {
+            console.error("Failed to toggle tool", error);
+        }
+    };
+
     if (!isMounted) return null;
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between space-y-2">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Analytics & Stats</h2>
+                    <h1 className="text-3xl font-bold tracking-tight">Analytics & Stats</h1>
                     <p className="text-muted-foreground">Real-time insights into your MCP infrastructure.</p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -171,6 +192,7 @@ export function AnalyticsDashboard() {
                     <TabsTrigger value="performance">Performance</TabsTrigger>
                     <TabsTrigger value="errors">Errors</TabsTrigger>
                     <TabsTrigger value="context">Context Usage</TabsTrigger>
+                    <TabsTrigger value="optimization">Optimization</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
@@ -456,6 +478,10 @@ export function AnalyticsDashboard() {
                             </CardContent>
                         </Card>
                     </div>
+                 </TabsContent>
+
+                 <TabsContent value="optimization" className="space-y-4">
+                    <OptimizationTab tools={tools} toolUsage={toolUsageMap} onToggleTool={handleToggleTool} />
                  </TabsContent>
             </Tabs>
         </div>

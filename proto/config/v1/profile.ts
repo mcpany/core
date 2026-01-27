@@ -23,7 +23,7 @@ export interface Profile {
 
 export interface ProfileServiceConfig {
   /** Whether the service is enabled in this profile. */
-  enabled?: boolean | undefined;
+  enabled: boolean;
 }
 
 export interface RateLimitConfig {
@@ -265,12 +265,12 @@ export const Profile: MessageFns<Profile> = {
 };
 
 function createBaseProfileServiceConfig(): ProfileServiceConfig {
-  return { enabled: undefined };
+  return { enabled: false };
 }
 
 export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   encode(message: ProfileServiceConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.enabled !== undefined) {
+    if (message.enabled !== false) {
       writer.uint32(8).bool(message.enabled);
     }
     return writer;
@@ -301,12 +301,12 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   },
 
   fromJSON(object: any): ProfileServiceConfig {
-    return { enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : undefined };
+    return { enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false };
   },
 
   toJSON(message: ProfileServiceConfig): unknown {
     const obj: any = {};
-    if (message.enabled !== undefined) {
+    if (message.enabled !== false) {
       obj.enabled = message.enabled;
     }
     return obj;
@@ -317,7 +317,7 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   },
   fromPartial<I extends Exact<DeepPartial<ProfileServiceConfig>, I>>(object: I): ProfileServiceConfig {
     const message = createBaseProfileServiceConfig();
-    message.enabled = object.enabled ?? undefined;
+    message.enabled = object.enabled ?? false;
     return message;
   },
 };

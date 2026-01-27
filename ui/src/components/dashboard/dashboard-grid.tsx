@@ -34,18 +34,18 @@ import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/component
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 
 /**
- * Represents an instance of a widget on the dashboard.
+ * Represents a specific instance of a widget on the dashboard.
  */
 export interface WidgetInstance {
-    /** The unique identifier for this specific instance of the widget. */
+    /** Unique ID for this instance (allows multiple widgets of same type). */
     instanceId: string;
-    /** The type of widget (references a WidgetDefinition). */
+    /** The type of widget (must match a type in WIDGET_DEFINITIONS). */
     type: string;
-    /** The title displayed for this widget instance. */
+    /** The title to display for this instance. */
     title: string;
-    /** The current display size of the widget. */
+    /** The current size of the widget. */
     size: WidgetSize;
-    /** Whether the widget is currently hidden from the view. */
+    /** Whether the widget is currently hidden from view. */
     hidden?: boolean;
 }
 

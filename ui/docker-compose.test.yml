@@ -14,7 +14,8 @@ services:
       ]
     environment:
       - MCPANY_API_KEY=test-token
-      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
+      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
+      - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s
@@ -29,6 +30,7 @@ services:
 
   ui-tests:
     image: mcpany-ui-e2e:latest
+    ipc: host
     user: "${TEST_UID}:${TEST_GID}"
     environment:
       - MCPANY_LOG_LEVEL=info

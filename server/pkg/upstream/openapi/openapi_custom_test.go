@@ -9,10 +9,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/proto"
@@ -42,17 +42,13 @@ paths:
           description: OK
 `
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-			OpenapiService: &configv1.OpenapiUpstreamService{
-				SpecSource: &configv1.OpenapiUpstreamService_SpecContent{
-					SpecContent: specContent,
-				},
-				Address: proto.String("http://127.0.0.1"),
-			},
-		},
-	}
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			SpecContent: proto.String(specContent),
+			Address:     proto.String("http://127.0.0.1"),
+		}.Build(),
+	}.Build()
 
 	// Expectations
 	mockToolManager.EXPECT().AddServiceInfo(gomock.Any(), gomock.Any()).Do(func(id string, info *tool.ServiceInfo) {
@@ -101,16 +97,12 @@ paths:
 
 	u := NewOpenAPIUpstream()
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("remote-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-			OpenapiService: &configv1.OpenapiUpstreamService{
-				SpecSource: &configv1.OpenapiUpstreamService_SpecUrl{
-					SpecUrl: ts.URL,
-				},
-			},
-		},
-	}
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			SpecUrl: proto.String(ts.URL),
+		}.Build(),
+	}.Build()
 
 	mockToolManager.EXPECT().AddServiceInfo(gomock.Any(), gomock.Any())
 	mockToolManager.EXPECT().GetTool("getRemote").Return(nil, false)
@@ -147,46 +139,36 @@ paths:
           description: OK
 `
 
-	config := &configv1.UpstreamServiceConfig{
+	config := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
-		ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-			OpenapiService: &configv1.OpenapiUpstreamService{
-				SpecSource: &configv1.OpenapiUpstreamService_SpecContent{
-					SpecContent: specContent,
-				},
-				Address: proto.String("http://127.0.0.1"),
-				Prompts: []*configv1.PromptDefinition{
-					{
-						Name: proto.String("test-prompt"),
-						Messages: []*configv1.PromptMessage{
-							{
-								Role: configv1.PromptMessage_USER.Enum(),
-								Content: &configv1.PromptMessage_Text{
-									Text: &configv1.TextContent{
-										Text: proto.String("test template"),
-									},
-								},
-							},
-						},
+		OpenapiService: configv1.OpenapiUpstreamService_builder{
+			SpecContent: proto.String(specContent),
+			Address:     proto.String("http://127.0.0.1"),
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{
+					Name: proto.String("test-prompt"),
+					Messages: []*configv1.PromptMessage{
+						configv1.PromptMessage_builder{
+							Role: configv1.PromptMessage_USER.Enum(),
+							Text: configv1.TextContent_builder{
+								Text: proto.String("test template"),
+							}.Build(),
+						}.Build(),
 					},
-				},
-				Resources: []*configv1.ResourceDefinition{
-					{
-						Name: proto.String("test-resource"),
-						ResourceType: &configv1.ResourceDefinition_Dynamic{
-							Dynamic: &configv1.DynamicResource{
-								CallDefinition: &configv1.DynamicResource_HttpCall{
-									HttpCall: &configv1.HttpCallDefinition{
-										Id: proto.String("getTest"),
-									},
-								},
-							},
-						},
-					},
-				},
+				}.Build(),
 			},
-		},
-	}
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name: proto.String("test-resource"),
+					Dynamic: configv1.DynamicResource_builder{
+						HttpCall: configv1.HttpCallDefinition_builder{
+							Id: proto.String("getTest"),
+						}.Build(),
+					}.Build(),
+				}.Build(),
+			},
+		}.Build(),
+	}.Build()
 
 	// Service Info
 	mockToolManager.EXPECT().AddServiceInfo(gomock.Any(), gomock.Any()).Do(func(_ string, info *tool.ServiceInfo) {

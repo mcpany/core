@@ -21,7 +21,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -29,17 +29,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
  * Represents a user profile configuration in the UI.
  */
 export interface Profile {
-    /** The unique identifier for the profile (often same as name). */
-    id: string;
-    /** The display name of the profile. */
+    /** Unique identifier for the profile (usually same as name). */
+    id: string; // name
+    /** Display name of the profile. */
     name: string;
-    /** An optional description of the profile's purpose. */
+    /** Optional description of the profile's purpose. */
     description?: string;
-    /** A list of service names enabled for this profile. */
-    services: string[];
-    /** The environment type associated with this profile. */
+    /** List of service names enabled for this profile. */
+    services: string[]; // List of enabled service names
+    /** The environment type (dev, prod, debug). */
     type: "dev" | "prod" | "debug";
-    /** Optional key-value pairs of secrets associated with the profile. */
+    /** Additional tags for service selection. */
+    additionalTags: string[];
+    /** Optional secrets associated with the profile. */
     secrets?: Record<string, string>;
 }
 
@@ -58,18 +60,22 @@ interface ProfileEditorProps {
 }
 
 /**
- * ProfileEditor component.
+ * A sheet component for creating or editing a user profile.
+ * Allows configuring profile details and selecting accessible services.
+ *
  * @param props - The component props.
- * @param props.profile - The profile property.
- * @param props.open - Whether the component is open.
- * @param props.onOpenChange - Whether the component is open.
- * @param props.onSave - The onSave property.
- * @returns The rendered component.
+ * @param props.profile - The profile to edit, or null to create a new one.
+ * @param props.open - Whether the editor sheet is open.
+ * @param props.onOpenChange - Callback to toggle the sheet's open state.
+ * @param props.onSave - Callback invoked when the profile is saved.
+ * @returns The rendered profile editor component.
  */
 export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEditorProps) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [type, setType] = useState<"dev" | "prod" | "debug">("dev");
+    const [additionalTags, setAdditionalTags] = useState<string[]>([]);
+    const [newTagInput, setNewTagInput] = useState("");
     const [selectedServices, setSelectedServices] = useState<Set<string>>(new Set());
     const [availableServices, setAvailableServices] = useState<UpstreamServiceConfig[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -84,12 +90,14 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                 setName(profile.name);
                 setDescription(profile.description || "");
                 setType(profile.type);
+                setAdditionalTags(profile.additionalTags || []);
                 setSelectedServices(new Set(profile.services));
             } else {
                 // Reset for new profile
                 setName("");
                 setDescription("");
                 setType("dev");
+                setAdditionalTags([]);
                 setSelectedServices(new Set());
             }
         }
@@ -125,7 +133,7 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
             const profileData = {
                 name: name,
                 selector: {
-                    tags: [type] // Use type as tag for now
+                    tags: [type, ...additionalTags] // Combine type and additional tags
                 },
                 serviceConfig: serviceConfig,
                 secrets: profile?.secrets || {} // Preserve secrets if any
@@ -141,12 +149,38 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
         }
     };
 
+    const addTag = () => {
+        if (!newTagInput.trim()) return;
+        if (additionalTags.includes(newTagInput.trim())) {
+            setNewTagInput("");
+            return;
+        }
+        setAdditionalTags([...additionalTags, newTagInput.trim()]);
+        setNewTagInput("");
+    };
+
+    const removeTag = (tag: string) => {
+        setAdditionalTags(additionalTags.filter(t => t !== tag));
+    };
+
     const filteredServices = useMemo(() => {
         if (!searchQuery) return availableServices;
         return availableServices.filter(s =>
             s.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [availableServices, searchQuery]);
+
+    const implicitlySelectedServices = useMemo(() => {
+        const allProfileTags = new Set([type, ...additionalTags]);
+        const implicitSet = new Set<string>();
+
+        availableServices.forEach(svc => {
+            if (svc.tags && svc.tags.some(t => allProfileTags.has(t))) {
+                implicitSet.add(svc.name);
+            }
+        });
+        return implicitSet;
+    }, [availableServices, type, additionalTags]);
 
     const toggleService = (svcName: string, checked: boolean) => {
         const newSet = new Set(selectedServices);
@@ -209,6 +243,44 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                         </div>
 
                         <div className="grid gap-2">
+                            <Label>Access Tags</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    value={newTagInput}
+                                    onChange={(e) => setNewTagInput(e.target.value)}
+                                    placeholder="Add tag (e.g. finance, hr)"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            addTag();
+                                        }
+                                    }}
+                                />
+                                <Button type="button" size="icon" variant="outline" onClick={addTag}>
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            {additionalTags.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2 p-2 bg-muted/20 rounded-md border">
+                                    {additionalTags.map(tag => (
+                                        <Badge key={tag} variant="secondary" className="pl-2 pr-1 py-1">
+                                            {tag}
+                                            <button
+                                                onClick={() => removeTag(tag)}
+                                                className="ml-1 hover:bg-muted rounded-full p-0.5"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                            <p className="text-[10px] text-muted-foreground">
+                                Services matching these tags will be automatically available to this profile.
+                            </p>
+                        </div>
+
+                        <div className="grid gap-2">
                              <Label htmlFor="desc">Description</Label>
                              <Input
                                 id="desc"
@@ -249,26 +321,41 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                                         {filteredServices.length === 0 && (
                                             <div className="text-sm text-muted-foreground text-center py-4">No services found.</div>
                                         )}
-                                        {filteredServices.map(svc => (
-                                            <div key={svc.name} className="flex items-start space-x-3 p-2 hover:bg-muted/50 rounded transition-colors">
-                                                <Checkbox
-                                                    id={`svc-${svc.name}`}
-                                                    checked={selectedServices.has(svc.name)}
-                                                    onCheckedChange={(c) => toggleService(svc.name, !!c)}
-                                                />
-                                                <div className="grid gap-1.5 leading-none">
-                                                    <label
-                                                        htmlFor={`svc-${svc.name}`}
-                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                                    >
-                                                        {svc.name}
-                                                    </label>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {svc.commandLineService ? "Command" : svc.httpService ? "HTTP" : "Remote"} • v{svc.version || "1.0.0"}
-                                                    </p>
+                                        {filteredServices.map(svc => {
+                                            const isImplicit = implicitlySelectedServices.has(svc.name);
+                                            const isExplicit = selectedServices.has(svc.name);
+                                            const isSelected = isImplicit || isExplicit;
+
+                                            return (
+                                                <div key={svc.name} className="flex items-start space-x-3 p-2 hover:bg-muted/50 rounded transition-colors">
+                                                    <Checkbox
+                                                        id={`svc-${svc.name}`}
+                                                        checked={isSelected}
+                                                        disabled={isImplicit}
+                                                        onCheckedChange={(c) => toggleService(svc.name, !!c)}
+                                                    />
+                                                    <div className="grid gap-1.5 leading-none flex-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <label
+                                                                htmlFor={`svc-${svc.name}`}
+                                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                            >
+                                                                {svc.name}
+                                                            </label>
+                                                            {isImplicit && <Badge variant="secondary" className="text-[10px] h-4 px-1">Auto</Badge>}
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-1 mt-1">
+                                                            {svc.tags && svc.tags.map(tag => (
+                                                                <Badge key={tag} variant="outline" className="text-[9px] h-3 px-1">{tag}</Badge>
+                                                            ))}
+                                                        </div>
+                                                        <p className="text-xs text-muted-foreground mt-0.5">
+                                                            {svc.commandLineService ? "Command" : svc.httpService ? "HTTP" : "Remote"} • v{svc.version || "1.0.0"}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </ScrollArea>

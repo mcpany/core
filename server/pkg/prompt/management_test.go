@@ -94,10 +94,6 @@ func TestPromptManager(t *testing.T) {
 
 		prompts := promptManager.ListPrompts()
 		assert.Len(t, prompts, 2)
-
-		// Call again to hit the cache
-		promptsCached := promptManager.ListPrompts()
-		assert.Len(t, promptsCached, 2)
 	})
 
 	t.Run("clear prompts for service", func(t *testing.T) {

@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jhump/protoreflect/desc/protoparse"
+	"github.com/bufbuild/protocompile"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1"
@@ -94,7 +94,7 @@ func (f *McpField) GetIsRepeated() bool {
 // temporary directory, invokes protoc to generate a FileDescriptorSet, and
 // then returns the parsed FileDescriptorSet.
 func ParseProtoFromDefs(
-	_ context.Context,
+	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,
 	protoCollections []*configv1.ProtoCollection,
 ) (*descriptorpb.FileDescriptorSet, error) {
@@ -138,13 +138,14 @@ func ParseProtoFromDefs(
 		return nil, fmt.Errorf("no proto files found to parse")
 	}
 
-	// Use protoparse to generate the FileDescriptorSet
-	parser := protoparse.Parser{
-		ImportPaths:      []string{tempDir},
-		InferImportPaths: true,
+	// Use protocompile to generate the FileDescriptorSet
+	compiler := protocompile.Compiler{
+		Resolver: &protocompile.SourceResolver{
+			ImportPaths: []string{tempDir},
+		},
 	}
 
-	// The file names passed to ParseFiles must be relative to the import paths.
+	// The file names passed to Compile must be relative to the import paths.
 	// Since tempDir is our import path, we need to get the base names of the files.
 	relativeFiles := make([]string, len(protoFiles))
 	for i, p := range protoFiles {
@@ -155,14 +156,14 @@ func ParseProtoFromDefs(
 		relativeFiles[i] = rel
 	}
 
-	fileDescriptors, err := parser.ParseFiles(relativeFiles...)
+	fileDescriptors, err := compiler.Compile(ctx, relativeFiles...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse proto files: %w", err)
 	}
 
 	fds := &descriptorpb.FileDescriptorSet{}
 	for _, fd := range fileDescriptors {
-		fds.File = append(fds.File, fd.AsFileDescriptorProto())
+		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(fd))
 	}
 
 	return fds, nil

@@ -1,0 +1,74 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+version: "3.7"
+
+services:
+  hydra-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.hydra
+    environment:
+      - DSN=postgres://hydra:secret@postgres:5432/hydra?sslmode=disable&max_conns=20&max_idle_conns=4
+    command: migrate sql -e --yes
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mcpany-net
+
+  hydra:
+    build:
+      context: .
+      dockerfile: Dockerfile.hydra
+    depends_on:
+      hydra-migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5444:4444" # Public port
+      - "5445:4445" # Admin port
+    command: serve -c /etc/config/hydra/hydra.yml all --dev
+    volumes:
+      - ./hydra_config.yaml:/etc/config/hydra/hydra.yml
+    environment:
+      - DSN=postgres://hydra:secret@postgres:5432/hydra?sslmode=disable&max_conns=20&max_idle_conns=4
+      - URLS_SELF_ISSUER=http://localhost:5444/
+      - URLS_CONSENT=http://localhost:3000/consent
+      - URLS_LOGIN=http://localhost:3000/login
+      - LOG_LEVEL=debug
+    networks:
+      - mcpany-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--spider",
+          "http://localhost:4444/health/ready",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: mirror.gcr.io/library/postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=hydra
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=hydra
+    networks:
+      - mcpany-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hydra"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mcpany-net:
+    driver: bridge

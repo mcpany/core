@@ -28,7 +28,7 @@ upstream_services:
         url: "https://api.example.com/health"
         expected_code: 200
         method: "GET"
-        interval: "30s"
+        interval: "30s" # Note: Currently reserved for future background monitoring; checks are performed on-demand.
         timeout: "5s"
 ```
 
@@ -42,7 +42,7 @@ upstream_services:
       health_check:
         service: "grpc.health.v1.Health"
         method: "Check"
-        interval: "10s"
+        interval: "10s" # Note: Currently reserved for future background monitoring.
 ```
 
 ### WebSocket Health Check
@@ -56,7 +56,7 @@ upstream_services:
         url: "ws://localhost:8080/health"
         message: "ping"
         expected_response_contains: "pong"
-        interval: "15s"
+        interval: "15s" # Note: Currently reserved for future background monitoring.
 ```
 
 ### Command Line Health Check
@@ -70,7 +70,7 @@ upstream_services:
         method: "-c"
         prompt: "print('alive')"
         expected_response_contains: "alive"
-        interval: "60s"
+        interval: "60s" # Note: Currently reserved for future background monitoring.
 ```
 
 ### Filesystem Health Check
@@ -88,4 +88,4 @@ upstream_services:
 
 ## Monitoring
 
-Health check status is logged and can be monitored via the metrics exported by the server. When a service fails its health check, it is marked as unhealthy, and requests may fail or be routed to other instances (if load balancing is configured).
+Health check status is logged and can be monitored via the metrics exported by the server. When a service fails its health check (performed on-demand, e.g., via diagnostics or at startup), it is marked as unhealthy, and requests may fail or be routed to other instances (if load balancing is configured).

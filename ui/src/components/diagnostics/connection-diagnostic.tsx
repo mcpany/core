@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
+import { apiClient } from "@/lib/client";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
 
 interface DiagnosticStep {
@@ -50,6 +51,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     const initialSteps: DiagnosticStep[] = [
       { id: "config", name: "Client-Side Configuration Check", status: "pending", logs: [] },
       { id: "backend_health", name: "Backend Status Check", status: "pending", logs: [] },
+      { id: "operational", name: "Operational Verification", status: "pending", logs: [] },
     ];
 
     if (service.websocketService || service.httpService) {
@@ -163,6 +165,14 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : "Unknown error";
             addLog("browser_connectivity", `Failed to connect from browser: ${msg}`);
+
+            // Localhost Warning Heuristic
+            if (httpUrl.includes("localhost") || httpUrl.includes("127.0.0.1") || httpUrl.includes("0.0.0.0")) {
+                addLog("browser_connectivity", "⚠️ WARNING: You are using 'localhost' or loopback address.");
+                addLog("browser_connectivity", "If MCP Any is running in Docker, it cannot access 'localhost' of your host machine directly.");
+                addLog("browser_connectivity", "Try using 'host.docker.internal' or your LAN IP address.");
+            }
+
             addLog("browser_connectivity", "Possible causes: Server down, blocked by firewall, invalid SSL cert, Mixed Content blocking, or CSP (Content Security Policy) restrictions.");
             updateStep("browser_connectivity", { status: "failure", detail: "Not Accessible" });
             // Don't stop diagnostics
@@ -218,6 +228,58 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         updateStep("backend_health", { status: "failure", detail: "API Failure" });
     }
 
+    // --- Step 3: Operational Verification ---
+    // Only proceed if backend check was successful or skipped (disabled)
+    const backendStep = steps.find(s => s.id === "backend_health");
+    // We access current state via a fresh look or logic flow, but here 'steps' state is stale closure.
+    // However, we can infer success if we reached here without returning early?
+    // Actually, I didn't return early in backend_health block. I should probably check if previous steps failed.
+
+    // Let's perform operational check regardless, as it fetches specific service details which might reveal more.
+    updateStep("operational", { status: "running" });
+    addLog("operational", "Verifying service operations...");
+
+    try {
+        const fullServiceRes = await apiClient.getService(service.name);
+
+        // API might return { service: ... } or just the service object depending on impl
+        const s = fullServiceRes.service || fullServiceRes;
+
+        if (s) {
+            addLog("operational", `Tools Discovered: ${s.toolCount ?? 0}`);
+
+            if (s.lastError) {
+                addLog("operational", `Service reported error: ${s.lastError}`);
+                const diagnosis = analyzeConnectionError(s.lastError);
+                // Only override diagnosis if it's more specific/severe or if we didn't have one
+                setDiagnosticResult(prev => {
+                    if (!prev || diagnosis.category !== 'unknown') return diagnosis;
+                    return prev;
+                });
+                updateStep("operational", { status: "failure", detail: "Operational Error" });
+            } else if ((s.toolCount ?? 0) === 0) {
+                addLog("operational", "Warning: Service is healthy but exposed 0 tools.");
+                addLog("operational", "Check if the service requires specific configuration to expose tools (e.g., allowed paths, exposed schemas).");
+                setDiagnosticResult({
+                    category: "configuration",
+                    title: "No Tools Discovered",
+                    description: "The service connected successfully but did not register any tools.",
+                    suggestion: "1. Check upstream service configuration (e.g. allowed paths for filesystem).\n2. Verify the upstream service actually exposes tools (some might only expose resources).\n3. Check logs for silent failures.",
+                    severity: "warning"
+                });
+                updateStep("operational", { status: "success", detail: "No Tools (Warning)" }); // Green but warned in logs
+            } else {
+                updateStep("operational", { status: "success", detail: "Fully Operational" });
+            }
+        } else {
+            throw new Error("Failed to retrieve service details");
+        }
+
+    } catch (e: any) {
+        addLog("operational", `Failed to verify operations: ${e.message}`);
+        updateStep("operational", { status: "failure", detail: "Verification Failed" });
+    }
+
     setIsRunning(false);
   };
 
@@ -246,8 +308,8 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] h-[600px] flex flex-col p-0 gap-0 overflow-hidden">
-        <DialogHeader className="p-6 border-b bg-muted/20">
+      <DialogContent className="sm:max-w-[700px] h-[600px] flex flex-col p-0 gap-0 overflow-hidden backdrop-blur-xl bg-background/95 border-primary/20 shadow-2xl">
+        <DialogHeader className="p-6 border-b bg-muted/30">
           <DialogTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5 text-primary" />
               Connection Diagnostics
@@ -297,13 +359,13 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             </div>
 
             {/* Logs View & Diagnosis Report */}
-            <div className="col-span-2 flex flex-col h-full bg-black/90">
+            <div className="col-span-2 flex flex-col h-full bg-zinc-950/90 dark:bg-zinc-950/50 backdrop-blur-sm">
                 {/* Logs */}
-                <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs">
+                <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs leading-relaxed">
                     <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10 text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <Terminal className="h-3 w-3" />
-                            <span>Diagnostic Logs</span>
+                            <span className="font-semibold tracking-wide uppercase text-[10px]">Diagnostic Console</span>
                         </div>
                         {steps.flatMap(s => s.logs).length > 0 && (
                             <Button
@@ -334,26 +396,26 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
                 {/* Diagnosis Suggestion Card */}
                 {diagnosticResult && (
-                    <div className="p-4 bg-muted/20 border-t border-white/10">
+                    <div className="p-4 bg-muted/30 border-t border-white/10">
                         <div className={cn(
-                            "rounded-md border p-3 flex gap-3",
-                            diagnosticResult.severity === 'critical' ? "bg-red-950/30 border-red-900/50" :
-                            diagnosticResult.severity === 'warning' ? "bg-amber-950/30 border-amber-900/50" :
-                            "bg-blue-950/30 border-blue-900/50"
+                            "rounded-lg border p-4 flex gap-4 shadow-sm",
+                            diagnosticResult.severity === 'critical' ? "bg-red-500/10 border-red-500/20" :
+                            diagnosticResult.severity === 'warning' ? "bg-amber-500/10 border-amber-500/20" :
+                            "bg-blue-500/10 border-blue-500/20"
                         )}>
                             <div className={cn(
-                                "shrink-0 mt-0.5",
+                                "shrink-0 mt-0.5 p-1 rounded-full bg-background/50 h-8 w-8 flex items-center justify-center shadow-sm",
                                 diagnosticResult.severity === 'critical' ? "text-red-500" :
                                 diagnosticResult.severity === 'warning' ? "text-amber-500" :
                                 "text-blue-500"
                             )}>
-                                <AlertTriangle className="h-5 w-5" />
+                                <AlertTriangle className="h-4 w-4" />
                             </div>
-                            <div className="space-y-1 text-sm">
-                                <p className="font-semibold text-foreground">{diagnosticResult.title}</p>
-                                <p className="text-muted-foreground">{diagnosticResult.description}</p>
-                                <div className="mt-2 flex gap-2 text-primary/90 bg-primary/10 p-2 rounded text-xs items-start">
-                                    <Lightbulb className="h-4 w-4 shrink-0 mt-0.5" />
+                            <div className="space-y-1 text-sm flex-1">
+                                <p className="font-semibold text-foreground tracking-tight">{diagnosticResult.title}</p>
+                                <p className="text-muted-foreground text-xs">{diagnosticResult.description}</p>
+                                <div className="mt-3 flex gap-2 text-foreground/90 bg-background/50 p-3 rounded-md text-xs items-start border border-white/5 shadow-sm">
+                                    <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5 text-yellow-500" />
                                     <span className="whitespace-pre-wrap font-medium">{diagnosticResult.suggestion}</span>
                                 </div>
                             </div>
@@ -363,7 +425,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             </div>
         </div>
 
-        <DialogFooter className="p-4 border-t bg-muted/20">
+        <DialogFooter className="p-4 border-t bg-muted/30 backdrop-blur-md">
             <Button
                 onClick={runDiagnostics}
                 disabled={isRunning}

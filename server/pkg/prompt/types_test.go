@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/prompt"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/prompt"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -67,7 +67,7 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 }
 
 func TestTemplatedPrompt_Get_UnmarshalError(t *testing.T) {
-	definition := &configv1.PromptDefinition{}
+	definition := configv1.PromptDefinition_builder{}.Build()
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 
 	_, err := templatedPrompt.Get(context.Background(), []byte("invalid json"))
@@ -127,7 +127,7 @@ func TestTemplatedPrompt_Prompt(t *testing.T) {
 }
 
 func TestTemplatedPrompt_Service(t *testing.T) {
-	definition := &configv1.PromptDefinition{}
+	definition := configv1.PromptDefinition_builder{}.Build()
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 	assert.Equal(t, "test-service", templatedPrompt.Service())
 }
@@ -159,7 +159,8 @@ func TestTemplatedPrompt_Get_NoText(t *testing.T) {
 	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
 
 	args, _ := json.Marshal(map[string]string{})
-	_, err := templatedPrompt.Get(context.Background(), args)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "missing text content")
+	result, err := templatedPrompt.Get(context.Background(), args)
+	assert.NoError(t, err)
+	assert.Len(t, result.Messages, 1)
+	assert.Nil(t, result.Messages[0]) // It should be nil if we didn't populate it
 }
