@@ -8,14 +8,16 @@ import { analyzeConnectionError } from './diagnostics-utils';
 describe('analyzeConnectionError', () => {
   it('identifies connection refused', () => {
     const result = analyzeConnectionError('dial tcp 127.0.0.1:8080: connect: connection refused');
-    expect(result.title).toBe('Connection Refused');
+    expect(result.title).toBe('Connection Failed');
     expect(result.category).toBe('network');
+    expect(result.action).toBe('edit_config');
   });
 
   it('identifies DNS errors', () => {
     const result = analyzeConnectionError('dial tcp: lookup non-existent-host: no such host');
     expect(result.title).toBe('Host Not Found');
     expect(result.category).toBe('configuration');
+    expect(result.action).toBe('edit_config');
   });
 
   it('identifies timeouts', () => {
@@ -28,12 +30,21 @@ describe('analyzeConnectionError', () => {
     const result = analyzeConnectionError('HTTP 401 Unauthorized');
     expect(result.title).toBe('Authentication Failed');
     expect(result.category).toBe('auth');
+    expect(result.action).toBe('edit_config');
   });
 
   it('identifies protocol errors (TLS)', () => {
     const result = analyzeConnectionError('remote error: tls: handshake failure');
     expect(result.title).toBe('SSL/TLS Error');
     expect(result.category).toBe('protocol');
+    expect(result.action).toBe('edit_config');
+  });
+
+  it('identifies missing environment variables', () => {
+    const result = analyzeConnectionError('Error: Missing env var GITHUB_TOKEN');
+    expect(result.title).toBe('Missing Environment Variable');
+    expect(result.category).toBe('configuration');
+    expect(result.action).toBe('edit_config');
   });
 
   it('handles unknown errors', () => {

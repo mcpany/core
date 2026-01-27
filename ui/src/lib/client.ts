@@ -262,6 +262,7 @@ export const apiClient = {
                      const s = data.service;
                      data.service = {
                          ...s,
+                         lastError: s.last_error,
                          connectionPool: s.connection_pool,
                          httpService: s.http_service,
                          grpcService: s.grpc_service,

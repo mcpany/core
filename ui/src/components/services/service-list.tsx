@@ -42,7 +42,7 @@ interface ServiceListProps {
   services: UpstreamServiceConfig[];
   isLoading?: boolean;
   onToggle?: (name: string, enabled: boolean) => void;
-  onEdit?: (service: UpstreamServiceConfig) => void;
+  onEdit?: (service: UpstreamServiceConfig, tab?: string) => void;
   onDelete?: (name: string) => void;
   onDuplicate?: (service: UpstreamServiceConfig) => void;
   onExport?: (service: UpstreamServiceConfig) => void;
@@ -260,7 +260,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
     isSelected: boolean,
     onSelect: (name: string, checked: boolean) => void,
     onToggle?: (name: string, enabled: boolean) => void,
-    onEdit?: (service: UpstreamServiceConfig) => void,
+    onEdit?: (service: UpstreamServiceConfig, tab?: string) => void,
     onDelete?: (name: string) => void,
     onDuplicate?: (service: UpstreamServiceConfig) => void,
     onExport?: (service: UpstreamServiceConfig) => void,
@@ -322,6 +322,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                     {service.lastError && (
                         <ConnectionDiagnosticDialog
                             service={service}
+                            onEdit={onEdit}
                             trigger={
                                 <Button
                                     variant="ghost"
@@ -397,6 +398,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <ConnectionDiagnosticDialog
                             service={service}
+                            onEdit={onEdit}
                             trigger={
                                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                     <Activity className="mr-2 h-4 w-4" />

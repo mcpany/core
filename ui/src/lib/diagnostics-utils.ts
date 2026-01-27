@@ -9,6 +9,7 @@ export interface DiagnosticResult {
   description: string;
   suggestion: string;
   severity: "critical" | "warning" | "info";
+  action?: 'edit_config' | 'check_logs';
 }
 
 /**
@@ -27,6 +28,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The hostname could not be resolved.",
       suggestion: "Check for typos in the hostname. Ensure the DNS is configured correctly within the container network.",
       severity: "critical",
+      action: 'edit_config',
     };
   }
 
@@ -38,6 +40,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The server is unreachable at the specified address/port.",
       suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. Docker Users: 'localhost' refers to the container itself. Use 'host.docker.internal' to reach your host machine.",
       severity: "critical",
+      action: 'edit_config',
     };
   }
 
@@ -60,6 +63,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The requested path or resource does not exist on the upstream server.",
       suggestion: "Check the URL path in your configuration. The base URL might be correct, but the endpoint might be wrong.",
       severity: "warning",
+      action: 'edit_config',
     };
   }
 
@@ -93,6 +97,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The server rejected the credentials.",
       suggestion: "Verify your API key or Bearer token. Check if the token has expired.",
       severity: "critical",
+      action: 'edit_config',
     };
   }
 
@@ -104,6 +109,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "You are authenticated, but lack permissions.",
       suggestion: "Check if the token has the necessary scopes or permissions for this resource.",
       severity: "critical",
+      action: 'edit_config',
     };
   }
 
@@ -126,6 +132,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "Secure connection failed.",
       suggestion: "If using self-signed certificates, ensure the CA is trusted. Check if you are trying to connect via HTTPS to an HTTP port (or vice versa).",
       severity: "critical",
+      action: 'edit_config',
     };
   }
 
@@ -148,6 +155,19 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The upstream server returned data that does not match the expected schema.",
       suggestion: "1. Check if the upstream service API has changed (version mismatch).\n2. If using an adapter (e.g. Linear, Stripe), ensure the configuration matches the required inputs.\n3. Check for required environment variables that might be missing in the upstream service.",
       severity: "warning",
+      action: 'edit_config',
+    };
+  }
+
+  // Configuration: Environment Variables (Heuristic)
+  if (err.includes("env var") || err.includes("environment variable") || err.includes("missing token") || err.includes("api key missing")) {
+    return {
+      category: "configuration",
+      title: "Missing Environment Variable",
+      description: "The server failed because a required environment variable or token is missing.",
+      suggestion: "Check the service configuration and ensure all required environment variables (e.g. API Keys) are set.",
+      severity: "critical",
+      action: 'edit_config',
     };
   }
 
@@ -159,6 +179,7 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       description: "The server does not have permission to access a requested file or resource.",
       suggestion: "1. Check file system permissions.\n2. Ensure the 'allowed_paths' configuration covers the target directory.\n3. If on Windows, check for administrative privileges or path formatting.",
       severity: "critical",
+      action: 'edit_config',
     };
   }
 

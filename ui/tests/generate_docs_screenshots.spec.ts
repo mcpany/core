@@ -50,6 +50,17 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                             lastError: 'ZodError: Invalid input: expected string, received number',
                             tool_count: 0,
                             version: '1.0.0'
+                        },
+                        {
+                            id: 'misconfigured-service',
+                            name: 'GitHub Bot',
+                            type: 'cmd',
+                            command_line_service: { command: 'npx server-github', env: {} },
+                            status: 'unhealthy',
+                            last_error: 'Error: Missing env var GITHUB_TOKEN',
+                            lastError: 'Error: Missing env var GITHUB_TOKEN',
+                            tool_count: 0,
+                            version: '1.0.0'
                         }
                     ]
                 }
@@ -732,7 +743,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       // await expect(page.getByText('Error', { exact: true })).toBeVisible(); // Flaky
 
       // Open Actions Dropdown (More Reliable)
-      const menuButton = page.getByRole('button', { name: 'Open menu' }).first();
+      const menuButton = page.getByRole('button', { name: 'Open menu' }).nth(2); // 3rd service (Legacy API)
       await expect(menuButton).toBeVisible();
       await menuButton.click();
 
@@ -750,6 +761,72 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
       // Take screenshot of the modal
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
+  });
+
+  test('Diagnostics Fix Config Screenshots', async ({ page }) => {
+      // Mock service detail for operational check (GitHub Bot)
+      await page.route('**/api/v1/services/misconfigured-service', async route => {
+          await route.fulfill({
+              json: {
+                  service: {
+                      id: 'misconfigured-service',
+                      name: 'GitHub Bot',
+                      type: 'cmd',
+                      command_line_service: { command: 'npx server-github', env: {} },
+                      status: 'unhealthy',
+                      last_error: 'Error: Missing env var GITHUB_TOKEN',
+                      lastError: 'Error: Missing env var GITHUB_TOKEN',
+                      tool_count: 0,
+                      toolCount: 0
+                  }
+              }
+          });
+      });
+
+      // Mock Health Check
+      await page.route('**/api/dashboard/health', async route => {
+        await route.fulfill({
+            json: [
+               {
+                   id: 'misconfigured-service',
+                   name: 'GitHub Bot',
+                   status: 'unhealthy',
+                   latency: '--',
+                   uptime: '1m',
+                   message: 'Error: Missing env var GITHUB_TOKEN'
+               }
+            ]
+        });
+      });
+
+      await page.goto('/upstream-services');
+      await expect(page.getByText('GitHub Bot')).toBeVisible();
+
+      // Open Actions Dropdown for the 4th service
+      const menuButton = page.getByRole('button', { name: 'Open menu' }).nth(3);
+      await expect(menuButton).toBeVisible();
+      await menuButton.click();
+
+      // Click Diagnose
+      await page.getByText('Diagnose').click();
+
+      // Click Start
+      await page.getByRole('button', { name: 'Start Diagnostics' }).click();
+
+      // Wait for "Fix Configuration" button
+      await page.getByRole('button', { name: 'Fix Configuration' }).waitFor({ timeout: 10000 });
+
+      // Take screenshot of diagnostic result
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_fix_suggestion.png') });
+
+      // Click Fix
+      await page.getByRole('button', { name: 'Fix Configuration' }).click();
+
+      // Verify Edit Dialog opened to Connection Tab
+      await expect(page.getByText('Edit Service')).toBeVisible();
+      await expect(page.locator("div[role='dialog']", { hasText: 'Edit Service' }).getByText('Environment Variables').first()).toBeVisible();
+
+      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_fix_sheet.png') });
   });
 
   test('Service Inspector Screenshots', async ({ page }) => {

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
@@ -33,6 +33,7 @@ interface ServiceHealth {
 interface ConnectionDiagnosticDialogProps {
   service: UpstreamServiceConfig;
   trigger?: React.ReactNode;
+  onEdit?: (service: UpstreamServiceConfig, tab?: string) => void;
 }
 
 /**
@@ -40,7 +41,7 @@ interface ConnectionDiagnosticDialogProps {
  *
  * @param trigger - The trigger.
  */
-export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagnosticDialogProps) {
+export function ConnectionDiagnosticDialog({ service, trigger, onEdit }: ConnectionDiagnosticDialogProps) {
   const [open, setOpen] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [steps, setSteps] = useState<DiagnosticStep[]>([]);
@@ -260,12 +261,18 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             } else if ((s.toolCount ?? 0) === 0) {
                 addLog("operational", "Warning: Service is healthy but exposed 0 tools.");
                 addLog("operational", "Check if the service requires specific configuration to expose tools (e.g., allowed paths, exposed schemas).");
-                setDiagnosticResult({
-                    category: "configuration",
-                    title: "No Tools Discovered",
-                    description: "The service connected successfully but did not register any tools.",
-                    suggestion: "1. Check upstream service configuration (e.g. allowed paths for filesystem).\n2. Verify the upstream service actually exposes tools (some might only expose resources).\n3. Check logs for silent failures.",
-                    severity: "warning"
+
+                // Only set warning if we don't already have a critical/failure diagnosis
+                setDiagnosticResult(prev => {
+                    if (prev && prev.severity === 'critical') return prev;
+
+                    return {
+                        category: "configuration",
+                        title: "No Tools Discovered",
+                        description: "The service connected successfully but did not register any tools.",
+                        suggestion: "1. Check upstream service configuration (e.g. allowed paths for filesystem).\n2. Verify the upstream service actually exposes tools (some might only expose resources).\n3. Check logs for silent failures.",
+                        severity: "warning"
+                    };
                 });
                 updateStep("operational", { status: "success", detail: "No Tools (Warning)" }); // Green but warned in logs
             } else {
@@ -297,6 +304,22 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
       });
+  };
+
+  const handleFixConfiguration = () => {
+      if (!onEdit || !diagnosticResult) return;
+
+      let targetTab = "connection";
+      if (diagnosticResult.category === "auth") {
+          targetTab = "auth";
+      } else if (diagnosticResult.title.toLowerCase().includes("environment")) {
+          // If it's a CLI service, env vars are in connection tab.
+          // Ideally we could point specifically to env section, but connection tab is close enough.
+          targetTab = "connection";
+      }
+
+      setOpen(false);
+      onEdit(service, targetTab);
   };
 
   return (
@@ -425,7 +448,20 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             </div>
         </div>
 
-        <DialogFooter className="p-4 border-t bg-muted/30 backdrop-blur-md">
+        <DialogFooter className="p-4 border-t bg-muted/30 backdrop-blur-md flex justify-between items-center">
+            <div className="flex-1">
+                {diagnosticResult && diagnosticResult.action === 'edit_config' && onEdit && (
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleFixConfiguration}
+                        className="gap-2 bg-amber-600 hover:bg-amber-700 text-white"
+                    >
+                        <Settings className="h-4 w-4" />
+                        Fix Configuration
+                    </Button>
+                )}
+            </div>
             <Button
                 onClick={runDiagnostics}
                 disabled={isRunning}

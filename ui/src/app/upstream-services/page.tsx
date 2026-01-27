@@ -45,6 +45,7 @@ import { applyTemplateFields } from "@/lib/template-utils";
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedService, setSelectedService] = useState<UpstreamServiceConfig | null>(null);
+  const [editingTab, setEditingTab] = useState<string | undefined>(undefined);
   const [configuringTemplate, setConfiguringTemplate] = useState<ServiceTemplate | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -185,13 +186,15 @@ export default function ServicesPage() {
     }
   }, [services, fetchServices, toast]);
 
-  const openEdit = useCallback((service: UpstreamServiceConfig) => {
+  const openEdit = useCallback((service: UpstreamServiceConfig, tab?: string) => {
       setSelectedService(service);
+      setEditingTab(tab);
       setIsSheetOpen(true);
   }, []);
 
   const openNew = () => {
       setSelectedService(null);
+      setEditingTab(undefined);
       setConfiguringTemplate(null);
       setIsSheetOpen(true);
   };
@@ -352,6 +355,7 @@ export default function ServicesPage() {
             <div className="h-[calc(100vh-140px)]">
                 <ServiceEditor
                     service={selectedService}
+                    initialTab={editingTab}
                     onChange={setSelectedService}
                     onSave={handleSave}
                     onCancel={() => {

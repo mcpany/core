@@ -28,6 +28,7 @@ import { ServiceInspector } from "@/components/services/editor/service-inspector
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
+    initialTab?: string;
     onChange: (service: UpstreamServiceConfig) => void;
     onSave: () => void;
     onCancel: () => void;
@@ -38,8 +39,8 @@ interface ServiceEditorProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
-    const [activeTab, setActiveTab] = useState("general");
+export function ServiceEditor({ service, initialTab, onChange, onSave, onCancel }: ServiceEditorProps) {
+    const [activeTab, setActiveTab] = useState(initialTab || "general");
     const [validating, setValidating] = useState(false);
     const { toast } = useToast();
 
