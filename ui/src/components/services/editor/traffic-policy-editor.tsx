@@ -26,17 +26,20 @@ interface TrafficPolicyEditorProps {
 
 // Helper to safely handle Duration which might be string (JSON) or object (gRPC)
 // For UI editing, we want string.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getDurationString = (d: any): string => {
     if (typeof d === 'string') return d;
     if (d && typeof d === 'object') {
         // approximate for display if we ever get object
         // TODO: Better formatting if needed
-        return d.seconds ? `${d.seconds}s` : '';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (d as any).seconds ? `${(d as any).seconds}s` : '';
     }
     return '';
 };
 
 export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorProps) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateResilience = (updates: any) => {
         onChange({
             resilience: {
@@ -46,6 +49,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateCircuitBreaker = (updates: any) => {
         onChange({
             resilience: {
@@ -58,6 +62,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateRetryPolicy = (updates: any) => {
         onChange({
             resilience: {
@@ -70,6 +75,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateRateLimit = (updates: any) => {
         onChange({
             rateLimit: {
@@ -79,6 +85,7 @@ export function TrafficPolicyEditor({ service, onChange }: TrafficPolicyEditorPr
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateConnectionPool = (updates: any) => {
         onChange({
             connectionPool: {

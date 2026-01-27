@@ -89,9 +89,9 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         // Initialize new config with defaults
         if (type === 'http') newService.httpService = { address: "", tools: [], calls: {}, resources: [], prompts: [] };
         if (type === 'grpc') newService.grpcService = { address: "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoDefinitions: [], protoCollection: [] };
-        if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
+        if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], calls: {}, prompts: [], communicationProtocol: 0 };
         if (type === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
-        if (type === 'openapi') newService.openapiService = { address: "", specSource: { $case: "specUrl", specUrl: "" }, tools: [], resources: [], calls: {}, prompts: [] };
+        if (type === 'openapi') newService.openapiService = { address: "", specUrl: "", tools: [], resources: [], calls: {}, prompts: [] };
 
         onChange(newService);
     };
@@ -287,9 +287,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <Label htmlFor="openapi-spec">Spec URL</Label>
                                          <Input
                                             id="openapi-spec"
-                                            // @ts-expect-error: Suppress type error if applicable - Proto oneof handling might be tricky in TS without proper generated types helper
-                                            value={(service.openapiService as any).specUrl || ""}
-                                            onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } as any })}
+                                            value={service.openapiService.specUrl || ""}
+                                            onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } })}
                                             placeholder="https://api.example.com/openapi.json"
                                         />
                                     </div>
