@@ -10,14 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Activity, Globe, ShieldAlert, Clock, Terminal } from "lucide-react"
 
-interface SystemStatus {
-  uptime_seconds: number
-  active_connections: number
-  bound_http_port: number
-  bound_grpc_port: number
-  version: string
-  security_warnings: string[]
-}
+import { apiClient, SystemStatus } from "@/lib/client"
 
 const formatUptime = (seconds: number) => {
   const hrs = Math.floor(seconds / 3600)
@@ -36,11 +29,8 @@ export const SystemHealthCard = memo(function SystemHealthCard() {
 
   const fetchStatus = async () => {
     try {
-      const response = await fetch("/api/v1/system/status")
-      if (response.ok) {
-        const data = await response.json()
-        setStatus(data)
-      }
+      const data = await apiClient.getSystemStatus()
+      setStatus(data)
     } catch (error) {
       console.error("Failed to fetch system status", error)
     } finally {
