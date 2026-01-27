@@ -420,32 +420,15 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 	// Heuristic: grow slightly more than original to accommodate values
 	sb.Grow(len(input) + 32)
 
-	// Security: Limit output length to prevent DoS via excessive memory allocation
-	const maxOutputLength = 8192
-
 	start := 0
 	for {
-		if sb.Len() > maxOutputLength {
-			return sb.String()[:maxOutputLength]
-		}
-
 		idx := strings.Index(input[start:], "{{")
 		if idx == -1 {
-			remaining := input[start:]
-			if sb.Len()+len(remaining) > maxOutputLength {
-				sb.WriteString(remaining[:maxOutputLength-sb.Len()])
-			} else {
-				sb.WriteString(remaining)
-			}
+			sb.WriteString(input[start:])
 			break
 		}
 		absoluteIdx := start + idx
-		prefix := input[start:absoluteIdx]
-		if sb.Len()+len(prefix) > maxOutputLength {
-			sb.WriteString(prefix[:maxOutputLength-sb.Len()])
-			return sb.String()
-		}
-		sb.WriteString(prefix)
+		sb.WriteString(input[start:absoluteIdx])
 
 		end := strings.Index(input[absoluteIdx+2:], "}}")
 		if end == -1 {
@@ -457,20 +440,11 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 		key := input[absoluteIdx+2 : absoluteEnd]
 		v, ok := params[key]
 		if !ok {
-			rawPlaceholder := input[absoluteIdx : absoluteEnd+2]
-			if sb.Len()+len(rawPlaceholder) > maxOutputLength {
-				sb.WriteString(rawPlaceholder[:maxOutputLength-sb.Len()])
-				return sb.String()
-			}
-			sb.WriteString(rawPlaceholder)
+			sb.WriteString(input[absoluteIdx : absoluteEnd+2])
 		} else {
 			val := ToString(v)
 			if noEscapeParams == nil || !noEscapeParams[key] {
 				val = escapeFunc(val)
-			}
-			if sb.Len()+len(val) > maxOutputLength {
-				sb.WriteString(val[:maxOutputLength-sb.Len()])
-				return sb.String()
 			}
 			sb.WriteString(val)
 		}

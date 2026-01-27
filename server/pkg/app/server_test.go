@@ -2600,6 +2600,33 @@ func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 		handler.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
+
+	t.Run("Query Param - Blocked by Default", func(t *testing.T) {
+		app.SettingsManager = NewGlobalSettingsManager("secret", nil, nil)
+		middleware := app.createAuthMiddleware(false, false)
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		req := httptest.NewRequest("GET", "/?api_key=secret", nil)
+		req.RemoteAddr = "127.0.0.1:12345"
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusForbidden, rec.Code)
+	})
+
+	t.Run("Query Param - Allowed with Env Var", func(t *testing.T) {
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_QUERY_AUTH", "true")
+		app.SettingsManager = NewGlobalSettingsManager("secret", nil, nil)
+		middleware := app.createAuthMiddleware(false, false)
+		handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		req := httptest.NewRequest("GET", "/?api_key=secret", nil)
+		req.RemoteAddr = "127.0.0.1:12345"
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
 }
 
 func TestAuthMiddleware_AuthDisabled(t *testing.T) {

@@ -41,7 +41,7 @@ export function middleware(request: NextRequest) {
   // Add Security Headers
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net for Monaco Editor. Removed unsafe-inline.
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net for Monaco Editor
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net", // Added cdn.jsdelivr.net
     "img-src 'self' data: https:",
     "font-src 'self' data: https://fonts.gstatic.com",

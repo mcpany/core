@@ -113,6 +113,7 @@ upstream_services:
 		"--network", networkName,
 		"-p", "25011:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", gatewayConfigDir),
+		"--env", "MCPANY_DANGEROUS_ALLOW_QUERY_AUTH=true",
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
