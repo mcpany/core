@@ -265,11 +265,13 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		}
 
 		var secretVal string
+		var isBinary bool
 		switch {
 		case result.SecretString != nil:
 			secretVal = *result.SecretString
 		case result.SecretBinary != nil:
 			secretVal = string(result.SecretBinary)
+			isBinary = true
 		default:
 			return "", fmt.Errorf("secret value is not a string or binary")
 		}
@@ -293,6 +295,9 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 			return strings.TrimSpace(fmt.Sprintf("%v", val)), nil
 		}
 
+		if isBinary {
+			return secretVal, nil
+		}
 		return strings.TrimSpace(secretVal), nil
 	default:
 		return "", nil

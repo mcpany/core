@@ -20,23 +20,30 @@ func TestResolveSecret_AwsSecretManager_Binary_Bug(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		target := r.Header.Get("X-Amz-Target")
 		if target == "secretsmanager.GetSecretValue" {
+			var req struct {
+				SecretId string
+			}
+			_ = json.NewDecoder(r.Body).Decode(&req)
+
 			w.WriteHeader(http.StatusOK)
 
-            // Secret content is JSON, but stored as binary
-            secretContent := []byte(`{"bin-key": "bin-value"}`)
+			if req.SecretId == "my-binary-raw" {
+				// Binary with trailing newline
+				secretContent := []byte("raw-value\n")
+				resp := map[string]interface{}{
+					"Name":         "my-binary-raw",
+					"SecretBinary": secretContent,
+				}
+				_ = json.NewEncoder(w).Encode(resp)
+				return
+			}
 
-            // AWS requires binary fields to be base64 encoded in JSON response
-            // SDK v2 might expect raw bytes if using specific protocol?
-            // AWS Secrets Manager uses AWS JSON 1.1 protocol.
-            // In JSON, Blob types are Base64 encoded strings.
-
-			// Construct response.
-            // We set SecretBinary, not SecretString.
+			// Default: Secret content is JSON, but stored as binary
+			secretContent := []byte(`{"bin-key": "bin-value"}`)
 			resp := map[string]interface{}{
 				"Name":         "my-binary-secret",
 				"SecretBinary": secretContent,
 			}
-            // Wait, encoding []byte to JSON automatically does Base64 encoding in Go.
 			_ = json.NewEncoder(w).Encode(resp)
 			return
 		}
@@ -53,7 +60,7 @@ func TestResolveSecret_AwsSecretManager_Binary_Bug(t *testing.T) {
 	t.Run("AwsSecretManager Binary with Key", func(t *testing.T) {
 		awsSecret := &configv1.AwsSecretManagerSecret{}
 		awsSecret.SetSecretId("my-binary-secret")
-        awsSecret.SetJsonKey("bin-key")
+		awsSecret.SetJsonKey("bin-key")
 
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
@@ -61,7 +68,22 @@ func TestResolveSecret_AwsSecretManager_Binary_Bug(t *testing.T) {
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 
-        // BUG: Currently it ignores JsonKey for binary secrets and returns the whole blob
+		// BUG: Currently it ignores JsonKey for binary secrets and returns the whole blob
 		assert.Equal(t, "bin-value", resolved, "Should extract key from binary secret containing JSON")
+	})
+
+	t.Run("AwsSecretManager Binary Raw Preserves Whitespace", func(t *testing.T) {
+		awsSecret := &configv1.AwsSecretManagerSecret{}
+		awsSecret.SetSecretId("my-binary-raw")
+		// No JsonKey
+
+		secret := &configv1.SecretValue{}
+		secret.SetAwsSecretManager(awsSecret)
+
+		resolved, err := util.ResolveSecret(context.Background(), secret)
+		assert.NoError(t, err)
+
+		// Verify whitespace is preserved
+		assert.Equal(t, "raw-value\n", resolved, "Should preserve trailing newline in binary secret")
 	})
 }
