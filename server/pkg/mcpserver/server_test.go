@@ -1035,6 +1035,7 @@ func (m *smartToolManager) AddTool(_ tool.Tool) error                { return ni
 func (m *smartToolManager) ClearToolsForService(_ string)            {}
 func (m *smartToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 func (m *smartToolManager) IsServiceAllowed(_, _ string) bool                       { return true }
+func (m *smartToolManager) IsToolAllowed(_ tool.Tool, _ string) bool                { return true }
 
 func (m *smartToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	// Permissive for testing
