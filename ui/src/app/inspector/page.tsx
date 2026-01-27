@@ -5,26 +5,93 @@
 
 "use client";
 
+import { useEffect, useState, useRef } from "react";
 import { InspectorTable } from "@/components/inspector/inspector-table";
+import { Trace } from "@/types/trace";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCcw, Bug, Unplug, Pause, Play, Trash2 } from "lucide-react";
-import { useTraces } from "@/hooks/use-traces";
 
 /**
  * InspectorPage component.
  * @returns The rendered component.
  */
 export default function InspectorPage() {
-  const {
-      traces,
-      loading,
-      isConnected,
-      isPaused,
-      setIsPaused,
-      clearTraces,
-      refresh
-  } = useTraces();
+  const [traces, setTraces] = useState<Trace[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const isPausedRef = useRef(isPaused);
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
+  const connect = () => {
+    setLoading(true);
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
+
+    // Cleanup previous
+    if (wsRef.current) {
+        wsRef.current.close();
+    }
+
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      setIsConnected(true);
+      setLoading(false);
+    };
+
+    ws.onmessage = (event) => {
+        if (isPausedRef.current) return;
+        try {
+            const trace: Trace = JSON.parse(event.data);
+            setTraces((prev) => {
+                // Check if trace already exists (update) or new
+                // Backend might stream history which overlaps with current if we reconnect
+                // But generally history is sent once.
+                // We prepend new traces to show newest at top
+
+                // Deduplicate by ID
+                const index = prev.findIndex(t => t.id === trace.id);
+                if (index !== -1) {
+                    const newTraces = [...prev];
+                    newTraces[index] = trace;
+                    return newTraces;
+                }
+                return [trace, ...prev];
+            });
+        } catch (e) {
+            console.error("Failed to parse trace", e);
+        }
+    };
+
+    ws.onclose = () => {
+      setIsConnected(false);
+      // Reconnect after 3s
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error", err);
+      ws.close();
+    };
+
+    wsRef.current = ws;
+  };
+
+  useEffect(() => {
+    connect();
+    return () => {
+        wsRef.current?.close();
+    };
+  }, []);
+
+  const clearTraces = () => setTraces([]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 space-y-4">
@@ -65,7 +132,10 @@ export default function InspectorPage() {
              <Button variant="outline" size="sm" onClick={clearTraces}>
                 <Trash2 className="mr-2 h-4 w-4" /> Clear
             </Button>
-            <Button variant="outline" size="sm" onClick={refresh} disabled={loading && !isConnected}>
+            <Button variant="outline" size="sm" onClick={() => {
+                setTraces([]);
+                connect(); // Reconnect to refresh/fetch history
+            }} disabled={loading && !isConnected}>
             <RefreshCcw className={`mr-2 h-4 w-4 ${loading && !isConnected ? 'animate-spin' : ''}`} />
             Refresh
             </Button>

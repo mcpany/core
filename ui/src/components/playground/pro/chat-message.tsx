@@ -18,7 +18,6 @@ import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DiffEditor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 /**
  * MessageType type definition.
@@ -256,13 +255,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             original={JSON.stringify(message.previousResult, null, 2)}
                             modified={JSON.stringify(message.toolResult, null, 2)}
                             language="json"
-                            theme={theme === "dark" ? "dracula" : "light"}
-                            onMount={(editor, monaco) => {
-                                if (theme === "dark") {
-                                    defineDraculaTheme(monaco);
-                                    monaco.editor.setTheme("dracula");
-                                }
-                            }}
+                            theme={theme === 'dark' ? 'vs-dark' : 'light'}
                             options={{
                                 readOnly: true,
                                 minimap: { enabled: false },

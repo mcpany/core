@@ -6,7 +6,6 @@ package http //nolint:revive,nolintlint // Package name 'http' is intentional fo
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"crypto/x509"
 	"net/http"
 	"os"
@@ -17,7 +16,6 @@ import (
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/validation"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -58,21 +56,12 @@ var NewHTTPPool = func(
 	}
 
 	if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
-		if err := validation.IsSecurePath(mtlsConfig.GetClientCertPath()); err != nil {
-			return nil, fmt.Errorf("invalid client certificate path: %w", err)
-		}
-		if err := validation.IsSecurePath(mtlsConfig.GetClientKeyPath()); err != nil {
-			return nil, fmt.Errorf("invalid client key path: %w", err)
-		}
 		cert, err := tls.LoadX509KeyPair(mtlsConfig.GetClientCertPath(), mtlsConfig.GetClientKeyPath())
 		if err != nil {
 			return nil, err
 		}
 		tlsConfig.Certificates = []tls.Certificate{cert}
 
-		if err := validation.IsSecurePath(mtlsConfig.GetCaCertPath()); err != nil {
-			return nil, fmt.Errorf("invalid CA certificate path: %w", err)
-		}
 		caCert, err := os.ReadFile(mtlsConfig.GetCaCertPath())
 		if err != nil {
 			return nil, err

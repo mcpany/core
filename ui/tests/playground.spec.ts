@@ -129,6 +129,9 @@ test.describe('Playground Tool Configuration', () => {
 
     // Verify input is populated
     await expect(page.getByRole('textbox', { name: /enter command/i })).toHaveValue(/timeout_tool/);
+
+    // Take verification screenshot
+    await page.screenshot({ path: 'verification.png' });
   });
 
 });
