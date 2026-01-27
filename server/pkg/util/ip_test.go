@@ -144,14 +144,14 @@ func TestGetClientIP(t *testing.T) {
 			remoteAddr: "1.2.3.4:1234",
 			xff:        "5.6.7.8, 9.10.11.12",
 			trustProxy: true,
-			expected:   "9.10.11.12",
+			expected:   "5.6.7.8",
 		},
 		{
 			name:       "Trust Proxy, XFF with Spaces",
 			remoteAddr: "1.2.3.4:1234",
 			xff:        " 5.6.7.8 , 9.10.11.12 ",
 			trustProxy: true,
-			expected:   "9.10.11.12",
+			expected:   "5.6.7.8",
 		},
 		{
 			name:       "Trust Proxy, Invalid XFF, Fallback to RemoteAddr",

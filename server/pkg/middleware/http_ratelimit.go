@@ -5,6 +5,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
@@ -62,7 +63,21 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 //   - http.Handler: An http.Handler that enforces rate limiting.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip := util.GetClientIP(r, m.trustProxy)
+		ip := util.ExtractIP(r.RemoteAddr)
+
+		if m.trustProxy {
+			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+				// Use the last IP in the list (the IP that connected to the trusted proxy).
+				// Standard proxies append the connecting IP to the list.
+				// We trust the proxy to have appended the correct IP, but we do NOT trust the
+				// earlier IPs in the list as they can be spoofed by the client.
+				if idx := strings.LastIndex(xff, ","); idx != -1 {
+					ip = strings.TrimSpace(xff[idx+1:])
+				} else {
+					ip = strings.TrimSpace(xff)
+				}
+			}
+		}
 
 		var limiter *rate.Limiter
 		if val, found := m.limiters.Get(ip); found {
