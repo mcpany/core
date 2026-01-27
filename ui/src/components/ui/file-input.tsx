@@ -7,6 +7,11 @@ import * as React from "react"
 import { Upload, X, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface FileInputProps {
   value?: string
@@ -27,19 +32,25 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [fileName, setFileName] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
 
   // Sync internal state with external value
   React.useEffect(() => {
     if (!value) {
       setFileName(null)
+      setPreviewUrl(null)
       if (inputRef.current) {
         inputRef.current.value = ""
       }
     } else if (!fileName) {
        // Value exists but no filename (e.g. form preset loaded)
        setFileName("File loaded")
+       if (!previewUrl && accept?.includes("image")) {
+           setPreviewUrl(`data:image/png;base64,${value}`)
+       }
     }
-  }, [value])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, accept])
 
   const [isDragging, setIsDragging] = React.useState(false)
 
@@ -57,6 +68,12 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
     const reader = new FileReader()
     reader.onload = (event) => {
       const result = event.target?.result as string
+      // Check if it's an image for preview
+      if (file.type.startsWith("image/")) {
+          setPreviewUrl(result)
+      } else {
+          setPreviewUrl(null)
+      }
       // result is "data:image/png;base64,....."
       // We want only the base64 part for contentEncoding="base64"
       const base64 = result.split(",")[1]
@@ -104,6 +121,7 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
 
   const clearFile = () => {
     setFileName(null)
+    setPreviewUrl(null)
     onChange(undefined)
     if (inputRef.current) {
       inputRef.current.value = ""
@@ -131,6 +149,30 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
         disabled={disabled}
       />
       <div className="flex items-center gap-2">
+        {previewUrl && (
+            <Dialog>
+                <DialogTrigger asChild>
+                    <div className="relative group cursor-zoom-in shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={previewUrl}
+                            alt="Preview"
+                            className="h-9 w-9 rounded object-cover border border-border bg-muted/50 shadow-sm"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded" />
+                    </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-hidden bg-transparent border-0 shadow-none flex justify-center items-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="max-h-[85vh] max-w-full rounded-lg shadow-2xl"
+                    />
+                </DialogContent>
+            </Dialog>
+        )}
+
         <Button
           type="button"
           variant="outline"
@@ -143,7 +185,7 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
         </Button>
         {fileName && (
            <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-md text-sm flex-1 overflow-hidden">
-             <FileText className="h-4 w-4 shrink-0" />
+             {!previewUrl && <FileText className="h-4 w-4 shrink-0" />}
              <span className="truncate">{fileName}</span>
              <Button
                type="button"

@@ -57,3 +57,10 @@ You can manage your playground session history using the buttons in the top righ
 
 - **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
 - **Import**: Load a previously exported session file to replay tool executions and results.
+
+### 6. Image Preview
+
+When a tool requires an image input (Base64 encoded), the Playground automatically provides a **File Picker**.
+If an image is selected, a visual thumbnail preview is displayed inline. Clicking the thumbnail opens a full-size lightbox view.
+
+This also works when replaying history or loading presets containing Base64 image data.

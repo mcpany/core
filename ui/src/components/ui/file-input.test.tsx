@@ -76,4 +76,58 @@ describe("FileInput", () => {
          });
          expect(onChange).not.toHaveBeenCalled();
     });
+
+    it("should display image preview when an image file is selected", async () => {
+        const Wrapper = () => {
+             const [val, setVal] = React.useState<string | undefined>(undefined);
+             return <FileInput value={val} onChange={setVal} accept="image/*" />;
+        };
+
+        const { container } = render(<Wrapper />);
+        const dropZone = container.firstChild as HTMLElement;
+
+        // Mock FileReader
+        const originalFileReader = window.FileReader;
+        window.FileReader = class {
+            onload: any;
+            onerror: any;
+            readAsDataURL(blob: Blob) {
+                setTimeout(() => {
+                    this.onload({ target: { result: "data:image/png;base64,mockbase64" } });
+                }, 0);
+            }
+        } as any;
+
+        const file = new File(["image"], "test.png", { type: "image/png" });
+
+        fireEvent.drop(dropZone, {
+            dataTransfer: {
+                files: [file]
+            }
+        });
+
+        await waitFor(() => {
+            const img = screen.getByAltText("Preview");
+            expect(img).toBeInTheDocument();
+            expect(img).toHaveAttribute("src", "data:image/png;base64,mockbase64");
+        });
+
+        window.FileReader = originalFileReader;
+    });
+
+    it("should attempt to display preview from base64 value with accept prop", async () => {
+        const Wrapper = () => {
+             // Simulate loading a preset with base64 data
+             const [val, setVal] = React.useState<string | undefined>("presetbase64");
+             return <FileInput value={val} onChange={setVal} accept="image/png" />;
+        };
+
+        render(<Wrapper />);
+
+        await waitFor(() => {
+            const img = screen.getByAltText("Preview");
+            expect(img).toBeInTheDocument();
+            expect(img).toHaveAttribute("src", "data:image/png;base64,presetbase64");
+        });
+    });
 });
