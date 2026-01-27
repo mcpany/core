@@ -29,10 +29,10 @@ No discrepancies were found between the selected documentation and the codebase 
 
 Due to a persistent environment failure (`Internal error` in bash session preventing command execution), dynamic verification (running the server and UI tests) could not be completed. A rigorous Static Audit was performed instead, inspecting source code to verify feature implementation and configuration support.
 
-To facilitate future dynamic verification, the following artifacts have been created and left in the repository:
-- `ui/tests/audit.spec.ts`: Playwright test suite for UI features.
-- `server/audit_config.yaml`: Server configuration for testing features.
-- `docker-compose.audit.yml`: Docker Compose file for the test environment.
-- `audit_manager.py`: Script to orchestrate the audit.
+To facilitate future dynamic verification without interfering with standard CI pipelines, the following artifacts have been created in the `verification/` directory:
+- `verification/ui_audit.spec.ts`: Playwright test suite for UI features.
+- `verification/server_audit_config.yaml`: Server configuration for testing features.
+- `verification/docker-compose.audit.yml`: Docker Compose file for the test environment.
+- `verification/audit_manager.py`: Script to orchestrate the audit.
 
-**Reviewers:** Please run `docker compose -f docker-compose.audit.yml up -d --build` followed by `cd ui && npx playwright test tests/audit.spec.ts` to perform the dynamic verification.
+**Reviewers:** Please run `docker compose -f verification/docker-compose.audit.yml up -d --build` followed by `cd ui && npx playwright test ../verification/ui_audit.spec.ts` to perform the dynamic verification.
