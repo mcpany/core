@@ -213,6 +213,10 @@ func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Stru
 			typeVal = TypeInteger
 		case "bool":
 			typeVal = TypeBoolean
+		case "message", "group":
+			typeVal = TypeObject
+		case "bytes":
+			typeVal = TypeString
 		}
 
 		scalarSchema := &structpb.Struct{

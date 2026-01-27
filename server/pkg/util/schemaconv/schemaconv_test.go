@@ -123,6 +123,9 @@ func TestMcpFieldsToProtoProperties(t *testing.T) {
 		{"sfixed32 field", "TYPE_SFIXED32", "integer"},
 		{"sfixed64 field", "TYPE_SFIXED64", "integer"},
 		{"bool field", "TYPE_BOOL", "boolean"},
+		{"message field", "TYPE_MESSAGE", "object"},
+		{"group field", "TYPE_GROUP", "object"},
+		{"bytes field", "TYPE_BYTES", "string"},
 	}
 
 	for _, tc := range testCases {
