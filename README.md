@@ -249,6 +249,18 @@ We welcome contributions to MCP Any! This section provides a brief overview of h
 - **Clean**: `make clean`
     - Removes build artifacts and generated files.
 
+### Documentation & Quality
+
+We enforce high standards for documentation and code quality.
+
+- **Documentation**:
+    - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style).
+        - Verify with: `go run server/tools/check_doc.go server/`
+    - **TypeScript**: All exported components, functions, interfaces, and types must have JSDoc comments.
+        - Verify with: `python3 server/tools/check_ts_doc.py`
+- **Linting**:
+    - Run `make lint` to check for code style issues and potential bugs. This uses `golangci-lint` for Go and `eslint` for TypeScript (via pre-commit).
+
 ### Running Locally
 
 After building, you can run the server locally:

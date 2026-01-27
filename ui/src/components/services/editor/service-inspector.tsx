@@ -17,6 +17,17 @@ interface ServiceInspectorProps {
     service: UpstreamServiceConfig;
 }
 
+/**
+ * A component that displays live traces for a specific service.
+ *
+ * It uses the `useTraces` hook to fetch real-time trace data and filters it
+ * to show only traces relevant to the provided service.
+ * It provides controls to pause/resume updates and clear the trace history.
+ *
+ * @param props - The component props.
+ * @param props.service - The configuration of the service to inspect.
+ * @returns The rendered service inspector component.
+ */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {
         traces,

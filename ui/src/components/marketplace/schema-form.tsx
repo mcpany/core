@@ -15,6 +15,18 @@ interface SchemaFormProps {
   onChange: (value: Record<string, string>) => void;
 }
 
+/**
+ * A component that dynamically renders a form based on a JSON schema.
+ *
+ * It supports string inputs, boolean checkboxes, and enum selects.
+ * It also automatically handles password fields based on property naming conventions.
+ *
+ * @param props - The component props.
+ * @param props.schema - The JSON schema defining the form structure.
+ * @param props.value - The current values of the form fields.
+ * @param props.onChange - Callback fired when a field value changes.
+ * @returns The rendered form component.
+ */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
   if (!schema || !schema.properties) return null;
 
