@@ -4,6 +4,7 @@
  */
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ConnectionDiagnosticDialog } from "./connection-diagnostic";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
@@ -13,6 +14,14 @@ vi.mock("@/lib/client", () => ({
     apiClient: {
         getService: vi.fn(),
     },
+}));
+
+vi.mock("@/components/logs/log-stream", () => ({
+    LogStream: () => <div data-testid="log-stream">Mock Log Stream</div>
+}));
+
+vi.mock("@/components/diagnostics/tool-inspector", () => ({
+    ToolInspector: () => <div data-testid="tool-inspector">Mock Tool Inspector</div>
 }));
 
 const mockService: UpstreamServiceConfig = {
@@ -360,5 +369,31 @@ describe("ConnectionDiagnosticDialog", () => {
 
     // Restore fetch
     global.fetch = originalFetch;
+  });
+
+  it("renders tabs and switches content", async () => {
+    const user = userEvent.setup();
+    render(<ConnectionDiagnosticDialog service={mockService} />);
+    await user.click(screen.getByText("Troubleshoot"));
+
+    // Check tabs exist
+    expect(screen.getByText("Health & Config")).toBeInTheDocument();
+    expect(screen.getByText("Live Logs")).toBeInTheDocument();
+    expect(screen.getByText("Tool Inspector")).toBeInTheDocument();
+
+    // Health is default
+    expect(screen.getByText("Start Diagnostics")).toBeInTheDocument();
+
+    // Switch to Logs
+    await user.click(screen.getByText("Live Logs"));
+    await waitFor(() => {
+        expect(screen.getByTestId("log-stream")).toBeInTheDocument();
+    });
+
+    // Switch to Tools
+    await user.click(screen.getByText("Tool Inspector"));
+    await waitFor(() => {
+        expect(screen.getByTestId("tool-inspector")).toBeInTheDocument();
+    });
   });
 });

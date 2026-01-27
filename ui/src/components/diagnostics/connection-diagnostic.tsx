@@ -9,11 +9,14 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, XCircle, Loader2, Play, Activity, Terminal, AlertTriangle, Lightbulb, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
+import { LogStream } from "@/components/logs/log-stream";
+import { ToolInspector } from "@/components/diagnostics/tool-inspector";
 
 interface DiagnosticStep {
   id: string;
@@ -308,8 +311,8 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] h-[600px] flex flex-col p-0 gap-0 overflow-hidden backdrop-blur-xl bg-background/95 border-primary/20 shadow-2xl">
-        <DialogHeader className="p-6 border-b bg-muted/30">
+      <DialogContent className="sm:max-w-[900px] h-[700px] flex flex-col p-0 gap-0 overflow-hidden backdrop-blur-xl bg-background/95 border-primary/20 shadow-2xl">
+        <DialogHeader className="p-6 pb-2 border-b bg-muted/30">
           <DialogTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5 text-primary" />
               Connection Diagnostics
@@ -319,131 +322,155 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden grid grid-cols-3">
-            {/* Steps List */}
-            <div className="col-span-1 border-r bg-muted/10 overflow-y-auto p-4 space-y-4">
-                {steps.map((step) => (
-                    <div key={step.id} className={cn(
-                        "relative pl-6 pb-4 border-l-2 last:border-0",
-                        step.status === 'success' ? "border-green-500" :
-                        step.status === 'failure' ? "border-red-500" :
-                        step.status === 'running' ? "border-blue-500" : "border-muted"
-                    )}>
-                        <div className={cn(
-                            "absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-background flex items-center justify-center",
-                            step.status === 'success' ? "border-green-500 text-green-500" :
-                            step.status === 'failure' ? "border-red-500 text-red-500" :
-                            step.status === 'running' ? "border-blue-500 text-blue-500 animate-pulse" : "border-muted text-muted-foreground"
-                        )}>
-                            {step.status === 'success' && <CheckCircle2 className="h-3 w-3" />}
-                            {step.status === 'failure' && <XCircle className="h-3 w-3" />}
-                            {step.status === 'running' && <div className="h-2 w-2 rounded-full bg-blue-500" />}
-                            {step.status === 'skipped' && <div className="h-2 w-2 rounded-full bg-muted-foreground" />}
-                        </div>
-
-                        <div className="space-y-1">
-                            <p className={cn("text-sm font-medium leading-none",
-                                step.status === 'running' && "text-blue-600 dark:text-blue-400",
-                                step.status === 'failure' && "text-red-600 dark:text-red-400"
-                            )}>
-                                {step.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {step.status === 'pending' ? 'Pending...' :
-                                 step.status === 'running' ? 'Checking...' :
-                                 step.detail || step.status}
-                            </p>
-                        </div>
-                    </div>
-                ))}
+        <Tabs defaultValue="health" className="flex-1 flex flex-col overflow-hidden">
+            <div className="px-6 border-b bg-muted/30 flex justify-between items-center">
+                 <TabsList className="bg-transparent p-0 gap-4">
+                    <TabsTrigger value="health" className="data-[state=active]:bg-background rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2 text-sm">Health & Config</TabsTrigger>
+                    <TabsTrigger value="logs" className="data-[state=active]:bg-background rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2 text-sm">Live Logs</TabsTrigger>
+                    <TabsTrigger value="tools" className="data-[state=active]:bg-background rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2 text-sm">Tool Inspector</TabsTrigger>
+                 </TabsList>
             </div>
 
-            {/* Logs View & Diagnosis Report */}
-            <div className="col-span-2 flex flex-col h-full bg-zinc-950/90 dark:bg-zinc-950/50 backdrop-blur-sm">
-                {/* Logs */}
-                <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs leading-relaxed">
-                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10 text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                            <Terminal className="h-3 w-3" />
-                            <span className="font-semibold tracking-wide uppercase text-[10px]">Diagnostic Console</span>
-                        </div>
-                        {steps.flatMap(s => s.logs).length > 0 && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-muted-foreground hover:text-white hover:bg-white/10"
-                                onClick={copyLogs}
-                            >
-                                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
-                        )}
-                    </div>
-                    <ScrollArea className="flex-1">
-                        <div className="space-y-1">
-                            {steps.flatMap(s => s.logs).length === 0 ? (
-                                <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
-                            ) : (
-                                steps.flatMap(s => s.logs).map((log, i) => (
-                                    <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
-                                ))
-                            )}
-                            {isRunning && (
-                                <div className="animate-pulse">_</div>
-                            )}
-                        </div>
-                    </ScrollArea>
-                </div>
-
-                {/* Diagnosis Suggestion Card */}
-                {diagnosticResult && (
-                    <div className="p-4 bg-muted/30 border-t border-white/10">
-                        <div className={cn(
-                            "rounded-lg border p-4 flex gap-4 shadow-sm",
-                            diagnosticResult.severity === 'critical' ? "bg-red-500/10 border-red-500/20" :
-                            diagnosticResult.severity === 'warning' ? "bg-amber-500/10 border-amber-500/20" :
-                            "bg-blue-500/10 border-blue-500/20"
-                        )}>
-                            <div className={cn(
-                                "shrink-0 mt-0.5 p-1 rounded-full bg-background/50 h-8 w-8 flex items-center justify-center shadow-sm",
-                                diagnosticResult.severity === 'critical' ? "text-red-500" :
-                                diagnosticResult.severity === 'warning' ? "text-amber-500" :
-                                "text-blue-500"
+            <TabsContent value="health" className="flex-1 flex flex-col overflow-hidden m-0 data-[state=inactive]:hidden">
+                <div className="flex-1 overflow-hidden grid grid-cols-3">
+                    {/* Steps List */}
+                    <div className="col-span-1 border-r bg-muted/10 overflow-y-auto p-4 space-y-4">
+                        {steps.map((step) => (
+                            <div key={step.id} className={cn(
+                                "relative pl-6 pb-4 border-l-2 last:border-0",
+                                step.status === 'success' ? "border-green-500" :
+                                step.status === 'failure' ? "border-red-500" :
+                                step.status === 'running' ? "border-blue-500" : "border-muted"
                             )}>
-                                <AlertTriangle className="h-4 w-4" />
-                            </div>
-                            <div className="space-y-1 text-sm flex-1">
-                                <p className="font-semibold text-foreground tracking-tight">{diagnosticResult.title}</p>
-                                <p className="text-muted-foreground text-xs">{diagnosticResult.description}</p>
-                                <div className="mt-3 flex gap-2 text-foreground/90 bg-background/50 p-3 rounded-md text-xs items-start border border-white/5 shadow-sm">
-                                    <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5 text-yellow-500" />
-                                    <span className="whitespace-pre-wrap font-medium">{diagnosticResult.suggestion}</span>
+                                <div className={cn(
+                                    "absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 bg-background flex items-center justify-center",
+                                    step.status === 'success' ? "border-green-500 text-green-500" :
+                                    step.status === 'failure' ? "border-red-500 text-red-500" :
+                                    step.status === 'running' ? "border-blue-500 text-blue-500 animate-pulse" : "border-muted text-muted-foreground"
+                                )}>
+                                    {step.status === 'success' && <CheckCircle2 className="h-3 w-3" />}
+                                    {step.status === 'failure' && <XCircle className="h-3 w-3" />}
+                                    {step.status === 'running' && <div className="h-2 w-2 rounded-full bg-blue-500" />}
+                                    {step.status === 'skipped' && <div className="h-2 w-2 rounded-full bg-muted-foreground" />}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className={cn("text-sm font-medium leading-none",
+                                        step.status === 'running' && "text-blue-600 dark:text-blue-400",
+                                        step.status === 'failure' && "text-red-600 dark:text-red-400"
+                                    )}>
+                                        {step.name}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {step.status === 'pending' ? 'Pending...' :
+                                         step.status === 'running' ? 'Checking...' :
+                                         step.detail || step.status}
+                                    </p>
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
-                )}
-            </div>
-        </div>
 
-        <DialogFooter className="p-4 border-t bg-muted/30 backdrop-blur-md">
-            <Button
-                onClick={runDiagnostics}
-                disabled={isRunning}
-                className={cn("w-full sm:w-auto min-w-[150px]", isRunning && "opacity-80")}
-            >
-                {isRunning ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Running...
-                    </>
-                ) : (
-                    <>
-                        <Play className="mr-2 h-4 w-4" />
-                        {steps.some(s => s.status !== 'pending') ? "Rerun Diagnostics" : "Start Diagnostics"}
-                    </>
-                )}
-            </Button>
-        </DialogFooter>
+                    {/* Logs View & Diagnosis Report */}
+                    <div className="col-span-2 flex flex-col h-full bg-zinc-950/90 dark:bg-zinc-950/50 backdrop-blur-sm">
+                        {/* Logs */}
+                        <div className="flex-1 overflow-hidden flex flex-col p-4 text-green-400 font-mono text-xs leading-relaxed">
+                            <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10 text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                    <Terminal className="h-3 w-3" />
+                                    <span className="font-semibold tracking-wide uppercase text-[10px]">Diagnostic Console</span>
+                                </div>
+                                {steps.flatMap(s => s.logs).length > 0 && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 text-muted-foreground hover:text-white hover:bg-white/10"
+                                        onClick={copyLogs}
+                                    >
+                                        {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    </Button>
+                                )}
+                            </div>
+                            <ScrollArea className="flex-1">
+                                <div className="space-y-1">
+                                    {steps.flatMap(s => s.logs).length === 0 ? (
+                                        <span className="text-muted-foreground/50 italic">Waiting to start diagnostics...</span>
+                                    ) : (
+                                        steps.flatMap(s => s.logs).map((log, i) => (
+                                            <div key={i} className="break-all whitespace-pre-wrap">{log}</div>
+                                        ))
+                                    )}
+                                    {isRunning && (
+                                        <div className="animate-pulse">_</div>
+                                    )}
+                                </div>
+                            </ScrollArea>
+                        </div>
+
+                        {/* Diagnosis Suggestion Card */}
+                        {diagnosticResult && (
+                            <div className="p-4 bg-muted/30 border-t border-white/10">
+                                <div className={cn(
+                                    "rounded-lg border p-4 flex gap-4 shadow-sm",
+                                    diagnosticResult.severity === 'critical' ? "bg-red-500/10 border-red-500/20" :
+                                    diagnosticResult.severity === 'warning' ? "bg-amber-500/10 border-amber-500/20" :
+                                    "bg-blue-500/10 border-blue-500/20"
+                                )}>
+                                    <div className={cn(
+                                        "shrink-0 mt-0.5 p-1 rounded-full bg-background/50 h-8 w-8 flex items-center justify-center shadow-sm",
+                                        diagnosticResult.severity === 'critical' ? "text-red-500" :
+                                        diagnosticResult.severity === 'warning' ? "text-amber-500" :
+                                        "text-blue-500"
+                                    )}>
+                                        <AlertTriangle className="h-4 w-4" />
+                                    </div>
+                                    <div className="space-y-1 text-sm flex-1">
+                                        <p className="font-semibold text-foreground tracking-tight">{diagnosticResult.title}</p>
+                                        <p className="text-muted-foreground text-xs">{diagnosticResult.description}</p>
+                                        <div className="mt-3 flex gap-2 text-foreground/90 bg-background/50 p-3 rounded-md text-xs items-start border border-white/5 shadow-sm">
+                                            <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5 text-yellow-500" />
+                                            <span className="whitespace-pre-wrap font-medium">{diagnosticResult.suggestion}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <DialogFooter className="p-4 border-t bg-muted/30 backdrop-blur-md shrink-0">
+                    <Button
+                        onClick={runDiagnostics}
+                        disabled={isRunning}
+                        className={cn("w-full sm:w-auto min-w-[150px]", isRunning && "opacity-80")}
+                    >
+                        {isRunning ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Running...
+                            </>
+                        ) : (
+                            <>
+                                <Play className="mr-2 h-4 w-4" />
+                                {steps.some(s => s.status !== 'pending') ? "Rerun Diagnostics" : "Start Diagnostics"}
+                            </>
+                        )}
+                    </Button>
+                </DialogFooter>
+            </TabsContent>
+
+            <TabsContent value="logs" className="flex-1 overflow-hidden m-0 data-[state=inactive]:hidden flex flex-col">
+                <div className="flex-1 p-4 overflow-hidden">
+                     <LogStream initialSource={service.name} hideControls />
+                </div>
+            </TabsContent>
+
+            <TabsContent value="tools" className="flex-1 overflow-hidden m-0 data-[state=inactive]:hidden flex flex-col">
+                 <div className="flex-1 p-0 overflow-y-auto">
+                     <ToolInspector serviceName={service.name} />
+                 </div>
+            </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

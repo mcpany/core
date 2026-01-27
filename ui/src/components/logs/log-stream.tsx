@@ -240,10 +240,18 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
+ * LogStream component props.
+ */
+interface LogStreamProps {
+  initialSource?: string;
+  hideControls?: boolean;
+}
+
+/**
  * LogStream component.
  * @returns The rendered component.
  */
-export function LogStream() {
+export function LogStream({ initialSource: propSource, hideControls }: LogStreamProps = {}) {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -255,7 +263,8 @@ export function LogStream() {
   }, [isPaused])
 
   const searchParams = useSearchParams()
-  const initialSource = searchParams.get("source") || "ALL"
+  // Use propSource if provided, otherwise fallback to URL params
+  const initialSource = propSource || searchParams.get("source") || "ALL"
 
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
@@ -432,62 +441,67 @@ export function LogStream() {
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
-        <div className="flex items-center justify-between md:justify-start gap-2">
-            <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <Terminal className="w-6 h-6" /> Live Logs
-                </h1>
-                <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
-                    {isConnected ? (
-                      <>
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        Live
-                      </>
-                    ) : (
-                      <>
-                        <Unplug className="h-3 w-3" /> Disconnected
-                      </>
-                    )}
-                </Badge>
-                <Badge variant="secondary" className="font-mono text-xs">
-                    {logs.length} events
-                </Badge>
-            </div>
-            {/* Mobile-only pause/resume for better access */}
-            <div className="md:hidden">
-               <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsPaused(!isPaused)}
-              >
-                {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-              </Button>
-            </div>
-        </div>
+      {!hideControls && (
+        <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
+          <div className="flex items-center justify-between md:justify-start gap-2">
+              <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                      <Terminal className="w-6 h-6" /> Live Logs
+                  </h1>
+                  <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
+                      {isConnected ? (
+                        <>
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                          </span>
+                          Live
+                        </>
+                      ) : (
+                        <>
+                          <Unplug className="h-3 w-3" /> Disconnected
+                        </>
+                      )}
+                  </Badge>
+                  <Badge variant="secondary" className="font-mono text-xs">
+                      {logs.length} events
+                  </Badge>
+              </div>
+              {/* Mobile-only pause/resume for better access */}
+              <div className="md:hidden">
+                 <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsPaused(!isPaused)}
+                >
+                  {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                </Button>
+              </div>
+          </div>
 
-        <div className="flex items-center gap-2 justify-end">
-           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsPaused(!isPaused)}
-            className="w-24 hidden md:flex"
-          >
-            {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
-          </Button>
-          <Button variant="outline" size="sm" onClick={clearLogs} className="flex-1 md:flex-none">
-            <Trash2 className="mr-2 h-4 w-4" /> Clear
-          </Button>
-          <Button variant="outline" size="sm" onClick={downloadLogs} className="flex-1 md:flex-none">
-            <Download className="mr-2 h-4 w-4" /> Export
-          </Button>
+          <div className="flex items-center gap-2 justify-end">
+             <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsPaused(!isPaused)}
+              className="w-24 hidden md:flex"
+            >
+              {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
+            </Button>
+            <Button variant="outline" size="sm" onClick={clearLogs} className="flex-1 md:flex-none">
+              <Trash2 className="mr-2 h-4 w-4" /> Clear
+            </Button>
+            <Button variant="outline" size="sm" onClick={downloadLogs} className="flex-1 md:flex-none">
+              <Download className="mr-2 h-4 w-4" /> Export
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
-      <Card className="flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm">
+      <Card className={cn(
+        "flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm",
+        hideControls && "border-0 shadow-none bg-transparent"
+      )}>
         <CardHeader className="p-4 border-b bg-muted/20">
              <div className="flex flex-col md:flex-row gap-4 justify-between">
                 <div className="relative flex-1 max-w-sm w-full">
@@ -500,18 +514,22 @@ export function LogStream() {
                     />
                 </div>
                 <div className="flex items-center gap-2 justify-end">
-                    <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <Select value={filterSource} onValueChange={setFilterSource}>
-                        <SelectTrigger className="w-[140px] bg-background">
-                            <SelectValue placeholder="Source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Sources</SelectItem>
-                            {uniqueSources.map(source => (
-                                <SelectItem key={source} value={source}>{source}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    {!propSource && (
+                        <>
+                            <Monitor className="h-4 w-4 text-muted-foreground" />
+                            <Select value={filterSource} onValueChange={setFilterSource}>
+                                <SelectTrigger className="w-[140px] bg-background">
+                                    <SelectValue placeholder="Source" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ALL">All Sources</SelectItem>
+                                    {uniqueSources.map(source => (
+                                        <SelectItem key={source} value={source}>{source}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </>
+                    )}
 
                     <Filter className="h-4 w-4 text-muted-foreground ml-2" />
                     <Select value={filterLevel} onValueChange={setFilterLevel}>
