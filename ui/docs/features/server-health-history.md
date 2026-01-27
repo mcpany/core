@@ -1,24 +1,29 @@
-# Server Health History
+# Traffic & Health History
 
-MCP Any now includes a visual timeline of service health directly in the dashboard.
+MCP Any provides a real-time visual timeline of server traffic and availability directly in the dashboard.
 
 ## Overview
 
-The System Health widget has been enhanced to show a historical timeline of each service's status over the last 10 minutes (configurable).
+The System Uptime widget has been upgraded to a **Traffic & Health Monitor**, displaying the availability and request volume over the last hour.
 
-![Server Health History](../screenshots/dashboard_overview.png)
+![Traffic & Health](../screenshots/dashboard_overview.png)
 
 ## Features
 
--   **Visual Timeline**: A heatmap-style visualization shows the status of each service over time.
-    -   <span style="color: green">Green</span>: Healthy
-    -   <span style="color: orange">Amber</span>: Degraded
-    -   <span style="color: red">Red</span>: Unhealthy/Error
-    -   <span style="color: gray">Gray</span>: Inactive
--   **Client-Side Persistence**: Health history is persisted in your browser's local storage, allowing you to see trends even after refreshing the page.
--   **Real-time Updates**: The timeline updates in real-time as the dashboard polls for service status.
--   **Tooltip Details**: Hover over any point in the timeline to see the exact status and timestamp.
+-   **Real-time Bar Chart**: Visualizes traffic volume and health status minute-by-minute for the last hour.
+-   **Availability Tracking**: Bars are color-coded based on the success rate of requests:
+    -   <span style="color: green">Green</span>: Healthy (>99% Success)
+    -   <span style="color: orange">Amber</span>: Degraded (>90% Success)
+    -   <span style="color: red">Red</span>: Critical (<90% Success)
+    -   <span style="color: gray">Gray</span>: No Traffic / Offline
+-   **Real-time Polling**: The chart updates automatically every 30 seconds to show the latest data.
+-   **Detailed Tooltips**: Hover over any bar to see:
+    -   Time bucket
+    -   Availability Percentage
+    -   Total Request Count
+    -   Error Count
+-   **Backend Powered**: Data is sourced from the server's traffic history, ensuring accuracy across sessions.
 
 ## Usage
 
-Navigate to the **Dashboard** to view the System Health widget. The history is automatically collected and displayed.
+Navigate to the **Dashboard** to view the **Traffic & Health (Last Hour)** widget. It provides an immediate "at-a-glance" view of your system's recent performance and reliability.

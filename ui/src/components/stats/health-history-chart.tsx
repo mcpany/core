@@ -5,97 +5,96 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
 
+export interface TrafficPoint {
+    time: string;
+    requests: number;
+    errors: number;
+    total?: number; // fallback
+}
+
 interface HealthPoint {
     time: string;
     status: "ok" | "degraded" | "error" | "offline";
-    uptime: number; // 0 to 100
+    uptime: number; // Availability %
+    requests: number;
+    errors: number;
 }
 
 /**
  * HealthHistoryChart component.
- * Displays server uptime history over the last 24 hours.
+ * Displays server traffic and health status over the last hour.
  * @returns The rendered component.
  */
 export function HealthHistoryChart() {
     const [data, setData] = useState<HealthPoint[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // In a real app, this would be a dedicated history endpoint.
-                // For this implementation, we simulate 24 hours of data based on
-                // the current status and some randomized historical noise.
-                const [status, traffic] = await Promise.all([
-                    apiClient.getDoctorStatus(),
-                    apiClient.getDashboardTraffic()
-                ]);
+    const fetchData = async () => {
+        try {
+            const traffic: TrafficPoint[] = await apiClient.getDashboardTraffic();
 
-                const points: HealthPoint[] = [];
+            const points: HealthPoint[] = [];
 
-                // Use traffic history to infer historical health
-                // If we have errors in a given interval (minute), we can mark it as degraded or error.
-                // Traffic history is minute-by-minute (last 60 mins)
-                // We want to show 24 hours?
-                // The backend now returns last 60 minutes of data.
-                // The UI expects 24 hours?
-                // "Displays server uptime history over the last 24 hours." description says so.
-                // But our backend now only returns 60 minutes.
-                // Let's adjust the chart to show available history (60 mins) or whatever backend returns.
-                // If backend returns 60 points, we show 60 points.
+            if (traffic && traffic.length > 0) {
+                 for (const t of traffic) {
+                    let pointStatus: HealthPoint["status"] = "ok";
 
-                if (traffic && traffic.length > 0) {
-                     for (const t of traffic) {
-                        let pointStatus: HealthPoint["status"] = "ok";
-                        let uptime = 100;
+                    const reqs = t.requests || t.total || 0;
+                    const errs = t.errors || 0;
 
-                        // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
-                        const reqs = t.requests || t.total || 0;
-                        const errs = t.errors || 0;
+                    let availability = 100;
+                    if (reqs > 0) {
+                        availability = Math.max(0, ((reqs - errs) / reqs) * 100);
+                    } else {
+                        // No traffic = 100% availability (technically not down) or special status?
+                        // For visualization, if no traffic, we might want to show empty or gray.
+                        // Let's keep it 100% but maybe use status 'offline' or 'idle' for color.
+                        pointStatus = "offline";
+                    }
 
-                        if (errs > 0) {
-                            if (reqs > 0 && (errs / reqs) > 0.1) { // >10% error rate
-                                pointStatus = "degraded";
-                                uptime = 80;
-                            }
-                             if (reqs > 0 && (errs / reqs) > 0.5) { // >50% error rate
-                                pointStatus = "error";
-                                uptime = 0;
-                            }
+                    if (reqs > 0) {
+                        if (availability < 90) {
+                            pointStatus = "error";
+                        } else if (availability < 99) {
+                            pointStatus = "degraded";
                         }
+                    }
 
-                        points.push({
-                            time: t.time,
-                            status: pointStatus,
-                            uptime: uptime
-                        });
-                     }
-                } else {
-                     // Fallback to showing just current status if no history
-                     // Or just empty
-                }
-                setData(points);
-            } catch (error) {
-                console.error("Failed to fetch health history", error);
-            } finally {
-                setLoading(false);
+                    points.push({
+                        time: t.time,
+                        status: pointStatus,
+                        uptime: availability,
+                        requests: reqs,
+                        errors: errs
+                    });
+                 }
             }
-        };
+            setData(points);
+        } catch (error) {
+            console.error("Failed to fetch health history", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchData();
+        // Poll every 30 seconds for real-time updates
+        const interval = setInterval(fetchData, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const STATUS_COLORS = {
         healthy: "hsl(var(--chart-2))",
-        ok: "hsl(var(--chart-2))",
-        degraded: "hsl(var(--chart-4))",
-        error: "hsl(var(--chart-1))",
-        offline: "hsl(var(--muted))",
+        ok: "hsl(var(--chart-2))", // Green
+        degraded: "hsl(var(--chart-4))", // Yellow/Orange
+        error: "hsl(var(--chart-1))", // Red
+        offline: "hsl(var(--muted))", // Gray
         unknown: "hsl(var(--muted))",
     };
 
@@ -106,9 +105,9 @@ export function HealthHistoryChart() {
     return (
         <Card className="col-span-4 backdrop-blur-sm bg-background/50">
             <CardHeader>
-                <CardTitle>System Uptime</CardTitle>
+                <CardTitle>Traffic & Health (Last Hour)</CardTitle>
                 <CardDescription>
-                    Availability and health status over the last 24 hours.
+                    Availability based on request success rate.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -141,10 +140,26 @@ export function HealthHistoryChart() {
                                                     </div>
                                                     <div className="flex flex-col">
                                                         <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                                            Uptime
+                                                            Availability
                                                         </span>
                                                         <span className="font-bold" style={{ color: getBarColor(d.status) }}>
-                                                            {d.uptime}%
+                                                            {d.uptime.toFixed(1)}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                                            Requests
+                                                        </span>
+                                                        <span className="font-bold text-foreground">
+                                                            {d.requests}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                                            Errors
+                                                        </span>
+                                                        <span className="font-bold text-destructive">
+                                                            {d.errors}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -165,18 +180,28 @@ export function HealthHistoryChart() {
                 <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-[hsl(var(--chart-2))]" />
-                        <span>Operational</span>
+                        <span>Healthy (&gt;99%)</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-[hsl(var(--chart-4))]" />
-                        <span>Degraded</span>
+                        <span>Degraded (&gt;90%)</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-[hsl(var(--chart-1))]" />
-                        <span>Down</span>
+                        <span>Critical (&lt;90%)</span>
                     </div>
+                    {/* Calculate overall uptime from displayed data */}
                     <div className="font-medium text-foreground">
-                        99.9% Overall Uptime
+                         {(() => {
+                             if (data.length === 0) return "No Data";
+                             // Weighted average? Or just average of averages?
+                             // Weighted by requests is better for "Success Rate".
+                             const totalReqs = data.reduce((acc, p) => acc + p.requests, 0);
+                             const totalErrs = data.reduce((acc, p) => acc + p.errors, 0);
+                             if (totalReqs === 0) return "100% Overall";
+                             const overall = ((totalReqs - totalErrs) / totalReqs) * 100;
+                             return `${overall.toFixed(1)}% Success Rate`;
+                         })()}
                     </div>
                 </div>
             </CardContent>
