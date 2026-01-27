@@ -169,7 +169,7 @@ export default function ServicesPage() {
             if (updates.tags) {
                 updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
             }
-            return apiClient.updateService(updated as any);
+            return apiClient.updateService(updated);
         }));
         toast({
             title: "Services Updated",

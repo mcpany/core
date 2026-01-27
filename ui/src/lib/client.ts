@@ -19,7 +19,7 @@ import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
-import { BrowserHeaders } from 'browser-headers';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
@@ -519,7 +519,7 @@ export const apiClient = {
         let data: any;
         try {
             data = JSON.parse(text);
-        } catch (e) {
+        } catch {
             // Not JSON
         }
 
@@ -579,7 +579,7 @@ export const apiClient = {
                 try {
                     const json = JSON.parse(text);
                     if (json.error) errorMsg = json.error;
-                } catch (e) {
+                } catch {
                     // ignore
                 }
                 if (errorMsg) throw new Error(errorMsg);

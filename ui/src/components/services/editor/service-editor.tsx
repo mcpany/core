@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UpstreamServiceConfig, apiClient } from "@/lib/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -18,13 +18,14 @@ import { Separator } from "@/components/ui/separator";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
