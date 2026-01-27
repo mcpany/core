@@ -23,9 +23,7 @@ import { Credential } from "@proto/config/v1/auth";
 import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
-import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
-import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -62,9 +60,8 @@ const detectSensitiveData = (text: string) => {
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);
   const [credentials, setCredentials] = useState<Credential[]>([]);
-  const [view, setView] = useState<"templates" | "template-config" | "form">("templates");
+  const [view, setView] = useState<"templates" | "form">("templates");
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
-  const [templateConfigValues, setTemplateConfigValues] = useState<Record<string, string>>({});
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{valid: boolean, message: string} | null>(null);
   const [showDiff, setShowDiff] = useState(false);
@@ -80,7 +77,6 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (!newOpen) {
           setView("templates");
           setSelectedTemplate(null);
-          setTemplateConfigValues({});
           setValidationResult(null);
           setShowDiff(false);
           setPendingConfig(null);
@@ -154,56 +150,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
   const handleTemplateSelect = (template: ServiceTemplate) => {
       setSelectedTemplate(template);
-      if (template.fields && template.fields.length > 0) {
-          // Initialize default values
-          const defaults: Record<string, string> = {};
-          template.fields.forEach(f => {
-              if (f.defaultValue) defaults[f.name] = f.defaultValue;
-          });
-          setTemplateConfigValues(defaults);
-          setView("template-config");
-      } else {
-          // No fields, proceed directly
-          populateFormFromTemplate(template);
-          setView("form");
-      }
-  };
 
-  const populateFormFromTemplate = (template: ServiceTemplate, fieldValues?: Record<string, string>) => {
-      // Clone config to avoid mutating template
-      const config = JSON.parse(JSON.stringify(template.config)) as Partial<UpstreamServiceConfig>;
-
-      // Perform substitution if fields present
-      if (template.fields && fieldValues) {
-          template.fields.forEach(field => {
-              const value = fieldValues[field.name] || "";
-              if (!value) return;
-
-              // Helper to set nested property by path string
-              // Note: We only support simple dot notation for now, or specific well-known paths
-              if (field.replaceToken) {
-                  // Token replacement in string
-                  // Find the value at key path
-                  // We handle specific paths for now to be safe
-                  if (field.key === "commandLineService.command" && config.commandLineService) {
-                      config.commandLineService.command = config.commandLineService.command.replace(field.replaceToken, value);
-                  }
-                  // Add other paths as needed
-              } else {
-                  // Direct value assignment
-                  if (field.key.startsWith("commandLineService.env.") && config.commandLineService) {
-                      const envKey = field.key.split(".").pop();
-                      if (envKey) {
-                          if (!config.commandLineService.env) config.commandLineService.env = {};
-                          config.commandLineService.env[envKey] = value;
-                      }
-                  } else if (field.key === "httpService.address" && config.httpService) {
-                      config.httpService.address = value;
-                  }
-              }
-          });
-      }
-
+      // Pre-fill form based on template config
+      const config = template.config;
       const type = config.grpcService ? "grpc" :
                    config.httpService ? "http" :
                    config.commandLineService ? "command_line" :
@@ -216,18 +165,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
       if (config.openapiService?.address) form.setValue("address", config.openapiService.address);
       if (config.commandLineService?.command) form.setValue("command", config.commandLineService.command);
-      if (config.tags) form.setValue("tags", config.tags?.join(", ") || "");
+      if (config.tags) form.setValue("tags", config.tags.join(", "));
 
       // Also set the JSON for advanced usage
       form.setValue("configJson", JSON.stringify(config, null, 2));
-  };
 
-  const handleTemplateConfigSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (selectedTemplate) {
-          populateFormFromTemplate(selectedTemplate, templateConfigValues);
-          setView("form");
-      }
+      setView("form");
   };
 
   const constructConfig = (values: z.infer<typeof formSchema>): UpstreamServiceConfig => {
@@ -378,25 +321,16 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                   </div>
               ) : view === "form" && !isEditing ? (
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6" onClick={() => setView(selectedTemplate && selectedTemplate.fields ? "template-config" : "templates")} aria-label="Back">
+                    <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6" onClick={() => setView("templates")} aria-label="Back to templates">
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
                     Configure Service
                   </div>
-              ) : view === "template-config" ? (
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6" onClick={() => setView("templates")} aria-label="Back to templates">
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    Configure {selectedTemplate?.name}
-                  </div>
-              ) : isEditing ? "Edit Service" : "Select Service Template"}
+              ) : isEditing ? "Edit Service" : view === "templates" ? "Select Service Template" : "Configure Service"}
           </DialogTitle>
           <DialogDescription>
             {showDiff ? "Review the changes before applying them." :
-             view === "templates" ? "Choose a template to quickly configure a popular service, or start from scratch." :
-             view === "template-config" ? "Fill in the required information to configure this service." :
-             "Configure the upstream service details."}
+             view === "templates" ? "Choose a template to quickly configure a popular service, or start from scratch." : "Configure the upstream service details."}
           </DialogDescription>
         </DialogHeader>
 
@@ -409,35 +343,32 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                 </div>
             </div>
         ) : view === "templates" ? (
-            <ServiceTemplateSelector onSelect={handleTemplateSelect} />
-        ) : view === "template-config" ? (
-            <form onSubmit={handleTemplateConfigSubmit} className="space-y-4 mt-4">
-                {selectedTemplate?.fields?.map((field) => (
-                    <div key={field.name} className="space-y-2">
-                        <label htmlFor={field.name} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            {field.label}
-                        </label>
-                        <Input
-                            id={field.name}
-                            type={field.type || "text"}
-                            placeholder={field.placeholder}
-                            value={templateConfigValues[field.name] || ""}
-                            onChange={(e) => setTemplateConfigValues({...templateConfigValues, [field.name]: e.target.value})}
-                            required
-                        />
-                    </div>
-                ))}
-                <div className="flex justify-end pt-4">
-                    <Button type="submit">Continue</Button>
-                </div>
-            </form>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                {SERVICE_TEMPLATES.map((template) => {
+                    const Icon = template.icon;
+                    return (
+                        <div
+                            key={template.id}
+                            className="flex flex-col items-start p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                            onClick={() => handleTemplateSelect(template)}
+                        >
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="p-2 bg-primary/10 rounded-md text-primary">
+                                    <Icon className="h-5 w-5" />
+                                </div>
+                                <h3 className="font-semibold">{template.name}</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{template.description}</p>
+                        </div>
+                    );
+                })}
+            </div>
         ) : (
             <Tabs defaultValue="basic" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
                     <TabsTrigger value="auth">Authentication</TabsTrigger>
                     <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
-                    {isEditing && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
                 </TabsList>
 
                 <Form {...form}>
@@ -682,12 +613,6 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     )}
                     />
                 </TabsContent>
-
-                {isEditing && serviceToEdit && (
-                    <TabsContent value="inspector" className="space-y-4">
-                        <ServiceInspector service={serviceToEdit} />
-                    </TabsContent>
-                )}
 
                 {validationResult && (
                     <div className={`p-3 rounded-md text-sm mb-4 ${validationResult.valid ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300" : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"}`}>

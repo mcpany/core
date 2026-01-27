@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
-import { SchemaForm } from "./schema-form";
 
 interface InstantiateDialogProps {
     open: boolean;
@@ -40,11 +39,6 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
     const [command, setCommand] = useState("");
     const [envVars, setEnvVars] = useState<Record<string, { plainText?: string; secretId?: string }>>({});
 
-    // Schema state
-    const [parsedSchema, setParsedSchema] = useState<any>(null);
-    const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
-    const [isSchemaValid, setIsSchemaValid] = useState(true);
-
     // Helper to determine if we should show CLI options
     // Community servers (which are created dynamically) usually have commandLineService populated.
     const isCommandLine = !!templateConfig?.commandLineService;
@@ -60,90 +54,29 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
                 // Initialize env vars
                 const newEnv: Record<string, { plainText?: string; secretId?: string }> = {};
-                const initialSchemaValues: Record<string, string> = {};
-
                 if (templateConfig.commandLineService.env) {
                     Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {
                         const sv = v as any;
-                        let val = "";
                         if (sv && typeof sv === 'object' && sv.plainText) {
-                            val = sv.plainText;
-                            newEnv[k] = { plainText: val };
+                            newEnv[k] = { plainText: sv.plainText };
                         } else if (typeof v === 'string') {
                              // Fallback if the input config was just a record of strings
-                             val = v;
-                             newEnv[k] = { plainText: val };
+                             newEnv[k] = { plainText: v };
+                        } else if (sv && typeof sv === 'object' && sv.environmentVariable) {
+                             // If it's a server-side env var reference, we show it as plain text for now or handle appropriately
+                             // For now, let's just map plainText
                         }
-                        initialSchemaValues[k] = val;
                     });
                 }
                 setEnvVars(newEnv);
-                setSchemaValues(initialSchemaValues);
             } else {
                 setCommand("");
                 setEnvVars({});
-                setSchemaValues({});
-            }
-
-            // Parse Schema if available
-            if (templateConfig.configurationSchema) {
-                try {
-                    const schema = JSON.parse(templateConfig.configurationSchema);
-                    setParsedSchema(schema);
-
-                    // Apply defaults if value not already present
-                    const valuesWithDefaults = { ...initialSchemaValues };
-                    if (schema.properties) {
-                        Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
-                            if (!valuesWithDefaults[k] && v.default) {
-                                valuesWithDefaults[k] = String(v.default);
-                            }
-                        });
-                    }
-                    setSchemaValues(valuesWithDefaults);
-                    // Sync defaults to envVars immediately
-                    const envWithDefaults = { ...newEnv };
-                    Object.entries(valuesWithDefaults).forEach(([k, v]) => {
-                        envWithDefaults[k] = { plainText: v };
-                    });
-                    setEnvVars(envWithDefaults);
-                    checkSchemaValidity(valuesWithDefaults, schema);
-
-                } catch (e) {
-                    console.error("Failed to parse configuration schema", e);
-                    setParsedSchema(null);
-                }
-            } else {
-                setParsedSchema(null);
-                setIsSchemaValid(true);
             }
 
             apiClient.listCredentials().then(setCredentials).catch(console.error);
         }
     }, [open, templateConfig]);
-
-    const checkSchemaValidity = (values: Record<string, string>, schema: any) => {
-        if (!schema || !schema.required) {
-            setIsSchemaValid(true);
-            return;
-        }
-        const missing = schema.required.some((field: string) => !values[field]);
-        setIsSchemaValid(!missing);
-    };
-
-    const handleSchemaChange = (newValues: Record<string, string>) => {
-        setSchemaValues(newValues);
-        // Sync to envVars for compatibility with handleInstantiate logic
-        const newEnv: Record<string, { plainText?: string }> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
-
-        // Update with new values
-        Object.entries(newValues).forEach(([k, v]) => {
-            newEnv[k] = { plainText: v };
-        });
-
-        setEnvVars(newEnv);
-        checkSchemaValidity(newValues, parsedSchema);
-    };
 
     const handleInstantiate = async () => {
         if (!templateConfig) return;
@@ -221,14 +154,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                             </div>
 
                             <div className="grid gap-2">
-                                {parsedSchema ? (
-                                    <>
-                                        <Label>Configuration</Label>
-                                        <SchemaForm schema={parsedSchema} value={schemaValues} onChange={handleSchemaChange} />
-                                    </>
-                                ) : (
-                                    <EnvVarEditor initialEnv={envVars} onChange={setEnvVars} />
-                                )}
+                                <EnvVarEditor initialEnv={envVars} onChange={setEnvVars} />
                             </div>
                         </>
                     )}
@@ -249,7 +175,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button onClick={handleInstantiate} disabled={loading || (parsedSchema && !isSchemaValid)}>
+                    <Button onClick={handleInstantiate} disabled={loading}>
                         {loading ? "Creating..." : "Create Instance"}
                     </Button>
                 </DialogFooter>

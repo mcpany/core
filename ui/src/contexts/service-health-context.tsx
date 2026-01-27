@@ -54,8 +54,7 @@ const POLLING_INTERVAL = 5000;
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
-    const lastTopologyText = useRef<string>('');
-    const lastGraph = useRef<Graph | null>(null);
+    const lastTopologyHash = useRef<string>('');
 
     const fetchTopology = useCallback(async () => {
         try {
@@ -63,18 +62,13 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
             const res = await fetch(url);
             if (!res.ok) return;
+            const graph: Graph = await res.json();
 
-            // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
-            // res.text() + string comparison is much faster than res.json() + JSON.stringify().
-            const text = await res.text();
-            let graph: Graph;
-
-            if (text === lastTopologyText.current && lastGraph.current) {
-                graph = lastGraph.current;
-            } else {
-                graph = JSON.parse(text);
-                lastTopologyText.current = text;
-                lastGraph.current = graph;
+            // ⚡ Bolt Optimization: Check if graph content has actually changed before updating state.
+            // This prevents unnecessary re-renders of the entire app context.
+            const graphContentHash = JSON.stringify(graph);
+            if (graphContentHash !== lastTopologyHash.current) {
+                lastTopologyHash.current = graphContentHash;
                 setLatestTopology(graph);
             }
 

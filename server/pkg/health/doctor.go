@@ -31,9 +31,8 @@ type DoctorReport struct {
 
 // Doctor is the health check handler.
 type Doctor struct {
-	checks     map[string]CheckFunc
-	mu         sync.RWMutex
-	httpClient *http.Client
+	checks map[string]CheckFunc
+	mu     sync.RWMutex
 }
 
 // NewDoctor creates a new Doctor.
@@ -41,8 +40,7 @@ type Doctor struct {
 // Returns the result.
 func NewDoctor() *Doctor {
 	return &Doctor{
-		checks:     make(map[string]CheckFunc),
-		httpClient: http.DefaultClient,
+		checks: make(map[string]CheckFunc),
 	}
 }
 
@@ -72,7 +70,7 @@ func (d *Doctor) Handler() http.HandlerFunc {
 		req, err := http.NewRequestWithContext(r.Context(), "GET", "https://www.google.com", nil)
 		if err == nil {
 			var resp *http.Response
-			resp, err = d.httpClient.Do(req)
+			resp, err = http.DefaultClient.Do(req)
 			if resp != nil {
 				defer func() {
 					_ = resp.Body.Close()

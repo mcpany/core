@@ -183,11 +183,6 @@ export interface UpstreamServiceConfig {
   prompts: PromptDefinition[];
   /** Tags for organizing and filtering services. */
   tags: string[];
-  /**
-   * JSON Schema string defining the configuration parameters (env vars, args) required by this service.
-   * This is used by the UI to generate a configuration form.
-   */
-  configurationSchema: string;
 }
 
 export interface CallPolicy {
@@ -966,7 +961,6 @@ function createBaseUpstreamServiceConfig(): UpstreamServiceConfig {
     postCallHooks: [],
     prompts: [],
     tags: [],
-    configurationSchema: "",
   };
 }
 
@@ -1082,9 +1076,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     }
     for (const v of message.tags) {
       writer.uint32(274).string(v!);
-    }
-    if (message.configurationSchema !== "") {
-      writer.uint32(306).string(message.configurationSchema);
     }
     return writer;
   },
@@ -1392,14 +1383,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
           message.tags.push(reader.string());
           continue;
         }
-        case 38: {
-          if (tag !== 306) {
-            break;
-          }
-
-          message.configurationSchema = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1474,7 +1457,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
       tags: globalThis.Array.isArray(object?.tags)
         ? object.tags.map((e: any) => globalThis.String(e))
         : [],
-      configurationSchema: isSet(object.configuration_schema) ? globalThis.String(object.configuration_schema) : "",
     };
   },
 
@@ -1591,9 +1573,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     if (message.tags?.length) {
       obj.tags = message.tags;
     }
-    if (message.configurationSchema !== "") {
-      obj.configuration_schema = message.configurationSchema;
-    }
     return obj;
   },
 
@@ -1679,7 +1658,6 @@ export const UpstreamServiceConfig: MessageFns<UpstreamServiceConfig> = {
     message.postCallHooks = object.postCallHooks?.map((e) => CallHook.fromPartial(e)) || [];
     message.prompts = object.prompts?.map((e) => PromptDefinition.fromPartial(e)) || [];
     message.tags = object.tags?.map((e) => e) || [];
-    message.configurationSchema = object.configurationSchema ?? "";
     return message;
   },
 };

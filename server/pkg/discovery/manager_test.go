@@ -71,15 +71,3 @@ func TestManager_Run(t *testing.T) {
 func pointer(s string) *string {
 	return &s
 }
-
-func TestManager_GetStatuses(t *testing.T) {
-	manager := NewManager()
-
-	p1 := &MockProvider{name: "p1"}
-	manager.RegisterProvider(p1)
-
-	statuses := manager.GetStatuses()
-	assert.Len(t, statuses, 1)
-	assert.Equal(t, "p1", statuses[0].Name)
-	assert.Equal(t, "PENDING", statuses[0].Status)
-}

@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/validation"
 )
 
 // handleUploadSkillAsset returns a handler that saves an asset for a skill.
@@ -34,11 +33,6 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 		assetPath := r.URL.Query().Get("path")
 		if assetPath == "" {
 			http.Error(w, "Asset path query parameter required", http.StatusBadRequest)
-			return
-		}
-
-		if err := validation.IsSecurePath(assetPath); err != nil {
-			http.Error(w, "Invalid asset path", http.StatusBadRequest)
 			return
 		}
 

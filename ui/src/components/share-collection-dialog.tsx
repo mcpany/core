@@ -6,7 +6,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, Copy, ExternalLink, Share2, AlertTriangle } from "lucide-react"
+import { Check, Copy, ExternalLink, Share2 } from "lucide-react"
 import * as jsyaml from "js-yaml"
 
 import { Button } from "@/components/ui/button"
@@ -29,13 +29,9 @@ import {
 } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { apiClient, UpstreamServiceConfig } from "@/lib/client"
 import { useToast } from "@/hooks/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils"
 
 /**
  * ShareCollectionDialog component.
@@ -47,7 +43,6 @@ export function ShareCollectionDialog() {
   const [selected, setSelected] = React.useState<Set<string>>(new Set())
   const [generatedConfig, setGeneratedConfig] = React.useState("")
   const [loading, setLoading] = React.useState(false)
-  const [secretMode, setSecretMode] = React.useState<SecretHandlingMode>('redact')
   const { toast } = useToast()
 
   React.useEffect(() => {
@@ -98,8 +93,7 @@ export function ShareCollectionDialog() {
         // Create a clean copy conformant to UpstreamServiceConfig for export
         // We might want to remove 'connectionPool' status etc.
         const { connectionPool, id, ...rest } = s as any;
-        // Apply secret sanitization
-        return sanitizeServiceConfig(rest, secretMode);
+        return rest;
     })
 
     const collection = {
@@ -188,41 +182,6 @@ export function ShareCollectionDialog() {
                 </TableBody>
                 </Table>
             </div>
-            <div className="py-4 border-t">
-                <Label className="mb-2 block text-sm font-medium">Secret Handling</Label>
-                <RadioGroup value={secretMode} onValueChange={(v) => setSecretMode(v as SecretHandlingMode)} className="grid grid-cols-1 gap-2">
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="redact" id="redact" />
-                        <Label htmlFor="redact" className="font-normal cursor-pointer">
-                            Redact Secrets <span className="text-muted-foreground text-xs">(Replaces with &lt;REDACTED&gt;)</span>
-                        </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="template" id="template" />
-                        <Label htmlFor="template" className="font-normal cursor-pointer">
-                            Template Variables <span className="text-muted-foreground text-xs">(Replaces with {'${VAR_NAME}'})</span>
-                        </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="unsafe" id="unsafe" />
-                        <Label htmlFor="unsafe" className="font-normal cursor-pointer text-amber-500">
-                            Unsafe Export <span className="text-muted-foreground text-xs">(Keeps original values - Use with caution)</span>
-                        </Label>
-                    </div>
-                </RadioGroup>
-
-                {secretMode === 'unsafe' && (
-                    <Alert variant="destructive" className="mt-4">
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Warning: Security Risk</AlertTitle>
-                        <AlertDescription>
-                            You are about to export a configuration containing your raw API keys and secrets.
-                            Do not share this file publicly.
-                        </AlertDescription>
-                    </Alert>
-                )}
-            </div>
-
             <DialogFooter>
                 <Button onClick={generateConfig} disabled={selected.size === 0}>
                     Generate Configuration

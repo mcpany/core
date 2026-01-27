@@ -24,7 +24,6 @@
 - [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
 - [ ] **Server Health History**: Visual timeline of server up/down status over the last 24h.
 - [x] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
-- [x] **Intelligent Stack Composer**: Visual editor for assembling complex microservice architectures.
 - [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
 - [ ] **Resource Content Search**: Ability to search within the text content of resources for keywords.
 - [x] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
@@ -52,7 +51,8 @@
 - [x] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
 - [x] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
 - [x] **Playground Session Replay**: Ability to reload a previous session from a JSON file into the playground.
-- [x] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
+- [ ] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
+- [ ] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [x] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
 - [ ] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
@@ -60,7 +60,7 @@
 - [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
 - [x] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
-- [x] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
+- [ ] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [x] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
 - [ ] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).

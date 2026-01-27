@@ -225,9 +225,6 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 func convertToMarkdown(converter *md.Converter, data any) any {
 	switch v := data.(type) {
 	case string:
-		if len(v) > 1024*1024 {
-			return "Error: Input too large"
-		}
 		res, err := converter.ConvertString(v)
 		if err != nil {
 			return v
@@ -275,9 +272,6 @@ func truncateRecursive(data any, maxChars int) any {
 func paginateRecursive(data any, page, pageSize int) any {
 	switch v := data.(type) {
 	case string:
-		if len(v) > 1024*1024 {
-			return "Error: Input too large"
-		}
 		runes := []rune(v)
 		start := (page - 1) * pageSize
 		if start >= len(runes) {

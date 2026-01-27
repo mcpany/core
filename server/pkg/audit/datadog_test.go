@@ -113,12 +113,3 @@ func TestDatadogAuditStore_Batch(t *testing.T) {
 
 	assert.Equal(t, int32(5), atomic.LoadInt32(&totalReceived))
 }
-
-func TestDatadogAuditStore_Read(t *testing.T) {
-	store := NewDatadogAuditStore(nil)
-	entries, err := store.Read(context.Background(), Filter{})
-	assert.Error(t, err)
-	assert.Nil(t, entries)
-	assert.Equal(t, "read not implemented for datadog audit store", err.Error())
-	_ = store.Close()
-}

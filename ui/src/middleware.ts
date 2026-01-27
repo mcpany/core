@@ -22,11 +22,6 @@ export function middleware(request: NextRequest) {
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
-    // Inject API Key for backend authentication
-    if (process.env.MCPANY_API_KEY) {
-      requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
-    }
-
     const url = new URL(request.url);
     const newUrl = new URL(pathname + url.search, backendUrl);
 
@@ -54,18 +49,15 @@ export function middleware(request: NextRequest) {
     "worker-src 'self' blob:", // Added for Monaco Editor workers
     "frame-ancestors 'none'",
     "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "upgrade-insecure-requests"
+    "base-uri 'self'"
   ].join('; ');
 
   response.headers.set('Content-Security-Policy', csp);
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'geolocation=(), camera=(), microphone=(), payment=(), usb=(), vr=(), magnetometer=(), gyroscope=(), accelerometer=(), autoplay=(), clipboard-write=(), clipboard-read=(), fullscreen=()');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
-  response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
 
   return response;
 }
