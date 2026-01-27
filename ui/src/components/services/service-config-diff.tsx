@@ -10,6 +10,7 @@ import { DiffEditor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import yaml from "js-yaml";
 import { UpstreamServiceConfig } from "@/lib/types";
+import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 interface ServiceConfigDiffProps {
   original: UpstreamServiceConfig;
@@ -27,8 +28,10 @@ export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps
   const { theme, systemTheme } = useTheme();
 
   // Calculate actual theme
+  // Calculate actual theme
   const currentTheme = theme === "system" ? systemTheme : theme;
-  const editorTheme = currentTheme === "dark" ? "vs-dark" : "light";
+  const isDark = currentTheme === "dark";
+  const editorTheme = isDark ? "dracula" : "light";
 
   // Dump to YAML
   // We use simple sorting to ensure keys are in consistent order for better diffs
@@ -43,6 +46,12 @@ export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps
         modified={modifiedYaml}
         language="yaml"
         theme={editorTheme}
+        onMount={(editor, monaco) => {
+          if (isDark) {
+            defineDraculaTheme(monaco);
+            monaco.editor.setTheme("dracula");
+          }
+        }}
         options={{
           readOnly: true,
           minimap: { enabled: false },

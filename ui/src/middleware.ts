@@ -22,6 +22,11 @@ export function middleware(request: NextRequest) {
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
+    // Inject API Key for backend authentication
+    if (process.env.MCPANY_API_KEY) {
+      requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
+    }
+
     const url = new URL(request.url);
     const newUrl = new URL(pathname + url.search, backendUrl);
 

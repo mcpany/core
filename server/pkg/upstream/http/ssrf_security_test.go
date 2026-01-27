@@ -7,7 +7,6 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -34,9 +33,9 @@ func TestSSRFProtection(t *testing.T) {
 
 	// 3. Create pool
 	// Ensure env vars are cleared so we test default secure behavior
-	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-	os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
-	os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
 
 	p, err := NewHTTPPool(1, 1, 10, config)
 	require.NoError(t, err)
@@ -76,8 +75,8 @@ func TestSSRFProtection_Allowed(t *testing.T) {
 	}.Build()
 
 	// 3. Allow loopback via env var
-	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
-	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	// 3. Allow loopback via env var
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	p, err := NewHTTPPool(1, 1, 10, config)
 	require.NoError(t, err)

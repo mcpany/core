@@ -5,7 +5,7 @@
 
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SchemaForm } from "../src/components/playground/schema-form";
+import { SchemaForm } from "../../src/components/playground/schema-form";
 import { describe, it, expect, vi } from "vitest";
 
 describe("SchemaForm", () => {

@@ -13,7 +13,6 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
-  testIgnore: '**/generate_docs_screenshots.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -29,6 +28,9 @@ export default defineConfig({
     trace: 'on-first-retry',
     colorScheme: 'dark',
     actionTimeout: 15000,
+    extraHTTPHeaders: {
+      'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+    },
   },
   projects: [
     {

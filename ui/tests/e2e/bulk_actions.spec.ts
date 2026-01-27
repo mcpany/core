@@ -30,7 +30,7 @@ test.describe('Bulk Service Actions', () => {
   });
 
   test('should select all services and show bulk actions', async ({ page }) => {
-    await page.goto('/services');
+    await page.goto('/upstream-services');
 
     // Wait for services to load
     await expect(page.getByText('service-1')).toBeVisible();
@@ -47,7 +47,7 @@ test.describe('Bulk Service Actions', () => {
   });
 
   test('should select individual services', async ({ page }) => {
-     await page.goto('/services');
+     await page.goto('/upstream-services');
      await expect(page.getByText('service-1')).toBeVisible();
 
      // Select first service
@@ -73,7 +73,7 @@ test.describe('Bulk Service Actions', () => {
           }
       });
 
-      await page.goto('/services');
+      await page.goto('/upstream-services');
       await expect(page.getByText('service-1')).toBeVisible();
 
       // Select service-1 and service-3
@@ -104,7 +104,7 @@ test.describe('Bulk Service Actions', () => {
       // Handle confirm dialog
       page.on('dialog', dialog => dialog.accept());
 
-      await page.goto('/services');
+      await page.goto('/upstream-services');
       await expect(page.getByText('service-1')).toBeVisible();
 
       // Select service-2
