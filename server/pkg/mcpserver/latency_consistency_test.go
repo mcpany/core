@@ -102,29 +102,37 @@ func TestMetricLatencyConsistency(t *testing.T) {
 
 	data := sink.Data()
 
+	// Flatten samples from all intervals
+	allSamples := make(map[string]metrics.SampledValue)
+	for _, interval := range data {
+		for k, v := range interval.Samples {
+			allSamples[k] = v
+		}
+	}
+
 	// Debug print
 	fmt.Println("Available samples:")
-	for k := range data[0].Samples {
+	for k := range allSamples {
 		fmt.Println(k)
 	}
 
 	// We expect consistent naming with counters: mcpany.tools.call.latency (plural)
-    // and properly labeled for tool specific metrics.
+	// and properly labeled for tool specific metrics.
 
-    // Check global latency metric
-    assert.NotContains(t, data[0].Samples, "mcpany.tools.call.latency")
+	// Check global latency metric
+	assert.NotContains(t, allSamples, "mcpany.tools.call.latency")
 
-    // Check tool-specific latency metric
-    // Ideally it should be mcpany.tools.call.latency;tool=...
-    // But currently it is mcpany.tool.<toolname>.call.latency (which causes high cardinality)
+	// Check tool-specific latency metric
+	// Ideally it should be mcpany.tools.call.latency;tool=...
+	// But currently it is mcpany.tool.<toolname>.call.latency (which causes high cardinality)
 
-    // We expect tool AND service_id labels
-    expectedIdealKey := "mcpany.tools.call.latency;tool=" + successID + ";service_id=test-service"
+	// We expect tool AND service_id labels
+	expectedIdealKey := "mcpany.tools.call.latency;tool=" + successID + ";service_id=test-service"
 
-    // This assertion fails with current implementation
-    assert.Contains(t, data[0].Samples, expectedIdealKey, "Should have labeled latency metric")
+	// This assertion fails with current implementation
+	assert.Contains(t, allSamples, expectedIdealKey, "Should have labeled latency metric")
 
-    // This assertion would pass with current implementation (proving the bug/inconsistency)
-    currentBadKey := "mcpany.tool." + successID + ".call.latency"
-    assert.NotContains(t, data[0].Samples, currentBadKey, "Should NOT have embedded tool name in metric key")
+	// This assertion would pass with current implementation (proving the bug/inconsistency)
+	currentBadKey := "mcpany.tool." + successID + ".call.latency"
+	assert.NotContains(t, allSamples, currentBadKey, "Should NOT have embedded tool name in metric key")
 }
