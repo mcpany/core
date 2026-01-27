@@ -237,6 +237,36 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            rateLimit: s.rate_limit ? {
+                isEnabled: s.rate_limit.is_enabled,
+                requestsPerSecond: s.rate_limit.requests_per_second,
+                burst: s.rate_limit.burst,
+                storage: s.rate_limit.storage,
+                keyBy: s.rate_limit.key_by,
+                costMetric: s.rate_limit.cost_metric,
+                redis: s.rate_limit.redis,
+                toolLimits: s.rate_limit.tool_limits,
+            } : undefined,
+            resilience: s.resilience ? {
+                timeout: s.resilience.timeout,
+                retryPolicy: s.resilience.retry_policy ? {
+                    numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                    baseBackoff: s.resilience.retry_policy.base_backoff,
+                    maxBackoff: s.resilience.retry_policy.max_backoff,
+                    maxElapsedTime: s.resilience.retry_policy.max_elapsed_time,
+                } : undefined,
+                circuitBreaker: s.resilience.circuit_breaker ? {
+                    failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                    consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                    openDuration: s.resilience.circuit_breaker.open_duration,
+                    halfOpenRequests: s.resilience.circuit_breaker.half_open_requests,
+                } : undefined,
+            } : undefined,
+            connectionPool: s.connection_pool ? {
+                maxConnections: s.connection_pool.max_connections,
+                maxIdleConnections: s.connection_pool.max_idle_connections,
+                idleTimeout: s.connection_pool.idle_timeout,
+            } : undefined,
         }));
     },
 
@@ -273,6 +303,36 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         rateLimit: s.rate_limit ? {
+                             isEnabled: s.rate_limit.is_enabled,
+                             requestsPerSecond: s.rate_limit.requests_per_second,
+                             burst: s.rate_limit.burst,
+                             storage: s.rate_limit.storage,
+                             keyBy: s.rate_limit.key_by,
+                             costMetric: s.rate_limit.cost_metric,
+                             redis: s.rate_limit.redis,
+                             toolLimits: s.rate_limit.tool_limits,
+                         } : undefined,
+                         resilience: s.resilience ? {
+                             timeout: s.resilience.timeout,
+                             retryPolicy: s.resilience.retry_policy ? {
+                                 numberOfRetries: s.resilience.retry_policy.number_of_retries,
+                                 baseBackoff: s.resilience.retry_policy.base_backoff,
+                                 maxBackoff: s.resilience.retry_policy.max_backoff,
+                                 maxElapsedTime: s.resilience.retry_policy.max_elapsed_time,
+                             } : undefined,
+                             circuitBreaker: s.resilience.circuit_breaker ? {
+                                 failureRateThreshold: s.resilience.circuit_breaker.failure_rate_threshold,
+                                 consecutiveFailures: s.resilience.circuit_breaker.consecutive_failures,
+                                 openDuration: s.resilience.circuit_breaker.open_duration,
+                                 halfOpenRequests: s.resilience.circuit_breaker.half_open_requests,
+                             } : undefined,
+                         } : undefined,
+                         connectionPool: s.connection_pool ? {
+                             maxConnections: s.connection_pool.max_connections,
+                             maxIdleConnections: s.connection_pool.max_idle_connections,
+                             idleTimeout: s.connection_pool.idle_timeout,
+                         } : undefined,
                      };
                  }
                  return data;
@@ -370,6 +430,42 @@ export const apiClient = {
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
         }
+        if (config.rateLimit) {
+            payload.rate_limit = {
+                is_enabled: config.rateLimit.isEnabled,
+                requests_per_second: config.rateLimit.requestsPerSecond,
+                burst: config.rateLimit.burst,
+                storage: config.rateLimit.storage,
+                key_by: config.rateLimit.keyBy,
+                cost_metric: config.rateLimit.costMetric,
+                redis: config.rateLimit.redis,
+                tool_limits: config.rateLimit.toolLimits,
+            };
+        }
+        if (config.connectionPool) {
+            payload.connection_pool = {
+                max_connections: config.connectionPool.maxConnections,
+                max_idle_connections: config.connectionPool.maxIdleConnections,
+                idle_timeout: config.connectionPool.idleTimeout,
+            };
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                timeout: config.resilience.timeout,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime,
+                } : undefined,
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests,
+                } : undefined,
+            };
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -430,6 +526,42 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = {
+                is_enabled: config.rateLimit.isEnabled,
+                requests_per_second: config.rateLimit.requestsPerSecond,
+                burst: config.rateLimit.burst,
+                storage: config.rateLimit.storage,
+                key_by: config.rateLimit.keyBy,
+                cost_metric: config.rateLimit.costMetric,
+                redis: config.rateLimit.redis,
+                tool_limits: config.rateLimit.toolLimits,
+            };
+        }
+        if (config.connectionPool) {
+            payload.connection_pool = {
+                max_connections: config.connectionPool.maxConnections,
+                max_idle_connections: config.connectionPool.maxIdleConnections,
+                idle_timeout: config.connectionPool.idleTimeout,
+            };
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                timeout: config.resilience.timeout,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime,
+                } : undefined,
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests,
+                } : undefined,
+            };
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -506,6 +638,42 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.rateLimit) {
+            payload.rate_limit = {
+                is_enabled: config.rateLimit.isEnabled,
+                requests_per_second: config.rateLimit.requestsPerSecond,
+                burst: config.rateLimit.burst,
+                storage: config.rateLimit.storage,
+                key_by: config.rateLimit.keyBy,
+                cost_metric: config.rateLimit.costMetric,
+                redis: config.rateLimit.redis,
+                tool_limits: config.rateLimit.toolLimits,
+            };
+        }
+        if (config.connectionPool) {
+            payload.connection_pool = {
+                max_connections: config.connectionPool.maxConnections,
+                max_idle_connections: config.connectionPool.maxIdleConnections,
+                idle_timeout: config.connectionPool.idleTimeout,
+            };
+        }
+        if (config.resilience) {
+            payload.resilience = {
+                timeout: config.resilience.timeout,
+                retry_policy: config.resilience.retryPolicy ? {
+                    number_of_retries: config.resilience.retryPolicy.numberOfRetries,
+                    base_backoff: config.resilience.retryPolicy.baseBackoff,
+                    max_backoff: config.resilience.retryPolicy.maxBackoff,
+                    max_elapsed_time: config.resilience.retryPolicy.maxElapsedTime,
+                } : undefined,
+                circuit_breaker: config.resilience.circuitBreaker ? {
+                    failure_rate_threshold: config.resilience.circuitBreaker.failureRateThreshold,
+                    consecutive_failures: config.resilience.circuitBreaker.consecutiveFailures,
+                    open_duration: config.resilience.circuitBreaker.openDuration,
+                    half_open_requests: config.resilience.circuitBreaker.halfOpenRequests,
+                } : undefined,
+            };
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -1250,6 +1418,8 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            rateLimit: s.rate_limit,
+            resilience: s.resilience,
         }));
     },
 
@@ -1301,6 +1471,15 @@ export const apiClient = {
         }
         if (template.resourceExportPolicy) {
             payload.resource_export_policy = template.resourceExportPolicy;
+        }
+        if (template.rateLimit) {
+            payload.rate_limit = template.rateLimit;
+        }
+        if (template.connectionPool) {
+            payload.connection_pool = template.connectionPool;
+        }
+        if (template.resilience) {
+            payload.resilience = template.resilience;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {
