@@ -84,10 +84,9 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Contains(t, err.Error(), "absolute path detected")
 	})
 
-	// Case 6: Versioned binary (e.g. python-3.14) is treated as an interpreter, so strict shell checks are skipped.
-	// This allows valid code execution (which is the intended function of python -c).
+	// Case 6: Shell injection bypass attempt with versioned binary (e.g. python-3.14)
 	t.Run("versioned_binary_bypass", func(t *testing.T) {
-		cmd := "python-3.14" // Should be treated as python (interpreter)
+		cmd := "python-3.14" // Should be treated as python
 		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
 		req := &ExecutionRequest{
 			ToolName: "test",
@@ -95,11 +94,8 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		}
 
 		_, err := tool.Execute(context.Background(), req)
-		// We expect execution error (binary not found) because we bypassed the shell check
-		// and tried to execute non-existent binary.
-		if err != nil {
-			assert.NotContains(t, err.Error(), "shell injection detected")
-		}
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected")
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
