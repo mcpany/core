@@ -12,7 +12,7 @@ import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, Share2, Copy, Check, Info, Upload } from "lucide-react";
+import { Download, Share2, Check, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens, estimateMessageTokens } from "@/lib/tokens";
 import {

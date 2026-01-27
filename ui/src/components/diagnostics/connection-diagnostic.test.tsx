@@ -6,14 +6,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ConnectionDiagnosticDialog } from "./connection-diagnostic";
 import { UpstreamServiceConfig } from "@/lib/types";
-import { apiClient } from "@/lib/client";
 import { vi } from "vitest";
-
-vi.mock("@/lib/client", () => ({
-    apiClient: {
-        getService: vi.fn(),
-    },
-}));
 
 const mockService: UpstreamServiceConfig = {
   id: "test-service",
@@ -65,14 +58,6 @@ const mockWebSocketService: UpstreamServiceConfig = {
 
 describe("ConnectionDiagnosticDialog", () => {
   beforeEach(() => {
-    // Default mock for getService (Operational Verification)
-    (apiClient.getService as any).mockResolvedValue({
-        service: {
-            toolCount: 5,
-            lastError: ""
-        }
-    });
-
     // Default mock global fetch (Success case)
     global.fetch = vi.fn((url: string | Request, _init?: RequestInit) => {
         if (typeof url === 'string' && url.includes("/api/dashboard/health")) {
@@ -134,12 +119,6 @@ describe("ConnectionDiagnosticDialog", () => {
     // Check if backend health check was successful
     expect(global.fetch).toHaveBeenCalledWith("/api/dashboard/health", expect.any(Object));
     expect(screen.getByText("Connected")).toBeInTheDocument();
-
-    // Check Operational Verification
-    expect(screen.getByText("Operational Verification")).toBeInTheDocument();
-    await waitFor(() => {
-         expect(screen.getByText("Fully Operational")).toBeInTheDocument();
-    });
   });
 
   it("detects HTTP service and adds browser check step", async () => {
@@ -268,51 +247,4 @@ describe("ConnectionDiagnosticDialog", () => {
     // Use getAllByText because it appears in logs and the card
     expect(screen.getAllByText(/Check if the upstream service is running/).length).toBeGreaterThan(0);
 });
-
-  it("warns when no tools are discovered", async () => {
-        (apiClient.getService as any).mockResolvedValue({
-            service: {
-                toolCount: 0,
-                lastError: ""
-            }
-        });
-
-        render(<ConnectionDiagnosticDialog service={mockService} />);
-
-        const trigger = screen.getByText("Troubleshoot");
-        fireEvent.click(trigger);
-
-        const startButton = screen.getByText("Start Diagnostics");
-        fireEvent.click(startButton);
-
-        await waitFor(() => {
-            expect(screen.getByText("No Tools (Warning)")).toBeInTheDocument();
-        }, { timeout: 5000 });
-
-        expect(screen.getByText("No Tools Discovered")).toBeInTheDocument();
-  });
-
-  it("detects and analyzes ZodError in operational check", async () => {
-        (apiClient.getService as any).mockResolvedValue({
-            service: {
-                toolCount: 0,
-                lastError: "ZodError: Invalid input"
-            }
-        });
-
-        render(<ConnectionDiagnosticDialog service={mockService} />);
-
-        const trigger = screen.getByText("Troubleshoot");
-        fireEvent.click(trigger);
-
-        const startButton = screen.getByText("Start Diagnostics");
-        fireEvent.click(startButton);
-
-        await waitFor(() => {
-            expect(screen.getByText("Operational Error")).toBeInTheDocument();
-        }, { timeout: 5000 });
-
-        expect(screen.getByText("Schema Validation Error")).toBeInTheDocument();
-        expect(screen.getByText("The upstream server returned data that does not match the expected schema.")).toBeInTheDocument();
-  });
 });

@@ -178,7 +178,7 @@ func TestManager_RecordActivity(t *testing.T) {
 	m.RecordActivity("session-1", map[string]interface{}{
 		"userAgent": "test-agent",
 		"count":     1, // Should be ignored as it's not a string
-	}, 10*time.Millisecond, false, "")
+	}, 10*time.Millisecond, false)
 
 	m.mu.RLock()
 	session, exists := m.sessions["session-1"]
@@ -194,7 +194,7 @@ func TestManager_RecordActivity(t *testing.T) {
 
 	// Record again to update stats
 	time.Sleep(100 * time.Millisecond) // Ensure time advances
-	m.RecordActivity("session-1", nil, 20*time.Millisecond, true, "")
+	m.RecordActivity("session-1", nil, 20*time.Millisecond, true)
 
 	m.mu.RLock()
 	session2 := m.sessions["session-1"]
@@ -211,10 +211,10 @@ func TestManager_GetStats(t *testing.T) {
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
 
-	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
-	m.RecordActivity("session-2", nil, 200*time.Millisecond, true, "")
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false)
+	m.RecordActivity("session-2", nil, 200*time.Millisecond, true)
 
-	stats := m.GetStats("")
+	stats := m.GetStats()
 
 	assert.Equal(t, int64(2), stats.TotalRequests)
 	assert.Equal(t, 150*time.Millisecond, stats.AvgLatency)
@@ -241,7 +241,7 @@ func TestManager_GetGraph(t *testing.T) {
 	mockTM.On("ListTools").Return([]tool.Tool{mockTool})
 
 	// Record a session
-	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false, "")
+	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false)
 
 	graph := m.GetGraph(context.Background())
 
@@ -325,34 +325,6 @@ func TestManager_Middleware(t *testing.T) {
 	session, exists = m.sessions["unknown"]
 	m.mu.RUnlock()
 	require.True(t, exists)
-
-	// Test case 4: Service Extraction for tools/call
-	mockTool := new(MockTool)
-	mockTool.On("Tool").Return(&mcp_router_v1.Tool{
-		Name:      proto.String("test-tool"),
-		ServiceId: proto.String("extracted-service"),
-	})
-	mockTM.On("GetTool", "test-tool").Return(mockTool, true)
-
-	ctx = context.Background()
-	req := &mcp.CallToolRequest{
-		Params: &mcp.CallToolParamsRaw{
-			Name: "test-tool",
-		},
-	}
-	_, err = wrapped(ctx, "tools/call", req)
-	require.NoError(t, err)
-
-	m.mu.RLock()
-	// Session might be new "unknown" because context is fresh
-	// But middleware uses same Manager instance, so "unknown" session accumulates?
-	// The session ID is "unknown" because no user/ip.
-	session, exists = m.sessions["unknown"]
-	require.True(t, exists)
-	// Check if ServiceCounts has it
-	count := session.ServiceCounts["extracted-service"]
-	m.mu.RUnlock()
-	assert.Equal(t, int64(1), count)
 }
 
 func TestManager_GetGraph_InactiveService(t *testing.T) {
@@ -389,7 +361,7 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 
 	m := NewManager(mockRegistry, mockTM)
 
-	m.RecordActivity("old-session", nil, 0, false, "")
+	m.RecordActivity("old-session", nil, 0, false)
 	// Manually age the session
 	m.mu.Lock()
 	m.sessions["old-session"].LastActive = time.Now().Add(-2 * time.Hour)
@@ -407,10 +379,10 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 
 	// Record some activity
 	// 1 request, 100ms latency
-	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false)
 
 	// Check history
-	history := m.GetTrafficHistory("")
+	history := m.GetTrafficHistory()
 	require.NotEmpty(t, history)
 
 	// The history returns 60 points (minutes). Most recent should have data.

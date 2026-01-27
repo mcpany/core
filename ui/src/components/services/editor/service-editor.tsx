@@ -23,7 +23,6 @@ import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucid
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
-import { PolicyEditor } from "@/components/services/editor/policy-editor";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -112,7 +111,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             <TabsTrigger value="general">General</TabsTrigger>
                             <TabsTrigger value="connection">Connection</TabsTrigger>
                             <TabsTrigger value="auth">Authentication</TabsTrigger>
-                            <TabsTrigger value="policies">Policies</TabsTrigger>
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
                             <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
                         </TabsList>
@@ -292,29 +290,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     </div>
                                 </div>
                             )}
-                        </TabsContent>
-
-                        <TabsContent value="policies" className="space-y-4 mt-0">
-                            <div className="grid grid-cols-1 gap-6">
-                                <PolicyEditor
-                                    title="Tool Export Policy"
-                                    description="Control which tools are exposed to the AI client."
-                                    policy={service.toolExportPolicy}
-                                    onChange={(policy) => updateService({ toolExportPolicy: policy })}
-                                />
-                                <PolicyEditor
-                                    title="Prompt Export Policy"
-                                    description="Control which prompts are exposed to the AI client."
-                                    policy={service.promptExportPolicy}
-                                    onChange={(policy) => updateService({ promptExportPolicy: policy })}
-                                />
-                                <PolicyEditor
-                                    title="Resource Export Policy"
-                                    description="Control which resources are exposed to the AI client."
-                                    policy={service.resourceExportPolicy}
-                                    onChange={(policy) => updateService({ resourceExportPolicy: policy })}
-                                />
-                            </div>
                         </TabsContent>
 
                         <TabsContent value="auth" className="space-y-4 mt-0">

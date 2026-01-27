@@ -216,7 +216,7 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 
-	stats := tm.GetStats("")
+	stats := tm.GetStats()
 	assert.Equal(t, int64(123), stats.TotalRequests)
 }
 

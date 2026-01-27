@@ -6,7 +6,6 @@
 "use client";
 
 import { useEffect, useState, memo } from "react";
-import { useDashboard } from "@/components/dashboard/dashboard-context";
 import {
   Users,
   Activity,
@@ -103,16 +102,11 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
-  const { serviceId } = useDashboard();
 
   useEffect(() => {
     async function fetchMetrics() {
       try {
-        let url = "/api/v1/dashboard/metrics";
-        if (serviceId) {
-          url += `?serviceId=${encodeURIComponent(serviceId)}`;
-        }
-        const res = await fetch(url);
+        const res = await fetch("/api/v1/dashboard/metrics");
         if (res.ok) {
           const data = await res.json();
           setMetrics(data);
@@ -142,7 +136,7 @@ export const MetricsOverview = memo(function MetricsOverview() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [serviceId]);
+  }, []);
 
   if (metrics.length === 0) {
     return <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>;

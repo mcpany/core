@@ -4,9 +4,10 @@
 package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (
-	"log/slog"
 	"os"
 	"strings"
+
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // IsEnvVarAllowed checks if an environment variable is allowed to be accessed
@@ -49,7 +50,7 @@ func IsEnvVarAllowed(name string) bool {
 	// 3. Strict Mode Check
 	strictMode := os.Getenv("MCPANY_STRICT_ENV_MODE") == "true"
 	if strictMode {
-		slog.Warn("Blocked access to environment variable in strict mode", "name", name)
+		logging.GetLogger().Warn("Blocked access to environment variable in strict mode", "name", name)
 		return false
 	}
 

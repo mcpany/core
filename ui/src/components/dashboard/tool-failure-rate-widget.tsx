@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
 import { apiClient } from "@/lib/client";
-import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 interface ToolFailureRate {
     name: string;
@@ -28,12 +27,11 @@ interface ToolFailureRate {
 export function ToolFailureRateWidget() {
     const [tools, setTools] = useState<ToolFailureRate[]>([]);
     const [loading, setLoading] = useState(true);
-    const { serviceId } = useDashboard();
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const stats = await apiClient.getToolFailures(serviceId);
+                const stats = await apiClient.getToolFailures();
                 const mapped = stats.map(s => ({
                     name: s.name,
                     service: s.serviceId,
@@ -49,7 +47,7 @@ export function ToolFailureRateWidget() {
         };
 
         fetchStats();
-    }, [serviceId]);
+    }, []);
 
     return (
         <Card className="col-span-3 backdrop-blur-sm bg-background/50">

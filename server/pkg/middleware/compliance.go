@@ -191,21 +191,13 @@ func (w *smartResponseWriter) rewriteError() {
 		message = "Invalid params"
 	}
 
-	// Sentinel Security: Sanitize sensitive data for internal errors (5xx).
-	// We prevent leaking stack traces or sensitive upstream errors in the Data field.
-	var data any = bodyStr
-	if w.statusCode >= 500 {
-		message = "Internal error"
-		data = nil
-	}
-
 	resp := JSONRPCResponse{
 		JSONRPC: "2.0",
 		ID:      nil,
 		Error: &JSONRPCError{
 			Code:    code,
 			Message: message,
-			Data:    data,
+			Data:    bodyStr, // Include original message as data
 		},
 	}
 

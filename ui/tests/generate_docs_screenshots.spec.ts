@@ -39,17 +39,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                             status: 'healthy',
                             uptime: '5h 30m',
                             version: '2.1.0'
-                        },
-                        {
-                            id: 'broken-service',
-                            name: 'Legacy API',
-                            type: 'http',
-                            http_service: { address: 'https://api.example.com' },
-                            status: 'unhealthy',
-                            last_error: 'ZodError: Invalid input: expected string, received number',
-                            lastError: 'ZodError: Invalid input: expected string, received number',
-                            tool_count: 0,
-                            version: '1.0.0'
                         }
                     ]
                 }
@@ -130,38 +119,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
-     // Mock Topology
-     await page.route('**/api/v1/topology', async route => {
-         await route.fulfill({
-             json: {
-                 clients: [],
-                 core: {
-                     id: 'core',
-                     label: 'MCP Core',
-                     type: 'NODE_TYPE_CORE',
-                     status: 'NODE_STATUS_ACTIVE',
-                     children: [
-                        { id: 'postgres-primary', label: 'Primary DB', type: 'NODE_TYPE_SERVICE', status: 'NODE_STATUS_ACTIVE', metrics: { latencyMs: 10, errorRate: 0, qps: 50 } },
-                        { id: 'openai-gateway', label: 'OpenAI Gateway', type: 'NODE_TYPE_SERVICE', status: 'NODE_STATUS_ACTIVE', metrics: { latencyMs: 150, errorRate: 0.01, qps: 20 } }
-                     ]
-                 }
-             }
-         });
-     });
-
-     // Mock Templates & Settings
-     await page.route('**/api/v1/templates', async route => {
-         await route.fulfill({ json: { templates: [] } });
-     });
-     await page.route('**/api/v1/settings', async route => {
-         await route.fulfill({ json: { theme: 'system' } });
-     });
-
-     // Mock Dashboard Tool Stats
-     await page.route('**/api/v1/dashboard/top-tools*', async route => { await route.fulfill({ json: [] }); });
-     await page.route('**/api/v1/dashboard/tool-usage*', async route => { await route.fulfill({ json: [] }); });
-     await page.route('**/api/v1/dashboard/tool-failures*', async route => { await route.fulfill({ json: [] }); });
-
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -215,7 +172,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Services Screenshots', async ({ page }) => {
-    await page.goto('/services');
+    await page.goto('/upstream-services');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
@@ -224,11 +181,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
-    // Click Add Service (Button)
-    await page.getByRole('button', { name: 'Add Service' }).click();
+    // Click Add Service (Link)
+    await page.getByRole('link', { name: 'Add Service' }).click();
     await page.waitForTimeout(1000);
-    // await expect(page).toHaveURL(/.*marketplace.*/); // It opens a sheet now
-    await expect(page.getByText('New Service')).toBeVisible();
+    await expect(page).toHaveURL(/.*marketplace.*/);
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
@@ -296,6 +252,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     if (await tool.isVisible()) {
         // Run once
         await page.getByRole('button', { name: /Build Command/i }).click();
+        // Wait for dialog to close
+        await expect(page.getByRole('dialog')).not.toBeVisible();
         await page.getByLabel('Send').click();
         await page.waitForTimeout(500);
 
@@ -307,7 +265,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await expect(page.getByRole('dialog')).toBeVisible();
 
         // Fill Form again (state is reset)
+        // Wait for input to be ready
+        await expect(page.getByLabel('path')).toBeVisible();
         await page.getByLabel('path').fill('/var/log');
+
+        // Ensure no validation errors are present before clicking
+        await expect(page.getByText('This field is required')).not.toBeVisible();
 
         await page.getByRole('button', { name: /Build Command/i }).click();
         // Wait for dialog to close
@@ -568,7 +531,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Service Actions Screenshots', async ({ page }) => {
-      await page.goto('/services');
+      await page.goto('/upstream-services');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
@@ -616,73 +579,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.goto('/audit');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'audit_logs.png'), fullPage: true });
-  });
-
-  test('Diagnostics Failure Screenshots', async ({ page }) => {
-      // Mock service detail for operational check
-      await page.route('**/api/v1/services/broken-service', async route => {
-          await route.fulfill({
-              json: {
-                  service: {
-                      id: 'broken-service',
-                      name: 'Legacy API',
-                      type: 'http',
-                      http_service: { address: 'https://api.example.com' },
-                      status: 'unhealthy',
-                      last_error: 'ZodError: Invalid input: expected string, received number',
-                      lastError: 'ZodError: Invalid input: expected string, received number',
-                      tool_count: 0,
-                      toolCount: 0
-                  }
-              }
-          });
-      });
-
-      // Mock Health Check for backend health step
-      await page.route('**/api/dashboard/health', async route => {
-        await route.fulfill({
-            json: [
-               {
-                   id: 'broken-service',
-                   name: 'Legacy API',
-                   status: 'unhealthy',
-                   latency: '--',
-                   uptime: '10m',
-                   message: 'ZodError: Invalid input: expected string, received number'
-               }
-            ]
-        });
-      });
-
-      await page.goto('/services');
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(1000);
-
-      // Verify service row is present
-      await expect(page.getByText('Legacy API')).toBeVisible();
-
-      // Verify Error badge is present (confirms lastError is recognized)
-      // await expect(page.getByText('Error', { exact: true })).toBeVisible(); // Flaky
-
-      // Open Actions Dropdown (More Reliable)
-      const menuButton = page.getByRole('button', { name: 'Open menu' }).first();
-      await expect(menuButton).toBeVisible();
-      await menuButton.click();
-
-      // Click Diagnose in menu
-      await page.getByText('Diagnose').click();
-
-      // Wait for dialog
-      await expect(page.getByText('Connection Diagnostics')).toBeVisible();
-
-      // Click Start
-      await page.getByRole('button', { name: 'Start Diagnostics' }).click();
-
-      // Wait for run to finish (look for "Rerun Diagnostics")
-      await page.getByText('Rerun Diagnostics').waitFor({ timeout: 10000 });
-
-      // Take screenshot of the modal
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diagnostics_failure.png') });
   });
 
 });

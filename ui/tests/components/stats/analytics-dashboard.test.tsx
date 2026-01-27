@@ -37,7 +37,7 @@ describe('AnalyticsDashboard', () => {
     expect(screen.getByText('Total Requests')).toBeInTheDocument();
     expect(screen.getByText('Avg Latency')).toBeInTheDocument();
     expect(screen.getByText('Error Rate')).toBeInTheDocument();
-    expect(screen.getByText('Avg Throughput')).toBeInTheDocument();
+    expect(screen.getByText('Active Services')).toBeInTheDocument();
   });
 
   it('renders the time range selector', () => {
