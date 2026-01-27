@@ -25,7 +25,8 @@ describe('useNetworkTopology', () => {
     beforeEach(() => {
         global.fetch = vi.fn().mockResolvedValue({
             ok: true,
-            json: async () => mockGraph
+            json: async () => mockGraph,
+            text: async () => JSON.stringify(mockGraph)
         });
     });
 
@@ -68,7 +69,8 @@ describe('useNetworkTopology', () => {
 
         global.fetch = vi.fn().mockResolvedValue({
             ok: true,
-            json: async () => newMockGraph
+            json: async () => newMockGraph,
+            text: async () => JSON.stringify(newMockGraph)
         });
 
         await act(async () => {
