@@ -183,7 +183,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     // Try to wait for data, but don't block if missing (e.g. backend down in test)
     try {
         await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 2000 });
-    } catch (e) {
+    } catch (_e) {
         console.warn('Primary DB not visible, proceeding with screenshot of empty/error state');
     }
     // Give widgets extra time to render after data fetch

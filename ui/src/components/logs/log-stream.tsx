@@ -316,6 +316,7 @@ export function LogStream() {
           // but computed strings are fine. They might take space though.
           // To save space, we could strip them, but re-computing them on load is cheap enough.
           // Let's strip them to save localStorage space.
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const toSave = logsRef.current.map(({ searchStr, formattedTime, ...rest }) => rest)
           window.localStorage.setItem("mcp_logs_v1", JSON.stringify(toSave))
         } catch (e) {
