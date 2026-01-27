@@ -275,15 +275,44 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 				return &mcp.ListToolsResult{Tools: s.toolManager.ListMCPTools()}, nil
 			}
 
-			// ⚡ Bolt Optimization: Use optimized lookup for allowed services to avoid iterating over all tools.
-			// This reduces complexity from O(N) where N is total tools to O(M) where M is allowed tools.
-			allowedServices, ok := s.toolManager.GetAllowedServiceIDs(profileID)
-			if !ok {
-				// Profile not found, return empty list (default deny)
-				return &mcp.ListToolsResult{Tools: []*mcp.Tool{}}, nil
+			// The tool manager is the authoritative source of tools. We iterate over the
+			// tools in the manager to ensure that the list is always up-to-date and
+			// reflects the current state of the system.
+			managedTools := s.toolManager.ListTools()
+			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
+
+			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
+			var allowedServices map[string]bool
+			if profileID != "" {
+				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
 			}
 
-			return &mcp.ListToolsResult{Tools: s.toolManager.ListMCPToolsForServices(allowedServices)}, nil
+			for _, toolInstance := range managedTools {
+				// Profile-based filtering
+				if profileID != "" {
+					serviceID := toolInstance.Tool().GetServiceId()
+					// Optimized O(1) map lookup
+					if allowedServices != nil {
+						if !allowedServices[serviceID] {
+							continue
+						}
+					} else {
+						// Profile not found or error, default to deny if profileID was present?
+						// Original IsServiceAllowed logic: if profile not found, return false.
+						continue
+					}
+				}
+
+				mcpTool := toolInstance.MCPTool()
+				if mcpTool != nil {
+					refreshedTools = append(refreshedTools, mcpTool)
+				} else {
+					logging.GetLogger().
+						Error("Failed to convert tool to MCP format", "toolName", toolInstance.Tool().GetName())
+					// We continue instead of failing the whole request.
+				}
+			}
+			return &mcp.ListToolsResult{Tools: refreshedTools}, nil
 		}
 		return next(ctx, method, req)
 	}

@@ -266,28 +266,6 @@ func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
 }
 
-// ListMCPToolsForServices mocks base method.
-//
-// allowedServices is a map of allowed service IDs.
-//
-// Returns the result.
-func (m *MockManagerInterface) ListMCPToolsForServices(allowedServices map[string]bool) []*mcp.Tool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListMCPToolsForServices", allowedServices)
-	ret0, _ := ret[0].([]*mcp.Tool)
-	return ret0
-}
-
-// ListMCPToolsForServices indicates an expected call of ListMCPToolsForServices.
-//
-// allowedServices is a map of allowed service IDs.
-//
-// Returns the result.
-func (mr *MockManagerInterfaceMockRecorder) ListMCPToolsForServices(allowedServices any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPToolsForServices", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPToolsForServices), allowedServices)
-}
-
 // ListServices mocks base method.
 //
 // Returns the result.
