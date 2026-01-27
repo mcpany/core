@@ -2602,52 +2602,57 @@ func isVersionSuffix(s string) bool {
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
-	quoteLevel := analyzeQuoteContext(template, placeholder)
+	// Returns a bitmask of observed contexts: 1=Unquoted, 2=Double, 4=Single
+	quoteMask := analyzeQuoteContext(template, placeholder)
 
-	if quoteLevel == 2 { // Single Quoted
-		// In single quotes, the only dangerous character is single quote itself
-		if strings.Contains(val, "'") {
-			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
-		}
-		return nil
-	}
+	// Check against ALL observed contexts. Input must be safe for ALL of them.
 
-	if quoteLevel == 1 { // Double Quoted
-		// In double quotes, dangerous characters are double quote, $, and backtick
-		// We also need to block backslash because it can be used to escape the closing quote
-		// % is also dangerous in Windows CMD inside double quotes
-		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
-			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
-		}
-		return nil
-	}
-
-	// Unquoted (or unknown quoting): strict check
+	// Level 0: Unquoted (Strict)
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+	if (quoteMask & 1) != 0 {
+		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+		charsToCheck := dangerousChars
+		// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
+		if filepath.Base(command) == "env" {
+			charsToCheck += "="
+		}
 
-	charsToCheck := dangerousChars
-	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
-	if filepath.Base(command) == "env" {
-		charsToCheck += "="
+		if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q (unquoted context)", val[idx])
+		}
 	}
 
-	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
-		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
+	// Level 1: Double Quoted
+	// In double quotes, dangerous characters are double quote, $, and backtick
+	// We also need to block backslash because it can be used to escape the closing quote
+	// % is also dangerous in Windows CMD inside double quotes
+	if (quoteMask & 2) != 0 {
+		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
+		}
 	}
+
+	// Level 2: Single Quoted
+	// In single quotes, the only dangerous character is single quote itself
+	if (quoteMask & 4) != 0 {
+		if strings.Contains(val, "'") {
+			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		}
+	}
+
 	return nil
 }
 
 func analyzeQuoteContext(template, placeholder string) int {
 	if template == "" || placeholder == "" {
-		return 0
+		return 1 // Default to Unquoted
 	}
 
-	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
-	minLevel := 2
+	// Mask: 1=Unquoted, 2=Double, 4=Single
+	mask := 0
 
 	inSingle := false
 	inDouble := false
@@ -2659,15 +2664,12 @@ func analyzeQuoteContext(template, placeholder string) int {
 		// Check if we match placeholder at current position
 		if strings.HasPrefix(template[i:], placeholder) {
 			foundAny = true
-			currentLevel := 0
 			if inSingle {
-				currentLevel = 2
+				mask |= 4
 			} else if inDouble {
-				currentLevel = 1
-			}
-
-			if currentLevel < minLevel {
-				minLevel = currentLevel
+				mask |= 2
+			} else {
+				mask |= 1
 			}
 
 			// Advance past placeholder
@@ -2695,8 +2697,8 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	if !foundAny {
-		return 0 // Should not happen if called correctly, fallback to strict
+		return 1 // Should not happen if called correctly, fallback to strict (Unquoted)
 	}
 
-	return minLevel
+	return mask
 }
