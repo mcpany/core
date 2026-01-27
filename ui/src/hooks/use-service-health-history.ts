@@ -46,11 +46,7 @@ export interface ServiceHistory {
 }
 
 const HISTORY_KEY = "mcp_service_health_history";
-const MAX_HISTORY_POINTS = 60; // Keep last 60 checks (e.g. 1 hour if polling every minute, or 10 mins if polling every 10s)
-// Actually, if we poll every 10s, 60 points is 10 minutes.
-// If we want 24h, we need 24 * 60 = 1440 points (if 1 min interval).
-// Storing 1440 * N services might be fine in localStorage (small ints).
-// Let's stick to 100 points for now (visual density).
+const MAX_HISTORY_POINTS = 8640; // Keep last 24 hours of checks (polling every 10s: 6 * 60 * 24 = 8640)
 
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.

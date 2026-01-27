@@ -63,6 +63,11 @@ const platformItems = [
     icon: LayoutDashboard,
   },
   {
+    title: "System Status",
+    url: "/status",
+    icon: Activity,
+  },
+  {
     title: "Network Graph",
     url: "/network",
     icon: Network,

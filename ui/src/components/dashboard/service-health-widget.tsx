@@ -133,7 +133,7 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
 
                 {/* Timeline Visualization */}
                 <div className="hidden md:flex flex-1 justify-end px-4">
-                     <HealthTimeline history={history} />
+                     <HealthTimeline history={history?.slice(-60)} />
                 </div>
             </div>
 
