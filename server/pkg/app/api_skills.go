@@ -42,6 +42,8 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
+		// Limit the request body size to 10MB to prevent DoS attacks
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Failed to read body", http.StatusBadRequest)

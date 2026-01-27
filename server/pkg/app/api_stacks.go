@@ -97,6 +97,8 @@ func (a *Application) getStackConfig(w http.ResponseWriter, r *http.Request, sto
 }
 
 func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, store storage.Storage, stackID string) {
+	// Limit request body size to 1MB to prevent DoS attacks
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "failed to read body", http.StatusBadRequest)
