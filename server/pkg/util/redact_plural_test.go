@@ -11,9 +11,9 @@ import (
 
 func TestIsSensitiveKey_PluralLogic(t *testing.T) {
 	tests := []struct {
-		name      string
-		input     string
-		want      bool
+		name  string
+		input string
+		want  bool
 	}{
 		{"cookies (plural of cookie)", "cookies", true},
 		{"tokens (explicitly in list)", "tokens", true},
