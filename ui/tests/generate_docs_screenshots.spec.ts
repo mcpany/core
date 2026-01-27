@@ -17,7 +17,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test.beforeEach(async ({ page }) => {
     // Global mocks to ensure consistent state
-    await page.route('**/api/v1/services*', async route => {
+    await page.route(/.*\/api\/v1\/services/, async route => {
         if (route.request().method() === 'GET') {
             await route.fulfill({
                 json: {
@@ -145,7 +145,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         window.localStorage.setItem('mcp_service_health_history', JSON.stringify(history));
     });
 
-    await page.route('**/api/dashboard/health', async route => {
+
+    await page.route(/.*\/api\/dashboard\/health/, async route => {
         await route.fulfill({
             json: [
                {
@@ -177,7 +178,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    // Wait for the widget to appear (use static title as fallback if data fails)
+    await expect(page.getByText('System Health')).toBeVisible();
+    // Try to wait for data, but don't block if missing (e.g. backend down in test)
+    try {
+        await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 2000 });
+    } catch (e) {
+        console.warn('Primary DB not visible, proceeding with screenshot of empty/error state');
+    }
     // Give widgets extra time to render after data fetch
     await page.waitForTimeout(3000);
     await expect(page.locator('body')).toBeVisible();
@@ -186,7 +194,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Services Screenshots', async ({ page }) => {
     await page.goto('/upstream-services');
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Primary DB')).toBeVisible();
     await page.waitForTimeout(1000);
     // Wait for loading to finish if applicable
     await expect(page.locator('text=Loading...')).not.toBeVisible();
@@ -387,7 +395,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     await page.goto('/traces');
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('filesystem.read').first()).toBeVisible();
     await page.waitForTimeout(1000);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces_list.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'traces.png'), fullPage: true });
@@ -399,7 +407,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     // Close sheet by reloading (simplest way to reset state in tests without complex interaction)
     await page.reload();
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('filesystem.read').first()).toBeVisible();
     await page.waitForTimeout(1000);
 
     // Click diagnostics trace
@@ -459,7 +467,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
           });
       });
       await page.goto('/secrets');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByText('API_KEY')).toBeVisible();
       await page.waitForTimeout(1000);
       await expect(page.getByText('Loading secrets...')).not.toBeVisible();
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'secrets_list.png'), fullPage: true });
@@ -506,7 +514,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Resources Screenshots', async ({ page }) => {
       await page.goto('/resources');
-      await page.waitForLoadState('networkidle');
+
       await page.waitForTimeout(2000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_list.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources.png'), fullPage: true });
@@ -556,7 +564,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Profiles Screenshots', async ({ page }) => {
       await page.goto('/profiles');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('button', { name: 'Create Profile' })).toBeVisible();
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles_page.png'), fullPage: true });
 
@@ -619,7 +627,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
   test('Service Actions Screenshots', async ({ page }) => {
       await page.goto('/upstream-services');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByText('Primary DB')).toBeVisible();
       await page.waitForTimeout(1000);
 
       // Open Actions Dropdown
@@ -705,7 +713,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       });
 
       await page.goto('/upstream-services');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByText('Legacy API')).toBeVisible();
       await page.waitForTimeout(1000);
 
       // Verify service row is present
@@ -759,7 +767,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
     await page.goto('/upstream-services');
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Primary DB')).toBeVisible();
     await page.waitForTimeout(1000);
 
     // Open Actions Menu for the first service (postgres-primary)

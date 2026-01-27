@@ -781,7 +781,7 @@ jobs:
 
               const list = failuresDetails.map(detail => `- **${detail}**`).join('\n');
               const agentPrompt = `
-              AI Agent (Jules), please investigate the failures above.
+              Please investigate the failures above.
               1. Check the [Action logs](${run_url}) for the specific error messages (e.g., failed tests, lint errors, build issues).
               2. Analyze the root cause.
               3. Apply fixes to the codebase.
@@ -789,7 +789,7 @@ jobs:
 
               const body = `❌ **CI Checks Failed**
 
-              The following checks failed in this run:
+              The following GitHub Actions checks failed in this run:
               ${list}
 
               ---

@@ -171,6 +171,9 @@ nodes:
 	if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
 		playwrightArgs = append(playwrightArgs, "--grep", grep)
 	}
+	if grepInvert := os.Getenv("PLAYWRIGHT_GREP_INVERT"); grepInvert != "" {
+		playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
+	}
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
