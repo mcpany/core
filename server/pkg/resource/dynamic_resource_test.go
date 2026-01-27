@@ -137,12 +137,14 @@ func TestDynamicResource_Read(t *testing.T) {
 		assert.JSONEq(t, string(expectedJSON), result.Contents[0].Text)
 	})
 
-	t.Run("previously unsupported result type (int)", func(t *testing.T) {
+	t.Run("unsupported result type", func(t *testing.T) {
+		// Verify that previously unsupported types (like int) are now supported
 		mockTool := new(MockTool)
 		mockTool.On("Execute", mock.Anything, mock.Anything).Return(123, nil)
 		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
 		dr, _ := NewDynamicResource(def, mockTool)
 		result, err := dr.Read(context.Background())
+		// Previously this would error, now it should succeed
 		require.NoError(t, err)
 		require.Len(t, result.Contents, 1)
 		assert.Equal(t, "123", result.Contents[0].Text)
