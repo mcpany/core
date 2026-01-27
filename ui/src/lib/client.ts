@@ -146,6 +146,16 @@ export interface DoctorReport {
 }
 
 /**
+ * Result of a specific service diagnostic check.
+ */
+export interface ServiceDiagnosisResult {
+    serviceName: string;
+    status: string;
+    message: string;
+    error?: string;
+}
+
+/**
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
@@ -1335,6 +1345,25 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/doctor');
         if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
+    },
+
+    /**
+     * Runs diagnostics for a specific service.
+     * @param name The name of the service to diagnose.
+     * @returns A promise that resolves to the diagnostic result.
+     */
+    diagnoseService: async (name: string): Promise<ServiceDiagnosisResult> => {
+        const res = await fetchWithAuth(`/api/v1/services/${name}/diagnose`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to diagnose service');
+        const data = await res.json();
+        return {
+            serviceName: data.service_name,
+            status: data.status,
+            message: data.message,
+            error: data.error
+        };
     },
 
     // Audit Logs

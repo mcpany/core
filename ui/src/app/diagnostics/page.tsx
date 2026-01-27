@@ -4,6 +4,7 @@
  */
 
 import { SystemHealth } from "@/components/diagnostics/system-health";
+import { ServiceDoctor } from "@/components/diagnostics/service-doctor";
 
 /**
  * DiagnosticsPage component.
@@ -20,7 +21,16 @@ export default function DiagnosticsPage() {
       </div>
 
       <div className="flex-1 overflow-auto rounded-md border bg-muted/10 p-4">
-           <SystemHealth />
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+               <div className="space-y-6">
+                   <h3 className="text-xl font-semibold">Global Health</h3>
+                   <SystemHealth />
+               </div>
+               <div className="space-y-6">
+                   <h3 className="text-xl font-semibold">Service Doctor</h3>
+                   <ServiceDoctor />
+               </div>
+           </div>
       </div>
     </div>
   );
