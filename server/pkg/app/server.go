@@ -356,7 +356,7 @@ func (a *Application) Run(opts RunOptions) error {
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(opts.ConfigPaths) > 0 {
-		// Always load config files if they are explicitly provided
+		// Always load config files if they are explicitly provided, AND enable file config store
 		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
 		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
 	} else if enableFileConfig {
