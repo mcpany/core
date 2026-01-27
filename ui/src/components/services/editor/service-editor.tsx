@@ -19,7 +19,7 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Play } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
@@ -41,23 +41,48 @@ interface ServiceEditorProps {
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
     const [validating, setValidating] = useState(false);
+    const [validationStatus, setValidationStatus] = useState<'idle' | 'validating' | 'success' | 'error'>('idle');
+    const [validationError, setValidationError] = useState<string | null>(null);
     const { toast } = useToast();
+
+    // Reset validation status when critical fields change
+    useEffect(() => {
+        if (validationStatus !== 'idle') {
+            setValidationStatus('idle');
+            setValidationError(null);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        service.httpService?.address,
+        service.grpcService?.address,
+        service.commandLineService?.command,
+        service.mcpService?.httpConnection?.httpAddress,
+        service.upstreamAuth
+    ]);
 
     const updateService = (updates: Partial<UpstreamServiceConfig>) => {
         onChange({ ...service, ...updates });
     };
 
-    const handleValidate = async () => {
+    const handleValidate = async (): Promise<boolean> => {
         setValidating(true);
+        setValidationStatus('validating');
+        setValidationError(null);
+        let isValid = false;
         try {
             const result = await apiClient.validateService(service);
             if (result.valid) {
+                setValidationStatus('success');
+                isValid = true;
                 toast({
                     title: "Configuration Valid",
                     description: "The service configuration is valid and reachable.",
                     action: <CheckCircle2 className="h-5 w-5 text-green-500" />
                 });
             } else {
+                 setValidationStatus('error');
+                 setValidationError(result.error || "Unknown validation error.");
+                 setActiveTab("connection");
                  toast({
                     variant: "destructive",
                     title: "Validation Failed",
@@ -66,13 +91,32 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                 });
             }
         } catch (e: any) {
+            setValidationStatus('error');
+            const errorMsg = e.message || "Failed to validate service.";
+            setValidationError(errorMsg);
+            setActiveTab("connection");
             toast({
                 variant: "destructive",
                 title: "Validation Error",
-                description: e.message || "Failed to validate service.",
+                description: errorMsg,
             });
         } finally {
             setValidating(false);
+        }
+        return isValid;
+    };
+
+    const handleSaveClick = async () => {
+        // If already validated and success, just save
+        if (validationStatus === 'success') {
+            onSave();
+            return;
+        }
+
+        // Otherwise, validate first
+        const isValid = await handleValidate();
+        if (isValid) {
+            onSave();
         }
     };
 
@@ -167,20 +211,41 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                         </TabsContent>
 
                         <TabsContent value="connection" className="space-y-4 mt-0">
-                            <div className="space-y-2">
-                                <Label htmlFor="service-type">Service Type</Label>
-                                <Select value={getType()} onValueChange={handleTypeChange}>
-                                    <SelectTrigger id="service-type">
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="http">HTTP Service</SelectItem>
-                                        <SelectItem value="grpc">gRPC Service</SelectItem>
-                                        <SelectItem value="cmd">Command Line (Stdio)</SelectItem>
-                                        <SelectItem value="mcp">MCP Proxy</SelectItem>
-                                        <SelectItem value="openapi">OpenAPI / Swagger</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                             {validationError && (
+                                <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertTitle>Connection Failed</AlertTitle>
+                                    <AlertDescription>
+                                        {validationError}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+
+                            <div className="flex items-end gap-4">
+                                <div className="space-y-2 flex-1">
+                                    <Label htmlFor="service-type">Service Type</Label>
+                                    <Select value={getType()} onValueChange={handleTypeChange}>
+                                        <SelectTrigger id="service-type">
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="http">HTTP Service</SelectItem>
+                                            <SelectItem value="grpc">gRPC Service</SelectItem>
+                                            <SelectItem value="cmd">Command Line (Stdio)</SelectItem>
+                                            <SelectItem value="mcp">MCP Proxy</SelectItem>
+                                            <SelectItem value="openapi">OpenAPI / Swagger</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => handleValidate()}
+                                    disabled={validating}
+                                    className="mb-0.5"
+                                >
+                                    {validating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
+                                    Test Connection
+                                </Button>
                             </div>
 
                             <Separator />
@@ -486,12 +551,15 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
             </div>
 
             <div className="border-t p-4 flex justify-end gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <Button variant="outline" onClick={handleValidate} disabled={validating}>
+                <Button variant="outline" onClick={() => handleValidate()} disabled={validating}>
                     {validating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Validate
                 </Button>
                 <Button variant="outline" onClick={onCancel}>Cancel</Button>
-                <Button onClick={onSave}>Save Changes</Button>
+                <Button onClick={handleSaveClick} disabled={validating}>
+                    {validating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Save Changes
+                </Button>
             </div>
         </div>
     );
