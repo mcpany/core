@@ -55,3 +55,9 @@ This feature detects common issues like:
 - **JSON Errors**: Invalid JSON payloads.
 - **Timeouts**: Operations taking too long.
 - **Connection Failures**: Upstream services being unreachable.
+
+### 6. Sequence Diagram
+
+Visualize the flow of the trace using a Sequence Diagram. This helps understand the interaction between the User, Core, and Services.
+
+![Trace Sequence Diagram](../screenshots/trace_sequence.png)

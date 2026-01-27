@@ -21,6 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { traceToMermaid } from "@/lib/trace-to-mermaid";
+import { Mermaid } from "@/components/ui/mermaid";
 
 /**
  * SpanIcon component.
@@ -225,6 +227,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 <div className="px-6 border-b">
                    <TabsList className="bg-transparent border-b-0 p-0 h-auto">
                        <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Overview</TabsTrigger>
+                       <TabsTrigger value="sequence" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Sequence</TabsTrigger>
                        <TabsTrigger value="payload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Payload</TabsTrigger>
                    </TabsList>
                 </div>
@@ -297,6 +300,19 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 </CardContent>
                             </Card>
                         </div>
+                    </ScrollArea>
+                </TabsContent>
+                <TabsContent value="sequence" className="flex-1 p-0 overflow-hidden m-0">
+                    <ScrollArea className="h-full p-6">
+                        <Card className="h-full border-none shadow-none">
+                            <CardHeader className="px-0 pt-0 pb-4">
+                                <CardTitle className="text-sm font-medium">Sequence Diagram</CardTitle>
+                                <CardDescription>Visualizing the flow of the trace</CardDescription>
+                            </CardHeader>
+                            <CardContent className="px-0">
+                                <Mermaid chart={traceToMermaid(trace)} />
+                            </CardContent>
+                        </Card>
                     </ScrollArea>
                 </TabsContent>
                 <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
