@@ -104,8 +104,8 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 		if !d.AllowLinkLocal && (ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || isNAT64LinkLocal(ip)) {
 			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to link-local ip %s", host, ip)
 		}
-		if !d.AllowPrivate && IsPrivateNetworkIP(ip) {
-			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to private ip %s", host, ip)
+		if !d.AllowPrivate && (IsPrivateNetworkIP(ip) || (ip.IsMulticast() && !ip.IsLinkLocalMulticast())) {
+			return nil, fmt.Errorf("ssrf attempt blocked: host %s resolved to private/multicast ip %s", host, ip)
 		}
 	}
 

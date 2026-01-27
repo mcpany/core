@@ -98,7 +98,7 @@ func TestResolveSecret_SSRF_PrivateIP_Blocked(t *testing.T) {
 
 	// Before fix, this might fail with "connection refused" or "i/o timeout" or similar.
 	// After fix, it MUST contain "blocked private IP".
-	assert.Contains(t, err.Error(), "resolved to private ip")
+	assert.Contains(t, err.Error(), "resolved to private/multicast ip")
 }
 
 func TestResolveSecret_SSRF_PrivateIP_Allowed(t *testing.T) {
