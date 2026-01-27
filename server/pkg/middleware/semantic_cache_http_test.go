@@ -1,0 +1,157 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+package middleware
+
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestNewHTTPEmbeddingProvider(t *testing.T) {
+	// Test success
+	p, err := NewHTTPEmbeddingProvider("http://example.com", nil, `{"input": "{{.input}}"}`, "$.embedding")
+	assert.NoError(t, err)
+	assert.NotNil(t, p)
+
+	// Test missing URL
+	p, err = NewHTTPEmbeddingProvider("", nil, "template", "path")
+	assert.Error(t, err)
+	assert.Nil(t, p)
+
+	// Test invalid template
+	p, err = NewHTTPEmbeddingProvider("http://example.com", nil, "{{.Invalid Syntax", "path")
+	assert.Error(t, err)
+	assert.Nil(t, p)
+}
+
+func TestHTTPEmbeddingProvider_Embed(t *testing.T) {
+	tests := []struct {
+		name             string
+		handler          http.HandlerFunc
+		jsonPath         string
+		expectedEmbedding []float32
+		expectError      bool
+		errorContains    string
+	}{
+		{
+			name: "Success",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+				assert.Equal(t, "Bearer test", r.Header.Get("Authorization"))
+				// Check that body template worked
+				var body map[string]interface{}
+				err := json.NewDecoder(r.Body).Decode(&body)
+				assert.NoError(t, err)
+				assert.Equal(t, "hello", body["input"])
+
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(`{"data": {"embedding": [0.1, 0.2, 0.3]}}`))
+			},
+			jsonPath:          "$.data.embedding",
+			expectedEmbedding: []float32{0.1, 0.2, 0.3},
+			expectError:       false,
+		},
+		{
+			name: "HTTP Error",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("Internal Server Error"))
+			},
+			jsonPath:      "$.embedding",
+			expectError:   true,
+			errorContains: "http api error (status 500)",
+		},
+		{
+			name: "Invalid JSON Response",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte("invalid json"))
+			},
+			jsonPath:      "$.embedding",
+			expectError:   true,
+			errorContains: "failed to unmarshal response json",
+		},
+		{
+			name: "JSONPath Extraction Failed",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(`{"other": "data"}`))
+			},
+			jsonPath:      "$.embedding",
+			expectError:   true,
+			errorContains: "jsonpath extraction failed",
+		},
+		{
+			name: "Result Not An Array",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(`{"embedding": "not an array"}`))
+			},
+			jsonPath:      "$.embedding",
+			expectError:   true,
+			errorContains: "jsonpath result is not an array",
+		},
+		{
+			name: "Non-Number In Embedding",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(`{"embedding": [0.1, "string"]}`))
+			},
+			jsonPath:      "$.embedding",
+			expectError:   true,
+			errorContains: "embedding element 1 is not a number",
+		},
+		{
+			name: "Empty Embedding",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte(`{"embedding": []}`))
+			},
+			jsonPath:      "$.embedding",
+			expectError:   true,
+			errorContains: "empty embedding returned",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(tt.handler)
+			defer server.Close()
+
+			provider, err := NewHTTPEmbeddingProvider(
+				server.URL,
+				map[string]string{"Authorization": "Bearer test"},
+				`{"input": "{{.input}}"}`,
+				tt.jsonPath,
+			)
+			require.NoError(t, err)
+
+			emb, err := provider.Embed(context.Background(), "hello")
+			if tt.expectError {
+				assert.Error(t, err)
+				if tt.errorContains != "" {
+					assert.Contains(t, err.Error(), tt.errorContains)
+				}
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedEmbedding, emb)
+			}
+		})
+	}
+}
+
+func TestHTTPEmbeddingProvider_Embed_RequestCreationFailure(t *testing.T) {
+    provider, err := NewHTTPEmbeddingProvider("http://[::1]:namedport", nil, "{}", "$")
+    require.NoError(t, err)
+
+    _, err = provider.Embed(context.Background(), "test")
+    assert.Error(t, err)
+    assert.Contains(t, err.Error(), "failed to create request")
+}
