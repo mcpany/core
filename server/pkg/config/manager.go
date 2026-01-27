@@ -348,19 +348,17 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	// iterate over this config to start services, we need to ensure downstream is safe OR we mark it disabled here.
 	if service.HasConfigError() {
 		m.log.Warn("Adding service with configuration error (marked disabled)", "service", service.GetName(), "error", service.GetConfigError())
-		service.SetDisable(true) // Force disable so it doesn't get started
+		isOverrideDisabled = true // Force disable so it doesn't get started
 	} else {
 		// Only hydrate secrets if config is valid to avoid potential issues
 		HydrateSecretsInService(service, m.profileSecrets)
 	}
 
 	// Apply enabled/disabled override
+	service.SetDisable(isOverrideDisabled)
 	if isOverrideDisabled {
-		m.log.Info("Service disabled by profile override, skipping", "service_name", service.GetName())
-		return nil
+		m.log.Info("Service disabled by profile override", "service_name", service.GetName())
 	}
-	// If explicitly enabled by profile, ensure it's added regardless of other conditions (e.g., if it was implicitly disabled by another profile rule, though current logic doesn't have that)
-	// For now, if it's explicitly enabled, it just means it passes this check.
 
 	serviceName := service.GetName()
 	if existingPriority, exists := m.servicePriorities[serviceName]; exists {

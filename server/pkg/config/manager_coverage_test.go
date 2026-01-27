@@ -110,8 +110,10 @@ func TestAddService_Overrides(t *testing.T) {
 	err := m.addService(svc, 0)
 	require.NoError(t, err)
 
-	// Should be skipped (not added to services map) because it's disabled
-	assert.Nil(t, m.services["s1"])
+	// Should be present but disabled
+	s, ok := m.services["s1"]
+	assert.True(t, ok)
+	assert.True(t, s.GetDisable())
 }
 
 func TestAddService_ConfigError(t *testing.T) {

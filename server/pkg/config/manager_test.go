@@ -421,7 +421,9 @@ func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 
 			var names []string
 			for _, s := range services {
-				names = append(names, s.GetName())
+				if !s.GetDisable() {
+					names = append(names, s.GetName())
+				}
 			}
 			sort.Strings(names)
 			sort.Strings(tt.expectedNames)
