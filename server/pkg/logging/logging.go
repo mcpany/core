@@ -67,6 +67,9 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			mainHandler = slog.NewJSONHandler(output, opts)
 		} else {
 			mainHandler = slog.NewTextHandler(output, opts)
+			// TextHandler doesn't automatically redact nested fields in structs/maps.
+			// We wrap it in a RedactingHandler to ensure deep redaction.
+			mainHandler = NewRedactingHandler(mainHandler)
 		}
 
 		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)

@@ -4,6 +4,7 @@
 package logging
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"log/slog"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 // LogEntry is the structure for logs sent over WebSocket.
@@ -216,4 +218,112 @@ func (h *TeeHandler) WithGroup(name string) slog.Handler {
 		handlers[i] = handler.WithGroup(name)
 	}
 	return NewTeeHandler(handlers...)
+}
+
+// RedactingHandler is a slog.Handler that deeply redacts sensitive information
+// from Any attributes by marshaling them to JSON, checking for sensitive keys,
+// and then unmarshaling them back. This ensures that text handlers don't leak
+// secrets hidden in structs.
+type RedactingHandler struct {
+	inner slog.Handler
+}
+
+// NewRedactingHandler creates a new RedactingHandler.
+func NewRedactingHandler(handler slog.Handler) *RedactingHandler {
+	return &RedactingHandler{inner: handler}
+}
+
+// Enabled delegates to the inner handler.
+func (h *RedactingHandler) Enabled(ctx context.Context, level slog.Level) bool {
+	return h.inner.Enabled(ctx, level)
+}
+
+// Handle redacts attributes and delegates to the inner handler.
+func (h *RedactingHandler) Handle(ctx context.Context, r slog.Record) error {
+	// We need to create a new record with redacted attributes.
+	// Since we can't easily modify the existing record's attributes in place without
+	// iterating and collecting them, we do exactly that.
+
+	newR := slog.NewRecord(r.Time, r.Level, r.Message, r.PC)
+	var newAttrs []slog.Attr
+
+	r.Attrs(func(a slog.Attr) bool {
+		newAttrs = append(newAttrs, h.redactAttr(a))
+		return true
+	})
+
+	newR.AddAttrs(newAttrs...)
+	return h.inner.Handle(ctx, newR)
+}
+
+// WithAttrs delegates to the inner handler with redacted attributes.
+func (h *RedactingHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	redactedAttrs := make([]slog.Attr, 0, len(attrs))
+	for _, a := range attrs {
+		redactedAttrs = append(redactedAttrs, h.redactAttr(a))
+	}
+	return NewRedactingHandler(h.inner.WithAttrs(redactedAttrs))
+}
+
+// WithGroup delegates to the inner handler.
+func (h *RedactingHandler) WithGroup(name string) slog.Handler {
+	return NewRedactingHandler(h.inner.WithGroup(name))
+}
+
+func (h *RedactingHandler) redactAttr(a slog.Attr) slog.Attr {
+	// First check if the key itself is sensitive (should already be handled by ReplaceAttr in Init,
+	// but good to have as backup/for direct use).
+	if util.IsSensitiveKey(a.Key) {
+		return slog.String(a.Key, "[REDACTED]")
+	}
+
+	// If the value is complex (Any or Group), we attempt deep redaction.
+	// Note: Group is usually a list of Attrs, but Any can be a struct/map.
+	if a.Value.Kind() == slog.KindAny {
+		val := a.Value.Any()
+		if val == nil {
+			return a
+		}
+
+		// Attempt to marshal to JSON to catch JSON-tagged sensitive fields.
+		b, err := json.Marshal(val)
+		if err == nil {
+			// Redact the JSON bytes
+			redacted := util.RedactJSON(b)
+
+			// Optimization: Check if modification happened
+			if !bytes.Equal(b, redacted) {
+				// If redacted, we need to return a value that represents the redacted structure.
+				// Unmarshalling back to interface{} gives us a map/slice with redacted values.
+				var v interface{}
+				if err := json.Unmarshal(redacted, &v); err == nil {
+					return slog.Any(a.Key, v)
+				}
+				// If unmarshal fails (unlikely for valid JSON), return the redacted JSON string
+				// as a fallback.
+				return slog.String(a.Key, string(redacted))
+			}
+		}
+	} else if a.Value.Kind() == slog.KindGroup {
+		// For groups, we need to recurse into the group's attributes.
+		// slog.Group returns an Attr with a Value of KindGroup.
+		// We can get the attributes via a.Value.Group().
+		attrs := a.Value.Group()
+		var newGroupAttrs []slog.Attr
+		for _, subAttr := range attrs {
+			newGroupAttrs = append(newGroupAttrs, h.redactAttr(subAttr))
+		}
+		return slog.Group(a.Key, asAny(newGroupAttrs)...)
+	}
+
+	return a
+}
+
+// asAny converts []slog.Attr to []any for slog.Group.
+func asAny(attrs []slog.Attr) []any {
+	args := make([]any, len(attrs))
+	for i, a := range attrs {
+		args[i] = a
+	}
+	return args
 }
