@@ -20,6 +20,7 @@ type LazyLogPayload struct {
 	Value any
 }
 
+// LogValue implements the slog.LogValuer interface to lazily marshal the payload.
 func (l LazyLogPayload) LogValue() slog.Value {
 	if l.Value == nil {
 		return slog.StringValue("<nil>")
