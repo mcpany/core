@@ -67,6 +67,7 @@ upstream_services:
 
 	// Test 1: Run with --strict and broken config -> Should Fail (Exit Code 1)
 	cmd := exec.Command(serverBin, "run", "--config-path", brokenConfigPath, "--strict")
+	cmd.Env = append(os.Environ(), "MCPANY_ADMIN_INIT_PASSWORD=testpassword")
 	output, err := cmd.CombinedOutput()
 
     // We expect an error
@@ -81,6 +82,7 @@ upstream_services:
 	// Test 2: Run without --strict and broken config -> Should Start (we kill it)
 	// We need to capture output to confirm it started or use a timeout
 	cmd = exec.Command(serverBin, "run", "--config-path", brokenConfigPath)
+	cmd.Env = append(os.Environ(), "MCPANY_ADMIN_INIT_PASSWORD=testpassword")
     // Set a pipe to read output? Or just run and kill.
     // Ideally we want to see "HTTP server listening"
 

@@ -75,6 +75,7 @@ upstream_services:
 		"-p", "25010:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", upstreamConfigDir),
 		"-v", fmt.Sprintf("%s:/data", upstreamConfigDir),
+		"-e", "MCPANY_ADMIN_INIT_PASSWORD=changeit",
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
@@ -113,6 +114,7 @@ upstream_services:
 		"--network", networkName,
 		"-p", "25011:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", gatewayConfigDir),
+		"-e", "MCPANY_ADMIN_INIT_PASSWORD=changeit",
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
