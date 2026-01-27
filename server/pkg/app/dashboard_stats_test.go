@@ -22,7 +22,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -216,7 +215,7 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 
-	stats := tm.GetStats()
+	stats := tm.GetStats("")
 	assert.Equal(t, int64(123), stats.TotalRequests)
 }
 
@@ -251,7 +250,11 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	mockTM := tool.NewMockManagerInterface(ctrl)
 
 	// Mock Managers for Counts
-	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{{Name: proto.String("s1")}}, nil)
+	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
+		s := &configv1.UpstreamServiceConfig{}
+		s.SetName("s1")
+		return []*configv1.UpstreamServiceConfig{s}
+	}(), nil)
 	mockTM.EXPECT().ListTools().Return([]tool.Tool{&TestMockTool{}})
 
 	// Topology
@@ -297,4 +300,66 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	assert.Equal(t, "1", metricMap["Prompts"])
 	assert.Equal(t, "1", metricMap["Resources"])
 	assert.Equal(t, "60", metricMap["Total Requests"])
+}
+
+func TestHandleDashboardToolUsage(t *testing.T) {
+	// Define counters matching what the middleware uses
+	toolsCallTotal := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "mcpany_tools_call_total",
+			Help: "Total number of tool calls",
+		},
+		[]string{"tool", "service_id", "status", "error_type"},
+	)
+
+	// Use a local registry for isolation
+	registry := prometheus.NewRegistry()
+	require.NoError(t, registry.Register(toolsCallTotal))
+
+	toolA := "tool_usage_A"
+	toolB := "tool_usage_B"
+
+	// Tool A: 5 success, 5 error => 50% success
+	toolsCallTotal.WithLabelValues(toolA, "service1", "success", "").Add(5)
+	toolsCallTotal.WithLabelValues(toolA, "service1", "error", "some_error").Add(5)
+
+	// Tool B: 10 success, 0 error => 100% success
+	toolsCallTotal.WithLabelValues(toolB, "service1", "success", "").Add(10)
+
+	// Create Request
+	req, err := http.NewRequest("GET", "/dashboard/tool-usage", nil)
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	app := &Application{
+		MetricsGatherer: registry,
+	}
+
+	handler := app.handleDashboardToolUsage()
+	handler.ServeHTTP(rr, req)
+
+	// Check Response
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var stats []ToolAnalytics
+	err = json.Unmarshal(rr.Body.Bytes(), &stats)
+	require.NoError(t, err)
+
+	// Filter stats
+	var myStats []ToolAnalytics
+	for _, s := range stats {
+		if s.Name == toolA || s.Name == toolB {
+			myStats = append(myStats, s)
+		}
+	}
+
+	// Sort by Name (A then B)
+	require.Equal(t, 2, len(myStats))
+	assert.Equal(t, toolA, myStats[0].Name)
+	assert.Equal(t, int64(10), myStats[0].TotalCalls)
+	assert.Equal(t, 50.0, myStats[0].SuccessRate)
+
+	assert.Equal(t, toolB, myStats[1].Name)
+	assert.Equal(t, int64(10), myStats[1].TotalCalls)
+	assert.Equal(t, 100.0, myStats[1].SuccessRate)
 }

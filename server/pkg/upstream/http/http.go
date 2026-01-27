@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/doctor"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -122,14 +122,21 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	u.serviceID = sanitizedName
-	serviceID := u.serviceID
+	// Store new ID in local variable
+	serviceID := sanitizedName
 
 	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	if isReload {
-		toolManager.ClearToolsForService(serviceID)
+		// Clear tools using the OLD service ID if available
+		idToClear := u.serviceID
+		if idToClear == "" {
+			idToClear = serviceID
+		}
+		toolManager.ClearToolsForService(idToClear)
 	}
+
+	u.serviceID = serviceID
 
 	httpService := serviceConfig.GetHttpService()
 	if httpService == nil {
@@ -238,13 +245,13 @@ func (u *Upstream) Register(
 			}
 			if !exists {
 				// Create a default tool definition
-				newTool := &configv1.ToolDefinition{
+				newTool := configv1.ToolDefinition_builder{
 					Name:        proto.String(callID),
 					CallId:      proto.String(callID),
 					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
-				}
+				}.Build()
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
-				httpService.Tools = append(httpService.Tools, newTool)
+				httpService.SetTools(append(httpService.GetTools(), newTool))
 			}
 		}
 	}
@@ -460,9 +467,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		// We use a manual parsing strategy to preserve invalid percent encodings.
 		type queryPart struct {
-			raw       string
-			key       string
-			isInvalid bool
+			raw        string
+			key        string
+			isInvalid  bool
+			keyDecoded bool
 		}
 
 		parseQueryManual := func(rawQuery string) []queryPart {
@@ -486,12 +494,15 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 				}
 
 				decodedKey, errKey := url.QueryUnescape(key)
+				if errKey == nil {
+					qp.key = decodedKey
+					qp.keyDecoded = true
+				}
+
 				_, errVal := url.QueryUnescape(value)
 
 				if errKey != nil || errVal != nil {
 					qp.isInvalid = true
-				} else {
-					qp.key = decodedKey
 				}
 				parts = append(parts, qp)
 			}
@@ -506,7 +517,9 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			// Index endpoint parts by key
 			endPartsByKey := make(map[string][]string)
 			for _, p := range endParts {
-				if !p.isInvalid {
+				// We include invalid parts if we managed to extract the key,
+				// so they can participate in override logic.
+				if p.keyDecoded {
 					endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
 				}
 			}
@@ -516,28 +529,30 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 
 			// Process base parts
 			for _, bp := range baseParts {
-				if bp.isInvalid {
-					finalParts = append(finalParts, bp.raw)
-					continue
+				// Check override if we have a decoded key
+				if bp.keyDecoded {
+					if parts, ok := endPartsByKey[bp.key]; ok {
+						if !keysOverridden[bp.key] {
+							finalParts = append(finalParts, parts...)
+							keysOverridden[bp.key] = true
+						}
+						// If overridden, we skip adding the base part (even if it was invalid)
+						continue
+					}
 				}
 
-				// Check override
-				if parts, ok := endPartsByKey[bp.key]; ok {
-					if !keysOverridden[bp.key] {
-						finalParts = append(finalParts, parts...)
-						keysOverridden[bp.key] = true
-					}
-				} else {
-					finalParts = append(finalParts, bp.raw)
-				}
+				// If not overridden (or key not decoded), add the base part
+				finalParts = append(finalParts, bp.raw)
 			}
 
 			// Append remaining endpoint parts
 			for _, ep := range endParts {
-				if ep.isInvalid {
+				// If we couldn't decode the key, we just append it (no override logic possible)
+				if !ep.keyDecoded {
 					finalParts = append(finalParts, ep.raw)
 					continue
 				}
+
 				// If key was not in base (so not added via base loop overrides), add it now.
 				if !keysOverridden[ep.key] {
 					finalParts = append(finalParts, ep.raw)

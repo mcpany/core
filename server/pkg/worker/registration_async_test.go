@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/bus"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -61,13 +61,17 @@ func TestServiceRegistrationWorker_Async(t *testing.T) {
 	start := time.Now()
 
 	// Publish slow request first
-	reqSlow := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{Name: ptr(slowServiceKey)}}
+	cfgSlow := &configv1.UpstreamServiceConfig{}
+	cfgSlow.SetName(slowServiceKey)
+	reqSlow := &bus.ServiceRegistrationRequest{Config: cfgSlow}
 	reqSlow.SetCorrelationID("slow")
 	err = requestBus.Publish(ctx, "request", reqSlow)
 	require.NoError(t, err)
 
 	// Publish fast request immediately after
-	reqFast := &bus.ServiceRegistrationRequest{Config: &configv1.UpstreamServiceConfig{Name: ptr(fastServiceKey)}}
+	cfgFast := &configv1.UpstreamServiceConfig{}
+	cfgFast.SetName(fastServiceKey)
+	reqFast := &bus.ServiceRegistrationRequest{Config: cfgFast}
 	reqFast.SetCorrelationID("fast")
 	err = requestBus.Publish(ctx, "request", reqFast)
 	require.NoError(t, err)

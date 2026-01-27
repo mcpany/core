@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
+	pbproto "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -205,17 +206,13 @@ func TestFilesystemCheck(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		config := &configv1.UpstreamServiceConfig{
-			Name: lo.ToPtr("fs-service-healthy"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					FilesystemType: &configv1.FilesystemUpstreamService_Os{
-						Os: &configv1.OsFs{},
-					},
-					RootPaths: map[string]string{"/": tmpDir},
-				},
-			},
-		}
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: pbproto.String("fs-service-healthy"),
+			FilesystemService: configv1.FilesystemUpstreamService_builder{
+				Os:        configv1.OsFs_builder{}.Build(),
+				RootPaths: map[string]string{"/": tmpDir},
+			}.Build(),
+		}.Build()
 
 		checker := NewChecker(config)
 		assert.NotNil(t, checker)
@@ -223,17 +220,13 @@ func TestFilesystemCheck(t *testing.T) {
 	})
 
 	t.Run("Failure_PathDoesNotExist", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{
-			Name: lo.ToPtr("fs-service-unhealthy"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					FilesystemType: &configv1.FilesystemUpstreamService_Os{
-						Os: &configv1.OsFs{},
-					},
-					RootPaths: map[string]string{"/": "/path/to/nowhere/must/not/exist"},
-				},
-			},
-		}
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: pbproto.String("fs-service-unhealthy"),
+			FilesystemService: configv1.FilesystemUpstreamService_builder{
+				Os:        configv1.OsFs_builder{}.Build(),
+				RootPaths: map[string]string{"/": "/path/to/nowhere/must/not/exist"},
+			}.Build(),
+		}.Build()
 
 		checker := NewChecker(config)
 		assert.NotNil(t, checker)
@@ -243,14 +236,12 @@ func TestFilesystemCheck(t *testing.T) {
 	t.Run("ImplicitLocal_Success", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		// No FilesystemType specified, defaults to local
-		config := &configv1.UpstreamServiceConfig{
-			Name: lo.ToPtr("fs-service-implicit-healthy"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{"/": tmpDir},
-				},
-			},
-		}
+		config := configv1.UpstreamServiceConfig_builder{
+			Name: pbproto.String("fs-service-implicit-healthy"),
+			FilesystemService: configv1.FilesystemUpstreamService_builder{
+				RootPaths: map[string]string{"/": tmpDir},
+			}.Build(),
+		}.Build()
 
 		checker := NewChecker(config)
 		assert.NotNil(t, checker)
@@ -470,7 +461,7 @@ func TestCheckVariousServices(t *testing.T) {
 			name: "MCP Service No Connection",
 			config: configv1.UpstreamServiceConfig_builder{
 				Name:       lo.ToPtr("mcp-no-connection"),
-				McpService: &configv1.McpUpstreamService{},
+				McpService: configv1.McpUpstreamService_builder{}.Build(),
 			}.Build(),
 			want: health.StatusDown,
 		},

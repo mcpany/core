@@ -279,10 +279,10 @@ func TestUpstream_Register(t *testing.T) {
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-with-setup")
-		mcpService := &configv1.McpUpstreamService{}
-		stdioConnection := &configv1.McpStdioConnection{}
+		mcpService := configv1.McpUpstreamService_builder{}.Build()
+		stdioConnection := configv1.McpStdioConnection_builder{}.Build()
 		// We use "echo" which is likely to exist.
 		stdioConnection.SetCommand("echo")
 		stdioConnection.SetSetupCommands([]string{"setup1", "setup2"})
@@ -334,10 +334,10 @@ func TestUpstream_Register(t *testing.T) {
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-with-image")
-		mcpService := &configv1.McpUpstreamService{}
-		stdioConnection := &configv1.McpStdioConnection{}
+		mcpService := configv1.McpUpstreamService_builder{}.Build()
+		stdioConnection := configv1.McpStdioConnection_builder{}.Build()
 		stdioConnection.SetCommand("my-command")
 		stdioConnection.SetContainerImage("my-custom-image:latest") // User-specified image
 		mcpService.SetStdioConnection(stdioConnection)
@@ -392,10 +392,10 @@ func TestUpstream_Register(t *testing.T) {
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-no-docker")
-		mcpService := &configv1.McpUpstreamService{}
-		stdioConnection := &configv1.McpStdioConnection{}
+		mcpService := configv1.McpUpstreamService_builder{}.Build()
+		stdioConnection := configv1.McpStdioConnection_builder{}.Build()
 		stdioConnection.SetCommand("node") // A command that would normally use a container
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
@@ -438,11 +438,11 @@ func TestUpstream_Register(t *testing.T) {
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-http")
 		config.SetAutoDiscoverTool(true)
-		mcpService := &configv1.McpUpstreamService{}
-		httpConnection := &configv1.McpStreamableHttpConnection{}
+		mcpService := configv1.McpUpstreamService_builder{}.Build()
+		httpConnection := configv1.McpStreamableHttpConnection_builder{}.Build()
 		httpConnection.SetHttpAddress(server.URL)
 		mcpService.SetHttpConnection(httpConnection)
 		config.SetMcpService(mcpService)
@@ -478,10 +478,10 @@ func TestUpstream_Register(t *testing.T) {
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-fail")
-		mcpService := &configv1.McpUpstreamService{}
-		httpConnection := &configv1.McpStreamableHttpConnection{}
+		mcpService := configv1.McpUpstreamService_builder{}.Build()
+		httpConnection := configv1.McpStreamableHttpConnection_builder{}.Build()
 		httpConnection.SetHttpAddress("http://127.0.0.1:9999")
 		mcpService.SetHttpConnection(httpConnection)
 		config.SetMcpService(mcpService)
@@ -514,10 +514,10 @@ func TestUpstream_Register(t *testing.T) {
 		}
 		defer func() { connectForTesting = originalConnect }()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-list-fail")
-		mcpService := &configv1.McpUpstreamService{}
-		stdioConnection := &configv1.McpStdioConnection{}
+		mcpService := configv1.McpUpstreamService_builder{}.Build()
+		stdioConnection := configv1.McpStdioConnection_builder{}.Build()
 		stdioConnection.SetCommand("echo")
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
@@ -534,7 +534,7 @@ func TestUpstream_Register(t *testing.T) {
 		resourceManager := resource.NewManager()
 		upstream := NewUpstream(nil)
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("test-service-nil")
 		config.SetMcpService(nil)
 
@@ -549,7 +549,7 @@ func TestUpstream_Register(t *testing.T) {
 		resourceManager := resource.NewManager()
 		upstream := NewUpstream(nil)
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("") // empty name
 
 		_, _, _, err := upstream.Register(ctx, config, toolManager, promptManager, resourceManager, false)
@@ -615,7 +615,7 @@ func TestUpstream_Register_HttpConnectionError(t *testing.T) {
 
 func TestBuildCommandFromStdioConfig(t *testing.T) {
 	t.Run("simple command", func(t *testing.T) {
-		stdio := &configv1.McpStdioConnection{}
+		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("ls")
 		stdio.SetArgs([]string{"-l", "-a"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
@@ -632,7 +632,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		// Enable unsafe setup commands for this test
 		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "true")
 
-		stdio := &configv1.McpStdioConnection{}
+		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("echo")
 		stdio.SetArgs([]string{"--verbose"})
 		stdio.SetSetupCommands([]string{"cd /tmp", "export FOO=bar"})
@@ -646,7 +646,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 		// Ensure it's disabled
 		t.Setenv("MCP_ALLOW_UNSAFE_SETUP_COMMANDS", "")
 
-		stdio := &configv1.McpStdioConnection{}
+		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("echo")
 		stdio.SetSetupCommands([]string{"cd /tmp"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
@@ -656,7 +656,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 	})
 
 	t.Run("docker command with sudo", func(t *testing.T) {
-		stdio := &configv1.McpStdioConnection{}
+		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("docker")
 		stdio.SetArgs([]string{"run", "hello-world"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, true)
@@ -666,7 +666,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 	})
 
 	t.Run("arguments with shell metacharacters should be passed directly", func(t *testing.T) {
-		stdio := &configv1.McpStdioConnection{}
+		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("echo")
 		stdio.SetArgs([]string{"hello; date"})
 		cmd, err := buildCommandFromStdioConfig(context.Background(), stdio, false)
@@ -677,7 +677,7 @@ func TestBuildCommandFromStdioConfig(t *testing.T) {
 	})
 
 	t.Run("attempt complex injection in args", func(t *testing.T) {
-		stdio := &configv1.McpStdioConnection{}
+		stdio := configv1.McpStdioConnection_builder{}.Build()
 		stdio.SetCommand("echo")
 		// Attempt to close quote, run command, open quote
 		stdio.SetArgs([]string{"foo'; date; echo 'bar"})
@@ -756,11 +756,11 @@ func TestUpstream_Register_HTTP_Integration(t *testing.T) {
 	}
 	defer func() { connectForTesting = originalConnect }()
 
-	config := &configv1.UpstreamServiceConfig{}
+	config := configv1.UpstreamServiceConfig_builder{}.Build()
 	config.SetName("test-service-http-integration")
 	config.SetAutoDiscoverTool(true)
-	mcpService := &configv1.McpUpstreamService{}
-	httpConnection := &configv1.McpStreamableHttpConnection{}
+	mcpService := configv1.McpUpstreamService_builder{}.Build()
+	httpConnection := configv1.McpStreamableHttpConnection_builder{}.Build()
 	httpConnection.SetHttpAddress(server.URL)
 	mcpService.SetHttpConnection(httpConnection)
 	config.SetMcpService(mcpService)

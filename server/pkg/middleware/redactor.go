@@ -36,13 +36,13 @@ type Redactor struct {
 //
 // Returns the result.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
-	if config == nil || config.Enabled == nil || !*config.Enabled {
+	if config == nil || !config.GetEnabled() {
 		return nil
 	}
 
 	// Separate custom patterns from default ones for optimized processing
 	var customPatterns []*regexp.Regexp
-	for _, p := range config.CustomPatterns {
+	for _, p := range config.GetCustomPatterns() {
 		if r, err := regexp.Compile(p); err == nil {
 			customPatterns = append(customPatterns, r)
 		} else if log != nil {

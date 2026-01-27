@@ -2627,9 +2627,11 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	origMiddlewares := config.GlobalSettings().Middlewares()
 	defer config.GlobalSettings().SetMiddlewares(origMiddlewares)
-	config.GlobalSettings().SetMiddlewares([]*configv1.Middleware{
-		{Name: proto.String("auth"), Priority: proto.Int32(1), Disabled: proto.Bool(true)},
-	})
+	mw := &configv1.Middleware{}
+	mw.SetName("auth")
+	mw.SetPriority(1)
+	mw.SetDisabled(true)
+	config.GlobalSettings().SetMiddlewares([]*configv1.Middleware{mw})
 
 	errChan := make(chan error, 1)
 	go func() {
@@ -3027,10 +3029,15 @@ func TestMiddlewareRegistry(t *testing.T) {
 	})
 
 	t.Run("GetMCPMiddlewares sorts by priority", func(t *testing.T) {
-		configs := []*configv1.Middleware{
-			{Name: proto.String("test_middleware"), Priority: proto.Int32(100)},
-			{Name: proto.String("logging"), Priority: proto.Int32(10)},
-		}
+		mw1 := &configv1.Middleware{}
+		mw1.SetName("test_middleware")
+		mw1.SetPriority(100)
+
+		mw2 := &configv1.Middleware{}
+		mw2.SetName("logging")
+		mw2.SetPriority(10)
+
+		configs := []*configv1.Middleware{mw1, mw2}
 		middleware.RegisterMCP("logging", func(cfg *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
 			return func(next mcp.MethodHandler) mcp.MethodHandler { return next }
 		})
@@ -3123,16 +3130,14 @@ func TestFilesystemHealthCheck(t *testing.T) {
 	os.Mkdir(existingDir, 0755)
 
 	app := NewApplication()
-	services := []*configv1.UpstreamServiceConfig{
-		{
-			Name: proto.String("svc-1"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_FilesystemService{
-				FilesystemService: &configv1.FilesystemUpstreamService{
-					RootPaths: map[string]string{"/data": existingDir},
-				},
-			},
-		},
-	}
+	fsSvc := &configv1.FilesystemUpstreamService{}
+	fsSvc.SetRootPaths(map[string]string{"/data": existingDir})
+
+	svc := &configv1.UpstreamServiceConfig{}
+	svc.SetName("svc-1")
+	svc.SetFilesystemService(fsSvc)
+
+	services := []*configv1.UpstreamServiceConfig{svc}
 
 	app.ServiceRegistry = &TestMockServiceRegistry{services: services}
 	res := app.filesystemHealthCheck(context.Background())
@@ -3231,10 +3236,9 @@ func TestTemplateManager_Persistence(t *testing.T) {
 	tmpDir := t.TempDir()
 	tm := NewTemplateManager(tmpDir)
 
-	tpl1 := &configv1.UpstreamServiceConfig{
-		Name: proto.String("svc1"),
-		Id:   proto.String("id1"),
-	}
+	tpl1 := &configv1.UpstreamServiceConfig{}
+	tpl1.SetName("svc1")
+	tpl1.SetId("id1")
 	tm.SaveTemplate(tpl1)
 
 	tm2 := NewTemplateManager(tmpDir)

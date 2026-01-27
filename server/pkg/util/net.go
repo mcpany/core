@@ -6,9 +6,10 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"math"
-	"math/rand"
+	"math/big"
 	"net"
 	"net/http"
 	"net/url"
@@ -203,11 +204,15 @@ func CheckConnection(ctx context.Context, address string) error {
 	// Use SafeDialer to prevent SSRF during connectivity checks
 	dialer := NewSafeDialer()
 	// Allow overriding safety checks via environment variables (consistent with validation package)
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr || os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
 		dialer.AllowLoopback = true
-		// Typically allowing local IPs implies allowing private IPs too, but let's be explicit
 		dialer.AllowPrivate = true
 	}
+
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		dialer.AllowLoopback = true
+	}
+
 	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
 		dialer.AllowPrivate = true
 	}
@@ -255,8 +260,12 @@ func ListenWithRetry(ctx context.Context, network, address string) (net.Listener
 		// We start slightly higher than before (100ms) to give more room.
 		backoff := time.Duration(100*math.Pow(2, float64(i))) * time.Millisecond
 		// Add jitter (up to 50ms)
-		// #nosec G404 - weak random is fine for backoff jitter
-		backoff += time.Duration(rand.Intn(50)) * time.Millisecond
+		jitterBig, err := rand.Int(rand.Reader, big.NewInt(50))
+		var jitter int64
+		if err == nil {
+			jitter = jitterBig.Int64()
+		}
+		backoff += time.Duration(jitter) * time.Millisecond
 
 		select {
 		case <-ctx.Done():

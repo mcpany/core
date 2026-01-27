@@ -36,7 +36,7 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp",
 			}
-			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/tmp", "mcr.microsoft.com/playwright:v1.50.0-jammy", setupCommands, env, args...)
+			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/tmp", "mcr.microsoft.com/playwright:v1.58.0-jammy", setupCommands, env, args...)
 
 
 

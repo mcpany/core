@@ -53,7 +53,6 @@ type BundleDockerTransport struct {
 	Env        []string
 	Mounts     []mount.Mount
 	WorkingDir string
-	Logger     *slog.Logger
 }
 
 // Connect establishes a connection to the service within the Docker container.
@@ -63,11 +62,7 @@ type BundleDockerTransport struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
-	log := t.Logger
-	if log == nil {
-		log = logging.GetLogger()
-	}
-
+	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
@@ -143,6 +138,7 @@ func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, er
 	go func() {
 		defer func() { _ = stdoutWriter.Close() }()
 		logWriterWithLevel := NewLogWriter(log)
+		defer func() { _ = logWriterWithLevel.Close() }()
 		_, err := stdcopy.StdCopy(stdoutWriter, logWriterWithLevel, hijackedResp.Reader)
 		if err != nil && err != io.EOF {
 			log.Error("Error demultiplexing docker stream", "error", err)

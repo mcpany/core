@@ -9,11 +9,11 @@ import (
 	"errors"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -98,10 +98,10 @@ func TestStdioUpstream_Shutdown(t *testing.T) {
 	tm := newMockToolManager()
 	prm := prompt.NewManager()
 	rm := resource.NewManager()
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-shutdown")
-	cmdService := &configv1.CommandLineUpstreamService{}
-	serviceConfig.SetCommandLineService(cmdService)
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name:               proto.String("test-shutdown"),
+		CommandLineService: configv1.CommandLineUpstreamService_builder{}.Build(),
+	}.Build()
 
 	_, _, _, err = u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
 	require.NoError(t, err)
@@ -118,32 +118,32 @@ func TestStdioUpstream_Register(t *testing.T) {
 
 	t.Run("successful registration", func(t *testing.T) {
 		tm := newMockToolManager()
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-stdio-service")
-		cmdService := &configv1.CommandLineUpstreamService{}
-		cmdService.SetCommand("/bin/echo")
-		toolDef := configv1.ToolDefinition_builder{
-			Name:   proto.String("echo"),
-			CallId: proto.String("echo-call"),
-		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Id: proto.String("echo-call"),
-		}.Build()
-
-		argsParam := configv1.CommandLineParameterMapping_builder{
-			Schema: configv1.ParameterSchema_builder{
-				Name:        proto.String("args"),
-				Type:        configv1.ParameterType_ARRAY.Enum(),
-				Description: proto.String("Additional arguments"),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-stdio-service"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Command: proto.String("/bin/echo"),
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"echo-call": configv1.CommandLineCallDefinition_builder{
+						Id: proto.String("echo-call"),
+						Parameters: []*configv1.CommandLineParameterMapping{
+							configv1.CommandLineParameterMapping_builder{
+								Schema: configv1.ParameterSchema_builder{
+									Name:        proto.String("args"),
+									Type:        configv1.ParameterType_ARRAY.Enum(),
+									Description: proto.String("Additional arguments"),
+								}.Build(),
+							}.Build(),
+						},
+					}.Build(),
+				},
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("echo"),
+						CallId: proto.String("echo-call"),
+					}.Build(),
+				},
 			}.Build(),
 		}.Build()
-		callDef.SetParameters([]*configv1.CommandLineParameterMapping{argsParam})
-
-		calls := make(map[string]*configv1.CommandLineCallDefinition)
-		calls["echo-call"] = callDef
-		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		serviceID, discoveredTools, _, err := u.Register(
 			context.Background(),
@@ -189,14 +189,16 @@ func TestStdioUpstream_Register(t *testing.T) {
 	t.Run("successful prompt registration", func(t *testing.T) {
 		tm := newMockToolManager()
 		prm := prompt.NewManager()
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-prompt-service")
-		cmdService := &configv1.CommandLineUpstreamService{}
-		promptDef := configv1.PromptDefinition_builder{
-			Name: proto.String("test-prompt"),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-prompt-service"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Prompts: []*configv1.PromptDefinition{
+					configv1.PromptDefinition_builder{
+						Name: proto.String("test-prompt"),
+					}.Build(),
+				},
+			}.Build(),
 		}.Build()
-		cmdService.SetPrompts([]*configv1.PromptDefinition{promptDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		serviceID, _, _, err := u.Register(
 			context.Background(),
@@ -219,33 +221,33 @@ func TestStdioUpstream_Register(t *testing.T) {
 	t.Run("successful dynamic resource registration", func(t *testing.T) {
 		tm := newMockToolManager()
 		rm := resource.NewManager()
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-dynamic-resource-service")
-		cmdService := &configv1.CommandLineUpstreamService{}
-
-		toolDef := configv1.ToolDefinition_builder{
-			Name:   proto.String("list-files"),
-			CallId: proto.String("list-files-call"),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-dynamic-resource-service"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"list-files-call": configv1.CommandLineCallDefinition_builder{
+						Id: proto.String("list-files-call"),
+					}.Build(),
+				},
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("list-files"),
+						CallId: proto.String("list-files-call"),
+					}.Build(),
+				},
+				Resources: []*configv1.ResourceDefinition{
+					configv1.ResourceDefinition_builder{
+						Name: proto.String("files"),
+						Uri:  proto.String("test-dynamic-resource-service.files"),
+						Dynamic: configv1.DynamicResource_builder{
+							CommandLineCall: configv1.CommandLineCallDefinition_builder{
+								Id: proto.String("list-files-call"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
+				},
+			}.Build(),
 		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Id: proto.String("list-files-call"),
-		}.Build()
-		calls := make(map[string]*configv1.CommandLineCallDefinition)
-		calls["list-files-call"] = callDef
-		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("files")
-		resourceDef.SetUri("test-dynamic-resource-service.files")
-		dynamicResource := &configv1.DynamicResource{}
-		commandLineCall := &configv1.CommandLineCallDefinition{}
-		commandLineCall.SetId("list-files-call")
-		dynamicResource.SetCommandLineCall(commandLineCall)
-		resourceDef.SetDynamic(dynamicResource)
-
-		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		serviceID, _, _, err := u.Register(
 			context.Background(),
@@ -264,15 +266,17 @@ func TestStdioUpstream_Register(t *testing.T) {
 
 	t.Run("missing call definition", func(t *testing.T) {
 		tm := newMockToolManager()
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-missing-call-def")
-		cmdService := &configv1.CommandLineUpstreamService{}
-		toolDef := configv1.ToolDefinition_builder{
-			Name:   proto.String("echo"),
-			CallId: proto.String("echo-call-missing"),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-missing-call-def"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("echo"),
+						CallId: proto.String("echo-call-missing"),
+					}.Build(),
+				},
+			}.Build(),
 		}.Build()
-		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		_, _, _, err := u.Register(
 			context.Background(),
@@ -287,16 +291,19 @@ func TestStdioUpstream_Register(t *testing.T) {
 	})
 
 	t.Run("nil command line service config", func(t *testing.T) {
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-nil-config")
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-nil-config"),
+		}.Build()
 		_, _, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "command line service config is nil")
 	})
 
 	t.Run("invalid service name", func(t *testing.T) {
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("") // empty name
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String(""), // empty name
+			CommandLineService: configv1.CommandLineUpstreamService_builder{}.Build(),
+		}.Build()
 		_, _, _, err := u.Register(context.Background(), serviceConfig, tm, prm, rm, false)
 		require.Error(t, err)
 	})
@@ -305,21 +312,22 @@ func TestStdioUpstream_Register(t *testing.T) {
 		tmWithError := newMockToolManager()
 		tmWithError.addError = errors.New("failed to add tool")
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-add-tool-error")
-		cmdService := &configv1.CommandLineUpstreamService{}
-		toolDef := configv1.ToolDefinition_builder{
-			Name:   proto.String("ls"),
-			CallId: proto.String("ls-call"),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-add-tool-error"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"ls-call": configv1.CommandLineCallDefinition_builder{
+						Id: proto.String("ls-call"),
+					}.Build(),
+				},
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("ls"),
+						CallId: proto.String("ls-call"),
+					}.Build(),
+				},
+			}.Build(),
 		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Id: proto.String("ls-call"),
-		}.Build()
-		calls := make(map[string]*configv1.CommandLineCallDefinition)
-		calls["ls-call"] = callDef
-		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		_, discoveredTools, _, err := u.Register(
 			context.Background(),
@@ -342,34 +350,32 @@ func TestStdioUpstream_Register_RequiredParams(t *testing.T) {
 	rm := resource.NewManager()
 	u := NewUpstream()
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-required-params-service")
-	cmdService := &configv1.CommandLineUpstreamService{}
-	cmdService.SetCommand("/bin/echo")
-	toolDef := configv1.ToolDefinition_builder{
-		Name:   proto.String("echo"),
-		CallId: proto.String("echo-call"),
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Id: proto.String("echo-call"),
-	}.Build()
-
-	// Define a required parameter
-	paramName := "required_arg"
-	requiredParam := configv1.CommandLineParameterMapping_builder{
-		Schema: configv1.ParameterSchema_builder{
-			Name:       proto.String(paramName),
-			Type:       configv1.ParameterType_STRING.Enum(),
-			IsRequired: proto.Bool(true),
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-required-params-service"),
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("/bin/echo"),
+			Calls: map[string]*configv1.CommandLineCallDefinition{
+				"echo-call": configv1.CommandLineCallDefinition_builder{
+					Id: proto.String("echo-call"),
+					Parameters: []*configv1.CommandLineParameterMapping{
+						configv1.CommandLineParameterMapping_builder{
+							Schema: configv1.ParameterSchema_builder{
+								Name:       proto.String("required_arg"),
+								Type:       configv1.ParameterType_STRING.Enum(),
+								IsRequired: proto.Bool(true),
+							}.Build(),
+						}.Build(),
+					},
+				}.Build(),
+			},
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("echo"),
+					CallId: proto.String("echo-call"),
+				}.Build(),
+			},
 		}.Build(),
 	}.Build()
-	callDef.SetParameters([]*configv1.CommandLineParameterMapping{requiredParam})
-
-	calls := make(map[string]*configv1.CommandLineCallDefinition)
-	calls["echo-call"] = callDef
-	cmdService.SetCalls(calls)
-	cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-	serviceConfig.SetCommandLineService(cmdService)
 
 	_, _, _, err := u.Register(
 		context.Background(),
@@ -395,6 +401,7 @@ func TestStdioUpstream_Register_RequiredParams(t *testing.T) {
 	listVal := requiredVal.GetListValue()
 	require.NotNil(t, listVal)
 
+	paramName := "required_arg"
 	found := false
 	for _, v := range listVal.Values {
 		if v.GetStringValue() == paramName {
@@ -414,32 +421,32 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 		rm := resource.NewManager()
 		prm := prompt.NewManager()
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-dynamic-resource-missing-tool")
-		cmdService := &configv1.CommandLineUpstreamService{}
-
-		toolDef := configv1.ToolDefinition_builder{
-			Name:   proto.String("list-files"),
-			CallId: proto.String("list-files-call"),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-dynamic-resource-missing-tool"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"list-files-call": configv1.CommandLineCallDefinition_builder{
+						Id: proto.String("list-files-call"),
+					}.Build(),
+				},
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:   proto.String("list-files"),
+						CallId: proto.String("list-files-call"),
+					}.Build(),
+				},
+				Resources: []*configv1.ResourceDefinition{
+					configv1.ResourceDefinition_builder{
+						Name: proto.String("files"),
+						Dynamic: configv1.DynamicResource_builder{
+							CommandLineCall: configv1.CommandLineCallDefinition_builder{
+								Id: proto.String("list-files-call"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
+				},
+			}.Build(),
 		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Id: proto.String("list-files-call"),
-		}.Build()
-		calls := make(map[string]*configv1.CommandLineCallDefinition)
-		calls["list-files-call"] = callDef
-		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("files")
-		dynamicResource := &configv1.DynamicResource{}
-		commandLineCall := &configv1.CommandLineCallDefinition{}
-		commandLineCall.SetId("list-files-call")
-		dynamicResource.SetCommandLineCall(commandLineCall)
-		resourceDef.SetDynamic(dynamicResource)
-
-		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		_, _, _, err := u.Register(
 			context.Background(),
@@ -460,23 +467,22 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 		rm := resource.NewManager()
 		prm := prompt.NewManager()
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-dynamic-resource-missing-call")
-		cmdService := &configv1.CommandLineUpstreamService{}
-
-		// No tools defined, so callIDToName will be empty
-		cmdService.SetCalls(make(map[string]*configv1.CommandLineCallDefinition))
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("files")
-		dynamicResource := &configv1.DynamicResource{}
-		commandLineCall := &configv1.CommandLineCallDefinition{}
-		commandLineCall.SetId("list-files-call-missing")
-		dynamicResource.SetCommandLineCall(commandLineCall)
-		resourceDef.SetDynamic(dynamicResource)
-
-		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-		serviceConfig.SetCommandLineService(cmdService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-dynamic-resource-missing-call"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Calls: make(map[string]*configv1.CommandLineCallDefinition),
+				Resources: []*configv1.ResourceDefinition{
+					configv1.ResourceDefinition_builder{
+						Name: proto.String("files"),
+						Dynamic: configv1.DynamicResource_builder{
+							CommandLineCall: configv1.CommandLineCallDefinition_builder{
+								Id: proto.String("list-files-call-missing"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
+				},
+			}.Build(),
+		}.Build()
 
 		_, _, _, err := u.Register(
 			context.Background(),
@@ -497,34 +503,33 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 		rm := resource.NewManager()
 		prm := prompt.NewManager()
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-dynamic-resource-sanitization-error")
-		cmdService := &configv1.CommandLineUpstreamService{}
-
-		// Tool with empty name AND disabled (to avoid AddTool failure)
-		toolDef := configv1.ToolDefinition_builder{
-			Name:    proto.String(""), // Empty name
-			CallId:  proto.String("empty-name-call"),
-			Disable: proto.Bool(true),
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-dynamic-resource-sanitization-error"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Calls: map[string]*configv1.CommandLineCallDefinition{
+					"empty-name-call": configv1.CommandLineCallDefinition_builder{
+						Id: proto.String("empty-name-call"),
+					}.Build(),
+				},
+				Tools: []*configv1.ToolDefinition{
+					configv1.ToolDefinition_builder{
+						Name:    proto.String(""), // Empty name
+						CallId:  proto.String("empty-name-call"),
+						Disable: proto.Bool(true),
+					}.Build(),
+				},
+				Resources: []*configv1.ResourceDefinition{
+					configv1.ResourceDefinition_builder{
+						Name: proto.String("files"),
+						Dynamic: configv1.DynamicResource_builder{
+							CommandLineCall: configv1.CommandLineCallDefinition_builder{
+								Id: proto.String("empty-name-call"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
+				},
+			}.Build(),
 		}.Build()
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Id: proto.String("empty-name-call"),
-		}.Build()
-		calls := make(map[string]*configv1.CommandLineCallDefinition)
-		calls["empty-name-call"] = callDef
-		cmdService.SetCalls(calls)
-		cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("files")
-		dynamicResource := &configv1.DynamicResource{}
-		commandLineCall := &configv1.CommandLineCallDefinition{}
-		commandLineCall.SetId("empty-name-call")
-		dynamicResource.SetCommandLineCall(commandLineCall)
-		resourceDef.SetDynamic(dynamicResource)
-
-		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-		serviceConfig.SetCommandLineService(cmdService)
 
 		_, _, _, err := u.Register(
 			context.Background(),
@@ -545,18 +550,19 @@ func TestStdioUpstream_Register_DynamicResourceErrors(t *testing.T) {
 		rm := resource.NewManager()
 		prm := prompt.NewManager()
 
-		serviceConfig := &configv1.UpstreamServiceConfig{}
-		serviceConfig.SetName("test-dynamic-resource-call-nil")
-		cmdService := &configv1.CommandLineUpstreamService{}
-
-		resourceDef := &configv1.ResourceDefinition{}
-		resourceDef.SetName("files")
-		dynamicResource := &configv1.DynamicResource{}
-		// Not setting CommandLineCall, so it is nil
-		resourceDef.SetDynamic(dynamicResource)
-
-		cmdService.SetResources([]*configv1.ResourceDefinition{resourceDef})
-		serviceConfig.SetCommandLineService(cmdService)
+		serviceConfig := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String("test-dynamic-resource-call-nil"),
+			CommandLineService: configv1.CommandLineUpstreamService_builder{
+				Resources: []*configv1.ResourceDefinition{
+					configv1.ResourceDefinition_builder{
+						Name: proto.String("files"),
+						Dynamic: configv1.DynamicResource_builder{
+							// Not setting CommandLineCall, so it is nil
+						}.Build(),
+					}.Build(),
+				},
+			}.Build(),
+		}.Build()
 
 		_, _, _, err := u.Register(
 			context.Background(),
@@ -579,52 +585,42 @@ func TestStdioUpstream_Register_Coverage(t *testing.T) {
 	rm := resource.NewManager()
 	u := NewUpstream()
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-coverage-service")
-	cmdService := &configv1.CommandLineUpstreamService{}
-	cmdService.SetLocal(true) // Cover Local: true path
-
-	// Disabled tool
-	toolDefDisabled := configv1.ToolDefinition_builder{
-		Name:    proto.String("disabled-tool"),
-		CallId:  proto.String("disabled-call"),
-		Disable: proto.Bool(true),
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-coverage-service"),
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Local: proto.Bool(true), // Cover Local: true path
+			Calls: map[string]*configv1.CommandLineCallDefinition{
+				"disabled-call": configv1.CommandLineCallDefinition_builder{Id: proto.String("disabled-call")}.Build(),
+				"enabled-call":  configv1.CommandLineCallDefinition_builder{Id: proto.String("enabled-call")}.Build(),
+			},
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:    proto.String("disabled-tool"),
+					CallId:  proto.String("disabled-call"),
+					Disable: proto.Bool(true),
+				}.Build(),
+				configv1.ToolDefinition_builder{
+					Name:   proto.String("enabled-tool"),
+					CallId: proto.String("enabled-call"),
+				}.Build(),
+			},
+			Resources: []*configv1.ResourceDefinition{
+				configv1.ResourceDefinition_builder{
+					Name:    proto.String("disabled-resource"),
+					Disable: proto.Bool(true),
+					Static: configv1.StaticResource_builder{
+						TextContent: proto.String("content"),
+					}.Build(),
+				}.Build(),
+			},
+			Prompts: []*configv1.PromptDefinition{
+				configv1.PromptDefinition_builder{
+					Name:    proto.String("disabled-prompt"),
+					Disable: proto.Bool(true),
+				}.Build(),
+			},
+		}.Build(),
 	}.Build()
-
-	// Enabled tool
-	toolDefEnabled := configv1.ToolDefinition_builder{
-		Name:   proto.String("enabled-tool"),
-		CallId: proto.String("enabled-call"),
-	}.Build()
-
-	callDefDisabled := configv1.CommandLineCallDefinition_builder{Id: proto.String("disabled-call")}.Build()
-	callDefEnabled := configv1.CommandLineCallDefinition_builder{Id: proto.String("enabled-call")}.Build()
-
-	calls := make(map[string]*configv1.CommandLineCallDefinition)
-	calls["disabled-call"] = callDefDisabled
-	calls["enabled-call"] = callDefEnabled
-
-	cmdService.SetCalls(calls)
-	cmdService.SetTools([]*configv1.ToolDefinition{toolDefDisabled, toolDefEnabled})
-
-	// Disabled resource
-	resourceDefDisabled := &configv1.ResourceDefinition{}
-	resourceDefDisabled.SetName("disabled-resource")
-	resourceDefDisabled.SetDisable(true)
-	resourceDefDisabled.SetStatic(&configv1.StaticResource{
-		ContentType: &configv1.StaticResource_TextContent{TextContent: "content"},
-	})
-
-	cmdService.SetResources([]*configv1.ResourceDefinition{resourceDefDisabled})
-
-	// Disabled prompt
-	promptDefDisabled := configv1.PromptDefinition_builder{
-		Name:    proto.String("disabled-prompt"),
-		Disable: proto.Bool(true),
-	}.Build()
-	cmdService.SetPrompts([]*configv1.PromptDefinition{promptDefDisabled})
-
-	serviceConfig.SetCommandLineService(cmdService)
 
 	_, discoveredTools, _, err := u.Register(
 		context.Background(),
@@ -657,31 +653,29 @@ func TestStdioUpstream_Register_AnnotationsAndHints(t *testing.T) {
 	rm := resource.NewManager()
 	u := NewUpstream()
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
-	serviceConfig.SetName("test-annotations-service")
-	cmdService := &configv1.CommandLineUpstreamService{}
-	cmdService.SetCommand("/bin/true")
-
-	toolDef := configv1.ToolDefinition_builder{
-		Name:            proto.String("true-tool"),
-		Title:           proto.String("True Tool"),
-		Description:     proto.String("Returns true"),
-		CallId:          proto.String("true-call"),
-		ReadOnlyHint:    proto.Bool(true),
-		DestructiveHint: proto.Bool(false),
-		IdempotentHint:  proto.Bool(true),
-		OpenWorldHint:   proto.Bool(false),
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-annotations-service"),
+		CommandLineService: configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("/bin/true"),
+			Calls: map[string]*configv1.CommandLineCallDefinition{
+				"true-call": configv1.CommandLineCallDefinition_builder{
+					Id: proto.String("true-call"),
+				}.Build(),
+			},
+			Tools: []*configv1.ToolDefinition{
+				configv1.ToolDefinition_builder{
+					Name:            proto.String("true-tool"),
+					Title:           proto.String("True Tool"),
+					Description:     proto.String("Returns true"),
+					CallId:          proto.String("true-call"),
+					ReadOnlyHint:    proto.Bool(true),
+					DestructiveHint: proto.Bool(false),
+					IdempotentHint:  proto.Bool(true),
+					OpenWorldHint:   proto.Bool(false),
+				}.Build(),
+			},
+		}.Build(),
 	}.Build()
-
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Id: proto.String("true-call"),
-	}.Build()
-
-	calls := make(map[string]*configv1.CommandLineCallDefinition)
-	calls["true-call"] = callDef
-	cmdService.SetCalls(calls)
-	cmdService.SetTools([]*configv1.ToolDefinition{toolDef})
-	serviceConfig.SetCommandLineService(cmdService)
 
 	_, _, _, err := u.Register(
 		context.Background(),

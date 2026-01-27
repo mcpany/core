@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -339,7 +338,6 @@ type mcpConnection struct {
 	httpClient      *http.Client
 	sessionRegistry *SessionRegistry
 	globalSettings  *configv1.GlobalSettings
-	serviceID       string
 }
 
 // withMCPClientSession is a helper function that abstracts the process of
@@ -347,11 +345,6 @@ type mcpConnection struct {
 // with the active session, and ensuring the session is closed afterward.
 func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs ClientSession) error) error {
 	var transport mcp.Transport
-	var log *slog.Logger
-	if c.serviceID != "" {
-		log = logging.GetLogger().With("source", c.serviceID)
-	}
-
 	switch {
 	case c.stdioConfig != nil:
 		image := c.stdioConfig.GetContainerImage()
@@ -359,7 +352,6 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 			if util.IsDockerSocketAccessible() {
 				transport = &DockerTransport{
 					StdioConfig: c.stdioConfig,
-					Logger:      log,
 				}
 			} else {
 				return fmt.Errorf("docker socket not accessible, but container_image is specified")
@@ -377,7 +369,6 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 			}
 			transport = &StdioTransport{
 				Command: cmd,
-				Logger:  log,
 			}
 		}
 	case c.bundleTransport != nil:
@@ -583,7 +574,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 		useSudo = u.globalSettings.GetUseSudoForDocker()
 	}
 
-	transport, err := createStdioTransport(ctx, stdio, useSudo, serviceID)
+	transport, err := createStdioTransport(ctx, stdio, useSudo)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -620,7 +611,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 			stdioConfig:     stdio,
 			sessionRegistry: u.sessionRegistry,
 			globalSettings:  u.globalSettings,
-			serviceID:       serviceID,
 		}
 	} else {
 		conn := &mcpConnection{
@@ -628,7 +618,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 			stdioConfig:     stdio,
 			sessionRegistry: u.sessionRegistry,
 			globalSettings:  u.globalSettings,
-			serviceID:       serviceID,
 		}
 		toolClient = conn
 		promptConnection = conn
@@ -638,14 +627,12 @@ func (u *Upstream) createAndRegisterMCPItemsFromStdio(
 	return u.processMCPItems(ctx, serviceID, listToolsResult, toolClient, promptConnection, cs, toolManager, promptManager, resourceManager, serviceConfig)
 }
 
-func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool, serviceID string) (mcp.Transport, error) {
-	log := logging.GetLogger().With("source", serviceID)
+func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnection, useSudo bool) (mcp.Transport, error) {
 	image := stdio.GetContainerImage()
 	if image != "" {
 		if util.IsDockerSocketAccessible() {
 			return &DockerTransport{
 				StdioConfig: stdio,
-				Logger:      log,
 			}, nil
 		}
 		return nil, fmt.Errorf("docker socket not accessible, but container_image is specified")
@@ -657,7 +644,6 @@ func createStdioTransport(ctx context.Context, stdio *configv1.McpStdioConnectio
 	// Use our robust StdioTransport instead of mcp.CommandTransport
 	return &StdioTransport{
 		Command: cmd,
-		Logger:  log,
 	}, nil
 }
 
@@ -716,7 +702,7 @@ func (u *Upstream) registerTools(
 			continue
 		}
 
-		callDef := &configv1.MCPCallDefinition{}
+		callDef := configv1.MCPCallDefinition_builder{}.Build()
 		if hasConfig {
 			if call, callOk := calls[configTool.GetCallId()]; callOk {
 				callDef = call
@@ -776,7 +762,7 @@ func (u *Upstream) registerTools(
 
 			// Apply other annotations/hints
 			if pbTool.Annotations == nil {
-				pbTool.Annotations = &v1.ToolAnnotations{}
+				pbTool.Annotations = v1.ToolAnnotations_builder{}.Build()
 			}
 			if configTool.GetReadOnlyHint() { // Only override if true? Or if set? Proto bool is false by default.
 				pbTool.Annotations.ReadOnlyHint = proto.Bool(configTool.GetReadOnlyHint())
@@ -1036,19 +1022,17 @@ func (u *Upstream) createAndRegisterMCPItemsFromStreamableHTTP(
 	if newClientImplForTesting != nil {
 		toolClient = newClientImplForTesting(mcpSdkClient, nil, httpAddress, httpClient)
 		promptConnection = &mcpConnection{
-			client:          mcpSdkClient,
-			httpAddress:     httpAddress,
-			httpClient:      httpClient,
+			client:      mcpSdkClient,
+			httpAddress: httpAddress,
+			httpClient:  httpClient,
 			sessionRegistry: u.sessionRegistry,
-			serviceID:       serviceID,
 		}
 	} else {
 		conn := &mcpConnection{
-			client:          mcpSdkClient,
-			httpAddress:     httpAddress,
-			httpClient:      httpClient,
+			client:      mcpSdkClient,
+			httpAddress: httpAddress,
+			httpClient:  httpClient,
 			sessionRegistry: u.sessionRegistry,
-			serviceID:       serviceID,
 		}
 		toolClient = conn
 		promptConnection = conn

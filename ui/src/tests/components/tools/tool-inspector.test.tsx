@@ -8,6 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ToolInspector } from '@/components/tools/tool-inspector';
 import { ToolDefinition } from '@/lib/client';
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Mock dependencies
 vi.mock('@/components/ui/sheet', () => ({
@@ -59,14 +60,22 @@ describe('ToolInspector', () => {
   });
 
   it('renders tool details when open', () => {
-    render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
+    render(
+      <TooltipProvider>
+        <ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />
+      </TooltipProvider>
+    );
     expect(screen.getByText('test_tool')).toBeDefined();
     expect(screen.getByText('A test tool')).toBeDefined();
     expect(screen.getByText('test_service')).toBeDefined();
   });
 
   it('renders input fields based on schema', () => {
-    render(<ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />);
+    render(
+      <TooltipProvider>
+        <ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />
+      </TooltipProvider>
+    );
     expect(screen.getAllByText(/arg1/).length).toBeGreaterThan(0);
     expect(screen.getByText(/"string"/)).toBeDefined();
     // In a real DOM (not mocked Sheet), we would look for the input

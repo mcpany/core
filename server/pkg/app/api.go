@@ -11,10 +11,11 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
@@ -90,12 +91,16 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/dashboard/traffic", a.handleDashboardTraffic())
 	mux.HandleFunc("/dashboard/top-tools", a.handleDashboardTopTools())
 	mux.HandleFunc("/dashboard/tool-failures", a.handleDashboardToolFailures())
+	mux.HandleFunc("/dashboard/tool-usage", a.handleDashboardToolUsage())
 
 	mux.HandleFunc("/templates", a.handleTemplates())
 	mux.HandleFunc("/templates/", a.handleTemplateDetail())
 
 	mux.HandleFunc("/profiles", a.handleProfiles(store))
 	mux.HandleFunc("/profiles/", a.handleProfileDetail(store))
+
+	// Stacks (Aliases for Collections with YAML support)
+	mux.HandleFunc("/stacks/", a.handleStackConfig(store))
 
 	mux.HandleFunc("/collections", a.handleCollections(store))
 	mux.HandleFunc("/collections/", a.handleCollectionDetail(store))
@@ -143,7 +148,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/alerts/rules/", a.handleAlertRuleDetail())
 	mux.HandleFunc("/alerts/", a.handleAlertDetail())
 
+	mux.HandleFunc("/traces", a.handleTraces())
 	mux.HandleFunc("/ws/logs", a.handleLogsWS())
+	mux.HandleFunc("/ws/traces", a.handleTracesWS())
 
 	return mux
 }
@@ -322,23 +329,55 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
-		// 2. Connectivity Check (Optional/Basic)
-		// We only check HTTP reachability for now as it's the most common and safe to check.
-		// For others, we just return valid for now.
-		var reachabilityErr error
+		// 2. Connectivity / Health Check
+		var checkErr error
+		var checkDetails string
+
+		// HTTP & GraphQL
 		if httpSvc := svc.GetHttpService(); httpSvc != nil {
-			reachabilityErr = checkURLReachability(r.Context(), httpSvc.GetAddress())
+			checkErr = checkURLReachability(r.Context(), httpSvc.GetAddress())
+			checkDetails = "HTTP reachability check failed"
 		} else if gqlSvc := svc.GetGraphqlService(); gqlSvc != nil {
-			reachabilityErr = checkURLReachability(r.Context(), gqlSvc.GetAddress())
+			checkErr = checkURLReachability(r.Context(), gqlSvc.GetAddress())
+			checkDetails = "GraphQL reachability check failed"
+		} else if fsSvc := svc.GetFilesystemService(); fsSvc != nil {
+			// Filesystem check
+			for _, path := range fsSvc.GetRootPaths() {
+				if err := checkFilesystemAccess(path); err != nil {
+					checkErr = err
+					checkDetails = fmt.Sprintf("Filesystem path check failed for %s", path)
+					break
+				}
+			}
+		} else if cmdSvc := svc.GetCommandLineService(); cmdSvc != nil {
+			// Command check
+			checkErr = checkCommandAvailability(cmdSvc.GetCommand(), cmdSvc.GetWorkingDirectory())
+			checkDetails = "Command availability check failed"
+		} else if mcpSvc := svc.GetMcpService(); mcpSvc != nil {
+			// MCP Remote check (if stdio, check command; if http, check url)
+			switch mcpSvc.WhichConnectionType() {
+			case configv1.McpUpstreamService_StdioConnection_case:
+				stdio := mcpSvc.GetStdioConnection()
+				if stdio != nil {
+					checkErr = checkCommandAvailability(stdio.GetCommand(), stdio.GetWorkingDirectory())
+					checkDetails = "MCP Stdio command check failed"
+				}
+			case configv1.McpUpstreamService_HttpConnection_case:
+				httpConn := mcpSvc.GetHttpConnection()
+				if httpConn != nil {
+					checkErr = checkURLReachability(r.Context(), httpConn.GetHttpAddress())
+					checkDetails = "MCP HTTP reachability check failed"
+				}
+			}
 		}
 
-		if reachabilityErr != nil {
+		if checkErr != nil {
 			w.Header().Set("Content-Type", "application/json")
 			// Return 200 OK but with valid=false to distinguish from malformed request
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"valid":   false,
-				"error":   reachabilityErr.Error(),
-				"details": "Connectivity check failed",
+				"error":   checkErr.Error(),
+				"details": checkDetails,
 			})
 			return
 		}
@@ -381,6 +420,49 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 			return fmt.Errorf("server returned error status: %s", resp.Status)
 		}
 	}
+	return nil
+}
+
+func checkFilesystemAccess(path string) error {
+	_, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("path does not exist: %s", path)
+		}
+		return fmt.Errorf("failed to access path: %w", err)
+	}
+	// We allow both files and directories, so existence is sufficient validation for now.
+	return nil
+}
+
+func checkCommandAvailability(command string, workDir string) error {
+	if command == "" {
+		return fmt.Errorf("command is empty")
+	}
+
+	// If absolute path, check existence
+	if filepath.IsAbs(command) {
+		if _, err := os.Stat(command); err != nil {
+			return fmt.Errorf("executable not found at %s", command)
+		}
+	} else {
+		// Look in PATH
+		if _, err := exec.LookPath(command); err != nil {
+			return fmt.Errorf("command %s not found in PATH", command)
+		}
+	}
+
+	// Check working directory if provided
+	if workDir != "" {
+		info, err := os.Stat(workDir)
+		if err != nil {
+			return fmt.Errorf("working directory not found: %s", workDir)
+		}
+		if !info.IsDir() {
+			return fmt.Errorf("working directory path is not a directory: %s", workDir)
+		}
+	}
+
 	return nil
 }
 
@@ -435,7 +517,7 @@ func (a *Application) handleServiceDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			svc.Name = proto.String(name) // Force name match
+			svc.SetName(name) // Force name match
 
 			// Validate service configuration before saving
 			if err := config.ValidateOrError(r.Context(), &svc); err != nil {
@@ -568,7 +650,7 @@ func (a *Application) handleSettings(store storage.Storage) http.HandlerFunc {
 				return
 			}
 			if settings == nil {
-				settings = &configv1.GlobalSettings{}
+				settings = configv1.GlobalSettings_builder{}.Build()
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
@@ -702,7 +784,7 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 			}
 			// Redact sensitive values
 			for _, s := range secrets {
-				s.Value = proto.String("[REDACTED]")
+				s.SetValue("[REDACTED]")
 			}
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
@@ -728,13 +810,23 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+
 			if secret.GetId() == "" {
-				secret.Id = proto.String(uuid.New().String())
+				http.Error(w, "id is required", http.StatusBadRequest)
+				return
 			}
+
+			// Validate skipped as config.ValidateOrError expects UpstreamServiceConfig
+
 			if err := store.SaveSecret(r.Context(), &secret); err != nil {
 				logging.GetLogger().Error("failed to save secret", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
+			}
+
+			// Reload
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after secret save", "error", err)
 			}
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
@@ -746,17 +838,17 @@ func (a *Application) handleSecrets(store storage.Storage) http.HandlerFunc {
 
 func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/secrets/")
-		if id == "" {
+		path := strings.TrimPrefix(r.URL.Path, "/secrets/")
+		if path == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return
 		}
 
 		switch r.Method {
 		case http.MethodGet:
-			secret, err := store.GetSecret(r.Context(), id)
+			secret, err := store.GetSecret(r.Context(), path)
 			if err != nil {
-				logging.GetLogger().Error("failed to get secret", "id", id, "error", err)
+				logging.GetLogger().Error("failed to get secret", "id", path, "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
@@ -764,19 +856,50 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 				http.NotFound(w, r)
 				return
 			}
-			// Redact sensitive value
-			secret.Value = proto.String("[REDACTED]")
-
+			// Redact
+			secret.SetValue("[REDACTED]")
 			w.Header().Set("Content-Type", "application/json")
 			opts := protojson.MarshalOptions{UseProtoNames: true}
 			b, _ := opts.Marshal(secret)
 			_, _ = w.Write(b)
 
-		case http.MethodDelete:
-			if err := store.DeleteSecret(r.Context(), id); err != nil {
-				logging.GetLogger().Error("failed to delete secret", "id", id, "error", err)
+		case http.MethodPut:
+			var secret configv1.Secret
+			body, err := readBodyWithLimit(w, r, 1048576)
+			if err != nil {
+				return
+			}
+			if err := protojson.Unmarshal(body, &secret); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if secret.GetName() == "" && secret.GetId() != "" {
+				secret.SetName(secret.GetId())
+			}
+
+
+			// Force ID
+			secret.SetId(path)
+
+			if err := store.SaveSecret(r.Context(), &secret); err != nil {
+				logging.GetLogger().Error("failed to save secret", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
+			}
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after secret update", "error", err)
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
+
+		case http.MethodDelete:
+			if err := store.DeleteSecret(r.Context(), path); err != nil {
+				logging.GetLogger().Error("failed to delete secret", "id", path, "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after secret delete", "error", err)
 			}
 			w.WriteHeader(http.StatusNoContent)
 		default:
@@ -789,6 +912,14 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
+			// Mix of config defined and DB defined?
+			// Profiles are in GlobalSettings.
+			// Currently GlobalSettings are single object.
+			// But DB can store user profiles separately?
+			// The handler seems to treat them as separate entities, but config stores them in GlobalSettings.ProfileDefinitions.
+			// Storage methods for Profiles might map to GlobalSettings mutation.
+
+			// Assuming Store.ListProfiles exists (it usually extracts from GlobalSettings)
 			profiles, err := store.ListProfiles(r.Context())
 			if err != nil {
 				logging.GetLogger().Error("failed to list profiles", "error", err)
@@ -823,6 +954,8 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "name is required", http.StatusBadRequest)
 				return
 			}
+			// ProfileDefinition uses Name as identifier, no ID field.
+
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
 				logging.GetLogger().Error("failed to save profile", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -832,7 +965,7 @@ func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after profile save", "error", err)
 			}
-			w.WriteHeader(http.StatusCreated)
+			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -902,7 +1035,7 @@ func (a *Application) handleProfileDetail(store storage.Storage) http.HandlerFun
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			profile.Name = proto.String(name) // Force name match
+			profile.SetName(name) // Force name match
 
 			if err := store.SaveProfile(r.Context(), &profile); err != nil {
 				logging.GetLogger().Error("failed to save profile", "name", name, "error", err)
@@ -1050,7 +1183,7 @@ func (a *Application) handleCollectionDetail(store storage.Storage) http.Handler
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			collection.Name = proto.String(name) // Force name match
+			collection.SetName(name) // Force name match
 
 			if err := store.SaveServiceCollection(r.Context(), &collection); err != nil {
 				logging.GetLogger().Error("failed to save collection", "name", name, "error", err)
@@ -1092,7 +1225,7 @@ func (a *Application) handleCollectionApply(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Apply services
-	for _, rawSvc := range collection.Services {
+	for _, rawSvc := range collection.GetServices() {
 		svc := proto.Clone(rawSvc).(*configv1.UpstreamServiceConfig)
 		// We should probably check if service already exists?
 		// "Upsert" logic ideally.

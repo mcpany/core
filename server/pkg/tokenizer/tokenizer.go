@@ -270,10 +270,11 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		return 1, true, nil
 	case float64:
 		// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-		// Only apply this optimization for values where the integer representation
-		// produces the same token count as the string representation (no scientific notation).
-		// Typically |val| < 1000000 avoids scientific notation in default formatting.
-		if i := int64(val); float64(i) == val && i > -1000000 && i < 1000000 {
+		// We can safely use simpleTokenizeInt64 for all integer-valued floats because
+		// standard JSON serialization (which this estimates) avoids scientific notation
+		// until 1e21, while strconv.AppendFloat uses it earlier (1e6).
+		// This alignment with JSON behavior also allows us to skip expensive float formatting.
+		if i := int64(val); float64(i) == val {
 			return simpleTokenizeInt64(i), true, nil
 		}
 		// OPTIMIZATION: Use stack buffer to avoid string allocation.
@@ -313,8 +314,9 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 		var buf [64]byte
 		for _, item := range val {
 			// OPTIMIZATION: Check if it is an integer to avoid string allocation/formatting.
-			// Same range restriction as for scalar float64.
-			if i := int64(item); float64(i) == item && i > -1000000 && i < 1000000 {
+			// Use simpleTokenizeInt64 for all integer-valued floats to match JSON behavior
+			// and improve performance significantly.
+			if i := int64(item); float64(i) == item {
 				count += simpleTokenizeInt64(i)
 				continue
 			}
@@ -523,16 +525,7 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 
 		return t.countRecursive(val.Elem().Interface(), visited)
 	case reflect.Struct:
-		count := 0
-		fields := getExportedFields(val.Type())
-		for _, i := range fields {
-			c, err := t.countRecursive(val.Field(i).Interface(), visited)
-			if err != nil {
-				return 0, err
-			}
-			count += c
-		}
-		return count, nil
+		return countTokensReflectStruct(t, val, visited)
 	case reflect.Slice:
 		if !val.IsNil() {
 			ptr := val.Pointer()
@@ -544,46 +537,132 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 		}
 		fallthrough
 	case reflect.Array:
-		count := 0
-		for i := 0; i < val.Len(); i++ {
-			c, err := t.countRecursive(val.Index(i).Interface(), visited)
+		return countTokensReflectSlice(t, val, visited)
+	case reflect.Map:
+		return countTokensReflectMap(t, val, visited)
+	}
+
+	// Fallback for others (channels, funcs, unhandled types)
+	return t.CountTokens(fmt.Sprintf("%v", v))
+}
+
+func countTokensReflectStruct[T recursiveTokenizer](t T, val reflect.Value, visited map[uintptr]bool) (int, error) {
+	count := 0
+	fields := getExportedFields(val.Type())
+	for _, i := range fields {
+		field := val.Field(i)
+		// Optimization: Avoid Interface() allocation for string fields.
+		if field.Kind() == reflect.String {
+			c, err := t.CountTokens(field.String())
 			if err != nil {
 				return 0, err
 			}
 			count += c
+			continue
 		}
-		return count, nil
-	case reflect.Map:
-		if !val.IsNil() {
-			ptr := val.Pointer()
-			if visited[ptr] {
-				return 0, fmt.Errorf("cycle detected in value")
+		// Optimization: Avoid Interface() allocation for bool fields.
+		if field.Kind() == reflect.Bool {
+			s := "false"
+			if field.Bool() {
+				s = "true"
 			}
-			visited[ptr] = true
-			defer delete(visited, ptr)
+			c, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
 		}
 
-		count := 0
-		iter := val.MapRange()
-		for iter.Next() {
-			// Key
-			kc, err := t.countRecursive(iter.Key().Interface(), visited)
+		c, err := t.countRecursive(field.Interface(), visited)
+		if err != nil {
+			return 0, err
+		}
+		count += c
+	}
+	return count, nil
+}
+
+func countTokensReflectSlice[T recursiveTokenizer](t T, val reflect.Value, visited map[uintptr]bool) (int, error) {
+	count := 0
+	for i := 0; i < val.Len(); i++ {
+		elem := val.Index(i)
+		// Optimization: Avoid Interface() allocation for string elements.
+		if elem.Kind() == reflect.String {
+			c, err := t.CountTokens(elem.String())
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		}
+
+		c, err := t.countRecursive(elem.Interface(), visited)
+		if err != nil {
+			return 0, err
+		}
+		count += c
+	}
+	return count, nil
+}
+
+func countTokensReflectMap[T recursiveTokenizer](t T, val reflect.Value, visited map[uintptr]bool) (int, error) {
+	if !val.IsNil() {
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+	}
+
+	count := 0
+	iter := val.MapRange()
+	for iter.Next() {
+		// Key
+		key := iter.Key()
+		if key.Kind() == reflect.String {
+			kc, err := t.CountTokens(key.String())
 			if err != nil {
 				return 0, err
 			}
 			count += kc
-			// Value
-			vc, err := t.countRecursive(iter.Value().Interface(), visited)
+		} else {
+			kc, err := t.countRecursive(key.Interface(), visited)
+			if err != nil {
+				return 0, err
+			}
+			count += kc
+		}
+
+		// Value
+		entryVal := iter.Value()
+		switch entryVal.Kind() {
+		case reflect.String:
+			vc, err := t.CountTokens(entryVal.String())
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		case reflect.Bool:
+			s := "false"
+			if entryVal.Bool() {
+				s = "true"
+			}
+			vc, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += vc
+		default:
+			vc, err := t.countRecursive(entryVal.Interface(), visited)
 			if err != nil {
 				return 0, err
 			}
 			count += vc
 		}
-		return count, nil
 	}
-
-	// Fallback for others (channels, funcs, unhandled types)
-	return t.CountTokens(fmt.Sprintf("%v", v))
+	return count, nil
 }
 
 // countTokensReflect is the fallback for non-recursiveTokenizer implementations.
@@ -677,33 +756,11 @@ func countTokensReflect(t Tokenizer, v interface{}, visited map[uintptr]bool) (i
 func simpleTokenizeInt(n int) int {
 	// Optimization: Fast path for common integers.
 	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
-	// Positive: 0 to 9,999,999 (7 digits) -> 1 token.
-	// Negative: -1 to -999,999 (7 chars) -> 1 token.
 	if n > -1000000 && n < 10000000 {
 		return 1
 	}
-
-	// n cannot be 0 here because it's handled by the fast path.
-	l := 0
-	if n < 0 {
-		l = 1 // count the sign
-		// Handle MinInt special case where -n overflows
-		// For int64 (usually int is int64), MinInt is -9223372036854775808
-		// which has 19 digits.
-		// We can just divide by 10 once to make it safe to negate,
-		// or process negative numbers.
-	}
-
-	for n != 0 {
-		l++
-		n /= 10
-	}
-
-	count := l / 4
-	if count < 1 {
-		return 1
-	}
-	return count
+	// Fallback to generic int64 implementation
+	return simpleTokenizeInt64(int64(n))
 }
 
 func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}, visited map[uintptr]bool) (int, error) {
@@ -760,19 +817,62 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.
+	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
 	if n > -1000000 && n < 10000000 {
 		return 1
 	}
 
-	// n cannot be 0 here because it's handled by the fast path.
+	// Calculate length using if-chain for performance (approx 4x faster than loop).
 	l := 0
 	if n < 0 {
 		l = 1 // count the sign
+		if n == -9223372036854775808 { // MinInt64
+			l += 19
+			return (l / 4) // 20 / 4 = 5
+		}
+		n = -n
 	}
 
-	for n != 0 {
+	// Unrolled loop for digit counting
+	switch {
+	case n < 10:
 		l++
-		n /= 10
+	case n < 100:
+		l += 2
+	case n < 1000:
+		l += 3
+	case n < 10000:
+		l += 4
+	case n < 100000:
+		l += 5
+	case n < 1000000:
+		l += 6
+	case n < 10000000:
+		l += 7
+	case n < 100000000:
+		l += 8
+	case n < 1000000000:
+		l += 9
+	case n < 10000000000:
+		l += 10
+	case n < 100000000000:
+		l += 11
+	case n < 1000000000000:
+		l += 12
+	case n < 10000000000000:
+		l += 13
+	case n < 100000000000000:
+		l += 14
+	case n < 1000000000000000:
+		l += 15
+	case n < 10000000000000000:
+		l += 16
+	case n < 100000000000000000:
+		l += 17
+	case n < 1000000000000000000:
+		l += 18
+	default:
+		l += 19
 	}
 
 	count := l / 4

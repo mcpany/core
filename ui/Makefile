@@ -85,7 +85,7 @@ build-test-docker:
 
 docker-build-ui:
 	@echo "Building UI Docker image (mcpany/ui:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/ui:latest -f Dockerfile ..
+	@$(DOCKER_BUILD_CMD) -t mcpany/ui:latest -f Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 # Build the UI production build
 build:

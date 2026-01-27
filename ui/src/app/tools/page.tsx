@@ -6,12 +6,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -19,9 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, List, LayoutList, Layers } from "lucide-react";
+import { List, LayoutList, Layers } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
+import { SmartToolSearch } from "@/components/tools/smart-tool-search";
 import { usePinnedTools } from "@/hooks/use-pinned-tools";
 import { ToolTable } from "@/components/tools/tool-table";
 import {
@@ -38,6 +38,7 @@ import {
 export default function ToolsPage() {
   const [tools, setTools] = useState<ToolDefinition[]>([]);
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
+  const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const { isPinned, togglePin, isLoaded } = usePinnedTools();
@@ -55,7 +56,21 @@ export default function ToolsPage() {
   useEffect(() => {
     fetchTools();
     fetchServices();
+    fetchToolUsage();
   }, []);
+
+  const fetchToolUsage = async () => {
+    try {
+        const stats = await apiClient.getToolUsage();
+        const statsMap: Record<string, ToolAnalytics> = {};
+        stats.forEach(s => {
+            statsMap[`${s.name}@${s.serviceId}`] = s;
+        });
+        setToolUsage(statsMap);
+    } catch (e) {
+        console.error("Failed to fetch tool usage", e);
+    }
+  };
 
   const fetchTools = async () => {
     try {
@@ -131,6 +146,7 @@ export default function ToolsPage() {
     return acc;
   }, {} as Record<string, ToolDefinition[]>);
 
+
   if (!isLoaded) {
       return (
           <div className="flex-1 p-8 animate-pulse text-muted-foreground">
@@ -144,15 +160,12 @@ export default function ToolsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
         <div className="flex items-center space-x-4">
-            <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search tools..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-[250px] pl-8 backdrop-blur-sm bg-background/50"
-                />
-            </div>
+            <SmartToolSearch
+                tools={tools}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onToolSelect={openInspector}
+            />
             <div className="flex items-center space-x-2">
                 <Select value={groupBy} onValueChange={(v: any) => setGroupBy(v)}>
                     <SelectTrigger className="w-[180px] backdrop-blur-sm bg-background/50">
@@ -217,6 +230,7 @@ export default function ToolsPage() {
               togglePin={togglePin}
               toggleTool={toggleTool}
               openInspector={openInspector}
+              usageStats={toolUsage}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -238,6 +252,7 @@ export default function ToolsPage() {
                       togglePin={togglePin}
                       toggleTool={toggleTool}
                       openInspector={openInspector}
+                      usageStats={toolUsage}
                     />
                   </AccordionContent>
                 </AccordionItem>

@@ -6,6 +6,7 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+apiKey: ""
 
 image:
   repository: mcpany/server
@@ -111,7 +112,7 @@ database:
     size: 1Gi
   postgresDb: mcpany
   postgresUser: mcpany
-  postgresPassword: "changeit"
+  postgresPassword: "CHANGE_ME_IN_PRODUCTION" # WARN: Default value. Change this in production!
 
 redis:
   image:
@@ -129,7 +130,7 @@ ui:
     type: ClusterIP
     port: 3000
   # Security configuration for the UI
-  apiKey: "test-token" # WARN: Default value for testing. Change this in production!
+  apiKey: "CHANGE_ME_IN_PRODUCTION" # WARN: Default value. Change this in production!
   # To use an existing secret instead of creating one from apiKey:
   # existingSecret: "my-existing-secret"
   secretKey: "api-key"

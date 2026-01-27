@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UpstreamServiceConfig, apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
+import { EnvVarEditor } from "@/components/services/env-var-editor";
+import { SchemaForm } from "./schema-form";
 
 interface InstantiateDialogProps {
     open: boolean;
@@ -33,13 +36,114 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
     const [loading, setLoading] = useState(false);
     const [credentials, setCredentials] = useState<any[]>([]);
 
+    // Command & Env state
+    const [command, setCommand] = useState("");
+    const [envVars, setEnvVars] = useState<Record<string, { plainText?: string; secretId?: string }>>({});
+
+    // Schema state
+    const [parsedSchema, setParsedSchema] = useState<any>(null);
+    const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
+    const [isSchemaValid, setIsSchemaValid] = useState(true);
+
+    // Helper to determine if we should show CLI options
+    // Community servers (which are created dynamically) usually have commandLineService populated.
+    const isCommandLine = !!templateConfig?.commandLineService;
+
     useEffect(() => {
         if (open && templateConfig) {
             setName(`${templateConfig.name}-copy`);
             setAuthId("none");
+
+            if (templateConfig.commandLineService) {
+                // Initialize command
+                setCommand(templateConfig.commandLineService.command || "");
+
+                // Initialize env vars
+                const newEnv: Record<string, { plainText?: string; secretId?: string }> = {};
+                const initialSchemaValues: Record<string, string> = {};
+
+                if (templateConfig.commandLineService.env) {
+                    Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {
+                        const sv = v as any;
+                        let val = "";
+                        if (sv && typeof sv === 'object' && sv.plainText) {
+                            val = sv.plainText;
+                            newEnv[k] = { plainText: val };
+                        } else if (typeof v === 'string') {
+                             // Fallback if the input config was just a record of strings
+                             val = v;
+                             newEnv[k] = { plainText: val };
+                        }
+                        initialSchemaValues[k] = val;
+                    });
+                }
+                setEnvVars(newEnv);
+                setSchemaValues(initialSchemaValues);
+            } else {
+                setCommand("");
+                setEnvVars({});
+                setSchemaValues({});
+            }
+
+            // Parse Schema if available
+            if (templateConfig.configurationSchema) {
+                try {
+                    const schema = JSON.parse(templateConfig.configurationSchema);
+                    setParsedSchema(schema);
+
+                    // Apply defaults if value not already present
+                    const valuesWithDefaults = { ...initialSchemaValues };
+                    if (schema.properties) {
+                        Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
+                            if (!valuesWithDefaults[k] && v.default) {
+                                valuesWithDefaults[k] = String(v.default);
+                            }
+                        });
+                    }
+                    setSchemaValues(valuesWithDefaults);
+                    // Sync defaults to envVars immediately
+                    const envWithDefaults = { ...newEnv };
+                    Object.entries(valuesWithDefaults).forEach(([k, v]) => {
+                        envWithDefaults[k] = { plainText: v };
+                    });
+                    setEnvVars(envWithDefaults);
+                    checkSchemaValidity(valuesWithDefaults, schema);
+
+                } catch (e) {
+                    console.error("Failed to parse configuration schema", e);
+                    setParsedSchema(null);
+                }
+            } else {
+                setParsedSchema(null);
+                setIsSchemaValid(true);
+            }
+
             apiClient.listCredentials().then(setCredentials).catch(console.error);
         }
     }, [open, templateConfig]);
+
+    const checkSchemaValidity = (values: Record<string, string>, schema: any) => {
+        if (!schema || !schema.required) {
+            setIsSchemaValid(true);
+            return;
+        }
+        const missing = schema.required.some((field: string) => !values[field]);
+        setIsSchemaValid(!missing);
+    };
+
+    const handleSchemaChange = (newValues: Record<string, string>) => {
+        setSchemaValues(newValues);
+        // Sync to envVars for compatibility with handleInstantiate logic
+        const newEnv: Record<string, { plainText?: string }> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
+
+        // Update with new values
+        Object.entries(newValues).forEach(([k, v]) => {
+            newEnv[k] = { plainText: v };
+        });
+
+        setEnvVars(newEnv);
+        checkSchemaValidity(newValues, parsedSchema);
+    };
 
     const handleInstantiate = async () => {
         if (!templateConfig) return;
@@ -48,6 +152,22 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
             const newConfig = { ...templateConfig };
             newConfig.name = name;
             newConfig.id = name; // ID is name for now
+
+            // Update CLI specific fields if applicable
+            if (newConfig.commandLineService) {
+                newConfig.commandLineService.command = command;
+
+                // Map EnvVars back to API format
+                const apiEnv: Record<string, any> = {};
+                Object.entries(envVars).forEach(([k, v]) => {
+                    if (v.plainText) {
+                        apiEnv[k] = { plainText: v.plainText };
+                    } else if (v.secretId) {
+                        // Secret handling placeholder
+                    }
+                });
+                newConfig.commandLineService.env = apiEnv;
+            }
 
             if (authId !== 'none') {
                 const cred = credentials.find(c => c.id === authId);
@@ -71,20 +191,50 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Instantiate Service</DialogTitle>
                     <DialogDescription>
                         Create a running instance from this template.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-6 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="service-name-input">Service Name</Label>
                         <Input id="service-name-input" value={name} onChange={e => setName(e.target.value)} />
                     </div>
+
+                    {isCommandLine && (
+                        <>
+                            <div className="grid gap-2">
+                                <Label htmlFor="command-input">Command</Label>
+                                <Textarea
+                                    id="command-input"
+                                    value={command}
+                                    onChange={e => setCommand(e.target.value)}
+                                    className="font-mono text-sm"
+                                    rows={3}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    The command to run the MCP server. Use absolute paths for executables if needed.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-2">
+                                {parsedSchema ? (
+                                    <>
+                                        <Label>Configuration</Label>
+                                        <SchemaForm schema={parsedSchema} value={schemaValues} onChange={handleSchemaChange} />
+                                    </>
+                                ) : (
+                                    <EnvVarEditor initialEnv={envVars} onChange={setEnvVars} />
+                                )}
+                            </div>
+                        </>
+                    )}
+
                     <div className="grid gap-2">
-                        <Label>Authentication</Label>
+                        <Label>Authentication (Optional)</Label>
                         <Select value={authId} onValueChange={setAuthId}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select credential" />
@@ -99,7 +249,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button onClick={handleInstantiate} disabled={loading}>
+                    <Button onClick={handleInstantiate} disabled={loading || (parsedSchema && !isSchemaValid)}>
                         {loading ? "Creating..." : "Create Instance"}
                     </Button>
                 </DialogFooter>

@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"os/exec"
 	"sync"
 
@@ -21,7 +20,6 @@ import (
 // capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
-	Logger  *slog.Logger
 }
 
 // Connect starts the command and returns a connection.
@@ -31,10 +29,7 @@ type StdioTransport struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
-	log := t.Logger
-	if log == nil {
-		log = logging.GetLogger()
-	}
+	log := logging.GetLogger()
 
 	stdin, err := t.Command.StdinPipe()
 	if err != nil {
@@ -70,6 +65,7 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 
 	go func() {
 		defer conn.wg.Done()
+		defer func() { _ = logWriter.Close() }()
 		if _, err := io.Copy(multiStderr, stderr); err != nil && err != io.EOF {
 			log.Error("Failed to copy stderr", "error", err)
 		}

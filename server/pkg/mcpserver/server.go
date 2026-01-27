@@ -545,6 +545,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// Try to get service ID from tool
 	var serviceID string
 	if t, ok := s.GetTool(req.ToolName); ok {
+		req.Tool = t
 		if t.Tool() != nil {
 			serviceID = t.Tool().GetServiceId()
 		}
@@ -563,15 +564,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	defer func() {
-		// Use AddSampleWithLabels directly to avoid emitting an unlabelled metric (which MeasureSinceWithLabels does).
-		// MeasureSince emits in milliseconds.
-		duration := float32(time.Since(startTime).Seconds() * 1000)
-		metrics.AddSampleWithLabels(metricToolsCallLatency, duration, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
-	}()
+	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
+		{Name: "tool", Value: req.ToolName},
+		{Name: "service_id", Value: serviceID},
+	})
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
@@ -580,86 +576,116 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			{Name: "service_id", Value: serviceID},
 		})
 	}
-	if logger.Enabled(ctx, slog.LevelInfo) {
-		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
-	}
+
+	// ⚡ Bolt Optimization: Defer logging until AFTER we have processed the result.
+	// This avoids double-marshaling large result maps (once for logging, once for return).
 
 	if err != nil {
+		// Log error result (nil result usually)
+		if logger.Enabled(ctx, slog.LevelInfo) {
+			logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result})
+		}
 		return nil, err
 	}
 
-	if ctr, ok := result.(*mcp.CallToolResult); ok {
-		return ctr, nil
-	}
-
-	// Handle map[string]any result (e.g. from HTTP tools)
+	var finalResult *mcp.CallToolResult
 	var jsonBytes []byte
 	var marshalErr error
+	var isStructured bool
 
-	if resultMap, ok := result.(map[string]any); ok {
-		// Heuristic: If map looks like CallToolResult (has "content" or "isError"),
-		// try to parse it as such.
+	// 1. Check if it's already a CallToolResult
+	if ctr, ok := result.(*mcp.CallToolResult); ok {
+		finalResult = ctr
+		isStructured = true
+	} else if resultMap, ok := result.(map[string]any); ok {
+		// 2. Handle map[string]any result
+		// Heuristic: If map looks like CallToolResult (has "content" or "isError"), try to parse it.
 		_, hasContent := resultMap["content"]
 		_, hasIsError := resultMap["isError"]
 
 		if hasContent || hasIsError {
 			// ⚡ Bolt Optimization: Try fast path conversion first to avoid JSON roundtrip
 			if res, err := convertMapToCallToolResult(resultMap); err == nil {
-				return res, nil
-			}
-
-			// Convert map to CallToolResult via JSON
-			jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
-			if marshalErr != nil {
-				return nil, fmt.Errorf("failed to marshal tool result map: %w", marshalErr)
-			}
-
-			var callToolRes mcp.CallToolResult
-			if err := fastJSON.Unmarshal(jsonBytes, &callToolRes); err == nil {
-				return &callToolRes, nil
-			}
-			// If unmarshal fails (e.g. content is string instead of array), fall through to default behavior
-			// and treat it as raw data.
-			logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
-
-			// Heuristic: If content is a string, wrap it in a TextContent
-			if content, ok := resultMap["content"].(string); ok {
-				isError := callToolRes.IsError
-				// If IsError is false, it might be because Unmarshal failed (defaulting to false).
-				// Check the raw map to see if it was explicitly set.
-				if val, ok := resultMap["isError"].(bool); ok {
-					isError = val
+				finalResult = res
+				isStructured = true
+			} else {
+				// Conversion failed, fall back to JSON unmarshal
+				// We marshal it to JSON bytes (reused for logging and return)
+				jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
+				if marshalErr == nil {
+					var callToolRes mcp.CallToolResult
+					if err := fastJSON.Unmarshal(jsonBytes, &callToolRes); err == nil {
+						finalResult = &callToolRes
+						isStructured = true
+					} else {
+						// Unmarshal failed
+						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
+						// Fall through to raw data handling
+					}
+				} else {
+					// Marshal failed? Extremely rare for map[string]any unless it has cycles/funcs
+					// Fall through to error handling or raw data
+					logging.GetLogger().Warn("Failed to marshal map[string]any", "error", marshalErr)
 				}
 
-				return &mcp.CallToolResult{
-					Content: []mcp.Content{
-						&mcp.TextContent{
-							Text: content,
-						},
-					},
-					IsError: isError,
-				}, nil
+				// Special case: If content is a string, wrap it in TextContent
+				if finalResult == nil && marshalErr == nil {
+					if content, ok := resultMap["content"].(string); ok {
+						isError := false
+						if val, ok := resultMap["isError"].(bool); ok {
+							isError = val
+						}
+						finalResult = &mcp.CallToolResult{
+							Content: []mcp.Content{
+								&mcp.TextContent{Text: content},
+							},
+							IsError: isError,
+						}
+						isStructured = true
+					}
+				}
 			}
 		}
 	}
 
-	// Default to JSON encoding for the result
-	if jsonBytes == nil {
-		jsonBytes, marshalErr = fastJSON.Marshal(result)
-	}
-	// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
-	text := util.BytesToString(jsonBytes)
-	if marshalErr != nil {
-		text = util.ToString(result)
+	// 3. Fallback: If no structured result identified, treat as raw data
+	if finalResult == nil {
+		if jsonBytes == nil {
+			jsonBytes, marshalErr = fastJSON.Marshal(result)
+		}
+
+		var text string
+		// ⚡ Bolt Optimization: Use Zero-copy conversion for large JSON payloads
+		if marshalErr == nil {
+			text = util.BytesToString(jsonBytes)
+		} else {
+			text = util.ToString(result)
+		}
+
+		finalResult = &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{Text: text},
+			},
+		}
 	}
 
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{
-			&mcp.TextContent{
-				Text: text,
-			},
-		},
-	}, nil
+	// Log the result
+	if logger.Enabled(ctx, slog.LevelInfo) {
+		var logValue slog.Value
+		// If we have a structured result (either directly or converted), use the summarizer.
+		// If we fell back to raw JSON (isStructured=false), reuse the jsonBytes for redacted logging.
+		if !isStructured && jsonBytes != nil && marshalErr == nil {
+			// ⚡ Bolt Optimization: Reuse marshaled bytes for logging (redacted)
+			// This saves a second marshal operation for large maps.
+			logValue = slog.StringValue(util.BytesToString(util.RedactJSON(jsonBytes)))
+		} else {
+			logValue = summarizeCallToolResult(finalResult)
+		}
+
+		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
+	}
+
+	return finalResult, nil
 }
 
 // SetMCPServer sets the MCP server provider for the tool manager.
@@ -890,6 +916,10 @@ func summarizeCallToolResult(ctr *mcp.CallToolResult) slog.Value {
 			contentSummaries = append(contentSummaries, fmt.Sprintf("Image(mime=%s, size=%d bytes)", c.MIMEType, len(c.Data)))
 		case *mcp.EmbeddedResource:
 			res := c.Resource
+			if res == nil {
+				contentSummaries = append(contentSummaries, "Resource(<nil>)")
+				continue
+			}
 			desc := fmt.Sprintf("Resource(uri=%s)", res.URI)
 			if len(res.Blob) > 0 {
 				desc += fmt.Sprintf(" blob=%d bytes", len(res.Blob))

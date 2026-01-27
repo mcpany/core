@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
 import dagre from 'dagre';
 import { Graph, Node as TopologyNode } from '../types/topology';
+import { useTopology } from '../contexts/service-health-context';
 
 /**
  * State and actions for the network graph visualization.
@@ -74,31 +75,20 @@ export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
+    // ⚡ Bolt Optimization: Use global topology data from context to avoid redundant polling
+    const { latestTopology, refreshTopology: refreshContextTopology } = useTopology();
+
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
     const lastStructureHash = useRef<string>('');
-    // ⚡ Bolt Optimization: Track content hash to skip processing identical API responses
-    const lastGraphContentHash = useRef<string>('');
 
     // Keep refs in sync with state
     useEffect(() => { nodesRef.current = nodes; }, [nodes]);
     useEffect(() => { edgesRef.current = edges; }, [edges]);
 
-    const fetchData = useCallback(async () => {
+    const processGraph = useCallback((graph: Graph) => {
         try {
-            const res = await fetch('/api/v1/topology');
-            if (!res.ok) throw new Error('Failed to fetch topology');
-            const graph: Graph = await res.json();
-
-            // ⚡ Bolt Optimization: Check if graph content has actually changed before processing.
-            // This prevents unnecessary object creation, layout calculations, and React state updates.
-            const graphContentHash = JSON.stringify(graph);
-            if (graphContentHash === lastGraphContentHash.current) {
-                return;
-            }
-            lastGraphContentHash.current = graphContentHash;
-
             const newNodes: Node[] = [];
             const newEdges: Edge[] = [];
 
@@ -216,33 +206,16 @@ export function useNetworkTopology() {
             }
 
         } catch (error) {
-            console.error("Failed to fetch topology data:", error);
+            console.error("Failed to process topology data:", error);
         }
     }, [setNodes, setEdges]);
 
-    // Fetch on mount
+    // Update graph when latestTopology from context changes
     useEffect(() => {
-        fetchData();
-        const interval = setInterval(() => {
-            // ⚡ Bolt Optimization: Stop polling when tab is hidden to save resources
-            if (!document.hidden) {
-                fetchData();
-            }
-        }, 5000);
-
-        // ⚡ Bolt Optimization: Refresh immediately when tab becomes visible
-        const onVisibilityChange = () => {
-            if (!document.hidden) {
-                fetchData();
-            }
-        };
-        document.addEventListener("visibilitychange", onVisibilityChange);
-
-        return () => {
-            clearInterval(interval);
-            document.removeEventListener("visibilitychange", onVisibilityChange);
-        };
-    }, [fetchData]);
+        if (latestTopology) {
+            processGraph(latestTopology);
+        }
+    }, [latestTopology, processGraph]);
 
     const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -250,12 +223,15 @@ export function useNetworkTopology() {
     );
 
     const refreshTopology = useCallback(() => {
-        fetchData();
-    }, [fetchData]);
+        refreshContextTopology();
+    }, [refreshContextTopology]);
 
     const autoLayout = useCallback(() => {
-         fetchData();
-    }, [fetchData]);
+         lastStructureHash.current = ''; // Force layout recalculation
+         if (latestTopology) {
+             processGraph(latestTopology);
+         }
+    }, [latestTopology, processGraph]);
 
     return {
         nodes,

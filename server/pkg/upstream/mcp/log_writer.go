@@ -56,6 +56,22 @@ func (w *LogWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+// Close flushes any remaining data in the buffer as a final log line.
+func (w *LogWriter) Close() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	if len(w.buf) > 0 {
+		line := string(w.buf)
+		// Trim CR if present
+		line = strings.TrimSuffix(line, "\r")
+		level := w.detectLevel(line)
+		w.logger.Log(context.Background(), level, line)
+		w.buf = w.buf[:0]
+	}
+	return nil
+}
+
 func (w *LogWriter) detectLevel(line string) slog.Level {
 	lower := strings.ToLower(line)
 

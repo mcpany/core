@@ -149,6 +149,23 @@ We will use the pre-built `wttr.in` configuration available in the examples dire
 
     > **Tip:** Need detailed logs? Add the `--debug` flag to the end of the `run` command.
 
+    **Option 3: Local Installation (from Source)**
+
+    Run the server directly on your machine without Docker.
+
+    ```bash
+    # Clone the repository
+    git clone https://github.com/mcpany/core.git
+    cd core
+
+    # Install dependencies and build
+    make prepare
+    make build
+
+    # Run the server
+    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ```
+
 2.  **Connect Gemini CLI:**
 
     ```bash
@@ -224,6 +241,9 @@ We welcome contributions to MCP Any! This section provides a brief overview of h
     - Runs all unit, integration, and E2E tests to ensure system stability.
 - **Lint**: `make lint`
     - Runs `golangci-lint` and other static analysis tools to maintain code quality.
+- **Check Docs**:
+    - Go: `go run server/tools/check_doc.go server/`
+    - TypeScript: `python3 server/tools/check_ts_doc.py`
 - **Generate**: `make gen`
     - Regenerates Go and TypeScript code from Protocol Buffers definitions.
 - **Clean**: `make clean`
@@ -303,6 +323,7 @@ We strive for high code quality. Please ensure the following before submitting a
     ```bash
     python3 server/tools/check_ts_doc.py
     ```
+  - **Note**: Ensure these checks pass before submitting your PR.
 - **Testing**: Add unit tests for new functionality. Run all tests with:
   ```bash
   make test

@@ -176,11 +176,10 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	// 4. Construct Transport
-	log := logging.GetLogger().With("source", serviceID)
 	if stat, err := os.Stat(tempDir); err != nil {
-		log.Error("Bundle temp dir check failed", "path", tempDir, "error", err)
+		logging.GetLogger().Error("Bundle temp dir check failed", "path", tempDir, "error", err)
 	} else {
-		log.Info("Bundle temp dir exists", "path", tempDir, "mode", stat.Mode())
+		logging.GetLogger().Info("Bundle temp dir exists", "path", tempDir, "mode", stat.Mode())
 	}
 	transport := &BundleDockerTransport{
 		Image:      imageName,
@@ -196,7 +195,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 				ReadOnly: true,
 			},
 		},
-		Logger: log,
 	}
 
 	// 5. Connect and Register
@@ -226,7 +224,6 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		client:          mcpSdkClient,
 		bundleTransport: transport,
 		sessionRegistry: u.sessionRegistry,
-		serviceID:       serviceID,
 	}
 
 	return u.processMCPItems(ctx, serviceID, listToolsResult, bundleConn, bundleConn, cs, toolManager, promptManager, resourceManager, serviceConfig)

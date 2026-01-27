@@ -406,16 +406,16 @@ func TestFloatConsistency(t *testing.T) {
 	tokenizer := NewSimpleTokenizer()
 
 	// These numbers are integers but represented as floats.
-	// We expect the token count to match the standard string representation (%v),
-	// which uses scientific notation for large numbers.
+	// We expect the token count to match the standard JSON string representation,
+	// which avoids scientific notation for these ranges (unlike strconv %v).
 	tests := []struct {
 		val float64
 		want int
 	}{
-		{1234567.0, 3}, // "1.234567e+06" -> 12 chars -> 3 tokens
-		{9999999.0, 3}, // "9.999999e+06" -> 12 chars -> 3 tokens
-		{10000000.0, 1}, // "1e+07" -> 5 chars -> 1 token
-		{123456789.0, 3}, // "1.234568e+08" -> 12 chars -> 3 tokens
+		{1234567.0, 1}, // "1234567" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{9999999.0, 1}, // "9999999" -> 7 chars -> 1.75 -> 1 token (Changed from 3)
+		{10000000.0, 2}, // "10000000" -> 8 chars -> 2 tokens (Changed from 1: "1e+07" was 5 chars)
+		{123456789.0, 2}, // "123456789" -> 9 chars -> 2.25 -> 2 tokens (Changed from 3)
 	}
 
 	for _, tt := range tests {

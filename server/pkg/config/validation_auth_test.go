@@ -23,40 +23,31 @@ func TestValidate_ReproSilentFailures(t *testing.T) {
 	}{
 		{
 			name: "OAuth2 Missing ClientID and Secret",
-			auth: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_Oauth2{
-					Oauth2: &configv1.OAuth2Auth{
-						TokenUrl: proto.String("https://example.com/token"),
-						// ClientID and ClientSecret are missing
-					},
-				},
-			},
+			auth: configv1.Authentication_builder{
+				Oauth2: configv1.OAuth2Auth_builder{
+					TokenUrl: proto.String("https://example.com/token"),
+				}.Build(),
+			}.Build(),
 			expectErr:    true,
 			errSubstring: "client_id is missing",
 		},
 		{
 			name: "OIDC Missing Issuer",
-			auth: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_Oidc{
-					Oidc: &configv1.OIDCAuth{
-						// Issuer is missing
-						Subject: proto.String("sub"),
-					},
-				},
-			},
+			auth: configv1.Authentication_builder{
+				Oidc: configv1.OIDCAuth_builder{
+					Subject: proto.String("sub"),
+				}.Build(),
+			}.Build(),
 			expectErr:    true,
 			errSubstring: "oidc issuer is empty",
 		},
 		{
 			name: "TrustedHeader Missing HeaderName",
-			auth: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_TrustedHeader{
-					TrustedHeader: &configv1.TrustedHeaderAuth{
-						// HeaderName is missing
-						HeaderValue: proto.String("secret"),
-					},
-				},
-			},
+			auth: configv1.Authentication_builder{
+				TrustedHeader: configv1.TrustedHeaderAuth_builder{
+					HeaderValue: proto.String("secret"),
+				}.Build(),
+			}.Build(),
 			expectErr:    true,
 			errSubstring: "trusted header name is empty",
 		},
@@ -65,19 +56,17 @@ func TestValidate_ReproSilentFailures(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Wrap in a dummy service to use Validate
-			config := &configv1.McpAnyServerConfig{
+			config := configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("test-service"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
 						UpstreamAuth: tt.auth,
-					},
+					}.Build(),
 				},
-			}
+			}.Build()
 
 			errs := Validate(ctx, config, Server)
 

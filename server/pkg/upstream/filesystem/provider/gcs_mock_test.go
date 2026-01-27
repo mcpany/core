@@ -233,9 +233,9 @@ func TestGcsProvider_Methods_WithMock(t *testing.T) {
 		return storage.NewClient(ctx, option.WithHTTPClient(httpClient))
 	}
 
-	config := &configv1.GcsFs{
+	config := configv1.GcsFs_builder{
 		Bucket: proto.String("my-bucket"),
-	}
+	}.Build()
 
 	p, err := NewGcsProvider(context.Background(), config)
 	require.NoError(t, err)
@@ -401,7 +401,7 @@ func TestGcsFile_ReadAt_WithMock(t *testing.T) {
 		return storage.NewClient(ctx, option.WithHTTPClient(httpClient))
 	}
 
-	config := &configv1.GcsFs{Bucket: proto.String("my-bucket")}
+	config := configv1.GcsFs_builder{Bucket: proto.String("my-bucket")}.Build()
 	p, _ := NewGcsProvider(context.Background(), config)
 	fs := p.GetFs()
 
@@ -484,7 +484,7 @@ func TestGcsFile_WriteString_WithMock(t *testing.T) {
 		return storage.NewClient(ctx, option.WithHTTPClient(httpClient))
 	}
 
-	config := &configv1.GcsFs{Bucket: proto.String("my-bucket")}
+	config := configv1.GcsFs_builder{Bucket: proto.String("my-bucket")}.Build()
 	p, _ := NewGcsProvider(context.Background(), config)
 	fs := p.GetFs()
 

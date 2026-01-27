@@ -234,6 +234,7 @@ var sensitiveKeys = []string{
 	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
 	"passwords", "tokens", "api_keys", "apikeys",
 	"authentication", "authenticator", "credentials", "secrets",
+	"passphrase", "passphrases", "ssh_key",
 }
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
@@ -456,7 +457,7 @@ var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?
 // We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
 // the path or subsequent text (e.g. multiple DSNs).
 // Matches scheme://user:password@
-var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^/?#\s]*)@`)
+var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).
@@ -499,6 +500,15 @@ func RedactDSN(dsn string) string {
 		if strings.EqualFold(u.Scheme, "mailto") {
 			return dsn
 		}
+
+		// If it's a standard hierarchical URL (not Opaque) and Host is clean (no @),
+		// and we didn't find User info (checked above),
+		// then we assume it's safe and doesn't contain credentials.
+		// We also require Host to be non-empty, because an empty Host might imply
+		// the credentials are hiding in the path (e.g. "scheme:/pass@host").
+		if u.Opaque == "" && u.Host != "" && !strings.Contains(u.Host, "@") {
+			return dsn
+		}
 	}
 
 	// Fallback to regex if parsing fails (e.g. not a valid URL)
@@ -510,7 +520,7 @@ func RedactDSN(dsn string) string {
 	// (e.g. containing colons or @) but assumes a single DSN string.
 	if strings.Contains(dsn, "://") {
 		// Use greedy match to handle special characters in password
-		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@")
+		dsn = dsnSchemeRegex.ReplaceAllString(dsn, "$1:"+redactedPlaceholder+"@$3$4")
 
 		// Fallback for cases without '@' (e.g. redis://:password where url.Parse fails due to invalid port)
 		if dsnFallbackNoAtRegex.MatchString(dsn) {
@@ -536,6 +546,16 @@ func RedactDSN(dsn string) string {
 					return m
 				}
 
+				// Fix: http/https often use named ports (e.g. http://myservice:web) or are misinterpreted
+				// as user:password when missing @. We should not redact if it looks like http/https.
+				// However, if the DSN contains an '@', it strongly suggests credentials, so we should allow redaction
+				// (even if dsnSchemeRegex failed to match it for some reason).
+				// We only skip redaction if it's http/https AND there is no '@'.
+				trimmedDSN := strings.TrimSpace(strings.ToLower(dsn))
+				if (strings.HasPrefix(trimmedDSN, "http://") || strings.HasPrefix(trimmedDSN, "https://")) && !strings.Contains(dsn, "@") {
+					return m
+				}
+
 				return prefix + ":" + redactedPlaceholder
 			})
 		}
@@ -553,21 +573,61 @@ func RedactSecrets(text string, secrets []string) string {
 		return text
 	}
 
-	// Sort secrets by length descending to avoid partial replacements (e.g. replacing "pass" in "password")
-	// Although for random secrets this might be less of an issue, but good practice.
-	// Making a copy to avoid mutating the input slice.
-	sortedSecrets := make([]string, len(secrets))
-	copy(sortedSecrets, secrets)
+	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
+	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
+	var mask []bool
+	foundAny := false
 
-	sort.Slice(sortedSecrets, func(i, j int) bool {
-		return len(sortedSecrets[i]) > len(sortedSecrets[j])
-	})
-
-	for _, secret := range sortedSecrets {
+	for _, secret := range secrets {
 		if secret == "" {
 			continue
 		}
-		text = strings.ReplaceAll(text, secret, redactedPlaceholder)
+
+		start := 0
+		for {
+			idx := strings.Index(text[start:], secret)
+			if idx == -1 {
+				break
+			}
+			absoluteIdx := start + idx
+			end := absoluteIdx + len(secret)
+
+			if mask == nil {
+				mask = make([]bool, len(text))
+			}
+
+			// Mark bytes as sensitive
+			for i := absoluteIdx; i < end; i++ {
+				mask[i] = true
+			}
+			foundAny = true
+
+			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
+			// (e.g. "aaaa" with secret "aa" -> mask 0-1, 2-3).
+			start = end
+		}
 	}
-	return text
+
+	if !foundAny {
+		return text
+	}
+
+	var sb strings.Builder
+	sb.Grow(len(text))
+
+	i := 0
+	n := len(text)
+	for i < n {
+		if mask[i] {
+			sb.WriteString(redactedPlaceholder)
+			// Skip until end of masked region
+			for i < n && mask[i] {
+				i++
+			}
+		} else {
+			sb.WriteByte(text[i])
+			i++
+		}
+	}
+	return sb.String()
 }

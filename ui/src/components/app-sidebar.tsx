@@ -18,13 +18,15 @@ import {
   Key,
   Database,
   User,
+  Users,
   ChevronsUpDown,
   LogOut,
   Layers,
   ShoppingBag,
   ShieldCheck,
   Zap,
-  ClipboardCheck
+  ClipboardCheck,
+  Bug
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -64,6 +66,11 @@ const platformItems = [
     title: "Network Graph",
     url: "/network",
     icon: Network,
+  },
+  {
+    title: "Diagnostics",
+    url: "/diagnostics",
+    icon: Activity,
   },
   {
     title: "Live Logs",
@@ -109,6 +116,11 @@ const devItems = [
     icon: Bot,
   },
   {
+    title: "Inspector",
+    url: "/inspector",
+    icon: Bug,
+  },
+  {
     title: "Schema Validation",
     url: "/playground/schema",
     icon: ShieldCheck,
@@ -148,10 +160,15 @@ const configItems = [
     icon: Server,
   },
   {
+    title: "Profiles",
+    url: "/profiles",
+    icon: User,
+  },
+  {
     title: "Users",
 
     url: "/users",
-    icon: User,
+    icon: Users,
   },
   {
     title: "Credentials",

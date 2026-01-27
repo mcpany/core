@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"strings"
 	"sync"
 
@@ -47,7 +46,6 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 // running inside a Docker container. It manages the container lifecycle.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
-	Logger      *slog.Logger
 }
 
 // Connect establishes a connection to the service within the Docker container.
@@ -57,11 +55,7 @@ type DockerTransport struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
-	log := t.Logger
-	if log == nil {
-		log = logging.GetLogger()
-	}
-
+	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
@@ -158,6 +152,7 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	go func() {
 		defer func() { _ = stdoutWriter.Close() }()
 		logWriter := NewLogWriter(log)
+		defer func() { _ = logWriter.Close() }()
 		// Write stderr to both capture buffer and log
 		multiStderr := io.MultiWriter(logWriter, stderrCapture)
 		_, err := stdcopy.StdCopy(stdoutWriter, multiStderr, hijackedResp.Reader)
@@ -365,6 +360,7 @@ func (c *dockerReadWriteCloser) Close() error {
 	_ = c.cli.Close()
 	return err
 }
+
 
 // tailBuffer is a thread-safe buffer that keeps the last N bytes written to it.
 type tailBuffer struct {

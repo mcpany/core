@@ -3,6 +3,8 @@
 
 edition = "2023";
 
+option features.field_presence = IMPLICIT;
+
 package examples.userservice.v1;
 
 // Import the MCP options. The path must be findable by protoc.

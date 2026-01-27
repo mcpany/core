@@ -14,16 +14,16 @@ import (
 
 func TestNewRedactor(t *testing.T) {
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 	assert.NotNil(t, r)
 	assert.Len(t, r.customPatterns, 1)
 
 	// Test with invalid regex
-	cfg.CustomPatterns = []string{`[`}
+	cfg.SetCustomPatterns([]string{`[`})
 	r = NewRedactor(cfg, slog.Default())
 	assert.NotNil(t, r)
 	assert.Len(t, r.customPatterns, 0)
@@ -34,17 +34,17 @@ func TestNewRedactor(t *testing.T) {
 
 	// Test with disabled config
 	disabled := false
-	cfg.Enabled = &disabled
+	cfg.SetEnabled(disabled)
 	r = NewRedactor(cfg, slog.Default())
 	assert.Nil(t, r)
 }
 
 func TestRedactString(t *testing.T) {
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 
 	tests := []struct {
@@ -99,10 +99,10 @@ func TestRedactString_NilRedactor(t *testing.T) {
 
 func TestRedactStruct(t *testing.T) {
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 
 	input := map[string]interface{}{
@@ -144,10 +144,10 @@ func TestRedactStruct_NilRedactor(t *testing.T) {
 
 func TestRedactValue(t *testing.T) {
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 
 	tests := []struct {
@@ -207,10 +207,10 @@ func TestRedactValue_NilRedactor(t *testing.T) {
 
 func TestRedactJSON(t *testing.T) {
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 
 	input := []byte(`{
@@ -243,9 +243,9 @@ func TestRedactJSON_NilRedactor(t *testing.T) {
 
 func TestRedactJSON_Empty(t *testing.T) {
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled: &enabled,
-	}
+	}.Build()
 	r := NewRedactor(cfg, slog.Default())
 
 	output, err := r.RedactJSON(nil)

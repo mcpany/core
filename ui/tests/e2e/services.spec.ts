@@ -43,11 +43,11 @@ test.describe('Services Feature', () => {
         }
     });
 
-    await page.goto('/services');
+    await page.goto('/upstream-services');
   });
 
   test('should list services, allow toggle, and manage services', async ({ page }) => {
-    await expect(page.locator('h2')).toContainText('Services');
+    await expect(page.locator('h1')).toContainText('Services');
 
     // Verify services are listed
     await expect(page.getByText('Payment Gateway')).toBeVisible();
@@ -91,5 +91,27 @@ test.describe('Services Feature', () => {
 
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
     await page.getByRole('button', { name: 'Cancel' }).click();
+  });
+  test('should navigate to logs from service list', async ({ page }) => {
+    const serviceName = 'Payment Gateway';
+    const row = page.locator('tr').filter({ hasText: serviceName });
+
+    // Open menu
+    await row.getByRole('button', { name: 'Open menu' }).click();
+
+    // Check View Logs link
+    const viewLogsLink = page.getByRole('menuitem', { name: 'View Logs' });
+    await expect(viewLogsLink).toBeVisible();
+
+    // Click and verify navigation
+    await viewLogsLink.click();
+
+    // Should navigate to logs page with query param
+    await expect(page).toHaveURL(/.*\/logs.*source=Payment/);
+
+    // Verify filter is applied (assuming log-stream uses query param to filter)
+    // We can check if the source dropdown or some indicator reflects the selection
+    // Based on implementation: source query param sets filterSource
+    // await expect(page.getByText('Payment Gateway')).toBeVisible(); // Source selector should show it
   });
 });

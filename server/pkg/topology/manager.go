@@ -26,12 +26,15 @@ type Manager struct {
 
 // SessionStats contains statistics about a topology session.
 type SessionStats struct {
-	ID           string
-	Metadata     map[string]string
-	LastActive   time.Time
-	RequestCount int64
-	TotalLatency time.Duration
-	ErrorCount   int64
+	ID             string
+	Metadata       map[string]string
+	LastActive     time.Time
+	RequestCount   int64
+	TotalLatency   time.Duration
+	ErrorCount     int64
+	ServiceCounts  map[string]int64         // Per service request count
+	ServiceErrors  map[string]int64         // Per service error count
+	ServiceLatency map[string]time.Duration // Per service latency
 }
 
 // Stats aggregated metrics.
@@ -43,9 +46,17 @@ type Stats struct {
 
 // MinuteStats tracks stats for a single minute.
 type MinuteStats struct {
+	Requests     int64
+	Errors       int64
+	Latency      int64 // Total latency in ms
+	ServiceStats map[string]*ServiceTrafficStats
+}
+
+// ServiceTrafficStats tracks stats for a single service in a minute.
+type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
-	Latency  int64 // Total latency in ms
+	Latency  int64
 }
 
 // TrafficPoint represents a data point for the traffic chart.
@@ -75,7 +86,8 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 //
 // sessionID is the sessionID.
 // meta is the meta.
-func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool) {
+// serviceID is the serviceID (optional).
+func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -89,21 +101,40 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 		}
 
 		m.sessions[sessionID] = &SessionStats{
-			ID:       sessionID,
-			Metadata: strMeta,
+			ID:             sessionID,
+			Metadata:       strMeta,
+			ServiceCounts:  make(map[string]int64),
+			ServiceErrors:  make(map[string]int64),
+			ServiceLatency: make(map[string]time.Duration),
 		}
 	}
-	m.sessions[sessionID].LastActive = time.Now()
-	m.sessions[sessionID].RequestCount++
-	m.sessions[sessionID].TotalLatency += latency
+	session := m.sessions[sessionID]
+	session.LastActive = time.Now()
+	session.RequestCount++
+	session.TotalLatency += latency
 	if isError {
-		m.sessions[sessionID].ErrorCount++
+		session.ErrorCount++
+	}
+
+	if serviceID != "" {
+		if session.ServiceCounts == nil {
+			session.ServiceCounts = make(map[string]int64)
+			session.ServiceErrors = make(map[string]int64)
+			session.ServiceLatency = make(map[string]time.Duration)
+		}
+		session.ServiceCounts[serviceID]++
+		session.ServiceLatency[serviceID] += latency
+		if isError {
+			session.ServiceErrors[serviceID]++
+		}
 	}
 
 	// Record traffic history
 	now := time.Now().Truncate(time.Minute).Unix()
 	if _, ok := m.trafficHistory[now]; !ok {
-		m.trafficHistory[now] = &MinuteStats{}
+		m.trafficHistory[now] = &MinuteStats{
+			ServiceStats: make(map[string]*ServiceTrafficStats),
+		}
 	}
 	stats := m.trafficHistory[now]
 	stats.Requests++
@@ -112,8 +143,23 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 		stats.Errors++
 	}
 
+	if serviceID != "" {
+		if stats.ServiceStats == nil {
+			stats.ServiceStats = make(map[string]*ServiceTrafficStats)
+		}
+		if _, ok := stats.ServiceStats[serviceID]; !ok {
+			stats.ServiceStats[serviceID] = &ServiceTrafficStats{}
+		}
+		sStats := stats.ServiceStats[serviceID]
+		sStats.Requests++
+		sStats.Latency += latency.Milliseconds()
+		if isError {
+			sStats.Errors++
+		}
+	}
+
 	// Cleanup old history (older than 24h) occasionally (every 100 requests roughly)
-	if m.sessions[sessionID].RequestCount%100 == 0 {
+	if session.RequestCount%100 == 0 {
 		cutoff := time.Now().Add(-24 * time.Hour).Unix()
 		for t := range m.trafficHistory {
 			if t < cutoff {
@@ -124,7 +170,8 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 }
 
 // GetStats returns the aggregated stats.
-func (m *Manager) GetStats() Stats {
+// serviceID is optional.
+func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -133,9 +180,17 @@ func (m *Manager) GetStats() Stats {
 	var totalErrors int64
 
 	for _, session := range m.sessions {
-		totalRequests += session.RequestCount
-		totalLatency += session.TotalLatency
-		totalErrors += session.ErrorCount
+		if serviceID != "" {
+			if count, ok := session.ServiceCounts[serviceID]; ok {
+				totalRequests += count
+				totalLatency += session.ServiceLatency[serviceID]
+				totalErrors += session.ServiceErrors[serviceID]
+			}
+		} else {
+			totalRequests += session.RequestCount
+			totalLatency += session.TotalLatency
+			totalErrors += session.ErrorCount
+		}
 	}
 
 	var avgLatency time.Duration
@@ -154,8 +209,8 @@ func (m *Manager) GetStats() Stats {
 }
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.
-// GetTrafficHistory returns the traffic history for the last 24 hours.
-func (m *Manager) GetTrafficHistory() []TrafficPoint {
+// serviceID is optional.
+func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -170,9 +225,17 @@ func (m *Manager) GetTrafficHistory() []TrafficPoint {
 		stats := m.trafficHistory[key]
 		var reqs, errs, lat int64
 		if stats != nil {
-			reqs = stats.Requests
-			errs = stats.Errors
-			lat = stats.Latency
+			if serviceID != "" && stats.ServiceStats != nil {
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					reqs = sStats.Requests
+					errs = sStats.Errors
+					lat = sStats.Latency
+				}
+			} else if serviceID == "" {
+				reqs = stats.Requests
+				errs = stats.Errors
+				lat = stats.Latency
+			}
 		}
 
 		// Calculate avg latency for the point if needed, or just total.
@@ -258,25 +321,24 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	coreNode := &topologyv1.Node{
-		Id:       "mcp-core",
-		Label:    "MCP Any",
-		Type:     topologyv1.NodeType_NODE_TYPE_CORE,
-		Status:   topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-		Children: []*topologyv1.Node{},
-	}
+	coreNode := topologyv1.Node_builder{
+		Id:     "mcp-core",
+		Label:  "MCP Any",
+		Type:   topologyv1.NodeType_NODE_TYPE_CORE,
+		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
+	}.Build()
 
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
 		tools := m.toolManager.ListTools()
 		for _, svc := range services {
-			svcNode := &topologyv1.Node{
+			svcNode := topologyv1.Node_builder{
 				Id:     "svc-" + svc.GetName(),
 				Label:  svc.GetName(),
 				Type:   topologyv1.NodeType_NODE_TYPE_SERVICE,
 				Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-			}
+			}.Build()
 			if svc.GetDisable() {
 				svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_INACTIVE
 			}
@@ -284,20 +346,20 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			// Add Tools
 			for _, t := range tools {
 				if t.Tool().GetServiceId() == svc.GetName() {
-					toolNode := &topologyv1.Node{
+					toolNode := topologyv1.Node_builder{
 						Id:     "tool-" + t.Tool().GetName(),
 						Label:  t.Tool().GetName(),
 						Type:   topologyv1.NodeType_NODE_TYPE_TOOL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}
+					}.Build()
 
 					// Mock API Call node
-					apiNode := &topologyv1.Node{
+					apiNode := topologyv1.Node_builder{
 						Id:     "api-" + t.Tool().GetName(),
 						Label:  "POST /" + t.Tool().GetName(),
 						Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}
+					}.Build()
 					toolNode.Children = append(toolNode.Children, apiNode)
 
 					svcNode.Children = append(svcNode.Children, toolNode)
@@ -310,30 +372,30 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 
 	// Add Middleware Nodes (Static or Dynamic)
 	// For now, these are static infrastructure components in the pipeline
-	middlewareNode := &topologyv1.Node{
+	middlewareNode := topologyv1.Node_builder{
 		Id:     "middleware-pipeline",
 		Label:  "Middleware Pipeline",
 		Type:   topologyv1.NodeType_NODE_TYPE_MIDDLEWARE,
 		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 		Children: []*topologyv1.Node{
-			{Id: "mw-auth", Label: "Authentication", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE},
-			{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE},
+			topologyv1.Node_builder{Id: "mw-auth", Label: "Authentication", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
+			topologyv1.Node_builder{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
-	}
+	}.Build()
 	coreNode.Children = append(coreNode.Children, middlewareNode)
 
 	// Add Webhooks Node
 	// This would ideally come from the WebhookManager
-	webhookNode := &topologyv1.Node{
+	webhookNode := topologyv1.Node_builder{
 		Id:     "webhooks",
 		Label:  "Webhooks",
 		Type:   topologyv1.NodeType_NODE_TYPE_WEBHOOK,
 		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 		// Example configured webhook
 		Children: []*topologyv1.Node{
-			{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE},
+			topologyv1.Node_builder{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
-	}
+	}.Build()
 	coreNode.Children = append(coreNode.Children, webhookNode)
 
 	// Build Clients list from active sessions
@@ -349,18 +411,18 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			label = name
 		}
 
-		clientNode := &topologyv1.Node{
+		clientNode := topologyv1.Node_builder{
 			Id:     "client-" + session.ID,
 			Label:  label,
 			Type:   topologyv1.NodeType_NODE_TYPE_CLIENT,
 			Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 			// Clients rely on UI to draw link to Core
-		}
+		}.Build()
 		clients = append(clients, clientNode)
 	}
 
-	return &topologyv1.Graph{
+	return topologyv1.Graph_builder{
 		Clients: clients,
 		Core:    coreNode,
-	}
+	}.Build()
 }

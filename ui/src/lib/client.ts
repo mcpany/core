@@ -13,6 +13,7 @@
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
@@ -23,7 +24,7 @@ import { BrowserHeaders } from 'browser-headers';
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
-export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
+export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
     /**
      * The last error message encountered by the service, if any.
      */
@@ -35,7 +36,7 @@ export interface UpstreamServiceConfig extends BaseUpstreamServiceConfig {
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -65,6 +66,12 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         const token = localStorage.getItem('mcp_auth_token');
         if (token) {
             headers.set('Authorization', `Basic ${token}`);
+        }
+    } else {
+        // Server-side: Inject API Key from env
+        const apiKey = process.env.MCPANY_API_KEY;
+        if (apiKey) {
+            headers.set('X-API-Key', apiKey);
         }
     }
     return fetch(input, { ...init, headers });
@@ -148,6 +155,39 @@ export interface ToolFailureStats {
     totalCalls: number;
 }
 
+/**
+ * Tool usage analytics.
+ */
+export interface ToolAnalytics {
+    name: string;
+    serviceId: string;
+    totalCalls: number;
+    successRate: number;
+}
+
+
+/**
+ * Metric definition for dashboard.
+ */
+export interface Metric {
+    label: string;
+    value: string;
+    change?: string;
+    trend?: "up" | "down" | "neutral";
+    icon: string;
+    subLabel?: string;
+}
+
+
+export interface SystemStatus {
+    uptime_seconds: number;
+    active_connections: number;
+    bound_http_port: number;
+    bound_grpc_port: number;
+    version: string;
+    security_warnings: string[];
+}
+
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -194,6 +234,9 @@ export const apiClient = {
             postCallHooks: s.post_call_hooks,
             lastError: s.last_error,
             toolCount: s.tool_count,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -227,6 +270,9 @@ export const apiClient = {
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
+                         toolExportPolicy: s.tool_export_policy,
+                         promptExportPolicy: s.prompt_export_policy,
+                         resourceExportPolicy: s.resource_export_policy,
                      };
                  }
                  return data;
@@ -257,9 +303,9 @@ export const apiClient = {
      * @returns A promise that resolves to the service status.
      */
     getServiceStatus: async (name: string) => {
-        // Fallback or keep as TODO - REST endpoint might be /api/v1/services/{name}/status ?
-        // For E2E, we mainly check list. Let's assume list covers status.
-        return {} as any;
+        const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
+        if (!res.ok) throw new Error('Failed to fetch service status');
+        return res.json();
     },
 
     /**
@@ -315,6 +361,15 @@ export const apiClient = {
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
         }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -366,6 +421,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -433,6 +497,15 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.toolExportPolicy) {
+            payload.tool_export_policy = config.toolExportPolicy;
+        }
+        if (config.promptExportPolicy) {
+            payload.prompt_export_policy = config.promptExportPolicy;
+        }
+        if (config.resourceExportPolicy) {
+            payload.resource_export_policy = config.resourceExportPolicy;
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
@@ -682,20 +755,26 @@ export const apiClient = {
 
     /**
      * Gets the dashboard traffic history.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the traffic history points.
      */
-    getDashboardTraffic: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/traffic');
+    getDashboardTraffic: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/traffic';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
         return res.json();
     },
 
     /**
      * Gets the top used tools.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the top tools stats.
      */
-    getTopTools: async () => {
-        const res = await fetchWithAuth('/api/v1/dashboard/top-tools');
+    getTopTools: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/top-tools';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
         return res.json();
@@ -716,14 +795,63 @@ export const apiClient = {
     /**
     /**
      * Gets the tools with highest failure rates.
+     * @param serviceId Optional service ID to filter by.
      * @returns A promise that resolves to the tool failure stats.
      */
-    getToolFailures: async (): Promise<ToolFailureStats[]> => {
-        const res = await fetchWithAuth('/api/v1/dashboard/tool-failures');
+    getToolFailures: async (serviceId?: string): Promise<ToolFailureStats[]> => {
+        let url = '/api/v1/dashboard/tool-failures';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
         if (!res.ok) return [];
         return res.json();
     },
 
+    /**
+     * Gets the tool usage analytics.
+     * @param serviceId Optional service ID to filter by.
+     * @returns A promise that resolves to the tool usage stats.
+     */
+    getToolUsage: async (serviceId?: string): Promise<ToolAnalytics[]> => {
+        let url = '/api/v1/dashboard/tool-usage';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) return [];
+        return res.json();
+    },
+
+
+    /**
+     * Gets the system status.
+     * @returns A promise that resolves to the system status.
+     */
+    getSystemStatus: async (): Promise<SystemStatus> => {
+        const res = await fetchWithAuth('/api/v1/system/status');
+        if (!res.ok) throw new Error('Failed to fetch system status');
+        return res.json();
+    },
+
+    /**
+     * Gets the dashboard metrics.
+     * @param serviceId Optional service ID to filter by.
+     * @returns A promise that resolves to the metrics list.
+     */
+    getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
+        let url = '/api/v1/dashboard/metrics';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch dashboard metrics. Is the server running and authenticated?');
+        return res.json();
+    },
+
+    /**
+     * Gets the latest execution traces.
+     * @returns A promise that resolves to the traces list.
+     */
+    getTraces: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/debug/traces'); // Use consistent API v1 prefix
+        if (!res.ok) throw new Error('Failed to fetch traces');
+        return res.json();
+    },
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).
@@ -754,33 +882,147 @@ export const apiClient = {
         return res.json();
     },
 
-    // Stack Management
+    // Stack Management (Collections)
 
     /**
-     * Gets the configuration for a stack.
-     * @param stackId The ID of the stack.
-     * @returns A promise that resolves to the stack configuration (as text/yaml).
+     * Lists all service collections (stacks).
+     * @returns A promise that resolves to a list of collections.
      */
-    getStackConfig: async (stackId: string) => {
-        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
-        if (!res.ok) throw new Error('Failed to fetch stack config');
-        return res.text(); // Config is likely raw YAML/JSON text
+    listCollections: async () => {
+        const res = await fetchWithAuth('/api/v1/collections');
+        if (!res.ok) throw new Error('Failed to list collections');
+        return res.json();
     },
 
     /**
-     * Saves the configuration for a stack.
+     * Gets a single service collection (stack) by its name.
+     * @param name The name of the collection.
+     * @returns A promise that resolves to the collection.
+     */
+    getCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}`);
+        if (!res.ok) throw new Error('Failed to get collection');
+        return res.json();
+    },
+
+    /**
+     * Saves a service collection (stack).
+     * @param collection The collection to save.
+     * @returns A promise that resolves when the collection is saved.
+     */
+    saveCollection: async (collection: any) => {
+        // Decide if create or update based on existence?
+        // The API might expect POST for create, PUT for update.
+        // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?
+        // But stack-editor logic handles "saving".
+        // The endpoint logic in api.go: handleCollections is POST, handleCollectionDetail is PUT.
+        // We'll use PUT if we have a name in the URL, POST otherwise?
+        // But `saveStackConfig` was replacing config.
+        // Let's assume we update an existing one usually.
+        const res = await fetchWithAuth(`/api/v1/collections/${collection.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collection)
+        });
+        if (!res.ok) {
+             // If PUT fails (e.g. not found), try POST to create?
+             // But UI should know if it's new.
+             // For now just error.
+             throw new Error('Failed to save collection');
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes a service collection (stack).
+     * @param name The name of the collection to delete.
+     * @returns A promise that resolves when the collection is deleted.
+     */
+    deleteCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete collection');
+        return {};
+    },
+
+    /**
+     * Gets the configuration for a stack (Compatibility wrapper).
      * @param stackId The ID of the stack.
-     * @param config The configuration content.
+     * @returns A promise that resolves to the stack configuration.
+     */
+    getStackConfig: async (stackId: string) => {
+        // Map to getCollection
+        return apiClient.getCollection(stackId);
+    },
+
+    /**
+     * Saves the configuration for a stack (Compatibility wrapper).
+     * @param stackId The ID of the stack.
+     * @param config The configuration content (Collection object).
      * @returns A promise that resolves when the config is saved.
      */
-    saveStackConfig: async (stackId: string, config: string) => {
-        const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' }, // Or application/yaml
-            body: config
-        });
-        if (!res.ok) throw new Error('Failed to save stack config');
+    saveStackConfig: async (stackId: string, config: any) => {
+        // Map to saveCollection. Ensure name is set.
+        const collection = typeof config === 'string' ? JSON.parse(config) : config;
+        if (!collection.name) collection.name = stackId;
+        return apiClient.saveCollection(collection);
+    },
+
+
+    // User Management
+
+    /**
+     * Lists all profiles.
+     * @returns A promise that resolves to a list of profiles.
+     */
+    listProfiles: async () => {
+        const res = await fetchWithAuth('/api/v1/profiles');
+        if (!res.ok) throw new Error('Failed to fetch profiles');
         return res.json();
+    },
+
+    /**
+     * Creates a new profile.
+     * @param profile The profile definition.
+     * @returns A promise that resolves to the created profile.
+     */
+    createProfile: async (profile: ProfileDefinition) => {
+        const res = await fetchWithAuth('/api/v1/profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profile)
+        });
+        if (!res.ok) throw new Error('Failed to create profile');
+        return res.json();
+    },
+
+    /**
+     * Updates an existing profile.
+     * @param profile The profile definition.
+     * @returns A promise that resolves to the updated profile.
+     */
+    updateProfile: async (profile: ProfileDefinition) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${profile.name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profile)
+        });
+        if (!res.ok) throw new Error('Failed to update profile');
+        return res.json();
+    },
+
+    /**
+     * Deletes a profile.
+     * @param name The name of the profile to delete.
+     * @returns A promise that resolves when the profile is deleted.
+     */
+    deleteProfile: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/profiles/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete profile');
+        return {};
     },
 
     // User Management
@@ -1005,6 +1247,9 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
+            toolExportPolicy: s.tool_export_policy,
+            promptExportPolicy: s.prompt_export_policy,
+            resourceExportPolicy: s.resource_export_policy,
         }));
     },
 
@@ -1047,6 +1292,15 @@ export const apiClient = {
         }
         if (template.postCallHooks) {
             payload.post_call_hooks = template.postCallHooks;
+        }
+        if (template.toolExportPolicy) {
+            payload.tool_export_policy = template.toolExportPolicy;
+        }
+        if (template.promptExportPolicy) {
+            payload.prompt_export_policy = template.promptExportPolicy;
+        }
+        if (template.resourceExportPolicy) {
+            payload.resource_export_policy = template.resourceExportPolicy;
         }
 
         const res = await fetchWithAuth('/api/v1/templates', {

@@ -5,8 +5,8 @@
 
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
-import { Graph, NodeType, NodeStatus } from '@/types/topology';
+import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
+import { Graph, NodeStatus } from '@/types/topology';
 
 /**
  * MetricPoint represents a single data point for service health metrics at a specific time.
@@ -27,9 +27,17 @@ export interface MetricPoint {
 interface ServiceHealthContextType {
     getServiceHistory: (serviceId: string) => MetricPoint[];
     getServiceCurrentHealth: (serviceId: string) => MetricPoint | null;
+    latestTopology: Graph | null;
+    refreshTopology: () => Promise<void>;
+}
+
+interface TopologyContextType {
+    latestTopology: Graph | null;
+    refreshTopology: () => Promise<void>;
 }
 
 const ServiceHealthContext = createContext<ServiceHealthContextType | undefined>(undefined);
+const TopologyContext = createContext<TopologyContextType | undefined>(undefined);
 
 /** Maximum number of history points to keep (30 points * 5s = 2.5 minutes). */
 const MAX_HISTORY_POINTS = 30;
@@ -45,71 +53,87 @@ const POLLING_INTERVAL = 5000;
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
+    const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
+    const lastTopologyText = useRef<string>('');
+    const lastGraph = useRef<Graph | null>(null);
 
-    useEffect(() => {
-        const fetchTopology = async () => {
-            if (document.hidden) return;
-            try {
-                // Handle relative URL for fetch in jsdom/test env
-                const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
-                const res = await fetch(url);
-                if (!res.ok) return;
-                const graph: Graph = await res.json();
+    const fetchTopology = useCallback(async () => {
+        try {
+            // Handle relative URL for fetch in jsdom/test env
+            const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
+            const res = await fetch(url);
+            if (!res.ok) return;
 
-                const now = Date.now();
-                const newPoints: Record<string, MetricPoint> = {};
+            // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
+            // res.text() + string comparison is much faster than res.json() + JSON.stringify().
+            const text = await res.text();
+            let graph: Graph;
 
-                // Helper to extract service nodes
-                // Using 'any' for node because TopologyNode type from types/topology
-                // might not match exactly what comes from API or recursion needs to be flexible
-                // But we should try to be safer if possible.
-                // Assuming Node type from @/types/topology
-                const extractServiceNodes = (nodes: any[]) => {
-                    nodes.forEach(node => {
-                        if (node.type === 'NODE_TYPE_SERVICE') {
-                            newPoints[node.id] = {
-                                timestamp: now,
-                                latencyMs: node.metrics?.latencyMs || 0,
-                                errorRate: node.metrics?.errorRate || 0,
-                                qps: node.metrics?.qps || 0,
-                                status: node.status || 'NODE_STATUS_UNSPECIFIED'
-                            };
-                        }
-                        if (node.children) {
-                            extractServiceNodes(node.children);
-                        }
-                    });
-                };
+            if (text === lastTopologyText.current && lastGraph.current) {
+                graph = lastGraph.current;
+            } else {
+                graph = JSON.parse(text);
+                lastTopologyText.current = text;
+                lastGraph.current = graph;
+                setLatestTopology(graph);
+            }
 
-                if (graph.core) {
-                    extractServiceNodes([graph.core]);
-                    if (graph.core.children) extractServiceNodes(graph.core.children);
-                }
+            const now = Date.now();
+            const newPoints: Record<string, MetricPoint> = {};
 
-                // Update history
-                setHistory(prev => {
-                    const next = { ...prev };
-                    Object.entries(newPoints).forEach(([id, point]) => {
-                        const points = next[id] ? [...next[id], point] : [point];
-                        if (points.length > MAX_HISTORY_POINTS) {
-                            points.shift();
-                        }
-                        next[id] = points;
-                    });
+            // Helper to extract service nodes
+            // Using 'any' for node because TopologyNode type from types/topology
+            // might not match exactly what comes from API or recursion needs to be flexible
+            // But we should try to be safer if possible.
+            // Assuming Node type from @/types/topology
+            const extractServiceNodes = (nodes: any[]) => {
+                nodes.forEach(node => {
+                    if (node.type === 'NODE_TYPE_SERVICE') {
+                        newPoints[node.id] = {
+                            timestamp: now,
+                            latencyMs: node.metrics?.latencyMs || 0,
+                            errorRate: node.metrics?.errorRate || 0,
+                            qps: node.metrics?.qps || 0,
+                            status: node.status || 'NODE_STATUS_UNSPECIFIED'
+                        };
+                    }
+                    if (node.children) {
+                        extractServiceNodes(node.children);
+                    }
+                });
+            };
 
-                    // Also initialize entries for services that didn't report (optional, or let them be empty)
-                    // We only track what we see in topology.
+            if (graph.core) {
+                extractServiceNodes([graph.core]);
+                if (graph.core.children) extractServiceNodes(graph.core.children);
+            }
 
-                    return next;
+            // Update history
+            setHistory(prev => {
+                const next = { ...prev };
+                Object.entries(newPoints).forEach(([id, point]) => {
+                    const points = next[id] ? [...next[id], point] : [point];
+                    if (points.length > MAX_HISTORY_POINTS) {
+                        points.shift();
+                    }
+                    next[id] = points;
                 });
 
-            } catch (e) {
-                console.error("Failed to fetch topology for health history", e);
-            }
-        };
+                return next;
+            });
 
+        } catch (e) {
+            console.error("Failed to fetch topology for health history", e);
+        }
+    }, []);
+
+    useEffect(() => {
         void fetchTopology();
-        const interval = setInterval(() => void fetchTopology(), POLLING_INTERVAL);
+        const interval = setInterval(() => {
+             if (!document.hidden) {
+                 void fetchTopology();
+             }
+        }, POLLING_INTERVAL);
 
         const onVisibilityChange = () => {
             if (!document.hidden) void fetchTopology();
@@ -120,20 +144,35 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             clearInterval(interval);
             document.removeEventListener("visibilitychange", onVisibilityChange);
         };
-    }, []);
+    }, [fetchTopology]);
 
-    const getServiceHistory = (serviceId: string) => {
+    const getServiceHistory = useCallback((serviceId: string) => {
         return history[serviceId] || [];
-    };
+    }, [history]);
 
-    const getServiceCurrentHealth = (serviceId: string) => {
+    const getServiceCurrentHealth = useCallback((serviceId: string) => {
         const points = history[serviceId];
         return points && points.length > 0 ? points[points.length - 1] : null;
-    };
+    }, [history]);
+
+    const value = useMemo(() => ({
+        getServiceHistory,
+        getServiceCurrentHealth,
+        latestTopology,
+        refreshTopology: fetchTopology
+    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
+
+    // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
+    const topologyValue = useMemo(() => ({
+        latestTopology,
+        refreshTopology: fetchTopology
+    }), [latestTopology, fetchTopology]);
 
     return (
-        <ServiceHealthContext.Provider value={{ getServiceHistory, getServiceCurrentHealth }}>
-            {children}
+        <ServiceHealthContext.Provider value={value}>
+            <TopologyContext.Provider value={topologyValue}>
+                {children}
+            </TopologyContext.Provider>
         </ServiceHealthContext.Provider>
     );
 }
@@ -147,6 +186,20 @@ export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
     if (!context) {
         throw new Error("useServiceHealth must be used within a ServiceHealthProvider");
+    }
+    return context;
+}
+
+/**
+ * useTopology is a hook to access network topology.
+ * It is optimized to not re-render when health metrics update.
+ * @returns The topology context.
+ * @throws Error if used outside of a ServiceHealthProvider.
+ */
+export function useTopology() {
+    const context = useContext(TopologyContext);
+    if (!context) {
+        throw new Error("useTopology must be used within a ServiceHealthProvider");
     }
     return context;
 }

@@ -492,7 +492,8 @@ func TestValidateAuthentication(t *testing.T) {
 	t.Run("no_method", func(t *testing.T) {
 		config := &configv1.Authentication{}
 		err := ValidateAuthentication(context.Background(), config, nil)
-		assert.NoError(t, err)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "unsupported or missing authentication method")
 	})
 }
 

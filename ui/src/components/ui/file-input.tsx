@@ -39,15 +39,12 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
        // Value exists but no filename (e.g. form preset loaded)
        setFileName("File loaded")
     }
-  }, [value, fileName])
+  }, [value])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const [isDragging, setIsDragging] = React.useState(false)
+
+  const processFile = (file: File) => {
     setError(null)
-
-    if (!file) {
-      return
-    }
 
     // Check size (optional, e.g. 5MB limit to prevent browser crash)
     if (file.size > 5 * 1024 * 1024) {
@@ -71,6 +68,40 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
     reader.readAsDataURL(file)
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      processFile(file)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!disabled) {
+      setIsDragging(true)
+    }
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    if (disabled) return
+
+    const file = e.dataTransfer.files?.[0]
+    if (file) {
+      processFile(file)
+    }
+  }
+
   const clearFile = () => {
     setFileName(null)
     onChange(undefined)
@@ -80,7 +111,16 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
   }
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-2 rounded-md border border-transparent transition-all",
+        isDragging && "border-dashed border-primary bg-primary/5 p-4",
+        className
+      )}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <input
         type="file"
         id={id}
@@ -116,6 +156,11 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
                <X className="h-4 w-4" />
              </Button>
            </div>
+        )}
+         {isDragging && !fileName && (
+            <div className="flex-1 flex items-center justify-center text-sm text-primary font-medium animate-pulse">
+                Drop file here
+            </div>
         )}
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}

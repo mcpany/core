@@ -27,7 +27,7 @@ const (
 
 type GetWeatherRequest struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Location      string                 `protobuf:"bytes,1,opt,name=location,proto3" json:"location,omitempty"`
+	Location      string                 `protobuf:"bytes,1,opt,name=location" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -84,7 +84,7 @@ func (b0 GetWeatherRequest_builder) Build() *GetWeatherRequest {
 
 type GetWeatherResponse struct {
 	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Weather       string                 `protobuf:"bytes,1,opt,name=weather,proto3" json:"weather,omitempty"`
+	Weather       string                 `protobuf:"bytes,1,opt,name=weather" json:"weather,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -150,7 +150,7 @@ const file_proto_examples_weather_v1_weather_proto_rawDesc = "" +
 	"\aweather\x18\x01 \x01(\tR\aweather2o\n" +
 	"\x0eWeatherService\x12]\n" +
 	"\n" +
-	"GetWeather\x12&.examples.weather.v1.GetWeatherRequest\x1a'.examples.weather.v1.GetWeatherResponseB2Z0github.com/mcpany/core/proto/examples/weather/v1b\x06proto3"
+	"GetWeather\x12&.examples.weather.v1.GetWeatherRequest\x1a'.examples.weather.v1.GetWeatherResponseB7Z0github.com/mcpany/core/proto/examples/weather/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_examples_weather_v1_weather_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_examples_weather_v1_weather_proto_goTypes = []any{

@@ -77,8 +77,8 @@ func (x WebhookKind) Number() protoreflect.EnumNumber {
 // WebhookReview explains the request and response of a webhook call.
 type WebhookReview struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Request  *WebhookRequest        `protobuf:"bytes,1,opt,name=request,proto3"`
-	xxx_hidden_Response *WebhookResponse       `protobuf:"bytes,2,opt,name=response,proto3"`
+	xxx_hidden_Request  *WebhookRequest        `protobuf:"bytes,1,opt,name=request"`
+	xxx_hidden_Response *WebhookResponse       `protobuf:"bytes,2,opt,name=response"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -170,10 +170,10 @@ func (b0 WebhookReview_builder) Build() *WebhookReview {
 
 type WebhookRequest struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Uid      string                 `protobuf:"bytes,1,opt,name=uid,proto3"`
-	xxx_hidden_Kind     WebhookKind            `protobuf:"varint,2,opt,name=kind,proto3,enum=mcpany.config.v1.WebhookKind"`
-	xxx_hidden_ToolName string                 `protobuf:"bytes,3,opt,name=tool_name,json=toolName,proto3"`
-	xxx_hidden_Object   *structpb.Struct       `protobuf:"bytes,4,opt,name=object,proto3"`
+	xxx_hidden_Uid      string                 `protobuf:"bytes,1,opt,name=uid"`
+	xxx_hidden_Kind     WebhookKind            `protobuf:"varint,2,opt,name=kind,enum=mcpany.config.v1.WebhookKind"`
+	xxx_hidden_ToolName string                 `protobuf:"bytes,3,opt,name=tool_name,json=toolName"`
+	xxx_hidden_Object   *structpb.Struct       `protobuf:"bytes,4,opt,name=object"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -284,9 +284,9 @@ func (b0 WebhookRequest_builder) Build() *WebhookRequest {
 
 type WebhookConfig struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Url           string                 `protobuf:"bytes,1,opt,name=url,proto3"`
-	xxx_hidden_Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout,proto3"`
-	xxx_hidden_WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret,proto3"`
+	xxx_hidden_Url           string                 `protobuf:"bytes,1,opt,name=url"`
+	xxx_hidden_Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout"`
+	xxx_hidden_WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -380,10 +380,10 @@ func (b0 WebhookConfig_builder) Build() *WebhookConfig {
 
 type SystemWebhookConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        string                 `protobuf:"bytes,1,opt,name=name,proto3"`
-	xxx_hidden_Description string                 `protobuf:"bytes,2,opt,name=description,proto3"`
-	xxx_hidden_UrlPath     string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath,proto3"`
-	xxx_hidden_Disabled    bool                   `protobuf:"varint,4,opt,name=disabled,proto3"`
+	xxx_hidden_Name        string                 `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description string                 `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_UrlPath     string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath"`
+	xxx_hidden_Disabled    bool                   `protobuf:"varint,4,opt,name=disabled"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -479,10 +479,10 @@ func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
 
 type WebhookResponse struct {
 	state                        protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Uid               string                 `protobuf:"bytes,1,opt,name=uid,proto3"`
-	xxx_hidden_Allowed           bool                   `protobuf:"varint,2,opt,name=allowed,proto3"`
-	xxx_hidden_Status            *WebhookStatus         `protobuf:"bytes,3,opt,name=status,proto3"`
-	xxx_hidden_ReplacementObject *structpb.Struct       `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject,proto3"`
+	xxx_hidden_Uid               string                 `protobuf:"bytes,1,opt,name=uid"`
+	xxx_hidden_Allowed           bool                   `protobuf:"varint,2,opt,name=allowed"`
+	xxx_hidden_Status            *WebhookStatus         `protobuf:"bytes,3,opt,name=status"`
+	xxx_hidden_ReplacementObject *structpb.Struct       `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -604,8 +604,8 @@ func (b0 WebhookResponse_builder) Build() *WebhookResponse {
 
 type WebhookStatus struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Code    int32                  `protobuf:"varint,1,opt,name=code,proto3"`
-	xxx_hidden_Message string                 `protobuf:"bytes,2,opt,name=message,proto3"`
+	xxx_hidden_Code    int32                  `protobuf:"varint,1,opt,name=code"`
+	xxx_hidden_Message string                 `protobuf:"bytes,2,opt,name=message"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -707,7 +707,7 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
 	"\x16WEBHOOK_KIND_POST_CALL\x10\x02\x12 \n" +
-	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B(Z&github.com/mcpany/core/proto/config/v1b\x06proto3"
+	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B-Z&github.com/mcpany/core/proto/config/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)

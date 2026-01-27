@@ -87,7 +87,8 @@ func TestToolCountPropagation(t *testing.T) {
 	tm := newThreadSafeToolManager()
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{Name: proto.String("tool-service")}
+	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig.SetName("tool-service")
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
 
