@@ -17,6 +17,7 @@ import (
 	cehttp "github.com/cloudevents/sdk-go/v2/protocol/http"
 	"github.com/google/uuid"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
@@ -161,11 +162,13 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	}
 
 	// Create client with signing transport if webhook signer is present
-	client := &http.Client{Timeout: timeout}
+	client := util.NewSafeHTTPClient()
+	client.Timeout = timeout
+
 	if wh != nil {
 		client.Transport = &SigningRoundTripper{
 			signer: wh,
-			base:   http.DefaultTransport,
+			base:   client.Transport,
 		}
 	}
 

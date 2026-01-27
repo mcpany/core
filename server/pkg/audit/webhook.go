@@ -12,6 +12,8 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"github.com/mcpany/core/server/pkg/util"
 )
 
 const (
@@ -33,10 +35,13 @@ type WebhookAuditStore struct {
 
 // NewWebhookAuditStore creates a new WebhookAuditStore.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
+	client := util.NewSafeHTTPClient()
+	client.Timeout = 10 * time.Second
+
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
 		headers:    headers,
-		client:     &http.Client{Timeout: 10 * time.Second},
+		client:     client,
 		queue:      make(chan Entry, webhookBufferSize),
 		done:       make(chan struct{}),
 	}
