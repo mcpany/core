@@ -457,7 +457,7 @@ var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?
 // We use a regex that stops at the last '@' before the host, allowing special characters in the password.
 // It stops at /, ?, or # to avoid swallowing the path or subsequent text (e.g. multiple DSNs).
 // Matches scheme://user:password@
-var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^@]*?)@([^/?#@\s]*)([/?#\s]|$)`)
+var dsnSchemeRegex = regexp.MustCompile(`(?s)(://[^/?#:\s]*):(.*?)@([^/?#@\s]*)([/?#\s]|$)`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).

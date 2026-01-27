@@ -184,6 +184,11 @@ func TestRedactDSN(t *testing.T) {
 			input:    "postgres://u ser:pass@host:5432/db",
 			expected: "postgres://u ser:[REDACTED]@host:5432/db",
 		},
+		{
+			name:     "regression: password with at sign when url.Parse fails (invalid port)",
+			input:    "postgres://user:pass@word@host:abc",
+			expected: "postgres://user:[REDACTED]@host:abc",
+		},
 	}
 
 	for _, tt := range tests {
