@@ -31,14 +31,21 @@ export default function ProfilesPage() {
       try {
           const data = await apiClient.listProfiles();
           // Map backend ProfileDefinition to UI Profile
-          const mapped: Profile[] = data.map((p: any) => ({
-              id: p.name, // Use name as ID
-              name: p.name,
-              description: "", // Not supported in backend yet, but we can display placeholder
-              services: p.serviceConfig ? Object.keys(p.serviceConfig) : [],
-              type: (p.selector?.tags?.find((t: string) => ["dev", "prod", "debug"].includes(t)) as "dev" | "prod" | "debug") || "dev",
-              secrets: p.secrets
-          }));
+          const mapped: Profile[] = data.map((p: any) => {
+              const allTags = p.selector?.tags || [];
+              const type = (allTags.find((t: string) => ["dev", "prod", "debug"].includes(t)) as "dev" | "prod" | "debug") || "dev";
+              const additionalTags = allTags.filter((t: string) => !["dev", "prod", "debug"].includes(t));
+
+              return {
+                  id: p.name, // Use name as ID
+                  name: p.name,
+                  description: "", // Not supported in backend yet, but we can display placeholder
+                  services: p.serviceConfig ? Object.keys(p.serviceConfig) : [],
+                  type: type,
+                  additionalTags: additionalTags,
+                  secrets: p.secrets
+              };
+          });
           setProfiles(mapped);
       } catch (error) {
           console.error("Failed to fetch profiles", error);
@@ -116,6 +123,12 @@ export default function ProfilesPage() {
                           <Badge variant={profile.type === 'prod' ? 'destructive' : profile.type === 'debug' ? 'secondary' : 'default'}>
                               {profile.type.toUpperCase()}
                           </Badge>
+                          {profile.additionalTags.slice(0, 3).map(tag => (
+                              <Badge key={tag} variant="outline">{tag}</Badge>
+                          ))}
+                          {profile.additionalTags.length > 3 && (
+                              <Badge variant="outline">+{profile.additionalTags.length - 3}</Badge>
+                          )}
                           <span className="text-xs text-muted-foreground flex items-center">
                               {profile.services.length} Services
                           </span>
