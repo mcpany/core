@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { AlertList } from "../alert-list";
 import React from "react";
 import userEvent from "@testing-library/user-event";
+import { apiClient } from "@/lib/client";
+import { vi } from "vitest";
 
 // Mock resize observer which is used by some UI components (like Recharts or ScrollArea)
 class ResizeObserver {
@@ -16,20 +18,55 @@ class ResizeObserver {
 }
 window.ResizeObserver = ResizeObserver;
 
+// Mock apiClient
+vi.mock("@/lib/client", () => ({
+  apiClient: {
+    listAlerts: vi.fn(),
+    updateAlertStatus: vi.fn(),
+  },
+}));
+
+const mockAlerts = [
+  {
+    id: "1",
+    title: "High CPU Usage",
+    message: "CPU usage is above 90%",
+    severity: "critical",
+    status: "active",
+    service: "core-service",
+    timestamp: new Date().toISOString(),
+  },
+  {
+    id: "2",
+    title: "API Latency Spike",
+    message: "Latency is above 500ms",
+    severity: "warning",
+    status: "active",
+    service: "api-gateway",
+    timestamp: new Date().toISOString(),
+  },
+];
+
 describe("AlertList", () => {
-  it("renders alerts correctly", async () => {
-    render(<AlertList />);
-    // Wait for alerts to load (assuming fetchAlerts is mocked or resolves)
-    // For unit tests, we should probably mock apiClient. But since we don't have mock setup here,
-    // we might rely on the fact that the test data is somehow injected or fetched.
-    // If real fetch is used, it fails.
-    // The previous error showed "No alerts match your filters." which means it rendered empty state.
-    // We need to mock the API call.
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (apiClient.listAlerts as any).mockResolvedValue(mockAlerts);
   });
 
-  // Skipped for now as they require proper API mocking setup which seems missing or broken in this file
-  it.skip("filters alerts by search query", async () => {
+  it("renders alerts correctly", async () => {
     render(<AlertList />);
+    await waitFor(() => {
+      expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
+      expect(screen.getByText("API Latency Spike")).toBeInTheDocument();
+    });
+  });
+
+  it("filters alerts by search query", async () => {
+    render(<AlertList />);
+
+    await waitFor(() => {
+        expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
+    });
 
     const searchInput = screen.getByPlaceholderText("Search alerts by title, message, service...");
     await userEvent.type(searchInput, "CPU");
@@ -40,6 +77,10 @@ describe("AlertList", () => {
 
   it("filters alerts by severity", async () => {
     render(<AlertList />);
+
+    await waitFor(() => {
+        expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
+    });
 
     // We need to interact with the Select component.
     // Radix UI Select is tricky to test as it uses portals.
