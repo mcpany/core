@@ -136,9 +136,10 @@ type RunOptions struct {
 	APIKey          string
 	ShutdownTimeout time.Duration
 	TLSCert         string
-	TLSKey          string
-	TLSClientCA     string
-	Strict          bool
+	TLSKey                   string
+	TLSClientCA              string
+	Strict                   bool
+	EnableStartupDiagnostics bool
 }
 
 // Runner defines the interface for running the application.
@@ -377,7 +378,7 @@ func (a *Application) Run(opts RunOptions) error {
 
 	// Startup Diagnostics
 	// We run this after loading all configs (file + db) but before starting upstreams.
-	if len(cfg.GetUpstreamServices()) > 0 {
+	if opts.EnableStartupDiagnostics && len(cfg.GetUpstreamServices()) > 0 {
 		log.Info("Running startup diagnostics...")
 		results := doctor.RunChecks(opts.Ctx, cfg)
 		hasErrors := false

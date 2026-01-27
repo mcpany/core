@@ -208,10 +208,11 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				Stdio:           stdio,
 				JSONRPCPort:     bindAddress,
 				GRPCPort:        grpcPort,
-				ConfigPaths:     configPaths,
-				APIKey:          cfg.APIKey(),
-				ShutdownTimeout: shutdownTimeout,
-				Strict:          strict,
+				ConfigPaths:              configPaths,
+				APIKey:                   cfg.APIKey(),
+				ShutdownTimeout:          shutdownTimeout,
+				Strict:                   strict,
+				EnableStartupDiagnostics: true,
 			}); err != nil {
 				log.Error("Application failed", "error", err)
 				return err
