@@ -29,10 +29,13 @@ test.describe('Dashboard Real Data', () => {
             });
         }
 
+        const apiKey = process.env.MCPANY_API_KEY || 'test-token';
+
         const seedRes = await request.post('/api/v1/debug/seed_traffic', {
             data: trafficPoints,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-API-Key': apiKey
             }
         });
         expect(seedRes.ok()).toBeTruthy();
@@ -41,7 +44,11 @@ test.describe('Dashboard Real Data', () => {
         await page.goto('/');
 
         // Debug: Fetch traffic data directly to verify backend state
-        const trafficRes = await request.get('/api/v1/dashboard/traffic');
+        const trafficRes = await request.get('/api/v1/dashboard/traffic', {
+            headers: {
+                'X-API-Key': apiKey
+            }
+        });
         expect(trafficRes.ok()).toBeTruthy();
         const trafficData = await trafficRes.json();
         console.log('DEBUG: Traffic Data:', JSON.stringify(trafficData));
@@ -109,8 +116,14 @@ test.describe('Dashboard Real Data', () => {
              });
          }
 
+         const apiKey = process.env.MCPANY_API_KEY || 'test-token';
+
          const seedRes = await request.post('/api/v1/debug/seed_traffic', {
-             data: trafficPoints
+             data: trafficPoints,
+             headers: {
+                 'Content-Type': 'application/json',
+                 'X-API-Key': apiKey
+             }
          });
          expect(seedRes.ok()).toBeTruthy();
 
