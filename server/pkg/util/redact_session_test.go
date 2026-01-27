@@ -18,27 +18,27 @@ func TestRedactJSON_SessionKeys(t *testing.T) {
 	}{
 		{
 			name:     "session_id",
-			input:    map[string]interface{}{"session_id": "secret-session-id"},
+			input:    map[string]interface{}{"session_id": "my-session-value"},
 			checkKey: "session_id",
 		},
 		{
 			name:     "sid",
-			input:    map[string]interface{}{"sid": "secret-sid"},
+			input:    map[string]interface{}{"sid": "my-sid-value"},
 			checkKey: "sid",
 		},
 		{
 			name:     "jsessionid",
-			input:    map[string]interface{}{"jsessionid": "secret-jsessionid"},
+			input:    map[string]interface{}{"jsessionid": "my-jsession-value"},
 			checkKey: "jsessionid",
 		},
 		{
 			name:     "sessionid",
-			input:    map[string]interface{}{"sessionid": "secret-sessionid"},
+			input:    map[string]interface{}{"sessionid": "my-sessionid-value"},
 			checkKey: "sessionid",
 		},
 		{
 			name:     "access_key",
-			input:    map[string]interface{}{"access_key": "secret-access-key"},
+			input:    map[string]interface{}{"access_key": "my-access-key-value"}, //nolint:gosec // Test value
 			checkKey: "access_key",
 		},
 	}
