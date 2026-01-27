@@ -264,7 +264,7 @@ describe("ConnectionDiagnosticDialog", () => {
     }, { timeout: 5000 });
 
     // Check for suggestion card elements
-    expect(screen.getByText("Connection Failed")).toBeInTheDocument();
+    expect(await screen.findByText("Connection Refused")).toBeInTheDocument();
     // Use getAllByText because it appears in logs and the card
     expect(screen.getAllByText(/Check if the upstream service is running/).length).toBeGreaterThan(0);
 });
@@ -360,5 +360,75 @@ describe("ConnectionDiagnosticDialog", () => {
 
     // Restore fetch
     global.fetch = originalFetch;
+  });
+
+  it("detects command line service and warns about relative paths", async () => {
+      const cliService: UpstreamServiceConfig = {
+          ...mockService,
+          commandLineService: {
+              command: "./python", // Relative path containing separator
+              args: ["script.py"],
+              env: {}
+          },
+          httpService: undefined
+      };
+
+      render(<ConnectionDiagnosticDialog service={cliService} />);
+
+      const trigger = screen.getByText("Troubleshoot");
+      fireEvent.click(trigger);
+
+      const startButton = screen.getByText("Start Diagnostics");
+      fireEvent.click(startButton);
+
+      // Wait for Config Validation logs
+      await waitFor(() => {
+          expect(screen.getByText("Client-Side Configuration Check")).toBeInTheDocument();
+      });
+
+      // Check for full command display
+      await waitFor(() => {
+           expect(screen.getByText((content) => content.includes("Validating Command: ./python script.py"))).toBeInTheDocument();
+      });
+
+      // Check for relative path warning
+      await waitFor(() => {
+           expect(screen.getByText((content) => content.includes("Warning: Command appears to be a relative path"))).toBeInTheDocument();
+      });
+  });
+
+  it("analyzes ENOENT error correctly", async () => {
+    // Mock failure response with ENOENT error
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([
+              { id: "test-service", name: "Test Service", status: "unhealthy", message: "exec: \"mytool\": executable file not found in $PATH" }
+          ]),
+      })
+    ) as unknown as typeof fetch;
+
+    render(<ConnectionDiagnosticDialog service={mockService} />);
+
+    const trigger = screen.getByText("Troubleshoot");
+    fireEvent.click(trigger);
+
+    const startButton = screen.getByText("Start Diagnostics");
+    fireEvent.click(startButton);
+
+    // Wait for completion
+    await waitFor(() => {
+        expect(screen.getByText("Rerun Diagnostics")).toBeInTheDocument();
+    }, { timeout: 5000 });
+
+    // Wait for logs to ensure processing is done
+    await waitFor(() => {
+        expect(screen.getByText((content) => content.includes("Error: exec:"))).toBeInTheDocument();
+    });
+
+    // Check for suggestion card elements
+    expect(await screen.findByText("Executable Not Found")).toBeInTheDocument();
+    expect(screen.getByText("The specified command or executable could not be found by the system.")).toBeInTheDocument();
+    expect(screen.getAllByText(/Check if the command path is correct/).length).toBeGreaterThan(0);
   });
 });

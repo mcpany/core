@@ -94,10 +94,27 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         url = service.grpcService.address;
         addLog("config", `Validating gRPC address: ${url}`);
     } else if (service.commandLineService) {
-        addLog("config", `Validating Command: ${service.commandLineService.command}`);
-        if (!service.commandLineService.command) {
+        const cmd = service.commandLineService.command;
+        const args = service.commandLineService.args || [];
+        const fullCmd = `${cmd} ${args.join(" ")}`;
+
+        addLog("config", `Validating Command: ${fullCmd}`);
+
+        if (!cmd) {
              addLog("config", "Error: Command is empty");
              isValid = false;
+        } else {
+            // Check for relative paths
+            if (!cmd.startsWith("/") && !cmd.match(/^[a-zA-Z]:\\/)) { // Simple check for absolute path (Unix/Win)
+                if (cmd.includes("/") || cmd.includes("\\")) {
+                     addLog("config", "⚠️ Warning: Command appears to be a relative path.");
+                     addLog("config", "If running in Docker, relative paths are relative to the WORKDIR (/app).");
+                     addLog("config", "Suggestion: Use an absolute path to the executable.");
+                } else {
+                    // Command like "python" or "npm" is usually fine if in PATH
+                    addLog("config", "Note: relying on system PATH to find executable.");
+                }
+            }
         }
     } else if (service.websocketService) {
         url = service.websocketService.address;

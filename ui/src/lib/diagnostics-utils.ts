@@ -30,8 +30,19 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
     };
   }
 
-  // Network: Connection Refused / Fetch Failed
-  if (err.includes("connection refused") || err.includes("fetch failed") || (err.includes("dial tcp") && !err.includes("lookup"))) {
+  // Network: Connection Refused
+  if (err.includes("connection refused")) {
+    return {
+      category: "network",
+      title: "Connection Refused",
+      description: "The server is unreachable at the specified address/port.",
+      suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. Docker Users: 'localhost' refers to the container itself. Use 'host.docker.internal' to reach your host machine.",
+      severity: "critical",
+    };
+  }
+
+  // Network: Connection Failed / Fetch Failed
+  if (err.includes("fetch failed") || (err.includes("dial tcp") && !err.includes("lookup"))) {
     return {
       category: "network",
       title: "Connection Failed",
@@ -158,6 +169,28 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
       title: "Permission Denied",
       description: "The server does not have permission to access a requested file or resource.",
       suggestion: "1. Check file system permissions.\n2. Ensure the 'allowed_paths' configuration covers the target directory.\n3. If on Windows, check for administrative privileges or path formatting.",
+      severity: "critical",
+    };
+  }
+
+  // Configuration: Executable Not Found (CLI)
+  if (err.includes("enoent") || err.includes("executable file not found") || err.includes("command not found")) {
+    return {
+      category: "configuration",
+      title: "Executable Not Found",
+      description: "The specified command or executable could not be found by the system.",
+      suggestion: "1. Check if the command path is correct.\n2. Use an absolute path (e.g. /usr/bin/python instead of python).\n3. Ensure the executable is installed within the container or environment where MCP Any is running.",
+      severity: "critical",
+    };
+  }
+
+  // Configuration: Process Crash (CLI)
+  if (err.includes("exit status") || err.includes("process exited")) {
+    return {
+      category: "configuration",
+      title: "Process Crashed",
+      description: "The upstream service process exited with an error code.",
+      suggestion: "1. Run the command manually to see the output.\n2. Check if arguments are missing or incorrect.\n3. Check if the service requires environment variables that are missing.",
       severity: "critical",
     };
   }
