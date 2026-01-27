@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package main implements a mock OAuth 2.0 Identity Provider for testing.
 package main
 
 import (
@@ -47,16 +48,24 @@ func main() {
 	mux.HandleFunc("/jwks", server.handleJWKS)
 	mux.HandleFunc("/auth", server.handleAuth)
 	mux.HandleFunc("/token", server.handleToken)
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	})
 
 	log.Printf("Starting Mock OAuth Server on port %d...", *port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), mux))
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%d", *port),
+		Handler:           mux,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      60 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
 
-func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request) {
+func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	config := map[string]interface{}{
 		"issuer":                 s.BaseURL,
@@ -64,16 +73,20 @@ func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request) {
 		"authorization_endpoint": s.BaseURL + "/auth",
 		"token_endpoint":         s.BaseURL + "/token",
 	}
-	json.NewEncoder(w).Encode(config)
+	if err := json.NewEncoder(w).Encode(config); err != nil {
+		log.Printf("Failed to encode discovery config: %v", err)
+	}
 }
 
-func (s *OAuthServer) handleJWKS(w http.ResponseWriter, r *http.Request) {
+func (s *OAuthServer) handleJWKS(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	jwk := jose.JSONWebKey{Key: &s.PrivateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
 	jwks := map[string]interface{}{
 		"keys": []interface{}{jwk},
 	}
-	json.NewEncoder(w).Encode(jwks)
+	if err := json.NewEncoder(w).Encode(jwks); err != nil {
+		log.Printf("Failed to encode JWKS: %v", err)
+	}
 }
 
 func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +99,7 @@ func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 
 	// Create a simple login page for interaction
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
+	_, _ = fmt.Fprintf(w, `
 		<html>
 			<body>
 				<h1>Mock OAuth Login</h1>
@@ -101,7 +114,7 @@ func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 	`, redirectURI, state)
 }
 
-func (s *OAuthServer) handleToken(w http.ResponseWriter, r *http.Request) {
+func (s *OAuthServer) handleToken(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
@@ -118,11 +131,13 @@ func (s *OAuthServer) handleToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{
 		"access_token": signedToken,
 		"id_token":     signedToken,
 		"token_type":   "Bearer",
 		"expires_in":   3600,
 		"scope":        "read write",
-	})
+	}); err != nil {
+		log.Printf("Failed to encode token response: %v", err)
+	}
 }
