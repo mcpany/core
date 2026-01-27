@@ -5,10 +5,9 @@
 
 "use client";
 
-import { useServiceHealthHistory, ServiceHealth } from "@/hooks/use-service-health-history";
+import { useServiceHealthHistory } from "@/hooks/use-service-health-history";
 import { StatusTimeline } from "@/components/status/status-timeline";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
