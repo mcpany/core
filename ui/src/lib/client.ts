@@ -166,6 +166,29 @@ export interface ToolAnalytics {
 }
 
 
+/**
+ * Metric definition for dashboard.
+ */
+export interface Metric {
+    label: string;
+    value: string;
+    change?: string;
+    trend?: "up" | "down" | "neutral";
+    icon: string;
+    subLabel?: string;
+}
+
+
+export interface SystemStatus {
+    uptime_seconds: number;
+    active_connections: number;
+    bound_http_port: number;
+    bound_grpc_port: number;
+    version: string;
+    security_warnings: string[];
+}
+
+
 const getMetadata = () => {
     // Metadata for gRPC calls.
     // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
@@ -733,15 +756,11 @@ export const apiClient = {
     /**
      * Gets the dashboard traffic history.
      * @param serviceId Optional service ID to filter by.
-     * @param timeRange Optional time range to filter by (e.g. "1h", "24h").
      * @returns A promise that resolves to the traffic history points.
      */
-    getDashboardTraffic: async (serviceId?: string, timeRange?: string) => {
-        const params = new URLSearchParams();
-        if (serviceId) params.set('serviceId', serviceId);
-        if (timeRange) params.set('range', timeRange);
-
-        const url = `/api/v1/dashboard/traffic?${params.toString()}`;
+    getDashboardTraffic: async (serviceId?: string) => {
+        let url = '/api/v1/dashboard/traffic';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch dashboard traffic');
         return res.json();
@@ -800,6 +819,39 @@ export const apiClient = {
         return res.json();
     },
 
+
+    /**
+     * Gets the system status.
+     * @returns A promise that resolves to the system status.
+     */
+    getSystemStatus: async (): Promise<SystemStatus> => {
+        const res = await fetchWithAuth('/api/v1/system/status');
+        if (!res.ok) throw new Error('Failed to fetch system status');
+        return res.json();
+    },
+
+    /**
+     * Gets the dashboard metrics.
+     * @param serviceId Optional service ID to filter by.
+     * @returns A promise that resolves to the metrics list.
+     */
+    getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
+        let url = '/api/v1/dashboard/metrics';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch dashboard metrics. Is the server running and authenticated?');
+        return res.json();
+    },
+
+    /**
+     * Gets the latest execution traces.
+     * @returns A promise that resolves to the traces list.
+     */
+    getTraces: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/debug/traces'); // Use consistent API v1 prefix
+        if (!res.ok) throw new Error('Failed to fetch traces');
+        return res.json();
+    },
 
     /**
      * Seeds the dashboard traffic history (Debug/Test only).

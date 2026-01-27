@@ -96,6 +96,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			// AuthManager might be using config-based users OR storage-based users.
 			// api.go ReloadConfig: a.AuthManager.SetUsers(cfg.GetUsers())
 			// LoadServices loads from store too.
+
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after user create", "error", err)
 			}
@@ -189,6 +190,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
+
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after user delete", "error", err)
 			}

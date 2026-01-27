@@ -392,7 +392,7 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 
 	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
 
-	history := m.GetTrafficHistory("", 60*time.Minute)
+	history := m.GetTrafficHistory("")
 	require.NotEmpty(t, history)
 
 	lastPoint := history[len(history)-1]

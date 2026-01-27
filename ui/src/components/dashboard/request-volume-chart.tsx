@@ -16,13 +16,13 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; total: number }[]>([]);
   const [mounted, setMounted] = useState(false);
-  const { serviceId, timeRange } = useDashboard();
+  const { serviceId } = useDashboard();
 
   useEffect(() => {
     setMounted(true);
     const fetchData = async () => {
         try {
-            const traffic = await apiClient.getDashboardTraffic(serviceId, timeRange);
+            const traffic = await apiClient.getDashboardTraffic(serviceId);
             // Backend returns traffic points directly
             setData(traffic);
         } catch (error) {
@@ -33,7 +33,7 @@ export function RequestVolumeChart() {
     // Poll every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [serviceId, timeRange]);
+  }, [serviceId]);
 
   if (!mounted) return null;
 
@@ -42,7 +42,7 @@ export function RequestVolumeChart() {
       <CardHeader>
         <CardTitle>Request Volume</CardTitle>
         <CardDescription>
-          Requests handled over the last {timeRange}.
+          Requests handled over the last 24 hours.
         </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">

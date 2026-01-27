@@ -259,7 +259,6 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 </CardContent>
                             </Card>
                         )}
-
                         <Card className="mb-6">
                              <CardHeader className="pb-3">
                                 <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>

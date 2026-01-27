@@ -10,8 +10,6 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 interface DashboardContextType {
   serviceId: string | undefined;
   setServiceId: (id: string | undefined) => void;
-  timeRange: string;
-  setTimeRange: (range: string) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -26,10 +24,9 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
  */
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const [serviceId, setServiceId] = useState<string | undefined>(undefined);
-  const [timeRange, setTimeRange] = useState<string>("1h");
 
   return (
-    <DashboardContext.Provider value={{ serviceId, setServiceId, timeRange, setTimeRange }}>
+    <DashboardContext.Provider value={{ serviceId, setServiceId }}>
       {children}
     </DashboardContext.Provider>
   );

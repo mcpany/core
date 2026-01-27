@@ -573,21 +573,61 @@ func RedactSecrets(text string, secrets []string) string {
 		return text
 	}
 
-	// Sort secrets by length descending to avoid partial replacements (e.g. replacing "pass" in "password")
-	// Although for random secrets this might be less of an issue, but good practice.
-	// Making a copy to avoid mutating the input slice.
-	sortedSecrets := make([]string, len(secrets))
-	copy(sortedSecrets, secrets)
+	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
+	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
+	var mask []bool
+	foundAny := false
 
-	sort.Slice(sortedSecrets, func(i, j int) bool {
-		return len(sortedSecrets[i]) > len(sortedSecrets[j])
-	})
-
-	for _, secret := range sortedSecrets {
+	for _, secret := range secrets {
 		if secret == "" {
 			continue
 		}
-		text = strings.ReplaceAll(text, secret, redactedPlaceholder)
+
+		start := 0
+		for {
+			idx := strings.Index(text[start:], secret)
+			if idx == -1 {
+				break
+			}
+			absoluteIdx := start + idx
+			end := absoluteIdx + len(secret)
+
+			if mask == nil {
+				mask = make([]bool, len(text))
+			}
+
+			// Mark bytes as sensitive
+			for i := absoluteIdx; i < end; i++ {
+				mask[i] = true
+			}
+			foundAny = true
+
+			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
+			// (e.g. "aaaa" with secret "aa" -> mask 0-1, 2-3).
+			start = end
+		}
 	}
-	return text
+
+	if !foundAny {
+		return text
+	}
+
+	var sb strings.Builder
+	sb.Grow(len(text))
+
+	i := 0
+	n := len(text)
+	for i < n {
+		if mask[i] {
+			sb.WriteString(redactedPlaceholder)
+			// Skip until end of masked region
+			for i < n && mask[i] {
+				i++
+			}
+		} else {
+			sb.WriteByte(text[i])
+			i++
+		}
+	}
+	return sb.String()
 }

@@ -208,22 +208,17 @@ func (m *Manager) GetStats(serviceID string) Stats {
 	}
 }
 
-// GetTrafficHistory returns the traffic history for the specified duration.
+// GetTrafficHistory returns the traffic history for the last 24 hours.
 // serviceID is optional.
-func (m *Manager) GetTrafficHistory(serviceID string, duration time.Duration) []TrafficPoint {
+func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	minutes := int(duration.Minutes())
-	if minutes <= 0 {
-		minutes = 60
-	}
-
-	points := make([]TrafficPoint, 0, minutes)
+	points := make([]TrafficPoint, 0, 60)
 	now := time.Now()
 
-	// Generate points for the last N minutes
-	for i := minutes - 1; i >= 0; i-- {
+	// Generate points for the last 60 minutes
+	for i := 59; i >= 0; i-- {
 		t := now.Add(time.Duration(-i) * time.Minute).Truncate(time.Minute)
 		key := t.Unix()
 
