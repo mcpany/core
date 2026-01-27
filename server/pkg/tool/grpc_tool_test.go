@@ -164,7 +164,10 @@ func TestGRPCTool_Execute(t *testing.T) {
 
 		result, err := grpcTool.Execute(context.Background(), req)
 		require.NoError(t, err)
-		assert.Equal(t, map[string]any{"weather": "sunny"}, result)
+		var resMap map[string]any
+		err = json.Unmarshal(result.(json.RawMessage), &resMap)
+		require.NoError(t, err)
+		assert.Equal(t, map[string]any{"weather": "sunny"}, resMap)
 	})
 
 	t.Run("pool get error", func(t *testing.T) {

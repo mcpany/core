@@ -367,13 +367,8 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to marshal grpc response to json: %w", err)
 	}
 
-	// ⚡ Bolt: Use json-iterator
-	var result map[string]any
-	if err := fastJSON.Unmarshal(responseJSON, &result); err != nil {
-		return string(responseJSON), nil
-	}
-
-	return result, nil
+	// ⚡ Bolt Optimization: Return RawMessage to avoid unnecessary Unmarshal/Marshal roundtrip.
+	return stdjson.RawMessage(responseJSON), nil
 }
 
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
@@ -1055,13 +1050,12 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 		return parsedResult, nil
 	}
 
-	// ⚡ Bolt: Use json-iterator
-	var result any
-	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil //nolint:nilerr
+	// ⚡ Bolt Optimization: Return RawMessage if valid JSON to avoid unnecessary Unmarshal/Marshal roundtrip.
+	if fastJSON.Valid(respBody) {
+		return stdjson.RawMessage(respBody), nil
 	}
 
-	return result, nil
+	return string(respBody), nil
 }
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
@@ -1523,12 +1517,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return parsedResult, nil
 	}
 
-	var result map[string]any
-	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
-		return string(respBody), nil
-	}
-
-	return result, nil
+	// ⚡ Bolt Optimization: Return RawMessage to avoid unnecessary Unmarshal/Marshal roundtrip.
+	return stdjson.RawMessage(respBody), nil
 }
 
 // CommandTool implements the Tool interface for a tool that is executed as a

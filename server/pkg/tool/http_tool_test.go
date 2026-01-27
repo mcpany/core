@@ -181,8 +181,9 @@ func TestHTTPTool_Execute_NoTransformation(t *testing.T) {
 	result, err := httpTool.Execute(context.Background(), req)
 	require.NoError(t, err)
 
-	resultMap, ok := result.(map[string]any)
-	require.True(t, ok)
+	var resultMap map[string]any
+	err = json.Unmarshal(result.(json.RawMessage), &resultMap)
+	require.NoError(t, err)
 	assert.Equal(t, "ok", resultMap["status"])
 	assert.Equal(t, "test", resultMap["param"])
 }
@@ -571,6 +572,8 @@ func TestHTTPTool_Execute_OutputTransformation_RawBytes(t *testing.T) {
 	result, err := httpTool.Execute(context.Background(), req)
 	require.NoError(t, err)
 
+	// Note: raw output transformer returns map[string]any directly because it constructs it
+	// See server/pkg/tool/types.go logic for OutputTransformer_RAW_BYTES
 	resultMap, ok := result.(map[string]any)
 	require.True(t, ok)
 	assert.Equal(t, rawBytesResponse, resultMap["raw"])
@@ -601,7 +604,11 @@ func TestHTTPTool_Execute_OutputTransformation_JQ(t *testing.T) {
 	result, err := httpTool.Execute(context.Background(), req)
 	require.NoError(t, err)
 
-	// Result should be a slice of interface{}
+	// JQ result is also parsed/transformed, so it might be interface{}
+	// See types.go:
+	// if t.outputTransformer != nil { ... return parsedResult, nil }
+	// So it returns whatever parser.Parse returns (likely []any or map[string]any)
+	// IT DOES NOT RETURN RawMessage in this case!
 	resultList, ok := result.([]any)
 	require.True(t, ok)
 	assert.Contains(t, resultList, "Alice")
@@ -834,8 +841,9 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	req1 := &tool.ExecutionRequest{ToolInputs: inputs1}
 	result1, err := httpTool.Execute(context.Background(), req1)
 	require.NoError(t, err)
-	resultMap1, ok := result1.(map[string]any)
-	require.True(t, ok)
+	var resultMap1 map[string]any
+	err = json.Unmarshal(result1.(json.RawMessage), &resultMap1)
+	require.NoError(t, err)
 	assert.Equal(t, "1", resultMap1["id"])
 
 	// Call 2
@@ -843,8 +851,9 @@ func TestHTTPTool_Execute_ConsecutiveCalls(t *testing.T) {
 	req2 := &tool.ExecutionRequest{ToolInputs: inputs2}
 	result2, err := httpTool.Execute(context.Background(), req2)
 	require.NoError(t, err)
-	resultMap2, ok := result2.(map[string]any)
-	require.True(t, ok)
+	var resultMap2 map[string]any
+	err = json.Unmarshal(result2.(json.RawMessage), &resultMap2)
+	require.NoError(t, err)
 	assert.Equal(t, "2", resultMap2["id"])
 }
 

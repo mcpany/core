@@ -61,8 +61,9 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		result, err := httpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
-		resultMap, ok := result.(map[string]any)
-		require.True(t, ok)
+		var resultMap map[string]any
+		err = json.Unmarshal(result.(json.RawMessage), &resultMap)
+		require.NoError(t, err)
 		assert.Equal(t, "/users/", resultMap["path"])
 	})
 
@@ -90,8 +91,9 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		result, err := httpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
-		resultMap, ok := result.(map[string]any)
-		require.True(t, ok)
+		var resultMap map[string]any
+		err = json.Unmarshal(result.(json.RawMessage), &resultMap)
+		require.NoError(t, err)
 		assert.Equal(t, "/files/image-.png", resultMap["path"])
 	})
 
@@ -119,8 +121,9 @@ func TestHTTPTool_Execute_MissingAndEmptyParams(t *testing.T) {
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
 		result, err := httpTool.Execute(context.Background(), req)
 		require.NoError(t, err)
-		resultMap, ok := result.(map[string]any)
-		require.True(t, ok)
+		var resultMap map[string]any
+		err = json.Unmarshal(result.(json.RawMessage), &resultMap)
+		require.NoError(t, err)
 		assert.Equal(t, "/users//items", resultMap["path"])
 	})
 

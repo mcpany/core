@@ -60,8 +60,9 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 		ToolInputs: json.RawMessage(`{}`),
 	})
 	assert.NoError(t, err)
-	resMap, ok := res.(map[string]any)
-	assert.True(t, ok)
+	var resMap map[string]any
+	err = json.Unmarshal(res.(json.RawMessage), &resMap)
+	assert.NoError(t, err)
 	assert.Equal(t, "ok", resMap["status"])
 }
 
@@ -109,8 +110,9 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 	}
 	res, err := ht.Execute(context.Background(), req)
 	assert.NoError(t, err)
-	resMap, ok := res.(map[string]any)
-	assert.True(t, ok)
+	var resMap map[string]any
+	err = json.Unmarshal(res.(json.RawMessage), &resMap)
+	assert.NoError(t, err)
 	assert.Equal(t, true, resMap["accepted"])
 }
 
@@ -152,7 +154,9 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 
 	res, err := ht.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.NoError(t, err)
-	resMap := res.(map[string]any)
+	var resMap map[string]any
+	err = json.Unmarshal(res.(json.RawMessage), &resMap)
+	assert.NoError(t, err)
 	assert.True(t, resMap["authed"].(bool))
 }
 
@@ -301,8 +305,9 @@ func TestOpenAPITool_Execute_Success(t *testing.T) {
 	}
 	res, err := ot.Execute(context.Background(), req)
 	assert.NoError(t, err)
-	resMap, ok := res.(map[string]any)
-	assert.True(t, ok)
+	var resMap map[string]any
+	err = json.Unmarshal(res.(json.RawMessage), &resMap)
+	assert.NoError(t, err)
 	assert.Equal(t, "item", resMap["name"])
 }
 
@@ -334,7 +339,8 @@ func TestOpenAPITool_Execute_QueryParam(t *testing.T) {
 	}
 	res, err := ot.Execute(context.Background(), req)
 	assert.NoError(t, err)
-	resMap, ok := res.(map[string]any)
-	assert.True(t, ok)
+	var resMap map[string]any
+	err = json.Unmarshal(res.(json.RawMessage), &resMap)
+	assert.NoError(t, err)
 	assert.Equal(t, true, resMap["found"])
 }

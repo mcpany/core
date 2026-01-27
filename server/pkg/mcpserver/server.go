@@ -6,6 +6,7 @@ package mcpserver
 import (
 	"context"
 	"encoding/base64"
+	stdjson "encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -597,6 +598,21 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	if ctr, ok := result.(*mcp.CallToolResult); ok {
 		finalResult = ctr
 		isStructured = true
+	} else if rawMsg, ok := result.(stdjson.RawMessage); ok {
+		// 1.5 Handle RawMessage (optimized path)
+		// We use json-iterator to peek for "content" or "isError" without full unmarshal
+		anyVal := fastJSON.Get([]byte(rawMsg))
+		if anyVal.LastError() == nil && (anyVal.Get("content").ValueType() != jsoniter.InvalidValue || anyVal.Get("isError").ValueType() != jsoniter.InvalidValue) {
+			// It looks like a CallToolResult structure
+			var callToolRes mcp.CallToolResult
+			if err := fastJSON.Unmarshal(rawMsg, &callToolRes); err == nil {
+				finalResult = &callToolRes
+				isStructured = true
+			} else {
+				logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult RawMessage, treating as raw data", "toolName", req.ToolName)
+			}
+		}
+		// If not structured, it will fall through to raw data handling where we use rawMsg directly.
 	} else if resultMap, ok := result.(map[string]any); ok {
 		// 2. Handle map[string]any result
 		// Heuristic: If map looks like CallToolResult (has "content" or "isError"), try to parse it.
@@ -651,7 +667,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
 		if jsonBytes == nil {
-			jsonBytes, marshalErr = fastJSON.Marshal(result)
+			// Optimization: If result is RawMessage, use it directly!
+			if rawMsg, ok := result.(stdjson.RawMessage); ok {
+				jsonBytes = []byte(rawMsg)
+			} else {
+				jsonBytes, marshalErr = fastJSON.Marshal(result)
+			}
 		}
 
 		var text string
@@ -879,6 +900,11 @@ func (r LazyLogResult) LogValue() slog.Value {
 	switch v := r.Value.(type) {
 	case *mcp.CallToolResult:
 		return summarizeCallToolResult(v)
+	case stdjson.RawMessage:
+		// Optimization: Avoid unmarshal/marshal, just redact
+		return slog.StringValue(util.BytesToString(util.RedactJSON([]byte(v))))
+	case []byte:
+		return slog.StringValue(util.BytesToString(util.RedactJSON(v)))
 	case map[string]any:
 		// Heuristic: Check if it looks like a CallToolResult
 		if ctr, err := convertMapToCallToolResult(v); err == nil {
