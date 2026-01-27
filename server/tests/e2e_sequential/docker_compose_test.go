@@ -55,6 +55,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	t.Setenv("COMPOSE_PROJECT_NAME", projectName)
 	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+	t.Setenv("MCPANY_API_KEY", "demo-key") // Ensure this is set for docker-compose variable substitution
 	t.Logf("Using COMPOSE_PROJECT_NAME: %s", projectName)
 
 	// Cleanup function
