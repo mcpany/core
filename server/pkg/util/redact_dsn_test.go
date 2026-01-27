@@ -91,7 +91,7 @@ func TestRedactDSN(t *testing.T) {
 		{
 			name:     "fallback: password with space",
 			input:    "postgres://user:pass word@localhost:5432/db",
-			expected: "postgres://user:[REDACTED] word@localhost:5432/db",
+			expected: "postgres://user:[REDACTED]@localhost:5432/db",
 		},
 		{
 			name:     "fallback: empty password",
@@ -168,6 +168,21 @@ func TestRedactDSN(t *testing.T) {
 			name:     "http credentials without at (treated as host:port)",
 			input:    "http://user:secret",
 			expected: "http://user:secret",
+		},
+		{
+			name:     "fallback: password with newline",
+			input:    "postgres://user:pass\nword@host:5432/db",
+			expected: "postgres://user:[REDACTED]@host:5432/db",
+		},
+		{
+			name:     "fallback: password with multiple spaces",
+			input:    "postgres://user:pass word more@host:5432/db",
+			expected: "postgres://user:[REDACTED]@host:5432/db",
+		},
+		{
+			name:     "User with space (matched by fallback regex)",
+			input:    "postgres://u ser:pass@host:5432/db",
+			expected: "postgres://u ser:[REDACTED]@host:5432/db",
 		},
 	}
 

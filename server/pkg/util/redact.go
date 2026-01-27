@@ -454,10 +454,10 @@ func isKeyColon(input []byte, endOffset int) bool {
 var dsnPasswordRegex = regexp.MustCompile(`(:)([^/?#@\s][^/?#\s]*|/[^/?#@\s][^/?#\s]*|)(@)`)
 
 // dsnSchemeRegex handles fallback cases where the DSN has a scheme (://)
-// We use a stricter regex that stops at whitespace, /, ?, or # to avoid swallowing
-// the path or subsequent text (e.g. multiple DSNs).
+// We use a regex that stops at the last '@' before the host, allowing special characters in the password.
+// It stops at /, ?, or # to avoid swallowing the path or subsequent text (e.g. multiple DSNs).
 // Matches scheme://user:password@
-var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^\s]*?)@([^/?#@\s]*)([/?#\s]|$)`)
+var dsnSchemeRegex = regexp.MustCompile(`(://[^/?#:\s]*):([^@]*?)@([^/?#@\s]*)([/?#\s]|$)`)
 
 // dsnFallbackNoAtRegex handles cases where url.Parse failed (e.g. invalid port) and there is no '@'.
 // This covers "redis://:password" or "scheme://user:password" (missing host).
