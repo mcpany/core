@@ -445,8 +445,21 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Logs Screenshots', async ({ page }) => {
+      // Pre-populate logs in localStorage to trigger restoration toast
+      await page.addInitScript(() => {
+          const logs = Array.from({ length: 5 }, (_, i) => ({
+              id: `restored-${i}`,
+              timestamp: new Date().toISOString(),
+              level: 'INFO',
+              message: `Restored log message ${i + 1} from previous session`,
+              source: 'system'
+          }));
+          window.localStorage.setItem('mcp_logs_v1', JSON.stringify(logs));
+      });
+
       await page.goto('/logs');
       await page.waitForTimeout(1000);
+       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_restored.png'), fullPage: true });
        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs_stream.png'), fullPage: true });
        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'logs.png'), fullPage: true });
   });

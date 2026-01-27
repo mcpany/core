@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { toast } from "sonner";
 
 // ⚡ Bolt Optimization: Lazy load the syntax highlighter.
 // react-syntax-highlighter is a heavy dependency. By lazy loading it only when a user
@@ -276,6 +277,55 @@ export function LogStream() {
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
   const logBufferRef = React.useRef<LogEntry[]>([])
+  // Persistence: Ref to access latest logs in saver interval
+  const logsRef = React.useRef(logs)
+  logsRef.current = logs
+
+  // Persistence: Load logs from localStorage on mount
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+
+    try {
+      const saved = window.localStorage.getItem("mcp_logs_v1")
+      if (saved) {
+        const parsed = JSON.parse(saved) as LogEntry[]
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Re-hydrate computed fields
+          parsed.forEach(log => {
+             log.searchStr = (log.message + " " + (log.source || "")).toLowerCase()
+             // Use cached formatter if possible, or new Date
+             log.formattedTime = timeFormatter
+                ? timeFormatter.format(new Date(log.timestamp))
+                : new Date(log.timestamp).toLocaleTimeString()
+          })
+          setLogs(parsed)
+          toast.success(`Restored ${parsed.length} logs from previous session`)
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load persisted logs", e)
+    }
+  }, [])
+
+  // Persistence: Save logs periodically
+  React.useEffect(() => {
+    const saveInterval = setInterval(() => {
+      if (typeof window !== "undefined" && logsRef.current.length > 0) {
+        try {
+          // We don't need to strip computed fields as JSON.stringify ignores functions/undefined
+          // but computed strings are fine. They might take space though.
+          // To save space, we could strip them, but re-computing them on load is cheap enough.
+          // Let's strip them to save localStorage space.
+          const toSave = logsRef.current.map(({ searchStr, formattedTime, ...rest }) => rest)
+          window.localStorage.setItem("mcp_logs_v1", JSON.stringify(toSave))
+        } catch (e) {
+          console.error("Failed to save logs to persistence", e)
+        }
+      }
+    }, 2000)
+
+    return () => clearInterval(saveInterval)
+  }, [])
 
   React.useEffect(() => {
     // Optimization: Flush buffer periodically to limit re-renders
@@ -284,25 +334,32 @@ export function LogStream() {
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
+
+          // Deduplication: Filter out logs that are already in the list
+          const existingIds = new Set(prev.map(l => l.id))
+          const uniqueBuffer = buffer.filter(l => !existingIds.has(l.id))
+
+          if (uniqueBuffer.length === 0) return prev
+
           const MAX_LOGS = 1000
 
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
           // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
 
           // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
+          if (prev.length + uniqueBuffer.length <= MAX_LOGS) {
+            return [...prev, ...uniqueBuffer]
           }
 
           // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
+          if (uniqueBuffer.length >= MAX_LOGS) {
+            return uniqueBuffer.slice(uniqueBuffer.length - MAX_LOGS)
           }
 
           // Case 3: Need to trim from prev to make room for buffer
-          // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
+          // We need (MAX_LOGS - uniqueBuffer.length) from the end of prev
+          const keepCount = MAX_LOGS - uniqueBuffer.length
+          return [...prev.slice(-keepCount), ...uniqueBuffer]
         })
       }
     }, 100) // Flush every 100ms
@@ -418,7 +475,13 @@ export function LogStream() {
     })
   }, [logs, filterLevel, filterSource, deferredSearchQuery])
 
-  const clearLogs = () => setLogs([])
+  const clearLogs = () => {
+    setLogs([])
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("mcp_logs_v1")
+      toast.info("Logs cleared and persistence reset")
+    }
+  }
 
   const downloadLogs = () => {
     const content = logs.map(l => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')
