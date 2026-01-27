@@ -28,10 +28,10 @@ var (
 	// Optimization: Use array instead of map for faster lookup.
 	sensitiveKeyGroups [256][][]byte
 
-	// sensitiveNextCharMask maps a starting character to a bitmask of allowed second characters.
-	// Bit 0 = 'a', Bit 1 = 'b', etc.
+	// sensitiveNextCharBitmap maps a starting character to a bitmap of allowed second characters.
+	// It covers all 256 possible byte values for the second character.
 	// Used to quickly filter out false positives based on the second character.
-	sensitiveNextCharMask [256]uint32
+	sensitiveNextCharBitmap [256][4]uint64
 
 	// sensitiveStartCharBitmap is a bitmap for fast checking if a character is a start char.
 	// It's faster than bytes.IndexAny for short strings because it avoids overhead.
@@ -85,21 +85,27 @@ func init() {
 	}
 	allSensitiveStartChars = sb.String()
 
-	// Build next char masks
+	// Build next char bitmaps
 	for start, keys := range sensitiveKeyGroups {
 		if len(keys) == 0 {
 			continue
 		}
-		var mask uint32
 		for _, k := range keys {
 			if len(k) > 1 {
 				second := k[1] // k is lowercase
-				if second >= 'a' && second <= 'z' {
-					mask |= 1 << (second - 'a')
-				}
+				// We normalize using | 0x20 in checkPotentialMatch, so we should map the bit here accordingly.
+				// However, sensitiveKeys only contain lowercase letters and symbols.
+				// | 0x20 maps 'A' to 'a', 'a' to 'a'.
+				// It also maps other chars.
+				// Since we check `input[matchStart+1] | 0x20` against this bitmap,
+				// we must ensure the bitmap is set for the normalized value.
+				// k[1] is already lowercase. k[1] | 0x20 == k[1].
+				normalized := second | 0x20
+				word := normalized / 64
+				bit := normalized % 64
+				sensitiveNextCharBitmap[start][word] |= 1 << bit
 			}
 		}
-		sensitiveNextCharMask[start] = mask
 	}
 
 	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
@@ -314,12 +320,10 @@ func checkPotentialMatch(input []byte, matchStart int, startChar byte) bool {
 	// Optimization: Check second character
 	if matchStart+1 < len(input) {
 		second := input[matchStart+1] | 0x20
-		if second >= 'a' && second <= 'z' {
-			mask := sensitiveNextCharMask[startChar]
-			if (mask & (1 << (second - 'a'))) == 0 {
-				// Second character doesn't match any key in this group
-				return false
-			}
+		word := sensitiveNextCharBitmap[startChar][second/64]
+		if (word & (1 << (second % 64))) == 0 {
+			// Second character doesn't match any key in this group
+			return false
 		}
 	} else {
 		// Not enough bytes for any key
