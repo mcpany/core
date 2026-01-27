@@ -10,11 +10,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -38,7 +38,7 @@ func TestHTTPTool_PathTraversal_Blocked(t *testing.T) {
 	poolManager.Register("test-service", p)
 
 	methodAndURL := "GET " + server.URL + "/api/v1/users/{{id}}"
-	mcpTool := v1.Tool_builder{
+	mcpTool := mcp_router_v1.Tool_builder{
 		UnderlyingMethodFqn: &methodAndURL,
 	}.Build()
 
@@ -89,17 +89,23 @@ func TestLocalCommandTool_ShellInjection_Prevention_NewCommands(t *testing.T) {
 
 	for _, cmd := range commands {
 		t.Run(cmd, func(t *testing.T) {
-			toolDef := &v1.Tool{Name: proto.String("test-tool-" + cmd)}
-			service := &configv1.CommandLineUpstreamService{
+			toolDef := mcp_router_v1.Tool_builder{
+				Name: proto.String("test-tool-" + cmd),
+			}.Build()
+			service := configv1.CommandLineUpstreamService_builder{
 				Command: proto.String(cmd),
 				Local:   proto.Bool(true),
-			}
-			callDef := &configv1.CommandLineCallDefinition{
+			}.Build()
+			callDef := configv1.CommandLineCallDefinition_builder{
 				Parameters: []*configv1.CommandLineParameterMapping{
-					{Schema: &configv1.ParameterSchema{Name: proto.String("arg")}},
+					configv1.CommandLineParameterMapping_builder{
+						Schema: configv1.ParameterSchema_builder{
+							Name: proto.String("arg"),
+						}.Build(),
+					}.Build(),
 				},
 				Args: []string{"{{arg}}"},
-			}
+			}.Build()
 			localTool := tool.NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
 
 			// Unquoted injection attempt

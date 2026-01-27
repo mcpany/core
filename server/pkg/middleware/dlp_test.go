@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,10 +17,10 @@ import (
 func TestDLPMiddleware(t *testing.T) {
 	logger := logging.GetLogger()
 	enabled := true
-	cfg := &configv1.DLPConfig{
+	cfg := configv1.DLPConfig_builder{
 		Enabled:        &enabled,
 		CustomPatterns: []string{`secret-\d+`},
-	}
+	}.Build()
 
 	mw := DLPMiddleware(cfg, logger)
 
@@ -63,10 +63,10 @@ func TestDLPMiddleware(t *testing.T) {
 
 	t.Run("OptimizationPath", func(t *testing.T) {
 		// Test the optimization path (no custom patterns)
-		cfg := &configv1.DLPConfig{
+		cfg := configv1.DLPConfig_builder{
 			Enabled: &enabled,
 			// No CustomPatterns
-		}
+		}.Build()
 		mwOpt := DLPMiddleware(cfg, logger)
 
 		handler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -121,9 +121,9 @@ func TestDLPMiddleware(t *testing.T) {
 
 	t.Run("Disabled", func(t *testing.T) {
 		disabled := false
-		cfg := &configv1.DLPConfig{
+		cfg := configv1.DLPConfig_builder{
 			Enabled: &disabled,
-		}
+		}.Build()
 		mwDisabled := DLPMiddleware(cfg, logger)
 
 		handler := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

@@ -87,7 +87,7 @@ func (a *Application) handleValidate() http.HandlerFunc {
 		}
 
 		// 3. Proto Validation (Required fields, custom logic)
-		cfg := &configv1.McpAnyServerConfig{}
+		cfg := configv1.McpAnyServerConfig_builder{}.Build()
 		engine, _ := config.NewEngine("config." + format) // Dummy path for engine selection
 		if err := engine.Unmarshal([]byte(req.Content), cfg); err != nil {
 			// This might catch things the schema didn't, or provide better messages

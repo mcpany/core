@@ -12,11 +12,12 @@ import { Button } from "@/components/ui/button";
 
 const actions = [
     {
-        title: "Add Service",
-        href: "/services",
+        title: "Register Service",
+        href: "/upstream-services",
         icon: PlusCircle,
         description: "Connect a new API or database",
-        color: "text-blue-500"
+        color: "text-blue-500",
+        bgColor: "bg-blue-500/10"
     },
     {
         title: "Playground",
@@ -41,6 +42,11 @@ const actions = [
     }
 ];
 
+/**
+ * A widget that provides quick access links to common actions and pages.
+ *
+ * @returns The rendered widget component.
+ */
 export function QuickActionsWidget() {
     return (
         <Card className="h-full flex flex-col backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-md transition-all duration-300">

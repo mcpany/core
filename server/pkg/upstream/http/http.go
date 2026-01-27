@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/doctor"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
@@ -122,14 +122,21 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	u.serviceID = sanitizedName
-	serviceID := u.serviceID
+	// Store new ID in local variable
+	serviceID := sanitizedName
 
 	u.checker = mcphealth.NewChecker(serviceConfig)
 
 	if isReload {
-		toolManager.ClearToolsForService(serviceID)
+		// Clear tools using the OLD service ID if available
+		idToClear := u.serviceID
+		if idToClear == "" {
+			idToClear = serviceID
+		}
+		toolManager.ClearToolsForService(idToClear)
 	}
+
+	u.serviceID = serviceID
 
 	httpService := serviceConfig.GetHttpService()
 	if httpService == nil {
@@ -238,13 +245,13 @@ func (u *Upstream) Register(
 			}
 			if !exists {
 				// Create a default tool definition
-				newTool := &configv1.ToolDefinition{
+				newTool := configv1.ToolDefinition_builder{
 					Name:        proto.String(callID),
 					CallId:      proto.String(callID),
 					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
-				}
+				}.Build()
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
-				httpService.Tools = append(httpService.Tools, newTool)
+				httpService.SetTools(append(httpService.GetTools(), newTool))
 			}
 		}
 	}

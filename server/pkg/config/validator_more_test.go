@@ -52,534 +52,448 @@ func TestValidate_MoreServices(t *testing.T) {
 	}{
 		{
 			name: "MTLS Auth Client Key Path Not Secure",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mtls-service-insecure-key"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(insecurePath),
-									ClientKeyPath:  proto.String(insecurePath), // Insecure path
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							Mtls: configv1.MTLSAuth_builder{
+								ClientCertPath: proto.String(insecurePath),
+								ClientKeyPath:  proto.String(insecurePath),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  0,
 			expectedErrorString: "",
 		},
 		{
 			name: "MTLS Auth Unauthorized Path",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mtls-unauthorized"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String("/etc/passwd"),
-									ClientKeyPath:  proto.String("/etc/passwd"),
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							Mtls: configv1.MTLSAuth_builder{
+								ClientCertPath: proto.String("/etc/passwd"),
+								ClientKeyPath:  proto.String("/etc/passwd"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_cert_path' is not a secure path",
 		},
 		{
 			name: "MTLS Auth File Not Found",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mtls-service-missing-file"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String("non-existent-cert.pem"),
-									ClientKeyPath:  proto.String("non-existent-key.pem"),
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							Mtls: configv1.MTLSAuth_builder{
+								ClientCertPath: proto.String("non-existent-cert.pem"),
+								ClientKeyPath:  proto.String("non-existent-key.pem"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_cert_path' not found",
 		},
 		{
 			name: "Basic Auth Unset Env",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("basic-auth-unset-env"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_BasicAuth{
-								BasicAuth: &configv1.BasicAuth{
-									Username: proto.String("user"),
-									Password: &configv1.SecretValue{
-										Value: &configv1.SecretValue_EnvironmentVariable{
-											EnvironmentVariable: "UNSET_ENV_VAR_FOR_TEST",
-										},
-									},
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							BasicAuth: configv1.BasicAuth_builder{
+								Username: proto.String("user"),
+								Password: configv1.SecretValue_builder{
+									EnvironmentVariable: proto.String("UNSET_ENV_VAR_FOR_TEST"),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "basic auth password validation failed",
 		},
 		{
 			name: "Bearer Token Unset Env",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("bearer-auth-unset-env"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_BearerToken{
-								BearerToken: &configv1.BearerTokenAuth{
-									Token: &configv1.SecretValue{
-										Value: &configv1.SecretValue_EnvironmentVariable{
-											EnvironmentVariable: "UNSET_ENV_VAR_FOR_TEST",
-										},
-									},
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							BearerToken: configv1.BearerTokenAuth_builder{
+								Token: configv1.SecretValue_builder{
+									EnvironmentVariable: proto.String("UNSET_ENV_VAR_FOR_TEST"),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "bearer token validation failed",
 		},
 		{
 			name: "invalid command line service - missing command",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("cmd-invalid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-							CommandLineService: &configv1.CommandLineUpstreamService{
-								// Command missing
-							},
-						},
-					},
+					configv1.UpstreamServiceConfig_builder{
+						Name:               proto.String("cmd-invalid"),
+						CommandLineService: configv1.CommandLineUpstreamService_builder{}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "cmd-invalid": command_line_service has empty command`,
 		},
 		{
 			name: "invalid grpc service - missing address",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("grpc-invalid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-							GrpcService: &configv1.GrpcUpstreamService{
-								// Address missing
-							},
-						},
-					},
+					configv1.UpstreamServiceConfig_builder{
+						Name:        proto.String("grpc-invalid"),
+						GrpcService: configv1.GrpcUpstreamService_builder{}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "grpc-invalid": gRPC service has empty address`,
 		},
 		{
 			name: "invalid mcp service - missing connection",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mcp-invalid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-							McpService: &configv1.McpUpstreamService{
-								// Connection type missing
-							},
-						},
-					},
+					configv1.UpstreamServiceConfig_builder{
+						Name:       proto.String("mcp-invalid"),
+						McpService: configv1.McpUpstreamService_builder{}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mcp-invalid": mcp service has no connection_type`,
 		},
 		{
 			name: "invalid mcp service - invalid stdio connection",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-stdio-invalid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-							McpService: &configv1.McpUpstreamService{
-								ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-									StdioConnection: &configv1.McpStdioConnection{
-										// Command missing
-									},
-								},
-							},
-						},
-					},
+						McpService: configv1.McpUpstreamService_builder{
+							StdioConnection: configv1.McpStdioConnection_builder{}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mcp-stdio-invalid": mcp service with stdio_connection has empty command`,
 		},
 		{
 			name: "invalid mcp service - invalid http connection",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-http-invalid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-							McpService: &configv1.McpUpstreamService{
-								ConnectionType: &configv1.McpUpstreamService_HttpConnection{
-									HttpConnection: &configv1.McpStreamableHttpConnection{
-										// Address missing
-									},
-								},
-							},
-						},
-					},
+						McpService: configv1.McpUpstreamService_builder{
+							HttpConnection: configv1.McpStreamableHttpConnection_builder{}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: `service "mcp-http-invalid": mcp service with http_connection has empty http_address`,
 		},
 		{
 			name: "invalid http service - empty address",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("http-empty"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								// Address missing
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "http service has empty address",
 		},
 		{
 			name: "invalid http service - invalid url",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("http-invalid-url"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("::invalid-url"),
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("::invalid-url"),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "invalid http address",
 		},
 		{
 			name: "invalid http service - invalid scheme",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("http-invalid-scheme"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("ftp://example.com"),
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("ftp://example.com"),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "invalid http address scheme",
 		},
 		{
 			name: "invalid websocket service - empty address",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("ws-empty"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
-							WebsocketService: &configv1.WebsocketUpstreamService{
-								// Address missing
-							},
-						},
-					},
+					configv1.UpstreamServiceConfig_builder{
+						Name:             proto.String("ws-empty"),
+						WebsocketService: configv1.WebsocketUpstreamService_builder{}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "websocket service has empty address",
 		},
 		{
 			name: "invalid websocket service - invalid scheme",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("ws-invalid-scheme"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
-							WebsocketService: &configv1.WebsocketUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-					},
+						WebsocketService: configv1.WebsocketUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "invalid websocket address scheme",
 		},
 		{
 			name: "invalid openapi service - all empty",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("openapi-empty"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-							OpenapiService: &configv1.OpenapiUpstreamService{
-								// All missing
-							},
-						},
-					},
+					configv1.UpstreamServiceConfig_builder{
+						Name:           proto.String("openapi-empty"),
+						OpenapiService: configv1.OpenapiUpstreamService_builder{}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "openapi service must have either an address, spec content or spec url",
 		},
 		{
 			name: "invalid openapi service - invalid address",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("openapi-invalid-addr"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-							OpenapiService: &configv1.OpenapiUpstreamService{
-								Address: proto.String("::invalid"),
-							},
-						},
-					},
+						OpenapiService: configv1.OpenapiUpstreamService_builder{
+							Address: proto.String("::invalid"),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "invalid openapi address",
 		},
 		{
 			name: "invalid openapi service - invalid spec url",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("openapi-invalid-spec-url"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-							OpenapiService: &configv1.OpenapiUpstreamService{
-								SpecSource: &configv1.OpenapiUpstreamService_SpecUrl{
-									SpecUrl: "::invalid",
-								},
-							},
-						},
-					},
+						OpenapiService: configv1.OpenapiUpstreamService_builder{
+							SpecUrl: proto.String("::invalid"),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "invalid openapi spec_url",
 		},
 		{
 			name: "valid command line service",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("cmd-valid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_CommandLineService{
-							CommandLineService: &configv1.CommandLineUpstreamService{
-								Command: proto.String("ls"),
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("cmd-valid")
+
+				cmdSvc := &configv1.CommandLineUpstreamService{}
+				cmdSvc.SetCommand("ls")
+				svc.SetCommandLineService(cmdSvc)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount: 0,
 		},
 		{
 			name: "invalid apikey auth - empty key value",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("apikey-empty-val"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_ApiKey{
-								ApiKey: &configv1.APIKeyAuth{
-									ParamName: proto.String("X-API-Key"),
-									Value: &configv1.SecretValue{
-										Value: &configv1.SecretValue_PlainText{PlainText: ""},
-									},
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							ApiKey: configv1.APIKeyAuth_builder{
+								ParamName: proto.String("X-API-Key"),
+								Value: configv1.SecretValue_builder{
+									PlainText: proto.String(""),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "resolved api key value is empty",
 		},
 		{
 			name: "invalid basic auth - empty password",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("basic-empty-pass"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("http://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_BasicAuth{
-								BasicAuth: &configv1.BasicAuth{
-									Username: proto.String("user"),
-									Password: &configv1.SecretValue{
-										Value: &configv1.SecretValue_PlainText{PlainText: ""},
-									},
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("http://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							BasicAuth: configv1.BasicAuth_builder{
+								Username: proto.String("user"),
+								Password: configv1.SecretValue_builder{
+									PlainText: proto.String(""),
+								}.Build(),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "basic auth 'password' is empty",
 		},
 		{
 			name: "valid mtls auth - no ca",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-valid-no-ca"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(insecurePath),
-									ClientKeyPath:  proto.String(insecurePath),
-									// CA Cert Path unset
-								},
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-valid-no-ca")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath(insecurePath)
+				mtls.SetClientKeyPath(insecurePath)
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount: 0,
 		},
 		{
 			name: "empty upstream auth config",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("empty-auth"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							// Empty auth config (no method set)
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("empty-auth")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				// Empty auth config (no method set)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount: 0,
 		},
 		{
 			name: "invalid mcp service - call schema error",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-schema-error"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-							McpService: &configv1.McpUpstreamService{
-								ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-									StdioConnection: &configv1.McpStdioConnection{
-										Command: proto.String("ls"),
-									},
-								},
-								Calls: map[string]*configv1.MCPCallDefinition{
-									"bad-call": {
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+						McpService: configv1.McpUpstreamService_builder{
+							StdioConnection: configv1.McpStdioConnection_builder{
+								Command: proto.String("ls"),
+							}.Build(),
+							Calls: map[string]*configv1.MCPCallDefinition{
+								"bad-call": configv1.MCPCallDefinition_builder{
+									InputSchema: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
 									},
-								},
+								}.Build(),
 							},
-						},
-					},
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "input_schema error",
 		},
 		{
 			name: "mtls auth insecure ca cert",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-insecure-ca"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(insecurePath),
-									ClientKeyPath:  proto.String(insecurePath),
-									CaCertPath:     proto.String(insecurePath),
-								},
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-insecure-ca")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath(insecurePath)
+				mtls.SetClientKeyPath(insecurePath)
+				mtls.SetCaCertPath(insecurePath)
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			// Validation might fail earlier on cert/key pending existence check,
 			// but cert.pem/key.pem don't exist?
 			// Wait, validator checks FileExists for client/key first.
@@ -593,181 +507,159 @@ func TestValidate_MoreServices(t *testing.T) {
 		},
 		{
 			name: "mtls auth missing ca cert",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mtls-missing-ca"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									// Use insecurePath (exists) for client cert/key to pass check
-									ClientCertPath: proto.String(insecurePath),
-									ClientKeyPath:  proto.String(insecurePath),
-									CaCertPath:     proto.String("non-existent-ca.pem"),
-								},
-							},
-						},
-					},
+						HttpService: configv1.HttpUpstreamService_builder{
+							Address: proto.String("https://example.com"),
+						}.Build(),
+						UpstreamAuth: configv1.Authentication_builder{
+							Mtls: configv1.MTLSAuth_builder{
+								ClientCertPath: proto.String(insecurePath),
+								ClientKeyPath:  proto.String(insecurePath),
+								CaCertPath:     proto.String("non-existent-ca.pem"),
+							}.Build(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'ca_cert_path' not found",
 		},
 		{
 			name: "invalid grpc service - schema error",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("grpc-schema-error"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-							GrpcService: &configv1.GrpcUpstreamService{
-								Address: proto.String("127.0.0.1:50051"),
-								Calls: map[string]*configv1.GrpcCallDefinition{
-									"bad-call": {
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+						GrpcService: configv1.GrpcUpstreamService_builder{
+							Address: proto.String("127.0.0.1:50051"),
+							Calls: map[string]*configv1.GrpcCallDefinition{
+								"bad-call": configv1.GrpcCallDefinition_builder{
+									InputSchema: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
 									},
-								},
+								}.Build(),
 							},
-						},
-					},
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "input_schema error",
 		},
 		{
 			name: "invalid websocket service - call input schema error",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("ws-input-error"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
-							WebsocketService: &configv1.WebsocketUpstreamService{
-								Address: proto.String("ws://example.com"),
-								Calls: map[string]*configv1.WebsocketCallDefinition{
-									"bad-input": {
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+						WebsocketService: configv1.WebsocketUpstreamService_builder{
+							Address: proto.String("ws://example.com"),
+							Calls: map[string]*configv1.WebsocketCallDefinition{
+								"bad-input": configv1.WebsocketCallDefinition_builder{
+									InputSchema: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
 									},
-								},
+								}.Build(),
 							},
-						},
-					},
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "input_schema error",
 		},
 		{
 			name: "invalid mcp service - call output schema error",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("mcp-output-error"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_McpService{
-							McpService: &configv1.McpUpstreamService{
-								ConnectionType: &configv1.McpUpstreamService_StdioConnection{
-									StdioConnection: &configv1.McpStdioConnection{
-										Command: proto.String("ls"),
-									},
-								},
-								Calls: map[string]*configv1.MCPCallDefinition{
-									"bad-output": {
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+						McpService: configv1.McpUpstreamService_builder{
+							StdioConnection: configv1.McpStdioConnection_builder{
+								Command: proto.String("ls"),
+							}.Build(),
+							Calls: map[string]*configv1.MCPCallDefinition{
+								"bad-output": configv1.MCPCallDefinition_builder{
+									OutputSchema: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
 									},
-								},
+								}.Build(),
 							},
-						},
-					},
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "output_schema error",
 		},
 		{
 			name: "invalid websocket service - call output schema error",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("ws-output-error"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_WebsocketService{
-							WebsocketService: &configv1.WebsocketUpstreamService{
-								Address: proto.String("ws://example.com"),
-								Calls: map[string]*configv1.WebsocketCallDefinition{
-									"bad-output": {
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+						WebsocketService: configv1.WebsocketUpstreamService_builder{
+							Address: proto.String("ws://example.com"),
+							Calls: map[string]*configv1.WebsocketCallDefinition{
+								"bad-output": configv1.WebsocketCallDefinition_builder{
+									OutputSchema: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
 									},
-								},
+								}.Build(),
 							},
-						},
-					},
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "output_schema error",
 		},
 		{
 			name: "valid openapi service - spec content",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("openapi-content"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-							OpenapiService: &configv1.OpenapiUpstreamService{
-								// Address empty
-								SpecSource: &configv1.OpenapiUpstreamService_SpecContent{
-									SpecContent: `{"openapi": "3.0.0"}`,
-								},
-							},
-						},
-					},
+						OpenapiService: configv1.OpenapiUpstreamService_builder{
+							SpecContent: proto.String(`{"openapi": "3.0.0"}`),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount: 0,
 		},
 		{
 			name: "invalid grpc service - output schema error",
-			config: &configv1.McpAnyServerConfig{
+			config: configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
+					configv1.UpstreamServiceConfig_builder{
 						Name: proto.String("grpc-output-error"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-							GrpcService: &configv1.GrpcUpstreamService{
-								Address: proto.String("127.0.0.1:50051"),
-								Calls: map[string]*configv1.GrpcCallDefinition{
-									"bad-output": {
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
-											},
+						GrpcService: configv1.GrpcUpstreamService_builder{
+							Address: proto.String("127.0.0.1:50051"),
+							Calls: map[string]*configv1.GrpcCallDefinition{
+								"bad-output": configv1.GrpcCallDefinition_builder{
+									OutputSchema: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 										},
 									},
-								},
+								}.Build(),
 							},
-						},
-					},
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 			expectedErrorCount:  1,
 			expectedErrorString: "output_schema error",
 		},
@@ -839,128 +731,123 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 	}{
 		{
 			name: "mtls auth - insecure ca cert mocked",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-mock-insecure-ca"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(securePath),
-									ClientKeyPath:  proto.String(securePath),
-									CaCertPath:     proto.String("insecure.pem"),
-								},
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-mock-insecure-ca")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath(securePath)
+				mtls.SetClientKeyPath(securePath)
+				mtls.SetCaCertPath("insecure.pem")
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'ca_cert_path' is not a secure path",
 		},
 		{
 			name: "mtls auth - insecure client cert mocked",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-mock-insecure-client"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String("insecure.pem"),
-									ClientKeyPath:  proto.String(securePath),
-								},
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-mock-insecure-client")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath("insecure.pem")
+				mtls.SetClientKeyPath(securePath)
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_cert_path' is not a secure path",
 		},
 		{
 			name: "mtls auth - insecure client key mocked",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-mock-insecure-key"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(securePath),
-									ClientKeyPath:  proto.String("insecure.pem"),
-								},
-							},
-						},
-					},
-				},
-			},
+			// Test case: Client Key is world readable (insecure)
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-insecure-key-file")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath(securePath)
+				mtls.SetClientKeyPath(insecurePath) // Insecure file
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_key_path' is not a secure path",
 		},
 		{
 			name: "mtls auth - valid path but missing file",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-missing-file"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(securePath),              // Valid secure path
-									ClientKeyPath:  proto.String(securePath + ".missing"), // Secure path BUT missing
-								},
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-missing-file")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath(securePath)
+				mtls.SetClientKeyPath(securePath + ".missing")
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_key_path' not found",
 		},
 		{
 			name: "mtls auth - permission denied",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("mtls-permission-denied"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-							HttpService: &configv1.HttpUpstreamService{
-								Address: proto.String("https://example.com"),
-							},
-						},
-						UpstreamAuth: &configv1.Authentication{
-							AuthMethod: &configv1.Authentication_Mtls{
-								Mtls: &configv1.MTLSAuth{
-									ClientCertPath: proto.String(securePath),
-									// Use mock path that triggers generic error in mocked osStat
-									ClientKeyPath: proto.String("mock-error-path"),
-								},
-							},
-						},
-					},
-				},
-			},
+			config: func() *configv1.McpAnyServerConfig {
+				cfg := &configv1.McpAnyServerConfig{}
+				svc := &configv1.UpstreamServiceConfig{}
+				svc.SetName("mtls-permission-denied")
+
+				httpSvc := &configv1.HttpUpstreamService{}
+				httpSvc.SetAddress("https://example.com")
+				svc.SetHttpService(httpSvc)
+
+				auth := &configv1.Authentication{}
+				mtls := &configv1.MTLSAuth{}
+				mtls.SetClientCertPath(securePath)
+				mtls.SetClientKeyPath("mock-error-path")
+				auth.SetMtls(mtls)
+				svc.SetUpstreamAuth(auth)
+
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+				return cfg
+			}(),
 			expectedErrorCount:  1,
 			expectedErrorString: "mtls 'client_key_path' error", // Matches "error: mock error"
 		},
@@ -985,17 +872,18 @@ func TestValidate_MtlsInsecure(t *testing.T) {
 }
 
 func TestValidate_RedisAddressNil(t *testing.T) {
-	redisBus := &bus.RedisBus{
-		// Address nil
-	}
+	redisBus := &bus.RedisBus{}
+	// Address is empty/nil
 	msgBus := &bus.MessageBus{}
 	msgBus.SetRedis(redisBus)
 
-	config := &configv1.McpAnyServerConfig{
-		GlobalSettings: &configv1.GlobalSettings{
-			MessageBus: msgBus,
-		},
-	}
+	config := func() *configv1.McpAnyServerConfig {
+		c := &configv1.McpAnyServerConfig{}
+		gs := &configv1.GlobalSettings{}
+		gs.SetMessageBus(msgBus)
+		c.SetGlobalSettings(gs)
+		return c
+	}()
 	// Address is empty/nil -> GetAddress() == "" -> Error
 	errs := Validate(context.Background(), config, Server)
 	assert.NotEmpty(t, errs)
@@ -1006,11 +894,13 @@ func TestValidate_MemoryBus(t *testing.T) {
 	msgBus := &bus.MessageBus{}
 	msgBus.SetInMemory(&bus.InMemoryBus{})
 
-	config := &configv1.McpAnyServerConfig{
-		GlobalSettings: &configv1.GlobalSettings{
-			MessageBus: msgBus,
-		},
-	}
+	config := func() *configv1.McpAnyServerConfig {
+		c := &configv1.McpAnyServerConfig{}
+		gs := &configv1.GlobalSettings{}
+		gs.SetMessageBus(msgBus)
+		c.SetGlobalSettings(gs)
+		return c
+	}()
 	errs := Validate(context.Background(), config, Server)
 	assert.Empty(t, errs)
 }

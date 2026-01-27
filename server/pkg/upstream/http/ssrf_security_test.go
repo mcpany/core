@@ -7,7 +7,6 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -26,19 +25,17 @@ func TestSSRFProtection(t *testing.T) {
 
 	// 2. Configure pool to point to it
 	// Note: httptest server listens on loopback
-	config := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(server.URL),
-			},
-		},
-	}
+	config := configv1.UpstreamServiceConfig_builder{
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+	}.Build()
 
 	// 3. Create pool
 	// Ensure env vars are cleared so we test default secure behavior
-	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-	os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
-	os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
 
 	p, err := NewHTTPPool(1, 1, 10, config)
 	require.NoError(t, err)
@@ -71,17 +68,15 @@ func TestSSRFProtection_Allowed(t *testing.T) {
 	defer server.Close()
 
 	// 2. Configure pool to point to it
-	config := &configv1.UpstreamServiceConfig{
-		ServiceConfig: &configv1.UpstreamServiceConfig_HttpService{
-			HttpService: &configv1.HttpUpstreamService{
-				Address: proto.String(server.URL),
-			},
-		},
-	}
+	config := configv1.UpstreamServiceConfig_builder{
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(server.URL),
+		}.Build(),
+	}.Build()
 
 	// 3. Allow loopback via env var
-	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
-	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	// 3. Allow loopback via env var
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	p, err := NewHTTPPool(1, 1, 10, config)
 	require.NoError(t, err)

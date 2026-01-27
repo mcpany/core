@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Service Configuration Editor', () => {
   test('should allow editing environment variables for command line service', async ({ page }) => {
     // Navigate to services page
-    await page.goto('/services');
+    await page.goto('/upstream-services');
     await expect(page).toHaveTitle(/MCPAny Manager/);
 
     // Open "New Service" sheet

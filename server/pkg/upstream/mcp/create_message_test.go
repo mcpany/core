@@ -14,7 +14,7 @@ import (
 )
 
 func TestHandleCreateMessage(t *testing.T) {
-	u := NewUpstream(&configv1.GlobalSettings{}).(*Upstream)
+	u := NewUpstream(configv1.GlobalSettings_builder{}.Build()).(*Upstream)
 	ctx := context.Background()
 
 	// Mock downstream session

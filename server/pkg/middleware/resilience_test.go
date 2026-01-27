@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/resilience"
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/resilience"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/proto"
@@ -41,21 +41,26 @@ func TestResilienceMiddleware_Execute_CircuitBreaker(t *testing.T) {
 	}
 
 	// Configure resilience
-	resilienceConfig := &configv1.ResilienceConfig{
-		CircuitBreaker: &configv1.CircuitBreakerConfig{
-			FailureRateThreshold: proto.Float64(0.5),
-			ConsecutiveFailures:  proto.Int32(2),
-			OpenDuration:         durationpb.New(100 * time.Millisecond),
-			HalfOpenRequests:     proto.Int32(1),
-		},
-	}
+	cbConfig := configv1.CircuitBreakerConfig_builder{
+		FailureRateThreshold: proto.Float64(0.5),
+		ConsecutiveFailures:  proto.Int32(2),
+		OpenDuration:         durationpb.New(100 * time.Millisecond),
+		HalfOpenRequests:     proto.Int32(1),
+	}.Build()
+
+	resilienceConfig := configv1.ResilienceConfig_builder{
+		CircuitBreaker: cbConfig,
+	}.Build()
+
+	svcConfig := configv1.UpstreamServiceConfig_builder{
+		Resilience: resilienceConfig,
+	}.Build()
+
 	serviceInfo := &tool.ServiceInfo{
 		Name:   serviceID,
-		Config: &configv1.UpstreamServiceConfig{Resilience: resilienceConfig},
+		Config: svcConfig,
 	}
 
-	// Mock expectations
-	// Note: We use AnyTimes because the middleware calls these multiple times
 	mockTM.EXPECT().GetTool(toolName).Return(mockTool, true).AnyTimes()
 	mockTM.EXPECT().GetServiceInfo(serviceID).Return(serviceInfo, true).AnyTimes()
 
@@ -121,16 +126,23 @@ func TestResilienceMiddleware_Execute_Retry(t *testing.T) {
 		},
 	}
 
-	resilienceConfig := &configv1.ResilienceConfig{
-		RetryPolicy: &configv1.RetryConfig{
-			NumberOfRetries: proto.Int32(2),
-			BaseBackoff:     durationpb.New(1 * time.Millisecond),
-			MaxBackoff:      durationpb.New(10 * time.Millisecond),
-		},
-	}
+	retryConfig := configv1.RetryConfig_builder{
+		NumberOfRetries: proto.Int32(2),
+		BaseBackoff:     durationpb.New(1 * time.Millisecond),
+		MaxBackoff:      durationpb.New(10 * time.Millisecond),
+	}.Build()
+
+	resilienceConfig := configv1.ResilienceConfig_builder{
+		RetryPolicy: retryConfig,
+	}.Build()
+
+	svcConfig := configv1.UpstreamServiceConfig_builder{
+		Resilience: resilienceConfig,
+	}.Build()
+
 	serviceInfo := &tool.ServiceInfo{
 		Name:   serviceID,
-		Config: &configv1.UpstreamServiceConfig{Resilience: resilienceConfig},
+		Config: svcConfig,
 	}
 
 	mockTM.EXPECT().GetTool(toolName).Return(mockTool, true).AnyTimes()

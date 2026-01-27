@@ -44,32 +44,30 @@ func TestValidateAuditConfig(t *testing.T) {
 	assert.NoError(t, validateAuditConfig(nil))
 
 	// Case 2: Disabled
-	assert.NoError(t, validateAuditConfig(&configv1.AuditConfig{Enabled: proto.Bool(false)}))
+	assert.NoError(t, validateAuditConfig(configv1.AuditConfig_builder{
+		Enabled: proto.Bool(false),
+	}.Build()))
 
-	// Case 3: File storage without path
-	stFile := configv1.AuditConfig_STORAGE_TYPE_FILE
-	err := validateAuditConfig(&configv1.AuditConfig{
+	err := validateAuditConfig(configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
-		StorageType: &stFile,
-	})
+		StorageType: configv1.AuditConfig_STORAGE_TYPE_FILE.Enum(),
+	}.Build())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "output_path is required")
 
-	// Case 4: Webhook storage without URL
-	stWebhook := configv1.AuditConfig_STORAGE_TYPE_WEBHOOK
-	err = validateAuditConfig(&configv1.AuditConfig{
+	err = validateAuditConfig(configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
-		StorageType: &stWebhook,
-	})
+		StorageType: configv1.AuditConfig_STORAGE_TYPE_WEBHOOK.Enum(),
+	}.Build())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "webhook_url is required")
 
 	// Case 5: Invalid webhook URL
-	err = validateAuditConfig(&configv1.AuditConfig{
+	err = validateAuditConfig(configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
-		StorageType: &stWebhook,
+		StorageType: configv1.AuditConfig_STORAGE_TYPE_WEBHOOK.Enum(),
 		WebhookUrl:  proto.String("not-a-url"),
-	})
+	}.Build())
 	assert.Error(t, err)
 }
 
@@ -78,38 +76,36 @@ func TestValidateDLPConfig(t *testing.T) {
 	assert.NoError(t, validateDLPConfig(nil))
 
 	// Case 2: Valid patterns
-	err := validateDLPConfig(&configv1.DLPConfig{
+	err := validateDLPConfig(configv1.DLPConfig_builder{
 		CustomPatterns: []string{"^abc$", "[0-9]+"},
-	})
+	}.Build())
 	assert.NoError(t, err)
 
 	// Case 3: Invalid pattern
-	err = validateDLPConfig(&configv1.DLPConfig{
+	err = validateDLPConfig(configv1.DLPConfig_builder{
 		CustomPatterns: []string{"["},
-	})
+	}.Build())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid regex pattern")
 }
 
 func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 	// Empty URL
-	sv := &configv1.SecretValue{
-		Value: &configv1.SecretValue_RemoteContent{
-			RemoteContent: &configv1.RemoteContent{
-				HttpUrl: proto.String(""),
-			},
-		},
-	}
+	sv := configv1.SecretValue_builder{
+		RemoteContent: configv1.RemoteContent_builder{
+			HttpUrl: proto.String(""),
+		}.Build(),
+	}.Build()
 	err := validateSecretValue(sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty http_url")
 
 	// Invalid URL scheme
-	sv.Value = &configv1.SecretValue_RemoteContent{
-		RemoteContent: &configv1.RemoteContent{
+	sv = configv1.SecretValue_builder{
+		RemoteContent: configv1.RemoteContent_builder{
 			HttpUrl: proto.String("ftp://example.com/secret"),
-		},
-	}
+		}.Build(),
+	}.Build()
 	err = validateSecretValue(sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid http_url scheme")
@@ -117,20 +113,20 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 
 func TestValidateContainerEnvironment_Errors(t *testing.T) {
 	// Empty host path
-	env := &configv1.ContainerEnvironment{
+	env := configv1.ContainerEnvironment_builder{
 		Image: proto.String("alpine"),
 		Volumes: map[string]string{
 			"": "/container/path",
 		},
-	}
+	}.Build()
 	err := validateContainerEnvironment(env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "host path is empty")
 
 	// Empty container path
-	env.Volumes = map[string]string{
+	env.SetVolumes(map[string]string{
 		"/host/path": "",
-	}
+	})
 	err = validateContainerEnvironment(env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container path is empty")
@@ -140,60 +136,59 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 	ctx := context.Background()
 
 	// API Key errors
-	auth := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String(""), // Error
-			},
-		},
-	}
+	auth := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String(""),
+		}.Build(),
+	}.Build()
 	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Bearer Token errors
-	auth = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_BearerToken{
-			BearerToken: &configv1.BearerTokenAuth{
-				Token: nil, // Error: token empty
-			},
-		},
-	}
+	auth = configv1.Authentication_builder{
+		BearerToken: configv1.BearerTokenAuth_builder{
+			Token: nil,
+		}.Build(),
+	}.Build()
 	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Basic Auth errors
-	auth = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_BasicAuth{
-			BasicAuth: &configv1.BasicAuth{
-				Username: proto.String(""), // Error
-			},
-		},
-	}
+	auth = configv1.Authentication_builder{
+		BasicAuth: configv1.BasicAuth_builder{
+			Username: proto.String(""),
+		}.Build(),
+	}.Build()
 	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 }
 
 func TestValidateSQLService_Errors(t *testing.T) {
 	// Empty Driver
-	s := &configv1.SqlUpstreamService{Driver: proto.String("")}
+	s := &configv1.SqlUpstreamService{}
+	s.SetDriver("")
 	err := validateSQLService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "driver")
 
 	// Empty DSN
-	s = &configv1.SqlUpstreamService{Driver: proto.String("postgres"), Dsn: proto.String("")}
+	s = &configv1.SqlUpstreamService{}
+	s.SetDriver("postgres")
+	s.SetDsn("")
 	err = validateSQLService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "dsn")
 
 	// Call with empty query
-	s = &configv1.SqlUpstreamService{
+	s = configv1.SqlUpstreamService_builder{
 		Driver: proto.String("postgres"),
 		Dsn:    proto.String("postgres://"),
 		Calls: map[string]*configv1.SqlCallDefinition{
-			"call1": {Query: proto.String("")},
+			"call1": configv1.SqlCallDefinition_builder{
+				Query: proto.String(""),
+			}.Build(),
 		},
-	}
+	}.Build()
 	err = validateSQLService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "query is empty")
@@ -201,104 +196,115 @@ func TestValidateSQLService_Errors(t *testing.T) {
 
 func TestValidateGraphQLService_Errors(t *testing.T) {
 	// Empty Address
-	s := &configv1.GraphQLUpstreamService{Address: proto.String("")}
+	s := &configv1.GraphQLUpstreamService{}
+	s.SetAddress("")
 	err := validateGraphQLService(s)
 	assert.Error(t, err)
 
 	// Invalid URL
-	s = &configv1.GraphQLUpstreamService{Address: proto.String("not-url")}
+	s = &configv1.GraphQLUpstreamService{}
+	s.SetAddress("not-url")
 	err = validateGraphQLService(s)
 	assert.Error(t, err)
 }
 
 func TestValidateWebrtcService_Errors(t *testing.T) {
 	// Empty Address
-	s := &configv1.WebrtcUpstreamService{Address: proto.String("")}
+	s := &configv1.WebrtcUpstreamService{}
+	s.SetAddress("")
 	err := validateWebrtcService(s)
 	assert.Error(t, err)
 
 	// Invalid URL
-	s = &configv1.WebrtcUpstreamService{Address: proto.String("not-url")}
+	s = &configv1.WebrtcUpstreamService{}
+	s.SetAddress("not-url")
 	err = validateWebrtcService(s)
 	assert.Error(t, err)
 }
 
 func TestValidateOAuth2Auth_Errors(t *testing.T) {
 	ctx := context.Background()
-	// Empty Token URL
-	auth := &configv1.OAuth2Auth{TokenUrl: proto.String("")}
-	err := validateOAuth2Auth(ctx, auth)
+	auth := configv1.Authentication_builder{
+		Oauth2: configv1.OAuth2Auth_builder{
+			TokenUrl: proto.String(""),
+		}.Build(),
+	}.Build()
+	err := validateOAuth2Auth(ctx, auth.GetOauth2())
 	assert.Error(t, err)
 
-	// Invalid URL
-	auth = &configv1.OAuth2Auth{TokenUrl: proto.String("not-url")}
-	err = validateOAuth2Auth(ctx, auth)
+	auth2 := configv1.OAuth2Auth_builder{
+		TokenUrl: proto.String("not-url"),
+	}.Build()
+	err = validateOAuth2Auth(ctx, auth2)
 	assert.Error(t, err)
 }
 
 func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 	ctx := context.Background()
+	var auth *configv1.Authentication
 	// Oauth2
-	auth := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{
-			Oauth2: &configv1.OAuth2Auth{TokenUrl: proto.String("")},
-		},
-	}
+	auth = configv1.Authentication_builder{
+		Oauth2: configv1.OAuth2Auth_builder{
+			TokenUrl: proto.String(""),
+		}.Build(),
+	}.Build()
 	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 
 	// Mtls
-	auth = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Mtls{
-			Mtls: &configv1.MTLSAuth{ClientCertPath: proto.String("")},
-		},
-	}
+	auth = configv1.Authentication_builder{
+		Mtls: configv1.MTLSAuth_builder{
+			ClientCertPath: proto.String(""),
+		}.Build(),
+	}.Build()
 	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 }
 
 func TestValidateGCSettings(t *testing.T) {
 	// Case 1: Invalid interval
-	gc := &configv1.GCSettings{Interval: proto.String("invalid")}
+	gc := &configv1.GCSettings{}
+	gc.SetInterval("invalid")
 	err := validateGCSettings(gc)
 	assert.Error(t, err)
 
 	// Case 2: Invalid TTL
-	gc = &configv1.GCSettings{Ttl: proto.String("invalid")}
+	gc = &configv1.GCSettings{}
+	gc.SetTtl("invalid")
 	err = validateGCSettings(gc)
 	assert.Error(t, err)
 
 	// Case 3: Empty path in Paths
-	gc = &configv1.GCSettings{
+	gc = configv1.GCSettings_builder{
 		Enabled: proto.Bool(true),
 		Paths:   []string{""},
-	}
+	}.Build()
 	err = validateGCSettings(gc)
 	assert.Error(t, err)
 
 	// Case 4: Relative path
-	gc = &configv1.GCSettings{
+	gc = configv1.GCSettings_builder{
 		Enabled: proto.Bool(true),
 		Paths:   []string{"relative/path"},
-	}
+	}.Build()
 	err = validateGCSettings(gc)
 	assert.Error(t, err)
 }
 
 func TestValidateHTTPService_SchemaErrors(t *testing.T) {
 	// Invalid Input Schema
-	s := &configv1.HttpUpstreamService{
+	s := configv1.HttpUpstreamService_builder{
 		Address: proto.String("http://example.com"),
 		Calls: map[string]*configv1.HttpCallDefinition{
-			"call1": {
+			"call1": configv1.HttpCallDefinition_builder{
 				InputSchema: &structpb.Struct{
 					Fields: map[string]*structpb.Value{
 						"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 					},
 				},
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 	err := validateHTTPService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "input_schema")
@@ -319,16 +325,14 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 	assert.Contains(t, err.Error(), "required for outgoing")
 
 	// Value resolves to empty
-	auth = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String("api_key"),
-				Value: &configv1.SecretValue{
-					Value: &configv1.SecretValue_PlainText{PlainText: ""},
-				},
-			},
-		},
-	}
+	auth = configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("api_key"),
+			Value: configv1.SecretValue_builder{
+				PlainText: proto.String(""),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "resolved api key value is empty")
@@ -357,11 +361,11 @@ func TestValidateAPIKeyAuth_Incoming_Errors(t *testing.T) {
 
 func TestValidateMcpService_BundleErrors(t *testing.T) {
 	// Empty Bundle Path
-	s := &configv1.McpUpstreamService{
-		ConnectionType: &configv1.McpUpstreamService_BundleConnection{
-			BundleConnection: &configv1.McpBundleConnection{BundlePath: proto.String("")},
-		},
-	}
+	s := configv1.McpUpstreamService_builder{
+		BundleConnection: configv1.McpBundleConnection_builder{
+			BundlePath: proto.String(""),
+		}.Build(),
+	}.Build()
 	err := validateMcpService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty bundle_path")
@@ -369,31 +373,31 @@ func TestValidateMcpService_BundleErrors(t *testing.T) {
 
 func TestValidateSQLService_SchemaErrors(t *testing.T) {
 	// Invalid Input Schema
-	s := &configv1.SqlUpstreamService{
+	s := configv1.SqlUpstreamService_builder{
 		Driver: proto.String("postgres"),
 		Dsn:    proto.String("postgres://"),
 		Calls: map[string]*configv1.SqlCallDefinition{
-			"call1": {
+			"call1": configv1.SqlCallDefinition_builder{
 				Query: proto.String("SELECT 1"),
 				InputSchema: &structpb.Struct{
 					Fields: map[string]*structpb.Value{
 						"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}},
 					},
 				},
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 	err := validateSQLService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "input_schema")
 }
 
 func TestValidate_ClientErrors(t *testing.T) {
-	cfg := &configv1.McpAnyServerConfig{
-		GlobalSettings: &configv1.GlobalSettings{
+	cfg := configv1.McpAnyServerConfig_builder{
+		GlobalSettings: configv1.GlobalSettings_builder{
 			ApiKey: proto.String("short"),
-		},
-	}
+		}.Build(),
+	}.Build()
 	errs := Validate(context.Background(), cfg, Client)
 	assert.NotEmpty(t, errs)
 	assert.Contains(t, errs[0].Err.Error(), "at least 16 characters")
@@ -426,103 +430,90 @@ func TestValidateCollection_Coverage(t *testing.T) {
 
 	// 4. Valid with Auth (ApiKey)
 	coll.HttpUrl = proto.String("http://example.com/collection.json")
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String("x-api-key"),
-				Value: &configv1.SecretValue{
-					Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
-				},
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("x-api-key"),
+			Value: configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	if err := validateCollection(ctx, coll); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
 	// Invalid API Key
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String(""), // Empty ParamName
-				Value: &configv1.SecretValue{
-					Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
-				},
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String(""), // Empty ParamName
+			Value: configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	assert.Error(t, validateCollection(ctx, coll))
 
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String("header"),
-				// Missing Value
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("header"),
+		}.Build(),
+	}.Build()
 	assert.Error(t, validateCollection(ctx, coll))
 
 	// 5. Valid with Bearer
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_BearerToken{
-			BearerToken: &configv1.BearerTokenAuth{
-				Token: &configv1.SecretValue{
-					Value: &configv1.SecretValue_PlainText{PlainText: "token"},
-				},
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		BearerToken: configv1.BearerTokenAuth_builder{
+			Token: configv1.SecretValue_builder{
+				PlainText: proto.String("token"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	if err := validateCollection(ctx, coll); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
 	// 7. Valid with mTLS (failing due to missing files, but covering code path)
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Mtls{
-			Mtls: &configv1.MTLSAuth{
-				ClientCertPath: proto.String("/tmp/nonexistent_cert.pem"),
-				ClientKeyPath:  proto.String("/tmp/nonexistent_key.pem"),
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		Mtls: configv1.MTLSAuth_builder{
+			ClientCertPath: proto.String("/tmp/nonexistent_cert.pem"),
+			ClientKeyPath:  proto.String("/tmp/nonexistent_key.pem"),
+		}.Build(),
+	}.Build()
 	// Should fail file check
 	if err := validateCollection(ctx, coll); err == nil {
 		t.Error("Expected error for missing mTLS files")
 	}
 
 	// 8. Valid with OAuth2
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{
-			Oauth2: &configv1.OAuth2Auth{
-				TokenUrl:     proto.String("https://example.com/token"),
-				ClientId:     &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "id"}},
-				ClientSecret: &configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "secret"}},
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		Oauth2: configv1.OAuth2Auth_builder{
+			TokenUrl: proto.String("https://example.com/token"),
+			ClientId: configv1.SecretValue_builder{
+				PlainText: proto.String("id"),
+			}.Build(),
+			ClientSecret: configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	if err := validateCollection(ctx, coll); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
 	// Invalid OAuth2
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{
-			Oauth2: &configv1.OAuth2Auth{
-				TokenUrl: proto.String(""), // Empty URL
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		Oauth2: configv1.OAuth2Auth_builder{
+			TokenUrl: proto.String(""), // Empty URL
+		}.Build(),
+	}.Build()
 	assert.Error(t, validateCollection(ctx, coll))
 
-	coll.Authentication = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{
-			Oauth2: &configv1.OAuth2Auth{
-				TokenUrl: proto.String("not-url"), // Invalid URL
-			},
-		},
-	}
+	coll.Authentication = configv1.Authentication_builder{
+		Oauth2: configv1.OAuth2Auth_builder{
+			TokenUrl: proto.String("not-url"), // Invalid URL
+		}.Build(),
+	}.Build()
 	assert.Error(t, validateCollection(ctx, coll))
 }

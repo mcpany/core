@@ -7,10 +7,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/bus"
 	busproto "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -52,17 +52,15 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		err := tm.AddTool(mockTool)
 		require.NoError(t, err)
 		tm.AddServiceInfo(serviceID, &ServiceInfo{
-			Config: &configv1.UpstreamServiceConfig{
+			Config: configv1.UpstreamServiceConfig_builder{
 				PreCallHooks: []*configv1.CallHook{
-					{
-						HookConfig: &configv1.CallHook_CallPolicy{
-							CallPolicy: &configv1.CallPolicy{
-								DefaultAction: ptrIntegration(configv1.CallPolicy_DENY),
-							},
-						},
-					},
+					configv1.CallHook_builder{
+						CallPolicy: configv1.CallPolicy_builder{
+							DefaultAction: configv1.CallPolicy_DENY.Enum(),
+						}.Build(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 		})
 
 		req := &ExecutionRequest{ToolName: toolID}
@@ -82,13 +80,13 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 		err := tm.AddTool(mockTool)
 		require.NoError(t, err)
 		tm.AddServiceInfo(serviceID, &ServiceInfo{
-			Config: &configv1.UpstreamServiceConfig{
+			Config: configv1.UpstreamServiceConfig_builder{
 				CallPolicies: []*configv1.CallPolicy{
-					{
-						DefaultAction: ptrIntegration(configv1.CallPolicy_DENY),
-					},
+					configv1.CallPolicy_builder{
+						DefaultAction: configv1.CallPolicy_DENY.Enum(),
+					}.Build(),
 				},
-			},
+			}.Build(),
 		})
 
 		req := &ExecutionRequest{ToolName: toolID}

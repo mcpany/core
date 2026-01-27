@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package middleware
@@ -12,151 +12,179 @@ import (
 )
 
 func TestCSRFMiddleware(t *testing.T) {
+	allowedOrigins := []string{"http://allowed.com", "http://localhost:3000"}
+	m := NewCSRFMiddleware(allowedOrigins)
+	handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
 	tests := []struct {
 		name           string
 		method         string
-		allowedOrigins []string
 		headers        map[string]string
-		host           string
-		wantStatus     int
+		expectedStatus int
 	}{
 		{
-			name:       "Safe Method GET",
-			method:     http.MethodGet,
-			wantStatus: http.StatusOK,
+			name:           "Safe Method GET",
+			method:         http.MethodGet,
+			headers:        map[string]string{},
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:       "Safe Method OPTIONS",
-			method:     http.MethodOptions,
-			wantStatus: http.StatusOK,
-		},
-		{
-			name:   "POST with Authorization",
-			method: http.MethodPost,
-			headers: map[string]string{
-				"Authorization": "Bearer token",
-			},
-			wantStatus: http.StatusOK,
+			name:           "Safe Method OPTIONS",
+			method:         http.MethodOptions,
+			headers:        map[string]string{},
+			expectedStatus: http.StatusOK,
 		},
 		{
 			name:   "POST with X-API-Key",
 			method: http.MethodPost,
 			headers: map[string]string{
-				"X-API-Key": "key",
+				"X-API-Key": "some-key",
 			},
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "POST with Valid Origin",
-			method:         http.MethodPost,
-			allowedOrigins: []string{"http://example.com"},
+			name:   "POST with Authorization Bearer",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Origin": "http://example.com",
+				"Authorization": "Bearer token",
 			},
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "POST with Invalid Origin",
-			method:         http.MethodPost,
-			allowedOrigins: []string{"http://example.com"},
+			name:   "POST with JSON Content-Type",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Origin": "http://evil.com",
+				"Content-Type": "application/json",
 			},
-			wantStatus: http.StatusForbidden,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "POST with Same Origin (Matches Host)",
-			method:         http.MethodPost,
-			allowedOrigins: []string{}, // Empty allowed
+			name:   "POST with Allowed Origin",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Origin": "http://localhost:8080",
+				"Origin": "http://allowed.com",
 			},
-			host:       "localhost:8080",
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "POST with Same Origin (Matches Host) 2",
-			method:         http.MethodPost,
-			allowedOrigins: []string{},
+			name:   "POST with Allowed Referer",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Origin": "https://myapp.com",
+				"Referer": "http://allowed.com/some/page",
 			},
-			host:       "myapp.com",
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "POST with Mismatched Host and Origin",
-			method:         http.MethodPost,
-			allowedOrigins: []string{},
+			name:   "POST with Blocked Origin",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Origin": "http://evil.com",
+				"Origin": "http://attacker.com",
 			},
-			host:       "localhost:8080",
-			wantStatus: http.StatusForbidden,
+			expectedStatus: http.StatusForbidden,
 		},
 		{
-			name:           "POST with Valid Referer",
-			method:         http.MethodPost,
-			allowedOrigins: []string{"http://example.com"},
+			name:   "POST with Blocked Referer",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Referer": "http://example.com/page",
+				"Referer": "http://attacker.com/page",
 			},
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusForbidden,
 		},
 		{
-			name:           "POST with Invalid Referer",
-			method:         http.MethodPost,
-			allowedOrigins: []string{"http://example.com"},
+			name:   "POST Form without Origin/Referer (allowed for CLI)",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Referer": "http://evil.com/page",
+				"Content-Type": "application/x-www-form-urlencoded",
 			},
-			wantStatus: http.StatusForbidden,
+			expectedStatus: http.StatusOK,
 		},
 		{
-			name:           "POST with Same Origin Referer",
-			method:         http.MethodPost,
-			allowedOrigins: []string{},
+			name:   "POST Form with Blocked Origin",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Referer": "http://localhost:8080/ui",
+				"Content-Type": "application/x-www-form-urlencoded",
+				"Origin":       "http://attacker.com",
 			},
-			host:       "localhost:8080",
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusForbidden,
 		},
 		{
-			name:       "POST with No Origin/Referer (Non-Browser)",
-			method:     http.MethodPost,
-			wantStatus: http.StatusOK,
-		},
-		{
-			name:           "POST with Wildcard Allowed Origin",
-			method:         http.MethodPost,
-			allowedOrigins: []string{"*"},
+			name:   "POST Form with Same Origin (Host match)",
+			method: http.MethodPost,
 			headers: map[string]string{
-				"Origin": "http://evil.com",
+				"Content-Type": "application/x-www-form-urlencoded",
+				"Origin":       "http://same-server.com",
+				"Host":         "same-server.com",
 			},
-			wantStatus: http.StatusOK,
+			expectedStatus: http.StatusOK,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := NewCSRFMiddleware(tt.allowedOrigins)
-			handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-			}))
-
-			req := httptest.NewRequest(tt.method, "http://localhost:8080/api", nil)
-			if tt.host != "" {
-				req.Host = tt.host
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, "/", nil)
+			// httptest.NewRequest sets Host to "example.com" by default.
+			// We need to override it if specified in headers for our test logic.
+			if host, ok := tc.headers["Host"]; ok {
+				req.Host = host
 			}
-			for k, v := range tt.headers {
+			for k, v := range tc.headers {
+				if k != "Host" { // Host header is special in Go http.Request
+					req.Header.Set(k, v)
+				}
+			}
+			w := httptest.NewRecorder()
+			handler.ServeHTTP(w, req)
+			assert.Equal(t, tc.expectedStatus, w.Code, "Test case: %s", tc.name)
+		})
+	}
+}
+
+func TestCSRFMiddleware_EmptyConfig(t *testing.T) {
+	// Initialize with empty allowed origins
+	m := NewCSRFMiddleware([]string{})
+	handler := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	tests := []struct {
+		name           string
+		headers        map[string]string
+		expectedStatus int
+	}{
+		{
+			name: "Localhost Origin Allowed by Default",
+			headers: map[string]string{
+				"Origin": "http://localhost:3000",
+			},
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name: "127.0.0.1 Origin Allowed by Default",
+			headers: map[string]string{
+				"Origin": "http://127.0.0.1:4000",
+			},
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name: "External Origin Blocked",
+			headers: map[string]string{
+				"Origin": "http://external.com",
+			},
+			expectedStatus: http.StatusForbidden,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodPost, "/", nil)
+			for k, v := range tc.headers {
 				req.Header.Set(k, v)
 			}
-
-			rec := httptest.NewRecorder()
-			handler.ServeHTTP(rec, req)
-
-			assert.Equal(t, tt.wantStatus, rec.Code)
+			w := httptest.NewRecorder()
+			handler.ServeHTTP(w, req)
+			assert.Equal(t, tc.expectedStatus, w.Code, "Test case: %s", tc.name)
 		})
 	}
 }

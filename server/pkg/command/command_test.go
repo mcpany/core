@@ -45,6 +45,9 @@ func (w *muWriter) Write(p []byte) (int, error) {
 }
 
 func canConnectToDocker(t *testing.T) bool {
+	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		return false
+	}
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		t.Logf("could not create docker client: %v", err)

@@ -166,7 +166,7 @@ export function AnalyticsDashboard() {
         <div className="flex-1 space-y-4 p-8 pt-6 h-full overflow-y-auto">
             <div className="flex items-center justify-between space-y-2">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Analytics & Stats</h2>
+                    <h1 className="text-3xl font-bold tracking-tight">Analytics & Stats</h1>
                     <p className="text-muted-foreground">Real-time insights into your MCP infrastructure.</p>
                 </div>
                 <div className="flex items-center space-x-2">

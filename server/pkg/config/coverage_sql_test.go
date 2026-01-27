@@ -22,61 +22,61 @@ func TestValidateSQLService_Coverage(t *testing.T) {
 	}{
 		{
 			name: "Valid SQL Service",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("sql-valid"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
-							SqlService: &configv1.SqlUpstreamService{
-								Driver: proto.String("postgres"),
-								Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
-								Calls: map[string]*configv1.SqlCallDefinition{
-									"my-query": {
-										Query: proto.String("SELECT 1"),
-										InputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
-											},
-										},
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_StringValue{StringValue: "array"}},
-											},
-										},
-									},
-								},
+			config: func() *configv1.McpAnyServerConfig {
+				sqlSvc := &configv1.SqlUpstreamService{}
+				sqlSvc.SetDriver("postgres")
+				sqlSvc.SetDsn("postgres://user:pass@127.0.0.1:5432/db")
+				sqlSvc.SetCalls(map[string]*configv1.SqlCallDefinition{
+					"my-query": {
+						Query: proto.String("SELECT 1"),
+						InputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+							},
+						},
+						OutputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_StringValue{StringValue: "array"}},
 							},
 						},
 					},
-				},
-			},
+				})
+
+				svcConfig := &configv1.UpstreamServiceConfig{}
+				svcConfig.SetName("sql-valid")
+				svcConfig.SetSqlService(sqlSvc)
+
+				return configv1.McpAnyServerConfig_builder{
+					UpstreamServices: []*configv1.UpstreamServiceConfig{svcConfig},
+				}.Build()
+			}(),
 			shouldFail: false,
 		},
 		{
 			name: "Invalid Output Schema",
-			config: &configv1.McpAnyServerConfig{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{
-					{
-						Name: proto.String("sql-invalid-output"),
-						ServiceConfig: &configv1.UpstreamServiceConfig_SqlService{
-							SqlService: &configv1.SqlUpstreamService{
-								Driver: proto.String("postgres"),
-								Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
-								Calls: map[string]*configv1.SqlCallDefinition{
-									"my-query": {
-										Query: proto.String("SELECT 1"),
-										OutputSchema: &structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"type": {Kind: &structpb.Value_NumberValue{NumberValue: 1}},
-											},
-										},
-									},
-								},
+			config: func() *configv1.McpAnyServerConfig {
+				sqlSvc := &configv1.SqlUpstreamService{}
+				sqlSvc.SetDriver("postgres")
+				sqlSvc.SetDsn("postgres://user:pass@127.0.0.1:5432/db")
+				sqlSvc.SetCalls(map[string]*configv1.SqlCallDefinition{
+					"my-query": {
+						Query: proto.String("SELECT 1"),
+						OutputSchema: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 1}},
 							},
 						},
 					},
-				},
-			},
+				})
+
+				svcConfig := &configv1.UpstreamServiceConfig{}
+				svcConfig.SetName("sql-invalid-output")
+				svcConfig.SetSqlService(sqlSvc)
+
+				return configv1.McpAnyServerConfig_builder{
+					UpstreamServices: []*configv1.UpstreamServiceConfig{svcConfig},
+				}.Build()
+			}(),
 			shouldFail:          true,
 			expectedErrorString: `service "sql-invalid-output": sql call "my-query" output_schema error: schema 'type' must be a string`,
 		},
