@@ -299,29 +299,54 @@ func TestGracefulShutdown(t *testing.T) {
 		Setpgid: true,
 	}
 
-	stdout, err := cmd.StdoutPipe()
+	// Capture stdout/stderr to inspect potential failures
+	var stdoutBuf, stderrBuf bytes.Buffer
+	cmd.Stderr = &stderrBuf
+
+	stdoutPipe, err := cmd.StdoutPipe()
 	assert.NoError(t, err)
 
 	err = cmd.Start()
 	assert.NoError(t, err)
 
-	// Wait for "READY" signal from child
-	scanner := bufio.NewScanner(stdout)
-	ready := false
-	timer := time.NewTimer(10 * time.Second)
-	done := make(chan struct{})
+	// Read from stdout pipe
+	// We wrap stdoutBuf with a mutex or just ensure we don't read it until done.
+	// Since StdoutPipe is read by the scanner, and TeeReader writes to stdoutBuf synchronously with the read,
+	// checking stdoutBuf is unsafe while scanning is active.
+	// We'll wait for the scanner to exit before reading stdoutBuf.
+
+	scanDone := make(chan struct{})
+	foundReady := make(chan struct{})
 
 	go func() {
+		defer close(scanDone)
+		// TeeReader writes to stdoutBuf as we read.
+		reader := io.TeeReader(stdoutPipe, &stdoutBuf)
+		scanner := bufio.NewScanner(reader)
 		for scanner.Scan() {
-			if scanner.Text() == "READY" {
-				close(done)
-				return
+			text := scanner.Text()
+			if text == "READY" {
+				// Signal ready but keep reading to capture full logs if needed?
+				// Actually, once READY, we probably don't care about further logs unless it fails later.
+				// But we need to keep draining the pipe to let the child run?
+				// The child prints READY and then waits for signal.
+				// If we stop reading, the child might block on writing if buffer fills?
+				// Yes, we should keep reading.
+				select {
+				case <-foundReady:
+					// Already signaled
+				default:
+					close(foundReady)
+				}
 			}
 		}
 	}()
 
+	ready := false
+	timer := time.NewTimer(10 * time.Second)
+
 	select {
-	case <-done:
+	case <-foundReady:
 		ready = true
 	case <-timer.C:
 		t.Log("Timed out waiting for child process to be ready")
@@ -330,6 +355,10 @@ func TestGracefulShutdown(t *testing.T) {
 
 	if !ready {
 		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+		// Wait for scanner to finish (pipe closed by kill/wait)
+		<-scanDone
+		t.Logf("Child process STDOUT:\n%s", stdoutBuf.String())
+		t.Logf("Child process STDERR:\n%s", stderrBuf.String())
 		t.Fatal("Child process did not become ready in time")
 	}
 
@@ -337,8 +366,28 @@ func TestGracefulShutdown(t *testing.T) {
 	err = syscall.Kill(-cmd.Process.Pid, syscall.SIGINT)
 	assert.NoError(t, err)
 
-	err = cmd.Wait()
-	assert.NoError(t, err)
+	waitTimer := time.NewTimer(5 * time.Second)
+	waitDone := make(chan error)
+	go func() {
+		waitDone <- cmd.Wait()
+	}()
+
+	select {
+	case err := <-waitDone:
+		if err != nil {
+			// Wait for scanner to finish to get full logs
+			<-scanDone
+			t.Logf("Child process STDOUT:\n%s", stdoutBuf.String())
+			t.Logf("Child process STDERR:\n%s", stderrBuf.String())
+		}
+		assert.NoError(t, err)
+	case <-waitTimer.C:
+		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+		<-scanDone // Ensure we can read buffers
+		t.Logf("Child process STDOUT:\n%s", stdoutBuf.String())
+		t.Logf("Child process STDERR:\n%s", stderrBuf.String())
+		t.Fatal("Timed out waiting for child process to exit")
+	}
 }
 
 func TestConfigValidateCmd(t *testing.T) {

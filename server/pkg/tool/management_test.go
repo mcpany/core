@@ -545,12 +545,18 @@ func TestToolManager_AddServiceInfo_WithConfig(t *testing.T) {
 		},
 		PreCallHooks: []*configv1.CallHook{
 			configv1.CallHook_builder{
-				Webhook: configv1.WebhookConfig_builder{Url: "http://pre.com"}.Build(),
+				Webhook: configv1.WebhookConfig_builder{
+					Url:           proto.String("http://pre.com"),
+					WebhookSecret: proto.String(""),
+				}.Build(),
 			}.Build(),
 		},
 		PostCallHooks: []*configv1.CallHook{
 			configv1.CallHook_builder{
-				Webhook: configv1.WebhookConfig_builder{Url: "http://post.com"}.Build(),
+				Webhook: configv1.WebhookConfig_builder{
+					Url:           proto.String("http://post.com"),
+					WebhookSecret: proto.String(""),
+				}.Build(),
 			}.Build(),
 		},
 	}.Build()

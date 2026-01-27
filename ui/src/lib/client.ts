@@ -277,6 +277,10 @@ export const apiClient = {
                  }
                  return data;
              }
+             if (res.status === 404) {
+                 const text = await res.text();
+                 throw new Error(text || `Service ${id} not found`);
+             }
              throw e;
          }
     },

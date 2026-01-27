@@ -124,6 +124,38 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 		profiles = GlobalSettings().Profiles()
 	}
 
+	// Inject a default profile definition if one is missing and we are using "default"
+	hasDefaultProfile := false
+	for _, p := range profiles {
+		if p == "default" {
+			hasDefaultProfile = true
+			break
+		}
+	}
+
+	if hasDefaultProfile {
+		hasDefaultDef := false
+		for _, def := range fileConfig.GetGlobalSettings().GetProfileDefinitions() {
+			if def.GetName() == "default" {
+				hasDefaultDef = true
+				break
+			}
+		}
+		if !hasDefaultDef {
+			// We need to add a default profile definition to avoid warnings in ProfileManager
+			defaultDef := configv1.ProfileDefinition_builder{
+				Name: proto.String("default"),
+			}.Build()
+
+			gs := fileConfig.GetGlobalSettings()
+			if gs == nil {
+				gs = configv1.GlobalSettings_builder{}.Build()
+				fileConfig.SetGlobalSettings(gs)
+			}
+			gs.SetProfileDefinitions(append(gs.GetProfileDefinitions(), defaultDef))
+		}
+	}
+
 	manager := NewUpstreamServiceManager(profiles)
 	services, err := manager.LoadAndMergeServices(ctx, fileConfig)
 	if err != nil {

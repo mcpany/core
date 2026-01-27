@@ -30,6 +30,10 @@ export function middleware(request: NextRequest) {
     const url = new URL(request.url);
     const newUrl = new URL(pathname + url.search, backendUrl);
 
+    if (process.env.MCPANY_API_KEY) {
+      requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
+    }
+
     return NextResponse.rewrite(newUrl, {
       request: {
         headers: requestHeaders,

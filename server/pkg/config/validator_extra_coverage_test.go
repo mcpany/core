@@ -55,9 +55,9 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
 			Value: &configv1.SecretValue_FilePath{FilePath: "/invalid/path\x00"},
 		},
 	}
-	auth := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_BasicAuth{BasicAuth: basicAuth},
-	}
+	auth := configv1.Authentication_builder{
+		BasicAuth: basicAuth,
+	}.Build()
 	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "basic auth password validation failed")
@@ -68,9 +68,9 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
 			Value: &configv1.SecretValue_FilePath{FilePath: "/invalid/path\x00"},
 		},
 	}
-	auth = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_BearerToken{BearerToken: bearerAuth},
-	}
+	auth = configv1.Authentication_builder{
+		BearerToken: bearerAuth,
+	}.Build()
 	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "bearer token validation failed")
@@ -82,9 +82,9 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
 			Value: &configv1.SecretValue_FilePath{FilePath: "/invalid/path\x00"},
 		},
     }
-    auth = &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{Oauth2: oauth},
-	}
+    auth = configv1.Authentication_builder{
+		Oauth2: oauth,
+	}.Build()
     err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
     assert.Error(t, err)
     assert.Contains(t, err.Error(), "oauth2 client_id validation failed")

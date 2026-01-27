@@ -78,11 +78,11 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		CommandLineService: configv1.CommandLineUpstreamService_builder{
 			Command: proto.String("echo"),
 			Tools: []*configv1.ToolDefinition{
-				{
-					Name:        proto.String("get_weather"),
-					Description: proto.String("Get current weather"),
-					CallId:      proto.String("get_weather"),
-				},
+				configv1.ToolDefinition_builder{
+					Name:        proto.String("init-tool"),
+					Description: proto.String("Initial tool"),
+					CallId:      proto.String("init-call"),
+				}.Build(),
 			},
 			Calls: map[string]*configv1.CommandLineCallDefinition{
 				"get_weather": {

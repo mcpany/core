@@ -51,29 +51,27 @@ func TestOAuthFlow_Complete(t *testing.T) {
 
 	// Create Authentication using builders or structs.
 	// Using standard struct pointers since builders caused issues.
-	oauthConfig := &configv1.OAuth2Auth{
-		ClientId: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "client-id"},
-		},
-		ClientSecret: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"},
-		},
+	oauthConfig := configv1.OAuth2Auth_builder{
+		ClientId: configv1.SecretValue_builder{
+			PlainText: proto.String("client-id"),
+		}.Build(),
+		ClientSecret: configv1.SecretValue_builder{
+			PlainText: proto.String("client-secret"),
+		}.Build(),
 		AuthorizationUrl: proto.String(mockOAuth.URL + "/auth"),
 		TokenUrl:         proto.String(mockOAuth.URL + "/token"),
 		Scopes:           proto.String("read write"),
-	}
+	}.Build()
 
-	authConfig := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{
-			Oauth2: oauthConfig,
-		},
-	}
+	authConfig := configv1.Authentication_builder{
+		Oauth2: oauthConfig,
+	}.Build()
 
-	cred := &configv1.Credential{
+	cred := configv1.Credential_builder{
 		Id:             proto.String(credID),
 		Name:           proto.String("test-oauth-cred"),
 		Authentication: authConfig,
-	}
+	}.Build()
 
 	err = memStore.SaveCredential(ctx, cred)
 	require.NoError(t, err)

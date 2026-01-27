@@ -184,8 +184,8 @@ func TestRegister_DynamicResource_Success(t *testing.T) {
 
 	// Config with 1 tool and 1 dynamic resource pointing to it
 	toolDef := configv1.ToolDefinition_builder{
-		Name:   proto.String("my-tool"),
-		CallId: proto.String("call-1"),
+		Name:    proto.String("my-tool"),
+		CallId:  proto.String("call-1"),
 	}.Build()
 
 	resourceDef := configv1.ResourceDefinition_builder{

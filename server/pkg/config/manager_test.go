@@ -17,10 +17,10 @@ import (
 
 func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 	// Local service definitions
-	localService1 := &configv1.UpstreamServiceConfig{}
+	localService1 := configv1.UpstreamServiceConfig_builder{}.Build()
 	localService1.SetName("service1")
 	localService1.SetVersion("1.0")
-	localService2 := &configv1.UpstreamServiceConfig{}
+	localService2 := configv1.UpstreamServiceConfig_builder{}.Build()
 	localService2.SetName("service2")
 	localService2.SetVersion("1.0")
 
@@ -94,10 +94,10 @@ services:
 		{
 			name: "local and remote services, remote has higher priority",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1, localService2})
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection1")
 				col.SetHttpUrl(server.URL + "/collection1")
 				col.SetPriority(-1)
@@ -113,10 +113,10 @@ services:
 		{
 			name: "local and remote services, local has higher priority",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1, localService2})
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection1")
 				col.SetHttpUrl(server.URL + "/collection1")
 				col.SetPriority(1)
@@ -132,20 +132,20 @@ services:
 		{
 			name: "multiple remote collections, mixed priorities",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1, localService2})
 
-				col1 := &configv1.Collection{}
+				col1 := configv1.Collection_builder{}.Build()
 				col1.SetName("collection1")
 				col1.SetHttpUrl(server.URL + "/collection1")
 				col1.SetPriority(1)
 
-				col2 := &configv1.Collection{}
+				col2 := configv1.Collection_builder{}.Build()
 				col2.SetName("collection2")
 				col2.SetHttpUrl(server.URL + "/collection2")
 				col2.SetPriority(-1)
 
-				col3 := &configv1.Collection{}
+				col3 := configv1.Collection_builder{}.Build()
 				col3.SetName("collection3")
 				col3.SetHttpUrl(server.URL + "/collection3")
 				col3.SetPriority(-2)
@@ -162,10 +162,10 @@ services:
 		{
 			name: "same priority, first one wins",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1})
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection1")
 				col.SetHttpUrl(server.URL + "/collection1")
 				col.SetPriority(0)
@@ -180,9 +180,9 @@ services:
 		{
 			name: "invalid semver",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection-invalid-semver")
 				col.SetHttpUrl(server.URL + "/collection-invalid-semver")
 				col.SetPriority(0)
@@ -196,9 +196,9 @@ services:
 		{
 			name: "yaml content type",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection-yaml")
 				col.SetHttpUrl(server.URL + "/collection-yaml")
 				col.SetPriority(0)
@@ -213,15 +213,15 @@ services:
 		{
 			name: "authenticated collection",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection-authed")
 				col.SetHttpUrl(server.URL + "/collection-authed")
 
-				auth := &configv1.Authentication{}
-				bearer := &configv1.BearerTokenAuth{}
-				val := &configv1.SecretValue{}
+				auth := configv1.Authentication_builder{}.Build()
+				bearer := configv1.BearerTokenAuth_builder{}.Build()
+				val := configv1.SecretValue_builder{}.Build()
 				val.SetPlainText("my-secret-token")
 				bearer.SetToken(val)
 				auth.SetBearerToken(bearer)
@@ -237,16 +237,16 @@ services:
 		{
 			name: "api key authenticated collection",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection-apikey")
 				col.SetHttpUrl(server.URL + "/collection-apikey")
 
-				auth := &configv1.Authentication{}
-				apiKey := &configv1.APIKeyAuth{}
+				auth := configv1.Authentication_builder{}.Build()
+				apiKey := configv1.APIKeyAuth_builder{}.Build()
 				apiKey.SetParamName("X-API-Key")
-				val := &configv1.SecretValue{}
+				val := configv1.SecretValue_builder{}.Build()
 				val.SetPlainText("my-api-key")
 				apiKey.SetValue(val)
 				auth.SetApiKey(apiKey)
@@ -262,16 +262,16 @@ services:
 		{
 			name: "basic auth authenticated collection",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection-basicauth")
 				col.SetHttpUrl(server.URL + "/collection-basicauth")
 
-				auth := &configv1.Authentication{}
-				basic := &configv1.BasicAuth{}
+				auth := configv1.Authentication_builder{}.Build()
+				basic := configv1.BasicAuth_builder{}.Build()
 				basic.SetUsername("testuser")
-				val := &configv1.SecretValue{}
+				val := configv1.SecretValue_builder{}.Build()
 				val.SetPlainText("testpass")
 				basic.SetPassword(val)
 				auth.SetBasicAuth(basic)
@@ -287,9 +287,9 @@ services:
 		{
 			name: "no content type assumes yaml",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				cfg := &configv1.McpAnyServerConfig{}
+				cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-				col := &configv1.Collection{}
+				col := configv1.Collection_builder{}.Build()
 				col.SetName("collection-no-content-type")
 				col.SetHttpUrl(server.URL + "/collection-no-content-type")
 
@@ -333,17 +333,17 @@ services:
 func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 	// Config with 2 services and profile definitions
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
+		cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
-		gs := &configv1.GlobalSettings{}
+		gs := configv1.GlobalSettings_builder{}.Build()
 
-		profDev := &configv1.ProfileDefinition{}
+		profDev := configv1.ProfileDefinition_builder{}.Build()
 		profDev.SetName("dev")
 
-		svcOverlapDev := &configv1.ProfileServiceConfig{}
+		svcOverlapDev := configv1.ProfileServiceConfig_builder{}.Build()
 		svcOverlapDev.SetEnabled(true)
 
-		svcOverlapProd := &configv1.ProfileServiceConfig{}
+		svcOverlapProd := configv1.ProfileServiceConfig_builder{}.Build()
 		svcOverlapProd.SetEnabled(false)
 
 		profDev.SetServiceConfig(map[string]*configv1.ProfileServiceConfig{
@@ -351,13 +351,13 @@ func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 			"prod-service": svcOverlapProd,
 		})
 
-		profProd := &configv1.ProfileDefinition{}
+		profProd := configv1.ProfileDefinition_builder{}.Build()
 		profProd.SetName("prod")
 
-		svcOverlapDev2 := &configv1.ProfileServiceConfig{}
+		svcOverlapDev2 := configv1.ProfileServiceConfig_builder{}.Build()
 		svcOverlapDev2.SetEnabled(false)
 
-		svcOverlapProd2 := &configv1.ProfileServiceConfig{}
+		svcOverlapProd2 := configv1.ProfileServiceConfig_builder{}.Build()
 		svcOverlapProd2.SetEnabled(true)
 
 		profProd.SetServiceConfig(map[string]*configv1.ProfileServiceConfig{
@@ -368,21 +368,21 @@ func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 		gs.SetProfileDefinitions([]*configv1.ProfileDefinition{profDev, profProd})
 		cfg.SetGlobalSettings(gs)
 
-		svc1 := &configv1.UpstreamServiceConfig{}
+		svc1 := configv1.UpstreamServiceConfig_builder{}.Build()
 		svc1.SetName("dev-service")
-		http1 := &configv1.HttpUpstreamService{}
+		http1 := configv1.HttpUpstreamService_builder{}.Build()
 		http1.SetAddress("http://dev")
 		svc1.SetHttpService(http1)
 
-		svc2 := &configv1.UpstreamServiceConfig{}
+		svc2 := configv1.UpstreamServiceConfig_builder{}.Build()
 		svc2.SetName("prod-service")
-		http2 := &configv1.HttpUpstreamService{}
+		http2 := configv1.HttpUpstreamService_builder{}.Build()
 		http2.SetAddress("http://prod")
 		svc2.SetHttpService(http2)
 
-		svc3 := &configv1.UpstreamServiceConfig{}
+		svc3 := configv1.UpstreamServiceConfig_builder{}.Build()
 		svc3.SetName("common-service")
-		http3 := &configv1.HttpUpstreamService{}
+		http3 := configv1.HttpUpstreamService_builder{}.Build()
 		http3.SetAddress("http://common")
 		svc3.SetHttpService(http3)
 

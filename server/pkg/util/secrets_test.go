@@ -31,14 +31,14 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("unknown secret type", func(t *testing.T) {
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Empty(t, resolved)
 	})
 
 	t.Run("PlainText", func(t *testing.T) {
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetPlainText("my-secret")
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
@@ -47,7 +47,7 @@ func TestResolveSecret(t *testing.T) {
 
 	t.Run("EnvironmentVariable", func(t *testing.T) {
 		t.Setenv("MY_SECRET_ENV", "my-env-secret")
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetEnvironmentVariable("MY_SECRET_ENV")
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
@@ -55,7 +55,7 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("EnvironmentVariable not set", func(t *testing.T) {
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetEnvironmentVariable("MY_SECRET_ENV_NOT_SET")
 		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
@@ -71,7 +71,7 @@ func TestResolveSecret(t *testing.T) {
 		assert.NoError(t, err)
 		_ = tmpfile.Close()
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetFilePath(tmpfile.Name())
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
@@ -79,7 +79,7 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("FilePath not found", func(t *testing.T) {
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetFilePath("non-existent-file")
 		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
@@ -94,7 +94,7 @@ func TestResolveSecret(t *testing.T) {
 		assert.NoError(t, err)
 		_ = tmpfile.Close()
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetFilePath(tmpfile.Name())
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
@@ -107,8 +107,8 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer server.Close()
 
-		secret := &configv1.SecretValue{}
-		remoteContent := &configv1.RemoteContent{}
+		secret := configv1.SecretValue_builder{}.Build()
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(server.URL)
 		secret.SetRemoteContent(remoteContent)
 
@@ -124,21 +124,21 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer server.Close()
 
-		apiKeySecret := &configv1.SecretValue{}
+		apiKeySecret := configv1.SecretValue_builder{}.Build()
 		apiKeySecret.SetPlainText("my-api-key")
 
-		apiKeyAuth := &configv1.APIKeyAuth{}
+		apiKeyAuth := configv1.APIKeyAuth_builder{}.Build()
 		apiKeyAuth.SetParamName("X-API-Key")
 		apiKeyAuth.SetValue(apiKeySecret)
 
-		auth := &configv1.Authentication{}
+		auth := configv1.Authentication_builder{}.Build()
 		auth.SetApiKey(apiKeyAuth)
 
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(server.URL)
 		remoteContent.SetAuth(auth)
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -153,20 +153,20 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer server.Close()
 
-		tokenSecret := &configv1.SecretValue{}
+		tokenSecret := configv1.SecretValue_builder{}.Build()
 		tokenSecret.SetPlainText("my-bearer-token")
 
-		bearerTokenAuth := &configv1.BearerTokenAuth{}
+		bearerTokenAuth := configv1.BearerTokenAuth_builder{}.Build()
 		bearerTokenAuth.SetToken(tokenSecret)
 
-		auth := &configv1.Authentication{}
+		auth := configv1.Authentication_builder{}.Build()
 		auth.SetBearerToken(bearerTokenAuth)
 
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(server.URL)
 		remoteContent.SetAuth(auth)
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -184,21 +184,21 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer server.Close()
 
-		passwordSecret := &configv1.SecretValue{}
+		passwordSecret := configv1.SecretValue_builder{}.Build()
 		passwordSecret.SetPlainText("my-password")
 
-		basicAuth := &configv1.BasicAuth{}
+		basicAuth := configv1.BasicAuth_builder{}.Build()
 		basicAuth.SetUsername("my-user")
 		basicAuth.SetPassword(passwordSecret)
 
-		auth := &configv1.Authentication{}
+		auth := configv1.Authentication_builder{}.Build()
 		auth.SetBasicAuth(basicAuth)
 
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(server.URL)
 		remoteContent.SetAuth(auth)
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -229,26 +229,26 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer resourceServer.Close()
 
-		clientIDSecret := &configv1.SecretValue{}
+		clientIDSecret := configv1.SecretValue_builder{}.Build()
 		clientIDSecret.SetPlainText("my-client-id")
 
-		clientSecretSecret := &configv1.SecretValue{}
+		clientSecretSecret := configv1.SecretValue_builder{}.Build()
 		clientSecretSecret.SetPlainText("my-client-secret")
 
-		oauth2Auth := &configv1.OAuth2Auth{}
+		oauth2Auth := configv1.OAuth2Auth_builder{}.Build()
 		oauth2Auth.SetClientId(clientIDSecret)
 		oauth2Auth.SetClientSecret(clientSecretSecret)
 		oauth2Auth.SetTokenUrl(tokenServer.URL)
 		oauth2Auth.SetScopes("read")
 
-		auth := &configv1.Authentication{}
+		auth := configv1.Authentication_builder{}.Build()
 		auth.SetOauth2(oauth2Auth)
 
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(resourceServer.URL)
 		remoteContent.SetAuth(auth)
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -257,9 +257,9 @@ func TestResolveSecret(t *testing.T) {
 	})
 
 	t.Run("RemoteContent with bad request", func(t *testing.T) {
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl("bad-url")
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		_, err := util.ResolveSecret(context.Background(), secret)
@@ -272,9 +272,9 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer server.Close()
 
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(server.URL)
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		_, err := util.ResolveSecret(context.Background(), secret)
@@ -287,9 +287,9 @@ func TestResolveSecret(t *testing.T) {
 		}))
 		defer server.Close()
 
-		remoteContent := &configv1.RemoteContent{}
+		remoteContent := configv1.RemoteContent_builder{}.Build()
 		remoteContent.SetHttpUrl(server.URL)
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetRemoteContent(remoteContent)
 
 		_, err := util.ResolveSecret(context.Background(), secret)
@@ -309,16 +309,16 @@ func TestResolveSecret_Vault(t *testing.T) {
 		}))
 		defer server.Close()
 
-		tokenSecret := &configv1.SecretValue{}
+		tokenSecret := configv1.SecretValue_builder{}.Build()
 		tokenSecret.SetPlainText("my-vault-token")
 
-		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret := configv1.VaultSecret_builder{}.Build()
 		vaultSecret.SetAddress(server.URL)
 		vaultSecret.SetToken(tokenSecret)
 		vaultSecret.SetPath("secret/data/my-app/db")
 		vaultSecret.SetKey("my-key")
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetVault(vaultSecret)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -332,16 +332,16 @@ func TestResolveSecret_Vault(t *testing.T) {
 		}))
 		defer server.Close()
 
-		tokenSecret := &configv1.SecretValue{}
+		tokenSecret := configv1.SecretValue_builder{}.Build()
 		tokenSecret.SetPlainText("my-vault-token")
 
-		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret := configv1.VaultSecret_builder{}.Build()
 		vaultSecret.SetAddress(server.URL)
 		vaultSecret.SetToken(tokenSecret)
 		vaultSecret.SetPath("secret/data/my-app/db")
 		vaultSecret.SetKey("my-key")
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetVault(vaultSecret)
 
 		_, err := util.ResolveSecret(context.Background(), secret)
@@ -355,16 +355,16 @@ func TestResolveSecret_Vault(t *testing.T) {
 		}))
 		defer server.Close()
 
-		tokenSecret := &configv1.SecretValue{}
+		tokenSecret := configv1.SecretValue_builder{}.Build()
 		tokenSecret.SetPlainText("my-vault-token")
 
-		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret := configv1.VaultSecret_builder{}.Build()
 		vaultSecret.SetAddress(server.URL)
 		vaultSecret.SetToken(tokenSecret)
 		vaultSecret.SetPath("secret/data/my-app/db")
 		vaultSecret.SetKey("my-key")
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetVault(vaultSecret)
 
 		_, err := util.ResolveSecret(context.Background(), secret)
@@ -380,16 +380,16 @@ func TestResolveSecret_Vault(t *testing.T) {
 		}))
 		defer server.Close()
 
-		tokenSecret := &configv1.SecretValue{}
+		tokenSecret := configv1.SecretValue_builder{}.Build()
 		tokenSecret.SetPlainText("my-vault-token")
 
-		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret := configv1.VaultSecret_builder{}.Build()
 		vaultSecret.SetAddress(server.URL)
 		vaultSecret.SetToken(tokenSecret)
 		vaultSecret.SetPath("secret/my-app/db")
 		vaultSecret.SetKey("my-key")
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetVault(vaultSecret)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -408,16 +408,16 @@ func TestResolveSecret_Vault(t *testing.T) {
 		}))
 		defer server.Close()
 
-		tokenSecret := &configv1.SecretValue{}
+		tokenSecret := configv1.SecretValue_builder{}.Build()
 		tokenSecret.SetPlainText("my-vault-token")
 
-		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret := configv1.VaultSecret_builder{}.Build()
 		vaultSecret.SetAddress(server.URL)
 		vaultSecret.SetToken(tokenSecret)
 		vaultSecret.SetPath("secret/my-app/db")
 		vaultSecret.SetKey("my-key")
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetVault(vaultSecret)
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
@@ -429,15 +429,15 @@ func TestResolveSecret_Vault(t *testing.T) {
 		// Create a circular dependency:
 		// secretA's token is secretB
 		// secretB's token is secretA
-		secretA := &configv1.SecretValue{}
-		vaultA := &configv1.VaultSecret{}
+		secretA := configv1.SecretValue_builder{}.Build()
+		vaultA := configv1.VaultSecret_builder{}.Build()
 		vaultA.SetAddress("http://fake-vault")
 		vaultA.SetPath("secret/a")
 		vaultA.SetKey("key")
 		secretA.SetVault(vaultA)
 
-		secretB := &configv1.SecretValue{}
-		vaultB := &configv1.VaultSecret{}
+		secretB := configv1.SecretValue_builder{}.Build()
+		vaultB := configv1.VaultSecret_builder{}.Build()
 		vaultB.SetAddress("http://fake-vault")
 		vaultB.SetPath("secret/b")
 		vaultB.SetKey("key")
@@ -456,13 +456,13 @@ func TestResolveSecret_Vault(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel() // Cancel immediately
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		// Use Vault type to trigger the context check
-		vaultSecret := &configv1.VaultSecret{}
+		vaultSecret := configv1.VaultSecret_builder{}.Build()
 		vaultSecret.SetAddress("http://127.0.0.1:8200")
-		vaultSecret.SetToken(&configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "token"},
-		})
+		vaultSecret.SetToken(configv1.SecretValue_builder{
+			PlainText: proto.String("token"),
+		}.Build())
 		vaultSecret.SetPath("secret/foo")
 		vaultSecret.SetKey("bar")
 		secret.SetVault(vaultSecret)
@@ -474,11 +474,11 @@ func TestResolveSecret_Vault(t *testing.T) {
 
 	t.Run("AwsSecretManager failure", func(t *testing.T) {
 		// Expect error because no credentials/network
-		smSecret := &configv1.AwsSecretManagerSecret{}
+		smSecret := configv1.AwsSecretManagerSecret_builder{}.Build()
 		smSecret.SetSecretId("my-secret")
 		smSecret.SetRegion("us-east-1")
 
-		secret := &configv1.SecretValue{}
+		secret := configv1.SecretValue_builder{}.Build()
 		secret.SetAwsSecretManager(smSecret)
 
 		_, err := util.ResolveSecret(context.Background(), secret)
@@ -489,11 +489,9 @@ func TestResolveSecret_Vault(t *testing.T) {
 func TestResolveSecretMap(t *testing.T) {
 	t.Run("Merge", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
-			"SECRET_VAR": {
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "secret_value",
-				},
-			},
+			"SECRET_VAR": configv1.SecretValue_builder{
+				PlainText: proto.String("secret_value"),
+			}.Build(),
 		}
 		plainMap := map[string]string{
 			"PLAIN_VAR":  "plain_value",
@@ -508,11 +506,9 @@ func TestResolveSecretMap(t *testing.T) {
 
 	t.Run("ResolveError", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
-			"SECRET_VAR": {
-				Value: &configv1.SecretValue_EnvironmentVariable{
-					EnvironmentVariable: "NON_EXISTENT_VAR",
-				},
-			},
+			"SECRET_VAR": configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("NON_EXISTENT_VAR"),
+			}.Build(),
 		}
 		plainMap := map[string]string{}
 
@@ -523,16 +519,12 @@ func TestResolveSecretMap(t *testing.T) {
 
 	t.Run("resolve secret map", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
-			"KEY1": {
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "test-value",
-				},
-			},
-			"KEY3": {
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "test-secret-override",
-				},
-			},
+			"KEY1": configv1.SecretValue_builder{
+				PlainText: proto.String("test-value"),
+			}.Build(),
+			"KEY3": configv1.SecretValue_builder{
+				PlainText: proto.String("test-secret-override"),
+			}.Build(),
 		}
 		plainMap := map[string]string{
 			"KEY2": "test-plain",

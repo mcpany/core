@@ -3,14 +3,14 @@
 
 edition = "2023";
 
-option features.field_presence = IMPLICIT;
-
 package mcpany.config.v1;
 
+import "google/protobuf/go_features.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
+option features.(pb.go).api_level = API_OPAQUE;
 
 // WebhookReview explains the request and response of a webhook call.
 message WebhookReview {

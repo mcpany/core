@@ -164,7 +164,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "id mismatch", http.StatusBadRequest)
 				return
 			}
-			user.Id = proto.String(id)
+			user.SetId(id)
 
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
@@ -206,12 +206,14 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 // It handles the case where the password is "REDACTED" by fetching the existing user and restoring the hash.
 func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage) error {
 	if user.GetAuthentication() != nil && user.GetAuthentication().GetBasicAuth() != nil {
+		// User has GetId()
+		userID := user.GetId()
 		basicAuth := user.GetAuthentication().GetBasicAuth()
 		plain := basicAuth.GetPasswordHash()
 
 		// Case 1: Password is REDACTED (from SanitizeUser). Restore existing hash.
 		if plain == util.RedactedString {
-			existingUser, err := store.GetUser(ctx, user.GetId())
+			existingUser, err := store.GetUser(ctx, userID)
 			if err != nil {
 				return err
 			}

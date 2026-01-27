@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,7 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func ptr[T any](v T) *T {
@@ -167,32 +167,60 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 func TestWebhookHook(t *testing.T) {
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var req configv1.WebhookRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		var payload map[string]any
+		if err := json.Unmarshal(body, &payload); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		resp := &configv1.WebhookResponse{Allowed: true}
+		if data, ok := payload["data"].(map[string]any); ok {
+			payload = data
+		} else {
+			// Check if keys are present at top level (Binary Mode)
+			// If not, print payload keys for debugging
+			// fmt.Printf("DEBUG: payload keys: %v\n", reflect.ValueOf(payload).MapKeys())
+		}
 
-		switch req.Kind {
+		// Map payload to WebhookRequest manually because keys mismatch Proto JSON defaults
+		req := configv1.WebhookRequest_builder{}.Build()
+
+		if k, ok := payload["kind"].(float64); ok {
+			req.SetKind(configv1.WebhookKind(int32(k)))
+		}
+
+		if name, ok := payload["tool_name"].(string); ok {
+			req.SetToolName(name)
+		}
+
+		// We don't strictly need 'object'/'inputs' for the current tests, they switch on tool_name/kind
+
+		// We don't strictly need 'object'/'inputs' for the current tests, they switch on tool_name/kind
+
+
+		resp := configv1.WebhookResponse_builder{Allowed: proto.Bool(true)}.Build()
+		var replacementObj any
+
+		switch req.GetKind() {
 		case configv1.WebhookKind_WEBHOOK_KIND_PRE_CALL:
-			switch req.ToolName {
+			switch req.GetToolName() {
 			case "deny-me":
-				resp.Allowed = false
-				resp.Status = &configv1.WebhookStatus{Message: "denied by policy"}
+				resp.SetAllowed(false)
+				resp.SetStatus(configv1.WebhookStatus_builder{Message: proto.String("denied by webhook")}.Build())
 			case "modify-me":
 				// Modify inputs
 				newInputs := map[string]any{"modified": "yes"}
-				s, _ := structpb.NewStruct(newInputs)
-				resp.ReplacementObject = s
+				replacementObj = newInputs
 			}
 		case configv1.WebhookKind_WEBHOOK_KIND_POST_CALL:
-			if req.ToolName == "modify-result" {
+			if req.GetToolName() == "modify-result" {
 				// hooks.go unwraps "value" if original result was likely a primitive
 				newResult := map[string]any{"value": "modified result"}
-				s, _ := structpb.NewStruct(newResult)
-				resp.ReplacementObject = s
+				replacementObj = newResult
 			}
 		}
 
@@ -203,25 +231,25 @@ func TestWebhookHook(t *testing.T) {
 		w.Header().Set("ce-type", "com.mcpany.webhook.response")
 		w.Header().Set("Content-Type", "application/json")
 
+		// resp is constructed but we build the map manually for JSON response to avoid structpb marshaling issues
 		respMap := map[string]any{
-			"allowed": resp.Allowed,
+			"allowed": resp.GetAllowed(),
 		}
-		if resp.Status != nil {
+		if resp.GetStatus() != nil {
 			respMap["status"] = map[string]any{
-				"code":    resp.Status.Code,
-				"message": resp.Status.Message,
+				"code":    resp.GetStatus().GetCode(),
+				"message": resp.GetStatus().GetMessage(),
 			}
 		}
-		if resp.ReplacementObject != nil {
-			// structpb.Struct to map
-			respMap["replacement_object"] = resp.ReplacementObject
+		if replacementObj != nil {
+			respMap["replacement_object"] = replacementObj
 		}
 
 		_ = json.NewEncoder(w).Encode(respMap)
 	}))
 	defer server.Close()
 
-	config := configv1.WebhookConfig_builder{Url: server.URL}.Build()
+	config := configv1.WebhookConfig_builder{Url: proto.String(server.URL)}.Build()
 	hook := NewWebhookHook(config)
 
 	t.Run("Pre Allow", func(t *testing.T) {

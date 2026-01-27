@@ -622,10 +622,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
 						// Fall through to raw data handling
 					}
-				} else {
-					// Marshal failed? Extremely rare for map[string]any unless it has cycles/funcs
-					// Fall through to error handling or raw data
-					logging.GetLogger().Warn("Failed to marshal map[string]any", "error", marshalErr)
 				}
 
 				// Special case: If content is a string, wrap it in TextContent
