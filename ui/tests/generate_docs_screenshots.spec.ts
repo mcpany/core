@@ -577,6 +577,15 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       // Open Editor (Create)
       await page.getByRole('button', { name: 'Create Profile' }).click();
       await page.waitForTimeout(1000);
+
+      // Add a tag to demonstrate the feature
+      const tagInput = page.getByPlaceholder('Add tag (e.g. finance, hr)');
+      if (await tagInput.isVisible()) {
+          await tagInput.fill('finance');
+          await page.keyboard.press('Enter');
+          await page.waitForTimeout(500);
+      }
+
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profile_editor.png') });
   });
 
