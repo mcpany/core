@@ -44,10 +44,10 @@ func TestHTTPUpstream_URLConstruction_InvalidValueOverrideBug(t *testing.T) {
 				"name": "invalid-override-service",
 				"http_service": {
 					"address": "` + tc.address + `",
-					"tools": [{"name": "test-op", "call_id": "test-op-call"}],
+					"tools": [{"name": "test-op", "call_id": "test-op-call-repro-override"}],
 					"calls": {
-						"test-op-call": {
-							"id": "test-op-call",
+						"test-op-call-repro-override": {
+							"id": "test-op-call-repro-override",
 							"method": "HTTP_METHOD_GET",
 							"endpoint_path": "` + tc.endpointPath + `"
 						}

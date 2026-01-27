@@ -41,10 +41,10 @@ func TestE2E_InvalidValueOverride(t *testing.T) {
 		"name": "e2e-override-service",
 		"http_service": {
 			"address": "` + address + `",
-			"tools": [{"name": "test-op", "call_id": "test-op-call"}],
+			"tools": [{"name": "test-op", "call_id": "test-op-call-e2e-override"}],
 			"calls": {
-				"test-op-call": {
-					"id": "test-op-call",
+				"test-op-call-e2e-override": {
+					"id": "test-op-call-e2e-override",
 					"method": "HTTP_METHOD_POST",
 					"endpoint_path": "` + endpointPath + `"
 				}
