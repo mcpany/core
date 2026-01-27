@@ -573,10 +573,13 @@ func RedactSecrets(text string, secrets []string) string {
 		return text
 	}
 
-	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
-	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
-	var mask []bool
-	foundAny := false
+	type interval struct {
+		start, end int
+	}
+
+	// Optimization: Store intervals instead of full-length mask to save memory.
+	// O(K) memory instead of O(N) where K is number of matches, N is text length.
+	var intervals []interval
 
 	for _, secret := range secrets {
 		if secret == "" {
@@ -592,42 +595,57 @@ func RedactSecrets(text string, secrets []string) string {
 			absoluteIdx := start + idx
 			end := absoluteIdx + len(secret)
 
-			if mask == nil {
-				mask = make([]bool, len(text))
-			}
-
-			// Mark bytes as sensitive
-			for i := absoluteIdx; i < end; i++ {
-				mask[i] = true
-			}
-			foundAny = true
+			intervals = append(intervals, interval{start: absoluteIdx, end: end})
 
 			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
-			// (e.g. "aaaa" with secret "aa" -> mask 0-1, 2-3).
+			// (e.g. "aaaa" with secret "aa" -> matches at 0 and 2).
 			start = end
 		}
 	}
 
-	if !foundAny {
+	if len(intervals) == 0 {
 		return text
 	}
 
-	var sb strings.Builder
-	sb.Grow(len(text))
+	// Sort intervals by start position
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i].start < intervals[j].start
+	})
 
-	i := 0
-	n := len(text)
-	for i < n {
-		if mask[i] {
-			sb.WriteString(redactedPlaceholder)
-			// Skip until end of masked region
-			for i < n && mask[i] {
-				i++
+	// Merge overlapping and adjacent intervals in-place
+	w := 0
+	curr := intervals[0]
+	for i := 1; i < len(intervals); i++ {
+		next := intervals[i]
+		// Merge if overlapping or adjacent (contiguous)
+		if next.start <= curr.end {
+			if next.end > curr.end {
+				curr.end = next.end
 			}
 		} else {
-			sb.WriteByte(text[i])
-			i++
+			intervals[w] = curr
+			w++
+			curr = next
 		}
 	}
+	intervals[w] = curr
+	w++
+	intervals = intervals[:w]
+
+	var sb strings.Builder
+	// Heuristic: Pre-allocate reasonable size (original length is safe upper bound usually,
+	// unless redaction is much longer than secrets).
+	sb.Grow(len(text))
+
+	lastPos := 0
+	for _, inv := range intervals {
+		sb.WriteString(text[lastPos:inv.start])
+		sb.WriteString(redactedPlaceholder)
+		lastPos = inv.end
+	}
+	if lastPos < len(text) {
+		sb.WriteString(text[lastPos:])
+	}
+
 	return sb.String()
 }
