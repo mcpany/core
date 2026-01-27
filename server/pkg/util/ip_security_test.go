@@ -39,6 +39,8 @@ func TestIsLoopback_Security(t *testing.T) {
 		{"10.0.0.1", false},    // Private but NOT loopback
 		{"8.8.8.8", false},     // Public
 		{"::ffff:127.0.0.1", true}, // IPv4-mapped loopback
+		{"64:ff9b::127.0.0.1", true}, // NAT64 loopback
+		{"::127.0.0.1", true}, // IPv4-compatible loopback
 	}
 
 	for _, tt := range tests {
