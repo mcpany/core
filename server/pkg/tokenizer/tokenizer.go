@@ -523,7 +523,15 @@ func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited
 		visited[ptr] = true
 		defer delete(visited, ptr)
 
-		return t.countRecursive(val.Elem().Interface(), visited)
+		// Optimization: Avoid Interface() allocation for structs.
+		// val.Elem() returns the struct value. Calling Interface() on it creates a copy.
+		// We can process it directly using countTokensReflectStruct.
+		elem := val.Elem()
+		if elem.Kind() == reflect.Struct {
+			return countTokensReflectStruct(t, elem, visited)
+		}
+
+		return t.countRecursive(elem.Interface(), visited)
 	case reflect.Struct:
 		return countTokensReflectStruct(t, val, visited)
 	case reflect.Slice:
@@ -566,6 +574,58 @@ func countTokensReflectStruct[T recursiveTokenizer](t T, val reflect.Value, visi
 			if field.Bool() {
 				s = "true"
 			}
+			c, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		}
+
+		// Optimization: Avoid Interface() allocation for int fields.
+		switch field.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			n := field.Int()
+			if _, ok := any(t).(*SimpleTokenizer); ok {
+				count += simpleTokenizeInt64(n)
+				continue
+			}
+			// Fallback to strconv for other tokenizers to avoid Interface() allocation
+			s := strconv.FormatInt(n, 10)
+			c, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			n := field.Uint()
+			s := strconv.FormatUint(n, 10)
+			c, err := t.CountTokens(s)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		case reflect.Float32, reflect.Float64:
+			f := field.Float()
+			if _, ok := any(t).(*SimpleTokenizer); ok {
+				// Match optimization in countTokensInValueSimpleFast
+				if i := int64(f); float64(i) == f {
+					count += simpleTokenizeInt64(i)
+					continue
+				}
+				// Use stack buffer
+				var buf [64]byte
+				b := strconv.AppendFloat(buf[:0], f, 'g', -1, 64)
+				c := len(b) / 4
+				if c < 1 {
+					c = 1
+				}
+				count += c
+				continue
+			}
+			s := strconv.FormatFloat(f, 'g', -1, 64)
 			c, err := t.CountTokens(s)
 			if err != nil {
 				return 0, err
@@ -814,7 +874,6 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 	return count, nil
 }
 
-
 func simpleTokenizeInt64(n int64) int {
 	// Optimization: Fast path for common integers.
 	// Integers with < 8 chars (including sign) always result in 1 token (length/4 < 2).
@@ -825,7 +884,7 @@ func simpleTokenizeInt64(n int64) int {
 	// Calculate length using if-chain for performance (approx 4x faster than loop).
 	l := 0
 	if n < 0 {
-		l = 1 // count the sign
+		l = 1                          // count the sign
 		if n == -9223372036854775808 { // MinInt64
 			l += 19
 			return (l / 4) // 20 / 4 = 5
