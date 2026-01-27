@@ -79,6 +79,46 @@ describe('analyzeTrace', () => {
     expect(diagnostics[0].title).toBe('Connection Failed');
   });
 
+  it('should detect authentication errors', () => {
+    const trace = createMockTrace('error', 'HTTP 401 Unauthorized');
+    const diagnostics = analyzeTrace(trace);
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].title).toBe('Authentication Failed');
+  });
+
+  it('should detect missing tool errors', () => {
+    const trace = createMockTrace('error', 'Tool not found: my-tool');
+    const diagnostics = analyzeTrace(trace);
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].title).toBe('Tool Not Found');
+  });
+
+  it('should detect rate limit errors', () => {
+    const trace = createMockTrace('error', '429 Too Many Requests');
+    const diagnostics = analyzeTrace(trace);
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0].title).toBe('Rate Limit Exceeded');
+  });
+
+  it('should detect recursion depth', () => {
+    const trace = createMockTrace('error', 'some error');
+    // Create deep chain
+    let current = trace.rootSpan;
+    for (let i = 0; i < 11; i++) {
+        const child: any = {
+            id: `span-${i}`,
+            children: []
+        };
+        current.children = [child];
+        current = child;
+    }
+
+    const diagnostics = analyzeTrace(trace);
+    // Should have Unknown Error AND Recursion Warning
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics.find(d => d.title === 'High Recursion Depth')).toBeDefined();
+  });
+
   it('should provide fallback for unknown errors', () => {
     const trace = createMockTrace('error', 'Something went wrong');
     const diagnostics = analyzeTrace(trace);

@@ -35,7 +35,69 @@ export function analyzeTrace(trace: Trace): Diagnostic[] {
 
   const lowerMsg = errorMessage.toLowerCase();
 
-  // 1. Schema Validation Errors
+  // Check for Recursion Depth
+  const getMaxDepth = (span: any, currentDepth = 1): number => {
+      if (!span.children || span.children.length === 0) return currentDepth;
+      return Math.max(...span.children.map((child: any) => getMaxDepth(child, currentDepth + 1)));
+  };
+  const depth = getMaxDepth(rootSpan);
+
+  if (depth > 10) {
+      diagnostics.push({
+          type: 'warning',
+          title: 'High Recursion Depth',
+          message: `The trace depth is ${depth}, which might indicate an infinite loop or inefficient chain.`,
+          suggestion: 'Check if the agent is stuck in a loop calling the same tools repeatedly.'
+      });
+  }
+
+  // 1. Authentication & Authorization Errors
+  if (
+      lowerMsg.includes('401') ||
+      lowerMsg.includes('403') ||
+      lowerMsg.includes('unauthorized') ||
+      lowerMsg.includes('unauthenticated') ||
+      lowerMsg.includes('invalid api key') ||
+      lowerMsg.includes('invalid token')
+  ) {
+      diagnostics.push({
+          type: 'error',
+          title: 'Authentication Failed',
+          message: 'The server rejected the credentials provided.',
+          suggestion: 'Go to Settings > Secrets and ensure the API Key for this service is correct and up to date.'
+      });
+  }
+
+  // 2. Missing Tool Errors
+  if (
+      lowerMsg.includes('tool not found') ||
+      lowerMsg.includes('unknown tool') ||
+      lowerMsg.includes('method not found')
+  ) {
+      diagnostics.push({
+          type: 'error',
+          title: 'Tool Not Found',
+          message: 'The requested tool does not exist or is not enabled.',
+          suggestion: 'Check the "Services" page to ensure the service providing this tool is enabled. Verify the tool name in the "Tools" list.'
+      });
+  }
+
+  // 3. Rate Limit Errors
+  if (
+      lowerMsg.includes('429') ||
+      lowerMsg.includes('rate limit') ||
+      lowerMsg.includes('quota exceeded') ||
+      lowerMsg.includes('too many requests')
+  ) {
+      diagnostics.push({
+          type: 'error',
+          title: 'Rate Limit Exceeded',
+          message: 'The upstream service is rejecting requests due to high volume.',
+          suggestion: 'Implement caching or exponential backoff. Consider upgrading the upstream service plan if applicable.'
+      });
+  }
+
+  // 4. Schema Validation Errors
   if (
     lowerMsg.includes('schema validation') ||
     lowerMsg.includes('validation error') ||
@@ -92,22 +154,24 @@ export function analyzeTrace(trace: Trace): Diagnostic[] {
     });
   }
 
-  // 5. Connection Errors
+  // 8. Connection Errors
   if (
     lowerMsg.includes('connection refused') ||
     lowerMsg.includes('failed to connect') ||
-    lowerMsg.includes('econnrefused')
+    lowerMsg.includes('econnrefused') ||
+    lowerMsg.includes('network error')
   ) {
     diagnostics.push({
       type: 'error',
       title: 'Connection Failed',
       message: 'Could not connect to the upstream service.',
-      suggestion: 'Ensure the upstream service is running and accessible from the MCP Any server container.'
+      suggestion: 'Ensure the upstream service is running and accessible from the MCP Any server container. Check firewall rules and network policies.'
     });
   }
 
   // Fallback if we have an error but matched nothing
-  if (diagnostics.length === 0 && errorMessage) {
+  const hasErrorDiagnostic = diagnostics.some(d => d.type === 'error');
+  if (!hasErrorDiagnostic && errorMessage) {
       diagnostics.push({
           type: 'error',
           title: 'Unknown Error',
