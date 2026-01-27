@@ -57,6 +57,9 @@ func TestWebhookAuditStore_Write(t *testing.T) {
 	}))
 	defer ts.Close()
 
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	store := NewWebhookAuditStore(ts.URL+"/webhook", map[string]string{"X-Foo": "bar"})
 	err := store.Write(context.Background(), Entry{ToolName: "test"})
 	require.NoError(t, err)
@@ -77,6 +80,9 @@ func TestWebhookAuditStore_Write_Error(t *testing.T) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
 	defer ts.Close()
+
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	store := NewWebhookAuditStore(ts.URL, nil)
 	err := store.Write(context.Background(), Entry{ToolName: "test"})

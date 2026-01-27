@@ -42,6 +42,9 @@ func TestWebhookAuditStore(t *testing.T) {
 	}))
 	defer server.Close()
 
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 	// Setup store
 	headers := map[string]string{
 		"X-Custom-Header": "test-value",
@@ -109,6 +112,9 @@ func TestWebhookAuditStore_Batch(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
+
+	// Allow loopback for testing
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 
 	store := NewWebhookAuditStore(server.URL, nil)
 
