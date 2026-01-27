@@ -16,6 +16,16 @@ if (!fs.existsSync(DOCS_SCREENSHOTS_DIR)) {
 test.describe('Generate Detailed Docs Screenshots', () => {
 
   test.beforeEach(async ({ page }) => {
+     // Catch-all for other API calls to prevent timeouts/errors from missing backend
+     // Defined FIRST so specific routes below override it (Playwright uses last-registered matching route)
+     await page.route('**/api/v1/**', async route => {
+         try {
+            await route.fulfill({ status: 200, body: '{}', contentType: 'application/json' });
+         } catch (e) {
+             // Ignore if already handled
+         }
+     });
+
     // Global mocks to ensure consistent state
     await page.route('**/api/v1/services*', async route => {
         if (route.request().method() === 'GET') {
@@ -119,24 +129,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
-     // Catch-all for other API calls to prevent timeouts/errors from missing backend
-     await page.route('**/api/v1/**', async route => {
-         // Only fulfill if not already handled by other routes (Playwright handles route priority by order of definition, last defined is checked first? No, inverse order usually or first match?)
-         // Playwright documentation: "Routes are matched in the order they are added."
-         // So I should add this catch-all at the END, but I am in beforeEach.
-         // Let's add it at the beginning of beforeEach, so specific routes later override it?
-         // Actually, Playwright: "When multiple routes match the URL, the handler of the most recently registered route is used."
-         // So I should add this catch-all FIRST.
-         // But here I am appending to the end of beforeEach.
-         // Let's just try to fallback continue() if we want real backend, but here we don't have real backend.
-         // So we should fulfill everything.
-         try {
-            await route.fulfill({ status: 200, body: '{}', contentType: 'application/json' });
-         } catch (e) {
-             // Ignore if already handled
-         }
-     });
-
   });
 
   test('Dashboard Screenshots', async ({ page }) => {
@@ -200,10 +192,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services.png'), fullPage: true });
 
     // Click Add Service (Button)
-    await page.getByRole('button', { name: 'Add Service' }).click();
+    const addServiceBtn = page.getByRole('button', { name: 'Add Service' });
+    await expect(addServiceBtn).toBeVisible();
+    await addServiceBtn.click();
     await page.waitForTimeout(1000);
     // It opens a Sheet/Modal, not a URL change to marketplace
-    await expect(page.getByText('New Service')).toBeVisible();
+    await expect(page.getByText('New Service').first()).toBeVisible();
 
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'services_add_dialog.png') });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'service_add_dialog.png') }); // Alias
