@@ -38,7 +38,7 @@ export function ViewOptions() {
         <DropdownMenuLabel>View Options</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Density</DropdownMenuLabel>
-        <DropdownMenuRadioGroup value={density} onValueChange={(v) => setDensity(v as any)}>
+        <DropdownMenuRadioGroup value={density} onValueChange={(v) => setDensity(v as "comfortable" | "compact")}>
             <DropdownMenuRadioItem value="comfortable" className="cursor-pointer">
                 <AlignJustify className="mr-2 h-4 w-4 opacity-50" /> Comfortable
             </DropdownMenuRadioItem>

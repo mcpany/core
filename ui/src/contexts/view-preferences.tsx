@@ -25,10 +25,8 @@ const STORAGE_KEY = "view-preferences";
  */
 export function ViewPreferencesProvider({ children }: { children: ReactNode }) {
   const [density, setDensityState] = useState<Density>("comfortable");
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {

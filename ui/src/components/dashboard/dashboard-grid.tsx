@@ -80,7 +80,7 @@ export function DashboardGrid() {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
                 if (parsed.length > 0 && !parsed[0].instanceId) {
-                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                    const migrated: WidgetInstance[] = parsed.map((w: { id: string; type: string; title: string; hidden?: boolean }) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
                         title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
