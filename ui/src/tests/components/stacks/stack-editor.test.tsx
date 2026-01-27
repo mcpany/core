@@ -13,7 +13,21 @@ vi.mock('@/lib/client', () => ({
   apiClient: {
     getStackConfig: vi.fn(),
     saveStackConfig: vi.fn(),
+    getCollection: vi.fn(),
+    saveCollection: vi.fn(),
   },
+}));
+
+// Mock Monaco Editor
+vi.mock('@monaco-editor/react', () => ({
+  default: ({ value, onChange }: any) => (
+    <textarea
+      data-testid="monaco-editor"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  ),
+  useMonaco: () => null,
 }));
 
 // Mock ResizeObserver for scroll area
@@ -29,19 +43,20 @@ describe('StackEditor', () => {
   });
 
   it('loads and displays configuration', async () => {
-    (apiClient.getStackConfig as any).mockResolvedValue('version: "1.0"');
+    (apiClient.getCollection as any).mockResolvedValue({ version: "1.0" });
 
     render(<StackEditor stackId="test-stack" />);
 
     await waitFor(() => {
       expect(screen.getByText('config.yaml')).toBeInTheDocument();
       // Use getByDisplayValue for textarea content
-      expect(screen.getByDisplayValue('version: "1.0"')).toBeInTheDocument();
+      // js-yaml might quote strings differently, so we use regex
+      expect(screen.getByDisplayValue(/version: ['"]?1\.0['"]?/)).toBeInTheDocument();
     });
   });
 
   it('validates YAML content', async () => {
-    (apiClient.getStackConfig as any).mockResolvedValue('');
+    (apiClient.getCollection as any).mockResolvedValue({});
 
     const { container } = render(<StackEditor stackId="test-stack" />);
 
@@ -64,7 +79,7 @@ describe('StackEditor', () => {
   });
 
   it('toggles palette and visualizer', async () => {
-    (apiClient.getStackConfig as any).mockResolvedValue('');
+    (apiClient.getCollection as any).mockResolvedValue({});
     render(<StackEditor stackId="test-stack" />);
 
     // Check initial state
