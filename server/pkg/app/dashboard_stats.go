@@ -18,6 +18,7 @@ const (
 	labelTool            = "tool"
 	labelServiceID       = "service_id"
 	labelStatus          = "status"
+	statusError          = "error"
 )
 
 // ToolUsageStats represents usage statistics for a tool.
@@ -221,7 +222,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 							}
 						}
 						count := int64(m.GetCounter().GetValue())
-						if status == "error" {
+						if status == statusError {
 							toolStats[key].Error += count
 						} else {
 							toolStats[key].Success += count
@@ -329,7 +330,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 							}
 						}
 						count := int64(m.GetCounter().GetValue())
-						if status == "error" {
+						if status == statusError {
 							toolStats[key].Error += count
 						} else {
 							toolStats[key].Success += count

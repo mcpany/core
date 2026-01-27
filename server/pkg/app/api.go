@@ -301,6 +301,7 @@ func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request
 	_, _ = w.Write([]byte("{}"))
 }
 
+// ValidationStep represents a single step in the validation process.
 type ValidationStep struct {
 	Name    string `json:"name"`
 	Status  string `json:"status"` // "pending", "success", "error", "skipped"

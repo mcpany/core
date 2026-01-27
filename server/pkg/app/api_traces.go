@@ -41,7 +41,6 @@ type Trace struct {
 
 const (
 	statusSuccess = "success"
-	statusError   = "error"
 )
 
 func toTrace(entry audit.Entry) *Trace {

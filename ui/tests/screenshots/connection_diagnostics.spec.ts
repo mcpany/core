@@ -1,4 +1,9 @@
-import { test, expect } from '@playwright/test';
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { test } from '@playwright/test';
 
 test('capture connection diagnostics screenshot', async ({ page }) => {
   // Mock Service Details
