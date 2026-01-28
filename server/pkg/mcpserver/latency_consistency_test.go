@@ -10,8 +10,6 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	bus_pb "github.com/mcpany/core/proto/bus"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -23,6 +21,8 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/worker"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,7 +32,7 @@ import (
 
 func TestMetricLatencyConsistency(t *testing.T) {
 	// Initialize metrics with an in-memory sink
-	sink := metrics.NewInmemSink(10*time.Millisecond, 1*time.Minute)
+	sink := metrics.NewInmemSink(10*time.Second, 30*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
@@ -97,16 +97,16 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check metrics
-	// Wait for metrics flush (TimerInterval is 10ms, Sink 10ms)
-	time.Sleep(500 * time.Millisecond)
+	// Wait for metrics flush (TimerInterval is 50ms)
+	time.Sleep(100 * time.Millisecond)
 
 	data := sink.Data()
 
-	// Debug print
-	fmt.Println("Available samples:")
-	for k := range data[0].Samples {
-		fmt.Println(k)
-	}
+    // Debug print
+    fmt.Println("Available samples:")
+    for k := range data[0].Samples {
+        fmt.Println(k)
+    }
 
 	// We expect consistent naming with counters: mcpany.tools.call.latency (plural)
     // and properly labeled for tool specific metrics.

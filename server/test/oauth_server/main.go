@@ -1,6 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
+// Package main implements a mock OAuth/OIDC server for testing purposes.
 package main
 
 import (
@@ -14,115 +12,152 @@ import (
 	"time"
 
 	"github.com/go-jose/go-jose/v4"
-	"github.com/golang-jwt/jwt/v5"
 )
 
-var (
-	port = flag.Int("port", 8085, "Port to listen on")
-)
-
-// OAuthServer mocks an OAuth 2.0 Identity Provider.
+// OAuthServer is a mock OAuth server.
 type OAuthServer struct {
-	// PrivateKey is the RSA private key used for signing tokens.
-	PrivateKey *rsa.PrivateKey
-	// BaseURL is the base URL of the mock server.
-	BaseURL string
+	Issuer string
+	Key    *rsa.PrivateKey
 }
 
 func main() {
+	port := flag.Int("port", 8081, "Port to listen on")
 	flag.Parse()
 
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		log.Fatalf("Failed to generate key: %v", err)
 	}
 
 	server := &OAuthServer{
-		PrivateKey: privateKey,
-		BaseURL:    fmt.Sprintf("http://localhost:%d", *port),
+		Issuer: fmt.Sprintf("http://localhost:%d", *port),
+		Key:    key,
 	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/.well-known/openid-configuration", server.handleDiscovery)
-	mux.HandleFunc("/jwks", server.handleJWKS)
-	mux.HandleFunc("/auth", server.handleAuth)
+	mux.HandleFunc("/jwks.json", server.handleJWKS)
+	mux.HandleFunc("/authorize", server.handleAuthorize)
 	mux.HandleFunc("/token", server.handleToken)
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte("OK"))
 	})
 
-	log.Printf("Starting Mock OAuth Server on port %d...", *port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), mux))
+	log.Printf("Starting mock OAuth server on port %d", *port)
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%d", *port),
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
 
-func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func (s *OAuthServer) handleDiscovery(w http.ResponseWriter, _ *http.Request) {
 	config := map[string]interface{}{
-		"issuer":                 s.BaseURL,
-		"jwks_uri":               s.BaseURL + "/jwks",
-		"authorization_endpoint": s.BaseURL + "/auth",
-		"token_endpoint":         s.BaseURL + "/token",
+		"issuer":                 s.Issuer,
+		"authorization_endpoint": s.Issuer + "/authorize",
+		"token_endpoint":         s.Issuer + "/token",
+		"jwks_uri":               s.Issuer + "/jwks.json",
+		"response_types_supported": []string{
+			"code",
+			"token",
+			"id_token",
+		},
+		"subject_types_supported": []string{
+			"public",
+		},
+		"id_token_signing_alg_values_supported": []string{
+			"RS256",
+		},
 	}
-	json.NewEncoder(w).Encode(config)
-}
-
-func (s *OAuthServer) handleJWKS(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	jwk := jose.JSONWebKey{Key: &s.PrivateKey.PublicKey, Algorithm: "RS256", Use: "sig"}
-	jwks := map[string]interface{}{
-		"keys": []interface{}{jwk},
-	}
-	json.NewEncoder(w).Encode(jwks)
+	_ = json.NewEncoder(w).Encode(config)
 }
 
-func (s *OAuthServer) handleAuth(w http.ResponseWriter, r *http.Request) {
-	state := r.URL.Query().Get("state")
-	redirectURI := r.URL.Query().Get("redirect_uri")
-	if redirectURI == "" {
-		http.Error(w, "missing redirect_uri", http.StatusBadRequest)
-		return
+func (s *OAuthServer) handleJWKS(w http.ResponseWriter, _ *http.Request) {
+	jwk := jose.JSONWebKey{
+		Key:       &s.Key.PublicKey,
+		KeyID:     "test-key",
+		Algorithm: "RS256",
+		Use:       "sig",
 	}
+	jwks := jose.JSONWebKeySet{
+		Keys: []jose.JSONWebKey{jwk},
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(jwks)
+}
 
-	// Create a simple login page for interaction
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
-		<html>
-			<body>
-				<h1>Mock OAuth Login</h1>
-				<p>Click below to approve.</p>
-				<form action="%s" method="get">
-					<input type="hidden" name="code" value="mock_auth_code_123" />
-					<input type="hidden" name="state" value="%s" />
-					<button type="submit" id="approve-btn">Approve</button>
-				</form>
-			</body>
-		</html>
-	`, redirectURI, state)
+func (s *OAuthServer) handleAuthorize(w http.ResponseWriter, r *http.Request) {
+	redirectURI := r.URL.Query().Get("redirect_uri")
+	state := r.URL.Query().Get("state")
+	code := "test-code"
+
+	// Auto-approve and redirect
+	target := fmt.Sprintf("%s?code=%s&state=%s", redirectURI, code, state)
+	http.Redirect(w, r, target, http.StatusFound)
 }
 
 func (s *OAuthServer) handleToken(w http.ResponseWriter, r *http.Request) {
+	// Generate tokens
+	// ... (simplified for mock)
+	// We return a simple access token.
+	// In a real OIDC server, we'd sign an ID token.
+
+	// Helper to generate dummy ID token
+	// ...
+
+	// For now, just return JSON
 	w.Header().Set("Content-Type", "application/json")
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"iss": s.BaseURL,
-		"sub": "test-user",
-		"aud": "mcp-any-client",
-		"exp": time.Now().Add(time.Hour).Unix(),
-		"scope": "read write",
-	})
-
-	signedToken, err := token.SignedString(s.PrivateKey)
-	if err != nil {
-		http.Error(w, "failed to sign token", http.StatusInternalServerError)
-		return
+	// If it's a code exchange
+	if r.FormValue("grant_type") == "authorization_code" {
+		// Return tokens
+		// Check client_id/secret if needed
+		log.Println("Handling authorization_code grant")
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"access_token": signedToken,
-		"id_token":     signedToken,
+	// Generate a dummy JWT ID Token
+	idToken := s.generateIDToken()
+
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
+		"access_token": "mock-access-token",
 		"token_type":   "Bearer",
 		"expires_in":   3600,
-		"scope":        "read write",
+		"id_token":     idToken,
 	})
+}
+
+func (s *OAuthServer) generateIDToken() string {
+	signer, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: s.Key}, nil)
+	if err != nil {
+		log.Printf("Failed to create signer: %v", err)
+		return ""
+	}
+
+	claims := map[string]interface{}{
+		"sub": "test-user",
+		"iss": s.Issuer,
+		"aud": "test-client",
+		"exp": time.Now().Add(time.Hour).Unix(),
+		"iat": time.Now().Unix(),
+	}
+
+	payload, err := json.Marshal(claims)
+	if err != nil {
+		log.Printf("Failed to marshal claims: %v", err)
+		return ""
+	}
+
+	object, err := signer.Sign(payload)
+	if err != nil {
+		log.Printf("Failed to sign: %v", err)
+		return ""
+	}
+
+	serialized, err := object.CompactSerialize()
+	if err != nil {
+		log.Printf("Failed to serialize: %v", err)
+		return ""
+	}
+	return serialized
 }

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 /**
  * ConfigValidatorPage allows users to validate their YAML or JSON configuration
@@ -88,13 +87,7 @@ export default function ConfigValidatorPage() {
             <Editor
               height="100%"
               defaultLanguage="yaml"
-              theme={theme === "dark" ? "dracula" : "light"}
-              onMount={(editor, monaco) => {
-                if (theme === "dark") {
-                  defineDraculaTheme(monaco);
-                  monaco.editor.setTheme("dracula");
-                }
-              }}
+              theme={theme === "dark" ? "vs-dark" : "light"}
               value={content}
               onChange={(value) => setContent(value || "")}
               options={{
