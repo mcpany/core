@@ -44,6 +44,22 @@ Unlike traditional "Wrapper" MCP servers (like `mcp-server-postgres`, `mcp-serve
 
 Most "popular" MCP servers today are bespoke binaries. If the upstream API changes, you must wait for the maintainer to update the code, release a new version, and then you must redeploy. With **MCP Any**, you simply update your configuration file to match the new API signature—zero downtime, zero recompilation.
 
+## 🏗️ Architecture & Stack
+
+MCP Any is built with performance, security, and scalability in mind.
+
+**Core Stack:**
+*   **Backend:** [Go](https://go.dev/) (Golang) - High-performance, concurrent runtime.
+*   **Protocol:** [gRPC](https://grpc.io/) & [Protobuf](https://protobuf.dev/) - Efficient service-to-service communication and strongly typed configuration.
+*   **API Layer:** gRPC-Gateway & HTTP/JSON-RPC - Dual support for high-performance RPC and standard HTTP clients.
+*   **Frontend:** [Next.js](https://nextjs.org/) (React), TypeScript, & Tailwind CSS - Modern, responsive management dashboard.
+*   **Storage:** SQLite (Embedded) or PostgreSQL (Production) - Flexible persistence options.
+
+**Design Patterns:**
+*   **Adapter Pattern:** Acts as a universal adapter, translating various upstream protocols (HTTP, gRPC, SQL) into the MCP standard.
+*   **Configuration-Driven:** Behavior is defined by declarative configuration files (YAML/JSON) rather than compiled code.
+*   **Middleware Chain:** Request processing pipeline for Authentication, Rate Limiting, Audit Logging, and DLP.
+
 ## ✨ Key Features
 
 - **Dynamic Config Reloading**: Automatically detects changes to configuration files (including atomic saves) and hot-swaps the registry without restarting the server.
