@@ -124,7 +124,20 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions defines the options for running the application.
+// RunOptions defines the configuration options for starting the application.
+//
+// Fields:
+//   - Ctx: The parent context for the application lifecycle.
+//   - Fs: The filesystem interface (Afero) for file operations.
+//   - Stdio: If true, runs the server in Stdio mode (stdin/stdout) instead of HTTP.
+//   - JSONRPCPort: Port to listen on for the MCP JSON-RPC/HTTP server (e.g. ":50050").
+//   - GRPCPort: Port to listen on for the internal gRPC server (e.g. ":50051").
+//   - ConfigPaths: List of file paths or directories to load configuration from.
+//   - APIKey: Explicit API key to enforce for authentication (overrides config).
+//   - ShutdownTimeout: Duration to wait for graceful shutdown.
+//   - TLSCert: Path to the TLS certificate file (optional).
+//   - TLSKey: Path to the TLS private key file (optional).
+//   - TLSClientCA: Path to the TLS client CA file for mTLS (optional).
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -139,28 +152,37 @@ type RunOptions struct {
 	TLSClientCA     string
 }
 
-// Runner defines the interface for running the application.
+// Runner defines the interface for the application lifecycle manager.
 type Runner interface {
-	// Run starts the application with the given options.
-	Run(opts RunOptions) error
-
-	// ReloadConfig reloads the application configuration from the provided file system
-	// and paths. It updates the internal state of the application, such as
-	// service registries and managers, to reflect changes in the configuration files.
+	// Run starts the application with the provided options.
 	//
 	// Parameters:
-	//   - fs: The filesystem interface for reading configuration files.
-	//   - configPaths: A slice of paths to configuration files to reload.
+	//   - opts: Configuration options for the run.
 	//
 	// Returns:
-	//   - An error if the configuration reload fails.
+	//   - error: An error if the application fails to start or encounters a fatal error.
+	Run(opts RunOptions) error
+
+	// ReloadConfig reloads the application configuration.
+	//
+	// Parameters:
+	//   - ctx: Context for the reload operation.
+	//   - fs: Filesystem to read config from.
+	//   - configPaths: Paths to reload.
+	//
+	// Returns:
+	//   - error: An error if reload fails.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and
-// logic for the MCP Any server. It encapsulates the components required to run
-// the server, such as the stdio mode handler, and provides the main `Run`
-// method that starts the application.
+// Application orchestrates the entire MCP Any server.
+//
+// It manages the lifecycle of all core components including:
+//   - Tool, Prompt, Resource, and Skill Managers
+//   - Service Registry and Discovery
+//   - Configuration loading and dynamic reloading
+//   - HTTP and gRPC servers
+//   - Background workers (GC, Upstream health checks)
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -243,11 +265,15 @@ type Application struct {
 	MetricsGatherer prometheus.Gatherer
 }
 
-// NewApplication creates a new Application with default dependencies.
-// It initializes the application with the standard implementation of the stdio
-// mode runner, making it ready to be configured and started.
+// NewApplication creates a new Application instance with default dependencies.
 //
-// Returns a new instance of the Application, ready to be run.
+// Returns:
+//   - *Application: The initialized application struct.
+//
+// Side Effects:
+//   - Initializes internal managers (Prompt, Tool, Alerts, Resource).
+//   - Sets up the upstream service factory.
+//   - Initializes a default in-memory event bus.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -265,26 +291,27 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components. It initializes the core
-// services, loads configurations from the provided paths, starts background
-// workers for handling service registration and upstream service communication,
-// and launches the gRPC and JSON-RPC servers.
+// Run starts the MCP Any server application.
 //
-// The server's lifecycle is managed by the provided context. A graceful
-// shutdown is initiated when the context is canceled.
+// It initializes the database, loads configuration, sets up the service registry,
+// starts background workers, and launches the HTTP/gRPC servers (or Stdio handler).
+// It blocks until the context is canceled or a fatal error occurs.
 //
 // Parameters:
-//   - ctx: The context for managing the application's lifecycle.
-//   - fs: The filesystem interface for reading configuration files.
-//   - stdio: A boolean indicating whether to run in standard I/O mode.
-//   - jsonrpcPort: The port for the JSON-RPC server.
-//   - grpcPort: The port for the gRPC registration server. An empty string
-//     disables the gRPC server.
-//   - configPaths: A slice of paths to service configuration files.
-//   - shutdownTimeout: The duration to wait for a graceful shutdown before
-//     forcing termination.
+//   - opts: Configuration options including ports, config paths, and flags.
 //
-// Returns an error if any part of the startup or execution fails.
+// Returns:
+//   - error: An error if startup fails or if the server exits unexpectedly.
+//
+// Errors:
+//   - Returns error if database initialization fails.
+//   - Returns error if configuration cannot be loaded.
+//   - Returns error if ports are already in use.
+//
+// Side Effects:
+//   - Starts multiple goroutines for servers and workers.
+//   - Writes to logs.
+//   - Modifies global application state.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {

@@ -43,9 +43,14 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Parameters:
+//   - t: The tokenizer implementation to use for token-based rate limiting.
 //
-// Returns the result.
+// Returns:
+//   - Option: A configuration option that sets the tokenizer.
+//
+// Side Effects:
+//   - Modifies the RateLimitMiddleware instance when the option is applied.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -54,10 +59,15 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Parameters:
+//   - toolManager: The manager used to look up tool and service information.
+//   - opts: Optional configuration functions (e.g., WithTokenizer).
 //
-// Returns the result.
+// Returns:
+//   - *RateLimitMiddleware: The initialized middleware instance.
+//
+// Side Effects:
+//   - Initializes internal caches and default strategies (memory, redis).
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -80,14 +90,27 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
+// Execute enforces rate limits for a tool execution request.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// It checks both tool-specific and service-level rate limits. If a limit is exceeded,
+// execution is blocked and an error is returned.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The tool execution request containing tool name and arguments.
+//   - next: The next function in the middleware chain.
+//
+// Returns:
+//   - any: The result of the execution if allowed.
+//   - error: An error if the rate limit is exceeded or if the next handler fails.
+//
+// Errors:
+//   - Returns error "rate limit exceeded" if the request is blocked.
+//   - Returns error if the tool or service configuration cannot be retrieved.
+//
+// Side Effects:
+//   - Increments rate limit counters in the configured storage (memory/redis).
+//   - Records metrics for allowed/blocked requests.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

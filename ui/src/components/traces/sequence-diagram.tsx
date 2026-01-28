@@ -34,6 +34,13 @@ interface Interaction {
   description?: string;
 }
 
+/**
+ * Visualizes the request/response flow of an MCP operation using a sequence diagram.
+ *
+ * @param props - The component props.
+ * @param props.trace - The trace object containing span information to visualize.
+ * @returns A React component rendering the sequence diagram.
+ */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
 
