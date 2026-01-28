@@ -32,9 +32,11 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
 
   // Network: Connection Refused / Fetch Failed
   if (err.includes("connection refused") || err.includes("fetch failed") || (err.includes("dial tcp") && !err.includes("lookup"))) {
+    // Distinguish "Refused" from generic "Failed" for clarity
+    const title = err.includes("connection refused") ? "Connection Refused" : "Connection Failed";
     return {
       category: "network",
-      title: "Connection Failed",
+      title: title,
       description: "The server is unreachable at the specified address/port.",
       suggestion: "1. Check if the upstream service is running.\n2. Verify the host and port are correct.\n3. Docker Users: 'localhost' refers to the container itself. Use 'host.docker.internal' to reach your host machine.",
       severity: "critical",
