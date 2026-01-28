@@ -191,7 +191,7 @@ func checkPrerequisites(t *testing.T) {
 	deps := []string{"kind", "kubectl", "helm", "docker"}
 	for _, dep := range deps {
 		if _, err := exec.LookPath(dep); err != nil {
-			t.Fatalf("Error: %s is not installed", dep)
+			t.Skipf("Skipping E2E test: %s is not installed", dep)
 		}
 	}
 }
