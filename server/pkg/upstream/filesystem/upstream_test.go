@@ -711,3 +711,43 @@ func TestFilesystemUpstream_UnavailablePath(t *testing.T) {
 	assert.Contains(t, roots, "/valid", "Valid path should be present")
 	assert.Contains(t, roots, "/invalid", "Invalid path should be preserved")
 }
+
+func TestFilesystemUpstream_CheckHealth(t *testing.T) {
+	// Create a temporary directory for valid path
+	tempDir, err := os.MkdirTemp("", "fs_health_test")
+	require.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	// Configure the upstream
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test_fs_health"),
+		FilesystemService: configv1.FilesystemUpstreamService_builder{
+			RootPaths: map[string]string{
+				"/valid": tempDir,
+			},
+			Os: configv1.OsFs_builder{}.Build(),
+		}.Build(),
+	}.Build()
+
+	u := NewUpstream()
+	b, _ := bus.NewProvider(nil)
+	tm := tool.NewManager(b)
+
+	// Register the service
+	_, _, _, err = u.Register(context.Background(), config, tm, nil, nil, false)
+	require.NoError(t, err)
+
+	// Verify Health Check - Should be OK
+	hc, ok := u.(interface{ CheckHealth(context.Context) error })
+	require.True(t, ok, "Upstream should implement CheckHealth")
+	err = hc.CheckHealth(context.Background())
+	assert.NoError(t, err)
+
+	// Now remove the directory to force failure
+	os.RemoveAll(tempDir)
+
+	// Verify Health Check - Should Fail
+	err = hc.CheckHealth(context.Background())
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "root path check failed")
+}
