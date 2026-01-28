@@ -58,6 +58,38 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container (catches overlayfs mount issues in restricted envs)
+	// We need to ensure the image exists first
+	_, _, err = cli.ImageInspectWithRaw(context.Background(), "alpine:latest")
+	if err != nil {
+		reader, err := cli.ImagePull(context.Background(), "alpine:latest", image.PullOptions{})
+		if err == nil {
+			defer reader.Close()
+			_, _ = io.Copy(io.Discard, reader)
+		} else {
+			t.Logf("could not pull alpine:latest: %v", err)
+			return false
+		}
+	}
+
+	resp, err := cli.ContainerCreate(context.Background(), &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("could not create test container: %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(context.Background(), resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("could not start test container: %v", err)
+		return false
+	}
+
 	return true
 }
 
