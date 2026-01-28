@@ -200,6 +200,26 @@ The AI will:
 
 For more complex examples, including gRPC, OpenAPI, and authentication, check out [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
 
+## ⚙️ Configuration
+
+MCP Any can be configured via command-line flags, environment variables, or configuration files.
+
+### Environment Variables
+
+The following environment variables can be used to configure the server:
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_API_KEY` | API key for securing the server. If set, clients must provide `X-API-Key` header. | `""` (None) |
+| `MCPANY_MCP_LISTEN_ADDRESS` | The address and port to listen on for HTTP/SSE requests. | `:50050` |
+| `MCPANY_GRPC_PORT` | The port to listen on for gRPC requests. | `""` (Disabled) |
+| `MCPANY_CONFIG_PATH` | Path to configuration files or directories (comma-separated). | `[]` |
+| `MCPANY_LOG_LEVEL` | Logging verbosity (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_STDIO` | Set to `true` to enable stdio mode for JSON-RPC (useful for direct integration). | `false` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file for persistence. | `data/mcpany.db` |
+
+For a complete reference of configuration file options, see [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
+
 ## 💡 More Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API.

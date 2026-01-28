@@ -15,6 +15,13 @@ interface SchemaFormProps {
   onChange: (value: Record<string, string>) => void;
 }
 
+/**
+ * A dynamic form component generated from a JSON schema.
+ * @param props - The component props.
+ * @param props.schema - The JSON schema defining the form structure.
+ * @param props.value - The current form values.
+ * @param props.onChange - Callback fired when values change.
+ */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
   if (!schema || !schema.properties) return null;
 

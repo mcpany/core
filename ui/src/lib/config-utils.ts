@@ -5,6 +5,12 @@
 
 import { UpstreamServiceConfig } from "./client";
 
+/**
+ * Defines how secrets should be handled during configuration processing.
+ * - 'redact': Replace secrets with a placeholder (e.g., <REDACTED>).
+ * - 'template': Replace secrets with template variables (e.g., ${KEY}).
+ * - 'unsafe': Keep secrets as-is (use with caution).
+ */
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
