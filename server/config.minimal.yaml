@@ -33,3 +33,14 @@ upstream_services:
       prompts:
         - name: "summarize_text"
           description: "Summarize text"
+  - id: "user-service"
+    name: "user-service"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "list_users"
+          description: "List users"
+          call_id: "list_users"
+      calls:
+        list_users:
+          args: ['[{"id": 1, "name": "Alice", "role": "Admin"}, {"id": 2, "name": "Bob", "role": "User"}]']
