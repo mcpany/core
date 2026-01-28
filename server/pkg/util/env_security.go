@@ -42,7 +42,7 @@ func IsEnvVarAllowed(name string) bool {
 	// if a user runs a shared malicious configuration.
 	if strings.HasPrefix(strings.ToUpper(name), "MCPANY_") {
 		// Log a warning for visibility (at debug level to avoid spam, or info)
-		// logging.GetLogger().Warn("Blocked access to protected environment variable", "name", name)
+		slog.Warn("Blocked access to protected environment variable", "name", name)
 		return false
 	}
 

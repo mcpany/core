@@ -2430,10 +2430,22 @@ func checkForPathTraversal(val string) error {
 			break
 		}
 		i += idx
-		if i+5 < len(val) {
-			if val[i+1] == '2' && (val[i+2]|0x20 == 'e') &&
-				val[i+3] == '%' &&
-				val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
+		// Check for %2e (case insensitive) -> "."
+		if i+2 < len(val) && val[i+1] == '2' && (val[i+2]|0x20 == 'e') {
+			// Found %2e (which is .)
+
+			// Check if followed by . -> mixed encoded ".." (%2e.)
+			if i+3 < len(val) && val[i+3] == '.' {
+				return fmt.Errorf("path traversal attempt detected (encoded mixed)")
+			}
+
+			// Check if preceded by . -> mixed encoded ".." (.%2e)
+			if i > 0 && val[i-1] == '.' {
+				return fmt.Errorf("path traversal attempt detected (encoded mixed)")
+			}
+
+			// Check if followed by %2e -> fully encoded ".." (%2e%2e)
+			if i+5 < len(val) && val[i+3] == '%' && val[i+4] == '2' && (val[i+5]|0x20 == 'e') {
 				return fmt.Errorf("path traversal attempt detected (encoded)")
 			}
 		}
