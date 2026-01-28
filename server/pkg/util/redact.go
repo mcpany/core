@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"unicode"
@@ -573,10 +574,14 @@ func RedactSecrets(text string, secrets []string) string {
 		return text
 	}
 
-	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
-	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
-	var mask []bool
-	foundAny := false
+	// ⚡ Bolt Optimization: Use interval merging instead of a boolean mask.
+	// This avoids O(N) memory allocation (where N is text length) and improves performance.
+	// We collect all secret occurrences, sort them, and merge overlapping ones.
+
+	type interval struct {
+		start, end int
+	}
+	var intervals []interval
 
 	for _, secret := range secrets {
 		if secret == "" {
@@ -591,43 +596,60 @@ func RedactSecrets(text string, secrets []string) string {
 			}
 			absoluteIdx := start + idx
 			end := absoluteIdx + len(secret)
-
-			if mask == nil {
-				mask = make([]bool, len(text))
-			}
-
-			// Mark bytes as sensitive
-			for i := absoluteIdx; i < end; i++ {
-				mask[i] = true
-			}
-			foundAny = true
+			intervals = append(intervals, interval{absoluteIdx, end})
 
 			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
-			// (e.g. "aaaa" with secret "aa" -> mask 0-1, 2-3).
 			start = end
 		}
 	}
 
-	if !foundAny {
+	if len(intervals) == 0 {
 		return text
 	}
 
-	var sb strings.Builder
-	sb.Grow(len(text))
+	// Sort intervals by start position using slices.SortFunc (faster, less allocs than sort.Slice)
+	slices.SortFunc(intervals, func(a, b interval) int {
+		return a.start - b.start
+	})
 
-	i := 0
-	n := len(text)
-	for i < n {
-		if mask[i] {
-			sb.WriteString(redactedPlaceholder)
-			// Skip until end of masked region
-			for i < n && mask[i] {
-				i++
+	// Merge overlapping intervals in-place
+	// Use read/write pointers to merge in-place
+	w := 0
+	for r := 1; r < len(intervals); r++ {
+		// Overlapping or adjacent. We merge them to avoid double redaction placeholders
+		if intervals[r].start <= intervals[w].end {
+			if intervals[r].end > intervals[w].end {
+				intervals[w].end = intervals[r].end
 			}
 		} else {
-			sb.WriteByte(text[i])
-			i++
+			w++
+			if w != r {
+				intervals[w] = intervals[r]
+			}
 		}
 	}
+	// Truncate to the number of merged intervals
+	merged := intervals[:w+1]
+
+	// Build result string
+	var sb strings.Builder
+	// We expect the result to be roughly the same size, or smaller if many secrets are redacted.
+	sb.Grow(len(text))
+
+	lastIdx := 0
+	for _, iv := range merged {
+		// Append safe text before secret
+		if iv.start > lastIdx {
+			sb.WriteString(text[lastIdx:iv.start])
+		}
+		// Append placeholder
+		sb.WriteString(redactedPlaceholder)
+		lastIdx = iv.end
+	}
+	// Append remaining text
+	if lastIdx < len(text) {
+		sb.WriteString(text[lastIdx:])
+	}
+
 	return sb.String()
 }
