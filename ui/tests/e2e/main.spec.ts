@@ -31,10 +31,18 @@ test.describe('MCP Any UI E2E', () => {
     await page.goto('/login');
     // If we are already logged in or no auth, we might be on dashboard.
     // Check if we are on login page.
-    if (await page.getByRole('button', { name: 'Sign in' }).isVisible()) {
-        await page.fill('input[name="username"]', 'admin');
-        await page.fill('input[name="password"]', 'password');
-        await page.click('button[type="submit"]');
+    // Use waitForSelector to avoid race conditions with isVisible immediately after navigation
+    try {
+        await page.waitForSelector('button[type="submit"]', { timeout: 5000 });
+        if (await page.getByRole('button', { name: 'Sign in' }).isVisible()) {
+            await page.fill('input[name="username"]', 'admin');
+            await page.fill('input[name="password"]', 'password');
+            await page.click('button[type="submit"]');
+            await page.waitForURL('/');
+        }
+    } catch (e) {
+        // Assume we are already logged in or not redirected to login
+        console.log("Login page not detected or timeout, proceeding...");
     }
   });
 
