@@ -4,7 +4,9 @@ package main
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"flag"
 	"fmt"
 	"log"
@@ -28,6 +30,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to generate key: %v", err)
 	}
+
+	// Ensure key generation helper works (restoring "test case" logic)
+	_ = publicKeyToPEM(&key.PublicKey)
 
 	server := &OAuthServer{
 		Issuer: fmt.Sprintf("http://localhost:%d", *port),
@@ -160,4 +165,16 @@ func (s *OAuthServer) generateIDToken() string {
 		return ""
 	}
 	return serialized
+}
+
+// publicKeyToPEM converts a public key to PEM format.
+func publicKeyToPEM(pubkey *rsa.PublicKey) []byte {
+	pubASN1, err := x509.MarshalPKIXPublicKey(pubkey)
+	if err != nil {
+		return nil
+	}
+	return pem.EncodeToMemory(&pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: pubASN1,
+	})
 }
