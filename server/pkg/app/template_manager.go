@@ -124,18 +124,17 @@ func (tm *TemplateManager) SaveTemplate(template *configv1.UpstreamServiceConfig
 	tm.mu.Lock()
 	found := false
 	for i, t := range tm.templates {
-		if t.GetName() == template.GetName() { // Identify by Name for now? Or ID? ID is safer.
-			// If ID missing, use Name?
-			if template.GetId() != "" && t.GetId() == template.GetId() {
-				tm.templates[i] = template
-				found = true
-				break
-			}
-			if template.GetId() == "" && t.GetName() == template.GetName() {
-				tm.templates[i] = template
-				found = true
-				break
-			}
+		// Identify by ID if present
+		if template.GetId() != "" && t.GetId() == template.GetId() {
+			tm.templates[i] = template
+			found = true
+			break
+		}
+		// Fallback: Identify by Name
+		if t.GetName() == template.GetName() {
+			tm.templates[i] = template
+			found = true
+			break
 		}
 	}
 	if !found {
