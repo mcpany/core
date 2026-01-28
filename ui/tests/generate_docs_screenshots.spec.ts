@@ -405,6 +405,11 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_detail.png'), fullPage: true });
 
+    // Click Sequence Tab
+    await page.getByRole('tab', { name: 'Sequence' }).click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'trace_sequence.png'), fullPage: true });
+
     // Close sheet by reloading (simplest way to reset state in tests without complex interaction)
     await page.reload();
     await expect(page.getByText('filesystem.read').first()).toBeVisible();

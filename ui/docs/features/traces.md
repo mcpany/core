@@ -55,3 +55,18 @@ This feature detects common issues like:
 - **JSON Errors**: Invalid JSON payloads.
 - **Timeouts**: Operations taking too long.
 - **Connection Failures**: Upstream services being unreachable.
+
+### 6. Sequence Diagram
+
+Visualizes the interaction flow between the Client, MCP Any Core, and Upstream Services using a sequence diagram. This makes it easy to understand the chain of calls and identify where a failure occurred.
+
+![Trace Sequence](../screenshots/trace_sequence.png)
+
+- **Actors**:
+    - **Client**: The user or agent initiating the request.
+    - **MCP Any**: The middleware processing the request.
+    - **[Service Name]**: The external service being called.
+- **Interactions**:
+    - Solid arrows represent requests.
+    - Dashed arrows represent responses.
+    - Red arrows indicate errors.
