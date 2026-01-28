@@ -263,7 +263,23 @@ func (p *LocalProvider) matchPath(pattern, targetPath string) bool {
 	if err == nil && matched {
 		return true
 	}
-	return strings.HasPrefix(targetPath, pattern)
+	if strings.HasPrefix(targetPath, pattern) {
+		return true
+	}
+
+	// Try resolving symlinks in the pattern if it doesn't contain glob characters
+	if !strings.ContainsAny(pattern, "*?[]") {
+		resolvedPattern, err := filepath.EvalSymlinks(pattern)
+		if err == nil && resolvedPattern != pattern {
+			matched, err := filepath.Match(resolvedPattern, targetPath)
+			if err == nil && matched {
+				return true
+			}
+			return strings.HasPrefix(targetPath, resolvedPattern)
+		}
+	}
+
+	return false
 }
 
 func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatchReal string) (bool, error) {

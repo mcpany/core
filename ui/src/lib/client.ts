@@ -229,6 +229,7 @@ export const apiClient = {
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
+            filesystemService: s.filesystem_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
@@ -267,6 +268,7 @@ export const apiClient = {
                          grpcService: s.grpc_service,
                          commandLineService: s.command_line_service,
                          mcpService: s.mcp_service,
+                         filesystemService: s.filesystem_service,
                          upstreamAuth: s.upstream_auth,
                          preCallHooks: s.pre_call_hooks,
                          postCallHooks: s.post_call_hooks,
@@ -355,6 +357,9 @@ export const apiClient = {
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
+        if (config.filesystemService) {
+            payload.filesystem_service = { ...config.filesystemService };
+        }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
         }
@@ -415,6 +420,9 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.filesystemService) {
+            payload.filesystem_service = { ...config.filesystemService };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -491,6 +499,9 @@ export const apiClient = {
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
+        }
+        if (config.filesystemService) {
+            payload.filesystem_service = { ...config.filesystemService };
         }
         if (config.preCallHooks) {
             payload.pre_call_hooks = config.preCallHooks;
@@ -1244,6 +1255,7 @@ export const apiClient = {
             grpcService: s.grpc_service,
             commandLineService: s.command_line_service,
             mcpService: s.mcp_service,
+            filesystemService: s.filesystem_service,
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
@@ -1286,6 +1298,9 @@ export const apiClient = {
         }
         if (template.mcpService) {
             payload.mcp_service = { ...template.mcpService };
+        }
+        if (template.filesystemService) {
+            payload.filesystem_service = { ...template.filesystemService };
         }
         if (template.preCallHooks) {
             payload.pre_call_hooks = template.preCallHooks;

@@ -13,6 +13,7 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 -   **Smart Heuristics**:
     -   **Localhost/Docker Detection**: Automatically detects if a user is trying to connect to `localhost` from within a Docker container and suggests using `host.docker.internal`.
     -   **Context-Aware Error Suggestions**: Analyzes error messages (e.g., "fetch failed", "connection refused", "404") and provides actionable advice.
+    -   **Filesystem Path Validation**: Specifically detects missing root paths, permission errors, and symlink security restrictions for Filesystem services. It provides tailored advice for Docker users regarding volume mounts (e.g., confirming paths exist *inside* the container).
 
 -   **Visual Logs**: Displays a real-time log of the diagnostic process, which can be copied to the clipboard for support.
 

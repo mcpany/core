@@ -151,13 +151,46 @@ export function analyzeConnectionError(error: string): DiagnosticResult {
     };
   }
 
-  // Configuration: Filesystem Permissions
+  // Configuration: Filesystem Root Path Check
+  if (err.includes("root path check failed") || (err.includes("no such file") && err.includes("stat"))) {
+    return {
+      category: "configuration",
+      title: "Filesystem Path Invalid",
+      description: "The configured root path does not exist on the server.",
+      suggestion: "1. Docker Users: The path must exist INSIDE the container, not just on your host.\n   - Did you use -v /local/path:/container/path?\n2. Windows Users: Ensure proper backslash escaping or use forward slashes.\n3. Check for typos in the path.",
+      severity: "critical",
+    };
+  }
+
+  // Configuration: Filesystem Security (Allowed Paths)
+  if (err.includes("path not in allowed list")) {
+    return {
+      category: "configuration",
+      title: "Access Denied (Allowed Paths)",
+      description: "The requested path is not in the configured 'Allowed Paths' list.",
+      suggestion: "1. Update the 'Allowed Paths' configuration to include this directory.\n2. If using symlinks, ensure the *target* directory is allowed.",
+      severity: "critical",
+    };
+  }
+
+  // Configuration: Filesystem Symlinks
+  if (err.includes("symlinks are disabled")) {
+    return {
+      category: "configuration",
+      title: "Access Denied (Symlinks)",
+      description: "Symlinks are disabled by security policy.",
+      suggestion: "1. Change the 'Symlink Mode' in configuration to 'Allow' (if safe).\n2. Or configure the real target path directly.",
+      severity: "warning",
+    };
+  }
+
+  // Configuration: Filesystem Permissions (Generic)
   if (err.includes("access denied") || err.includes("eacces") || err.includes("permission denied")) {
     return {
       category: "configuration",
       title: "Permission Denied",
       description: "The server does not have permission to access a requested file or resource.",
-      suggestion: "1. Check file system permissions.\n2. Ensure the 'allowed_paths' configuration covers the target directory.\n3. If on Windows, check for administrative privileges or path formatting.",
+      suggestion: "1. Check file system permissions (chmod/chown).\n2. Ensure the user running MCP Any has read/write access.",
       severity: "critical",
     };
   }

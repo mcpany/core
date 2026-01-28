@@ -106,6 +106,25 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             addLog("config", "Error: WebSocket address must start with ws:// or wss://");
             isValid = false;
         }
+    } else if (service.filesystemService) {
+        const roots = service.filesystemService.rootPaths || {};
+        const count = Object.keys(roots).length;
+        addLog("config", `Filesystem Service: ${count} root path(s) configured.`);
+
+        Object.entries(roots).forEach(([v, r]) => {
+             addLog("config", ` - ${v} -> ${r}`);
+             if (r.includes("\\") && !r.includes("/")) {
+                 addLog("config", "Warning: Backslashes detected. Ensure they are properly escaped in your config file (e.g. C:\\\\Path).");
+             }
+        });
+
+        const allowed = service.filesystemService.allowedPaths || [];
+        if (allowed.length > 0) {
+            addLog("config", `Allowed Paths (${allowed.length}):`);
+            allowed.forEach(p => addLog("config", ` - ${p}`));
+        } else {
+            addLog("config", "No allowed_paths restrictions (All root subdirectories allowed).");
+        }
     }
 
     if (!isValid) {
