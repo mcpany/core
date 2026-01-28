@@ -32,12 +32,12 @@ ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	DOCKER_CMD := docker
 	DOCKER_BUILDX_CMD := docker buildx
 	ifeq ($(shell docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
-		DOCKER_BUILD_CMD := docker buildx build --load
-		HAS_BUILDX := 1
-	else
-		DOCKER_BUILD_CMD := docker build
-		HAS_BUILDX := 0
-	endif
+	DOCKER_BUILD_CMD := DOCKER_API_VERSION=1.44 docker buildx build --load
+	HAS_BUILDX := 1
+else
+	DOCKER_BUILD_CMD := docker build
+	HAS_BUILDX := 0
+endif
 	SUDO_MSG := " (no sudo)"
 	NEEDS_SUDO_FOR_DOCKER := 0
 else

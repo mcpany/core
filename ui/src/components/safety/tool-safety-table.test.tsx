@@ -8,18 +8,19 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ToolSafetyTable } from './tool-safety-table';
 import { apiClient } from '@/lib/client';
 import { ToolDefinition } from '@/lib/types';
+import { vi, describe, it, expect } from 'vitest';
 
 // Mock apiClient
-jest.mock('@/lib/client', () => ({
+vi.mock('@/lib/client', () => ({
     apiClient: {
-        setToolStatus: jest.fn(),
+        setToolStatus: vi.fn(),
     },
 }));
 
 // Mock useToast
-jest.mock('@/hooks/use-toast', () => ({
+vi.mock('@/hooks/use-toast', () => ({
     useToast: () => ({
-        toast: jest.fn(),
+        toast: vi.fn(),
     }),
 }));
 
@@ -54,7 +55,7 @@ describe('ToolSafetyTable', () => {
     });
 
     it('calls setToolStatus when toggle is clicked', async () => {
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         render(<ToolSafetyTable tools={mockTools} onUpdate={onUpdate} />);
 
         // Find toggle for test-tool (which is enabled)

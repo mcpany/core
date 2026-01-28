@@ -80,7 +80,7 @@ test.describe('Playground Tool Output Diffing', () => {
     // Monaco renders text in lines.
     await expect(page.locator('.monaco-diff-editor')).toBeVisible();
 
-    // Take verification screenshot
-    await page.screenshot({ path: 'diff-feature.png' });
+
+
   });
 });

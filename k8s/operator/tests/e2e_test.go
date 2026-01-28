@@ -135,6 +135,8 @@ nodes:
 		"--set", "ui.service.type=NodePort",
 		"--set", "ui.service.nodePort=30000",
 		"--set", "ui.apiKey=test-token",
+		"--set", "apiKey=test-token",
+		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
@@ -168,6 +170,9 @@ nodes:
 	playwrightArgs := []string{"test", "--workers=" + workers}
 	if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
 		playwrightArgs = append(playwrightArgs, "--grep", grep)
+	}
+	if grepInvert := os.Getenv("PLAYWRIGHT_GREP_INVERT"); grepInvert != "" {
+		playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
 	}
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
