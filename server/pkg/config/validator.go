@@ -1026,9 +1026,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return WrapActionableError("oauth2 client_id validation failed", err)
 	}
 
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
-		// Proceed to next check without resolving
-	} else {
+	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); !ok || !skip {
 		clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
 		if err != nil {
 			return fmt.Errorf("failed to resolve oauth2 client_id: %w", err)
@@ -1042,9 +1040,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return WrapActionableError("oauth2 client_secret validation failed", err)
 	}
 
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
-		// Skip
-	} else {
+	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); !ok || !skip {
 		clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())
 		if err != nil {
 			return fmt.Errorf("failed to resolve oauth2 client_secret: %w", err)
