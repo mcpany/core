@@ -431,6 +431,10 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		minDist := 1000
 		var suffixMatches []string
 
+		// ⚡ Bolt Optimization: Use bounded Levenshtein search
+		// We only care about matches with distance <= 3.
+		currentLimit := 3
+
 		// Iterate over exposed tool names (keys in nameMap)
 		tm.nameMap.Range(func(name string, _ string) bool {
 			// Check for missing namespace (suffix match)
@@ -439,11 +443,16 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 				suffixMatches = append(suffixMatches, name)
 			}
 
-			// Levenshtein check
-			dist := util.LevenshteinDistance(req.ToolName, name)
-			if dist < minDist {
-				minDist = dist
-				bestMatch = name
+			// Levenshtein check with limit
+			dist := util.LevenshteinDistanceWithLimit(req.ToolName, name, currentLimit)
+			if dist <= currentLimit {
+				if dist < minDist {
+					minDist = dist
+					bestMatch = name
+					// Tighten the limit: we only care about finding something BETTER than what we have.
+					// If we have distance 2, next time we only care about distance <= 1.
+					currentLimit = dist - 1
+				}
 			}
 			return true
 		})

@@ -9,10 +9,19 @@ import "unicode/utf8"
 // It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
 // required to change one string into the other.
 func LevenshteinDistance(s1, s2 string) int {
+	// Pass a very large limit so it behaves like the unbounded version.
+	// The maximum possible distance is max(len(s1), len(s2)).
+	// We use max int as limit effectively.
+	return LevenshteinDistanceWithLimit(s1, s2, len(s1)+len(s2))
+}
+
+// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
+// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.
 	if isASCII(s1) && isASCII(s2) {
-		return levenshteinASCII(s1, s2)
+		return levenshteinASCIIBounded(s1, s2, limit)
 	}
 
 	// Optimization: avoid []rune conversion for the longer string.
@@ -46,6 +55,7 @@ func LevenshteinDistance(s1, s2 string) int {
 	}
 
 	// Initialize v0 (the first row, where one string is empty)
+	// v0[j] is distance from s1[:0] (empty) to s2[:j] which is j
 	for j := 0; j <= m; j++ {
 		v0[j] = j
 	}
@@ -54,6 +64,7 @@ func LevenshteinDistance(s1, s2 string) int {
 	for _, c1 := range s1 {
 		i++
 		v1[0] = i
+		minRow := v1[0]
 		for j := 1; j <= m; j++ {
 			cost := 0
 			if c1 != r2[j-1] {
@@ -64,7 +75,16 @@ func LevenshteinDistance(s1, s2 string) int {
 				v1[j-1]+1,    // insertion
 				v0[j-1]+cost, // substitution
 			)
+			if v1[j] < minRow {
+				minRow = v1[j]
+			}
 		}
+
+		// If the minimum value in this row exceeds the limit, we can stop early.
+		if minRow > limit {
+			return limit + 1
+		}
+
 		// Swap v0 and v1 for the next iteration
 		v0, v1 = v1, v0
 	}
@@ -81,7 +101,7 @@ func isASCII(s string) bool {
 	return true
 }
 
-func levenshteinASCII(s1, s2 string) int {
+func levenshteinASCIIBounded(s1, s2 string, limit int) int {
 	n, m := len(s1), len(s2)
 
 	if n == 0 {
@@ -94,6 +114,12 @@ func levenshteinASCII(s1, s2 string) int {
 	if m > n {
 		s1, s2 = s2, s1
 		n, m = m, n
+	}
+
+	// Optimization: Length check
+	// Since these are ASCII, length difference is a lower bound on distance.
+	if n-m > limit {
+		return limit + 1
 	}
 
 	// Optimization: Use stack allocation for small strings.
@@ -118,6 +144,7 @@ func levenshteinASCII(s1, s2 string) int {
 
 	for i := 1; i <= n; i++ {
 		v1[0] = i
+		minRow := v1[0]
 		for j := 1; j <= m; j++ {
 			cost := 0
 			if s1[i-1] != s2[j-1] {
@@ -128,7 +155,16 @@ func levenshteinASCII(s1, s2 string) int {
 				v1[j-1]+1,    // insertion
 				v0[j-1]+cost, // substitution
 			)
+			if v1[j] < minRow {
+				minRow = v1[j]
+			}
 		}
+
+		// If the minimum value in this row exceeds the limit, we can stop early.
+		if minRow > limit {
+			return limit + 1
+		}
+
 		// Swap v0 and v1
 		v0, v1 = v1, v0
 	}

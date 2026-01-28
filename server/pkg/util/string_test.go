@@ -93,3 +93,42 @@ func TestLevenshteinDistance_Swap(t *testing.T) {
 		t.Errorf("LevenshteinDistance(%q, %q) = %d, expected >= 8", s1, s2, got)
 	}
 }
+
+func TestLevenshteinDistanceWithLimit(t *testing.T) {
+	tests := []struct {
+		s1, s2 string
+		limit  int
+		want   int // If > limit, any value > limit is acceptable, but our implementation returns limit + 1
+	}{
+		{"abc", "abc", 1, 0},
+		{"abc", "abd", 1, 1},
+		{"abc", "abe", 1, 1}, // substitution 'c'->'e'
+		{"abc", "def", 1, 2}, // distance is 3, limit 1 -> returns 2 (limit+1)
+		{"abc", "abcd", 1, 1},
+		{"abc", "abcde", 1, 2}, // distance 2, limit 1 -> returns 2
+		{"kitten", "sitting", 3, 3},
+		{"kitten", "sitting", 2, 3}, // distance 3, limit 2 -> returns 3
+		{"rosettacode", "raisethysword", 5, 6}, // distance 8, limit 5 -> returns 6
+
+		// ASCII optimization check (length diff > limit)
+		{"abc", "abcdef", 2, 3}, // diff 3, limit 2 -> returns 3
+
+		// Unicode
+		{"café", "cafe", 1, 1},
+		{"café", "cafe", 0, 1}, // distance 1, limit 0 -> returns 1
+		{"😊", "😢", 0, 1},
+	}
+
+	for _, tt := range tests {
+		got := LevenshteinDistanceWithLimit(tt.s1, tt.s2, tt.limit)
+		if tt.want > tt.limit {
+			if got <= tt.limit {
+				t.Errorf("LevenshteinDistanceWithLimit(%q, %q, %d) = %d; want > %d", tt.s1, tt.s2, tt.limit, got, tt.limit)
+			}
+		} else {
+			if got != tt.want {
+				t.Errorf("LevenshteinDistanceWithLimit(%q, %q, %d) = %d; want %d", tt.s1, tt.s2, tt.limit, got, tt.want)
+			}
+		}
+	}
+}
