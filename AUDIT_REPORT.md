@@ -1,54 +1,42 @@
-# Audit Report - 2026-01-26
+# Audit Report: Truth Reconciliation
 
 ## Executive Summary
-A comprehensive audit of 10 randomly selected documentation features was performed against the codebase and live system (simulated environment). The audit revealed that while the codebase implements the described features, the Roadmap documentation was out of sync with the actual progress. Several features marked as "Planned" or missing were found to be fully implemented.
+Performed a comprehensive "Truth Reconciliation Audit" on 10 sampled features (5 UI, 5 Server). The audit revealed a high level of code quality but identified discrepancies between the Documentation, Roadmap, and Implementation.
+- **Health Score**: 8/10 features aligned (after minor fixes).
+- **Major Finding**: Filesystem Health Checks were documented as automatic but were not implemented in the codebase.
+- **Action Taken**: Implemented the missing health check logic and refactored documentation location.
 
-## Features Audited
+## Verification Matrix
 
-The following documents were selected for verification:
-
-1.  **Log Search Highlighting** (`ui/docs/features/log-search-highlighting.md`)
-2.  **Resource Preview Modal** (`ui/docs/features/resource_preview_modal.md`)
-3.  **Intelligent Stack Composer** (`ui/docs/features/stack-composer.md`)
-4.  **Tool Output Diffing** (`ui/docs/features/tool-diff.md`)
-5.  **Native File Upload in Playground** (`ui/docs/features/native_file_upload_playground.md`)
-6.  **Tool Search Bar** (`server/docs/features/tool_search_bar.md`)
-7.  **Health Checks** (`server/docs/features/health-checks.md`)
-8.  **Theme Builder** (`server/docs/features/theme_builder.md`)
-9.  **Dynamic UI** (`server/docs/features/dynamic-ui.md`)
-10. **Context Optimizer** (`server/docs/features/context_optimizer.md`)
-
-## Verification Results
-
-| Feature | Verification Step | Outcome | Evidence |
+| Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| **Log Search Highlighting** | Search for terms in Live Logs UI | **Verified (Code)** | Feature implementation found in `ui/src/components/logs/log-stream.tsx`. UI test encountered timeouts due to environment constraints. |
-| **Resource Preview Modal** | Access "Preview in Modal" for resources | **Verified (Code)** | Modal logic and context menu actions confirmed in `ui/src/components/resource-detail.tsx`. |
-| **Stack Composer** | Navigate to `/stacks` and check editor | **Verified (Code)** | Full page implementation found in `ui/src/app/stacks/page.tsx` including Palette and Visualizer. |
-| **Tool Output Diffing** | Re-run tool with same args | **Verified** | Diffing logic and "Show Changes" button (`GitCompare` icon) confirmed in `ui/src/components/playground/pro/chat-message.tsx`. |
-| **Native File Upload** | Select tool with `base64` input | **Passed** | UI Verification Test passed. File picker appears for appropriate inputs. |
-| **Tool Search Bar** | Filter tools in list | **Verified** | `SmartToolSearch.tsx` implements client-side filtering by name/description. UI test confirmed component existence. |
-| **Health Checks** | Query `/healthz` endpoint | **Passed** | Server returned `HTTP 200 OK`. Code in `server/pkg/upstream` supports HTTP, gRPC, and CLI checks. |
-| **Theme Builder** | Toggle Light/Dark mode | **Passed** | UI Verification Test passed. Theme toggle functional. |
-| **Dynamic UI** | Check for dynamic component loading | **Passed** | Multiple `next/dynamic` imports found in `ui/src` (e.g., Charts, Log Viewer). |
-| **Context Optimizer** | Check middleware existence | **Passed** | Middleware found in `server/pkg/middleware/context_optimizer.go`. |
+| `ui/docs/features/connection-diagnostics.md` | ✅ Correct | None | Verified UI component and tests exist. |
+| `ui/docs/features/structured_log_viewer.md` | ✅ Correct | None | Verified `LogViewer` component. |
+| `ui/docs/features/native_file_upload_playground.md` | ✅ Correct | None | Verified `SchemaForm` logic. |
+| `ui/docs/features/server-health-history.md` | ⚠️ Roadmap Debt | Update Roadmap | Feature exists (client-side), updated Roadmap to reflect status. |
+| `ui/docs/features/tag-based-access-control.md` | ⚠️ Roadmap Debt | Update Roadmap | Feature exists, updated Roadmap to reflect status. |
+| `server/docs/features/context_optimizer.md` | ✅ Correct | None | Verified Middleware implementation. |
+| `server/docs/features/health-checks.md` | ❌ Code Missing | **Fixed Code** | Implemented `CheckHealth` for Filesystem upstream. |
+| `server/docs/features/tool_search_bar.md` | ❌ Doc Drift | **Moved Doc** | Moved to `ui/docs` to match implementation location. |
+| `server/docs/features/hot_reload.md` | ✅ Correct | None | Verified `ReloadConfig` logic. |
+| `server/docs/features/config_validator.md` | ✅ Correct | None | Verified API endpoint and UI existence. |
 
-## Changes Made
+## Remediation Log
 
-### Documentation Updates
+### 1. Filesystem Health Check (Code Fix)
+- **Issue**: The documentation claimed filesystem health checks verify `root_paths`, but the `filesystem` upstream did not implement the `HealthChecker` interface.
+- **Fix**: Implemented `CheckHealth` method in `server/pkg/upstream/filesystem/upstream.go`.
+- **Details**: The check iterates over configured `root_paths` and performs `os.Stat` to verify existence. Added comprehensive unit tests in `upstream_test.go`.
 
-*   **`ui/roadmap.md`**:
-    *   Marked **Tool Output Diffing** as Completed `[x]`.
-    *   Marked **Recent Tools in Search** as Completed `[x]`.
-    *   Marked **Intelligent Stack Composer** as Completed `[x]`.
-    *   Removed duplicate entry for **Context Usage Estimator**.
-*   **`server/roadmap.md`**:
-    *   Moved **gRPC Health Checks** from Planned to Completed Features.
-    *   Added **Context Optimizer Middleware** to Completed Features.
+### 2. Tool Search Bar (Documentation Refactor)
+- **Issue**: Documentation for the UI-only "Tool Search Bar" feature was located in `server/docs`.
+- **Fix**: Moved `server/docs/features/tool_search_bar.md` to `ui/docs/features/tool_search_bar.md`.
 
-### Code Remediation
-*   No code changes were required as the implementation was found to be ahead of the roadmap.
-*   Verified system integrity via linting and testing.
+### 3. Roadmap Alignment
+- **Issue**: `ui/roadmap.md` listed "Tag-based Access Control" and "Server Health History" as planned, but they are implemented.
+- **Fix**: Updated `ui/roadmap.md` to mark these features as Completed.
+- **Fix**: Updated `server/roadmap.md` to mark "Filesystem Health Check" as Completed.
 
-## Roadmap Alignment Notes
-The audit identified a pattern where features were implemented ("Done") but remained unchecked in the Roadmap. This suggests a need for better synchronization between development and documentation updates. The performed updates have brought the Roadmap into alignment with the current code state.
+## Security Scrub
+- Verified no PII, secrets, or internal IPs were included in the report or the code changes.
+- `CheckHealth` implementation uses standard `os.Stat` and does not expose file contents.
