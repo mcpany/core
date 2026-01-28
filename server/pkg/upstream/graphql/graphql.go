@@ -418,6 +418,7 @@ func setHTTPClient(c *graphql.Client, hc *http.Client) error {
 	if !f.IsValid() {
 		return fmt.Errorf("field 'httpClient' not found in graphql.Client (library version mismatch?)")
 	}
+	//nolint:gosec // Reflection is required here to inject the SafeHTTPClient into the third-party library which does not expose this field.
 	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
 	f.Set(reflect.ValueOf(hc))
 	return nil
