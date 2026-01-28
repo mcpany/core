@@ -333,7 +333,7 @@ func TestValidateMcpService_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateMcpService(tt.service)
+			err := validateMcpService(context.Background(), tt.service)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {

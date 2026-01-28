@@ -27,6 +27,21 @@ import (
 
 const maxSecretRecursionDepth = 10
 
+const (
+	skipSecretContentKey contextKey = "skip_secret_content"
+)
+
+// WithSkipSecretValidation returns a context that instructs secret resolution/validation
+// to skip content-based checks (like regex validation).
+func WithSkipSecretValidation(ctx context.Context) context.Context {
+	return context.WithValue(ctx, skipSecretContentKey, true)
+}
+
+func ShouldSkipSecretValidation(ctx context.Context) bool {
+	v, _ := ctx.Value(skipSecretContentKey).(bool)
+	return v
+}
+
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
 // remote URLs, Vault, and AWS Secrets Manager.
@@ -51,12 +66,14 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 	}
 
 	if secret != nil && secret.GetValidationRegex() != "" {
-		re, err := regexp.Compile(secret.GetValidationRegex())
-		if err != nil {
-			return "", fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
-		}
-		if !re.MatchString(val) {
-			return "", fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
+		if !ShouldSkipSecretValidation(ctx) {
+			re, err := regexp.Compile(secret.GetValidationRegex())
+			if err != nil {
+				return "", fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+			}
+			if !re.MatchString(val) {
+				return "", fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
+			}
 		}
 	}
 
@@ -66,6 +83,13 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) { //nolint:gocyclo
 	if depth > maxSecretRecursionDepth {
 		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
+	}
+
+	// If validation skipping is requested, return a placeholder immediately.
+	// This prevents side-effects like file reading or network requests during validation,
+	// which closes the Information Leakage / Blind Oracle vulnerability.
+	if ShouldSkipSecretValidation(ctx) {
+		return "[SKIPPED_SECRET_VALIDATION]", nil
 	}
 
 	if secret == nil {

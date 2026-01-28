@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -66,7 +67,9 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", err))
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
-			validationErrors := config.Validate(r.Context(), cfg, config.Server)
+			// We skip secret content validation (reading files/env vars for regex) to prevent information leakage oracle.
+			validateCtx := util.WithSkipSecretValidation(r.Context())
+			validationErrors := config.Validate(validateCtx, cfg, config.Server)
 			for _, ve := range validationErrors {
 				errors = append(errors, ve.Error())
 			}
