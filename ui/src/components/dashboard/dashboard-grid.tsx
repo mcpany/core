@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -110,8 +110,25 @@ export function DashboardGrid() {
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
-        localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
     };
+
+    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
+    // Randomized Selection from Top 5 High-Impact Targets
+    const isFirstRun = useRef(true);
+    useEffect(() => {
+        if (!isMounted) return;
+
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [widgets, isMounted]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
