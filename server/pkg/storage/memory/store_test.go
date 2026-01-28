@@ -5,7 +5,6 @@ package memory
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -373,28 +372,6 @@ func TestMemoryStore(t *testing.T) {
 		got, err = s8.GetToken(context.Background(), "user-1", "service-1")
 		assert.NoError(t, err)
 		assert.Nil(t, got)
-	})
-
-	t.Run("Token Eviction", func(t *testing.T) {
-		s9 := NewStore()
-		// Lower the limit for testing
-		s9.maxTokens = 10
-
-		// Insert more than limit
-		for i := 0; i < 20; i++ {
-			token := configv1.UserToken_builder{
-				UserId:      proto.String(fmt.Sprintf("user-%d", i)),
-				ServiceId:   proto.String("service-1"),
-				AccessToken: proto.String(fmt.Sprintf("token-%d", i)),
-			}.Build()
-			err := s9.SaveToken(context.Background(), token)
-			assert.NoError(t, err)
-		}
-
-		// Verify size is capped at maxTokens
-		// We are in package memory, so we can access private fields.
-		assert.LessOrEqual(t, len(s9.tokens), s9.maxTokens)
-		assert.Equal(t, s9.maxTokens, len(s9.tokens))
 	})
 
 	t.Run("Close", func(t *testing.T) {

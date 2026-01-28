@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"sync"
 
 	"github.com/alexliesenfeld/health"
@@ -35,7 +34,6 @@ type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
 	checker health.Checker
-	config  *configv1.FilesystemUpstreamService
 }
 
 // NewUpstream creates a new instance of FilesystemUpstream.
@@ -86,7 +84,6 @@ func (u *Upstream) Register(
 	_ resource.ManagerInterface,
 	_ bool,
 ) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	_ = os.Getpid() // Force os usage
 	log := logging.GetLogger()
 
 	// Calculate SHA256 for the ID if not set
@@ -115,10 +112,9 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to create filesystem provider: %w", err)
 	}
 
-	// Register closer for the provider and store config
+	// Register closer for the provider
 	u.mu.Lock()
 	u.closers = append(u.closers, prov)
-	u.config = fsService
 	u.mu.Unlock()
 
 	fs := prov.GetFs()
@@ -269,34 +265,4 @@ func (u *Upstream) getSupportedTools(fsService *configv1.FilesystemUpstreamServi
 	}
 
 	return getTools(prov, fs, fsService.GetReadOnly(), fsService.GetRootPaths())
-}
-
-// CheckHealth performs a health check on the upstream service.
-func (u *Upstream) CheckHealth(_ context.Context) error {
-	u.mu.Lock()
-	config := u.config
-	u.mu.Unlock()
-
-	if config == nil {
-		return fmt.Errorf("upstream not configured")
-	}
-
-	// Basic check: Ensure root paths exist (for local OS FS)
-	// Only check local paths if it's explicitly OsFs or not specified (default)
-	isLocal := false
-
-	if config.GetOs() != nil {
-		isLocal = true
-	} else if config.GetS3() == nil && config.GetGcs() == nil && config.GetSftp() == nil && config.GetHttp() == nil && config.GetTmpfs() == nil && config.GetZip() == nil {
-		isLocal = true
-	}
-
-	if isLocal {
-		for virtualPath, localPath := range config.GetRootPaths() {
-			if _, err := os.Stat(localPath); err != nil {
-				return fmt.Errorf("root path check failed for %s (%s): %w", virtualPath, localPath, err)
-			}
-		}
-	}
-	return nil
 }

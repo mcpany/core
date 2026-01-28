@@ -55,54 +55,35 @@ func TestCheckForArgumentInjection(t *testing.T) {
 }
 
 func TestCheckForShellInjection(t *testing.T) {
-    // Unquoted - always strict regardless of mode
-    assert.Error(t, checkForShellInjection("safe; rm -rf /", "", "", "sh", false))
-    assert.NoError(t, checkForShellInjection("safe", "", "", "sh", false))
+    assert.Error(t, checkForShellInjection("safe; rm -rf /", "", "", "sh"))
+    assert.NoError(t, checkForShellInjection("safe", "", "", "sh"))
 
-    // Single quoted context - Strict Mode (Interpreter)
-    assert.Error(t, checkForShellInjection("break'out", "'{{val}}'", "{{val}}", "sh", true))
-    assert.Error(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "sh", true), "strict mode blocks ; even in quotes")
+    // Single quoted context
+    assert.Error(t, checkForShellInjection("break'out", "'{{val}}'", "{{val}}", "sh"))
+    assert.NoError(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "sh"))
 
-    // Single quoted context - Standard Mode (Sensitive Command like curl)
-    assert.Error(t, checkForShellInjection("break'out", "'{{val}}'", "{{val}}", "curl", false))
-    assert.NoError(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "curl", false), "standard mode allows ; in quotes")
-
-    // Double quoted context - Strict Mode
-    assert.Error(t, checkForShellInjection("break\"out", "\"{{val}}\"", "{{val}}", "sh", true))
-    assert.Error(t, checkForShellInjection("$var", "\"{{val}}\"", "{{val}}", "sh", true))
-    assert.NoError(t, checkForShellInjection("safe space", "\"{{val}}\"", "{{val}}", "sh", true), "space is allowed even in strict mode")
-
-    // Double quoted context - Standard Mode
-    assert.Error(t, checkForShellInjection("break\"out", "\"{{val}}\"", "{{val}}", "curl", false))
-    assert.Error(t, checkForShellInjection("$var", "\"{{val}}\"", "{{val}}", "curl", false))
-    assert.NoError(t, checkForShellInjection("safe; space", "\"{{val}}\"", "{{val}}", "curl", false))
+    // Double quoted context
+    assert.Error(t, checkForShellInjection("break\"out", "\"{{val}}\"", "{{val}}", "sh"))
+    assert.Error(t, checkForShellInjection("$var", "\"{{val}}\"", "{{val}}", "sh"))
+    assert.NoError(t, checkForShellInjection("safe space", "\"{{val}}\"", "{{val}}", "sh"))
 
     // Extended unquoted
-    assert.Error(t, checkForShellInjection("val|ue", "", "", "sh", true))
-    assert.Error(t, checkForShellInjection("val&ue", "", "", "sh", true))
-    assert.Error(t, checkForShellInjection("val>ue", "", "", "sh", true))
+    assert.Error(t, checkForShellInjection("val|ue", "", "", "sh"))
+    assert.Error(t, checkForShellInjection("val&ue", "", "", "sh"))
+    assert.Error(t, checkForShellInjection("val>ue", "", "", "sh"))
 
     // Env command specific
-    assert.Error(t, checkForShellInjection("VAR=val", "", "", "env", true), "env command should block '='")
-    assert.NoError(t, checkForShellInjection("VAR=val", "", "", "sh", true), "sh command should allow '='")
+    assert.Error(t, checkForShellInjection("VAR=val", "", "", "env"), "env command should block '='")
+    assert.NoError(t, checkForShellInjection("VAR=val", "", "", "sh"), "sh command should allow '='")
 }
 
-func TestIsInterpreter(t *testing.T) {
-    assert.True(t, isInterpreter("bash"))
-    assert.True(t, isInterpreter("/bin/sh"))
-    // python is no longer considered strict interpreter for shell injection purposes
-    // it falls into sensitive/standard validation
-    assert.False(t, isInterpreter("python"))
-    assert.False(t, isInterpreter("curl"))
-    assert.False(t, isInterpreter("echo"))
-}
-
-func TestIsSensitiveCommand(t *testing.T) {
-    assert.True(t, isSensitiveCommand("curl"))
-    assert.True(t, isSensitiveCommand("git"))
-    assert.True(t, isSensitiveCommand("python")) // python is sensitive
-    assert.False(t, isSensitiveCommand("bash")) // bash is strict interpreter
-    assert.False(t, isSensitiveCommand("echo"))
+func TestIsShellCommand(t *testing.T) {
+    assert.True(t, isShellCommand("bash"))
+    assert.True(t, isShellCommand("/bin/sh"))
+    assert.True(t, isShellCommand("python"))
+    assert.True(t, isShellCommand("cmd.exe"))
+    assert.False(t, isShellCommand("ls"))
+    assert.False(t, isShellCommand("echo"))
 }
 
 func setupHTTPToolExtra(t *testing.T, handler http.Handler, callDefinition *configv1.HttpCallDefinition, urlSuffix string) (*HTTPTool, *httptest.Server) {

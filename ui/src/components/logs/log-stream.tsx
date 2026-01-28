@@ -75,15 +75,6 @@ export interface LogEntry {
  */
 // Optimization: Memoize HighlightText to avoid unnecessary re-renders.
 // Accepting a regex instead of string prevents re-compiling the RegExp for every row.
-/**
- * Renders text with matched patterns highlighted.
- * Used for highlighting search terms in log entries.
- *
- * @param props - The component props.
- * @param props.text - The text content to display.
- * @param props.regex - The regular expression to match for highlighting.
- * @returns The rendered text component with highlights.
- */
 const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
   if (!regex || !text) return <>{text}</>;
 

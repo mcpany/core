@@ -45,8 +45,7 @@ func TestIsShellCommand_ExtendedList(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.cmd, func(t *testing.T) {
-            isShell := isInterpreter(tt.cmd) || isSensitiveCommand(tt.cmd)
-			assert.Equal(t, tt.expected, isShell, "isInterpreter/isSensitiveCommand(%q) should match expectation", tt.cmd)
+			assert.Equal(t, tt.expected, isShellCommand(tt.cmd), "isShellCommand(%q) should be %v", tt.cmd, tt.expected)
 		})
 	}
 }

@@ -179,21 +179,12 @@ export interface Metric {
 }
 
 
-/**
- * System status information.
- */
 export interface SystemStatus {
-    /** The uptime of the server in seconds. */
     uptime_seconds: number;
-    /** The number of active connections. */
     active_connections: number;
-    /** The port the HTTP server is bound to. */
     bound_http_port: number;
-    /** The port the gRPC server is bound to. */
     bound_grpc_port: number;
-    /** The version of the server. */
     version: string;
-    /** List of security warnings. */
     security_warnings: string[];
 }
 
