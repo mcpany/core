@@ -2573,6 +2573,11 @@ func isShellCommand(cmd string) bool {
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
 	}
 	base := filepath.Base(cmd)
+	// Strip .exe extension if present (case-insensitive)
+	if strings.HasSuffix(strings.ToLower(base), ".exe") {
+		base = base[:len(base)-4]
+	}
+
 	for _, shell := range shells {
 		if base == shell {
 			return true
