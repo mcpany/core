@@ -1337,6 +1337,17 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the historical health status of the server.
+     * @returns A promise that resolves to the health history.
+     */
+    getHealthHistory: async () => {
+        const res = await fetchWithAuth('/api/v1/health/history');
+        if (!res.ok) throw new Error('Failed to fetch health history');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.points || []);
+    },
+
     // Audit Logs
 
     /**

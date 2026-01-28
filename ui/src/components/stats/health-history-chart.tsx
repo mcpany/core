@@ -28,57 +28,24 @@ export function HealthHistoryChart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // In a real app, this would be a dedicated history endpoint.
-                // For this implementation, we simulate 24 hours of data based on
-                // the current status and some randomized historical noise.
-                const [status, traffic] = await Promise.all([
-                    apiClient.getDoctorStatus(),
-                    apiClient.getDashboardTraffic()
-                ]);
+                const history = await apiClient.getHealthHistory();
 
-                const points: HealthPoint[] = [];
+                const points: HealthPoint[] = history.map((h: any) => {
+                    const uptime = h.uptimePercentage !== undefined ? h.uptimePercentage : (h.uptime_percentage || 0);
+                    let status: HealthPoint["status"] = "ok";
+                    if (uptime < 90) status = "degraded";
+                    if (uptime < 50) status = "error";
 
-                // Use traffic history to infer historical health
-                // If we have errors in a given interval (minute), we can mark it as degraded or error.
-                // Traffic history is minute-by-minute (last 60 mins)
-                // We want to show 24 hours?
-                // The backend now returns last 60 minutes of data.
-                // The UI expects 24 hours?
-                // "Displays server uptime history over the last 24 hours." description says so.
-                // But our backend now only returns 60 minutes.
-                // Let's adjust the chart to show available history (60 mins) or whatever backend returns.
-                // If backend returns 60 points, we show 60 points.
+                    // Format timestamp to HH:mm
+                    const date = new Date(h.timestamp);
+                    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                if (traffic && traffic.length > 0) {
-                     for (const t of traffic) {
-                        let pointStatus: HealthPoint["status"] = "ok";
-                        let uptime = 100;
-
-                        // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
-                        const reqs = t.requests || t.total || 0;
-                        const errs = t.errors || 0;
-
-                        if (errs > 0) {
-                            if (reqs > 0 && (errs / reqs) > 0.1) { // >10% error rate
-                                pointStatus = "degraded";
-                                uptime = 80;
-                            }
-                             if (reqs > 0 && (errs / reqs) > 0.5) { // >50% error rate
-                                pointStatus = "error";
-                                uptime = 0;
-                            }
-                        }
-
-                        points.push({
-                            time: t.time,
-                            status: pointStatus,
-                            uptime: uptime
-                        });
-                     }
-                } else {
-                     // Fallback to showing just current status if no history
-                     // Or just empty
-                }
+                    return {
+                        time: time,
+                        status: status,
+                        uptime: Math.round(uptime)
+                    };
+                });
                 setData(points);
             } catch (error) {
                 console.error("Failed to fetch health history", error);

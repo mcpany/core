@@ -62,6 +62,13 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
+
+  // GetHealthHistory returns the historical health status of the server.
+  rpc GetHealthHistory(GetHealthHistoryRequest) returns (GetHealthHistoryResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/health/history"
+    };
+  }
 }
 
 message ClearCacheRequest {}
@@ -183,4 +190,20 @@ message AuditLogEntry {
   string error = 7;
   string duration = 8;
   int64 duration_ms = 9;
+}
+
+message GetHealthHistoryRequest {
+  string start_time = 1; // ISO 8601, optional
+  string end_time = 2;   // ISO 8601, optional
+}
+
+message GetHealthHistoryResponse {
+  repeated HealthPoint points = 1;
+}
+
+message HealthPoint {
+  string timestamp = 1; // ISO 8601
+  double uptime_percentage = 2; // 0-100
+  int32 healthy_services = 3;
+  int32 total_services = 4;
 }

@@ -241,6 +241,9 @@ type Application struct {
 	// MetricsGatherer is the interface for gathering metrics.
 	// Defaults to prometheus.DefaultGatherer.
 	MetricsGatherer prometheus.Gatherer
+
+	// HealthRecorder records historical health data.
+	HealthRecorder *health.Recorder
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -497,6 +500,9 @@ func (a *Application) Run(opts RunOptions) error {
 	)
 	a.ServiceRegistry = serviceRegistry
 
+	// Initialize Health Recorder
+	a.HealthRecorder = health.NewRecorder(serviceRegistry)
+
 	// New message bus and workers
 	upstreamWorker := worker.NewUpstreamWorker(busProvider, a.ToolManager)
 	registrationWorker := worker.NewServiceRegistrationWorker(busProvider, serviceRegistry)
@@ -513,6 +519,8 @@ func (a *Application) Run(opts RunOptions) error {
 	registrationWorker.Start(workerCtx)
 	// Start periodic health checks (every 30 seconds)
 	serviceRegistry.StartHealthChecks(workerCtx, 30*time.Second)
+	// Start health recorder
+	a.HealthRecorder.Start(workerCtx)
 
 	// If we're using an in-memory bus, start the in-process worker
 	if busConfig == nil || busConfig.GetInMemory() != nil {
@@ -1939,7 +1947,7 @@ func (a *Application) runServerMode(
 	if standardMiddlewares != nil {
 		auditMiddleware = standardMiddlewares.Audit
 	}
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware, a.HealthRecorder)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service

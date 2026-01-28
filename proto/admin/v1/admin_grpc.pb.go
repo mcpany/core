@@ -34,6 +34,7 @@ const (
 	AdminService_DeleteUser_FullMethodName         = "/mcpany.admin.v1.AdminService/DeleteUser"
 	AdminService_GetDiscoveryStatus_FullMethodName = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
 	AdminService_ListAuditLogs_FullMethodName      = "/mcpany.admin.v1.AdminService/ListAuditLogs"
+	AdminService_GetHealthHistory_FullMethodName   = "/mcpany.admin.v1.AdminService/GetHealthHistory"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -66,6 +67,8 @@ type AdminServiceClient interface {
 	GetDiscoveryStatus(ctx context.Context, in *GetDiscoveryStatusRequest, opts ...grpc.CallOption) (*GetDiscoveryStatusResponse, error)
 	// ListAuditLogs returns audit logs matching the filter.
 	ListAuditLogs(ctx context.Context, in *ListAuditLogsRequest, opts ...grpc.CallOption) (*ListAuditLogsResponse, error)
+	// GetHealthHistory returns the historical health status of the server.
+	GetHealthHistory(ctx context.Context, in *GetHealthHistoryRequest, opts ...grpc.CallOption) (*GetHealthHistoryResponse, error)
 }
 
 type adminServiceClient struct {
@@ -196,6 +199,16 @@ func (c *adminServiceClient) ListAuditLogs(ctx context.Context, in *ListAuditLog
 	return out, nil
 }
 
+func (c *adminServiceClient) GetHealthHistory(ctx context.Context, in *GetHealthHistoryRequest, opts ...grpc.CallOption) (*GetHealthHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetHealthHistoryResponse)
+	err := c.cc.Invoke(ctx, AdminService_GetHealthHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -226,6 +239,8 @@ type AdminServiceServer interface {
 	GetDiscoveryStatus(context.Context, *GetDiscoveryStatusRequest) (*GetDiscoveryStatusResponse, error)
 	// ListAuditLogs returns audit logs matching the filter.
 	ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error)
+	// GetHealthHistory returns the historical health status of the server.
+	GetHealthHistory(context.Context, *GetHealthHistoryRequest) (*GetHealthHistoryResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -271,6 +286,9 @@ func (UnimplementedAdminServiceServer) GetDiscoveryStatus(context.Context, *GetD
 }
 func (UnimplementedAdminServiceServer) ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAuditLogs not implemented")
+}
+func (UnimplementedAdminServiceServer) GetHealthHistory(context.Context, *GetHealthHistoryRequest) (*GetHealthHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHealthHistory not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -509,6 +527,24 @@ func _AdminService_ListAuditLogs_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_GetHealthHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHealthHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetHealthHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetHealthHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetHealthHistory(ctx, req.(*GetHealthHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -563,6 +599,10 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListAuditLogs",
 			Handler:    _AdminService_ListAuditLogs_Handler,
+		},
+		{
+			MethodName: "GetHealthHistory",
+			Handler:    _AdminService_GetHealthHistory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

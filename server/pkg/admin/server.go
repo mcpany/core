@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage"
@@ -36,6 +37,7 @@ type Server struct {
 	storage          storage.Storage
 	discoveryManager *discovery.Manager
 	auditMiddleware  *middleware.AuditMiddleware
+	healthRecorder   *health.Recorder
 }
 
 // NewServer creates a new Admin Server.
@@ -55,6 +57,7 @@ func NewServer(
 	storage storage.Storage,
 	discoveryManager *discovery.Manager,
 	auditMiddleware *middleware.AuditMiddleware,
+	healthRecorder *health.Recorder,
 ) *Server {
 	return &Server{
 		cache:            cache,
@@ -63,6 +66,7 @@ func NewServer(
 		storage:          storage,
 		discoveryManager: discoveryManager,
 		auditMiddleware:  auditMiddleware,
+		healthRecorder:   healthRecorder,
 	}
 }
 
@@ -425,4 +429,25 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 		})
 	}
 	return &pb.ListAuditLogsResponse{Entries: pbEntries}, nil
+}
+
+// GetHealthHistory returns the historical health status of the server.
+func (s *Server) GetHealthHistory(_ context.Context, _ *pb.GetHealthHistoryRequest) (*pb.GetHealthHistoryResponse, error) {
+	if s.healthRecorder == nil {
+		return &pb.GetHealthHistoryResponse{}, nil
+	}
+
+	history := s.healthRecorder.GetHistory()
+	pbPoints := make([]*pb.HealthPoint, 0, len(history))
+
+	for _, p := range history {
+		pbPoints = append(pbPoints, &pb.HealthPoint{
+			Timestamp:        proto.String(p.Timestamp.Format(time.RFC3339)),
+			UptimePercentage: proto.Float64(p.UptimePercentage),
+			HealthyServices:  proto.Int32(p.HealthyServices),
+			TotalServices:    proto.Int32(p.TotalServices),
+		})
+	}
+
+	return &pb.GetHealthHistoryResponse{Points: pbPoints}, nil
 }

@@ -151,6 +151,26 @@ export interface AuditLogEntry {
   durationMs: Long;
 }
 
+export interface GetHealthHistoryRequest {
+  /** ISO 8601, optional */
+  startTime: string;
+  /** ISO 8601, optional */
+  endTime: string;
+}
+
+export interface GetHealthHistoryResponse {
+  points: HealthPoint[];
+}
+
+export interface HealthPoint {
+  /** ISO 8601 */
+  timestamp: string;
+  /** 0-100 */
+  uptimePercentage: number;
+  healthyServices: number;
+  totalServices: number;
+}
+
 function createBaseClearCacheRequest(): ClearCacheRequest {
   return {};
 }
@@ -2084,6 +2104,270 @@ export const AuditLogEntry: MessageFns<AuditLogEntry> = {
   },
 };
 
+function createBaseGetHealthHistoryRequest(): GetHealthHistoryRequest {
+  return { startTime: "", endTime: "" };
+}
+
+export const GetHealthHistoryRequest: MessageFns<GetHealthHistoryRequest> = {
+  encode(message: GetHealthHistoryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.startTime !== "") {
+      writer.uint32(10).string(message.startTime);
+    }
+    if (message.endTime !== "") {
+      writer.uint32(18).string(message.endTime);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetHealthHistoryRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetHealthHistoryRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.startTime = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.endTime = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetHealthHistoryRequest {
+    return {
+      startTime: isSet(object.startTime)
+        ? globalThis.String(object.startTime)
+        : isSet(object.start_time)
+        ? globalThis.String(object.start_time)
+        : "",
+      endTime: isSet(object.endTime)
+        ? globalThis.String(object.endTime)
+        : isSet(object.end_time)
+        ? globalThis.String(object.end_time)
+        : "",
+    };
+  },
+
+  toJSON(message: GetHealthHistoryRequest): unknown {
+    const obj: any = {};
+    if (message.startTime !== "") {
+      obj.startTime = message.startTime;
+    }
+    if (message.endTime !== "") {
+      obj.endTime = message.endTime;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetHealthHistoryRequest>, I>>(base?: I): GetHealthHistoryRequest {
+    return GetHealthHistoryRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetHealthHistoryRequest>, I>>(object: I): GetHealthHistoryRequest {
+    const message = createBaseGetHealthHistoryRequest();
+    message.startTime = object.startTime ?? "";
+    message.endTime = object.endTime ?? "";
+    return message;
+  },
+};
+
+function createBaseGetHealthHistoryResponse(): GetHealthHistoryResponse {
+  return { points: [] };
+}
+
+export const GetHealthHistoryResponse: MessageFns<GetHealthHistoryResponse> = {
+  encode(message: GetHealthHistoryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.points) {
+      HealthPoint.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetHealthHistoryResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetHealthHistoryResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.points.push(HealthPoint.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetHealthHistoryResponse {
+    return {
+      points: globalThis.Array.isArray(object?.points) ? object.points.map((e: any) => HealthPoint.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: GetHealthHistoryResponse): unknown {
+    const obj: any = {};
+    if (message.points?.length) {
+      obj.points = message.points.map((e) => HealthPoint.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetHealthHistoryResponse>, I>>(base?: I): GetHealthHistoryResponse {
+    return GetHealthHistoryResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetHealthHistoryResponse>, I>>(object: I): GetHealthHistoryResponse {
+    const message = createBaseGetHealthHistoryResponse();
+    message.points = object.points?.map((e) => HealthPoint.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseHealthPoint(): HealthPoint {
+  return { timestamp: "", uptimePercentage: 0, healthyServices: 0, totalServices: 0 };
+}
+
+export const HealthPoint: MessageFns<HealthPoint> = {
+  encode(message: HealthPoint, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.timestamp !== "") {
+      writer.uint32(10).string(message.timestamp);
+    }
+    if (message.uptimePercentage !== 0) {
+      writer.uint32(17).double(message.uptimePercentage);
+    }
+    if (message.healthyServices !== 0) {
+      writer.uint32(24).int32(message.healthyServices);
+    }
+    if (message.totalServices !== 0) {
+      writer.uint32(32).int32(message.totalServices);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): HealthPoint {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseHealthPoint();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.timestamp = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.uptimePercentage = reader.double();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.healthyServices = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.totalServices = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): HealthPoint {
+    return {
+      timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "",
+      uptimePercentage: isSet(object.uptimePercentage)
+        ? globalThis.Number(object.uptimePercentage)
+        : isSet(object.uptime_percentage)
+        ? globalThis.Number(object.uptime_percentage)
+        : 0,
+      healthyServices: isSet(object.healthyServices)
+        ? globalThis.Number(object.healthyServices)
+        : isSet(object.healthy_services)
+        ? globalThis.Number(object.healthy_services)
+        : 0,
+      totalServices: isSet(object.totalServices)
+        ? globalThis.Number(object.totalServices)
+        : isSet(object.total_services)
+        ? globalThis.Number(object.total_services)
+        : 0,
+    };
+  },
+
+  toJSON(message: HealthPoint): unknown {
+    const obj: any = {};
+    if (message.timestamp !== "") {
+      obj.timestamp = message.timestamp;
+    }
+    if (message.uptimePercentage !== 0) {
+      obj.uptimePercentage = message.uptimePercentage;
+    }
+    if (message.healthyServices !== 0) {
+      obj.healthyServices = Math.round(message.healthyServices);
+    }
+    if (message.totalServices !== 0) {
+      obj.totalServices = Math.round(message.totalServices);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<HealthPoint>, I>>(base?: I): HealthPoint {
+    return HealthPoint.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<HealthPoint>, I>>(object: I): HealthPoint {
+    const message = createBaseHealthPoint();
+    message.timestamp = object.timestamp ?? "";
+    message.uptimePercentage = object.uptimePercentage ?? 0;
+    message.healthyServices = object.healthyServices ?? 0;
+    message.totalServices = object.totalServices ?? 0;
+    return message;
+  },
+};
+
 /** AdminService provides administrative operations for the MCP Any server. */
 export interface AdminService {
   /** ClearCache clears all cached data in the server. */
@@ -2113,6 +2397,11 @@ export interface AdminService {
   ): Promise<GetDiscoveryStatusResponse>;
   /** ListAuditLogs returns audit logs matching the filter. */
   ListAuditLogs(request: DeepPartial<ListAuditLogsRequest>, metadata?: grpc.Metadata): Promise<ListAuditLogsResponse>;
+  /** GetHealthHistory returns the historical health status of the server. */
+  GetHealthHistory(
+    request: DeepPartial<GetHealthHistoryRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<GetHealthHistoryResponse>;
 }
 
 export class AdminServiceClientImpl implements AdminService {
@@ -2132,6 +2421,7 @@ export class AdminServiceClientImpl implements AdminService {
     this.DeleteUser = this.DeleteUser.bind(this);
     this.GetDiscoveryStatus = this.GetDiscoveryStatus.bind(this);
     this.ListAuditLogs = this.ListAuditLogs.bind(this);
+    this.GetHealthHistory = this.GetHealthHistory.bind(this);
   }
 
   ClearCache(request: DeepPartial<ClearCacheRequest>, metadata?: grpc.Metadata): Promise<ClearCacheResponse> {
@@ -2183,6 +2473,13 @@ export class AdminServiceClientImpl implements AdminService {
 
   ListAuditLogs(request: DeepPartial<ListAuditLogsRequest>, metadata?: grpc.Metadata): Promise<ListAuditLogsResponse> {
     return this.rpc.unary(AdminServiceListAuditLogsDesc, ListAuditLogsRequest.fromPartial(request), metadata);
+  }
+
+  GetHealthHistory(
+    request: DeepPartial<GetHealthHistoryRequest>,
+    metadata?: grpc.Metadata,
+  ): Promise<GetHealthHistoryResponse> {
+    return this.rpc.unary(AdminServiceGetHealthHistoryDesc, GetHealthHistoryRequest.fromPartial(request), metadata);
   }
 }
 
@@ -2454,6 +2751,29 @@ export const AdminServiceListAuditLogsDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       const value = ListAuditLogsResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceGetHealthHistoryDesc: UnaryMethodDefinitionish = {
+  methodName: "GetHealthHistory",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetHealthHistoryRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = GetHealthHistoryResponse.decode(data);
       return {
         ...value,
         toObject() {
