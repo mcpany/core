@@ -332,6 +332,15 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
 		tools := m.toolManager.ListTools()
+
+		// ⚡ BOLT: Optimize graph building from O(Services * Tools) to O(Services + Tools)
+		// Randomized Selection from Top 5 High-Impact Targets
+		toolsByService := make(map[string][]tool.Tool)
+		for _, t := range tools {
+			serviceID := t.Tool().GetServiceId()
+			toolsByService[serviceID] = append(toolsByService[serviceID], t)
+		}
+
 		for _, svc := range services {
 			svcNode := topologyv1.Node_builder{
 				Id:     "svc-" + svc.GetName(),
@@ -344,8 +353,8 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			}
 
 			// Add Tools
-			for _, t := range tools {
-				if t.Tool().GetServiceId() == svc.GetName() {
+			if serviceTools, ok := toolsByService[svc.GetName()]; ok {
+				for _, t := range serviceTools {
 					toolNode := topologyv1.Node_builder{
 						Id:     "tool-" + t.Tool().GetName(),
 						Label:  t.Tool().GetName(),

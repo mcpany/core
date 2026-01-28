@@ -30,12 +30,14 @@ func NewRouter() *Router {
 	}
 }
 
-// Register associates a handler function with a specific MCP method name. If a
-// handler for the method already exists, it will be overwritten.
+// Register associates a handler function with a specific MCP method name.
 //
 // Parameters:
 //   - method: The name of the MCP method (e.g., "tools/call").
 //   - handler: The function that will handle the method call.
+//
+// Side Effects:
+//   - Overwrites any existing handler for the given method name.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -46,8 +48,11 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //   - method: The name of the MCP method.
 //
 // Returns:
-//   - The handler function if found.
-//   - A boolean indicating whether a handler was found.
+//   - MethodHandler: The handler function if found.
+//   - bool: True if a handler was found, false otherwise.
+//
+// Errors:
+//   - None.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok
