@@ -18,6 +18,9 @@ func TestStore_SSRF_Protection(t *testing.T) {
 	// This test confirms that the SSRF protection blocks access to 127.0.0.1.
 	// It relies on the default configuration of the secure http client.
 
+	// Explicitly block loopback (default)
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
 	// Start a local HTTP server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")

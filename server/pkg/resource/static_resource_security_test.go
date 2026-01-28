@@ -33,5 +33,7 @@ func TestStaticResource_SSRFProtection(t *testing.T) {
 	_, err := r.Read(context.Background())
 	assert.Error(t, err)
 	// The error message comes from SafeDialer in util/net.go
-	assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	if err != nil {
+		assert.Contains(t, err.Error(), "ssrf attempt blocked")
+	}
 }
