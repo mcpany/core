@@ -1211,6 +1211,27 @@ func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 func validateCommandExists(command string, workingDir string) error {
 	// If the command is an absolute path, check if it exists and is executable
 	if filepath.IsAbs(command) {
+		// Sentinel Security: Restrict execution to AllowedPaths or system PATH.
+		// This prevents probing arbitrary files or executing untrusted binaries.
+		allowed := false
+		if err := validation.IsAllowedPath(command); err == nil {
+			allowed = true
+		} else {
+			// Check if the directory is in system PATH
+			dir := filepath.Dir(command)
+			pathEnv := os.Getenv("PATH")
+			for _, pathDir := range filepath.SplitList(pathEnv) {
+				if filepath.Clean(dir) == filepath.Clean(pathDir) {
+					allowed = true
+					break
+				}
+			}
+		}
+
+		if !allowed {
+			return fmt.Errorf("command path %q is not allowed (must be in CWD, AllowedPaths, or system PATH)", command)
+		}
+
 		info, err := osStat(command)
 		if err != nil {
 			if os.IsNotExist(err) {

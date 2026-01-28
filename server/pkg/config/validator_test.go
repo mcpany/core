@@ -609,6 +609,11 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 }
 
 func TestValidateCommandExists(t *testing.T) {
+	// Ensure /bin is in PATH for this test to allow /bin/ls
+	oldPath := os.Getenv("PATH")
+	os.Setenv("PATH", "/bin"+string(os.PathListSeparator)+oldPath)
+	defer os.Setenv("PATH", oldPath)
+
 	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()

@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -348,6 +349,9 @@ upstream_services:
 func TestValidatorCommandExists(t *testing.T) {
     // Create a dummy executable
     tmpDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
+
     exePath := filepath.Join(tmpDir, "myexe")
     f, err := os.Create(exePath)
     require.NoError(t, err)
