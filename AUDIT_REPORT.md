@@ -1,54 +1,47 @@
-# Audit Report - 2026-01-26
+# Truth Reconciliation Audit Report
 
-## Executive Summary
-A comprehensive audit of 10 randomly selected documentation features was performed against the codebase and live system (simulated environment). The audit revealed that while the codebase implements the described features, the Roadmap documentation was out of sync with the actual progress. Several features marked as "Planned" or missing were found to be fully implemented.
+**Date:** 2026-01-28
+**Auditor:** Principal Software Engineer (Agent)
 
-## Features Audited
+## 1. Executive Summary
 
-The following documents were selected for verification:
+The Truth Reconciliation Audit was performed on a sample of 10 features across the UI and Server domains. The objective was to verify alignment between Documentation, Codebase, and the Product Roadmap.
 
-1.  **Log Search Highlighting** (`ui/docs/features/log-search-highlighting.md`)
-2.  **Resource Preview Modal** (`ui/docs/features/resource_preview_modal.md`)
-3.  **Intelligent Stack Composer** (`ui/docs/features/stack-composer.md`)
-4.  **Tool Output Diffing** (`ui/docs/features/tool-diff.md`)
-5.  **Native File Upload in Playground** (`ui/docs/features/native_file_upload_playground.md`)
-6.  **Tool Search Bar** (`server/docs/features/tool_search_bar.md`)
-7.  **Health Checks** (`server/docs/features/health-checks.md`)
-8.  **Theme Builder** (`server/docs/features/theme_builder.md`)
-9.  **Dynamic UI** (`server/docs/features/dynamic-ui.md`)
-10. **Context Optimizer** (`server/docs/features/context_optimizer.md`)
+**Overall Health:** **Healthy** (8/10 Pass, 2/10 Documentation Drift)
 
-## Verification Results
+The audit revealed a robust codebase with high alignment to the Roadmap. Most features described in the documentation were fully implemented and verified. Two discrepancies were identified, both categorized as "Case A: Documentation Drift," where the documentation claimed support for planned features or missed implementation details. No critical "Roadmap Debt" (missing code for planned features) was found in the sample.
 
-| Feature | Verification Step | Outcome | Evidence |
+## 2. Verification Matrix
+
+| Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| **Log Search Highlighting** | Search for terms in Live Logs UI | **Verified (Code)** | Feature implementation found in `ui/src/components/logs/log-stream.tsx`. UI test encountered timeouts due to environment constraints. |
-| **Resource Preview Modal** | Access "Preview in Modal" for resources | **Verified (Code)** | Modal logic and context menu actions confirmed in `ui/src/components/resource-detail.tsx`. |
-| **Stack Composer** | Navigate to `/stacks` and check editor | **Verified (Code)** | Full page implementation found in `ui/src/app/stacks/page.tsx` including Palette and Visualizer. |
-| **Tool Output Diffing** | Re-run tool with same args | **Verified** | Diffing logic and "Show Changes" button (`GitCompare` icon) confirmed in `ui/src/components/playground/pro/chat-message.tsx`. |
-| **Native File Upload** | Select tool with `base64` input | **Passed** | UI Verification Test passed. File picker appears for appropriate inputs. |
-| **Tool Search Bar** | Filter tools in list | **Verified** | `SmartToolSearch.tsx` implements client-side filtering by name/description. UI test confirmed component existence. |
-| **Health Checks** | Query `/healthz` endpoint | **Passed** | Server returned `HTTP 200 OK`. Code in `server/pkg/upstream` supports HTTP, gRPC, and CLI checks. |
-| **Theme Builder** | Toggle Light/Dark mode | **Passed** | UI Verification Test passed. Theme toggle functional. |
-| **Dynamic UI** | Check for dynamic component loading | **Passed** | Multiple `next/dynamic` imports found in `ui/src` (e.g., Charts, Log Viewer). |
-| **Context Optimizer** | Check middleware existence | **Passed** | Middleware found in `server/pkg/middleware/context_optimizer.go`. |
+| `ui/docs/features/connection-diagnostics.md` | **PASS** | None | Verified `ConnectionDiagnosticDialog` implementation matches described multi-stage analysis steps. |
+| `ui/docs/features/structured_log_viewer.md` | **PASS** | None | Verified `JsonViewer` component and log stream expansion logic exists. |
+| `ui/docs/features/playground.md` | **PASS** | None | Verified Playground UI components, dynamic form generation, and history logic. |
+| `ui/docs/features/native_file_upload_playground.md` | **PASS** | None | Verified `SchemaForm` component correctly handles `contentEncoding: "base64"` with file inputs. |
+| `ui/docs/features/stack-composer.md` | **PASS** | None | Verified Stack Composer UI structure and drag-and-drop palette components. |
+| `server/docs/features/context_optimizer.md` | **PASS** | None | Verified `ContextOptimizer` middleware implementation for response truncation. |
+| `server/docs/features/health-checks.md` | **PASS** | None | Verified Health Check logic and data structures support the described protocols. |
+| `server/docs/features/dynamic_registration.md` | **DOC DRIFT** | **Updated Doc** | Code currently only supports Ollama discovery (`ollama.go`). Documentation claimed support for OpenAPI/gRPC/GraphQL, which are listed as "Planned" in the Roadmap. |
+| `server/docs/features/config_validator.md` | **PASS** | None | Verified Config Validator API endpoints and corresponding UI integration. |
+| `server/docs/features/tool_search_bar.md` | **DOC DRIFT** | **Updated Doc** | Code inspection (`smart-tool-search.tsx`) confirmed that `serviceId` is included in the client-side search, which was missing from the documentation. |
 
-## Changes Made
+## 3. Remediation Log
 
-### Documentation Updates
+The following remediations were applied to align documentation with the codebase:
 
-*   **`ui/roadmap.md`**:
-    *   Marked **Tool Output Diffing** as Completed `[x]`.
-    *   Marked **Recent Tools in Search** as Completed `[x]`.
-    *   Marked **Intelligent Stack Composer** as Completed `[x]`.
-    *   Removed duplicate entry for **Context Usage Estimator**.
-*   **`server/roadmap.md`**:
-    *   Moved **gRPC Health Checks** from Planned to Completed Features.
-    *   Added **Context Optimizer Middleware** to Completed Features.
+1.  **Fixed Documentation Drift in `server/docs/features/dynamic_registration.md`**
+    *   **Issue:** The document listed OpenAPI, gRPC, and GraphQL as "Supported Sources".
+    *   **Reality:** Only "Local LLM (Ollama)" is currently implemented in the codebase. The others are on the Roadmap as "Planned".
+    *   **Action:** Updated the document to clearly distinguish between the supported Ollama source and the planned sources.
 
-### Code Remediation
-*   No code changes were required as the implementation was found to be ahead of the roadmap.
-*   Verified system integrity via linting and testing.
+2.  **Fixed Documentation Drift in `server/docs/features/tool_search_bar.md`**
+    *   **Issue:** The document stated that search only matches against `name` and `description`.
+    *   **Reality:** The implementation also matches against `serviceId`.
+    *   **Action:** Updated the "Fields Searched" section to include `serviceId`.
 
-## Roadmap Alignment Notes
-The audit identified a pattern where features were implemented ("Done") but remained unchecked in the Roadmap. This suggests a need for better synchronization between development and documentation updates. The performed updates have brought the Roadmap into alignment with the current code state.
+## 4. Security Scrub
+
+*   **PII Check:** No Personally Identifiable Information (PII) was found in the audit report or the modified documentation.
+*   **Secrets Check:** No secrets, API keys, or credentials were found in the audit report or the modified documentation.
+*   **Internal IPs:** No internal IP addresses were exposed.

@@ -8,6 +8,10 @@ Instead of manually defining every tool, you can point MCP Any to a service defi
 
 ## Supported Sources
 
+- **Local LLM (Ollama)**: Automatically discovers and registers local Ollama models as OpenAI-compatible tools.
+
+### Planned Sources
+
 - **OpenAPI**: Parses Swagger/OpenAPI specs to create tools for each operation.
 - **gRPC**: Uses Server Reflection to discover methods and messages.
 - **GraphQL**: Introspects the schema to create tools for Queries and Mutations.

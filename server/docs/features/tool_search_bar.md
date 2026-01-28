@@ -20,5 +20,5 @@ As the number of connected services and tools grows, finding a specific tool can
 ## Technical Details
 
 -   **Filtering Logic**: The search is performed client-side on the currently loaded list of tools.
--   **Fields Searched**: Matches against `name` and `description` (case-insensitive).
+-   **Fields Searched**: Matches against `name`, `description`, and `serviceId` (case-insensitive).
 -   **Combination**: Works in conjunction with the "Filter by Service" and "Show Pinned Only" filters.
