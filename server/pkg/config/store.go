@@ -413,15 +413,21 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		return j + 1 - startIdx
 	}
 
-	if ok {
-		if val == "" && hasDefault {
-			buf.WriteString(defaultValue)
-		} else {
-			buf.WriteString(val)
+	useDefault := (ok && val == "" && hasDefault) || (!ok && hasDefault)
+
+	if useDefault {
+		expanded, err := expand([]byte(defaultValue))
+		if err != nil {
+			*missingCount++
+			// Clean up error message from recursive call
+			errMsg := err.Error()
+			prefix := "missing environment variables:"
+			errMsg = strings.TrimPrefix(errMsg, prefix)
+			fmt.Fprintf(missingErrBuilder, "\n  - In default value for %s:%s", varName, errMsg)
 		}
+		buf.Write(expanded)
 	} else {
-		// Must have default
-		buf.WriteString(defaultValue)
+		buf.WriteString(val)
 	}
 
 	return j + 1 - startIdx
