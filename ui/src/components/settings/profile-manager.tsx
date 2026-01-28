@@ -26,14 +26,12 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient, ProfileDefinition } from "@/lib/client";
-import { Textarea } from "@/components/ui/textarea";
 
 /**
  * ProfileManager component.

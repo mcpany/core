@@ -43,7 +43,8 @@ describe('ProfileManager', () => {
       { name: 'dev', requiredRoles: ['admin'], selector: { tags: ['env:dev'] } },
       { name: 'prod', requiredRoles: [], selector: { tags: ['env:prod'] } },
     ];
-    (apiClient.listProfiles as any).mockResolvedValue(mockProfiles);
+    // Cast to unknown first to avoid TS error with strict checks on mock implementation
+    (apiClient.listProfiles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockProfiles);
 
     render(<ProfileManager />);
 
@@ -53,7 +54,7 @@ describe('ProfileManager', () => {
   });
 
   it('opens create dialog', async () => {
-    (apiClient.listProfiles as any).mockResolvedValue([]);
+    (apiClient.listProfiles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     render(<ProfileManager />);
 
     // Wait for loading to finish (or mock it to be fast)
