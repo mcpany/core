@@ -35,13 +35,13 @@ test.describe('Profile Management', () => {
 
         // 5. Verify it appears
         // The profiles might be fetched via SWR which revalidates on focus or interval.
-        // We manually trigger a refresh by navigating away and back or reloading.
-        // But first, let's wait a bit for the optimistic UI or initial re-fetch.
+        // We manually trigger a refresh by reloading.
 
         // Polling retry loop
         await expect(async () => {
             await page.reload();
-            const profile = page.getByRole('heading', { name: profileName });
+            // Use getByText to find the profile name anywhere in the card
+            const profile = page.getByText(profileName);
             await expect(profile).toBeVisible({ timeout: 5000 });
         }).toPass({ timeout: 60000, intervals: [2000, 5000] });
 
