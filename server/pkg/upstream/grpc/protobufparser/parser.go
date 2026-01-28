@@ -7,6 +7,7 @@ package protobufparser
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -14,6 +15,7 @@ import (
 	"time"
 
 	"github.com/bufbuild/protocompile"
+	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1"
@@ -291,7 +293,28 @@ func ParseProtoByReflection(ctx context.Context, target string) (*descriptorpb.F
 	defer cancel()
 
 	// 1. Connect to the gRPC service
-	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// Use SafeDialer to prevent SSRF
+	dialer := util.NewSafeDialer()
+	// Allow overriding via environment variables (consistent with other components)
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
+		dialer.AllowPrivate = true
+	}
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+			return dialer.DialContext(ctx, "tcp", addr)
+		}),
+	}
+
+	conn, err := grpc.NewClient(target, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC service at %s: %w", target, err)
 	}

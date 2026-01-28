@@ -48,6 +48,7 @@ func setupMockGRPCServer(t *testing.T) (string, func()) {
 }
 
 func TestParseProtoByReflection_Integration(t *testing.T) {
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 	addr, cleanup := setupMockGRPCServer(t)
 	defer cleanup()
 
