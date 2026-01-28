@@ -8,11 +8,11 @@ import { test, expect } from '@playwright/test';
 test.describe('Playground Smart Result View', () => {
     test.beforeAll(async ({ request }) => {
         // Register a service that returns a JSON list via echo
-        // We use the BACKEND_URL environment variable which is set in the test container
-        const baseURL = process.env.BACKEND_URL || 'http://localhost:50050';
+        // We use relative path so it works with PLAYWRIGHT_BASE_URL in K8s environment (proxied via UI)
+        // or local environment.
 
         // Register the service
-        const response = await request.post(`${baseURL}/api/v1/services`, {
+        const response = await request.post(`/api/v1/services`, {
             data: {
                 id: "test-table-service",
                 name: "test-table-service",
