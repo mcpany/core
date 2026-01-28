@@ -9,6 +9,7 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { grpc } from "@improbable-eng/grpc-web";
 import { BrowserHeaders } from "browser-headers";
 import Long from "long";
+import { ProfileDefinition } from "../../config/v1/config";
 import { UpstreamServiceConfig } from "../../config/v1/upstream_service";
 import { User } from "../../config/v1/user";
 import { Tool } from "../../mcp_router/v1/mcp_router";
@@ -101,6 +102,44 @@ export interface DeleteUserRequest {
 }
 
 export interface DeleteUserResponse {
+}
+
+export interface ListProfilesRequest {
+}
+
+export interface ListProfilesResponse {
+  profiles: ProfileDefinition[];
+}
+
+export interface GetProfileRequest {
+  name: string;
+}
+
+export interface GetProfileResponse {
+  profile?: ProfileDefinition | undefined;
+}
+
+export interface CreateProfileRequest {
+  profile?: ProfileDefinition | undefined;
+}
+
+export interface CreateProfileResponse {
+  profile?: ProfileDefinition | undefined;
+}
+
+export interface UpdateProfileRequest {
+  profile?: ProfileDefinition | undefined;
+}
+
+export interface UpdateProfileResponse {
+  profile?: ProfileDefinition | undefined;
+}
+
+export interface DeleteProfileRequest {
+  name: string;
+}
+
+export interface DeleteProfileResponse {
 }
 
 export interface GetDiscoveryStatusRequest {
@@ -1389,6 +1428,570 @@ export const DeleteUserResponse: MessageFns<DeleteUserResponse> = {
   },
 };
 
+function createBaseListProfilesRequest(): ListProfilesRequest {
+  return {};
+}
+
+export const ListProfilesRequest: MessageFns<ListProfilesRequest> = {
+  encode(_: ListProfilesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListProfilesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListProfilesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): ListProfilesRequest {
+    return {};
+  },
+
+  toJSON(_: ListProfilesRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListProfilesRequest>, I>>(base?: I): ListProfilesRequest {
+    return ListProfilesRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListProfilesRequest>, I>>(_: I): ListProfilesRequest {
+    const message = createBaseListProfilesRequest();
+    return message;
+  },
+};
+
+function createBaseListProfilesResponse(): ListProfilesResponse {
+  return { profiles: [] };
+}
+
+export const ListProfilesResponse: MessageFns<ListProfilesResponse> = {
+  encode(message: ListProfilesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.profiles) {
+      ProfileDefinition.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ListProfilesResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListProfilesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.profiles.push(ProfileDefinition.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListProfilesResponse {
+    return {
+      profiles: globalThis.Array.isArray(object?.profiles)
+        ? object.profiles.map((e: any) => ProfileDefinition.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ListProfilesResponse): unknown {
+    const obj: any = {};
+    if (message.profiles?.length) {
+      obj.profiles = message.profiles.map((e) => ProfileDefinition.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListProfilesResponse>, I>>(base?: I): ListProfilesResponse {
+    return ListProfilesResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListProfilesResponse>, I>>(object: I): ListProfilesResponse {
+    const message = createBaseListProfilesResponse();
+    message.profiles = object.profiles?.map((e) => ProfileDefinition.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseGetProfileRequest(): GetProfileRequest {
+  return { name: "" };
+}
+
+export const GetProfileRequest: MessageFns<GetProfileRequest> = {
+  encode(message: GetProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetProfileRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetProfileRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetProfileRequest {
+    return { name: isSet(object.name) ? globalThis.String(object.name) : "" };
+  },
+
+  toJSON(message: GetProfileRequest): unknown {
+    const obj: any = {};
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetProfileRequest>, I>>(base?: I): GetProfileRequest {
+    return GetProfileRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetProfileRequest>, I>>(object: I): GetProfileRequest {
+    const message = createBaseGetProfileRequest();
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
+function createBaseGetProfileResponse(): GetProfileResponse {
+  return { profile: undefined };
+}
+
+export const GetProfileResponse: MessageFns<GetProfileResponse> = {
+  encode(message: GetProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.profile !== undefined) {
+      ProfileDefinition.encode(message.profile, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetProfileResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetProfileResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.profile = ProfileDefinition.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetProfileResponse {
+    return { profile: isSet(object.profile) ? ProfileDefinition.fromJSON(object.profile) : undefined };
+  },
+
+  toJSON(message: GetProfileResponse): unknown {
+    const obj: any = {};
+    if (message.profile !== undefined) {
+      obj.profile = ProfileDefinition.toJSON(message.profile);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetProfileResponse>, I>>(base?: I): GetProfileResponse {
+    return GetProfileResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetProfileResponse>, I>>(object: I): GetProfileResponse {
+    const message = createBaseGetProfileResponse();
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? ProfileDefinition.fromPartial(object.profile)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseCreateProfileRequest(): CreateProfileRequest {
+  return { profile: undefined };
+}
+
+export const CreateProfileRequest: MessageFns<CreateProfileRequest> = {
+  encode(message: CreateProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.profile !== undefined) {
+      ProfileDefinition.encode(message.profile, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateProfileRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateProfileRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.profile = ProfileDefinition.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateProfileRequest {
+    return { profile: isSet(object.profile) ? ProfileDefinition.fromJSON(object.profile) : undefined };
+  },
+
+  toJSON(message: CreateProfileRequest): unknown {
+    const obj: any = {};
+    if (message.profile !== undefined) {
+      obj.profile = ProfileDefinition.toJSON(message.profile);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateProfileRequest>, I>>(base?: I): CreateProfileRequest {
+    return CreateProfileRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateProfileRequest>, I>>(object: I): CreateProfileRequest {
+    const message = createBaseCreateProfileRequest();
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? ProfileDefinition.fromPartial(object.profile)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseCreateProfileResponse(): CreateProfileResponse {
+  return { profile: undefined };
+}
+
+export const CreateProfileResponse: MessageFns<CreateProfileResponse> = {
+  encode(message: CreateProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.profile !== undefined) {
+      ProfileDefinition.encode(message.profile, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateProfileResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateProfileResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.profile = ProfileDefinition.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateProfileResponse {
+    return { profile: isSet(object.profile) ? ProfileDefinition.fromJSON(object.profile) : undefined };
+  },
+
+  toJSON(message: CreateProfileResponse): unknown {
+    const obj: any = {};
+    if (message.profile !== undefined) {
+      obj.profile = ProfileDefinition.toJSON(message.profile);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateProfileResponse>, I>>(base?: I): CreateProfileResponse {
+    return CreateProfileResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateProfileResponse>, I>>(object: I): CreateProfileResponse {
+    const message = createBaseCreateProfileResponse();
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? ProfileDefinition.fromPartial(object.profile)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseUpdateProfileRequest(): UpdateProfileRequest {
+  return { profile: undefined };
+}
+
+export const UpdateProfileRequest: MessageFns<UpdateProfileRequest> = {
+  encode(message: UpdateProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.profile !== undefined) {
+      ProfileDefinition.encode(message.profile, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateProfileRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateProfileRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.profile = ProfileDefinition.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateProfileRequest {
+    return { profile: isSet(object.profile) ? ProfileDefinition.fromJSON(object.profile) : undefined };
+  },
+
+  toJSON(message: UpdateProfileRequest): unknown {
+    const obj: any = {};
+    if (message.profile !== undefined) {
+      obj.profile = ProfileDefinition.toJSON(message.profile);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateProfileRequest>, I>>(base?: I): UpdateProfileRequest {
+    return UpdateProfileRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateProfileRequest>, I>>(object: I): UpdateProfileRequest {
+    const message = createBaseUpdateProfileRequest();
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? ProfileDefinition.fromPartial(object.profile)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseUpdateProfileResponse(): UpdateProfileResponse {
+  return { profile: undefined };
+}
+
+export const UpdateProfileResponse: MessageFns<UpdateProfileResponse> = {
+  encode(message: UpdateProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.profile !== undefined) {
+      ProfileDefinition.encode(message.profile, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateProfileResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateProfileResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.profile = ProfileDefinition.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateProfileResponse {
+    return { profile: isSet(object.profile) ? ProfileDefinition.fromJSON(object.profile) : undefined };
+  },
+
+  toJSON(message: UpdateProfileResponse): unknown {
+    const obj: any = {};
+    if (message.profile !== undefined) {
+      obj.profile = ProfileDefinition.toJSON(message.profile);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateProfileResponse>, I>>(base?: I): UpdateProfileResponse {
+    return UpdateProfileResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateProfileResponse>, I>>(object: I): UpdateProfileResponse {
+    const message = createBaseUpdateProfileResponse();
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? ProfileDefinition.fromPartial(object.profile)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteProfileRequest(): DeleteProfileRequest {
+  return { name: "" };
+}
+
+export const DeleteProfileRequest: MessageFns<DeleteProfileRequest> = {
+  encode(message: DeleteProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteProfileRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteProfileRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteProfileRequest {
+    return { name: isSet(object.name) ? globalThis.String(object.name) : "" };
+  },
+
+  toJSON(message: DeleteProfileRequest): unknown {
+    const obj: any = {};
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteProfileRequest>, I>>(base?: I): DeleteProfileRequest {
+    return DeleteProfileRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteProfileRequest>, I>>(object: I): DeleteProfileRequest {
+    const message = createBaseDeleteProfileRequest();
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteProfileResponse(): DeleteProfileResponse {
+  return {};
+}
+
+export const DeleteProfileResponse: MessageFns<DeleteProfileResponse> = {
+  encode(_: DeleteProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteProfileResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteProfileResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): DeleteProfileResponse {
+    return {};
+  },
+
+  toJSON(_: DeleteProfileResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteProfileResponse>, I>>(base?: I): DeleteProfileResponse {
+    return DeleteProfileResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteProfileResponse>, I>>(_: I): DeleteProfileResponse {
+    const message = createBaseDeleteProfileResponse();
+    return message;
+  },
+};
+
 function createBaseGetDiscoveryStatusRequest(): GetDiscoveryStatusRequest {
   return {};
 }
@@ -2106,6 +2709,16 @@ export interface AdminService {
   UpdateUser(request: DeepPartial<UpdateUserRequest>, metadata?: grpc.Metadata): Promise<UpdateUserResponse>;
   /** DeleteUser deletes a user by ID. */
   DeleteUser(request: DeepPartial<DeleteUserRequest>, metadata?: grpc.Metadata): Promise<DeleteUserResponse>;
+  /** ListProfiles returns all profile definitions. */
+  ListProfiles(request: DeepPartial<ListProfilesRequest>, metadata?: grpc.Metadata): Promise<ListProfilesResponse>;
+  /** GetProfile returns a specific profile definition by name. */
+  GetProfile(request: DeepPartial<GetProfileRequest>, metadata?: grpc.Metadata): Promise<GetProfileResponse>;
+  /** CreateProfile creates a new profile definition. */
+  CreateProfile(request: DeepPartial<CreateProfileRequest>, metadata?: grpc.Metadata): Promise<CreateProfileResponse>;
+  /** UpdateProfile updates an existing profile definition. */
+  UpdateProfile(request: DeepPartial<UpdateProfileRequest>, metadata?: grpc.Metadata): Promise<UpdateProfileResponse>;
+  /** DeleteProfile deletes a profile definition by name. */
+  DeleteProfile(request: DeepPartial<DeleteProfileRequest>, metadata?: grpc.Metadata): Promise<DeleteProfileResponse>;
   /** GetDiscoveryStatus returns the status of auto-discovery providers. */
   GetDiscoveryStatus(
     request: DeepPartial<GetDiscoveryStatusRequest>,
@@ -2130,6 +2743,11 @@ export class AdminServiceClientImpl implements AdminService {
     this.ListUsers = this.ListUsers.bind(this);
     this.UpdateUser = this.UpdateUser.bind(this);
     this.DeleteUser = this.DeleteUser.bind(this);
+    this.ListProfiles = this.ListProfiles.bind(this);
+    this.GetProfile = this.GetProfile.bind(this);
+    this.CreateProfile = this.CreateProfile.bind(this);
+    this.UpdateProfile = this.UpdateProfile.bind(this);
+    this.DeleteProfile = this.DeleteProfile.bind(this);
     this.GetDiscoveryStatus = this.GetDiscoveryStatus.bind(this);
     this.ListAuditLogs = this.ListAuditLogs.bind(this);
   }
@@ -2172,6 +2790,26 @@ export class AdminServiceClientImpl implements AdminService {
 
   DeleteUser(request: DeepPartial<DeleteUserRequest>, metadata?: grpc.Metadata): Promise<DeleteUserResponse> {
     return this.rpc.unary(AdminServiceDeleteUserDesc, DeleteUserRequest.fromPartial(request), metadata);
+  }
+
+  ListProfiles(request: DeepPartial<ListProfilesRequest>, metadata?: grpc.Metadata): Promise<ListProfilesResponse> {
+    return this.rpc.unary(AdminServiceListProfilesDesc, ListProfilesRequest.fromPartial(request), metadata);
+  }
+
+  GetProfile(request: DeepPartial<GetProfileRequest>, metadata?: grpc.Metadata): Promise<GetProfileResponse> {
+    return this.rpc.unary(AdminServiceGetProfileDesc, GetProfileRequest.fromPartial(request), metadata);
+  }
+
+  CreateProfile(request: DeepPartial<CreateProfileRequest>, metadata?: grpc.Metadata): Promise<CreateProfileResponse> {
+    return this.rpc.unary(AdminServiceCreateProfileDesc, CreateProfileRequest.fromPartial(request), metadata);
+  }
+
+  UpdateProfile(request: DeepPartial<UpdateProfileRequest>, metadata?: grpc.Metadata): Promise<UpdateProfileResponse> {
+    return this.rpc.unary(AdminServiceUpdateProfileDesc, UpdateProfileRequest.fromPartial(request), metadata);
+  }
+
+  DeleteProfile(request: DeepPartial<DeleteProfileRequest>, metadata?: grpc.Metadata): Promise<DeleteProfileResponse> {
+    return this.rpc.unary(AdminServiceDeleteProfileDesc, DeleteProfileRequest.fromPartial(request), metadata);
   }
 
   GetDiscoveryStatus(
@@ -2408,6 +3046,121 @@ export const AdminServiceDeleteUserDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       const value = DeleteUserResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceListProfilesDesc: UnaryMethodDefinitionish = {
+  methodName: "ListProfiles",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListProfilesRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = ListProfilesResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceGetProfileDesc: UnaryMethodDefinitionish = {
+  methodName: "GetProfile",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetProfileRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = GetProfileResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceCreateProfileDesc: UnaryMethodDefinitionish = {
+  methodName: "CreateProfile",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return CreateProfileRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = CreateProfileResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceUpdateProfileDesc: UnaryMethodDefinitionish = {
+  methodName: "UpdateProfile",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return UpdateProfileRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = UpdateProfileResponse.decode(data);
+      return {
+        ...value,
+        toObject() {
+          return value;
+        },
+      };
+    },
+  } as any,
+};
+
+export const AdminServiceDeleteProfileDesc: UnaryMethodDefinitionish = {
+  methodName: "DeleteProfile",
+  service: AdminServiceDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return DeleteProfileRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      const value = DeleteProfileResponse.decode(data);
       return {
         ...value,
         toObject() {

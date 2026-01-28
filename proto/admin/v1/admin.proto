@@ -8,6 +8,7 @@ package mcpany.admin.v1;
 import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/user.proto";
+import "proto/config/v1/config.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
 
 option go_package = "github.com/mcpany/core/proto/admin/v1";
@@ -48,6 +49,25 @@ service AdminService {
 
   // DeleteUser deletes a user by ID.
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+
+  // ===================================================================
+  // Profile Management
+  // ===================================================================
+
+  // ListProfiles returns all profile definitions.
+  rpc ListProfiles(ListProfilesRequest) returns (ListProfilesResponse);
+
+  // GetProfile returns a specific profile definition by name.
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+
+  // CreateProfile creates a new profile definition.
+  rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse);
+
+  // UpdateProfile updates an existing profile definition.
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+
+  // DeleteProfile deletes a profile definition by name.
+  rpc DeleteProfile(DeleteProfileRequest) returns (DeleteProfileResponse);
 
   // GetDiscoveryStatus returns the status of auto-discovery providers.
   rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
@@ -142,6 +162,44 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {}
+
+// Profile Management Messages
+
+message ListProfilesRequest {}
+
+message ListProfilesResponse {
+  repeated mcpany.config.v1.ProfileDefinition profiles = 1;
+}
+
+message GetProfileRequest {
+  string name = 1;
+}
+
+message GetProfileResponse {
+  mcpany.config.v1.ProfileDefinition profile = 1;
+}
+
+message CreateProfileRequest {
+  mcpany.config.v1.ProfileDefinition profile = 1;
+}
+
+message CreateProfileResponse {
+  mcpany.config.v1.ProfileDefinition profile = 1;
+}
+
+message UpdateProfileRequest {
+  mcpany.config.v1.ProfileDefinition profile = 1;
+}
+
+message UpdateProfileResponse {
+  mcpany.config.v1.ProfileDefinition profile = 1;
+}
+
+message DeleteProfileRequest {
+  string name = 1;
+}
+
+message DeleteProfileResponse {}
 
 message GetDiscoveryStatusRequest {}
 

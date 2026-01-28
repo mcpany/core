@@ -17,7 +17,9 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -36,6 +38,7 @@ type Server struct {
 	storage          storage.Storage
 	discoveryManager *discovery.Manager
 	auditMiddleware  *middleware.AuditMiddleware
+	profileManager   *profile.Manager
 }
 
 // NewServer creates a new Admin Server.
@@ -55,6 +58,7 @@ func NewServer(
 	storage storage.Storage,
 	discoveryManager *discovery.Manager,
 	auditMiddleware *middleware.AuditMiddleware,
+	profileManager *profile.Manager,
 ) *Server {
 	return &Server{
 		cache:            cache,
@@ -63,6 +67,7 @@ func NewServer(
 		storage:          storage,
 		discoveryManager: discoveryManager,
 		auditMiddleware:  auditMiddleware,
+		profileManager:   profileManager,
 	}
 }
 
@@ -336,6 +341,90 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
 	}
 	return &pb.DeleteUserResponse{}, nil
+}
+
+// ListProfiles returns all profile definitions.
+func (s *Server) ListProfiles(ctx context.Context, _ *pb.ListProfilesRequest) (*pb.ListProfilesResponse, error) {
+	profiles, err := s.storage.ListProfiles(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list profiles: %v", err)
+	}
+	return &pb.ListProfilesResponse{Profiles: profiles}, nil
+}
+
+// GetProfile returns a specific profile definition by name.
+func (s *Server) GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.GetProfileResponse, error) {
+	profile, err := s.storage.GetProfile(ctx, req.GetName())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get profile: %v", err)
+	}
+	if profile == nil {
+		return nil, status.Error(codes.NotFound, "profile not found")
+	}
+	return &pb.GetProfileResponse{Profile: profile}, nil
+}
+
+// CreateProfile creates a new profile definition.
+func (s *Server) CreateProfile(ctx context.Context, req *pb.CreateProfileRequest) (*pb.CreateProfileResponse, error) {
+	if req.Profile == nil {
+		return nil, status.Error(codes.InvalidArgument, "profile is required")
+	}
+	if err := s.storage.SaveProfile(ctx, req.Profile); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create profile: %v", err)
+	}
+
+	// Refresh profile manager
+	if err := s.refreshProfiles(ctx); err != nil {
+		// Log error but return success as storage was updated
+		logging.GetLogger().Error("Failed to refresh profiles", "error", err)
+	}
+
+	return &pb.CreateProfileResponse{Profile: req.Profile}, nil
+}
+
+// UpdateProfile updates an existing profile definition.
+func (s *Server) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest) (*pb.UpdateProfileResponse, error) {
+	if req.Profile == nil {
+		return nil, status.Error(codes.InvalidArgument, "profile is required")
+	}
+	if err := s.storage.SaveProfile(ctx, req.Profile); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update profile: %v", err)
+	}
+
+	// Refresh profile manager
+	if err := s.refreshProfiles(ctx); err != nil {
+		// Log error but return success as storage was updated
+		logging.GetLogger().Error("Failed to refresh profiles", "error", err)
+	}
+
+	return &pb.UpdateProfileResponse{Profile: req.Profile}, nil
+}
+
+// DeleteProfile deletes a profile definition by name.
+func (s *Server) DeleteProfile(ctx context.Context, req *pb.DeleteProfileRequest) (*pb.DeleteProfileResponse, error) {
+	if err := s.storage.DeleteProfile(ctx, req.GetName()); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete profile: %v", err)
+	}
+
+	// Refresh profile manager
+	if err := s.refreshProfiles(ctx); err != nil {
+		// Log error but return success as storage was updated
+		logging.GetLogger().Error("Failed to refresh profiles", "error", err)
+	}
+
+	return &pb.DeleteProfileResponse{}, nil
+}
+
+func (s *Server) refreshProfiles(ctx context.Context) error {
+	if s.profileManager == nil {
+		return nil
+	}
+	profiles, err := s.storage.ListProfiles(ctx)
+	if err != nil {
+		return err
+	}
+	s.profileManager.Update(profiles)
+	return nil
 }
 
 // GetDiscoveryStatus returns the status of auto-discovery providers.

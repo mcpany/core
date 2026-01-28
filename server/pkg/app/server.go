@@ -1939,7 +1939,7 @@ func (a *Application) runServerMode(
 	if standardMiddlewares != nil {
 		auditMiddleware = standardMiddlewares.Audit
 	}
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware, a.ProfileManager)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service
