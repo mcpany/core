@@ -86,6 +86,7 @@ upstream_services:
 		"-p", "25000:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", configDir),
 		"-v", fmt.Sprintf("%s:/config_data", configDir),
+		"-e", "MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)

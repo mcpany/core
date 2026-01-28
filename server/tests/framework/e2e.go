@@ -119,6 +119,9 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 				}
 			}
 
+			// Ensure loopback access is allowed for E2E tests
+			t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+
 			var mcpanyTestServerInfo *integration.MCPANYTestServerInfo
 			switch {
 			case testCase.StartMCPANYServer != nil:
