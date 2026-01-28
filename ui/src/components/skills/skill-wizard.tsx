@@ -34,6 +34,8 @@ export default function SkillWizard() {
     instructions: '# Skill Instructions\n\nProvide step-by-step instructions for the model here.',
     allowedTools: [],
     assets: [],
+    license: '',
+    metadata: {},
   });
   const [files, setFiles] = useState<File[]>([]);
 

@@ -90,7 +90,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (type === 'grpc') newService.grpcService = { address: "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoDefinitions: [], protoCollection: [] };
         if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
         if (type === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
-        if (type === 'openapi') newService.openapiService = { address: "", specSource: { $case: "specUrl", specUrl: "" }, tools: [], resources: [], calls: {}, prompts: [] };
+        if (type === 'openapi') newService.openapiService = { address: "", specUrl: "", tools: [], resources: [], calls: {}, prompts: [] };
 
         onChange(newService);
     };
@@ -245,7 +245,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <Label>Environment Variables</Label>
                                         <EnvVarEditor
                                             initialEnv={service.commandLineService.env as any}
-                                            onChange={(newEnv) => onChange({ ...service, commandLineService: { ...service.commandLineService!, env: newEnv } })}
+                                            onChange={(newEnv) => onChange({ ...service, commandLineService: { ...service.commandLineService!, env: newEnv as any } })}
                                         />
                                     </div>
                                 </div>
@@ -286,7 +286,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <Label htmlFor="openapi-spec">Spec URL</Label>
                                          <Input
                                             id="openapi-spec"
-                                            // @ts-expect-error: Suppress type error if applicable - Proto oneof handling might be tricky in TS without proper generated types helper
                                             value={(service.openapiService as any).specUrl || ""}
                                             onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } as any })}
                                             placeholder="https://api.example.com/openapi.json"
@@ -336,11 +335,11 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 if (val === 'none') {
                                                     updateService({ upstreamAuth: undefined });
                                                 } else if (val === 'apikey') {
-                                                    updateService({ upstreamAuth: { apiKey: { key: "", value: "", location: 0 } } });
+                                                    updateService({ upstreamAuth: { apiKey: { paramName: "", value: { plainText: "", validationRegex: "" }, in: 0, verificationValue: "" } } });
                                                 } else if (val === 'bearer') {
-                                                    updateService({ upstreamAuth: { bearerToken: { token: "" } } });
+                                                    updateService({ upstreamAuth: { bearerToken: { token: { plainText: "", validationRegex: "" } } } });
                                                 } else if (val === 'oauth2') {
-                                                    updateService({ upstreamAuth: { oauth2: { clientId: { plainText: "" }, clientSecret: { plainText: "" }, tokenUrl: "", authorizationUrl: "", scopes: "" } } });
+                                                    updateService({ upstreamAuth: { oauth2: { clientId: { plainText: "", validationRegex: "" }, clientSecret: { plainText: "", validationRegex: "" }, tokenUrl: "", authorizationUrl: "", scopes: "", issuerUrl: "", audience: "" } } });
                                                 }
                                             }}
                                         >
@@ -381,8 +380,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 <Label htmlFor="api-key-name">Key Name (Header/Param Name)</Label>
                                                 <Input
                                                     id="api-key-name"
-                                                    value={service.upstreamAuth.apiKey.key}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, key: e.target.value } } })}
+                                                    value={service.upstreamAuth.apiKey.paramName}
+                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, paramName: e.target.value } } })}
                                                     placeholder="X-API-Key"
                                                 />
                                             </div>
@@ -391,16 +390,16 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 <Input
                                                     id="api-key-value"
                                                     type="password"
-                                                    value={service.upstreamAuth.apiKey.value}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: e.target.value } } })}
+                                                    value={service.upstreamAuth.apiKey.value?.plainText || ""}
+                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: { plainText: e.target.value, validationRegex: "" } } } })}
                                                     placeholder="secret-key-123"
                                                 />
                                             </div>
                                              <div className="space-y-2">
                                                 <Label htmlFor="api-key-location">Location</Label>
                                                 <Select
-                                                     value={service.upstreamAuth.apiKey.location?.toString() || "0"}
-                                                     onValueChange={(val) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, location: parseInt(val) } } })}
+                                                     value={service.upstreamAuth.apiKey.in?.toString() || "0"}
+                                                     onValueChange={(val) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, in: parseInt(val) } } })}
                                                 >
                                                     <SelectTrigger id="api-key-location">
                                                         <SelectValue />
@@ -422,8 +421,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 <Input
                                                     id="bearer-token"
                                                     type="password"
-                                                    value={service.upstreamAuth.bearerToken.token}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: e.target.value } } })}
+                                                    value={service.upstreamAuth.bearerToken.token?.plainText || ""}
+                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: { plainText: e.target.value, validationRegex: "" } } } })}
                                                     placeholder="ey..."
                                                 />
                                             </div>
@@ -448,7 +447,6 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             <Input
                                                 id="timeout"
                                                 placeholder="30s"
-                                                // @ts-expect-error: Suppress type error if applicable - Assuming simplified input for now
                                                 defaultValue="30s"
                                             />
                                         </div>

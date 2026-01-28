@@ -195,7 +195,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                       const envKey = field.key.split(".").pop();
                       if (envKey) {
                           if (!config.commandLineService.env) config.commandLineService.env = {};
-                          config.commandLineService.env[envKey] = value;
+                          config.commandLineService.env[envKey] = { plainText: value, validationRegex: "" };
                       }
                   } else if (field.key === "httpService.address" && config.httpService) {
                       config.httpService.address = value;
@@ -251,6 +251,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           prompts: [],
           autoDiscoverTool: false,
           configError: "",
+          configurationSchema: "",
           tags: values.tags ? values.tags.split(",").map(t => t.trim()).filter(t => t) : [],
       };
 

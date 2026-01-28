@@ -49,6 +49,11 @@ describe('ResourcePreviewModal', () => {
     uri: 'file:///test.json',
     name: 'test.json',
     mimeType: 'application/json',
+    title: 'Test JSON',
+    description: 'A test json file',
+    size: 100 as any,
+    disable: false,
+    profiles: []
   };
 
   const mockContent: ResourceContent = {

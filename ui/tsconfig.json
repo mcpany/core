@@ -27,7 +27,8 @@
       "@improbable-eng/grpc-web": ["./node_modules/@improbable-eng/grpc-web"],
       "browser-headers": ["./node_modules/browser-headers"],
       "long": ["./node_modules/long"]
-    }
+    },
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../proto/**/*.ts"],
   "exclude": ["node_modules"]
