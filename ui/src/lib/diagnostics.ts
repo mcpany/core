@@ -28,9 +28,18 @@ export function analyzeTrace(trace: Trace): Diagnostic[] {
     return diagnostics;
   }
 
+  let outputObj: any = rootSpan.output;
+  if (typeof outputObj === 'string') {
+    try {
+      outputObj = JSON.parse(outputObj);
+    } catch {
+      outputObj = null;
+    }
+  }
+
   const errorMessage = rootSpan.errorMessage ||
-                       (typeof rootSpan.output?.error === 'string' ? rootSpan.output.error : null) ||
-                       (typeof rootSpan.output?.message === 'string' ? rootSpan.output.message : null) ||
+                       (outputObj && typeof outputObj.error === 'string' ? outputObj.error : null) ||
+                       (outputObj && typeof outputObj.message === 'string' ? outputObj.message : null) ||
                        '';
 
   const lowerMsg = errorMessage.toLowerCase();

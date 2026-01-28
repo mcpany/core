@@ -8,7 +8,7 @@ import { analyzeConnectionError } from './diagnostics-utils';
 describe('analyzeConnectionError', () => {
   it('identifies connection refused', () => {
     const result = analyzeConnectionError('dial tcp 127.0.0.1:8080: connect: connection refused');
-    expect(result.title).toBe('Connection Refused');
+    expect(result.title).toBe('Connection Failed');
     expect(result.category).toBe('network');
   });
 

@@ -43,8 +43,8 @@ describe('GET /api/traces', () => {
         expect(json).toHaveLength(1);
         expect(json[0].id).toBe('1');
         expect(json[0].rootSpan.name).toBe('POST /test');
-        expect(json[0].rootSpan.input).toEqual({ foo: 'bar' });
-        expect(json[0].rootSpan.output).toEqual({ baz: 'qux' });
+        expect(json[0].rootSpan.input).toBe('{"foo":"bar"}');
+        expect(json[0].rootSpan.output).toBe('{"baz":"qux"}');
         expect(json[0].totalDuration).toBe(10);
     });
 

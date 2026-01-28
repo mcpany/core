@@ -55,33 +55,27 @@ export async function GET(request: Request) {
         const startTime = new Date(entry.timestamp).getTime();
         const durationMs = entry.duration / 1000000; // ns to ms
 
-        let input: Record<string, any> | undefined;
-        try {
-            input = JSON.parse(entry.request_body);
-        } catch {
-            input = { raw: entry.request_body };
-        }
-
-        let output: Record<string, any> | undefined;
-        try {
-            output = JSON.parse(entry.response_body);
-        } catch {
-            output = { raw: entry.response_body };
-        }
+        // ⚡ BOLT: Offloaded JSON.parse to client to reduce server CPU load.
+        // Randomized Selection from Top 5 High-Impact Targets
+        const input = entry.request_body;
+        const output = entry.response_body;
 
         let errorMessage: string | undefined;
-        if (entry.status >= 400 && output) {
-            if (typeof output.error === 'string') {
-                errorMessage = output.error;
-            } else if (output.error && typeof output.error.message === 'string') {
-                errorMessage = output.error.message;
-            } else if (typeof output.message === 'string') {
-                errorMessage = output.message;
-            } else if (typeof output.detail === 'string') {
-                errorMessage = output.detail;
-            } else if (output.raw && typeof output.raw === 'string') {
-                // Truncate raw body if it's too long
-                errorMessage = output.raw.length > 200 ? output.raw.substring(0, 200) + '...' : output.raw;
+        if (entry.status >= 400) {
+            try {
+                const parsedOutput = JSON.parse(entry.response_body);
+                if (typeof parsedOutput.error === 'string') {
+                    errorMessage = parsedOutput.error;
+                } else if (parsedOutput.error && typeof parsedOutput.error.message === 'string') {
+                    errorMessage = parsedOutput.error.message;
+                } else if (typeof parsedOutput.message === 'string') {
+                    errorMessage = parsedOutput.message;
+                } else if (typeof parsedOutput.detail === 'string') {
+                    errorMessage = parsedOutput.detail;
+                }
+            } catch {
+                // If parsing fails, use the raw body string (truncated)
+                errorMessage = entry.response_body.length > 200 ? entry.response_body.substring(0, 200) + '...' : entry.response_body;
             }
         }
 

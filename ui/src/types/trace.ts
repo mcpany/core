@@ -18,8 +18,8 @@ export interface Span {
   startTime: number;
   endTime: number;
   status: SpanStatus;
-  input?: Record<string, any>;
-  output?: Record<string, any>;
+  input?: Record<string, any> | string;
+  output?: Record<string, any> | string;
   children?: Span[];
   serviceName?: string;
   errorMessage?: string;

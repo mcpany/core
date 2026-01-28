@@ -23,6 +23,22 @@ import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 /**
+ * Safely parses a value that might be a JSON string.
+ * @param data - The data to parse.
+ * @returns The parsed data.
+ */
+function safeParse(data: any): any {
+    if (typeof data === 'string') {
+        try {
+            return JSON.parse(data);
+        } catch {
+            return { raw: data };
+        }
+    }
+    return data;
+}
+
+/**
  * SpanIcon component.
  * @param props - The component props.
  * @param props.type - The type definition.
@@ -158,9 +174,12 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
     }
 
     const diagnostics = analyzeTrace(trace);
+    const rootInput = safeParse(trace.rootSpan.input);
+    const rootOutput = safeParse(trace.rootSpan.output);
 
-    const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
-         const argsStr = JSON.stringify(args || {});
+    const handleReplay = (toolName: string, args: any) => {
+         const parsedArgs = safeParse(args);
+         const argsStr = JSON.stringify(parsedArgs || {});
          const encodedArgs = encodeURIComponent(argsStr);
          router.push(`/playground?tool=${toolName}&args=${encodedArgs}`);
     };
@@ -285,7 +304,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <JsonView data={trace.rootSpan.input} />
+                                    <JsonView data={rootInput} />
                                 </CardContent>
                             </Card>
                             <Card>
@@ -293,7 +312,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                     <JsonView data={trace.rootSpan.output} />
+                                     <JsonView data={rootOutput} />
                                 </CardContent>
                             </Card>
                         </div>
@@ -307,7 +326,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <Code className="h-4 w-4" /> Request Payload
                                 </h3>
                                 <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
-                                    <pre>{JSON.stringify(trace.rootSpan.input, null, 2)}</pre>
+                                    <pre>{JSON.stringify(rootInput, null, 2)}</pre>
                                 </div>
                             </div>
                             <div className="space-y-2">
@@ -315,7 +334,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <Terminal className="h-4 w-4" /> Response Payload
                                 </h3>
                                 <div className="bg-muted/30 border rounded-lg p-4 font-mono text-xs overflow-auto max-h-[400px]">
-                                     <pre>{JSON.stringify(trace.rootSpan.output, null, 2)}</pre>
+                                     <pre>{JSON.stringify(rootOutput, null, 2)}</pre>
                                 </div>
                             </div>
                         </div>
