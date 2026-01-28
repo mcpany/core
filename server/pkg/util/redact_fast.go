@@ -182,7 +182,14 @@ func redactJSONFast(input []byte) []byte {
 						if extra < 128 {
 							extra = 128
 						}
-						out = make([]byte, 0, len(input)+extra)
+
+						// Safety check for overflow
+						capacity := len(input) + extra
+						if capacity < len(input) {
+							// Overflow occurred, fallback to input length
+							capacity = len(input)
+						}
+						out = make([]byte, 0, capacity)
 					}
 
 					// Determine value end
