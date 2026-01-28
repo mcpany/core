@@ -107,10 +107,16 @@ func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }
 
+// Deprecated: Use IsLoopback instead, which handles NAT64.
+//
+//nolint:unused // Kept for potential backward compatibility or specialized use, although internal.
 func isNAT64Loopback(ip net.IP) bool {
 	return validation.IsNAT64Loopback(ip)
 }
 
+// Deprecated: Use IsLinkLocal instead, which handles NAT64.
+//
+//nolint:unused // Kept for potential backward compatibility or specialized use, although internal.
 func isNAT64LinkLocal(ip net.IP) bool {
 	return validation.IsNAT64LinkLocal(ip)
 }
