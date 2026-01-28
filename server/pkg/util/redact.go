@@ -507,6 +507,15 @@ func RedactDSN(dsn string) string {
 		// We also require Host to be non-empty, because an empty Host might imply
 		// the credentials are hiding in the path (e.g. "scheme:/pass@host").
 		if u.Opaque == "" && u.Host != "" && !strings.Contains(u.Host, "@") {
+			// If Host starts with ":", it implies empty hostname (e.g. redis://:password).
+			// If scheme is not http/https, we should suspect it's a password, not a port.
+			if strings.HasPrefix(u.Host, ":") {
+				scheme := strings.ToLower(u.Scheme)
+				if scheme != "http" && scheme != "https" {
+					// Fall through to regex fallback to check if we should redact
+					goto RegexFallback
+				}
+			}
 			return dsn
 		}
 	}
@@ -516,6 +525,7 @@ func RedactDSN(dsn string) string {
 	// But note: the regex is known to be imperfect for complex cases (e.g. colons in password).
 	// We apply the regex as a best-effort attempt.
 
+RegexFallback:
 	// If the DSN has a scheme, use the scheme-aware regex which is more robust for complex passwords
 	// (e.g. containing colons or @) but assumes a single DSN string.
 	if strings.Contains(dsn, "://") {
@@ -542,7 +552,9 @@ func RedactDSN(dsn string) string {
 					}
 				}
 
-				if isNumeric && len(potentialPass) > 0 {
+				// If the prefix ends with "://", it means the host is empty (e.g. redis://:123456).
+				// In this case, the numeric value is likely a password, not a port.
+				if isNumeric && len(potentialPass) > 0 && !strings.HasSuffix(prefix, "://") {
 					return m
 				}
 
