@@ -2602,7 +2602,14 @@ func isVersionSuffix(s string) bool {
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
-	quoteLevel := analyzeQuoteContext(template, placeholder)
+	quoteLevel, isFString := analyzeQuoteContext(template, placeholder)
+
+	if isFString {
+		// If we are in a Python f-string (f'...' or f"..."), interpolation { } is dangerous.
+		if idx := strings.IndexAny(val, "{}"); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains interpolation characters '{}' inside f-string")
+		}
+	}
 
 	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself
@@ -2616,7 +2623,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
-		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+		// # is dangerous in Ruby and other languages supporting interpolation in double quotes
+		if idx := strings.IndexAny(val, "\"$`\\%#"); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
 		return nil
@@ -2641,19 +2649,23 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return nil
 }
 
-func analyzeQuoteContext(template, placeholder string) int {
+func analyzeQuoteContext(template, placeholder string) (int, bool) {
 	if template == "" || placeholder == "" {
-		return 0
+		return 0, false
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
 	minLevel := 2
+	isFString := false
 
 	inSingle := false
 	inDouble := false
 	escaped := false
 
 	foundAny := false
+
+	// Track if the current active quote was started by an f-string prefix
+	currentQuoteIsFString := false
 
 	for i := 0; i < len(template); i++ {
 		// Check if we match placeholder at current position
@@ -2668,6 +2680,12 @@ func analyzeQuoteContext(template, placeholder string) int {
 
 			if currentLevel < minLevel {
 				minLevel = currentLevel
+				isFString = currentQuoteIsFString
+			} else if currentLevel == minLevel {
+				// If we have multiple occurrences at same level, be conservative
+				if currentQuoteIsFString {
+					isFString = true
+				}
 			}
 
 			// Advance past placeholder
@@ -2688,15 +2706,89 @@ func analyzeQuoteContext(template, placeholder string) int {
 		}
 
 		if char == '\'' && !inDouble {
+			if !inSingle {
+				// Entering single quote
+				currentQuoteIsFString = isFStringStart(template, i)
+			}
 			inSingle = !inSingle
 		} else if char == '"' && !inSingle {
+			if !inDouble {
+				// Entering double quote
+				currentQuoteIsFString = isFStringStart(template, i)
+			}
 			inDouble = !inDouble
 		}
 	}
 
 	if !foundAny {
-		return 0 // Should not happen if called correctly, fallback to strict
+		return 0, false // Should not happen if called correctly, fallback to strict
 	}
 
-	return minLevel
+	return minLevel, isFString
+}
+
+func isFStringStart(s string, quoteIndex int) bool {
+	if quoteIndex <= 0 {
+		return false
+	}
+
+	// Scan backwards from quoteIndex
+	// We expect f or F.
+	// Optionally r or R before or after f/F.
+	// Total length can be 1 or 2.
+	// Examples: f, F, fr, fR, Fr, FR, rf, rF, Rf, RF.
+
+	idx := quoteIndex - 1
+	if idx < 0 {
+		return false
+	}
+
+	c1 := s[idx]
+
+	var hasF bool
+
+	if c1 == 'f' || c1 == 'F' {
+		hasF = true
+	} else if c1 != 'r' && c1 != 'R' {
+		return false // Not f/F or r/R
+	}
+
+	prefixLen := 1
+
+	// Check if there is another char
+	if idx > 0 {
+		c2 := s[idx-1]
+		if hasF {
+			// We have f/F. Prev can be r/R.
+			if c2 == 'r' || c2 == 'R' {
+				prefixLen = 2
+			}
+		} else {
+			// We have r/R. Prev must be f/F (for fr case)
+			if c2 == 'f' || c2 == 'F' {
+				hasF = true
+				prefixLen = 2
+			}
+		}
+	}
+
+	if !hasF {
+		// We found r/R but no f/F. Not an f-string (it's a raw string r'...')
+		return false
+	}
+
+	// Now verify boundary. The character BEFORE the prefix must NOT be an identifier char.
+	startOfPrefix := quoteIndex - prefixLen
+	if startOfPrefix > 0 {
+		prevChar := s[startOfPrefix-1]
+		if isIdentChar(prevChar) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func isIdentChar(c byte) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
 }
