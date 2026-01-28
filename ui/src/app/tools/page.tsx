@@ -64,6 +64,7 @@ export default function ToolsPage() {
   const fetchToolUsage = async () => {
     try {
         const stats = await apiClient.getToolUsage();
+        if (!stats) return;
         const statsMap: Record<string, ToolAnalytics> = {};
         stats.forEach(s => {
             statsMap[`${s.name}@${s.serviceId}`] = s;
