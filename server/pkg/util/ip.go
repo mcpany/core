@@ -111,6 +111,10 @@ func isNAT64Loopback(ip net.IP) bool {
 	return validation.IsNAT64Loopback(ip)
 }
 
+func isIPv4CompatibleLoopback(ip net.IP) bool {
+	return validation.IsIPv4CompatibleLoopback(ip)
+}
+
 func isNAT64LinkLocal(ip net.IP) bool {
 	return validation.IsNAT64LinkLocal(ip)
 }
