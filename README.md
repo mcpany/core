@@ -200,11 +200,28 @@ The AI will:
 
 For more complex examples, including gRPC, OpenAPI, and authentication, check out [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
 
+## ⚙️ Configuration
+
+MCP Any can be configured using command-line flags, environment variables, or a configuration file.
+
+### Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_API_KEY` | API key for securing the server. | `""` |
+| `MCPANY_CONFIG_PATH` | Path to configuration file(s). | `[]` |
+| `MCPANY_MCP_LISTEN_ADDRESS` | HTTP/JSON-RPC bind address. | `50050` |
+| `MCPANY_GRPC_PORT` | gRPC registration server port. | `""` |
+| `MCPANY_LOG_LEVEL` | Log level (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_PROFILES` | Comma-separated list of active profiles. | `default` |
+| `MCPANY_DB_PATH` | Path to the SQLite database. | `data/mcpany.db` |
+
+### Configuration File
+
+For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
+
 ## 💡 More Usage
 
-Once the server is running, you can interact with it using its JSON-RPC API.
-
-- For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
 - For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](server/docs/integrations.md)**.
 - For hands-on examples, see the **[Examples](server/docs/examples.md)** and the **[Profile Authentication Example](server/examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](server/docs/monitoring.md)**.
