@@ -1,6 +1,10 @@
-# Merge Strategy and Profile-Based Tool Selection
+# Design Proposal: Merge Strategy and Profile-Based Tool Selection
 
-This document describes the new configuration merge strategies and profile-based tool selection capabilities options to give users more control over how configurations are combined and which tools are active.
+> **Status:** Planned / Design Proposal
+>
+> **Note:** This document describes a planned feature for configuration inheritance and advanced profile selection. The APIs described herein (specifically `merge_strategy` and `McpBundleConfig`) are **not yet implemented** in the current version of MCP Any. See [Roadmap](../../roadmap.md) for details.
+
+This document describes the proposed configuration merge strategies and profile-based tool selection capabilities options to give users more control over how configurations are combined and which tools are active.
 
 ## Merge Strategy
 

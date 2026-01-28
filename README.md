@@ -72,7 +72,7 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
   - **mTLS**
 - **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
 - **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
-- **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
+- **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering (Design)](server/docs/design/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
 ## ⚙️ Configuration

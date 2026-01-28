@@ -15,6 +15,35 @@ Caching can be configured at the **service level** (applying to all tools in the
 | `strategy`   | `string` | The caching strategy to use (default: exact match).            |
 | `semantic_config` | `object` | Configuration for semantic caching (see below).               |
 
+### Semantic Caching Configuration (`semantic_config`)
+
+Semantic caching uses vector embeddings to find similar previous requests, allowing for fuzzy matching of inputs.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `similarity_threshold` | `float` | Threshold for similarity match (0.0 to 1.0). Higher values require closer matches. Default: 0.9. |
+| `persistence_path` | `string` | Path to SQLite database file (e.g., `./data/cache.db`) or Postgres DSN (`postgres://...`) for persistent storage. If empty, uses in-memory. |
+| `openai` | `object` | Configuration for OpenAI embedding provider. |
+| `ollama` | `object` | Configuration for Ollama embedding provider. |
+| `http` | `object` | Configuration for generic HTTP embedding provider. |
+
+#### Provider Configuration Examples
+
+**OpenAI:**
+```yaml
+openai:
+  model: "text-embedding-3-small"
+  api_key:
+    value: "sk-..." # Or use secret reference
+```
+
+**Ollama:**
+```yaml
+ollama:
+  model: "nomic-embed-text"
+  base_url: "http://localhost:11434"
+```
+
 ### Configuration Snippet
 
 ```yaml
@@ -44,6 +73,14 @@ upstream_services:
     cache:
       is_enabled: true
       ttl: "5m"
+      # Example of semantic caching
+      semantic_config:
+        similarity_threshold: 0.95
+        persistence_path: "./data/weather_cache.db"
+        openai:
+          model: "text-embedding-3-small"
+          api_key:
+            from_secret: "OPENAI_API_KEY"
 ```
 
 ## Use Case
