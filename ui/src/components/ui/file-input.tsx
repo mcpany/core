@@ -45,7 +45,9 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
     } else if (!fileName) {
        // Value exists but no filename (e.g. form preset loaded)
        setFileName("File loaded")
-       if (!previewUrl && accept?.includes("image")) {
+       // Validate base64 to prevent injection
+       const isBase64 = /^[A-Za-z0-9+/=\s]+$/.test(value || "");
+       if (!previewUrl && accept?.includes("image") && isBase64) {
            setPreviewUrl(`data:image/png;base64,${value}`)
        }
     }
@@ -149,7 +151,7 @@ export function FileInput({ value, onChange, accept, className, disabled, id }: 
         disabled={disabled}
       />
       <div className="flex items-center gap-2">
-        {previewUrl && (
+        {previewUrl && previewUrl.startsWith("data:image/") && (
             <Dialog>
                 <DialogTrigger asChild>
                     <div className="relative group cursor-zoom-in shrink-0">
