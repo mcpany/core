@@ -75,6 +75,24 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
 
+## ⚙️ Configuration
+
+MCP Any can be configured via environment variables, CLI flags, and configuration files.
+
+### Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_MCP_LISTEN_ADDRESS` | Address for the MCP HTTP server. | `:50050` |
+| `MCPANY_GRPC_PORT` | Port for the gRPC registration server. | `50051` |
+| `MCPANY_LOG_LEVEL` | Log verbosity (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_API_KEY` | **Secret**: Master API key for securing the server. | `""` |
+| `MCPANY_CONFIG_PATH` | Comma-separated paths to configuration files or directories. | `""` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from files (read-only mode). | `false` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file. | `data/mcpany.db` |
+
+For a complete list of configuration options, see the [Configuration Reference](server/docs/reference/configuration.md).
+
 ## 🖥️ Management Dashboard
 
 The **MCP Any UI** provides a powerful interface for managing your server, services, and configuration.
