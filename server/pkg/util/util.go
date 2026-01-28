@@ -636,7 +636,7 @@ func SanitizeFilename(filename string) string {
 		if idx := strings.IndexByte(result, '.'); idx != -1 {
 			result = result[:idx] + "_file" + result[idx:]
 		} else {
-			result = result + "_file"
+			result += "_file"
 		}
 	}
 
