@@ -179,6 +179,9 @@ export interface Metric {
 }
 
 
+/**
+ * System status information.
+ */
 export interface SystemStatus {
     uptime_seconds: number;
     active_connections: number;

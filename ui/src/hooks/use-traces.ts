@@ -10,6 +10,16 @@ interface UseTracesOptions {
     initialPaused?: boolean;
 }
 
+/**
+ * Hook to manage trace subscriptions via WebSocket.
+ *
+ * This hook establishes a WebSocket connection to the server to receive
+ * real-time trace events. It handles connection management, automatic
+ * reconnection, and state management for traces.
+ *
+ * @param options - Configuration options for the hook.
+ * @returns An object containing the current traces, connection status, and controls.
+ */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
