@@ -215,3 +215,87 @@ func TestSafeDialer_Security(t *testing.T) {
 		dialer.AssertNotCalled(t, "DialContext")
 	})
 }
+
+type SimpleMockIPResolver struct {
+	IPs []net.IP
+}
+
+func (m *SimpleMockIPResolver) LookupIP(ctx context.Context, network, host string) ([]net.IP, error) {
+	return m.IPs, nil
+}
+
+func TestSafeDialer_LoopbackBypass_Repro(t *testing.T) {
+	// Setup SafeDialer that allows Private IP but BLOCKS Loopback
+	dialer := util.NewSafeDialer()
+	dialer.AllowPrivate = true
+	dialer.AllowLoopback = false
+
+	tests := []struct {
+		name      string
+		ipStr     string
+		shouldBlk bool
+	}{
+		{
+			name:      "Standard Loopback (127.0.0.1)",
+			ipStr:     "127.0.0.1",
+			shouldBlk: true,
+		},
+		{
+			name:      "IPv6 Loopback (::1)",
+			ipStr:     "::1",
+			shouldBlk: true,
+		},
+		{
+			name:      "Standard Unspecified (0.0.0.0)",
+			ipStr:     "0.0.0.0",
+			shouldBlk: true, // Treated as loopback/dangerous
+		},
+		{
+			name:      "IPv6 Unspecified (::)",
+			ipStr:     "::",
+			shouldBlk: true,
+		},
+		{
+			name:      "IPv4-Mapped Unspecified (::ffff:0.0.0.0)",
+			ipStr:     "::ffff:0.0.0.0",
+			shouldBlk: true, // Blocked as unspecified/loopback equivalent
+		},
+		{
+			name:      "IPv4-Compatible Loopback (::127.0.0.1)",
+			ipStr:     "::127.0.0.1",
+			shouldBlk: true, // This should be blocked by our fix!
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ip := net.ParseIP(tc.ipStr)
+			require.NotNil(t, ip)
+
+			dialer.Resolver = &SimpleMockIPResolver{IPs: []net.IP{ip}}
+
+			// Attempt to dial. We expect an error BEFORE connection attempt if blocked.
+			// The error message should contain "ssrf attempt blocked".
+			// If it tries to connect (even if it fails to connect), it means it wasn't blocked.
+
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+			defer cancel()
+
+			_, err := dialer.DialContext(ctx, "tcp", "example.com:80")
+
+			if tc.shouldBlk {
+				if err == nil {
+					t.Fatalf("Expected SSRF block for %s, but got success (connection established?)", tc.ipStr)
+				}
+				if !assert.Contains(t, err.Error(), "ssrf attempt blocked", "Should be blocked as SSRF") {
+					t.Logf("Actual error for %s: %v", tc.ipStr, err)
+				}
+			} else {
+				// If strictly should not block, we expect either nil or a connection error, but NOT ssrf blocked
+				if err != nil {
+					assert.NotContains(t, err.Error(), "ssrf attempt blocked", "Should not be blocked")
+				}
+			}
+		})
+	}
+}

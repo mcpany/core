@@ -170,3 +170,35 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 
 	return false
 }
+
+// IsLoopback checks if the IP is a loopback address, including IPv4-mapped and IPv4-compatible IPv6 addresses.
+func IsLoopback(ip net.IP) bool {
+	if ip.IsLoopback() {
+		return true
+	}
+	if IsNAT64Loopback(ip) {
+		return true
+	}
+	// IPv4-compatible Loopback (::127.x.x.x)
+	if IsIPv4Compatible(ip) {
+		ip4 := ip[12:16]
+		return ip4[0] == 127
+	}
+	return false
+}
+
+// IsLinkLocal checks if the IP is a link-local address, including IPv4-mapped and IPv4-compatible IPv6 addresses.
+func IsLinkLocal(ip net.IP) bool {
+	if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+		return true
+	}
+	if IsNAT64LinkLocal(ip) {
+		return true
+	}
+	// IPv4-compatible Link-local (::169.254.x.x)
+	if IsIPv4Compatible(ip) {
+		ip4 := ip[12:16]
+		return ip4[0] == 169 && ip4[1] == 254
+	}
+	return false
+}

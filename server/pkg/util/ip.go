@@ -114,3 +114,13 @@ func isNAT64Loopback(ip net.IP) bool {
 func isNAT64LinkLocal(ip net.IP) bool {
 	return validation.IsNAT64LinkLocal(ip)
 }
+
+// IsLoopback checks if the IP address is a loopback address.
+func IsLoopback(ip net.IP) bool {
+	return validation.IsLoopback(ip)
+}
+
+// IsLinkLocal checks if the IP address is a link-local address.
+func IsLinkLocal(ip net.IP) bool {
+	return validation.IsLinkLocal(ip)
+}
