@@ -1,100 +1,73 @@
-# Page snapshot
+# Actionable Configuration Errors
 
-```yaml
-- generic [active] [ref=e1]:
-  - generic [ref=e2]:
-    - generic [ref=e3]:
-      - generic [ref=e4]:
-        - generic [ref=e6]:
-          - img [ref=e8]
-          - generic [ref=e13]: MCP Any
-        - generic [ref=e15]:
-          - link "Home" [ref=e16] [cursor=pointer]:
-            - /url: /dashboard
-            - img [ref=e17]
-            - generic [ref=e20]: Home
-          - link "Stacks" [ref=e21] [cursor=pointer]:
-            - /url: /stacks
-            - img [ref=e22]
-            - generic [ref=e26]: Stacks
-          - link "Services" [ref=e27] [cursor=pointer]:
-            - /url: /services
-            - img [ref=e28]
-            - generic [ref=e31]: Services
-          - link "Settings" [ref=e32] [cursor=pointer]:
-            - /url: /settings
-            - img [ref=e33]
-            - generic [ref=e36]: Settings
-      - button [ref=e38] [cursor=pointer]:
-        - img
-    - generic [ref=e39]:
-      - banner [ref=e40]:
-        - generic [ref=e41]: Dashboard
-        - generic [ref=e42]:
-          - button "Search feature... ⌘ K" [ref=e43] [cursor=pointer]:
-            - generic [ref=e44]: Search feature...
-            - generic:
-              - generic: ⌘
-              - text: K
-          - button "Toggle theme" [ref=e45] [cursor=pointer]:
-            - img
-            - img
-            - generic [ref=e46]: Toggle theme
-      - main [ref=e47]:
-        - generic [ref=e49]:
-          - generic [ref=e50]:
-            - generic [ref=e51]:
-              - generic [ref=e52]:
-                - img [ref=e53]
-                - text: Network Topology
-              - generic [ref=e55]: Visualizing 4 nodes and 3 connections.
-            - generic [ref=e56]:
-              - button "Refresh" [ref=e57] [cursor=pointer]:
-                - img
-                - text: Refresh
-              - button "Auto-Layout" [ref=e58] [cursor=pointer]:
-                - img
-                - text: Auto-Layout
-          - application [ref=e59]:
-            - generic [ref=e61]:
-              - generic:
-                - generic:
-                  - img
-                  - img:
-                    - group "Edge from client-1 to mcp-core"
-                  - img:
-                    - group "Edge from mcp-core to svc-1" [ref=e62] [cursor=pointer]:
-                      - generic [ref=e63]:
-                        - generic: 5.2 QPS
-                  - img:
-                    - group "Edge from svc-1 to tool-1"
-                - generic:
-                  - group [ref=e65]: Claude Desktop
-                  - group [ref=e68]: MCP Any
-                  - group [ref=e71]: Payment Service
-                  - group [ref=e74]: process_payment
-            - generic "Control Panel" [ref=e77]:
-              - button "Zoom In" [ref=e78] [cursor=pointer]:
-                - img [ref=e79]
-              - button "Zoom Out" [ref=e81] [cursor=pointer]:
-                - img [ref=e82]
-              - button "Fit View" [ref=e84] [cursor=pointer]:
-                - img [ref=e85]
-              - button "Toggle Interactivity" [ref=e87] [cursor=pointer]:
-                - img [ref=e88]
-            - img "Mini Map" [ref=e91]
-            - img
-            - generic [ref=e96]:
-              - generic [ref=e97]: Core
-              - generic [ref=e99]: Service
-              - generic [ref=e101]: Client
-              - generic [ref=e103]: Tool
-            - link "React Flow attribution" [ref=e106] [cursor=pointer]:
-              - /url: https://reactflow.dev
-              - text: React Flow
-  - region "Notifications (F8)":
-    - list
-  - button "Open Next.js Dev Tools" [ref=e113] [cursor=pointer]:
-    - img [ref=e114]
-  - alert [ref=e117]
+MCP Any includes a robust configuration validation system designed to provide **Actionable Errors**. Instead of opaque error messages, the server analyzes configuration issues and provides specific suggestions to fix them.
+
+## Overview
+
+When the server starts, it validates the loaded configuration (`config.yaml`). If an error is detected, the system attempts to wrap it in an `ActionableError`, which includes:
+1.  **Context**: What went wrong.
+2.  **Suggestion**: A specific step the user can take to resolve the issue.
+
+## Features
+
+### 1. Environment Variable Validation
+The server checks for required environment variables. If one is missing, it suggests:
+*   Adding it to the `.env` file.
+*   Exporting it in the shell.
+*   **Fuzzy Matching**: If you have a typo (e.g., `OPENAI_API_KEYY` instead of `OPENAI_API_KEY`), the error message will suggest the correct variable name.
+
+**Example Error:**
+```text
+Error: api key secret validation failed
+Suggestion: Environment variable 'OPENAI_API_KEY' is missing.
+Did you mean 'OPENAI_API_KEYY'?
+Check your .env file or export the variable.
+```
+
+### 2. Path & Command Validation
+For local command-line tools (`stdio`), the server verifies that the executable path exists and is executable.
+
+**Example Error:**
+```text
+Error: command_line_service command validation failed
+Suggestion: The command '/usr/bin/phython3' was not found.
+Did you mean '/usr/bin/python3'?
+```
+
+### 3. URL Validation
+For HTTP and WebSocket services, URLs are validated for correct scheme (`http://`, `https://`, `ws://`) and format.
+
+**Example Error:**
+```text
+Error: http_service address validation failed
+Suggestion: Address must start with 'http://' or 'https://'.
+Found: 'api.weather.com'
+```
+
+### 4. Whitespace Detection
+The validator detects invisible whitespace characters that often creep in when copying configurations from the web.
+
+**Example Error:**
+```text
+Error: invalid configuration
+Suggestion: The value for 'api_key' contains leading/trailing whitespace.
+Please check your config file and remove hidden characters.
+```
+
+## Developer Guide
+
+If you are extending MCP Any, you can use the `ActionableError` type in `pkg/config/errors.go` to provide better error messages in your own components.
+
+```go
+import "github.com/mcpany/core/server/pkg/config"
+
+func validate() error {
+    if somethingWrong {
+        return &config.ActionableError{
+            Err: fmt.Errorf("validation failed"),
+            Suggestion: "Try setting X to Y.",
+        }
+    }
+    return nil
+}
 ```
