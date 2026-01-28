@@ -37,6 +37,8 @@ func WithSkipSecretValidation(ctx context.Context) context.Context {
 	return context.WithValue(ctx, skipSecretContentKey, true)
 }
 
+// ShouldSkipSecretValidation returns true if secret validation should be skipped.
+// This is used to prevent information leakage (e.g. side-channel attacks) during configuration validation.
 func ShouldSkipSecretValidation(ctx context.Context) bool {
 	v, _ := ctx.Value(skipSecretContentKey).(bool)
 	return v
