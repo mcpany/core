@@ -1715,8 +1715,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+					cmd := t.service.GetCommand()
+					if isInterpreter(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, true); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					} else if isSensitiveCommand(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, false); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -1757,8 +1762,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+						cmd := t.service.GetCommand()
+						if isInterpreter(cmd) {
+							if err := checkForShellInjection(argStr, "", "", cmd, true); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						} else if isSensitiveCommand(cmd) {
+							if err := checkForShellInjection(argStr, "", "", cmd, false); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2024,8 +2034,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
-					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+					cmd := t.service.GetCommand()
+					if isInterpreter(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, true); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					} else if isSensitiveCommand(cmd) {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, false); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2066,8 +2081,13 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+						cmd := t.service.GetCommand()
+						if isInterpreter(cmd) {
+							if err := checkForShellInjection(argStr, "", "", cmd, true); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						} else if isSensitiveCommand(cmd) {
+							if err := checkForShellInjection(argStr, "", "", cmd, false); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2540,15 +2560,23 @@ func checkForArgumentInjection(val string) error {
 	return nil
 }
 
-func isShellCommand(cmd string) bool {
-	// Shells and commands that invoke a shell or execute code remotely/locally via shell.
-	// We treat them as shells to enforce strict argument validation.
-	shells := []string{
+func isInterpreter(cmd string) bool {
+	// Interpreters and shells that can execute code via arguments.
+	// These require STRICT validation even inside quotes.
+	interpreters := []string{
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
 		"busybox", "expect",
-		// Common interpreters and runners that can execute code
+	}
+	return checkCommandList(cmd, interpreters)
+}
+
+func isSensitiveCommand(cmd string) bool {
+	// Commands that are sensitive but generally treat arguments as data/flags.
+	// These require STANDARD validation (prevent breakout) inside quotes.
+	sensitive := []string{
+		// Common runtimes/interpreters (treated as sensitive data processors)
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
@@ -2556,30 +2584,30 @@ func isShellCommand(cmd string) bool {
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
-		// Additional shells/runners found missing
-		"busybox", "expect", "tclsh", "wish",
+		"tclsh", "wish",
 		"irb", "php-cgi", "perl5",
+		// Network/System tools
 		"openssl", "git", "hg", "svn",
 		"wget", "curl", "nc", "netcat", "ncat",
 		"socat", "telnet",
-		// Editors and pagers that can execute commands
 		"vi", "vim", "nvim", "emacs", "nano",
 		"less", "more", "man",
-		// Build tools and others that can execute commands
 		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
-		// Cloud/DevOps tools that can execute commands or have sensitive flags
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
 	}
+	return checkCommandList(cmd, sensitive)
+}
+
+func checkCommandList(cmd string, list []string) bool {
 	base := filepath.Base(cmd)
-	for _, shell := range shells {
-		if base == shell {
+	for _, item := range list {
+		if base == item {
 			return true
 		}
-		// Check for versioned binaries (e.g. python3.10, ruby2.7)
-		if strings.HasPrefix(base, shell) {
-			suffix := base[len(shell):]
+		if strings.HasPrefix(base, item) {
+			suffix := base[len(item):]
 			if isVersionSuffix(suffix) {
 				return true
 			}
@@ -2600,27 +2628,9 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
-func checkForShellInjection(val string, template string, placeholder string, command string) error {
+func checkForShellInjection(val string, template string, placeholder string, command string, strictMode bool) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
-
-	if quoteLevel == 2 { // Single Quoted
-		// In single quotes, the only dangerous character is single quote itself
-		if strings.Contains(val, "'") {
-			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
-		}
-		return nil
-	}
-
-	if quoteLevel == 1 { // Double Quoted
-		// In double quotes, dangerous characters are double quote, $, and backtick
-		// We also need to block backslash because it can be used to escape the closing quote
-		// % is also dangerous in Windows CMD inside double quotes
-		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
-			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
-		}
-		return nil
-	}
 
 	// Unquoted (or unknown quoting): strict check
 	// Block common shell metacharacters and globbing/expansion characters
@@ -2629,6 +2639,44 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
+	if quoteLevel == 2 { // Single Quoted
+		// In single quotes, strictly block ' to prevent breakout.
+		if strings.Contains(val, "'") {
+			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		}
+
+		if strictMode {
+			// For interpreters, we enforce strict character checks even inside quotes to prevent code injection.
+			// We exclude the single quote from dangerousChars because it is already checked above.
+			charsToCheck := strings.ReplaceAll(dangerousChars, "'", "")
+			if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
+				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside single-quoted argument (enforcing strict mode for interpreters)", val[idx])
+			}
+		}
+		return nil
+	} else if quoteLevel == 1 { // Double Quoted
+		// In double quotes, strictly block " $ ` \ %
+		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
+		}
+
+		if strictMode {
+			// In strict mode, we block other dangerous chars too (like ; or { or |) even inside double quotes.
+			// dangerousChars includes ', which is valid in shell double quotes but dangerous for python strings.
+			if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
+				// We already checked for " $ ` \ % above, but doing it again via dangerousChars is fine/redundant.
+				// The main point is to catch things like ; { } |
+				if val[idx] == '"' || val[idx] == '$' || val[idx] == '`' || val[idx] == '\\' || val[idx] == '%' {
+					// Already returned error above
+				} else {
+					return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument (enforcing strict mode for interpreters)", val[idx])
+				}
+			}
+		}
+		return nil
+	}
+
+	// Unquoted: Always strict
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
 	if filepath.Base(command) == "env" {
