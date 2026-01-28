@@ -215,7 +215,8 @@ export const marketplaceService = {
           let currentCategory = "Uncategorized";
 
           // Regex to match: * [Name](URL) Tags - Description OR - [Name](URL) Tags - Description
-          const itemRegex = /^\s*[\-\*]\s+\[([^\]]+)\]\(([^)]+)\)\s*(.*?)\s*-\s*(.*)$/;
+          // Sentinel Security: Strengthened regex to prevent ReDoS and restrict URL characters
+          const itemRegex = /^\s*[\-\*]\s+\[([^\]]{1,100})\]\((https?:\/\/[^)]+)\)\s*([^\n]*?)\s*-\s*([^\n]*)$/;
 
           // Regex to match category headers (e.g., "## 📂 File Systems") or "📂 File Systems" inside a list if structured differently
           // The structure seems to be:
