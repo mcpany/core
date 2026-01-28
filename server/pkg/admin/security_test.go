@@ -40,7 +40,7 @@ func TestServer_SecretLeakage(t *testing.T) {
 		services: []*configv1.UpstreamServiceConfig{svc},
 	}
 
-	s := NewServer(nil, tm, sr, nil, nil, nil, nil)
+	s := NewServer(nil, tm, sr, nil, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	// ListServices

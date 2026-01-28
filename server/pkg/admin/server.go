@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -39,6 +40,7 @@ type Server struct {
 	discoveryManager *discovery.Manager
 	auditMiddleware  *middleware.AuditMiddleware
 	profileManager   *profile.Manager
+	authManager      *auth.Manager
 }
 
 // NewServer creates a new Admin Server.
@@ -59,6 +61,7 @@ func NewServer(
 	discoveryManager *discovery.Manager,
 	auditMiddleware *middleware.AuditMiddleware,
 	profileManager *profile.Manager,
+	authManager *auth.Manager,
 ) *Server {
 	return &Server{
 		cache:            cache,
@@ -68,6 +71,7 @@ func NewServer(
 		discoveryManager: discoveryManager,
 		auditMiddleware:  auditMiddleware,
 		profileManager:   profileManager,
+		authManager:      authManager,
 	}
 }
 
@@ -248,6 +252,10 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
 
+	if err := s.refreshUsers(ctx); err != nil {
+		logging.GetLogger().Error("Failed to refresh users", "error", err)
+	}
+
 	safeUser := proto.Clone(req.User).(*configv1.User)
 	config.StripSecretsFromAuth(safeUser.Authentication)
 	return &pb.CreateUserResponse{User: safeUser}, nil
@@ -324,6 +332,10 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
 
+	if err := s.refreshUsers(ctx); err != nil {
+		logging.GetLogger().Error("Failed to refresh users", "error", err)
+	}
+
 	safeUser := proto.Clone(req.User).(*configv1.User)
 	config.StripSecretsFromAuth(safeUser.Authentication)
 	return &pb.UpdateUserResponse{User: safeUser}, nil
@@ -340,7 +352,24 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
 	}
+
+	if err := s.refreshUsers(ctx); err != nil {
+		logging.GetLogger().Error("Failed to refresh users", "error", err)
+	}
+
 	return &pb.DeleteUserResponse{}, nil
+}
+
+func (s *Server) refreshUsers(ctx context.Context) error {
+	if s.authManager == nil {
+		return nil
+	}
+	users, err := s.storage.ListUsers(ctx)
+	if err != nil {
+		return err
+	}
+	s.authManager.SetUsers(users)
+	return nil
 }
 
 // ListProfiles returns all profile definitions.

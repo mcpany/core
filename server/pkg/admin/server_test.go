@@ -73,7 +73,7 @@ func TestNewServer(t *testing.T) {
 	tm := tool.NewMockManagerInterface(ctrl)
 	sr := &MockServiceRegistry{}
 
-	s := NewServer(nil, tm, sr, store, nil, nil, nil)
+	s := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	assert.NotNil(t, s)
 }
 
@@ -84,7 +84,7 @@ func TestServer_UserManagement(t *testing.T) {
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
 	sr := &MockServiceRegistry{}
-	s := NewServer(nil, tm, sr, store, nil, nil, nil)
+	s := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	// Test CreateUser
@@ -161,7 +161,7 @@ func TestServer_ServiceManagement(t *testing.T) {
 			"svc_error": "failed to start",
 		},
 	}
-	s := NewServer(nil, tm, sr, store, nil, nil, nil)
+	s := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	// Test ListServices
@@ -207,7 +207,7 @@ func TestServer_ToolManagement(t *testing.T) {
 	store := memory.NewStore()
 	tm := tool.NewMockManagerInterface(ctrl)
 	sr := &MockServiceRegistry{}
-	s := NewServer(nil, tm, sr, store, nil, nil, nil)
+	s := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	// Mock Tool
@@ -242,14 +242,14 @@ func TestServer_ClearCache(t *testing.T) {
 	defer ctrl.Finish()
 
 	// Test with nil cache
-	s := NewServer(nil, nil, nil, nil, nil, nil, nil)
+	s := NewServer(nil, nil, nil, nil, nil, nil, nil, nil)
 	_, err := s.ClearCache(context.Background(), &pb.ClearCacheRequest{})
 	assert.Error(t, err)
 	assert.Equal(t, codes.FailedPrecondition, status.Code(err))
 
 	// Test ClearCache with valid cache
 	realMiddleware := middleware.NewCachingMiddleware(tool.NewMockManagerInterface(ctrl))
-	sValid := NewServer(realMiddleware, nil, nil, nil, nil, nil, nil)
+	sValid := NewServer(realMiddleware, nil, nil, nil, nil, nil, nil, nil)
 	resp, err := sValid.ClearCache(context.Background(), &pb.ClearCacheRequest{})
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
@@ -307,7 +307,7 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 	tm := tool.NewMockManagerInterface(ctrl)
 	ms := &mockStorage{Store: memory.NewStore()}
 	sr := &MockServiceRegistry{}
-	s := NewServer(nil, tm, sr, ms, nil, nil, nil)
+	s := NewServer(nil, tm, sr, ms, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	errInternal := status.Error(codes.Internal, "storage error")
@@ -358,7 +358,7 @@ func TestServer_UserManagement_PasswordHashing(t *testing.T) {
 	tm := tool.NewMockManagerInterface(ctrl)
 	store := memory.NewStore()
 	sr := &MockServiceRegistry{}
-	s := NewServer(nil, tm, sr, store, nil, nil, nil)
+	s := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	longPassword := string(make([]byte, 73)) // 73 bytes > 72 bytes limit for bcrypt
@@ -397,7 +397,7 @@ func TestServer_ServiceManagement_Errors(t *testing.T) {
 	// But in our implementation if serviceRegistry is set, we ONLY use serviceRegistry.
 	// So let's test with nil serviceRegistry to trigger fallback path, which tests old logic.
 
-	sFallback := NewServer(nil, tm, nil, store, nil, nil, nil)
+	sFallback := NewServer(nil, tm, nil, store, nil, nil, nil, nil)
 
 	// GetService: Service found but config nil (via ToolManager)
 	tm.EXPECT().GetServiceInfo("svc_no_config").Return(&tool.ServiceInfo{Config: nil}, true)
@@ -431,7 +431,7 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 	ctx := context.Background()
 	dm.Run(ctx)
 
-	s := NewServer(nil, tm, sr, store, dm, nil, nil)
+	s := NewServer(nil, tm, sr, store, dm, nil, nil, nil)
 
 	// Test GetDiscoveryStatus
 	resp, err := s.GetDiscoveryStatus(ctx, &pb.GetDiscoveryStatusRequest{})
@@ -442,7 +442,7 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 	assert.Equal(t, int32(1), resp.Providers[0].GetDiscoveredCount())
 
 	// Test with nil manager
-	sNil := NewServer(nil, tm, sr, store, nil, nil, nil)
+	sNil := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	respNil, err := sNil.GetDiscoveryStatus(ctx, &pb.GetDiscoveryStatusRequest{})
 	require.NoError(t, err)
 	assert.Empty(t, respNil.Providers)
@@ -505,7 +505,7 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	}
 	am.SetStore(mockStore)
 
-	s := NewServer(nil, tm, sr, store, nil, am, nil)
+	s := NewServer(nil, tm, sr, store, nil, am, nil, nil)
 	ctx := context.Background()
 
 	// Test ListAuditLogs - Success
@@ -519,7 +519,7 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	assert.Equal(t, "user1", resp.Entries[0].GetUserId())
 
 	// Test ListAuditLogs - Audit disabled (middleware nil)
-	sNil := NewServer(nil, tm, sr, store, nil, nil, nil)
+	sNil := NewServer(nil, tm, sr, store, nil, nil, nil, nil)
 	_, err = sNil.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{})
 	assert.Error(t, err)
 	assert.Equal(t, codes.FailedPrecondition, status.Code(err))
@@ -547,7 +547,7 @@ func TestServer_ListServices_Fallback(t *testing.T) {
 	tm := tool.NewMockManagerInterface(ctrl)
 	store := memory.NewStore()
 
-	s := NewServer(nil, tm, nil, store, nil, nil, nil)
+	s := NewServer(nil, tm, nil, store, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	svcFallback := &configv1.UpstreamServiceConfig{}
