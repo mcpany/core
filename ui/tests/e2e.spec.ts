@@ -42,7 +42,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
     await expect(page.locator('text=calculator')).toBeVisible();
@@ -73,7 +73,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
@@ -86,7 +86,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
     const userService = page.locator('.group', { hasText: 'User Service' });
     await expect(userService).toBeVisible();

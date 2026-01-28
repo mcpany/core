@@ -5,6 +5,7 @@
 
 
 import { test, expect } from '@playwright/test';
+import { seedTraffic, seedUser, seedServices, cleanupUser, cleanupServices } from './test-data';
 
 test.describe('MCP Any UI E2E', () => {
 
@@ -12,43 +13,34 @@ test.describe('MCP Any UI E2E', () => {
     console.log('DEBUG: RUNNING MODIFIED FILE');
   });
 
-  test.beforeEach(async ({ page }) => {
-    // Mock metrics API to prevent backend connection errors during tests
-    await page.route('**/api/v1/dashboard/metrics*', async route => {
-        await route.fulfill({
-            json: [
-                { label: "Total Requests", value: "1,234", icon: "Activity", change: "+10%", trend: "up" },
-                { label: "System Health", value: "99.9%", icon: "Zap", change: "Stable", trend: "neutral" }
-            ]
-        });
-    });
+  test.beforeEach(async ({ page, request }) => {
+    await seedTraffic(request);
+    await seedServices(request);
+    await seedUser(request, "admin");
 
-    // Mock health API
-    await page.route('**/api/dashboard/health*', async route => {
-        await route.fulfill({
-            json: []
-        });
-    });
+    // Login (assuming auth is enabled or required for full view, though dashboard might be public if config allows)
+    // But main.spec.ts didn't login before.
+    // However, without login, we might not see everything or get 401.
+    // Dashboard might be protected.
+    // Let's assume we need to login if we removed mocks.
+    // But `e2e.spec.ts` does login.
+    // `main.spec.ts` seemed to test "public" dashboard or assumed no auth?
+    // The previous mocks bypassed auth? No, they mocked API responses.
+    // I'll try without login first, but if it redirects to login, I'll add it.
+    // Given `e2e.spec.ts` logs in, I should probably log in here too.
+    await page.goto('/login');
+    // If we are already logged in or no auth, we might be on dashboard.
+    // Check if we are on login page.
+    if (await page.getByRole('button', { name: 'Sign in' }).isVisible()) {
+        await page.fill('input[name="username"]', 'admin');
+        await page.fill('input[name="password"]', 'password');
+        await page.click('button[type="submit"]');
+    }
+  });
 
-    // Mock doctor API to prevent system status banner
-    await page.route('**/doctor', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ status: 'healthy', checks: {} })
-        });
-    });
-
-    // Mock stats/tools APIs for Analytics page
-    await page.route('**/api/v1/dashboard/traffic*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/dashboard/top-tools*', async route => {
-        await route.fulfill({ json: [] });
-    });
-    await page.route('**/api/v1/tools*', async route => {
-        await route.fulfill({ json: { tools: [] } });
-    });
+  test.afterEach(async ({ request }) => {
+    await cleanupServices(request);
+    await cleanupUser(request, "admin");
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
@@ -65,16 +57,13 @@ test.describe('MCP Any UI E2E', () => {
     // Check for metrics cards
     await expect(page.locator('text=Total Requests').first()).toBeVisible();
     await expect(page.locator('text=System Health').first()).toBeVisible();
-    // Verify that exactly 2 metric cards are displayed
-    const cards = page.locator('.rounded-xl.border.bg-card');
-    // Note: The selector might need to be specific to the metric cards if other cards exist
-    // But based on the dashboard, we can check for specific content presence.
-    // Let's rely on visibility for now, or check count of specific metric values
-    await expect(page.getByText('1,234').first()).toBeVisible();
-    await expect(page.getByText('99.9%').first()).toBeVisible();
+
+    // Verify values based on seeded data (100 requests)
+    // We expect "100" or similar.
+    await expect(page.getByText('100').first()).toBeVisible();
   });
 
-  test.skip('should navigate to analytics from sidebar', async ({ page }) => {
+  test('should navigate to analytics from sidebar', async ({ page }) => {
     // Verify direct navigation first (and warm up the route)
     await page.goto('/stats');
     await expect(page.locator('h1')).toContainText('Analytics & Stats');
@@ -110,6 +99,11 @@ test.describe('MCP Any UI E2E', () => {
     await expect(page.locator('h1')).toContainText('Middleware Pipeline');
     await expect(page.locator('text=Active Pipeline')).toBeVisible();
     // Resolving ambiguity by selecting the first occurrence (likely the list item)
+    // Since we seeded services, middleware might not be populated via seedServices?
+    // But middleware list comes from global config.
+    // We didn't mock middleware list.
+    // The previous test mocked nothing for middleware?
+    // Wait, `e2e.spec.ts` checked middleware too.
     await expect(page.locator('text=Authentication').first()).toBeVisible();
   });
 
