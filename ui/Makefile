@@ -35,7 +35,7 @@ export TEST_GID
 
 # Default test target
 # Run the tests in a docker container
-test: clean-test-results build-test-docker build-server-docker build-http-echo-docker
+test: clean-test-results build-test-docker build-server-docker
 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
@@ -59,13 +59,9 @@ build-server-docker:
 	$(MAKE) -C ../server build-docker
 	docker tag mcpany/server:latest $(SERVER_IMAGE)
 
-build-http-echo-docker:
-	@echo "Building http-echo-server Docker image..."
-	$(MAKE) -C ../server docker-build-http-echo
-
 # Run audit tests (generate screenshots)
 # Run audit tests (generate screenshots)
-audit: build-test-docker build-server-docker build-http-echo-docker
+audit: build-test-docker build-server-docker
 	@mkdir -p test-results playwright-report .audit docs
 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) CAPTURE_SCREENSHOTS=true docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
 	docker compose -f ./docker-compose.test.yml down -v
