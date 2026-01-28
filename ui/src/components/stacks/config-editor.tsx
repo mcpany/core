@@ -9,7 +9,6 @@ import React, { useEffect, useRef } from "react";
 import Editor, { useMonaco, OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { STACK_CONFIG_SCHEMA } from "@/lib/stack-schema";
-import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 interface ConfigEditorProps {
   value: string;
@@ -30,8 +29,7 @@ export function ConfigEditor({ value, onChange, language = "yaml", readOnly = fa
 
   // Calculate actual theme
   const currentTheme = theme === "system" ? systemTheme : theme;
-  const isDark = currentTheme === "dark";
-  const editorTheme = isDark ? "dracula" : "light";
+  const editorTheme = currentTheme === "dark" ? "vs-dark" : "light";
 
   useEffect(() => {
     if (monaco && language === "yaml") {
@@ -114,13 +112,7 @@ export function ConfigEditor({ value, onChange, language = "yaml", readOnly = fa
         value={value}
         onChange={onChange}
         theme={editorTheme}
-        onMount={(editor, monaco) => {
-          if (isDark) {
-            defineDraculaTheme(monaco);
-            monaco.editor.setTheme("dracula");
-          }
-          handleEditorDidMount(editor, monaco);
-        }}
+        onMount={handleEditorDidMount}
         options={{
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
