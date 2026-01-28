@@ -64,12 +64,14 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 //
 // Returns an error if the operation fails.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
+	// ⚡ BOLT: Lazily allocate Metadata to reduce GC pressure on high-volume logs.
+	// Randomized Selection from Top 5 High-Impact Targets
 	entry := LogEntry{
 		ID:        uuid.New().String(),
 		Timestamp: r.Time.Format(time.RFC3339),
 		Level:     r.Level.String(),
 		Message:   r.Message,
-		Metadata:  make(map[string]any),
+		// Metadata is lazily allocated
 	}
 
 	// Track source priority to ensure we get the most specific source
@@ -78,6 +80,9 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	// Try to find source in attributes or use default
 	r.Attrs(func(a slog.Attr) bool {
 		// Collect all attributes into Metadata
+		if entry.Metadata == nil {
+			entry.Metadata = make(map[string]any)
+		}
 		entry.Metadata[a.Key] = a.Value.Any()
 
 		if a.Key == "source" || a.Key == "component" {

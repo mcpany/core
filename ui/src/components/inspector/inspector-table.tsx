@@ -39,12 +39,28 @@ interface InspectorTableProps {
   loading?: boolean;
 }
 
+/**
+ * Renders an icon indicating the status of a trace span (success, error, or pending).
+ *
+ * @param props - The component props.
+ * @param props.status - The status of the span ('success', 'error', 'pending').
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered icon component.
+ */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
   if (status === 'success') return <CheckCircle2 className={cn("text-green-500", className)} />;
   return <Clock className={cn("text-muted-foreground", className)} />;
 }
 
+/**
+ * Renders an icon representing the type of a trace span (tool, resource, prompt, etc.).
+ *
+ * @param props - The component props.
+ * @param props.type - The type of the span (e.g., 'tool', 'resource').
+ * @param props.className - Additional CSS classes.
+ * @returns The rendered icon component.
+ */
 function TypeIcon({ type, className }: { type: string, className?: string }) {
     switch(type) {
         case 'tool': return <Terminal className={className} />;

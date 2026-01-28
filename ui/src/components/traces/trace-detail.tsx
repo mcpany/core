@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { SequenceDiagram } from "@/components/traces/sequence-diagram";
 
 /**
  * SpanIcon component.
@@ -259,6 +260,16 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 </CardContent>
                             </Card>
                         )}
+
+                        <Card className="mb-6">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium">Sequence Diagram</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <SequenceDiagram trace={trace} />
+                            </CardContent>
+                        </Card>
+
                         <Card className="mb-6">
                              <CardHeader className="pb-3">
                                 <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>

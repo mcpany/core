@@ -41,6 +41,14 @@ const getStatusColor = (status: string) => {
 };
 
 // ⚡ Bolt Optimization: Extracted diagnosis logic to a memoized component.
+/**
+ * Displays a detailed diagnosis of a service connection error in a popover.
+ * Analyzes the error message to provide actionable advice.
+ *
+ * @param props - The component props.
+ * @param props.message - The raw error message to analyze.
+ * @returns The rendered popover component.
+ */
 const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message }: { message: string }) {
     const diagnosis = useMemo(() => analyzeConnectionError(message), [message]);
 
@@ -69,6 +77,14 @@ const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message 
     );
 });
 
+/**
+ * Visualizes the historical health status of a service as a timeline of dots.
+ * Each dot represents a check result at a specific point in time.
+ *
+ * @param props - The component props.
+ * @param props.history - Array of historical health data points.
+ * @returns The rendered timeline component.
+ */
 const HealthTimeline = memo(function HealthTimeline({ history }: { history: HealthHistoryPoint[] }) {
   if (!history || history.length === 0) return null;
 
@@ -107,6 +123,14 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
 
 // ⚡ Bolt Optimization: Memoized individual service items.
+/**
+ * Renders a single row in the service health dashboard, showing status, latency, and history.
+ *
+ * @param props - The component props.
+ * @param props.service - The service health status object.
+ * @param props.history - The historical health data for this service.
+ * @returns The rendered service item component.
+ */
 const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
     return (
         <div

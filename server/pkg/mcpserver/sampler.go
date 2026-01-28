@@ -16,31 +16,50 @@ type MCPSession struct {
 	session *mcp.ServerSession
 }
 
-// NewMCPSession creates a new MCPSession.
+// NewMCPSession initializes a new MCPSession wrapper.
 //
-// session is the session.
+// Parameters:
+//   - session: The underlying MCP server session.
 //
-// Returns the result.
+// Returns:
+//   - *MCPSession: The initialized session wrapper.
+//
+// Side Effects:
+//   - None.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
 
-// NewMCPSampler is a deprecated alias for NewMCPSession.
+// NewMCPSampler creates a new MCPSession (deprecated alias).
 //
-// session is the session.
+// Parameters:
+//   - session: The underlying MCP server session.
 //
-// Returns the result.
+// Returns:
+//   - *MCPSession: The initialized session wrapper.
+//
+// Side Effects:
+//   - None.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
 
-// CreateMessage requests a message creation from the client (sampling).
+// CreateMessage requests the client to generate a message (sampling).
 //
-// ctx is the context for the request.
-// params is the params.
+// Parameters:
+//   - ctx: Request context.
+//   - params: Parameters for the sampling request (messages, model preferences).
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *mcp.CreateMessageResult: The generated message from the client.
+//   - error: If the session is nil or the client returns an error.
+//
+// Errors:
+//   - Returns error if no active session is available.
+//   - Returns error if the client fails to generate a message.
+//
+// Side Effects:
+//   - Sends a JSON-RPC request to the connected client.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -50,10 +69,19 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 
 // ListRoots requests the list of roots from the client.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: Request context.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *mcp.ListRootsResult: The list of roots provided by the client.
+//   - error: If the session is nil or the client returns an error.
+//
+// Errors:
+//   - Returns error if no active session is available.
+//   - Returns error if the client fails to list roots.
+//
+// Side Effects:
+//   - Sends a JSON-RPC request to the connected client.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")
