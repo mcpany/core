@@ -310,23 +310,12 @@ func SanitizeOperationID(input string) string {
 		return input
 	}
 
-	// Optimization: Calculate exact required size to avoid buffer resizing
-	needed := 0
-	for i := 0; i < len(input); {
-		if allowedIDChars[input[i]] {
-			needed++
-			i++
-		} else {
-			// Found start of disallowed sequence
-			for i < len(input) && !allowedIDChars[input[i]] {
-				i++
-			}
-			needed += 8 // _ + 6 hash + _
-		}
-	}
-
 	var sb strings.Builder
-	sb.Grow(needed)
+	// Heuristic: grow to input length + constant padding (32 bytes).
+	// This avoids a second pass over the string to calculate the exact size.
+	// 32 bytes covers up to 4 replacements (each replacement adds ~8 bytes).
+	// Strings.Builder will resize efficiently if needed.
+	sb.Grow(len(input) + 32)
 
 	for i := 0; i < len(input); {
 		if allowedIDChars[input[i]] {
