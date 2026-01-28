@@ -628,6 +628,13 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 		}
 	}
 
+	// Mark all services loaded from files as read-only
+	if mergedConfig != nil {
+		for _, svc := range mergedConfig.GetUpstreamServices() {
+			svc.SetReadOnly(true)
+		}
+	}
+
 	return mergedConfig, nil
 }
 

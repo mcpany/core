@@ -19,7 +19,7 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Lock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
@@ -121,6 +121,15 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                     </div>
 
                     <div className="p-4 space-y-6">
+                        {service.readOnly && (
+                            <Alert>
+                                <Lock className="h-4 w-4" />
+                                <AlertTitle>Read Only Configuration</AlertTitle>
+                                <AlertDescription>
+                                    This service is managed by a configuration file. Changes cannot be saved via the UI.
+                                </AlertDescription>
+                            </Alert>
+                        )}
                         <TabsContent value="general" className="space-y-4 mt-0">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -491,7 +500,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                     Validate
                 </Button>
                 <Button variant="outline" onClick={onCancel}>Cancel</Button>
-                <Button onClick={onSave}>Save Changes</Button>
+                <Button onClick={onSave} disabled={service.readOnly}>Save Changes</Button>
             </div>
         </div>
     );

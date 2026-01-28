@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal, Lock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -317,7 +317,18 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                         <Switch
                             checked={!service.disable}
                             onCheckedChange={(checked) => onToggle(service.name, checked)}
+                            disabled={service.readOnly}
                         />
+                    )}
+                    {service.readOnly && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Lock className="h-4 w-4 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Managed by configuration file</p>
+                            </TooltipContent>
+                        </Tooltip>
                     )}
                     {service.lastError && (
                         <ConnectionDiagnosticDialog
@@ -417,9 +428,9 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                             </DropdownMenuItem>
                         )}
                         {onEdit && (
-                            <DropdownMenuItem onClick={() => onEdit(service)}>
+                            <DropdownMenuItem onClick={() => onEdit(service)} disabled={service.readOnly}>
                                 <Settings className="mr-2 h-4 w-4" />
-                                Edit
+                                {service.readOnly ? "View Configuration" : "Edit"}
                             </DropdownMenuItem>
                         )}
                         {onDuplicate && (
@@ -442,7 +453,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                         )}
                         <DropdownMenuSeparator />
                         {onDelete && (
-                            <DropdownMenuItem onClick={() => onDelete(service.name)} className="text-destructive focus:text-destructive">
+                            <DropdownMenuItem onClick={() => onDelete(service.name)} className="text-destructive focus:text-destructive" disabled={service.readOnly}>
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete
                             </DropdownMenuItem>
