@@ -26,7 +26,9 @@ import {
   ShieldCheck,
   Zap,
   ClipboardCheck,
-  Bug
+  Bug,
+  Webhook,
+  Route
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -179,6 +181,16 @@ const configItems = [
     title: "Secrets Vault",
     url: "/secrets",
     icon: Key,
+  },
+  {
+    title: "Webhooks",
+    url: "/webhooks",
+    icon: Webhook,
+  },
+  {
+    title: "Middleware",
+    url: "/middleware",
+    icon: Route,
   },
   {
     title: "Settings",
