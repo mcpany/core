@@ -239,14 +239,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -2639,7 +2639,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
-	if quoteLevel == 2 { // Single Quoted
+	switch quoteLevel {
+	case 2: // Single Quoted
 		// In single quotes, strictly block ' to prevent breakout.
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
@@ -2654,7 +2655,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			}
 		}
 		return nil
-	} else if quoteLevel == 1 { // Double Quoted
+	case 1: // Double Quoted
 		// In double quotes, strictly block " $ ` \ %
 		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
@@ -2666,9 +2667,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
 				// We already checked for " $ ` \ % above, but doing it again via dangerousChars is fine/redundant.
 				// The main point is to catch things like ; { } |
-				if val[idx] == '"' || val[idx] == '$' || val[idx] == '`' || val[idx] == '\\' || val[idx] == '%' {
-					// Already returned error above
-				} else {
+				if val[idx] != '"' && val[idx] != '$' && val[idx] != '`' && val[idx] != '\\' && val[idx] != '%' {
 					return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument (enforcing strict mode for interpreters)", val[idx])
 				}
 			}
