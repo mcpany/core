@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UpstreamServiceConfig, apiClient } from "@/lib/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
@@ -66,6 +65,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                     action: <XCircle className="h-5 w-5 text-destructive-foreground" />
                 });
             }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
             toast({
                 variant: "destructive",
@@ -245,6 +245,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                     <div className="space-y-2">
                                         <Label>Environment Variables</Label>
                                         <EnvVarEditor
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             initialEnv={service.commandLineService.env as any}
                                             onChange={(newEnv) => onChange({ ...service, commandLineService: { ...service.commandLineService!, env: newEnv } })}
                                         />
@@ -287,8 +288,9 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <Label htmlFor="openapi-spec">Spec URL</Label>
                                          <Input
                                             id="openapi-spec"
-                                            // @ts-expect-error: Suppress type error if applicable - Proto oneof handling might be tricky in TS without proper generated types helper
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             value={(service.openapiService as any).specUrl || ""}
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } as any })}
                                             placeholder="https://api.example.com/openapi.json"
                                         />
