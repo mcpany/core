@@ -885,6 +885,19 @@ func (t *HTTPTool) processParameters(ctx context.Context, inputs map[string]any)
 				}
 			}
 
+			if t.paramInQuery[i] {
+				// Check for path traversal in query parameters as well to prevent LFI on upstream
+				if err := checkForPathTraversal(valStr); err != nil {
+					return nil, nil, false, fmt.Errorf("path traversal attempt detected in query parameter %q: %w", name, err)
+				}
+				// Also check decoded value
+				if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
+					if err := checkForPathTraversal(decodedVal); err != nil {
+						return nil, nil, false, fmt.Errorf("path traversal attempt detected in query parameter %q (decoded): %w", name, err)
+					}
+				}
+			}
+
 			if param.GetDisableEscape() {
 				if t.paramInPath[i] {
 					pathReplacements[name] = valStr
@@ -1400,7 +1413,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	url := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
+			valStr := util.ToString(paramValue)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", paramName, err)
+			}
+			url = strings.ReplaceAll(url, "{{"+paramName+"}}", valStr)
 			delete(inputs, paramName)
 		}
 	}
