@@ -39,10 +39,12 @@ func TestHandleLogsWS_History(t *testing.T) {
 
 	// Read history messages
 	// Note: We might receive them in quick succession
+	ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, msg, err := ws.ReadMessage()
 	require.NoError(t, err)
 	assert.Equal(t, historyMsg1, msg)
 
+	ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, msg, err = ws.ReadMessage()
 	require.NoError(t, err)
 	assert.Equal(t, historyMsg2, msg)
@@ -64,14 +66,62 @@ func TestHandleLogsWS_Streaming(t *testing.T) {
 	require.NoError(t, err)
 	defer ws.Close()
 
-	// Give it a moment to connect and subscribe
-	time.Sleep(50 * time.Millisecond)
+	// Wait for connection to be established by reading potential history (which should be empty)
+	// OR sending a sync message.
+	// Since we know the server implementation, it sends history immediately upon connection.
+	// If history is empty, it just subscribes.
+	// To reliably test streaming, we can use a "sync" message mechanism if we could inject it,
+	// but here we are testing the endpoint.
+	// Instead of sleep, we can retry broadcast until received or timeout.
+	// OR we can assume that if we dial successfully, we are close to ready.
+	// But `handleLogsWS` subscribes AFTER upgrade.
+	// We can't easily hook into "subscribed" event.
+	// Best approach: Broadcast a "PING" message repeatedly until client sees it, then broadcast real message.
 
-	// Broadcast new message
+	syncMsg := []byte("SYNC")
 	newMsg := []byte("new message")
+
+	// Helper to wait for sync
+	ready := make(chan bool)
+	go func() {
+		for {
+			ws.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
+			_, msg, err := ws.ReadMessage()
+			if err == nil && string(msg) == string(syncMsg) {
+				ready <- true
+				return
+			}
+			if err != nil {
+				// if timeout, continue. if closed, return
+				if !strings.Contains(err.Error(), "timeout") {
+					return
+				}
+			}
+		}
+	}()
+
+	// Broadcast sync until received
+	timeout := time.After(10 * time.Second)
+	ticker := time.NewTicker(50 * time.Millisecond)
+	defer ticker.Stop()
+
+Loop:
+	for {
+		select {
+		case <-ready:
+			break Loop
+		case <-timeout:
+			t.Fatal("Timeout waiting for sync message")
+		case <-ticker.C:
+			logging.GlobalBroadcaster.Broadcast(syncMsg)
+		}
+	}
+
+	// Now we are synced
 	logging.GlobalBroadcaster.Broadcast(newMsg)
 
 	// Read message
+	ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, msg, err := ws.ReadMessage()
 	require.NoError(t, err)
 	assert.Equal(t, newMsg, msg)
@@ -100,14 +150,55 @@ func TestHandleLogsWS_Concurrency(t *testing.T) {
 		defer ws.Close()
 	}
 
-	// Give clients time to connect
-	time.Sleep(100 * time.Millisecond)
-
+	// Use Sync pattern for all clients
+	syncMsg := []byte("SYNC")
 	msgContent := []byte("broadcast to all")
+
+	// Wait for all to be ready
+	readyCh := make(chan int, clientCount)
+	for i, ws := range clients {
+		go func(idx int, c *websocket.Conn) {
+			for {
+				c.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
+				_, msg, err := c.ReadMessage()
+				if err == nil && string(msg) == string(syncMsg) {
+					readyCh <- idx
+					return
+				}
+				if err != nil && !strings.Contains(err.Error(), "timeout") {
+					return
+				}
+			}
+		}(i, ws)
+	}
+
+	// Broadcast sync
+	timeout := time.After(10 * time.Second)
+	ticker := time.NewTicker(50 * time.Millisecond)
+	defer ticker.Stop()
+
+	syncedCount := 0
+
+SyncLoop:
+	for {
+		select {
+		case <-readyCh:
+			syncedCount++
+			if syncedCount == clientCount {
+				break SyncLoop
+			}
+		case <-timeout:
+			t.Fatal("Timeout waiting for clients to sync")
+		case <-ticker.C:
+			logging.GlobalBroadcaster.Broadcast(syncMsg)
+		}
+	}
+
+	// Broadcast real message
 	logging.GlobalBroadcaster.Broadcast(msgContent)
 
 	for i, ws := range clients {
-		ws.SetReadDeadline(time.Now().Add(1 * time.Second))
+		ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 		_, msg, err := ws.ReadMessage()
 		require.NoError(t, err, "Client %d failed to read message", i)
 		assert.Equal(t, msgContent, msg, "Client %d received wrong message", i)
@@ -133,8 +224,10 @@ func TestHandleLogsWS_Close(t *testing.T) {
 	ws.Close()
 
 	// Give server time to detect close (though broadcast is async/channel based)
-	time.Sleep(50 * time.Millisecond)
-
-	// Broadcast shouldn't panic and should handle the closed channel internally (via Unsubscribe)
-	logging.GlobalBroadcaster.Broadcast([]byte("test"))
+	// We just want to ensure no panic happens on next broadcast
+	// Retry broadcast a few times to ensure logic paths are hit
+	for i := 0; i < 5; i++ {
+		logging.GlobalBroadcaster.Broadcast([]byte("test"))
+		time.Sleep(10 * time.Millisecond)
+	}
 }
