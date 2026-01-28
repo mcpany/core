@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"log/slog"
+	"path/filepath"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -17,7 +18,7 @@ import (
 
 func TestAuditHandler_Coverage_Extra(t *testing.T) {
 	// Use a local file to pass validation
-	tmpFile := t.TempDir() + "/audit_test_coverage.log"
+	tmpFile := filepath.Join(t.TempDir(), "audit_test_coverage.log")
 
 	// Test NewAuditHandler with enabled config
 	st := configv1.AuditConfig_STORAGE_TYPE_FILE
@@ -63,10 +64,12 @@ func TestAuditHandler_InitializeStore_Coverage(t *testing.T) {
 
 	for _, st := range types {
 		val := st // Copy to take address
+		// Use a safe temp path for all types to avoid platform-specific file issues (like /dev/null on Windows)
+		safePath := filepath.Join(t.TempDir(), "audit.log")
 		cfg := configv1.AuditConfig_builder{
 			Enabled:    proto.Bool(true),
 			StorageType: &val,
-			OutputPath:  proto.String("/dev/null"),
+			OutputPath:  proto.String(safePath),
 		}.Build()
 		NewAuditHandler(slog.NewTextHandler(io.Discard, nil), cfg)
 	}
