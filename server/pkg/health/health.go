@@ -159,8 +159,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) healthpkg.Checker {
 		}),
 		// Enable periodic checks to populate health history.
 		// Interval is set to 30s to provide reasonable granularity without overloading upstreams.
-		healthpkg.WithPeriodicCheck(30*time.Second, 10*time.Second),
-		healthpkg.WithCheck(check),
+		healthpkg.WithPeriodicCheck(30*time.Second, 10*time.Second, check),
 		// Cache the health check result for a short duration to avoid spamming the upstream
 		// if IsHealthy is called frequently (e.g. by the pool).
 		healthpkg.WithCacheDuration(1 * time.Second),
