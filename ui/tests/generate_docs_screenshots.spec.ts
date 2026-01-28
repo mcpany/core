@@ -586,16 +586,15 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   test('Settings Screenshots', async ({ page }) => {
       await page.goto('/settings');
       await page.waitForTimeout(1000);
+      // Default is Global Config
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings.png'), fullPage: true });
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_profiles.png'), fullPage: true });
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles.png'), fullPage: true }); // Legacy alias
 
-      // Click General Tab
-      await page.getByRole('tab', { name: 'General' }).click();
+      // Click Global Config Tab (explicitly, though it should be default)
+      await page.getByRole('tab', { name: 'Global Config' }).click();
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_general.png'), fullPage: true });
 
-      // Legacy alias for Auth Settings (which is another tab)
+      // Auth Settings
       await page.getByRole('tab', { name: 'Authentication' }).click();
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_auth.png'), fullPage: true });
