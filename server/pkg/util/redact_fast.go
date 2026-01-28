@@ -26,6 +26,8 @@ var isNumberDelimiter [256]bool
 
 // hexValues is a lookup table for hex digit values.
 // -1 indicates invalid hex digit.
+//
+//nolint:gochecknoglobals // Lookup table for optimization
 var hexValues [256]int
 
 func init() {
