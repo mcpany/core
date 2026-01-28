@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { HealthTimeline } from "@/components/health-timeline";
 
 /**
  * UpstreamServiceDetailPage component.
@@ -32,6 +33,7 @@ export default function UpstreamServiceDetailPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [testing, setTesting] = useState(false);
+    const [healthHistory, setHealthHistory] = useState<any[]>([]);
 
     // Fetch Service
     useEffect(() => {
@@ -109,6 +111,24 @@ export default function UpstreamServiceDetailPage() {
             setTesting(false);
         }
     };
+
+    // Fetch Health History periodically
+    useEffect(() => {
+        if (!service?.name) return;
+        const fetchHealth = async () => {
+            try {
+                const data = await apiClient.getServiceStatus(service.name);
+                if (data.history) {
+                    setHealthHistory(data.history);
+                }
+            } catch (e) {
+                console.error("Failed to fetch health history", e);
+            }
+        };
+        fetchHealth();
+        const interval = setInterval(fetchHealth, 5000);
+        return () => clearInterval(interval);
+    }, [service?.name]);
 
     if (loading) {
         return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
@@ -192,7 +212,10 @@ export default function UpstreamServiceDetailPage() {
                                 <CardTitle>Stats</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground text-sm">Real-time stats coming soon.</p>
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-medium leading-none">Health History (Last 50 checks)</h4>
+                                    <HealthTimeline history={healthHistory} limit={50} />
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

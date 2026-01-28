@@ -601,6 +601,7 @@ func (a *Application) handleServiceStatus(w http.ResponseWriter, r *http.Request
 		"name":    name,
 		"status":  status,
 		"metrics": map[string]any{},
+		"history": health.GetHistory(name),
 	})
 }
 

@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alexliesenfeld/health"
+	healthpkg "github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/command"
@@ -66,13 +66,13 @@ type HTTPServiceWithHealthCheck interface {
 //   - uc: The configuration of the upstream service to check.
 //
 // Returns:
-//   - A health.Checker instance that can be used to monitor the service's health.
-func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
+//   - A healthpkg.Checker instance that can be used to monitor the service's health.
+func NewChecker(uc *configv1.UpstreamServiceConfig) healthpkg.Checker {
 	if uc == nil {
 		return nil
 	}
 
-	var check health.Check
+	var check healthpkg.Check
 	serviceName := uc.GetName()
 
 	switch uc.WhichServiceConfig() {
@@ -110,19 +110,28 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	check.Check = func(ctx context.Context) error {
 		start := time.Now()
 		err := originalCheck(ctx)
-		duration := time.Since(start).Seconds()
-		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration), []metrics.Label{
+		duration := time.Since(start)
+		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration.Seconds()), []metrics.Label{
 			{Name: "service", Value: serviceName},
 			{Name: "status", Value: lo.Ternary(err == nil, "success", "failure")},
 		})
+
+		statusStr := "UP"
+		errMsg := ""
+		if err != nil {
+			statusStr = "DOWN"
+			errMsg = err.Error()
+		}
+		AddRecord(serviceName, statusStr, duration.Milliseconds(), errMsg)
+
 		return err
 	}
 
-	var lastStatus health.AvailabilityStatus
+	var lastStatus healthpkg.AvailabilityStatus
 	var lastStatusMu sync.Mutex
 
-	opts := []health.CheckerOption{
-		health.WithStatusListener(func(ctx context.Context, state health.CheckerState) {
+	opts := []healthpkg.CheckerOption{
+		healthpkg.WithStatusListener(func(ctx context.Context, state healthpkg.CheckerState) {
 			lastStatusMu.Lock()
 			prev := lastStatus
 			lastStatus = state.Status
@@ -134,7 +143,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 			}
 
 			status := float32(0.0)
-			if state.Status == health.StatusUp {
+			if state.Status == healthpkg.StatusUp {
 				status = 1.0
 			}
 			metrics.SetGauge(healthStatusGauge, status, serviceName)
@@ -148,16 +157,16 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
 			}
 		}),
-		// Using synchronous checks for now to simplify the implementation and ensure
-		// tests are reliable. Periodic checks can be re-introduced later if needed,
-		// likely controlled by a configuration option.
-		health.WithCheck(check),
+		// Enable periodic checks to populate health history.
+		// Interval is set to 30s to provide reasonable granularity without overloading upstreams.
+		healthpkg.WithPeriodicCheck(30*time.Second, 10*time.Second),
+		healthpkg.WithCheck(check),
 		// Cache the health check result for a short duration to avoid spamming the upstream
 		// if IsHealthy is called frequently (e.g. by the pool).
-		health.WithCacheDuration(1 * time.Second),
+		healthpkg.WithCacheDuration(1 * time.Second),
 	}
 
-	return health.NewChecker(opts...)
+	return healthpkg.NewChecker(opts...)
 }
 
 func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) error {
@@ -199,8 +208,8 @@ func httpCheckFunc(ctx context.Context, _ string, hc *configv1.HttpHealthCheck) 
 	return nil
 }
 
-func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
-	return health.Check{
+func httpCheck(name string, c HTTPServiceWithHealthCheck) healthpkg.Check {
+	return healthpkg.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
@@ -209,8 +218,8 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 	}
 }
 
-func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
-	return health.Check{
+func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) healthpkg.Check {
+	return healthpkg.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
@@ -229,8 +238,8 @@ func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 	}
 }
 
-func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Check {
-	return health.Check{
+func websocketCheck(name string, c *configv1.WebsocketUpstreamService) healthpkg.Check {
+	return healthpkg.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
@@ -300,8 +309,8 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 	return nil
 }
 
-func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
-	return health.Check{
+func grpcCheck(name string, c *configv1.GrpcUpstreamService) healthpkg.Check {
+	return healthpkg.Check{
 		Name:    name,
 		Timeout: 5 * time.Second,
 		Check: func(ctx context.Context) error {
@@ -335,8 +344,8 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 	}
 }
 
-func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) health.Check {
-	return health.Check{
+func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healthpkg.Check {
+	return healthpkg.Check{
 		Name: name,
 		Check: func(ctx context.Context) error {
 			// For command line services, we assume it's healthy if not otherwise configured.
@@ -387,8 +396,8 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 	}
 }
 
-func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
-	return health.Check{
+func mcpCheck(name string, c *configv1.McpUpstreamService) healthpkg.Check {
+	return healthpkg.Check{
 		Name: name,
 		Check: func(ctx context.Context) error {
 			if conn := c.GetHttpConnection(); conn != nil {
@@ -402,7 +411,7 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	}
 }
 
-func sendWebhook(ctx context.Context, url, serviceName string, status health.AvailabilityStatus) {
+func sendWebhook(ctx context.Context, url, serviceName string, status healthpkg.AvailabilityStatus) {
 	// Simple webhook implementation: POST JSON payload
 	payload := map[string]interface{}{
 		"event":     "health_status_changed",
@@ -438,8 +447,8 @@ func sendWebhook(ctx context.Context, url, serviceName string, status health.Ava
 	}
 }
 
-func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.Check {
-	return health.Check{
+func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) healthpkg.Check {
+	return healthpkg.Check{
 		Name: name,
 		Check: func(_ context.Context) error {
 			// Basic check: Ensure root paths exist (for local OS FS)
