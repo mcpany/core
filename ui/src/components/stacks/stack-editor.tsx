@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import jsyaml from "js-yaml";
 import { apiClient } from "@/lib/client";
-import { ServiceCollection } from "@/lib/marketplace-service";
 
 // New Components
 import { ServicePalette } from "@/components/stacks/service-palette";
@@ -22,8 +21,6 @@ import { ConfigEditor } from "./config-editor";
 
 interface StackEditorProps {
     stackId: string;
-    initialData?: ServiceCollection;
-    onSave?: (collection: ServiceCollection) => void;
 }
 
 /**
@@ -31,7 +28,7 @@ interface StackEditorProps {
  *
  * @param { stackId - The { stackId.
  */
-export function StackEditor({ stackId, initialData, onSave }: StackEditorProps) {
+export function StackEditor({ stackId }: StackEditorProps) {
     const [content, setContent] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -42,44 +39,32 @@ export function StackEditor({ stackId, initialData, onSave }: StackEditorProps) 
 
     // Initial load
     useEffect(() => {
-        if (initialData) {
-            loadFromData(initialData);
-        } else {
-            loadConfig();
-        }
-    }, [stackId, initialData]); // Added initialData to deps
-
-    const loadFromData = (collection: any) => {
-        // Transform services array to map for YAML Editor
-        const servicesMap: Record<string, any> = {};
-        if (collection.services && Array.isArray(collection.services)) {
-            collection.services.forEach((s: any) => {
-                servicesMap[s.name] = s;
-            });
-        } else if (collection.services) {
-            // Already a map?
-            Object.assign(servicesMap, collection.services);
-        }
-
-        const configObj = {
-            ...collection,
-            services: servicesMap
-        };
-
-        try {
-            const yaml = jsyaml.dump(configObj);
-            setContent(yaml);
-        } catch (e) {
-            console.error("Failed to dump yaml", e);
-            toast.error("Failed to parse configuration");
-        }
-    };
+        loadConfig();
+    }, [stackId]);
 
     const loadConfig = async () => {
         setIsLoading(true);
         try {
             const collection = await apiClient.getCollection(stackId);
-            loadFromData(collection);
+            console.log("DEBUG: collection:", JSON.stringify(collection));
+            // Transform services array to map for YAML Editor
+            const servicesMap: Record<string, any> = {};
+            if (collection.services && Array.isArray(collection.services)) {
+                collection.services.forEach((s: any) => {
+                    servicesMap[s.name] = s;
+                });
+            } else if (collection.services) {
+                // Already a map?
+                Object.assign(servicesMap, collection.services);
+            }
+
+            const configObj = {
+                ...collection,
+                services: servicesMap
+            };
+
+            const yaml = jsyaml.dump(configObj);
+            setContent(yaml);
         } catch (error) {
             console.error("DEBUG: loadConfig failed:", error);
             toast.error("Failed to load stack configuration");
@@ -131,17 +116,13 @@ export function StackEditor({ stackId, initialData, onSave }: StackEditorProps) 
                 }
             }
 
-            const collection: ServiceCollection = {
+            const collection = {
                 ...configObj,
                 name: stackId, // Ensure ID matches
                 services: servicesArray
             };
 
-            if (onSave) {
-                await onSave(collection);
-            } else {
-                await apiClient.saveCollection(collection);
-            }
+            await apiClient.saveCollection(collection);
             toast.success("Configuration saved successfully");
         } catch (error) {
             console.error(error);
@@ -214,7 +195,7 @@ export function StackEditor({ stackId, initialData, onSave }: StackEditorProps) 
                         <Columns className="h-4 w-4 mr-1" /> {showVisualizer ? "Hide Preview" : "Show Preview"}
                      </Button>
                      <div className="h-4 w-px bg-border mx-1" />
-                     <Button variant="ghost" size="sm" onClick={() => initialData ? loadFromData(initialData) : loadConfig()} disabled={isLoading} title="Reset to last saved">
+                     <Button variant="ghost" size="sm" onClick={loadConfig} disabled={isLoading} title="Reset to last saved">
                         <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} /> Reset
                     </Button>
                      <Button variant="ghost" size="sm" onClick={handleDownload} title="Download Config">

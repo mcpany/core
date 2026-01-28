@@ -78,7 +78,7 @@ const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
             version: "1.0.0",
             commandLineService: {
                 command: "npx -y @modelcontextprotocol/server-sqlite",
-                env: { "DB_PATH": { plainText: "./data.db", validationRegex: "" } }, // placeholders
+                env: { "DB_PATH": { plainText: "./data.db" } }, // placeholders
                 workingDirectory: "",
                 tools: [],
                 resources: [],
@@ -98,9 +98,7 @@ const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
 
             autoDiscoverTool: false,
             configError: "",
-            tags: [],
-            readOnly: false,
-            configurationSchema: ""
+            tags: []
         }
 
     ]
@@ -173,7 +171,7 @@ export const marketplaceService = {
                     version: '1.0.0',
                     commandLineService: {
                         command: 'npx -y @modelcontextprotocol/server-linear',
-                        env: { "LINEAR_API_KEY": { plainText: "", validationRegex: "" } },
+                        env: { "LINEAR_API_KEY": { plainText: "" } },
                         workingDirectory: "",
                         tools: [],
                         resources: [],
@@ -193,9 +191,7 @@ export const marketplaceService = {
 
                     autoDiscoverTool: false,
                     configError: "",
-                    tags: [],
-                    readOnly: false,
-                    configurationSchema: ""
+                    tags: []
                 }
 
             }

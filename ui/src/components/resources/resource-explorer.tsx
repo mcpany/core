@@ -153,28 +153,52 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     };
 
-    const handleDownload = (uri?: string) => {
-        // If called from context menu with URI, we might not have content loaded yet.
-        // For this demo, we only support download if content is already loaded (selected)
-        // or we could fetch it. Ideally we should fetch.
-        // For now, let's fallback to current selection if match.
-
-        // If uri is provided and matches selectedUri, use resourceContent.
-        // Otherwise we can't easily download without fetching first.
+    const handleDownload = async (uri?: string) => {
         const targetUri = uri || selectedUri;
         if (!targetUri) return;
 
-        if (targetUri === selectedUri && resourceContent) {
-             const blob = new Blob([resourceContent.text || ""], { type: resourceContent.mimeType });
-             const url = URL.createObjectURL(blob);
-             const a = document.createElement("a");
-             a.href = url;
-             const selectedRes = resources.find(r => r.uri === targetUri);
-             a.download = selectedRes?.name || "resource";
-             a.click();
-        } else {
-             // TODO: Fetch and download
-             toast({ title: "Info", description: "Select the resource first to download." });
+        const targetRes = resources.find(r => r.uri === targetUri);
+        if (!targetRes) {
+            toast({ title: "Error", description: "Resource definition not found." });
+            return;
+        }
+
+        try {
+            toast({ title: "Downloading...", description: "Fetching resource content." });
+            const res = await apiClient.readResource(targetUri);
+            if (!res.contents || res.contents.length === 0) {
+                 toast({ title: "Error", description: "No content found for resource.", variant: "destructive" });
+                 return;
+            }
+
+            const content = res.contents[0];
+            let blob: Blob;
+
+            if (content.blob) {
+                // Decode base64 to blob
+                const byteCharacters = atob(content.blob);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                blob = new Blob([byteArray], { type: content.mimeType });
+            } else {
+                blob = new Blob([content.text || ""], { type: content.mimeType });
+            }
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = targetRes.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+        } catch (e) {
+            console.error("Failed to download resource", e);
+            toast({ title: "Error", description: "Failed to download resource.", variant: "destructive" });
         }
     };
 
@@ -193,6 +217,15 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         // This allows dragging to apps that accept text/uri-list
         e.dataTransfer.setData("text/plain", res.uri);
         e.dataTransfer.setData("text/uri-list", res.uri);
+
+        // Add DownloadURL support for drag-and-drop to desktop
+        const token = localStorage.getItem('mcp_auth_token');
+        // Construct absolute URL
+        const downloadUrl = `${window.location.origin}/api/resources/download?uri=${encodeURIComponent(res.uri)}&name=${encodeURIComponent(res.name)}&token=${token || ''}`;
+        // Format: mimeType:fileName:url
+        const downloadData = `${res.mimeType || 'application/octet-stream'}:${res.name}:${downloadUrl}`;
+        e.dataTransfer.setData("DownloadURL", downloadData);
+
         e.dataTransfer.effectAllowed = "copy";
     };
 
@@ -411,7 +444,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                                     <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCopyContent} disabled={!resourceContent}>
                                         <Copy className="h-3 w-3 mr-1" /> Copy
                                     </Button>
-                                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleDownload()} disabled={!resourceContent}>
+                                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleDownload()} disabled={!selectedUri}>
                                         <Download className="h-3 w-3 mr-1" /> Download
                                     </Button>
                                     <Button

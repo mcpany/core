@@ -5,41 +5,32 @@
 
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { StackEditor } from "@/components/stacks/stack-editor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
+import { use } from "react";
 import { apiClient } from "@/lib/client";
-import { marketplaceService, ServiceCollection } from "@/lib/marketplace-service";
 
 // Placeholder for StackStatus if we want a separate component
 /**
  * StackStatus component.
  * @param props - The component props.
  * @param props.stackId - The unique identifier for stack.
- * @param props.initialCollection - The initial collection data.
  * @returns The rendered component.
  */
-function StackStatus({ stackId, initialCollection }: { stackId: string, initialCollection?: ServiceCollection }) {
+function StackStatus({ stackId }: { stackId: string }) {
     const [services, setServices] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchStatus = async () => {
         setIsLoading(true);
         try {
-            let collection = initialCollection;
-            if (!collection) {
-                 try {
-                    collection = await apiClient.getCollection(stackId);
-                 } catch (e) {
-                     console.warn("Could not fetch collection from backend", e);
-                 }
-            }
-
-            const svcList = collection?.services || [];
+            const collection = await apiClient.getCollection(stackId);
+            const svcList = collection.services || [];
 
             const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
                 // Default values if status fetch fails
@@ -74,7 +65,7 @@ function StackStatus({ stackId, initialCollection }: { stackId: string, initialC
 
     useEffect(() => {
         fetchStatus();
-    }, [stackId, initialCollection]);
+    }, [stackId]);
 
     return (
         <div className="space-y-4">
@@ -177,18 +168,6 @@ function StackStatus({ stackId, initialCollection }: { stackId: string, initialC
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
     const resolvedParams = use(params);
     const [activeTab, setActiveTab] = useState("editor");
-    const [localStack, setLocalStack] = useState<ServiceCollection | undefined>(undefined);
-
-    useEffect(() => {
-        const locals = marketplaceService.fetchLocalCollections();
-        const found = locals.find(c => c.name === resolvedParams.stackId);
-        setLocalStack(found);
-    }, [resolvedParams.stackId]);
-
-    const handleSaveLocal = async (col: ServiceCollection) => {
-        marketplaceService.saveLocalCollection(col);
-        setLocalStack(col); // Update local state
-    };
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
@@ -197,7 +176,6 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
                      <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
                         {resolvedParams.stackId}
                         <Badge variant="outline" className="text-xs font-normal">Stack</Badge>
-                        {localStack && <Badge variant="secondary" className="text-xs font-normal">Local</Badge>}
                      </h2>
                 </div>
                 <div className="flex items-center gap-2">
@@ -224,15 +202,11 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
                 </TabsList>
 
                 <TabsContent value="status" className="flex-1">
-                     <StackStatus stackId={resolvedParams.stackId} initialCollection={localStack} />
+                     <StackStatus stackId={resolvedParams.stackId} />
                 </TabsContent>
 
                 <TabsContent value="editor" className="flex-1 flex flex-col h-full min-h-0">
-                    <StackEditor
-                        stackId={resolvedParams.stackId}
-                        initialData={localStack}
-                        onSave={localStack ? handleSaveLocal : undefined}
-                    />
+                    <StackEditor stackId={resolvedParams.stackId} />
                 </TabsContent>
             </Tabs>
         </div>
