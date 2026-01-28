@@ -604,7 +604,43 @@ func SanitizeFilename(filename string) string {
 		return "unnamed_file"
 	}
 
-	// 5. Truncate
+	// 5. Check for Windows reserved names
+	// CON, PRN, AUX, NUL, COM1-9, LPT1-9
+	// We check case-insensitive.
+	// We also check if the name *without extension* is a reserved name (e.g. CON.txt).
+	// Windows checks the base name up to the FIRST dot.
+	base := result
+	if idx := strings.IndexByte(result, '.'); idx != -1 {
+		base = result[:idx]
+	}
+
+	upperBase := strings.ToUpper(base)
+	isReserved := false
+	switch upperBase {
+	case "CON", "PRN", "AUX", "NUL":
+		isReserved = true
+	default:
+		if len(upperBase) == 4 {
+			if strings.HasPrefix(upperBase, "COM") || strings.HasPrefix(upperBase, "LPT") {
+				c := upperBase[3]
+				if c >= '1' && c <= '9' {
+					isReserved = true
+				}
+			}
+		}
+	}
+
+	if isReserved {
+		// Append _file to make it safe
+		// If it has extension, insert before the FIRST extension to ensure the reserved base name is modified.
+		if idx := strings.IndexByte(result, '.'); idx != -1 {
+			result = result[:idx] + "_file" + result[idx:]
+		} else {
+			result = result + "_file"
+		}
+	}
+
+	// 6. Truncate
 	if len(result) > 255 {
 		result = result[:255]
 		// Ensure we don't end with an incomplete multi-byte character
