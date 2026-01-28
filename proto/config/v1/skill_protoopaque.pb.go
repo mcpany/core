@@ -14,7 +14,6 @@ package v1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -257,7 +256,7 @@ var File_proto_config_v1_skill_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_skill_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/config/v1/skill.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\"\xb9\x02\n" +
+	"\x1bproto/config/v1/skill.proto\x12\x10mcpany.config.v1\"\xb9\x02\n" +
 	"\x05Skill\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x18\n" +

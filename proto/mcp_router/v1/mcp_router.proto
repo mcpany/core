@@ -9,30 +9,49 @@ option go_package = "github.com/mcpany/core/proto/mcp_router/v1";
 
 import "google/protobuf/struct.proto"; // For generic JSON-like data
 
-// Represents an MCP Tool exposed by the aggregator
+// Tool represents an MCP Tool exposed by the aggregator.
 message Tool {
-     string name = 1;                   // Unique name, e.g., "serviceName/methodName" or a hash
-     string display_name = 2;         // User-friendly name
-     string description = 3;          // Description from annotation
-     string service_id = 4;           // The ID of the registered user service that provides this tool
-     string underlying_method_fqn = 5; // Fully qualified name of the gRPC method, e.g., /pkg.UserService/Method
-     string request_type_fqn = 6;     // Fully qualified name of the underlying method's request message
-     string response_type_fqn = 7;    // Fully qualified name of the underlying method's response message
+     // Unique name, e.g., "serviceName/methodName" or a hash.
+     string name = 1;
+     // User-friendly display name.
+     string display_name = 2;
+     // Description of the tool's functionality.
+     string description = 3;
+     // The ID of the registered upstream service that provides this tool.
+     string service_id = 4;
+     // Fully qualified name of the underlying gRPC method, e.g., /pkg.UserService/Method.
+     string underlying_method_fqn = 5;
+     // Fully qualified name of the underlying method's request message.
+     string request_type_fqn = 6;
+     // Fully qualified name of the underlying method's response message.
+     string response_type_fqn = 7;
+     // JSON schema for the input arguments.
      google.protobuf.Struct input_schema = 8;
+     // JSON schema for the output result.
      google.protobuf.Struct output_schema = 9;
+     // Additional annotations and hints for the tool.
      ToolAnnotations annotations = 11;
+     // Indicates if the tool produces a stream of results.
      bool is_stream = 12;
+     // Tags for categorization and filtering.
      repeated string tags = 13;
+     // List of profiles that have access to this tool.
      repeated string profiles = 14;
+     // Cryptographic integrity check for the tool definition.
      ToolIntegrity integrity = 15;
 }
 
+// ToolIntegrity contains hash information for verifying tool definitions.
 message ToolIntegrity {
+    // The hash value.
     string hash = 1;
-    string algorithm = 2; // e.g. "sha256"
+    // The algorithm used (e.g., "sha256").
+    string algorithm = 2;
 }
 
+// ToolAnnotations provides hints for LLMs on how to use the tool.
 message ToolAnnotations {
+     // A short title for the tool.
      string title = 1;
      // If true, the tool does not modify its environment.
      // Default: false
@@ -52,68 +71,100 @@ message ToolAnnotations {
      // a web search tool is open, whereas that of a memory tool is not.
      // Default: true
      bool open_world_hint = 5;
+     // Override input schema.
      google.protobuf.Struct input_schema = 6;
+     // Override output schema.
      google.protobuf.Struct output_schema = 7;
 }
 
+// ListToolsRequest represents a request to list available tools.
 message ListToolsRequest {
-    // Future: filtering options
+    // Future: filtering options can be added here.
 }
 
+// ListToolsResponse represents the response containing the list of tools.
 message ListToolsResponse {
+    // The list of tools matching the request.
     repeated Tool tools = 1;
 }
 
+// CallToolRequest represents a request to execute a tool.
 message CallToolRequest {
-     string tool_id = 1;                     // ID of the tool to execute
-     google.protobuf.Struct inputs = 2;     // Actual inputs for the tool, as a JSON-like object
-                                          // The fields should match the fields of the underlying gRPC method's request message
+     // ID of the tool to execute.
+     string tool_id = 1;
+     // Actual inputs for the tool, as a JSON-like object.
+     // The fields should match the fields of the underlying gRPC method's request message.
+     google.protobuf.Struct inputs = 2;
 }
 
+// CallToolResponse represents the result of a tool execution.
 message CallToolResponse {
-     google.protobuf.Struct outputs = 1;    // Actual outputs from the tool, as a JSON-like object
-                                          // The fields will match the fields of the underlying gRPC method's response message
+     // Actual outputs from the tool, as a JSON-like object.
+     // The fields will match the fields of the underlying gRPC method's response message.
+     google.protobuf.Struct outputs = 1;
 }
 
-// A Prompt is a pre-defined template for interacting with a language model.
+// Prompt is a pre-defined template for interacting with a language model.
 message Prompt {
+    // Unique name of the prompt.
     string name = 1;
+    // Display title.
     string title = 2;
+    // Description of what the prompt does.
     string description = 3;
+    // Arguments required by the prompt.
     repeated PromptArgument arguments = 4;
 }
 
+// PromptArgument defines an argument for a prompt template.
 message PromptArgument {
+    // Name of the argument.
     string name = 1;
+    // Description of the argument.
     string description = 2;
+    // Whether the argument is required.
     bool required = 3;
 }
 
+// ListPromptsRequest represents a request to list available prompts.
 message ListPromptsRequest {
+    // Cursor for pagination.
     string cursor = 1;
 }
 
+// ListPromptsResponse represents the response containing list of prompts.
 message ListPromptsResponse {
+    // The list of prompts.
     repeated Prompt prompts = 1;
+    // Cursor for next page.
     string next_cursor = 2;
 }
 
+// GetPromptRequest represents a request to retrieve a fully hydrated prompt.
 message GetPromptRequest {
+    // The name of the prompt to retrieve.
     string name = 1;
+    // The arguments to fill the template with.
     google.protobuf.Struct arguments = 2;
 }
 
+// GetPromptResponse represents the hydrated prompt ready for the LLM.
 message GetPromptResponse {
+    // Description of the prompt.
     string description = 1;
+    // The sequence of messages comprising the prompt.
     repeated PromptMessage messages = 2;
 }
 
+// PromptMessage represents a single message in the prompt conversation.
 message PromptMessage {
+    // The role of the message sender.
     enum Role {
         USER = 0;
         ASSISTANT = 1;
     }
     Role role = 1;
+    // The content of the message.
     oneof content {
         TextContent text = 2;
         ImageContent image = 3;
@@ -122,49 +173,75 @@ message PromptMessage {
     }
 }
 
+// TextContent represents text-based content.
 message TextContent {
+    // The text body.
     string text = 1;
 }
 
+// ImageContent represents image content.
 message ImageContent {
+    // Base64 encoded image data.
     string data = 1;
+    // MIME type of the image.
     string mime_type = 2;
 }
 
+// AudioContent represents audio content.
 message AudioContent {
+    // Base64 encoded audio data.
     string data = 1;
+    // MIME type of the audio.
     string mime_type = 2;
 }
 
+// ResourceContent represents content that is a reference to an MCP resource.
 message ResourceContent {
+    // The URI of the resource.
     string uri = 1;
+    // The MIME type of the resource.
     string mime_type = 2;
+    // The actual content of the resource (inline).
     oneof content {
         string text = 3;
         bytes blob = 4;
     }
 }
 
-// A Resource is a piece of data that can be used by tools or prompts.
+// Resource represents a piece of data that can be used by tools or prompts.
 message Resource {
+     // Unique identifier.
      string id = 1;
+     // Name of the resource.
      string name = 2;
+     // Description of the resource.
      string description = 3;
-     string type = 4; // e.g., "text", "image", "url"
+     // MIME type of the resource (e.g., "text/plain", "image/png").
+     string type = 4;
+     // The content of the resource (if inline).
      bytes content = 5;
 }
 
+// ListResourcesRequest represents a request to list available resources.
 message ListResourcesRequest {}
 
+// ListResourcesResponse represents the response containing the list of resources.
 message ListResourcesResponse {
+    // The list of resources.
     repeated Resource resources = 1;
 }
 
+// McpRouter defines the RPC interface for the router service, providing access to Tools, Prompts, and Resources.
 service McpRouter {
+    // ListTools retrieves available tools.
     rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+    // CallTool executes a specific tool.
     rpc CallTool(CallToolRequest) returns (CallToolResponse);
 
+    // ListPrompts retrieves available prompts.
     rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+    // GetPrompt retrieves and hydrates a specific prompt.
     rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
+    // ListResources retrieves available resources.
     rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
 }

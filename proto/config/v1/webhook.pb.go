@@ -27,12 +27,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// WebhookKind defines the trigger point for a webhook.
 type WebhookKind int32
 
 const (
-	WebhookKind_WEBHOOK_KIND_UNSPECIFIED     WebhookKind = 0
-	WebhookKind_WEBHOOK_KIND_PRE_CALL        WebhookKind = 1
-	WebhookKind_WEBHOOK_KIND_POST_CALL       WebhookKind = 2
+	// Unspecified kind.
+	WebhookKind_WEBHOOK_KIND_UNSPECIFIED WebhookKind = 0
+	// Triggered before a tool call is executed. Can allow/deny or mutate arguments.
+	WebhookKind_WEBHOOK_KIND_PRE_CALL WebhookKind = 1
+	// Triggered after a tool call is executed. Can mutate results.
+	WebhookKind_WEBHOOK_KIND_POST_CALL WebhookKind = 2
+	// Triggered to transform raw input into structured data (e.g. for HTTP bodies).
 	WebhookKind_WEBHOOK_KIND_TRANSFORM_INPUT WebhookKind = 3
 )
 
@@ -74,11 +79,13 @@ func (x WebhookKind) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// WebhookReview explains the request and response of a webhook call.
+// WebhookReview encapsulates the full context of a webhook interaction, including the request sent and the response received.
 type WebhookReview struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Request       *WebhookRequest        `protobuf:"bytes,1,opt,name=request" json:"request,omitempty"`
-	Response      *WebhookResponse       `protobuf:"bytes,2,opt,name=response" json:"response,omitempty"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The request payload sent to the webhook.
+	Request *WebhookRequest `protobuf:"bytes,1,opt,name=request" json:"request,omitempty"`
+	// The response payload received from the webhook.
+	Response      *WebhookResponse `protobuf:"bytes,2,opt,name=response" json:"response,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -155,7 +162,9 @@ func (x *WebhookReview) ClearResponse() {
 type WebhookReview_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Request  *WebhookRequest
+	// The request payload sent to the webhook.
+	Request *WebhookRequest
+	// The response payload received from the webhook.
 	Response *WebhookResponse
 }
 
@@ -168,15 +177,16 @@ func (b0 WebhookReview_builder) Build() *WebhookReview {
 	return m0
 }
 
+// WebhookRequest represents the data sent to a webhook for review or transformation.
 type WebhookRequest struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Unique identifier for the request.
+	// A unique identifier for this specific request.
 	Uid string `protobuf:"bytes,1,opt,name=uid" json:"uid,omitempty"`
-	// The operation type (e.g., "PreCall", "PostCall").
+	// The type of operation triggering the webhook (e.g., PreCall, PostCall).
 	Kind WebhookKind `protobuf:"varint,2,opt,name=kind,enum=mcpany.config.v1.WebhookKind" json:"kind,omitempty"`
-	// The tool name being executed.
+	// The name of the tool associated with the event (if applicable).
 	ToolName string `protobuf:"bytes,3,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
-	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
+	// The data object being reviewed or transformed (e.g., tool arguments or results).
 	Object        *structpb.Struct `protobuf:"bytes,4,opt,name=object" json:"object,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -265,13 +275,13 @@ func (x *WebhookRequest) ClearObject() {
 type WebhookRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Unique identifier for the request.
+	// A unique identifier for this specific request.
 	Uid string
-	// The operation type (e.g., "PreCall", "PostCall").
+	// The type of operation triggering the webhook (e.g., PreCall, PostCall).
 	Kind WebhookKind
-	// The tool name being executed.
+	// The name of the tool associated with the event (if applicable).
 	ToolName string
-	// The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
+	// The data object being reviewed or transformed (e.g., tool arguments or results).
 	Object *structpb.Struct
 }
 
@@ -286,11 +296,15 @@ func (b0 WebhookRequest_builder) Build() *WebhookRequest {
 	return m0
 }
 
+// WebhookConfig defines the configuration for connecting to an external webhook.
 type WebhookConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Url           string                 `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
-	Timeout       *durationpb.Duration   `protobuf:"bytes,2,opt,name=timeout" json:"timeout,omitempty"`
-	WebhookSecret string                 `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret" json:"webhook_secret,omitempty"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The URL of the webhook service.
+	Url string `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
+	// The maximum time to wait for a response from the webhook.
+	Timeout *durationpb.Duration `protobuf:"bytes,2,opt,name=timeout" json:"timeout,omitempty"`
+	// A shared secret used to sign the webhook payload for verification.
+	WebhookSecret string `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret" json:"webhook_secret,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -367,8 +381,11 @@ func (x *WebhookConfig) ClearTimeout() {
 type WebhookConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Url           string
-	Timeout       *durationpb.Duration
+	// The URL of the webhook service.
+	Url string
+	// The maximum time to wait for a response from the webhook.
+	Timeout *durationpb.Duration
+	// A shared secret used to sign the webhook payload for verification.
 	WebhookSecret string
 }
 
@@ -382,12 +399,17 @@ func (b0 WebhookConfig_builder) Build() *WebhookConfig {
 	return m0
 }
 
+// SystemWebhookConfig defines a system-level webhook endpoint exposed by MCP Any.
 type SystemWebhookConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	UrlPath       string                 `protobuf:"bytes,3,opt,name=url_path,json=urlPath" json:"url_path,omitempty"`
-	Disabled      bool                   `protobuf:"varint,4,opt,name=disabled" json:"disabled,omitempty"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The name of the webhook.
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	// A description of the webhook's purpose.
+	Description string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
+	// The URL path where the webhook listens.
+	UrlPath string `protobuf:"bytes,3,opt,name=url_path,json=urlPath" json:"url_path,omitempty"`
+	// Whether this webhook endpoint is disabled.
+	Disabled      bool `protobuf:"varint,4,opt,name=disabled" json:"disabled,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -464,10 +486,14 @@ func (x *SystemWebhookConfig) SetDisabled(v bool) {
 type SystemWebhookConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name        string
+	// The name of the webhook.
+	Name string
+	// A description of the webhook's purpose.
 	Description string
-	UrlPath     string
-	Disabled    bool
+	// The URL path where the webhook listens.
+	UrlPath string
+	// Whether this webhook endpoint is disabled.
+	Disabled bool
 }
 
 func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
@@ -481,15 +507,16 @@ func (b0 SystemWebhookConfig_builder) Build() *SystemWebhookConfig {
 	return m0
 }
 
+// WebhookResponse represents the decision or transformation returned by the webhook service.
 type WebhookResponse struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Unique identifier for the request.
+	// The unique identifier matching the request.
 	Uid string `protobuf:"bytes,1,opt,name=uid" json:"uid,omitempty"`
-	// allowed indicates if the request is permitted (for PreCall).
+	// For PreCall hooks, indicates whether the operation is permitted.
 	Allowed bool `protobuf:"varint,2,opt,name=allowed" json:"allowed,omitempty"`
-	// status contains extra details for the decision.
+	// Status details regarding the decision or processing.
 	Status *WebhookStatus `protobuf:"bytes,3,opt,name=status" json:"status,omitempty"`
-	// replacement_object is a complete replacement for the object (simple mutation).
+	// If present, this object replaces the original object in the flow (e.g. modified arguments).
 	ReplacementObject *structpb.Struct `protobuf:"bytes,4,opt,name=replacement_object,json=replacementObject" json:"replacement_object,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
@@ -589,13 +616,13 @@ func (x *WebhookResponse) ClearReplacementObject() {
 type WebhookResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Unique identifier for the request.
+	// The unique identifier matching the request.
 	Uid string
-	// allowed indicates if the request is permitted (for PreCall).
+	// For PreCall hooks, indicates whether the operation is permitted.
 	Allowed bool
-	// status contains extra details for the decision.
+	// Status details regarding the decision or processing.
 	Status *WebhookStatus
-	// replacement_object is a complete replacement for the object (simple mutation).
+	// If present, this object replaces the original object in the flow (e.g. modified arguments).
 	ReplacementObject *structpb.Struct
 }
 
@@ -610,10 +637,13 @@ func (b0 WebhookResponse_builder) Build() *WebhookResponse {
 	return m0
 }
 
+// WebhookStatus provides additional status information from the webhook.
 type WebhookStatus struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// A numeric status code (e.g., HTTP-like status).
+	Code int32 `protobuf:"varint,1,opt,name=code" json:"code,omitempty"`
+	// A descriptive message regarding the status.
+	Message       string `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -668,7 +698,9 @@ func (x *WebhookStatus) SetMessage(v string) {
 type WebhookStatus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Code    int32
+	// A numeric status code (e.g., HTTP-like status).
+	Code int32
+	// A descriptive message regarding the status.
 	Message string
 }
 

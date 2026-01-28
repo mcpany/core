@@ -25,6 +25,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Collection represents a grouping of upstream services and skills that can be distributed together.
+// Collections allow for modular configuration and sharing of capabilities.
 type Collection struct {
 	state                     protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Name           *string                   `protobuf:"bytes,1,opt,name=name"`
@@ -247,14 +249,22 @@ func (x *Collection) ClearAuthentication() {
 type Collection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name           *string
-	Description    *string
-	Version        *string
-	Priority       *int32
-	HttpUrl        *string
+	// The human-readable name of the collection.
+	Name *string
+	// A description of what the collection provides.
+	Description *string
+	// The version of the collection (e.g., "1.0.0").
+	Version *string
+	// The priority of the collection when loading. Lower numbers load first.
+	Priority *int32
+	// The URL to fetch the collection configuration from (if remote).
+	HttpUrl *string
+	// Authentication required to fetch the collection from the http_url.
 	Authentication *Authentication
-	Services       []*UpstreamServiceConfig
-	Skills         []string
+	// The list of upstream services included in this collection.
+	Services []*UpstreamServiceConfig
+	// The list of skills included in this collection.
+	Skills []string
 }
 
 func (b0 Collection_builder) Build() *Collection {

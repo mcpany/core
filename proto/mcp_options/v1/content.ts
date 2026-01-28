@@ -10,8 +10,14 @@ import Long from "long";
 
 export const protobufPackage = "mcpany.mcp_options.v1";
 
+/**
+ * Content represents a generic content block with an associated role.
+ * This is used for defining custom options or annotations in protobuf files.
+ */
 export interface Content {
+  /** The actual text content. */
   content: string;
+  /** The role associated with the content (e.g., "user", "assistant", "system"). */
   role: string;
 }
 

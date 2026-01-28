@@ -12,55 +12,76 @@ import "google/protobuf/duration.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
-// WebhookReview explains the request and response of a webhook call.
+// WebhookReview encapsulates the full context of a webhook interaction, including the request sent and the response received.
 message WebhookReview {
+  // The request payload sent to the webhook.
   WebhookRequest request = 1;
+  // The response payload received from the webhook.
   WebhookResponse response = 2;
 }
 
+// WebhookRequest represents the data sent to a webhook for review or transformation.
 message WebhookRequest {
-  // Unique identifier for the request.
+  // A unique identifier for this specific request.
   string uid = 1;
-  // The operation type (e.g., "PreCall", "PostCall").
+  // The type of operation triggering the webhook (e.g., PreCall, PostCall).
   WebhookKind kind = 2;
-  // The tool name being executed.
+  // The name of the tool associated with the event (if applicable).
   string tool_name = 3;
-  // The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall).
+  // The data object being reviewed or transformed (e.g., tool arguments or results).
   google.protobuf.Struct object = 4;
 }
 
+// WebhookKind defines the trigger point for a webhook.
 enum WebhookKind {
+  // Unspecified kind.
   WEBHOOK_KIND_UNSPECIFIED = 0;
+  // Triggered before a tool call is executed. Can allow/deny or mutate arguments.
   WEBHOOK_KIND_PRE_CALL = 1;
+  // Triggered after a tool call is executed. Can mutate results.
   WEBHOOK_KIND_POST_CALL = 2;
+  // Triggered to transform raw input into structured data (e.g. for HTTP bodies).
   WEBHOOK_KIND_TRANSFORM_INPUT = 3;
 }
 
+// WebhookConfig defines the configuration for connecting to an external webhook.
 message WebhookConfig {
+  // The URL of the webhook service.
   string url = 1;
+  // The maximum time to wait for a response from the webhook.
   google.protobuf.Duration timeout = 2;
+  // A shared secret used to sign the webhook payload for verification.
   string webhook_secret = 3;
 }
 
+// SystemWebhookConfig defines a system-level webhook endpoint exposed by MCP Any.
 message SystemWebhookConfig {
+  // The name of the webhook.
   string name = 1;
+  // A description of the webhook's purpose.
   string description = 2;
+  // The URL path where the webhook listens.
   string url_path = 3;
+  // Whether this webhook endpoint is disabled.
   bool disabled = 4;
 }
 
+// WebhookResponse represents the decision or transformation returned by the webhook service.
 message WebhookResponse {
-  // Unique identifier for the request.
+  // The unique identifier matching the request.
   string uid = 1;
-  // allowed indicates if the request is permitted (for PreCall).
+  // For PreCall hooks, indicates whether the operation is permitted.
   bool allowed = 2;
-  // status contains extra details for the decision.
+  // Status details regarding the decision or processing.
   WebhookStatus status = 3;
-  // replacement_object is a complete replacement for the object (simple mutation).
+  // If present, this object replaces the original object in the flow (e.g. modified arguments).
   google.protobuf.Struct replacement_object = 4;
 }
 
+// WebhookStatus provides additional status information from the webhook.
 message WebhookStatus {
+  // A numeric status code (e.g., HTTP-like status).
   int32 code = 1;
+  // A descriptive message regarding the status.
   string message = 2;
 }

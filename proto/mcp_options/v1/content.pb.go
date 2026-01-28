@@ -25,10 +25,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Content represents a generic content block with an associated role.
+// This is used for defining custom options or annotations in protobuf files.
 type Content struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Content       *string                `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
-	Role          *string                `protobuf:"bytes,2,opt,name=role" json:"role,omitempty"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The actual text content.
+	Content *string `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
+	// The role associated with the content (e.g., "user", "assistant", "system").
+	Role          *string `protobuf:"bytes,2,opt,name=role" json:"role,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -105,8 +109,10 @@ func (x *Content) ClearRole() {
 type Content_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The actual text content.
 	Content *string
-	Role    *string
+	// The role associated with the content (e.g., "user", "assistant", "system").
+	Role *string
 }
 
 func (b0 Content_builder) Build() *Content {

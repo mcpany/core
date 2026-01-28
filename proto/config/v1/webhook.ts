@@ -12,10 +12,15 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "mcpany.config.v1";
 
+/** WebhookKind defines the trigger point for a webhook. */
 export enum WebhookKind {
+  /** WEBHOOK_KIND_UNSPECIFIED - Unspecified kind. */
   WEBHOOK_KIND_UNSPECIFIED = 0,
+  /** WEBHOOK_KIND_PRE_CALL - Triggered before a tool call is executed. Can allow/deny or mutate arguments. */
   WEBHOOK_KIND_PRE_CALL = 1,
+  /** WEBHOOK_KIND_POST_CALL - Triggered after a tool call is executed. Can mutate results. */
   WEBHOOK_KIND_POST_CALL = 2,
+  /** WEBHOOK_KIND_TRANSFORM_INPUT - Triggered to transform raw input into structured data (e.g. for HTTP bodies). */
   WEBHOOK_KIND_TRANSFORM_INPUT = 3,
   UNRECOGNIZED = -1,
 }
@@ -57,51 +62,71 @@ export function webhookKindToJSON(object: WebhookKind): string {
   }
 }
 
-/** WebhookReview explains the request and response of a webhook call. */
+/** WebhookReview encapsulates the full context of a webhook interaction, including the request sent and the response received. */
 export interface WebhookReview {
-  request?: WebhookRequest | undefined;
+  /** The request payload sent to the webhook. */
+  request?:
+    | WebhookRequest
+    | undefined;
+  /** The response payload received from the webhook. */
   response?: WebhookResponse | undefined;
 }
 
+/** WebhookRequest represents the data sent to a webhook for review or transformation. */
 export interface WebhookRequest {
-  /** Unique identifier for the request. */
+  /** A unique identifier for this specific request. */
   uid: string;
-  /** The operation type (e.g., "PreCall", "PostCall"). */
+  /** The type of operation triggering the webhook (e.g., PreCall, PostCall). */
   kind: WebhookKind;
-  /** The tool name being executed. */
+  /** The name of the tool associated with the event (if applicable). */
   toolName: string;
-  /** The object being reviewed (e.g., ToolInputs for PreCall, ToolResult for PostCall). */
+  /** The data object being reviewed or transformed (e.g., tool arguments or results). */
   object?: { [key: string]: any } | undefined;
 }
 
+/** WebhookConfig defines the configuration for connecting to an external webhook. */
 export interface WebhookConfig {
+  /** The URL of the webhook service. */
   url: string;
-  timeout?: Duration | undefined;
+  /** The maximum time to wait for a response from the webhook. */
+  timeout?:
+    | Duration
+    | undefined;
+  /** A shared secret used to sign the webhook payload for verification. */
   webhookSecret: string;
 }
 
+/** SystemWebhookConfig defines a system-level webhook endpoint exposed by MCP Any. */
 export interface SystemWebhookConfig {
+  /** The name of the webhook. */
   name: string;
+  /** A description of the webhook's purpose. */
   description: string;
+  /** The URL path where the webhook listens. */
   urlPath: string;
+  /** Whether this webhook endpoint is disabled. */
   disabled: boolean;
 }
 
+/** WebhookResponse represents the decision or transformation returned by the webhook service. */
 export interface WebhookResponse {
-  /** Unique identifier for the request. */
+  /** The unique identifier matching the request. */
   uid: string;
-  /** allowed indicates if the request is permitted (for PreCall). */
+  /** For PreCall hooks, indicates whether the operation is permitted. */
   allowed: boolean;
-  /** status contains extra details for the decision. */
+  /** Status details regarding the decision or processing. */
   status?:
     | WebhookStatus
     | undefined;
-  /** replacement_object is a complete replacement for the object (simple mutation). */
+  /** If present, this object replaces the original object in the flow (e.g. modified arguments). */
   replacementObject?: { [key: string]: any } | undefined;
 }
 
+/** WebhookStatus provides additional status information from the webhook. */
 export interface WebhookStatus {
+  /** A numeric status code (e.g., HTTP-like status). */
   code: number;
+  /** A descriptive message regarding the status. */
   message: string;
 }
 

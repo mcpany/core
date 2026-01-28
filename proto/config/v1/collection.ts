@@ -12,14 +12,28 @@ import { UpstreamServiceConfig } from "./upstream_service";
 
 export const protobufPackage = "mcpany.config.v1";
 
+/**
+ * Collection represents a grouping of upstream services and skills that can be distributed together.
+ * Collections allow for modular configuration and sharing of capabilities.
+ */
 export interface Collection {
+  /** The human-readable name of the collection. */
   name: string;
+  /** A description of what the collection provides. */
   description: string;
+  /** The version of the collection (e.g., "1.0.0"). */
   version: string;
+  /** The priority of the collection when loading. Lower numbers load first. */
   priority: number;
+  /** The URL to fetch the collection configuration from (if remote). */
   httpUrl: string;
-  authentication?: Authentication | undefined;
+  /** Authentication required to fetch the collection from the http_url. */
+  authentication?:
+    | Authentication
+    | undefined;
+  /** The list of upstream services included in this collection. */
   services: UpstreamServiceConfig[];
+  /** The list of skills included in this collection. */
   skills: string[];
 }
 

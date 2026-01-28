@@ -10,6 +10,7 @@ import Long from "long";
 
 export const protobufPackage = "topology.v1";
 
+/** NodeType defines the category of a node. */
 export enum NodeType {
   NODE_TYPE_UNSPECIFIED = 0,
   NODE_TYPE_CLIENT = 1,
@@ -91,10 +92,14 @@ export function nodeTypeToJSON(object: NodeType): string {
   }
 }
 
+/** NodeStatus defines the operational state of a node. */
 export enum NodeStatus {
   NODE_STATUS_UNSPECIFIED = 0,
+  /** NODE_STATUS_ACTIVE - The node is active and healthy. */
   NODE_STATUS_ACTIVE = 1,
+  /** NODE_STATUS_INACTIVE - The node is inactive or disabled. */
   NODE_STATUS_INACTIVE = 2,
+  /** NODE_STATUS_ERROR - The node is in an error state. */
   NODE_STATUS_ERROR = 3,
   UNRECOGNIZED = -1,
 }
@@ -136,20 +141,29 @@ export function nodeStatusToJSON(object: NodeStatus): string {
   }
 }
 
-/** Graph represents the full network topology. */
+/** Graph represents the full network topology of the MCP ecosystem. */
 export interface Graph {
+  /** The list of connected clients. */
   clients: Node[];
+  /** The core MCP Any server node. */
   core?: Node | undefined;
 }
 
-/** Node represents a node in the topology graph. */
+/** Node represents a single entity in the topology graph. */
 export interface Node {
+  /** Unique identifier for the node. */
   id: string;
+  /** Human-readable label for the node. */
   label: string;
+  /** The type of the node. */
   type: NodeType;
+  /** The operational status of the node. */
   status: NodeStatus;
+  /** Additional metadata associated with the node. */
   metadata: { [key: string]: string };
+  /** Child nodes contained within or connected to this node. */
   children: Node[];
+  /** Performance metrics for the node. */
   metrics?: NodeMetrics | undefined;
 }
 
@@ -158,9 +172,13 @@ export interface Node_MetadataEntry {
   value: string;
 }
 
+/** NodeMetrics encapsulates performance metrics for a node. */
 export interface NodeMetrics {
+  /** Queries per second. */
   qps: number;
+  /** Average latency in milliseconds. */
   latencyMs: number;
+  /** Error rate as a percentage (0.0 to 1.0). */
   errorRate: number;
 }
 

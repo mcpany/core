@@ -5,8 +5,6 @@ edition = "2023";
 
 package mcpany.config.v1;
 
-import "google/protobuf/struct.proto";
-
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "SkillProto";
 

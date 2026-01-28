@@ -41,6 +41,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // AdminService provides administrative operations for the MCP Any server.
+// It allows management of services, users, tools, and audit logs.
 type AdminServiceClient interface {
 	// ClearCache clears all cached data in the server.
 	ClearCache(ctx context.Context, in *ClearCacheRequest, opts ...grpc.CallOption) (*ClearCacheResponse, error)
@@ -201,6 +202,7 @@ func (c *adminServiceClient) ListAuditLogs(ctx context.Context, in *ListAuditLog
 // for forward compatibility.
 //
 // AdminService provides administrative operations for the MCP Any server.
+// It allows management of services, users, tools, and audit logs.
 type AdminServiceServer interface {
 	// ClearCache clears all cached data in the server.
 	ClearCache(context.Context, *ClearCacheRequest) (*ClearCacheResponse, error)

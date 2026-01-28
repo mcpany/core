@@ -26,7 +26,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Defines a health check for an HTTP-based service.
+// HttpHealthCheck defines a health check mechanism using HTTP requests.
 type HttpHealthCheck struct {
 	state                                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Url                          *string                `protobuf:"bytes,1,opt,name=url"`
@@ -220,15 +220,15 @@ type HttpHealthCheck_builder struct {
 
 	// The full URL to send the health check request to.
 	Url *string
-	// The expected HTTP status code for a successful health check. Defaults to 200.
+	// The expected HTTP status code for a successful check (default: 200).
 	ExpectedCode *int32
-	// Optional: A substring that must be present in the response body for the check to pass.
+	// A substring that must be present in the response body for the check to pass.
 	ExpectedResponseBodyContains *string
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration
-	// The HTTP method to use for the health check. Defaults to "GET".
+	// The HTTP method to use (e.g., "GET", "HEAD"). Default is "GET".
 	Method *string
 }
 
@@ -257,7 +257,7 @@ func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
 	return m0
 }
 
-// Defines a health check for a websocket-based service.
+// WebsocketHealthCheck defines a health check mechanism for Websocket services.
 type WebsocketHealthCheck struct {
 	state                               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Message                  *string                `protobuf:"bytes,1,opt,name=message"`
@@ -424,15 +424,15 @@ func (x *WebsocketHealthCheck) ClearUrl() {
 type WebsocketHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The message to send to the websocket service for the health check.
+	// The message to send to the websocket server to initiate the check (e.g., "ping").
 	Message *string
-	// A substring expected in the service's response for the check to pass.
+	// A substring that must be present in the response message for the check to pass.
 	ExpectedResponseContains *string
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration
-	// The URL to send the health check request to.
+	// The full URL of the websocket endpoint.
 	Url *string
 }
 
@@ -457,7 +457,7 @@ func (b0 WebsocketHealthCheck_builder) Build() *WebsocketHealthCheck {
 	return m0
 }
 
-// Defines a health check for a gRPC-based service.
+// GrpcHealthCheck defines a health check mechanism for gRPC services, typically using the standard Health service.
 type GrpcHealthCheck struct {
 	state                       protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Service          *string                `protobuf:"bytes,1,opt,name=service"`
@@ -677,19 +677,19 @@ func (x *GrpcHealthCheck) ClearTimeout() {
 type GrpcHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The gRPC service name to check (e.g., "grpc.health.v1.Health").
+	// The name of the gRPC service to check (e.g., "grpc.health.v1.Health").
 	Service *string
-	// The gRPC method to call.
+	// The specific gRPC method to call.
 	Method *string
-	// A JSON string representing the request message.
+	// The JSON representation of the request message.
 	Request *string
-	// A JSON string representing the expected response message.
+	// The JSON representation of the expected response message.
 	ExpectedResponse *string
-	// Set to true if connecting to the gRPC service without TLS.
+	// If true, the connection will use plaintext instead of TLS.
 	Insecure *bool
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration
 }
 
@@ -722,7 +722,7 @@ func (b0 GrpcHealthCheck_builder) Build() *GrpcHealthCheck {
 	return m0
 }
 
-// Defines a health check for a command line-based service.
+// CommandLineHealthCheck defines a health check mechanism for CLI-based services.
 type CommandLineHealthCheck struct {
 	state                               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Method                   *string                `protobuf:"bytes,1,opt,name=method"`
@@ -889,15 +889,15 @@ func (x *CommandLineHealthCheck) ClearTimeout() {
 type CommandLineHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The method or command to send to the command line service for the health check.
+	// The command or method to invoke to check health.
 	Method *string
-	// The input/prompt to send to the service.
+	// The input or prompt to pass to the command.
 	Prompt *string
-	// A substring expected in the service's output for the check to pass.
+	// A substring that must be present in the command's output for the check to pass.
 	ExpectedResponseContains *string
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for execution before considering the check failed.
 	Timeout *durationpb.Duration
 }
 
@@ -922,7 +922,8 @@ func (b0 CommandLineHealthCheck_builder) Build() *CommandLineHealthCheck {
 	return m0
 }
 
-// Defines a health check for a WebRTC-based service.
+// WebRTCHealthCheck defines a health check mechanism for WebRTC services.
+// It can use either HTTP or Websocket for the signaling check.
 type WebRTCHealthCheck struct {
 	state                      protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_HealthCheckType isWebRTCHealthCheck_HealthCheckType `protobuf_oneof:"health_check_type"`
@@ -1048,6 +1049,8 @@ func (x *WebRTCHealthCheck) WhichHealthCheckType() case_WebRTCHealthCheck_Health
 
 type WebRTCHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The underlying health check mechanism.
 
 	// Fields of oneof xxx_hidden_HealthCheckType:
 	Http      *HttpHealthCheck

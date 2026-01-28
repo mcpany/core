@@ -11,81 +11,84 @@ import { Duration } from "../../google/protobuf/duration";
 
 export const protobufPackage = "mcpany.config.v1";
 
-/** Defines a health check for an HTTP-based service. */
+/** HttpHealthCheck defines a health check mechanism using HTTP requests. */
 export interface HttpHealthCheck {
   /** The full URL to send the health check request to. */
   url: string;
-  /** The expected HTTP status code for a successful health check. Defaults to 200. */
+  /** The expected HTTP status code for a successful check (default: 200). */
   expectedCode: number;
-  /** Optional: A substring that must be present in the response body for the check to pass. */
+  /** A substring that must be present in the response body for the check to pass. */
   expectedResponseBodyContains: string;
-  /** How often to perform the health check. */
+  /** The frequency at which to perform the health check. */
   interval?:
     | Duration
     | undefined;
-  /** The timeout for each health check attempt. */
+  /** The maximum time to wait for a response before considering the check failed. */
   timeout?:
     | Duration
     | undefined;
-  /** The HTTP method to use for the health check. Defaults to "GET". */
+  /** The HTTP method to use (e.g., "GET", "HEAD"). Default is "GET". */
   method: string;
 }
 
-/** Defines a health check for a websocket-based service. */
+/** WebsocketHealthCheck defines a health check mechanism for Websocket services. */
 export interface WebsocketHealthCheck {
-  /** The message to send to the websocket service for the health check. */
+  /** The message to send to the websocket server to initiate the check (e.g., "ping"). */
   message: string;
-  /** A substring expected in the service's response for the check to pass. */
+  /** A substring that must be present in the response message for the check to pass. */
   expectedResponseContains: string;
-  /** How often to perform the health check. */
+  /** The frequency at which to perform the health check. */
   interval?:
     | Duration
     | undefined;
-  /** The timeout for each health check attempt. */
+  /** The maximum time to wait for a response before considering the check failed. */
   timeout?:
     | Duration
     | undefined;
-  /** The URL to send the health check request to. */
+  /** The full URL of the websocket endpoint. */
   url: string;
 }
 
-/** Defines a health check for a gRPC-based service. */
+/** GrpcHealthCheck defines a health check mechanism for gRPC services, typically using the standard Health service. */
 export interface GrpcHealthCheck {
-  /** The gRPC service name to check (e.g., "grpc.health.v1.Health"). */
+  /** The name of the gRPC service to check (e.g., "grpc.health.v1.Health"). */
   service: string;
-  /** The gRPC method to call. */
+  /** The specific gRPC method to call. */
   method: string;
-  /** A JSON string representing the request message. */
+  /** The JSON representation of the request message. */
   request: string;
-  /** A JSON string representing the expected response message. */
+  /** The JSON representation of the expected response message. */
   expectedResponse: string;
-  /** Set to true if connecting to the gRPC service without TLS. */
+  /** If true, the connection will use plaintext instead of TLS. */
   insecure: boolean;
-  /** How often to perform the health check. */
+  /** The frequency at which to perform the health check. */
   interval?:
     | Duration
     | undefined;
-  /** The timeout for each health check attempt. */
+  /** The maximum time to wait for a response before considering the check failed. */
   timeout?: Duration | undefined;
 }
 
-/** Defines a health check for a command line-based service. */
+/** CommandLineHealthCheck defines a health check mechanism for CLI-based services. */
 export interface CommandLineHealthCheck {
-  /** The method or command to send to the command line service for the health check. */
+  /** The command or method to invoke to check health. */
   method: string;
-  /** The input/prompt to send to the service. */
+  /** The input or prompt to pass to the command. */
   prompt: string;
-  /** A substring expected in the service's output for the check to pass. */
+  /** A substring that must be present in the command's output for the check to pass. */
   expectedResponseContains: string;
-  /** How often to perform the health check. */
+  /** The frequency at which to perform the health check. */
   interval?:
     | Duration
     | undefined;
-  /** The timeout for each health check attempt. */
+  /** The maximum time to wait for execution before considering the check failed. */
   timeout?: Duration | undefined;
 }
 
-/** Defines a health check for a WebRTC-based service. */
+/**
+ * WebRTCHealthCheck defines a health check mechanism for WebRTC services.
+ * It can use either HTTP or Websocket for the signaling check.
+ */
 export interface WebRTCHealthCheck {
   http?: HttpHealthCheck | undefined;
   websocket?: WebsocketHealthCheck | undefined;

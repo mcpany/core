@@ -15,139 +15,207 @@ import { Tool } from "../../mcp_router/v1/mcp_router";
 
 export const protobufPackage = "mcpany.admin.v1";
 
+/** ClearCacheRequest represents a request to clear the server cache. */
 export interface ClearCacheRequest {
 }
 
+/** ClearCacheResponse represents the response to a cache clear request. */
 export interface ClearCacheResponse {
 }
 
+/** ListServicesRequest represents a request to list all registered services. */
 export interface ListServicesRequest {
 }
 
+/** ListServicesResponse represents the response containing the list of services. */
 export interface ListServicesResponse {
-  /** @deprecated */
+  /**
+   * The list of registered upstream service configurations (deprecated).
+   *
+   * @deprecated
+   */
   services: UpstreamServiceConfig[];
+  /** The list of service states, including status and errors. */
   serviceStates: ServiceState[];
 }
 
+/** ServiceState represents the current state of a service. */
 export interface ServiceState {
+  /** The configuration of the service. */
   config?:
     | UpstreamServiceConfig
     | undefined;
-  /** "OK", "ERROR", "CONNECTING" */
+  /** The current status of the service (e.g., "OK", "ERROR", "CONNECTING"). */
   status: string;
+  /** Any error message associated with the service status. */
   error: string;
 }
 
+/** GetServiceRequest represents a request to get details of a specific service. */
 export interface GetServiceRequest {
+  /** The ID of the service to retrieve. */
   serviceId: string;
 }
 
+/** GetServiceResponse represents the response containing service details. */
 export interface GetServiceResponse {
-  /** @deprecated */
-  service?: UpstreamServiceConfig | undefined;
+  /**
+   * The configuration of the requested service (deprecated).
+   *
+   * @deprecated
+   */
+  service?:
+    | UpstreamServiceConfig
+    | undefined;
+  /** The current state of the requested service. */
   serviceState?: ServiceState | undefined;
 }
 
+/** ListToolsRequest represents a request to list all registered tools. */
 export interface ListToolsRequest {
 }
 
+/** ListToolsResponse represents the response containing the list of tools. */
 export interface ListToolsResponse {
+  /** The list of registered tools. */
   tools: Tool[];
 }
 
+/** GetToolRequest represents a request to get details of a specific tool. */
 export interface GetToolRequest {
+  /** The name of the tool to retrieve. */
   toolName: string;
 }
 
+/** GetToolResponse represents the response containing tool details. */
 export interface GetToolResponse {
+  /** The requested tool. */
   tool?: Tool | undefined;
 }
 
+/** CreateUserRequest represents a request to create a new user. */
 export interface CreateUserRequest {
+  /** The definition of the user to create. */
   user?: User | undefined;
 }
 
+/** CreateUserResponse represents the response containing the created user. */
 export interface CreateUserResponse {
+  /** The created user. */
   user?: User | undefined;
 }
 
+/** GetUserRequest represents a request to get details of a specific user. */
 export interface GetUserRequest {
+  /** The ID of the user to retrieve. */
   userId: string;
 }
 
+/** GetUserResponse represents the response containing user details. */
 export interface GetUserResponse {
+  /** The requested user. */
   user?: User | undefined;
 }
 
+/** ListUsersRequest represents a request to list all registered users. */
 export interface ListUsersRequest {
 }
 
+/** ListUsersResponse represents the response containing the list of users. */
 export interface ListUsersResponse {
+  /** The list of registered users. */
   users: User[];
 }
 
+/** UpdateUserRequest represents a request to update an existing user. */
 export interface UpdateUserRequest {
-  /** Field mask to specify which fields to update (optional for now, full replace). */
+  /** The updated user definition. */
   user?: User | undefined;
 }
 
+/** UpdateUserResponse represents the response containing the updated user. */
 export interface UpdateUserResponse {
+  /** The updated user. */
   user?: User | undefined;
 }
 
+/** DeleteUserRequest represents a request to delete a user. */
 export interface DeleteUserRequest {
+  /** The ID of the user to delete. */
   userId: string;
 }
 
+/** DeleteUserResponse represents the response to a delete request. */
 export interface DeleteUserResponse {
 }
 
+/** GetDiscoveryStatusRequest represents a request to get the status of discovery providers. */
 export interface GetDiscoveryStatusRequest {
 }
 
+/** GetDiscoveryStatusResponse represents the response containing discovery status. */
 export interface GetDiscoveryStatusResponse {
+  /** The list of discovery provider statuses. */
   providers: DiscoveryProviderStatus[];
 }
 
+/** DiscoveryProviderStatus represents the status of a single discovery provider. */
 export interface DiscoveryProviderStatus {
+  /** The name of the provider. */
   name: string;
-  /** "OK", "ERROR" */
+  /** The status of the provider (e.g., "OK", "ERROR"). */
   status: string;
+  /** The last error message, if any. */
   lastError: string;
-  /** ISO 8601 */
+  /** The timestamp of the last run (ISO 8601). */
   lastRunAt: string;
+  /** The number of services discovered in the last run. */
   discoveredCount: number;
 }
 
+/** ListAuditLogsRequest represents a request to list audit logs. */
 export interface ListAuditLogsRequest {
-  /** ISO 8601 */
+  /** The start time filter (ISO 8601). */
   startTime: string;
-  /** ISO 8601 */
+  /** The end time filter (ISO 8601). */
   endTime: string;
+  /** Filter by tool name. */
   toolName: string;
+  /** Filter by user ID. */
   userId: string;
+  /** Filter by profile ID. */
   profileId: string;
+  /** The maximum number of logs to return. */
   limit: number;
+  /** The offset for pagination. */
   offset: number;
 }
 
+/** ListAuditLogsResponse represents the response containing audit logs. */
 export interface ListAuditLogsResponse {
+  /** The list of audit log entries. */
   entries: AuditLogEntry[];
 }
 
+/** AuditLogEntry represents a single audit log entry. */
 export interface AuditLogEntry {
-  /** ISO 8601 */
+  /** The timestamp of the event (ISO 8601). */
   timestamp: string;
+  /** The name of the tool executed. */
   toolName: string;
+  /** The ID of the user who executed the tool. */
   userId: string;
+  /** The ID of the profile used. */
   profileId: string;
-  /** JSON string */
+  /** The arguments passed to the tool (JSON string). */
   arguments: string;
-  /** JSON string */
+  /** The result returned by the tool (JSON string). */
   result: string;
+  /** Any error returned by the tool. */
   error: string;
+  /** The duration of the execution as a string. */
   duration: string;
+  /** The duration of the execution in milliseconds. */
   durationMs: Long;
 }
 
@@ -2084,7 +2152,10 @@ export const AuditLogEntry: MessageFns<AuditLogEntry> = {
   },
 };
 
-/** AdminService provides administrative operations for the MCP Any server. */
+/**
+ * AdminService provides administrative operations for the MCP Any server.
+ * It allows management of services, users, tools, and audit logs.
+ */
 export interface AdminService {
   /** ClearCache clears all cached data in the server. */
   ClearCache(request: DeepPartial<ClearCacheRequest>, metadata?: grpc.Metadata): Promise<ClearCacheResponse>;

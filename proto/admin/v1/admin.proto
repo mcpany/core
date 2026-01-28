@@ -14,6 +14,7 @@ option go_package = "github.com/mcpany/core/proto/admin/v1";
 option java_outer_classname = "AdminProto";
 
 // AdminService provides administrative operations for the MCP Any server.
+// It allows management of services, users, tools, and audit logs.
 service AdminService {
   // ClearCache clears all cached data in the server.
   rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
@@ -64,123 +65,192 @@ service AdminService {
   }
 }
 
+// ClearCacheRequest represents a request to clear the server cache.
 message ClearCacheRequest {}
 
+// ClearCacheResponse represents the response to a cache clear request.
 message ClearCacheResponse {}
 
+// ListServicesRequest represents a request to list all registered services.
 message ListServicesRequest {}
 
+// ListServicesResponse represents the response containing the list of services.
 message ListServicesResponse {
+  // The list of registered upstream service configurations (deprecated).
   repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
+  // The list of service states, including status and errors.
   repeated ServiceState service_states = 2;
 }
 
+// ServiceState represents the current state of a service.
 message ServiceState {
+  // The configuration of the service.
   mcpany.config.v1.UpstreamServiceConfig config = 1;
-  string status = 2; // "OK", "ERROR", "CONNECTING"
+  // The current status of the service (e.g., "OK", "ERROR", "CONNECTING").
+  string status = 2;
+  // Any error message associated with the service status.
   string error = 3;
 }
 
+// GetServiceRequest represents a request to get details of a specific service.
 message GetServiceRequest {
+  // The ID of the service to retrieve.
   string service_id = 1;
 }
 
+// GetServiceResponse represents the response containing service details.
 message GetServiceResponse {
+  // The configuration of the requested service (deprecated).
   mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
+  // The current state of the requested service.
   ServiceState service_state = 2;
 }
 
+// ListToolsRequest represents a request to list all registered tools.
 message ListToolsRequest {}
 
+// ListToolsResponse represents the response containing the list of tools.
 message ListToolsResponse {
+  // The list of registered tools.
   repeated mcpany.mcp_router.v1.Tool tools = 1;
 }
 
+// GetToolRequest represents a request to get details of a specific tool.
 message GetToolRequest {
+  // The name of the tool to retrieve.
   string tool_name = 1;
 }
 
+// GetToolResponse represents the response containing tool details.
 message GetToolResponse {
+  // The requested tool.
   mcpany.mcp_router.v1.Tool tool = 1;
 }
 
 // User Management Messages
 
+// CreateUserRequest represents a request to create a new user.
 message CreateUserRequest {
+  // The definition of the user to create.
   mcpany.config.v1.User user = 1;
 }
 
+// CreateUserResponse represents the response containing the created user.
 message CreateUserResponse {
+  // The created user.
   mcpany.config.v1.User user = 1;
 }
 
+// GetUserRequest represents a request to get details of a specific user.
 message GetUserRequest {
+  // The ID of the user to retrieve.
   string user_id = 1;
 }
 
+// GetUserResponse represents the response containing user details.
 message GetUserResponse {
+  // The requested user.
   mcpany.config.v1.User user = 1;
 }
 
+// ListUsersRequest represents a request to list all registered users.
 message ListUsersRequest {}
 
+// ListUsersResponse represents the response containing the list of users.
 message ListUsersResponse {
+  // The list of registered users.
   repeated mcpany.config.v1.User users = 1;
 }
 
+// UpdateUserRequest represents a request to update an existing user.
 message UpdateUserRequest {
+  // The updated user definition.
   mcpany.config.v1.User user = 1;
   // Field mask to specify which fields to update (optional for now, full replace).
 }
 
+// UpdateUserResponse represents the response containing the updated user.
 message UpdateUserResponse {
+  // The updated user.
   mcpany.config.v1.User user = 1;
 }
 
+// DeleteUserRequest represents a request to delete a user.
 message DeleteUserRequest {
+  // The ID of the user to delete.
   string user_id = 1;
 }
 
+// DeleteUserResponse represents the response to a delete request.
 message DeleteUserResponse {}
 
+// GetDiscoveryStatusRequest represents a request to get the status of discovery providers.
 message GetDiscoveryStatusRequest {}
 
+// GetDiscoveryStatusResponse represents the response containing discovery status.
 message GetDiscoveryStatusResponse {
+  // The list of discovery provider statuses.
   repeated DiscoveryProviderStatus providers = 1;
 }
 
+// DiscoveryProviderStatus represents the status of a single discovery provider.
 message DiscoveryProviderStatus {
+  // The name of the provider.
   string name = 1;
-  string status = 2; // "OK", "ERROR"
+  // The status of the provider (e.g., "OK", "ERROR").
+  string status = 2;
+  // The last error message, if any.
   string last_error = 3;
-  string last_run_at = 4; // ISO 8601
+  // The timestamp of the last run (ISO 8601).
+  string last_run_at = 4;
+  // The number of services discovered in the last run.
   int32 discovered_count = 5;
 }
 
 // Audit Log Messages
 
+// ListAuditLogsRequest represents a request to list audit logs.
 message ListAuditLogsRequest {
-  string start_time = 1; // ISO 8601
-  string end_time = 2;   // ISO 8601
+  // The start time filter (ISO 8601).
+  string start_time = 1;
+  // The end time filter (ISO 8601).
+  string end_time = 2;
+  // Filter by tool name.
   string tool_name = 3;
+  // Filter by user ID.
   string user_id = 4;
+  // Filter by profile ID.
   string profile_id = 5;
+  // The maximum number of logs to return.
   int32 limit = 6;
+  // The offset for pagination.
   int32 offset = 7;
 }
 
+// ListAuditLogsResponse represents the response containing audit logs.
 message ListAuditLogsResponse {
+  // The list of audit log entries.
   repeated AuditLogEntry entries = 1;
 }
 
+// AuditLogEntry represents a single audit log entry.
 message AuditLogEntry {
-  string timestamp = 1; // ISO 8601
+  // The timestamp of the event (ISO 8601).
+  string timestamp = 1;
+  // The name of the tool executed.
   string tool_name = 2;
+  // The ID of the user who executed the tool.
   string user_id = 3;
+  // The ID of the profile used.
   string profile_id = 4;
-  string arguments = 5; // JSON string
-  string result = 6;    // JSON string
+  // The arguments passed to the tool (JSON string).
+  string arguments = 5;
+  // The result returned by the tool (JSON string).
+  string result = 6;
+  // Any error returned by the tool.
   string error = 7;
+  // The duration of the execution as a string.
   string duration = 8;
+  // The duration of the execution in milliseconds.
   int64 duration_ms = 9;
 }

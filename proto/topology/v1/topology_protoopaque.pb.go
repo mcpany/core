@@ -25,6 +25,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// NodeType defines the category of a node.
 type NodeType int32
 
 const (
@@ -90,13 +91,17 @@ func (x NodeType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// NodeStatus defines the operational state of a node.
 type NodeStatus int32
 
 const (
 	NodeStatus_NODE_STATUS_UNSPECIFIED NodeStatus = 0
-	NodeStatus_NODE_STATUS_ACTIVE      NodeStatus = 1
-	NodeStatus_NODE_STATUS_INACTIVE    NodeStatus = 2
-	NodeStatus_NODE_STATUS_ERROR       NodeStatus = 3
+	// The node is active and healthy.
+	NodeStatus_NODE_STATUS_ACTIVE NodeStatus = 1
+	// The node is inactive or disabled.
+	NodeStatus_NODE_STATUS_INACTIVE NodeStatus = 2
+	// The node is in an error state.
+	NodeStatus_NODE_STATUS_ERROR NodeStatus = 3
 )
 
 // Enum value maps for NodeStatus.
@@ -137,7 +142,7 @@ func (x NodeStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Graph represents the full network topology.
+// Graph represents the full network topology of the MCP ecosystem.
 type Graph struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Clients *[]*Node               `protobuf:"bytes,1,rep,name=clients"`
@@ -209,8 +214,10 @@ func (x *Graph) ClearCore() {
 type Graph_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of connected clients.
 	Clients []*Node
-	Core    *Node
+	// The core MCP Any server node.
+	Core *Node
 }
 
 func (b0 Graph_builder) Build() *Graph {
@@ -222,7 +229,7 @@ func (b0 Graph_builder) Build() *Graph {
 	return m0
 }
 
-// Node represents a node in the topology graph.
+// Node represents a single entity in the topology graph.
 type Node struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id       string                 `protobuf:"bytes,1,opt,name=id"`
@@ -354,13 +361,20 @@ func (x *Node) ClearMetrics() {
 type Node_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id       string
-	Label    string
-	Type     NodeType
-	Status   NodeStatus
+	// Unique identifier for the node.
+	Id string
+	// Human-readable label for the node.
+	Label string
+	// The type of the node.
+	Type NodeType
+	// The operational status of the node.
+	Status NodeStatus
+	// Additional metadata associated with the node.
 	Metadata map[string]string
+	// Child nodes contained within or connected to this node.
 	Children []*Node
-	Metrics  *NodeMetrics
+	// Performance metrics for the node.
+	Metrics *NodeMetrics
 }
 
 func (b0 Node_builder) Build() *Node {
@@ -377,6 +391,7 @@ func (b0 Node_builder) Build() *Node {
 	return m0
 }
 
+// NodeMetrics encapsulates performance metrics for a node.
 type NodeMetrics struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Qps       float64                `protobuf:"fixed64,1,opt,name=qps"`
@@ -447,8 +462,11 @@ func (x *NodeMetrics) SetErrorRate(v float64) {
 type NodeMetrics_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Qps       float64
+	// Queries per second.
+	Qps float64
+	// Average latency in milliseconds.
 	LatencyMs float64
+	// Error rate as a percentage (0.0 to 1.0).
 	ErrorRate float64
 }
 

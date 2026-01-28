@@ -26,20 +26,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Defines a health check for an HTTP-based service.
+// HttpHealthCheck defines a health check mechanism using HTTP requests.
 type HttpHealthCheck struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// The full URL to send the health check request to.
 	Url *string `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
-	// The expected HTTP status code for a successful health check. Defaults to 200.
+	// The expected HTTP status code for a successful check (default: 200).
 	ExpectedCode *int32 `protobuf:"varint,2,opt,name=expected_code,json=expectedCode" json:"expected_code,omitempty"`
-	// Optional: A substring that must be present in the response body for the check to pass.
+	// A substring that must be present in the response body for the check to pass.
 	ExpectedResponseBodyContains *string `protobuf:"bytes,3,opt,name=expected_response_body_contains,json=expectedResponseBodyContains" json:"expected_response_body_contains,omitempty"`
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration `protobuf:"bytes,4,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration `protobuf:"bytes,5,opt,name=timeout" json:"timeout,omitempty"`
-	// The HTTP method to use for the health check. Defaults to "GET".
+	// The HTTP method to use (e.g., "GET", "HEAD"). Default is "GET".
 	Method        *string `protobuf:"bytes,6,opt,name=method" json:"method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -207,15 +207,15 @@ type HttpHealthCheck_builder struct {
 
 	// The full URL to send the health check request to.
 	Url *string
-	// The expected HTTP status code for a successful health check. Defaults to 200.
+	// The expected HTTP status code for a successful check (default: 200).
 	ExpectedCode *int32
-	// Optional: A substring that must be present in the response body for the check to pass.
+	// A substring that must be present in the response body for the check to pass.
 	ExpectedResponseBodyContains *string
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration
-	// The HTTP method to use for the health check. Defaults to "GET".
+	// The HTTP method to use (e.g., "GET", "HEAD"). Default is "GET".
 	Method *string
 }
 
@@ -232,18 +232,18 @@ func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
 	return m0
 }
 
-// Defines a health check for a websocket-based service.
+// WebsocketHealthCheck defines a health check mechanism for Websocket services.
 type WebsocketHealthCheck struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The message to send to the websocket service for the health check.
+	// The message to send to the websocket server to initiate the check (e.g., "ping").
 	Message *string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	// A substring expected in the service's response for the check to pass.
+	// A substring that must be present in the response message for the check to pass.
 	ExpectedResponseContains *string `protobuf:"bytes,2,opt,name=expected_response_contains,json=expectedResponseContains" json:"expected_response_contains,omitempty"`
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration `protobuf:"bytes,3,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration `protobuf:"bytes,4,opt,name=timeout" json:"timeout,omitempty"`
-	// The URL to send the health check request to.
+	// The full URL of the websocket endpoint.
 	Url           *string `protobuf:"bytes,5,opt,name=url" json:"url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -387,15 +387,15 @@ func (x *WebsocketHealthCheck) ClearUrl() {
 type WebsocketHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The message to send to the websocket service for the health check.
+	// The message to send to the websocket server to initiate the check (e.g., "ping").
 	Message *string
-	// A substring expected in the service's response for the check to pass.
+	// A substring that must be present in the response message for the check to pass.
 	ExpectedResponseContains *string
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration
-	// The URL to send the health check request to.
+	// The full URL of the websocket endpoint.
 	Url *string
 }
 
@@ -411,22 +411,22 @@ func (b0 WebsocketHealthCheck_builder) Build() *WebsocketHealthCheck {
 	return m0
 }
 
-// Defines a health check for a gRPC-based service.
+// GrpcHealthCheck defines a health check mechanism for gRPC services, typically using the standard Health service.
 type GrpcHealthCheck struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The gRPC service name to check (e.g., "grpc.health.v1.Health").
+	// The name of the gRPC service to check (e.g., "grpc.health.v1.Health").
 	Service *string `protobuf:"bytes,1,opt,name=service" json:"service,omitempty"`
-	// The gRPC method to call.
+	// The specific gRPC method to call.
 	Method *string `protobuf:"bytes,2,opt,name=method" json:"method,omitempty"`
-	// A JSON string representing the request message.
+	// The JSON representation of the request message.
 	Request *string `protobuf:"bytes,3,opt,name=request" json:"request,omitempty"`
-	// A JSON string representing the expected response message.
+	// The JSON representation of the expected response message.
 	ExpectedResponse *string `protobuf:"bytes,4,opt,name=expected_response,json=expectedResponse" json:"expected_response,omitempty"`
-	// Set to true if connecting to the gRPC service without TLS.
+	// If true, the connection will use plaintext instead of TLS.
 	Insecure *bool `protobuf:"varint,5,opt,name=insecure" json:"insecure,omitempty"`
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration `protobuf:"bytes,6,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout       *durationpb.Duration `protobuf:"bytes,7,opt,name=timeout" json:"timeout,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -614,19 +614,19 @@ func (x *GrpcHealthCheck) ClearTimeout() {
 type GrpcHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The gRPC service name to check (e.g., "grpc.health.v1.Health").
+	// The name of the gRPC service to check (e.g., "grpc.health.v1.Health").
 	Service *string
-	// The gRPC method to call.
+	// The specific gRPC method to call.
 	Method *string
-	// A JSON string representing the request message.
+	// The JSON representation of the request message.
 	Request *string
-	// A JSON string representing the expected response message.
+	// The JSON representation of the expected response message.
 	ExpectedResponse *string
-	// Set to true if connecting to the gRPC service without TLS.
+	// If true, the connection will use plaintext instead of TLS.
 	Insecure *bool
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for a response before considering the check failed.
 	Timeout *durationpb.Duration
 }
 
@@ -644,18 +644,18 @@ func (b0 GrpcHealthCheck_builder) Build() *GrpcHealthCheck {
 	return m0
 }
 
-// Defines a health check for a command line-based service.
+// CommandLineHealthCheck defines a health check mechanism for CLI-based services.
 type CommandLineHealthCheck struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The method or command to send to the command line service for the health check.
+	// The command or method to invoke to check health.
 	Method *string `protobuf:"bytes,1,opt,name=method" json:"method,omitempty"`
-	// The input/prompt to send to the service.
+	// The input or prompt to pass to the command.
 	Prompt *string `protobuf:"bytes,2,opt,name=prompt" json:"prompt,omitempty"`
-	// A substring expected in the service's output for the check to pass.
+	// A substring that must be present in the command's output for the check to pass.
 	ExpectedResponseContains *string `protobuf:"bytes,3,opt,name=expected_response_contains,json=expectedResponseContains" json:"expected_response_contains,omitempty"`
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration `protobuf:"bytes,4,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
+	// The maximum time to wait for execution before considering the check failed.
 	Timeout       *durationpb.Duration `protobuf:"bytes,5,opt,name=timeout" json:"timeout,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -799,15 +799,15 @@ func (x *CommandLineHealthCheck) ClearTimeout() {
 type CommandLineHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The method or command to send to the command line service for the health check.
+	// The command or method to invoke to check health.
 	Method *string
-	// The input/prompt to send to the service.
+	// The input or prompt to pass to the command.
 	Prompt *string
-	// A substring expected in the service's output for the check to pass.
+	// A substring that must be present in the command's output for the check to pass.
 	ExpectedResponseContains *string
-	// How often to perform the health check.
+	// The frequency at which to perform the health check.
 	Interval *durationpb.Duration
-	// The timeout for each health check attempt.
+	// The maximum time to wait for execution before considering the check failed.
 	Timeout *durationpb.Duration
 }
 
@@ -823,9 +823,12 @@ func (b0 CommandLineHealthCheck_builder) Build() *CommandLineHealthCheck {
 	return m0
 }
 
-// Defines a health check for a WebRTC-based service.
+// WebRTCHealthCheck defines a health check mechanism for WebRTC services.
+// It can use either HTTP or Websocket for the signaling check.
 type WebRTCHealthCheck struct {
 	state protoimpl.MessageState `protogen:"hybrid.v1"`
+	// The underlying health check mechanism.
+	//
 	// Types that are valid to be assigned to HealthCheckType:
 	//
 	//	*WebRTCHealthCheck_Http
@@ -960,6 +963,8 @@ func (x *WebRTCHealthCheck) WhichHealthCheckType() case_WebRTCHealthCheck_Health
 
 type WebRTCHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The underlying health check mechanism.
 
 	// Fields of oneof HealthCheckType:
 	Http      *HttpHealthCheck

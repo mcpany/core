@@ -11,29 +11,46 @@ option go_package = "github.com/mcpany/core/proto/bus";
 option java_outer_classname = "BusProto";
 option features.(pb.go).api_level = API_OPAQUE;
 
+// MessageBus configuration for the internal event bus.
 message MessageBus {
+  // The specific type of bus implementation to use.
   oneof bus_type {
+    // Configuration for an in-memory bus (default).
     InMemoryBus in_memory = 1;
+    // Configuration for a Redis-based bus.
     RedisBus redis = 2;
+    // Configuration for a NATS-based bus.
     NatsBus nats = 3;
+    // Configuration for a Kafka-based bus.
     KafkaBus kafka = 4;
   }
 }
 
+// InMemoryBus defines configuration for an in-memory event bus.
 message InMemoryBus {}
 
+// NatsBus defines configuration for a NATS event bus.
 message NatsBus {
+  // The NATS server URL (e.g., "nats://localhost:4222").
   string server_url = 1;
 }
 
+// RedisBus defines configuration for a Redis event bus.
 message RedisBus {
+  // The Redis server address (e.g., "localhost:6379").
   string address = 1;
+  // The Redis database index.
   int32 db = 2;
+  // The Redis password.
   string password = 3;
 }
 
+// KafkaBus defines configuration for a Kafka event bus.
 message KafkaBus {
+  // A list of Kafka broker addresses.
   repeated string brokers = 1;
+  // A prefix to apply to all topics.
   string topic_prefix = 2;
+  // The consumer group ID.
   string consumer_group = 3;
 }

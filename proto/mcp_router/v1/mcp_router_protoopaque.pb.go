@@ -26,6 +26,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The role of the message sender.
 type PromptMessage_Role int32
 
 const (
@@ -67,7 +68,7 @@ func (x PromptMessage_Role) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Represents an MCP Tool exposed by the aggregator
+// Tool represents an MCP Tool exposed by the aggregator.
 type Tool struct {
 	state                          protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name                *string                `protobuf:"bytes,1,opt,name=name"`
@@ -441,20 +442,34 @@ func (x *Tool) ClearIntegrity() {
 type Tool_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name                *string
-	DisplayName         *string
-	Description         *string
-	ServiceId           *string
+	// Unique name, e.g., "serviceName/methodName" or a hash.
+	Name *string
+	// User-friendly display name.
+	DisplayName *string
+	// Description of the tool's functionality.
+	Description *string
+	// The ID of the registered upstream service that provides this tool.
+	ServiceId *string
+	// Fully qualified name of the underlying gRPC method, e.g., /pkg.UserService/Method.
 	UnderlyingMethodFqn *string
-	RequestTypeFqn      *string
-	ResponseTypeFqn     *string
-	InputSchema         *structpb.Struct
-	OutputSchema        *structpb.Struct
-	Annotations         *ToolAnnotations
-	IsStream            *bool
-	Tags                []string
-	Profiles            []string
-	Integrity           *ToolIntegrity
+	// Fully qualified name of the underlying method's request message.
+	RequestTypeFqn *string
+	// Fully qualified name of the underlying method's response message.
+	ResponseTypeFqn *string
+	// JSON schema for the input arguments.
+	InputSchema *structpb.Struct
+	// JSON schema for the output result.
+	OutputSchema *structpb.Struct
+	// Additional annotations and hints for the tool.
+	Annotations *ToolAnnotations
+	// Indicates if the tool produces a stream of results.
+	IsStream *bool
+	// Tags for categorization and filtering.
+	Tags []string
+	// List of profiles that have access to this tool.
+	Profiles []string
+	// Cryptographic integrity check for the tool definition.
+	Integrity *ToolIntegrity
 }
 
 func (b0 Tool_builder) Build() *Tool {
@@ -502,6 +517,7 @@ func (b0 Tool_builder) Build() *Tool {
 	return m0
 }
 
+// ToolIntegrity contains hash information for verifying tool definitions.
 type ToolIntegrity struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Hash        *string                `protobuf:"bytes,1,opt,name=hash"`
@@ -594,7 +610,9 @@ func (x *ToolIntegrity) ClearAlgorithm() {
 type ToolIntegrity_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Hash      *string
+	// The hash value.
+	Hash *string
+	// The algorithm used (e.g., "sha256").
 	Algorithm *string
 }
 
@@ -613,6 +631,7 @@ func (b0 ToolIntegrity_builder) Build() *ToolIntegrity {
 	return m0
 }
 
+// ToolAnnotations provides hints for LLMs on how to use the tool.
 type ToolAnnotations struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Title           *string                `protobuf:"bytes,1,opt,name=title"`
@@ -823,6 +842,7 @@ func (x *ToolAnnotations) ClearOutputSchema() {
 type ToolAnnotations_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// A short title for the tool.
 	Title *string
 	// If true, the tool does not modify its environment.
 	// Default: false
@@ -842,8 +862,10 @@ type ToolAnnotations_builder struct {
 	// a web search tool is open, whereas that of a memory tool is not.
 	// Default: true
 	OpenWorldHint *bool
-	InputSchema   *structpb.Struct
-	OutputSchema  *structpb.Struct
+	// Override input schema.
+	InputSchema *structpb.Struct
+	// Override output schema.
+	OutputSchema *structpb.Struct
 }
 
 func (b0 ToolAnnotations_builder) Build() *ToolAnnotations {
@@ -875,6 +897,7 @@ func (b0 ToolAnnotations_builder) Build() *ToolAnnotations {
 	return m0
 }
 
+// ListToolsRequest represents a request to list available tools.
 type ListToolsRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -918,6 +941,7 @@ func (b0 ListToolsRequest_builder) Build() *ListToolsRequest {
 	return m0
 }
 
+// ListToolsResponse represents the response containing the list of tools.
 type ListToolsResponse struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tools *[]*Tool               `protobuf:"bytes,1,rep,name=tools"`
@@ -966,6 +990,7 @@ func (x *ListToolsResponse) SetTools(v []*Tool) {
 type ListToolsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of tools matching the request.
 	Tools []*Tool
 }
 
@@ -977,6 +1002,7 @@ func (b0 ListToolsResponse_builder) Build() *ListToolsResponse {
 	return m0
 }
 
+// CallToolRequest represents a request to execute a tool.
 type CallToolRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ToolId      *string                `protobuf:"bytes,1,opt,name=tool_id,json=toolId"`
@@ -1064,7 +1090,10 @@ func (x *CallToolRequest) ClearInputs() {
 type CallToolRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// ID of the tool to execute.
 	ToolId *string
+	// Actual inputs for the tool, as a JSON-like object.
+	// The fields should match the fields of the underlying gRPC method's request message.
 	Inputs *structpb.Struct
 }
 
@@ -1080,6 +1109,7 @@ func (b0 CallToolRequest_builder) Build() *CallToolRequest {
 	return m0
 }
 
+// CallToolResponse represents the result of a tool execution.
 type CallToolResponse struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Outputs *structpb.Struct       `protobuf:"bytes,1,opt,name=outputs"`
@@ -1137,6 +1167,8 @@ func (x *CallToolResponse) ClearOutputs() {
 type CallToolResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Actual outputs from the tool, as a JSON-like object.
+	// The fields will match the fields of the underlying gRPC method's response message.
 	Outputs *structpb.Struct
 }
 
@@ -1148,7 +1180,7 @@ func (b0 CallToolResponse_builder) Build() *CallToolResponse {
 	return m0
 }
 
-// A Prompt is a pre-defined template for interacting with a language model.
+// Prompt is a pre-defined template for interacting with a language model.
 type Prompt struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -1283,10 +1315,14 @@ func (x *Prompt) ClearDescription() {
 type Prompt_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name        *string
-	Title       *string
+	// Unique name of the prompt.
+	Name *string
+	// Display title.
+	Title *string
+	// Description of what the prompt does.
 	Description *string
-	Arguments   []*PromptArgument
+	// Arguments required by the prompt.
+	Arguments []*PromptArgument
 }
 
 func (b0 Prompt_builder) Build() *Prompt {
@@ -1309,6 +1345,7 @@ func (b0 Prompt_builder) Build() *Prompt {
 	return m0
 }
 
+// PromptArgument defines an argument for a prompt template.
 type PromptArgument struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -1426,9 +1463,12 @@ func (x *PromptArgument) ClearRequired() {
 type PromptArgument_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name        *string
+	// Name of the argument.
+	Name *string
+	// Description of the argument.
 	Description *string
-	Required    *bool
+	// Whether the argument is required.
+	Required *bool
 }
 
 func (b0 PromptArgument_builder) Build() *PromptArgument {
@@ -1450,6 +1490,7 @@ func (b0 PromptArgument_builder) Build() *PromptArgument {
 	return m0
 }
 
+// ListPromptsRequest represents a request to list available prompts.
 type ListPromptsRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Cursor      *string                `protobuf:"bytes,1,opt,name=cursor"`
@@ -1514,6 +1555,7 @@ func (x *ListPromptsRequest) ClearCursor() {
 type ListPromptsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Cursor for pagination.
 	Cursor *string
 }
 
@@ -1528,6 +1570,7 @@ func (b0 ListPromptsRequest_builder) Build() *ListPromptsRequest {
 	return m0
 }
 
+// ListPromptsResponse represents the response containing list of prompts.
 type ListPromptsResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Prompts     *[]*Prompt             `protobuf:"bytes,1,rep,name=prompts"`
@@ -1606,7 +1649,9 @@ func (x *ListPromptsResponse) ClearNextCursor() {
 type ListPromptsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Prompts    []*Prompt
+	// The list of prompts.
+	Prompts []*Prompt
+	// Cursor for next page.
 	NextCursor *string
 }
 
@@ -1622,6 +1667,7 @@ func (b0 ListPromptsResponse_builder) Build() *ListPromptsResponse {
 	return m0
 }
 
+// GetPromptRequest represents a request to retrieve a fully hydrated prompt.
 type GetPromptRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -1709,7 +1755,9 @@ func (x *GetPromptRequest) ClearArguments() {
 type GetPromptRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name      *string
+	// The name of the prompt to retrieve.
+	Name *string
+	// The arguments to fill the template with.
 	Arguments *structpb.Struct
 }
 
@@ -1725,6 +1773,7 @@ func (b0 GetPromptRequest_builder) Build() *GetPromptRequest {
 	return m0
 }
 
+// GetPromptResponse represents the hydrated prompt ready for the LLM.
 type GetPromptResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Description *string                `protobuf:"bytes,1,opt,name=description"`
@@ -1803,8 +1852,10 @@ func (x *GetPromptResponse) ClearDescription() {
 type GetPromptResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Description of the prompt.
 	Description *string
-	Messages    []*PromptMessage
+	// The sequence of messages comprising the prompt.
+	Messages []*PromptMessage
 }
 
 func (b0 GetPromptResponse_builder) Build() *GetPromptResponse {
@@ -1819,6 +1870,7 @@ func (b0 GetPromptResponse_builder) Build() *GetPromptResponse {
 	return m0
 }
 
+// PromptMessage represents a single message in the prompt conversation.
 type PromptMessage struct {
 	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_Role        PromptMessage_Role      `protobuf:"varint,1,opt,name=role,enum=mcpany.mcp_router.v1.PromptMessage_Role"`
@@ -2043,6 +2095,8 @@ type PromptMessage_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Role *PromptMessage_Role
+	// The content of the message.
+
 	// Fields of oneof xxx_hidden_Content:
 	Text     *TextContent
 	Image    *ImageContent
@@ -2112,6 +2166,7 @@ func (*promptMessage_Audio) isPromptMessage_Content() {}
 
 func (*promptMessage_Resource) isPromptMessage_Content() {}
 
+// TextContent represents text-based content.
 type TextContent struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Text        *string                `protobuf:"bytes,1,opt,name=text"`
@@ -2176,6 +2231,7 @@ func (x *TextContent) ClearText() {
 type TextContent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The text body.
 	Text *string
 }
 
@@ -2190,6 +2246,7 @@ func (b0 TextContent_builder) Build() *TextContent {
 	return m0
 }
 
+// ImageContent represents image content.
 type ImageContent struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Data        *string                `protobuf:"bytes,1,opt,name=data"`
@@ -2282,7 +2339,9 @@ func (x *ImageContent) ClearMimeType() {
 type ImageContent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Data     *string
+	// Base64 encoded image data.
+	Data *string
+	// MIME type of the image.
 	MimeType *string
 }
 
@@ -2301,6 +2360,7 @@ func (b0 ImageContent_builder) Build() *ImageContent {
 	return m0
 }
 
+// AudioContent represents audio content.
 type AudioContent struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Data        *string                `protobuf:"bytes,1,opt,name=data"`
@@ -2393,7 +2453,9 @@ func (x *AudioContent) ClearMimeType() {
 type AudioContent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Data     *string
+	// Base64 encoded audio data.
+	Data *string
+	// MIME type of the audio.
 	MimeType *string
 }
 
@@ -2412,6 +2474,7 @@ func (b0 AudioContent_builder) Build() *AudioContent {
 	return m0
 }
 
+// ResourceContent represents content that is a reference to an MCP resource.
 type ResourceContent struct {
 	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_Uri         *string                   `protobuf:"bytes,1,opt,name=uri"`
@@ -2591,8 +2654,12 @@ func (x *ResourceContent) WhichContent() case_ResourceContent_Content {
 type ResourceContent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Uri      *string
+	// The URI of the resource.
+	Uri *string
+	// The MIME type of the resource.
 	MimeType *string
+	// The actual content of the resource (inline).
+
 	// Fields of oneof xxx_hidden_Content:
 	Text *string
 	Blob []byte
@@ -2646,7 +2713,7 @@ func (*resourceContent_Text) isResourceContent_Content() {}
 
 func (*resourceContent_Blob) isResourceContent_Content() {}
 
-// A Resource is a piece of data that can be used by tools or prompts.
+// Resource represents a piece of data that can be used by tools or prompts.
 type Resource struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
@@ -2823,11 +2890,16 @@ func (x *Resource) ClearContent() {
 type Resource_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id          *string
-	Name        *string
+	// Unique identifier.
+	Id *string
+	// Name of the resource.
+	Name *string
+	// Description of the resource.
 	Description *string
-	Type        *string
-	Content     []byte
+	// MIME type of the resource (e.g., "text/plain", "image/png").
+	Type *string
+	// The content of the resource (if inline).
+	Content []byte
 }
 
 func (b0 Resource_builder) Build() *Resource {
@@ -2857,6 +2929,7 @@ func (b0 Resource_builder) Build() *Resource {
 	return m0
 }
 
+// ListResourcesRequest represents a request to list available resources.
 type ListResourcesRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -2900,6 +2973,7 @@ func (b0 ListResourcesRequest_builder) Build() *ListResourcesRequest {
 	return m0
 }
 
+// ListResourcesResponse represents the response containing the list of resources.
 type ListResourcesResponse struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Resources *[]*Resource           `protobuf:"bytes,1,rep,name=resources"`
@@ -2948,6 +3022,7 @@ func (x *ListResourcesResponse) SetResources(v []*Resource) {
 type ListResourcesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of resources.
 	Resources []*Resource
 }
 

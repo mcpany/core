@@ -27,6 +27,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ListSkillsRequest represents a request to list all skills.
 type ListSkillsRequest struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -70,6 +71,7 @@ func (b0 ListSkillsRequest_builder) Build() *ListSkillsRequest {
 	return m0
 }
 
+// ListSkillsResponse represents the response containing the list of skills.
 type ListSkillsResponse struct {
 	state             protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Skills *[]*v1.Skill           `protobuf:"bytes,1,rep,name=skills"`
@@ -118,6 +120,7 @@ func (x *ListSkillsResponse) SetSkills(v []*v1.Skill) {
 type ListSkillsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of skills.
 	Skills []*v1.Skill
 }
 
@@ -129,6 +132,7 @@ func (b0 ListSkillsResponse_builder) Build() *ListSkillsResponse {
 	return m0
 }
 
+// GetSkillRequest represents a request to get a specific skill.
 type GetSkillRequest struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name"`
@@ -175,6 +179,7 @@ func (x *GetSkillRequest) SetName(v string) {
 type GetSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the skill to retrieve.
 	Name string
 }
 
@@ -186,6 +191,7 @@ func (b0 GetSkillRequest_builder) Build() *GetSkillRequest {
 	return m0
 }
 
+// GetSkillResponse represents the response containing the skill details.
 type GetSkillResponse struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
@@ -243,6 +249,7 @@ func (x *GetSkillResponse) ClearSkill() {
 type GetSkillResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The requested skill.
 	Skill *v1.Skill
 }
 
@@ -254,6 +261,7 @@ func (b0 GetSkillResponse_builder) Build() *GetSkillResponse {
 	return m0
 }
 
+// CreateSkillRequest represents a request to create a new skill.
 type CreateSkillRequest struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
@@ -311,6 +319,7 @@ func (x *CreateSkillRequest) ClearSkill() {
 type CreateSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The definition of the skill to create.
 	Skill *v1.Skill
 }
 
@@ -322,6 +331,7 @@ func (b0 CreateSkillRequest_builder) Build() *CreateSkillRequest {
 	return m0
 }
 
+// CreateSkillResponse represents the response containing the created skill.
 type CreateSkillResponse struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
@@ -379,6 +389,7 @@ func (x *CreateSkillResponse) ClearSkill() {
 type CreateSkillResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The created skill.
 	Skill *v1.Skill
 }
 
@@ -390,6 +401,7 @@ func (b0 CreateSkillResponse_builder) Build() *CreateSkillResponse {
 	return m0
 }
 
+// UpdateSkillRequest represents a request to update an existing skill.
 type UpdateSkillRequest struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name  string                 `protobuf:"bytes,1,opt,name=name"`
@@ -459,7 +471,9 @@ func (x *UpdateSkillRequest) ClearSkill() {
 type UpdateSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name  string
+	// The name of the skill to update.
+	Name string
+	// The new definition of the skill.
 	Skill *v1.Skill
 }
 
@@ -472,6 +486,7 @@ func (b0 UpdateSkillRequest_builder) Build() *UpdateSkillRequest {
 	return m0
 }
 
+// UpdateSkillResponse represents the response containing the updated skill.
 type UpdateSkillResponse struct {
 	state            protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
@@ -529,6 +544,7 @@ func (x *UpdateSkillResponse) ClearSkill() {
 type UpdateSkillResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The updated skill.
 	Skill *v1.Skill
 }
 
@@ -540,6 +556,7 @@ func (b0 UpdateSkillResponse_builder) Build() *UpdateSkillResponse {
 	return m0
 }
 
+// DeleteSkillRequest represents a request to delete a skill.
 type DeleteSkillRequest struct {
 	state           protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name"`
@@ -586,6 +603,7 @@ func (x *DeleteSkillRequest) SetName(v string) {
 type DeleteSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the skill to delete.
 	Name string
 }
 
@@ -597,6 +615,7 @@ func (b0 DeleteSkillRequest_builder) Build() *DeleteSkillRequest {
 	return m0
 }
 
+// DeleteSkillResponse represents the response to a delete request.
 type DeleteSkillResponse struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields

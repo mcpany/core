@@ -9,7 +9,11 @@ package mcpany.mcp_options.v1;
 
 option go_package = "github.com/mcpany/core/proto/mcp_options/v1";
 
+// Content represents a generic content block with an associated role.
+// This is used for defining custom options or annotations in protobuf files.
 message Content {
+  // The actual text content.
   string content = 1 [features.field_presence = EXPLICIT];
+  // The role associated with the content (e.g., "user", "assistant", "system").
   string role = 2 [features.field_presence = EXPLICIT];
 }

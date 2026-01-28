@@ -10,14 +10,24 @@ import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 
+// Collection represents a grouping of upstream services and skills that can be distributed together.
+// Collections allow for modular configuration and sharing of capabilities.
 message Collection {
+  // The human-readable name of the collection.
   string name = 1;
+  // A description of what the collection provides.
   string description = 2;
+  // The version of the collection (e.g., "1.0.0").
   string version = 3;
+  // The priority of the collection when loading. Lower numbers load first.
   int32 priority = 4;
+  // The URL to fetch the collection configuration from (if remote).
   string http_url = 5 [json_name = "http_url"];
+  // Authentication required to fetch the collection from the http_url.
   Authentication authentication = 6;
 
+  // The list of upstream services included in this collection.
   repeated UpstreamServiceConfig services = 7;
+  // The list of skills included in this collection.
   repeated string skills = 8;
 }
