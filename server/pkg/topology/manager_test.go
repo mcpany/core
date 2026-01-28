@@ -179,11 +179,19 @@ func TestManager_RecordActivity(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	m.RecordActivity("session-1", map[string]interface{}{
 		"userAgent": "test-agent",
 		"count":     1,
 	}, 10*time.Millisecond, false, "")
+
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["session-1"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
 
 	m.mu.RLock()
 	session, exists := m.sessions["session-1"]
@@ -200,6 +208,14 @@ func TestManager_RecordActivity(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 	m.RecordActivity("session-1", nil, 20*time.Millisecond, true, "")
 
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		s := m.sessions["session-1"]
+		count := s.RequestCount
+		m.mu.RUnlock()
+		return count == 2
+	}, 1*time.Second, 10*time.Millisecond)
+
 	m.mu.RLock()
 	session2 := m.sessions["session-1"]
 	m.mu.RUnlock()
@@ -214,9 +230,15 @@ func TestManager_GetStats(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
 	m.RecordActivity("session-2", nil, 200*time.Millisecond, true, "")
+
+	assert.Eventually(t, func() bool {
+		stats := m.GetStats("")
+		return stats.TotalRequests == 2
+	}, 1*time.Second, 10*time.Millisecond)
 
 	stats := m.GetStats("")
 
@@ -229,6 +251,7 @@ func TestManager_GetGraph(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	svcConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
@@ -243,6 +266,13 @@ func TestManager_GetGraph(t *testing.T) {
 	mockTM.On("ListTools").Return([]tool.Tool{mockTool})
 
 	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false, "")
+
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["session-1"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
 
 	graph := m.GetGraph(context.Background())
 
@@ -283,6 +313,7 @@ func TestManager_Middleware(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	nextHandler := func(ctx context.Context, method string, req mcp_sdk.Request) (mcp_sdk.Result, error) {
 		return &mcp_sdk.CallToolResult{}, nil
@@ -294,6 +325,13 @@ func TestManager_Middleware(t *testing.T) {
 	_, err := wrapped(ctx, "method", &mcp_sdk.CallToolRequest{})
 	require.NoError(t, err)
 
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["user-user123"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
+
 	m.mu.RLock()
 	session, exists := m.sessions["user-user123"]
 	m.mu.RUnlock()
@@ -304,6 +342,13 @@ func TestManager_Middleware(t *testing.T) {
 	_, err = wrapped(ctx, "method", &mcp_sdk.CallToolRequest{})
 	require.NoError(t, err)
 
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["ip-127.0.0.1"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
+
 	m.mu.RLock()
 	session, exists = m.sessions["ip-127.0.0.1"]
 	m.mu.RUnlock()
@@ -312,6 +357,13 @@ func TestManager_Middleware(t *testing.T) {
 
 	_, err = wrapped(context.Background(), "method", &mcp_sdk.CallToolRequest{})
 	require.NoError(t, err)
+
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["unknown"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
 
 	m.mu.RLock()
 	session, exists = m.sessions["unknown"]
@@ -334,6 +386,18 @@ func TestManager_Middleware(t *testing.T) {
 	_, err = wrapped(ctx, "tools/call", req)
 	require.NoError(t, err)
 
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		s := m.sessions["unknown"]
+		if s == nil {
+			m.mu.RUnlock()
+			return false
+		}
+		count, ok := s.ServiceCounts["extracted-service"]
+		m.mu.RUnlock()
+		return ok && count == 1
+	}, 1*time.Second, 10*time.Millisecond)
+
 	m.mu.RLock()
 	session, exists = m.sessions["unknown"]
 	require.True(t, exists)
@@ -347,6 +411,7 @@ func TestManager_GetGraph_InactiveService(t *testing.T) {
 	mockTM := new(MockToolManager)
 	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	svcConfig := configv1.UpstreamServiceConfig_builder{
 		Name:    proto.String("disabled-service"),
@@ -374,8 +439,17 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{}, nil)
 
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	m.RecordActivity("old-session", nil, 0, false, "")
+
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions["old-session"]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
+
 	m.mu.Lock()
 	m.sessions["old-session"].LastActive = time.Now().Add(-2 * time.Hour)
 	m.mu.Unlock()
@@ -389,8 +463,18 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
+
+	assert.Eventually(t, func() bool {
+		history := m.GetTrafficHistory("")
+		if len(history) == 0 {
+			return false
+		}
+		lastPoint := history[len(history)-1]
+		return lastPoint.Total == 1
+	}, 1*time.Second, 10*time.Millisecond)
 
 	history := m.GetTrafficHistory("")
 	require.NotEmpty(t, history)
@@ -406,6 +490,7 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	points := []TrafficPoint{
 		{Time: "12:00", Total: 10, Errors: 1, Latency: 50},

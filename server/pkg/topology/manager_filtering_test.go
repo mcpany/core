@@ -14,6 +14,7 @@ func TestManager_Filtering(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
 	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	// Record activity for Service A
 	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "service-a")
@@ -23,6 +24,12 @@ func TestManager_Filtering(t *testing.T) {
 
 	// Record activity with no service
 	m.RecordActivity("session-3", nil, 50*time.Millisecond, false, "")
+
+	// Wait for all 3 requests to be processed
+	assert.Eventually(t, func() bool {
+		globalStats := m.GetStats("")
+		return globalStats.TotalRequests == 3
+	}, 1*time.Second, 10*time.Millisecond)
 
 	// Test Global Stats
 	globalStats := m.GetStats("")
