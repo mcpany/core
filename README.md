@@ -209,6 +209,26 @@ Once the server is running, you can interact with it using its JSON-RPC API.
 - For hands-on examples, see the **[Examples](server/docs/examples.md)** and the **[Profile Authentication Example](server/examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](server/docs/monitoring.md)**.
 
+## ⚙️ Configuration
+
+MCP Any can be configured via YAML/JSON files or Environment Variables.
+
+### Environment Variables
+
+The following environment variables can be used to configure the server:
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_MCP_LISTEN_ADDRESS` | Address for the MCP server to listen on. | `:50050` |
+| `MCPANY_GRPC_PORT` | Port for the gRPC registration server. | `50051` |
+| `MCPANY_CONFIG_PATH` | Comma-separated list of paths to configuration files or directories. | `[]` |
+| `MCPANY_LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_API_KEY` | API Key for securing the server (required if exposed publicly). | `""` |
+| `MCPANY_STDIO` | Set to `true` to enable stdio mode for JSON-RPC. | `false` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file. | `data/mcpany.db` |
+
+For a complete list of configuration options, see the [Configuration Reference](server/docs/reference/configuration.md).
+
 ## 🛠️ Development Guide
 
 We welcome contributions to MCP Any! This section provides a brief overview of how to set up your development environment. For more detailed information, including code structure, service registration, and debugging tips, please refer to the [**Developer Guide**](server/docs/developer_guide.md).

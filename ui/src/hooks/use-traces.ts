@@ -10,6 +10,11 @@ interface UseTracesOptions {
     initialPaused?: boolean;
 }
 
+/**
+ * Hook to manage and display live traces from the server.
+ * @param options - Configuration options for the hook.
+ * @returns An object containing traces, loading state, connection status, and controls.
+ */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
