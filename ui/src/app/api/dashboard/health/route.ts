@@ -14,6 +14,11 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * Handles GET requests to check the dashboard health.
+ * @param request - The incoming HTTP request.
+ * @returns A JSON response with the health status.
+ */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');

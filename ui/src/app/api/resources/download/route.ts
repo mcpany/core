@@ -5,6 +5,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Handles GET requests to download a resource.
+ * @param request - The incoming HTTP request.
+ * @returns A response containing the resource data.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');

@@ -179,6 +179,9 @@ export interface Metric {
 }
 
 
+/**
+ * SystemStatus defines the current status of the server.
+ */
 export interface SystemStatus {
     uptime_seconds: number;
     active_connections: number;

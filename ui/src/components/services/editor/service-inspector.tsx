@@ -17,6 +17,12 @@ interface ServiceInspectorProps {
     service: UpstreamServiceConfig;
 }
 
+/**
+ * Component to inspect and debug a service configuration.
+ * @param props - The component props.
+ * @param props.service - The service definition to inspect.
+ * @returns The rendered inspector component.
+ */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {
         traces,

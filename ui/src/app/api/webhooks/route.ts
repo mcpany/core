@@ -6,6 +6,10 @@
 
 import { NextResponse } from 'next/server';
 
+/**
+ * Handles GET requests for webhooks.
+ * @returns A simple text response indicating the webhook endpoint is active.
+ */
 export async function GET() {
   const webhooks = [
     { id: "wh_1", url: "https://example.com/webhook", events: ["service.up", "service.down"], active: true },

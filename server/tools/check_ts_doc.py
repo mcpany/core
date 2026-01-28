@@ -35,14 +35,14 @@ def check_file(filepath):
     # export default function ...
     # export default class ...
 
-    pattern = re.compile(r'^\s*export\s+(default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
+    pattern = re.compile(r'^\s*export\s+(default\s+)?(async\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
 
     missing_docs = []
 
     for i, line in enumerate(lines):
         match = pattern.match(line)
         if match:
-            name = match.group(3)
+            name = match.group(4)
             # Check for docstring above
             has_doc = False
             j = i - 1
