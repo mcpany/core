@@ -328,7 +328,10 @@ For more details, see the [UI README](ui/README.md).
 We strive for high code quality. Please ensure the following before submitting a PR:
 
 - **Documentation**:
-  - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style). This includes a description of the purpose, parameters, and return values.
+  - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style). The format must include:
+    - **Summary**: Active-voice description of intent.
+    - **Parameters**: Name, Type, and Constraints.
+    - **Returns**: Type and Meaning.
   - **TypeScript/React**: All exported components, functions, interfaces, and types must have JSDoc comments explaining their usage, props/parameters, and return values.
   - **Quality Standard**: Avoid "empty calorie" comments (e.g., `// Sets ID` for `SetID`). Strive for clear, actionable descriptions.
   - **Strict Enforcement**: Documentation coverage is strictly enforced. Do not leave any public symbol undocumented.

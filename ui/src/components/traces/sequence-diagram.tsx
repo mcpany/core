@@ -34,6 +34,14 @@ interface Interaction {
   description?: string;
 }
 
+/**
+ * SequenceDiagram renders an interactive sequence diagram of a trace.
+ * It visualizes the flow of messages between the user, MCP core, and tools.
+ *
+ * @param props - The component props.
+ * @param props.trace - The trace data to visualize.
+ * @returns A rendered SVG sequence diagram.
+ */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
 
