@@ -1650,11 +1650,12 @@ func (a *Application) runServerMode(
 				}
 			} else {
 				// No auth configured at any level
-				// Sentinel Security: Enforce private network access if no auth is configured.
+				// Sentinel Security: Enforce localhost access if no auth is configured.
 				ip := util.GetClientIP(r, trustProxy)
-				if !util.IsPrivateIP(net.ParseIP(ip)) {
-					logging.GetLogger().Warn("Blocked public internet request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
-					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+				parsedIP := net.ParseIP(ip)
+				if parsedIP == nil || !parsedIP.IsLoopback() {
+					logging.GetLogger().Warn("Blocked non-loopback request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
+					http.Error(w, "Forbidden: Access restricted to localhost. Configure an API Key to allow external access.", http.StatusForbidden)
 					return
 				}
 				isAuthenticated = true
@@ -2252,9 +2253,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Check if the request is from a loopback address
 			ipAddr := net.ParseIP(host)
-			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+			if ipAddr == nil || !ipAddr.IsLoopback() {
+				logging.GetLogger().Warn("Blocked non-loopback request because no API Key is configured", "remote_addr", r.RemoteAddr)
+				http.Error(w, "Forbidden: Access restricted to localhost. Configure an API Key to allow external access.", http.StatusForbidden)
 				return
 			}
 
