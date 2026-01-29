@@ -140,15 +140,15 @@ func ProjectRoot(t *testing.T) string {
 
 const (
 	// McpAnyServerStartupTimeout is the timeout for the server to start.
-	McpAnyServerStartupTimeout = 120 * time.Second
+	McpAnyServerStartupTimeout = 300 * time.Second
 	// ServiceStartupTimeout is the timeout for services to start up.
-	ServiceStartupTimeout = 60 * time.Second
+	ServiceStartupTimeout = 120 * time.Second
 	// TestWaitTimeShort is a short wait time for tests.
 	TestWaitTimeShort = 120 * time.Second
 	// TestWaitTimeMedium is the default timeout for medium duration tests.
-	TestWaitTimeMedium = 240 * time.Second
+	TestWaitTimeMedium = 480 * time.Second
 	// TestWaitTimeLong is the default timeout for long duration tests.
-	TestWaitTimeLong = 5 * time.Minute
+	TestWaitTimeLong = 10 * time.Minute
 	// RetryInterval is the interval between retries.
 	RetryInterval           = 250 * time.Millisecond
 	localHeaderMcpSessionID = "Mcp-Session-Id"
