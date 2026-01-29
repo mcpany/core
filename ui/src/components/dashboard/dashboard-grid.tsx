@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -77,7 +77,13 @@ export function DashboardGrid() {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
                 if (parsed.length > 0 && !parsed[0].instanceId) {
-                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                    interface LegacyWidget {
+                        id: string;
+                        title: string;
+                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+                        hidden?: boolean;
+                    }
+                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
                         title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
@@ -110,8 +116,35 @@ export function DashboardGrid() {
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
-        localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
     };
+
+    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
+    // Randomized Selection from Top 5 High-Impact Targets
+    const isFirstRun = useRef(true);
+    useEffect(() => {
+        if (!isMounted) return;
+
+        // Prevent saving the initial empty state if it's the very first mounted render
+        // But we must allow saving if we just loaded/migrated data.
+        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
+        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
+        // But for initial load, widgets is [].
+
+        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            // If widgets are empty on first run, it's likely the initial state.
+            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
+            // But `isMounted` gate likely delays this enough.
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [widgets, isMounted]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;

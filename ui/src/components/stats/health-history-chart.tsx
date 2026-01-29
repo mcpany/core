@@ -95,8 +95,8 @@ export function HealthHistoryChart() {
         ok: "hsl(var(--chart-2))",
         degraded: "hsl(var(--chart-4))",
         error: "hsl(var(--chart-1))",
-        offline: "hsl(var(--muted))",
-        unknown: "hsl(var(--muted))",
+        offline: "hsl(var(--muted-foreground))",
+        unknown: "hsl(var(--muted-foreground))",
     };
 
     const getBarColor = (status: HealthPoint["status"]) => {

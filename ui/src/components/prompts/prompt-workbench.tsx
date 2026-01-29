@@ -338,7 +338,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                 <CardContent className="flex-1 p-0 overflow-auto">
                                     {executionResult ? (
                                         <div className="p-4 space-y-4">
-                                            {(executionResult.messages || []).map((msg: any, idx: number) => (
+                                            {(executionResult?.messages || []).map((msg: any, idx: number) => (
                                                 <div key={idx} className="space-y-1">
                                                      <div className="text-[10px] font-mono uppercase text-muted-foreground flex items-center gap-2">
                                                         <span className={cn(
