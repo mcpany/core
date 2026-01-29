@@ -567,16 +567,20 @@ func RedactDSN(dsn string) string {
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
+// redactInterval represents a range of text to be redacted.
+type redactInterval struct {
+	start, end int
+}
+
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 func RedactSecrets(text string, secrets []string) string {
 	if text == "" || len(secrets) == 0 {
 		return text
 	}
 
-	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
-	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
-	var mask []bool
-	foundAny := false
+	// ⚡ BOLT: Optimization - Use interval merging instead of O(N) boolean mask.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var intervals []redactInterval
 
 	for _, secret := range secrets {
 		if secret == "" {
@@ -591,43 +595,54 @@ func RedactSecrets(text string, secrets []string) string {
 			}
 			absoluteIdx := start + idx
 			end := absoluteIdx + len(secret)
-
-			if mask == nil {
-				mask = make([]bool, len(text))
-			}
-
-			// Mark bytes as sensitive
-			for i := absoluteIdx; i < end; i++ {
-				mask[i] = true
-			}
-			foundAny = true
-
+			intervals = append(intervals, redactInterval{start: absoluteIdx, end: end})
 			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
-			// (e.g. "aaaa" with secret "aa" -> mask 0-1, 2-3).
+			// (e.g. "aaaa" with secret "aa" -> match at 0, next search starts at 2).
 			start = end
 		}
 	}
 
-	if !foundAny {
+	if len(intervals) == 0 {
 		return text
 	}
 
+	// Sort intervals by start position
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i].start < intervals[j].start
+	})
+
+	// Merge overlapping or adjacent intervals
+	var merged []redactInterval
+	if len(intervals) > 0 {
+		current := intervals[0]
+		for i := 1; i < len(intervals); i++ {
+			next := intervals[i]
+			// If overlaps or touches (next.start <= current.end)
+			// Touching intervals (e.g. [0,3) and [3,6)) should be merged into one [0,6)
+			// so they result in a single [REDACTED] placeholder.
+			if next.start <= current.end {
+				if next.end > current.end {
+					current.end = next.end
+				}
+			} else {
+				merged = append(merged, current)
+				current = next
+			}
+		}
+		merged = append(merged, current)
+	}
+
+	// Build result string
 	var sb strings.Builder
 	sb.Grow(len(text))
 
-	i := 0
-	n := len(text)
-	for i < n {
-		if mask[i] {
-			sb.WriteString(redactedPlaceholder)
-			// Skip until end of masked region
-			for i < n && mask[i] {
-				i++
-			}
-		} else {
-			sb.WriteByte(text[i])
-			i++
-		}
+	lastIdx := 0
+	for _, interval := range merged {
+		sb.WriteString(text[lastIdx:interval.start])
+		sb.WriteString(redactedPlaceholder)
+		lastIdx = interval.end
 	}
+	sb.WriteString(text[lastIdx:])
+
 	return sb.String()
 }
