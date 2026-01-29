@@ -150,9 +150,10 @@ func TestLocalCommandTool_ShellInjection_Prevention(t *testing.T) {
 		reqSafe.ToolInputs, _ = json.Marshal(reqSafe.Arguments)
 
 		_, err := localTool.Execute(context.Background(), reqSafe)
-		// Should PASS because it's quoted
+		// Should FAIL because strict mode blocks '&' even inside quotes
+		assert.Error(t, err)
 		if err != nil {
-			assert.NotContains(t, err.Error(), "shell injection detected")
+			assert.Contains(t, err.Error(), "shell injection detected")
 		}
 
 		// Breakout attempt

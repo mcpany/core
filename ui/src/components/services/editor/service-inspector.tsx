@@ -18,10 +18,12 @@ interface ServiceInspectorProps {
 }
 
 /**
- * ServiceInspector component.
+ * Provides an interface for inspecting live traffic and traces for a specific service.
+ * Connects to the backend trace stream and displays real-time execution data.
+ *
  * @param props - The component props.
- * @param props.service - The service property.
- * @returns The rendered component.
+ * @param props.service - The configuration of the service to inspect.
+ * @returns The rendered inspector component.
  */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {
