@@ -42,7 +42,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Tools page lists tools', async ({ page }) => {
+  test('Tools page lists tools', async ({ page }) => {
     await page.goto('/tools');
     await expect(page.locator('h1')).toContainText('Tools');
     await expect(page.locator('text=calculator')).toBeVisible();
@@ -51,6 +51,49 @@ test.describe('MCP Any UI E2E Tests', () => {
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
     }
+  });
+
+  test('Tools page filtering', async ({ page }) => {
+      await page.goto('/tools');
+
+      // Filter by Service
+      // The filter dropdown is the second Select on the page (Group By is 1st, Filter By is 2nd)
+      // Open the dropdown that likely contains "All Services" text
+      const serviceFilter = page.getByRole('combobox').filter({ hasText: 'All Services' });
+      await serviceFilter.click();
+
+      // Select Payment Gateway
+      await page.getByRole('option', { name: 'Payment Gateway' }).click();
+
+      await expect(page.locator('text=process_payment')).toBeVisible();
+      await expect(page.locator('text=calculator')).toBeHidden();
+
+      // Search by Name (Search input is cleared on reload)
+      await page.reload();
+      await page.fill('input[placeholder="Search tools..."]', 'calc');
+      await expect(page.locator('text=calculator')).toBeVisible();
+      await expect(page.locator('text=process_payment')).toBeHidden();
+  });
+
+  test('Tools page search by description', async ({ page }) => {
+      await page.goto('/tools');
+      await page.fill('input[placeholder="Search tools..."]', 'Process a payment');
+      await expect(page.locator('text=process_payment')).toBeVisible();
+      await expect(page.locator('text=calculator')).toBeHidden();
+  });
+
+  test('Tools page grouping', async ({ page }) => {
+      await page.goto('/tools');
+
+      // Select Group By Category
+      // The first select is Group By. Initial text "No Grouping".
+      const groupBySelect = page.getByRole('combobox').filter({ hasText: 'No Grouping' });
+      await groupBySelect.click();
+      await page.getByRole('option', { name: 'Group by Category' }).click();
+
+      // Check headers
+      await expect(page.locator('text=payment').first()).toBeVisible();
+      await expect(page.locator('text=math').first()).toBeVisible();
   });
 
   test('Middleware page shows pipeline', async ({ page }) => {
@@ -73,12 +116,13 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Network page visualizes topology', async ({ page }) => {
+  test('Network page visualizes topology', async ({ page }) => {
     await page.goto('/network');
     await expect(page.locator('body')).toBeVisible();
     await expect(page.getByText('Network Graph').first()).toBeVisible();
     // Check for nodes
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
+    // Nodes might take time to render or animate
+    await expect(page.locator('text=Payment Gateway')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('text=Math')).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
@@ -86,12 +130,10 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test.skip('Service Health Widget shows diagnostics', async ({ page }) => {
+  test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
-    const userService = page.locator('.group', { hasText: 'User Service' });
+    const userService = page.locator('div').filter({ hasText: 'User Service' }).first();
     await expect(userService).toBeVisible();
-
-    // We skip checking error details as it depends on runtime health check timing
   });
 
 });
