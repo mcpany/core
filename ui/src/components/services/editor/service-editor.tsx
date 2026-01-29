@@ -19,7 +19,8 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Key } from "lucide-react";
+import { SecretPicker } from "@/components/secrets/secret-picker";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
@@ -388,13 +389,25 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             </div>
                                              <div className="space-y-2">
                                                 <Label htmlFor="api-key-value">Value</Label>
-                                                <Input
-                                                    id="api-key-value"
-                                                    type="password"
-                                                    value={service.upstreamAuth.apiKey.value}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: e.target.value } } })}
-                                                    placeholder="secret-key-123"
-                                                />
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        id="api-key-value"
+                                                        type="password"
+                                                        value={service.upstreamAuth.apiKey.value}
+                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: e.target.value } } })}
+                                                        placeholder="secret-key-123"
+                                                    />
+                                                    <SecretPicker
+                                                        onSelect={(key) => {
+                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: `\${${key}}` } } });
+                                                        }}
+                                                    >
+                                                        <Button variant="outline" size="icon" title="Insert Secret Reference">
+                                                            <Key className="h-4 w-4" />
+                                                        </Button>
+                                                    </SecretPicker>
+                                                </div>
+                                                <p className="text-[10px] text-muted-foreground">Use <code>{"${SECRET_NAME}"}</code> to reference a stored secret.</p>
                                             </div>
                                              <div className="space-y-2">
                                                 <Label htmlFor="api-key-location">Location</Label>
@@ -419,13 +432,25 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <div className="space-y-4 border-l-2 border-primary/20 pl-4">
                                              <div className="space-y-2">
                                                 <Label htmlFor="bearer-token">Token</Label>
-                                                <Input
-                                                    id="bearer-token"
-                                                    type="password"
-                                                    value={service.upstreamAuth.bearerToken.token}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: e.target.value } } })}
-                                                    placeholder="ey..."
-                                                />
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        id="bearer-token"
+                                                        type="password"
+                                                        value={service.upstreamAuth.bearerToken.token}
+                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: e.target.value } } })}
+                                                        placeholder="ey..."
+                                                    />
+                                                    <SecretPicker
+                                                        onSelect={(key) => {
+                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: `\${${key}}` } } });
+                                                        }}
+                                                    >
+                                                        <Button variant="outline" size="icon" title="Insert Secret Reference">
+                                                            <Key className="h-4 w-4" />
+                                                        </Button>
+                                                    </SecretPicker>
+                                                </div>
+                                                <p className="text-[10px] text-muted-foreground">Use <code>{"${SECRET_NAME}"}</code> to reference a stored secret.</p>
                                             </div>
                                         </div>
                                     )}
