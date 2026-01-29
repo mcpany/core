@@ -4,11 +4,13 @@
 package tool
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
@@ -43,10 +45,29 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	return true
 }
 
+func normalizeJSON(input []byte) []byte {
+	var v interface{}
+	if err := json.Unmarshal(input, &v); err != nil {
+		return input // Fallback to raw if invalid
+	}
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(v); err != nil {
+		return input // Fallback on error
+	}
+	return bytes.TrimSpace(buf.Bytes())
+}
+
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	var normalizedArgs []byte
+	if arguments != nil {
+		normalizedArgs = normalizeJSON(arguments)
+	}
+
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
 		if policy == nil {
@@ -71,7 +92,7 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 					// Cannot match argument regex at registration time
 					matched = false
 				} else {
-					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), arguments); !matchedArgs {
+					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), normalizedArgs); !matchedArgs {
 						matched = false
 					}
 				}
@@ -189,6 +210,11 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns true if successful.
 // Returns an error if the operation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	var normalizedArgs []byte
+	if arguments != nil {
+		normalizedArgs = normalizeJSON(arguments)
+	}
+
 	for _, policy := range policies {
 		policyBlocked := false
 		matchedRule := false
@@ -209,7 +235,7 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 			if matched && rule.GetArgumentRegex() != "" {
 				if arguments == nil {
 					matched = false
-				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(arguments) {
+				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(normalizedArgs) {
 					matched = false
 				}
 			}
