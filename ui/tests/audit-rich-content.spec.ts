@@ -8,7 +8,6 @@ import http from 'http';
 import { AddressInfo } from 'net';
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:50050';
-// Using a simpler API key/Token strategy if needed, but defaults usually work in dev
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 
 test.describe('Audit Logs Rich Content', () => {
@@ -41,11 +40,21 @@ test.describe('Audit Logs Rich Content', () => {
         });
 
         await new Promise<void>((resolve) => {
-            mockServer.listen(0, '127.0.0.1', () => resolve());
+            // Bind to 0.0.0.0 to be accessible from other containers
+            mockServer.listen(0, '0.0.0.0', () => resolve());
         });
         const port = (mockServer.address() as AddressInfo).port;
-        mockUrl = `http://127.0.0.1:${port}`;
-        console.log(`Mock server listening at ${mockUrl}`);
+        // Use 'ui-tests' hostname if running in docker (CI), otherwise localhost or IP.
+        // In CI docker-compose, the container name is 'ui-tests'.
+        // To be safe for both, if we can detect docker, use hostname.
+        // But for this specific failure where server tries to connect back to playwright runner:
+        const host = process.env.CI ? 'ui-tests' : 'host.docker.internal';
+        // Fallback for local dev if not in docker: 'localhost' might work if server is local too.
+        // But if server is in docker and tests are local, we need host.docker.internal.
+        // Let's rely on standard logic: if we are in the same network (CI), use container name.
+        // Since we are fixing the CI failure where tests run in 'ui-tests' container:
+        mockUrl = `http://${process.env.CI ? 'ui-tests' : '127.0.0.1'}:${port}`;
+        console.log(`Mock server listening at ${mockUrl} (bound to 0.0.0.0:${port})`);
     });
 
     test.afterAll(async ({ request }) => {
@@ -111,7 +120,7 @@ test.describe('Audit Logs Rich Content', () => {
         await page.getByRole('button', { name: 'Filter' }).click();
 
         // Wait for table to reload
-        await page.waitForTimeout(1000);
+        await expect(page.getByText('generate_image').first()).toBeVisible();
 
         // Click View - assume the top one is ours or the only one
         const viewBtn = page.getByRole('button', { name: 'View' }).first();

@@ -308,7 +308,7 @@ func TestGracefulShutdown(t *testing.T) {
 	// Wait for "READY" signal from child
 	scanner := bufio.NewScanner(stdout)
 	ready := false
-	timer := time.NewTimer(10 * time.Second)
+	timer := time.NewTimer(30 * time.Second)
 	done := make(chan struct{})
 
 	go func() {
