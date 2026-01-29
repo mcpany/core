@@ -175,6 +175,11 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return args.String(0), args.Bool(1)
 }
 
+func (m *MockServiceRegistry) RegisterMockService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) error {
+	args := m.Called(ctx, serviceConfig)
+	return args.Error(0)
+}
+
 func TestManager_RecordActivity(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)

@@ -13,9 +13,9 @@ const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 test.describe('MCP Any UI E2E Tests', () => {
 
   test.beforeEach(async ({ request, page }) => {
+      await seedUser(request, "e2e-admin");
       await seedServices(request);
       await seedTraffic(request);
-      await seedUser(request, "e2e-admin");
 
       // Login before each test
       await page.goto('/login');
