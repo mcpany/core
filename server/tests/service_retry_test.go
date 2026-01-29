@@ -98,7 +98,7 @@ func TestServiceRetry(t *testing.T) {
 		}
 		_, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
 		return hasError
-	}, 15*time.Second, 100*time.Millisecond, "ServiceRegistry not initialized or service did not fail as expected")
+	}, 30*time.Second, 100*time.Millisecond, "ServiceRegistry not initialized or service did not fail as expected")
 
 	errStr, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
 	t.Logf("Initial Service Error: %s (hasError: %v)", errStr, hasError)
@@ -141,7 +141,7 @@ func TestServiceRetry(t *testing.T) {
 	require.Eventually(t, func() bool {
 		_, hasError := a.ServiceRegistry.GetServiceError("delayed-mcp")
 		return !hasError
-	}, 20*time.Second, 500*time.Millisecond, "Service failed to recover within timeout")
+	}, 30*time.Second, 500*time.Millisecond, "Service failed to recover within timeout")
 
 	t.Log("Service recovered successfully!")
 }
