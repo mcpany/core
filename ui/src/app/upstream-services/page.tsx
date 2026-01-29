@@ -25,6 +25,7 @@ import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
 import { ServiceTemplate } from "@/lib/templates";
 import { BulkServiceImport } from "@/components/services/bulk-service-import";
+import { BulkUpdate } from "@/components/services/editor/bulk-service-editor";
 import {
     Dialog,
     DialogContent,
@@ -164,14 +165,42 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
-  const handleBulkEdit = useCallback(async (names: string[], updates: { tags?: string[] }) => {
+  const handleBulkEdit = useCallback(async (names: string[], updates: BulkUpdate) => {
     try {
         const servicesToUpdate = services.filter(s => names.includes(s.name));
         await Promise.all(servicesToUpdate.map(service => {
-            const updated = { ...service };
-            if (updates.tags) {
-                updated.tags = [...new Set([...(service.tags || []), ...updates.tags])];
+            // Deep clone to prevent state mutation
+            const updated = JSON.parse(JSON.stringify(service));
+
+            // Tags: Merge unique
+            if (updates.tags && updates.tags.length > 0) {
+                updated.tags = [...new Set([...(updated.tags || []), ...updates.tags])];
             }
+
+            // Env Vars: Merge (Append/Update)
+            if (updates.env && Object.keys(updates.env).length > 0) {
+                if (updated.commandLineService) {
+                    updated.commandLineService.env = { ...(updated.commandLineService.env || {}), ...updates.env };
+                }
+                if (updated.mcpService?.stdioConnection) {
+                    updated.mcpService.stdioConnection.env = { ...(updated.mcpService.stdioConnection.env || {}), ...updates.env };
+                }
+                if (updated.mcpService?.bundleConnection) {
+                     updated.mcpService.bundleConnection.env = { ...(updated.mcpService.bundleConnection.env || {}), ...updates.env };
+                }
+            }
+
+            // Resilience
+            if (updates.timeout) {
+                 if (!updated.resilience) updated.resilience = {};
+                 updated.resilience.timeout = updates.timeout as any; // proto duration expected string in json
+            }
+            if (updates.maxRetries !== undefined) {
+                 if (!updated.resilience) updated.resilience = {};
+                 if (!updated.resilience.retryPolicy) updated.resilience.retryPolicy = {};
+                 updated.resilience.retryPolicy.numberOfRetries = updates.maxRetries;
+            }
+
             return apiClient.updateService(updated as any);
         }));
         toast({

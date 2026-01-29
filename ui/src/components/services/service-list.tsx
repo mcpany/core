@@ -27,15 +27,7 @@ import { UpstreamServiceConfig } from "@/lib/client";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { useServiceHealth } from "@/contexts/service-health-context";
 import { Sparkline } from "@/components/charts/sparkline";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { BulkServiceEditor, BulkUpdate } from "@/components/services/editor/bulk-service-editor";
 
 
 interface ServiceListProps {
@@ -50,7 +42,7 @@ interface ServiceListProps {
   onBulkDelete?: (names: string[]) => void;
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
-  onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onBulkEdit?: (names: string[], updates: BulkUpdate) => void;
 }
 
 /**
@@ -62,7 +54,6 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
-  const [bulkTags, setBulkTags] = useState("");
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
@@ -205,38 +196,18 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
           </TableBody>
         </Table>
       </div>
-      <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Bulk Edit Services</DialogTitle>
-                <DialogDescription>
-                    Update {selected.size} selected services. Currently only supports updating tags.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label htmlFor="bulk-tags">Add Tags (comma separated)</Label>
-                    <Input
-                        id="bulk-tags"
-                        placeholder="production, web, internal"
-                        value={bulkTags}
-                        onChange={(e) => setBulkTags(e.target.value)}
-                    />
-                </div>
-            </div>
-            <DialogFooter>
-                <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>Cancel</Button>
-                <Button onClick={() => {
-                    if (onBulkEdit) {
-                        onBulkEdit(Array.from(selected), { tags: bulkTags.split(",").map(t => t.trim()).filter(Boolean) });
-                    }
-                    setIsBulkEditDialogOpen(false);
-                    setSelected(new Set());
-                    setBulkTags("");
-                }}>Apply Changes</Button>
-            </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+      <BulkServiceEditor
+        open={isBulkEditDialogOpen}
+        onOpenChange={setIsBulkEditDialogOpen}
+        selectedCount={selected.size}
+        onSave={(updates) => {
+             if (onBulkEdit) {
+                 onBulkEdit(Array.from(selected), updates);
+             }
+             setSelected(new Set());
+        }}
+      />
     </div>
   );
 }
