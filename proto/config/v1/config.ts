@@ -28,6 +28,15 @@ export interface McpAnyServerConfig {
   collections: Collection[];
   /** A list of users authorized to access the server. */
   users: User[];
+  /** Configuration for how to merge lists when loading from multiple sources. */
+  mergeStrategy?: MergeStrategyConfig | undefined;
+}
+
+export interface MergeStrategyConfig {
+  /** Strategy for merging upstream_services list ("extend" or "replace"). */
+  upstreamServiceList: string;
+  /** Strategy for merging profiles list ("extend" or "replace"). */
+  profileList: string;
 }
 
 /** Secret defines a secret value. */
@@ -432,7 +441,7 @@ export interface Middleware {
 }
 
 function createBaseMcpAnyServerConfig(): McpAnyServerConfig {
-  return { globalSettings: undefined, upstreamServices: [], collections: [], users: [] };
+  return { globalSettings: undefined, upstreamServices: [], collections: [], users: [], mergeStrategy: undefined };
 }
 
 export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
@@ -448,6 +457,9 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
     }
     for (const v of message.users) {
       User.encode(v!, writer.uint32(34).fork()).join();
+    }
+    if (message.mergeStrategy !== undefined) {
+      MergeStrategyConfig.encode(message.mergeStrategy, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -491,6 +503,14 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
           message.users.push(User.decode(reader, reader.uint32()));
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.mergeStrategy = MergeStrategyConfig.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -510,6 +530,7 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
         ? object.collections.map((e: any) => Collection.fromJSON(e))
         : [],
       users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => User.fromJSON(e)) : [],
+      mergeStrategy: isSet(object.merge_strategy) ? MergeStrategyConfig.fromJSON(object.merge_strategy) : undefined,
     };
   },
 
@@ -527,6 +548,9 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
     if (message.users?.length) {
       obj.users = message.users.map((e) => User.toJSON(e));
     }
+    if (message.mergeStrategy !== undefined) {
+      obj.merge_strategy = MergeStrategyConfig.toJSON(message.mergeStrategy);
+    }
     return obj;
   },
 
@@ -541,6 +565,85 @@ export const McpAnyServerConfig: MessageFns<McpAnyServerConfig> = {
     message.upstreamServices = object.upstreamServices?.map((e) => UpstreamServiceConfig.fromPartial(e)) || [];
     message.collections = object.collections?.map((e) => Collection.fromPartial(e)) || [];
     message.users = object.users?.map((e) => User.fromPartial(e)) || [];
+    message.mergeStrategy = (object.mergeStrategy !== undefined && object.mergeStrategy !== null)
+      ? MergeStrategyConfig.fromPartial(object.mergeStrategy)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseMergeStrategyConfig(): MergeStrategyConfig {
+  return { upstreamServiceList: "", profileList: "" };
+}
+
+export const MergeStrategyConfig: MessageFns<MergeStrategyConfig> = {
+  encode(message: MergeStrategyConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.upstreamServiceList !== "") {
+      writer.uint32(10).string(message.upstreamServiceList);
+    }
+    if (message.profileList !== "") {
+      writer.uint32(18).string(message.profileList);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): MergeStrategyConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMergeStrategyConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.upstreamServiceList = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.profileList = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MergeStrategyConfig {
+    return {
+      upstreamServiceList: isSet(object.upstream_service_list) ? globalThis.String(object.upstream_service_list) : "",
+      profileList: isSet(object.profile_list) ? globalThis.String(object.profile_list) : "",
+    };
+  },
+
+  toJSON(message: MergeStrategyConfig): unknown {
+    const obj: any = {};
+    if (message.upstreamServiceList !== "") {
+      obj.upstream_service_list = message.upstreamServiceList;
+    }
+    if (message.profileList !== "") {
+      obj.profile_list = message.profileList;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MergeStrategyConfig>, I>>(base?: I): MergeStrategyConfig {
+    return MergeStrategyConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MergeStrategyConfig>, I>>(object: I): MergeStrategyConfig {
+    const message = createBaseMergeStrategyConfig();
+    message.upstreamServiceList = object.upstreamServiceList ?? "";
+    message.profileList = object.profileList ?? "";
     return message;
   },
 };

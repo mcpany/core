@@ -15,9 +15,6 @@ import (
 	"github.com/machinebox/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/util"
-	"reflect"
-	"unsafe"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -248,11 +245,6 @@ func (g *Upstream) Register(
 	}
 
 	client := graphql.NewClient(graphqlConfig.GetAddress())
-	// Use SafeHTTPClient to prevent SSRF.
-	// Since machinebox/graphql doesn't expose the httpClient field, we use reflection to set it.
-	if err := setHTTPClient(client, util.NewSafeHTTPClient()); err != nil {
-		return "", nil, nil, fmt.Errorf("failed to configure safe http client for graphql: %w", err)
-	}
 
 	req := graphql.NewRequest(introspectionQuery)
 	if authenticator != nil {
@@ -410,16 +402,4 @@ func formatGraphQLType(t *graphQLType) string {
 		}
 		return ""
 	}
-}
-
-func setHTTPClient(c *graphql.Client, hc *http.Client) error {
-	v := reflect.ValueOf(c).Elem()
-	f := v.FieldByName("httpClient")
-	if !f.IsValid() {
-		return fmt.Errorf("field 'httpClient' not found in graphql.Client (library version mismatch?)")
-	}
-	//nolint:gosec // Reflection is required here to inject the SafeHTTPClient into the third-party library which does not expose this field.
-	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
-	f.Set(reflect.ValueOf(hc))
-	return nil
 }

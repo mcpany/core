@@ -32,6 +32,15 @@ message McpAnyServerConfig {
   repeated Collection collections = 3 [json_name = "collections"];
   // A list of users authorized to access the server.
   repeated User users = 4 [json_name = "users"];
+  // Configuration for how to merge lists when loading from multiple sources.
+  MergeStrategyConfig merge_strategy = 5 [json_name = "merge_strategy"];
+}
+
+message MergeStrategyConfig {
+  // Strategy for merging upstream_services list ("extend" or "replace").
+  string upstream_service_list = 1 [json_name = "upstream_service_list"];
+  // Strategy for merging profiles list ("extend" or "replace").
+  string profile_list = 2 [json_name = "profile_list"];
 }
 
 // Secret defines a secret value.

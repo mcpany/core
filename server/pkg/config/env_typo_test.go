@@ -4,6 +4,7 @@
 package config
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -86,7 +87,7 @@ func TestEnvVarTypoSuggestion(t *testing.T) {
 				},
 			}
 
-			err := validateSecretValue(secret)
+			err := validateSecretValue(context.Background(), secret)
 			assert.Error(t, err)
 
 			ae, ok := err.(*ActionableError)

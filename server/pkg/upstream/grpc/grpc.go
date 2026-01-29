@@ -9,8 +9,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"net"
-	"os"
 	"strings"
 	"time"
 
@@ -130,25 +128,7 @@ func (u *Upstream) Register(
 	}
 	grpcCreds := auth.NewPerRPCCredentials(upstreamAuthenticator)
 
-	// Use SafeDialer to prevent SSRF
-	dialer := util.NewSafeDialer()
-	// Allow overriding via environment variables
-	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == util.TrueStr {
-		dialer.AllowLoopback = true
-		dialer.AllowPrivate = true
-	}
-	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == util.TrueStr {
-		dialer.AllowLoopback = true
-	}
-	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == util.TrueStr {
-		dialer.AllowPrivate = true
-	}
-
-	safeDialerFunc := func(ctx context.Context, addr string) (net.Conn, error) {
-		return dialer.DialContext(ctx, "tcp", addr)
-	}
-
-	grpcPool, err := NewGrpcPool(0, 10, 300*time.Second, safeDialerFunc, grpcCreds, serviceConfig, false)
+	grpcPool, err := NewGrpcPool(0, 10, 300*time.Second, nil, grpcCreds, serviceConfig, false)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create gRPC pool for %s: %w", serviceConfig.GetName(), err)
 	}
