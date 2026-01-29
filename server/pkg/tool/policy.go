@@ -236,11 +236,12 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 				}
 			}
 			if matched && rule.GetArgumentRegex() != "" {
-				if arguments == nil {
+				switch {
+				case arguments == nil:
 					matched = false
-				} else if cRule.argumentRegex == nil {
+				case cRule.argumentRegex == nil:
 					matched = false
-				} else {
+				default:
 					// Check both raw and normalized arguments to ensure:
 					// 1. We catch bypasses (normalized match)
 					// 2. We don't break existing rules relying on specific formatting (raw match)
