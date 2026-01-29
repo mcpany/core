@@ -356,11 +356,16 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			shouldValidate = true
 		case configv1.SecretValue_FilePath_case:
 			// We already validated file existence above, so we can try to read it.
+			path := secret.GetFilePath()
+			// Explicitly check for path traversal to satisfy CodeQL
+			if strings.Contains(path, "..") {
+				return fmt.Errorf("invalid secret file path %q: path traversal not allowed", path)
+			}
 			// Sanitize path for security (CodeQL)
-			cleanPath := filepath.Clean(secret.GetFilePath())
+			cleanPath := filepath.Clean(path)
 			content, err := os.ReadFile(cleanPath)
 			if err != nil {
-				return fmt.Errorf("failed to read secret file %q for validation: %w", secret.GetFilePath(), err)
+				return fmt.Errorf("failed to read secret file %q for validation: %w", path, err)
 			}
 			valueToValidate = strings.TrimSpace(string(content))
 			shouldValidate = true
