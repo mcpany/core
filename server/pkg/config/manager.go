@@ -11,11 +11,13 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/profile"
 	"github.com/mcpany/core/server/pkg/util"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
@@ -29,6 +31,7 @@ import (
 // including local files and remote URLs (e.g., GitHub).
 type UpstreamServiceManager struct {
 	log               *slog.Logger
+	mu                sync.Mutex                                 // Protects services and servicePriorities
 	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
 	servicePriorities map[string]int32
 	httpClient        *http.Client
@@ -113,11 +116,27 @@ func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, confi
 	}
 
 	// Load and merge remote service collections
+	g, ctx := errgroup.WithContext(ctx)
+	// ⚡ BOLT: Parallelize collection loading to avoid waterfall latency.
+	// Randomized Selection from Top 5 High-Impact Targets
+	g.SetLimit(5)
+
 	for _, collection := range config.GetCollections() {
-		if err := m.loadAndMergeCollection(ctx, collection); err != nil {
-			m.log.Warn("Failed to load upstream service collection", "name", collection.GetName(), "url", collection.GetHttpUrl(), "error", err)
-			// Continue loading other collections even if one fails
-		}
+		collection := collection // Capture loop variable
+		g.Go(func() error {
+			if err := m.loadAndMergeCollection(ctx, collection); err != nil {
+				m.log.Warn("Failed to load upstream service collection", "name", collection.GetName(), "url", collection.GetHttpUrl(), "error", err)
+				// Continue loading other collections even if one fails.
+				// We return nil so errgroup doesn't cancel the context for other goroutines.
+				return nil
+			}
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		// Should not happen as we return nil on error
+		m.log.Error("Unexpected error in parallel collection loading", "error", err)
 	}
 
 	// Return the final list of services
@@ -361,6 +380,9 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	}
 	// If explicitly enabled by profile, ensure it's added regardless of other conditions (e.g., if it was implicitly disabled by another profile rule, though current logic doesn't have that)
 	// For now, if it's explicitly enabled, it just means it passes this check.
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
 	serviceName := service.GetName()
 	if existingPriority, exists := m.servicePriorities[serviceName]; exists {
