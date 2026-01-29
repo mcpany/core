@@ -876,19 +876,6 @@ export const apiClient = {
     },
 
     /**
-     * Seeds the server state (Debug/Test only).
-     * @param data The seed request payload.
-     */
-    seedData: async (data: any) => {
-        const res = await fetchWithAuth('/api/v1/debug/seed', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) throw new Error('Failed to seed data');
-    },
-
-    /**
      * Updates an alert status.
      * @param id The ID of the alert.
      * @param status The new status.

@@ -24,7 +24,7 @@ this view is split into tabs:
 
 - **Request**: The JSON arguments sent to the tool.
 - **Response**: The JSON output returned.
-- **Timeline**: A waterfall view of the operation (if sub-spans exist).
+- **Timeline**: A waterfall view of the operation lifecycle (Request -> Call -> Result -> Response).
 
 ![Trace Detail](../screenshots/trace_detail.png)
 

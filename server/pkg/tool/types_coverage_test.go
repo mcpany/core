@@ -97,7 +97,15 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 		pm,
 		"http-service",
 		nil,
-		&configv1.HttpCallDefinition{},
+		&configv1.HttpCallDefinition{
+			Parameters: []*configv1.HttpParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{
+						Name: proto.String("foo"),
+					},
+				},
+			},
+		},
 		nil,
 		nil,
 		"",

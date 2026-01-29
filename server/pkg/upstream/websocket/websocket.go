@@ -37,6 +37,12 @@ type Upstream struct {
 
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
+//
+// Parameters:
+//   - ctx: The context for the shutdown operation.
+//
+// Returns:
+//   - error: An error if the shutdown operation fails, or nil on success.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil
@@ -44,8 +50,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
-// poolManager is the connection pool manager to be used for managing WebSocket
-// connections.
+// Parameters:
+//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
+//
+// Returns:
+//   - upstream.Upstream: A new Upstream instance for WebSocket services.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -55,6 +64,20 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Register processes the configuration for a WebSocket service. It creates a
 // connection pool and registers tools for each call definition specified in the
 // configuration.
+//
+// Parameters:
+//   - ctx: The context for the registration process.
+//   - serviceConfig: The configuration for the upstream service.
+//   - toolManager: The manager where discovered tools will be registered.
+//   - promptManager: The manager where discovered prompts will be registered.
+//   - resourceManager: The manager where discovered resources will be registered.
+//   - isReload: Indicates whether this is an initial registration or a reload.
+//
+// Returns:
+//   - string: A unique service key.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if registration fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

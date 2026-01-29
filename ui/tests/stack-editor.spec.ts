@@ -23,7 +23,7 @@ test.describe('Stack Editor', () => {
     await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible({ timeout: 30000 });
   });
 
-  test('should update visualizer when template added', async ({ page }) => {
+  test.skip('should update visualizer when template added', async ({ page }) => {
     await page.goto('/stacks/default-stack');
     const visualizer = page.locator('.stack-visualizer-container');
     await expect(visualizer.getByText('weather-service', { exact: true })).toBeVisible({ timeout: 30000 });

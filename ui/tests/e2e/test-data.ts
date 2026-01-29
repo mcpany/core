@@ -11,61 +11,49 @@ const HEADERS = { 'X-API-Key': API_KEY };
 
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-
-    // Construct seed payload using the new debug endpoint
-    const payload = {
-        services: [
-            {
-                id: "svc_01",
-                name: "Payment Gateway",
-                version: "v1.2.0",
-                http_service: { address: "https://stripe.com" }
-            },
-            {
-                id: "svc_02",
-                name: "User Service",
-                version: "v1.0",
-                http_service: { address: "http://localhost:50051" }
-            },
-            {
-                id: "svc_03",
-                name: "Math",
-                version: "v1.0",
-                http_service: { address: "http://localhost:8080" }
+    const services = [
+        {
+            id: "svc_01",
+            name: "Payment Gateway",
+            version: "v1.2.0",
+            http_service: {
+                address: "https://stripe.com",
+                tools: [
+                    { name: "process_payment", description: "Process a payment" }
+                ]
             }
-        ],
-        tools: [
-            {
-                name: "process_payment",
-                description: "Process a payment",
-                serviceId: "svc_01",
-                inputSchema: { type: "object", properties: { amount: { type: "number" } } },
-                output: { success: true, transactionId: "txn_123" }
-            },
-            {
-                name: "get_user",
-                description: "Get user details",
-                serviceId: "svc_02",
-                inputSchema: { type: "object", properties: { userId: { type: "string" } } },
-                output: { id: "u_1", name: "Alice" }
-            },
-            {
-                name: "calculator",
-                description: "calc",
-                serviceId: "svc_03",
-                inputSchema: { type: "object", properties: { expression: { type: "string" } } },
-                output: { result: 42 }
+        },
+        {
+            id: "svc_02",
+            name: "User Service",
+            version: "v1.0",
+            http_service: {
+                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                tools: [
+                     { name: "get_user", description: "Get user details" }
+                ]
             }
-        ]
-    };
-
-    try {
-        const res = await context.post('/api/v1/debug/seed', { data: payload, headers: HEADERS });
-        if (!res.ok()) {
-            console.log(`Failed to seed services: ${res.status()} ${await res.text()}`);
+        },
+        // Add a service with calculator for existing test compatibility if desired
+        {
+            id: "svc_03",
+            name: "Math",
+            version: "v1.0",
+            http_service: {
+                address: "http://localhost:8080", // Dummy
+                tools: [
+                    { name: "calculator", description: "calc" }
+                ]
+            }
         }
-    } catch (e) {
-        console.log(`Failed to seed services: ${e}`);
+    ];
+
+    for (const svc of services) {
+        try {
+            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed service ${svc.name}: ${e}`);
+        }
     }
 };
 
