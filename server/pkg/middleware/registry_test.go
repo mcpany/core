@@ -154,3 +154,17 @@ func TestRegistry_MCPMiddlewares(t *testing.T) {
 func activeMiddlewareName(c *configv1.Middleware) string {
 	return c.GetName()
 }
+
+func TestInitStandardMiddlewares_ContextOptimizer_Default(t *testing.T) {
+	// Initialize with empty ContextOptimizerConfig (MaxChars = 0)
+	config := &configv1.ContextOptimizerConfig{} // Defaults to 0
+
+	stdMws, err := InitStandardMiddlewares(
+		nil, nil, nil, nil, nil, nil,
+		config, // Pass empty config
+		nil,
+	)
+	assert.NoError(t, err)
+	assert.NotNil(t, stdMws.ContextOptimizer)
+	assert.Equal(t, 32000, stdMws.ContextOptimizer.MaxChars)
+}
