@@ -21,6 +21,7 @@ type Response struct {
 	Message string `json:"message"`
 }
 
+// main reads a JSON request from stdin and writes a JSON response to stdout.
 func main() {
 	input, err := io.ReadAll(os.Stdin)
 	if err != nil {

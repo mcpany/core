@@ -118,7 +118,7 @@ You can manage core configuration directly from the UI without editing YAML file
 - **Secrets**: Securely manage API keys and credentials for upstream services.
 ![Settings](ui/docs/screenshots/settings.png)
 
-## ⚡ Quick Start (5 Minutes)
+## ⚡ Getting Started
 
 Ready to give your AI access to real-time data? Let's connect a public Weather API to **Gemini CLI** (or any MCP client) using MCP Any.
 
@@ -127,7 +127,7 @@ Ready to give your AI access to real-time data? Let's connect a public Weather A
 - **Go**: Ensure you have [Go](https://go.dev/doc/install) installed (1.23+ recommended).
 - **Gemini CLI**: If not installed, see the [installation guide](https://docs.cloud.google.com/gemini/docs/codeassist/gemini-cli).
 
-_(Prefer building from source? See [Getting Started](server/docs/developer_guide.md) for build instructions.)_
+_(Prefer building from source? See [Development](#-development) for build instructions.)_
 
 ### 2. Configuration
 
@@ -218,18 +218,33 @@ The AI will:
 2.  `mcpany` will **proxy** the request to `https://wttr.in/moon`.
 3.  The AI receives the ASCII art response and describes it!
 
-For more complex examples, including gRPC, OpenAPI, and authentication, check out [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
+## ⚙️ Configuration
+
+MCP Any is configured primarily through YAML/JSON files and Environment Variables.
+
+### Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_MCP_LISTEN_ADDRESS` | Address for the MCP server to listen on. | `50050` |
+| `MCPANY_METRICS_LISTEN_ADDRESS` | Address to expose Prometheus metrics. | (Disabled) |
+| `MCPANY_CONFIG_PATH` | Path(s) to configuration files or directories. | `[]` |
+| `MCPANY_API_KEY` | Global API Key for securing the server. | (None) |
+| `MCPANY_LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_DB_PATH` | Path to the SQLite database. | `data/mcpany.db` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading config from files (read-only mode for those settings). | `false` |
+
+For a complete list of configuration options, including detailed YAML file structures for upstream services, see the **[Configuration Reference](server/docs/reference/configuration.md)**.
 
 ## 💡 More Usage
 
 Once the server is running, you can interact with it using its JSON-RPC API.
 
-- For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
 - For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](server/docs/integrations.md)**.
 - For hands-on examples, see the **[Examples](server/docs/examples.md)** and the **[Profile Authentication Example](server/examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](server/docs/monitoring.md)**.
 
-## 🛠️ Development Guide
+## 🛠️ Development
 
 We welcome contributions to MCP Any! This section provides a brief overview of how to set up your development environment. For more detailed information, including code structure, service registration, and debugging tips, please refer to the [**Developer Guide**](server/docs/developer_guide.md).
 
