@@ -27,12 +27,15 @@ vi.mock("@/components/dashboard/tool-failure-rate-widget", () => ({
 // Mock Drag and Drop
 vi.mock("@hello-pangea/dnd", () => ({
   DragDropContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Droppable: ({ children }: { children: (args: { droppableProps: object; innerRef: null; placeholder: null }) => React.ReactNode }) => children({ droppableProps: {}, innerRef: null, placeholder: null }),
-  Draggable: ({ children }: { children: (args: { draggableProps: object; dragHandleProps: object; innerRef: null }, snapshot: { isDragging: boolean }) => React.ReactNode }) => children({ draggableProps: {}, dragHandleProps: {}, innerRef: null }, { isDragging: false }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Droppable: ({ children }: { children: (args: any) => React.ReactNode }) => children({ droppableProps: {}, innerRef: null, placeholder: null }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Draggable: ({ children }: { children: (args: any, snapshot: any) => React.ReactNode }) => children({ draggableProps: {}, dragHandleProps: {}, innerRef: null }, { isDragging: false }),
 }));
 
 vi.mock('@/components/dashboard/add-widget-sheet', () => ({
-    AddWidgetSheet: ({ onAdd }: { onAdd: (type: string) => void }) => (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    AddWidgetSheet: ({ onAdd }: any) => (
       <button onClick={() => onAdd('metrics')} data-testid="add-widget">
         Add Widget
       </button>
