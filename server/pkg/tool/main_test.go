@@ -4,6 +4,7 @@
 package tool
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	fmt.Println("DEBUG: Running TestMain in package tool")
 	// Mock IsSafeURL to allow all URLs during tests in this package.
 	// This is necessary because many tests use httptest.NewServer which runs on 127.0.0.1.
 	// We also set the env var to ensure any test restoring IsSafeURL still passes.

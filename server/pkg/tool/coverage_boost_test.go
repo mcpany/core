@@ -361,6 +361,13 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
         InputTransformer: &configv1.InputTransformer{
             Template: proto.String("Hello {{name}}"),
         },
+        Parameters: []*configv1.HttpParameterMapping{
+            {
+                Schema: &configv1.ParameterSchema{
+                    Name: proto.String("name"),
+                },
+            },
+        },
     }
 
 	toolDef := &v1.Tool{UnderlyingMethodFqn: &method, Name: proto.String("test-post")}
