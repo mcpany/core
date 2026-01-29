@@ -699,13 +699,9 @@ func (tm *Manager) AddTool(tool Tool) error {
 		}
 
 		if tool.Tool().GetInputSchema() != nil {
-			b, err := tool.Tool().GetInputSchema().MarshalJSON()
-			if err != nil {
-				return fmt.Errorf("failed to marshal input schema: %w", err)
-			}
-			if err := json.Unmarshal(b, &mcpTool.InputSchema); err != nil {
-				return fmt.Errorf("failed to unmarshal input schema: %w", err)
-			}
+			// ⚡ BOLT: Direct Struct -> Map conversion avoids JSON serialization overhead
+			// Randomized Selection from Top 5 High-Impact Targets
+			mcpTool.InputSchema = tool.Tool().GetInputSchema().AsMap()
 		}
 
 

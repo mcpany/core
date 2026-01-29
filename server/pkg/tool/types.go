@@ -1719,7 +1719,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					if !isDocker {
-						if err := checkForAbsolutePath(val); err != nil {
+						if err := checkForLocalFileAccess(val); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -1761,7 +1761,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if !isDocker {
-							if err := checkForAbsolutePath(argStr); err != nil {
+							if err := checkForLocalFileAccess(argStr); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -1838,7 +1838,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			if !isDocker {
-				if err := checkForAbsolutePath(valStr); err != nil {
+				if err := checkForLocalFileAccess(valStr); err != nil {
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
@@ -2028,7 +2028,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					if !isDocker {
-						if err := checkForAbsolutePath(val); err != nil {
+						if err := checkForLocalFileAccess(val); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2070,7 +2070,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						if !isDocker {
-							if err := checkForAbsolutePath(argStr); err != nil {
+							if err := checkForLocalFileAccess(argStr); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2160,7 +2160,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			if !isDocker {
-				if err := checkForAbsolutePath(valStr); err != nil {
+				if err := checkForLocalFileAccess(valStr); err != nil {
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
@@ -2546,9 +2546,14 @@ func cleanPathPreserveDoubleSlash(p string) string {
 	return res
 }
 
-func checkForAbsolutePath(val string) error {
+func checkForLocalFileAccess(val string) error {
 	if filepath.IsAbs(val) {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
+	}
+	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
+	// We check for "file:" prefix case-insensitively.
+	if strings.HasPrefix(strings.ToLower(val), "file:") {
+		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
 	return nil
 }
@@ -2595,6 +2600,13 @@ func isShellCommand(cmd string) bool {
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
+		// Additional interpreters and compilers that can execute code
+		"R", "Rscript", "julia", "groovy", "jshell",
+		"scala", "kotlin", "swift",
+		"elixir", "iex", "erl", "escript",
+		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
+		"gcc", "g++", "clang", "java",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {

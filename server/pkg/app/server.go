@@ -124,7 +124,20 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions defines the options for running the application.
+// RunOptions configuration for starting the MCP Any application.
+//
+// Fields:
+//   - Ctx: The parent context for the application lifecycle.
+//   - Fs: The filesystem interface (afero.Fs) to use.
+//   - Stdio: If true, runs in Standard I/O mode (for single-client/CLI usage).
+//   - JSONRPCPort: The port to listen on for HTTP JSON-RPC requests.
+//   - GRPCPort: The port to listen on for gRPC registration requests.
+//   - ConfigPaths: List of paths to configuration files or directories.
+//   - APIKey: A static API key to enforce for global authentication.
+//   - ShutdownTimeout: Duration to wait for graceful shutdown.
+//   - TLSCert: Path to the TLS certificate file.
+//   - TLSKey: Path to the TLS private key file.
+//   - TLSClientCA: Path to the TLS Client CA file (for mTLS).
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -142,6 +155,12 @@ type RunOptions struct {
 // Runner defines the interface for running the application.
 type Runner interface {
 	// Run starts the application with the given options.
+	//
+	// Parameters:
+	//   - opts (RunOptions): The options for running the application.
+	//
+	// Returns:
+	//   - (error): An error if the application fails to run.
 	Run(opts RunOptions) error
 
 	// ReloadConfig reloads the application configuration from the provided file system
@@ -149,11 +168,12 @@ type Runner interface {
 	// service registries and managers, to reflect changes in the configuration files.
 	//
 	// Parameters:
-	//   - fs: The filesystem interface for reading configuration files.
-	//   - configPaths: A slice of paths to configuration files to reload.
+	//   - ctx (context.Context): The context for the reload operation.
+	//   - fs (afero.Fs): The filesystem interface for reading configuration files.
+	//   - configPaths ([]string): A slice of paths to configuration files to reload.
 	//
 	// Returns:
-	//   - An error if the configuration reload fails.
+	//   - (error): An error if the configuration reload fails.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
@@ -247,7 +267,8 @@ type Application struct {
 // It initializes the application with the standard implementation of the stdio
 // mode runner, making it ready to be configured and started.
 //
-// Returns a new instance of the Application, ready to be run.
+// Returns:
+//   - (*Application): A new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -274,17 +295,10 @@ func NewApplication() *Application {
 // shutdown is initiated when the context is canceled.
 //
 // Parameters:
-//   - ctx: The context for managing the application's lifecycle.
-//   - fs: The filesystem interface for reading configuration files.
-//   - stdio: A boolean indicating whether to run in standard I/O mode.
-//   - jsonrpcPort: The port for the JSON-RPC server.
-//   - grpcPort: The port for the gRPC registration server. An empty string
-//     disables the gRPC server.
-//   - configPaths: A slice of paths to service configuration files.
-//   - shutdownTimeout: The duration to wait for a graceful shutdown before
-//     forcing termination.
+//   - opts (RunOptions): The options for running the application.
 //
-// Returns an error if any part of the startup or execution fails.
+// Returns:
+//   - (error): An error if any part of the startup or execution fails.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
@@ -817,6 +831,14 @@ func (a *Application) Run(opts RunOptions) error {
 
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the reload operation.
+//   - fs (afero.Fs): The filesystem interface for reading configuration files.
+//   - configPaths ([]string): A slice of paths to configuration files to reload.
+//
+// Returns:
+//   - (error): An error if the configuration reload fails.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1171,7 +1193,13 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 }
 
 // WaitForStartup waits for the application to be fully initialized.
-// It returns nil if startup completes, or context error if context is canceled.
+// It blocks until the startup process is complete or the context is canceled.
+//
+// Parameters:
+//   - ctx (context.Context): The context to wait on.
+//
+// Returns:
+//   - (error): nil if startup completes successfully, or a context error if canceled.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1184,9 +1212,12 @@ func (a *Application) WaitForStartup(ctx context.Context) error {
 // setup initializes the filesystem for the server. It ensures that a valid
 // afero.Fs is available, returning an error if a nil filesystem is provided.
 //
-// fs is the filesystem to be validated.
+// Parameters:
+//   - fs (afero.Fs): The filesystem to be validated.
 //
-// It returns a non-nil afero.Fs or an error if the provided filesystem is nil.
+// Returns:
+//   - (afero.Fs): A non-nil afero.Fs.
+//   - (error): An error if the provided filesystem is nil.
 func setup(fs afero.Fs) (afero.Fs, error) {
 	log := logging.GetLogger()
 	if fs == nil {
@@ -1202,10 +1233,12 @@ func setup(fs afero.Fs) (afero.Fs, error) {
 // debugging and simple, single-client scenarios. It uses the standard input
 // and output as the transport layer.
 //
-// ctx is the context for managing the server's lifecycle.
-// mcpSrv is the MCP server instance to run.
+// Parameters:
+//   - ctx (context.Context): The context for managing the server's lifecycle.
+//   - mcpSrv (*mcpserver.Server): The MCP server instance to run.
 //
-// It returns an error if the server fails to run in stdio mode.
+// Returns:
+//   - (error): An error if the server fails to run in stdio mode.
 func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	log := logging.GetLogger()
 	log.Info("Starting in stdio mode")
@@ -1291,12 +1324,14 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 // health check.
 //
 // Parameters:
-//   - out: The writer to which the success message will be written.
-//   - addr: The address (host:port) on which the server is running.
+//   - out (io.Writer): The writer to which the success message will be written.
+//   - addr (string): The address (host:port) on which the server is running.
+//   - timeout (time.Duration): The maximum duration to wait for the health check.
 //
-// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
-// error if the health check fails for any reason (e.g., connection error,
-// non-200 status code).
+// Returns:
+//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
+//     error if the health check fails for any reason (e.g., connection error,
+//     non-200 status code).
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1312,13 +1347,14 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 // health check.
 //
 // Parameters:
-//   - ctx: The context for managing the health check's lifecycle.
-//   - out: The writer to which the success message will be written.
-//   - addr: The address (host:port) on which the server is running.
+//   - ctx (context.Context): The context for managing the health check's lifecycle.
+//   - out (io.Writer): The writer to which the success message will be written.
+//   - addr (string): The address (host:port) on which the server is running.
 //
-// Returns nil if the server is healthy (i.e., responds with a 200 OK), or an
-// error if the health check fails for any reason (e.g., connection error,
-// non-200 status code).
+// Returns:
+//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
+//     error if the health check fails for any reason (e.g., connection error,
+//     non-200 status code).
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -1358,14 +1394,25 @@ func HealthCheckWithContext(
 // starts the HTTP server for JSON-RPC and the gRPC server for service
 // registration, and handles graceful shutdown.
 //
-// ctx is the context for managing the server's lifecycle.
-// mcpSrv is the MCP server instance.
-// bus is the message bus for inter-component communication.
-// jsonrpcPort is the port for the JSON-RPC server.
-// grpcPort is the port for the gRPC registration server.
+// Parameters:
+//   - ctx (context.Context): The context for managing the server's lifecycle.
+//   - mcpSrv (*mcpserver.Server): The MCP server instance.
+//   - bus (*bus.Provider): The message bus for inter-component communication.
+//   - bindAddress (string): The address for the HTTP/JSON-RPC server.
+//   - grpcPort (string): The port for the gRPC registration server.
+//   - shutdownTimeout (time.Duration): Duration to wait for graceful shutdown.
+//   - globalSettings (*config_v1.GlobalSettings): Global configuration settings.
+//   - cachingMiddleware (*middleware.CachingMiddleware): The caching middleware.
+//   - standardMiddlewares (*middleware.StandardMiddlewares): The standard middleware chain.
+//   - store (storage.Storage): The storage interface.
+//   - serviceRegistry (*serviceregistry.ServiceRegistry): The service registry.
+//   - startupCallback (func()): Callback function executed when servers are ready.
+//   - tlsCert (string): Path to TLS certificate.
+//   - tlsKey (string): Path to TLS key.
+//   - tlsClientCA (string): Path to TLS Client CA.
 //
-// It returns an error if any of the servers fail to start or run.
-
+// Returns:
+//   - (error): An error if any of the servers fail to start or run.
 //
 //nolint:gocyclo
 func (a *Application) runServerMode(

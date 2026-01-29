@@ -111,6 +111,36 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		_, err := tool.Execute(context.Background(), req)
 		assert.NoError(t, err)
 	})
+
+	// Case 8: Extended Interpreter Detection
+	t.Run("extended_interpreter_detection", func(t *testing.T) {
+		interpreters := []string{
+			"R", "Rscript", "julia", "groovy", "jshell",
+			"scala", "kotlin", "swift",
+			"elixir", "iex", "erl", "escript",
+			"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+			"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
+			"gcc", "g++", "clang", "java",
+		}
+
+		for _, cmd := range interpreters {
+			t.Run(cmd, func(t *testing.T) {
+				// Use a payload that is safe for shell (simple string) but triggers shell injection detection
+				// if we try to break out.
+				// Here we use unquoted template, so any shell metacharacter should be blocked.
+				// We pass ";" which is blocked in strict mode.
+				tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
+				req := &ExecutionRequest{
+					ToolName: "test",
+					ToolInputs: []byte(`{"input": "safe; unsafe"}`),
+				}
+
+				_, err := tool.Execute(context.Background(), req)
+				assert.Error(t, err, "Expected error for %s", cmd)
+				assert.Contains(t, err.Error(), "shell injection detected", "Interpreter %s should be detected as shell", cmd)
+			})
+		}
+	})
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {
