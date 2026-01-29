@@ -2621,6 +2621,22 @@ func isShellCommand(cmd string) bool {
 			}
 		}
 	}
+
+	// Check for script extensions that indicate shell execution or interpretation
+	ext := strings.ToLower(filepath.Ext(base))
+	scriptExts := []string{
+		".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
+		".bat", ".cmd", ".ps1", ".vbs", ".js", ".mjs", ".ts",
+		".py", ".pyc", ".pyo", ".pyd",
+		".rb", ".pl", ".pm", ".php",
+		".lua", ".r",
+	}
+	for _, scriptExt := range scriptExts {
+		if ext == scriptExt {
+			return true
+		}
+	}
+
 	return false
 }
 
