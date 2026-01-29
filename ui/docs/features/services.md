@@ -15,7 +15,7 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
+Navigate to the **Upstream Services** page via the sidebar (URL: `/upstream-services`). This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 
@@ -31,8 +31,8 @@ Key columns:
 
 To register a new upstream service:
 
-1. Click the **"Add Service"** link in the top-right corner.
-2. You will be redirected to the **Marketplace**.
+1. Click the **"Add Service"** button in the top-right corner.
+2. A **Selection Panel** (Sheet) will open, allowing you to choose a Service Type or Template.
 3. Select the desired service type (e.g., HTTP, gRPC) or a pre-configured service template.
 4. Follow the configuration wizard to register the service.
 
@@ -43,7 +43,7 @@ To register a new upstream service:
 To edit an existing service:
 
 1. Click on the service name in the list.
-2. You will be taken to the detailed **Configuration Page**.
+2. The **Configuration Panel** will open.
 3. Here you can update the endpoint, managing **Environment Variables**, and view specialized settings.
 
 ![Service Configuration](screenshots/service_config.png)
