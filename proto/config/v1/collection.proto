@@ -20,6 +20,4 @@ message Collection {
 
   repeated UpstreamServiceConfig services = 7;
   repeated string skills = 8;
-  string author = 9;
-  repeated string tags = 10;
 }

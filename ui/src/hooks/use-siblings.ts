@@ -42,7 +42,7 @@ export function useToolSiblings(serviceId: string, currentToolName: string) {
             const tools = res.tools || [];
             const decodedName = decodeURIComponent(currentToolName);
             setSiblings(tools
-                .filter((t) => t.service_id === serviceId && t.name !== decodedName)
+                .filter((t) => t.serviceId === serviceId && t.name !== decodedName)
                 .map((t) => ({ label: t.name, href: `/service/${serviceId}/tool/${t.name}` }))
             );
         });

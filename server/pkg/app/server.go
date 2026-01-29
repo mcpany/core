@@ -261,6 +261,15 @@ type Application struct {
 	// MetricsGatherer is the interface for gathering metrics.
 	// Defaults to prometheus.DefaultGatherer.
 	MetricsGatherer prometheus.Gatherer
+
+	// statsCache for dashboard
+	statsCacheMu sync.RWMutex
+	statsCache   map[string]statsCacheEntry
+}
+
+type statsCacheEntry struct {
+	Data      any
+	ExpiresAt time.Time
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -283,6 +292,7 @@ func NewApplication() *Application {
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
 		MetricsGatherer: prometheus.DefaultGatherer,
+		statsCache:      make(map[string]statsCacheEntry),
 	}
 }
 
@@ -362,12 +372,6 @@ func (a *Application) Run(opts RunOptions) error {
 	// Initialize DB if empty
 	if err := a.initializeDatabase(opts.Ctx, storageStore); err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
-	}
-
-	// Initialize Official Collections (Idempotent)
-	if err := a.initializeOfficialCollections(opts.Ctx, storageStore); err != nil {
-		// Log but don't fail, as this is optional seeding
-		log.Error("Failed to initialize official collections", "error", err)
 	}
 
 	// Determine config sources
@@ -2125,7 +2129,7 @@ func (a *Application) runServerMode(
 	}
 
 	// Wait for servers to be ready
-	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
+	timeout := time.NewTimer(30 * time.Second) // Reasonable timeout for binding ports, increased for slow CI
 	defer timeout.Stop()
 
 	for i := 0; i < expectedReady; i++ {

@@ -146,3 +146,37 @@ func TestIsSensitiveHeader(t *testing.T) {
     assert.True(t, isSensitiveHeader("X-My-Token"))
     assert.False(t, isSensitiveHeader("Content-Type"))
 }
+
+func TestManager_Profile_GranularToolDisabling(t *testing.T) {
+	tm := NewManager(nil)
+
+	p1 := configv1.ProfileDefinition_builder{
+		Name: proto.String("p1"),
+		ServiceConfig: map[string]*configv1.ProfileServiceConfig{
+			"s1": configv1.ProfileServiceConfig_builder{
+				Enabled: proto.Bool(true),
+				Tools: map[string]*configv1.ToolConfig{
+					"disabled_tool": configv1.ToolConfig_builder{Disabled: true}.Build(),
+					"enabled_tool":  configv1.ToolConfig_builder{Disabled: false}.Build(),
+				},
+			}.Build(),
+		},
+	}.Build()
+
+	tm.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{p1})
+
+	// Enabled Service, Disabled Tool
+	t1 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("disabled_tool")}
+	mTool1 := &MockTool{ToolFunc: func() *v1.Tool { return t1 }}
+	assert.False(t, tm.ToolMatchesProfile(mTool1, "p1"), "Tool should be disabled by config")
+
+	// Enabled Service, Explicitly Enabled Tool
+	t2 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("enabled_tool")}
+	mTool2 := &MockTool{ToolFunc: func() *v1.Tool { return t2 }}
+	assert.True(t, tm.ToolMatchesProfile(mTool2, "p1"), "Tool should be enabled by config")
+
+	// Enabled Service, Unspecified Tool (Default allowed)
+	t3 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("other_tool")}
+	mTool3 := &MockTool{ToolFunc: func() *v1.Tool { return t3 }}
+	assert.True(t, tm.ToolMatchesProfile(mTool3, "p1"), "Tool should be allowed by default service enablement")
+}

@@ -9,7 +9,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Eye, EyeOff, Lock } from "lucide-react";
+import { Plus, X, Eye, EyeOff, Lock, Unlock, Key } from "lucide-react";
+import { SecretPicker } from "@/components/secrets/secret-picker";
 
 interface EnvVar {
   key: string;
@@ -19,9 +20,11 @@ interface EnvVar {
   secretId?: string;
 }
 
+import { SecretValue } from "@proto/config/v1/auth";
+
 interface EnvVarEditorProps {
-  initialEnv?: Record<string, { plainText?: string; secretId?: string }>;
-  onChange: (env: Record<string, { plainText?: string; secretId?: string }>) => void;
+  initialEnv?: Record<string, SecretValue>;
+  onChange: (env: Record<string, SecretValue>) => void;
 }
 
 /**
@@ -33,23 +36,26 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
   const [envVars, setEnvVars] = useState<EnvVar[]>(() => {
       if (!initialEnv) return [];
       return Object.entries(initialEnv).map(([key, val]) => {
-          if (val.secretId) {
-               return { key, value: val.secretId, isSecretRef: true, secretId: val.secretId };
+          // Heuristic: if plainText starts with ${ and ends with }, treat as secret ref
+          const plainText = val.plainText || "";
+          const secretMatch = plainText.match(/^\$\{(.+)\}$/);
+          if (secretMatch) {
+               return { key, value: secretMatch[1], isSecretRef: true, secretId: secretMatch[1] };
           }
-          return { key, value: val.plainText || "", isSecretRef: false };
+          return { key, value: plainText, isSecretRef: false };
       });
   });
 
   const [showValues, setShowValues] = useState<Record<number, boolean>>({});
 
   const updateParent = (vars: EnvVar[]) => {
-      const newEnv: Record<string, { plainText?: string; secretId?: string }> = {};
+      const newEnv: Record<string, SecretValue> = {};
       vars.forEach(v => {
           if (v.key) {
              if (v.isSecretRef && v.secretId) {
-                 newEnv[v.key] = { secretId: v.secretId };
+                 newEnv[v.key] = { plainText: `\${${v.secretId}}`, validationRegex: "" };
              } else {
-                 newEnv[v.key] = { plainText: v.value };
+                 newEnv[v.key] = { plainText: v.value, validationRegex: "" };
              }
           }
       });
@@ -71,11 +77,28 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
           if (i === index) {
               const updated = { ...v, [field]: value };
               // If user edits value of a secret ref, it becomes plain text unless we implement secret picker
-              if (field === 'value' && v.isSecretRef) {
-                  updated.isSecretRef = false;
-                  updated.secretId = undefined;
+              if (field === 'secretId') {
+                  updated.secretId = value as string;
               }
               return updated;
+          }
+          return v;
+      });
+      setEnvVars(newVars);
+      updateParent(newVars);
+  };
+
+  const toggleSecretMode = (index: number) => {
+      const newVars = envVars.map((v, i) => {
+          if (i === index) {
+              const newIsSecretRef = !v.isSecretRef;
+              return {
+                  ...v,
+                  isSecretRef: newIsSecretRef,
+                  // If switching to secret, clear value. If to text, clear secretId.
+                  value: newIsSecretRef ? "" : "",
+                  secretId: newIsSecretRef ? "" : undefined
+              };
           }
           return v;
       });
@@ -113,14 +136,20 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                   />
                   <div className="relative flex-1">
                       {v.isSecretRef ? (
-                           <div className="relative">
-                               <Input
-                                  value={`Secret: ${v.secretId}`}
-                                  disabled
-                                  className="pr-8 bg-muted text-muted-foreground"
-                               />
-                               <Lock className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                           </div>
+                           <SecretPicker
+                                value={v.secretId}
+                                onSelect={(key) => updateVar(i, "secretId", key)}
+                           >
+                                <div className="relative cursor-pointer group">
+                                    <Input
+                                        value={v.secretId || ""}
+                                        readOnly
+                                        className="pr-8 bg-muted/50 cursor-pointer text-primary font-medium focus-visible:ring-primary"
+                                        placeholder="Select a secret..."
+                                    />
+                                    <Key className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+                                </div>
+                           </SecretPicker>
                       ) : (
                           <>
                            <Input
@@ -128,12 +157,12 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                               type={showValues[i] ? "text" : "password"}
                               value={v.value}
                               onChange={(e) => updateVar(i, "value", e.target.value)}
-                              className="pr-8"
+                              className="pr-10"
                           />
                            <button
                               type="button"
                               onClick={() => toggleShowValue(i)}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
                            >
                               {showValues[i] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                            </button>
@@ -141,7 +170,18 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                       )}
                   </div>
 
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removeVar(i)}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => toggleSecretMode(i)}
+                    className={v.isSecretRef ? "text-primary hover:text-primary/80" : "text-muted-foreground"}
+                    title={v.isSecretRef ? "Switch to Plain Text" : "Switch to Secret Reference"}
+                  >
+                      {v.isSecretRef ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+                  </Button>
+
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeVar(i)} className="text-destructive/50 hover:text-destructive">
                       <X className="h-4 w-4" />
                   </Button>
               </div>

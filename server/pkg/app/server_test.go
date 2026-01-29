@@ -607,10 +607,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
-	// Expect calls for official collections seeding
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	app.Storage = mockStore
 
 	// Should return error, as we are now strict about config errors during startup
@@ -715,7 +712,6 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -1497,7 +1493,6 @@ func TestRunStdioMode(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 
 	app := &Application{
@@ -1842,7 +1837,6 @@ upstream_services:
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -1908,7 +1902,6 @@ upstream_services:
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -2387,7 +2380,6 @@ upstream_services:
 		mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 		mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 		mockStore.On("Close").Return(nil)
 		app.Storage = mockStore
 
@@ -2433,7 +2425,6 @@ upstream_services: []
 		mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 		mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 		mockStore.On("Close").Return(nil)
 		app.Storage = mockStore
 
@@ -2462,7 +2453,6 @@ func TestConfigHealthCheck(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -2797,7 +2787,6 @@ func TestMultiUserHandler_EdgeCases(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -2848,7 +2837,6 @@ func TestMultiUserHandler_UserAuth(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -2893,7 +2881,6 @@ func TestReloadConfig_DynamicUpdates(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 
@@ -2930,7 +2917,6 @@ func TestMultiUserHandler_RBAC_RoleMismatch(t *testing.T) {
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
 

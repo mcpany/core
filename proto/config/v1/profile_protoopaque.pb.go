@@ -260,9 +260,68 @@ func (b0 Profile_builder) Build() *Profile {
 	return m0
 }
 
+type ToolConfig struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Disabled bool                   `protobuf:"varint,1,opt,name=disabled"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ToolConfig) Reset() {
+	*x = ToolConfig{}
+	mi := &file_proto_config_v1_profile_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ToolConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolConfig) ProtoMessage() {}
+
+func (x *ToolConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_profile_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ToolConfig) GetDisabled() bool {
+	if x != nil {
+		return x.xxx_hidden_Disabled
+	}
+	return false
+}
+
+func (x *ToolConfig) SetDisabled(v bool) {
+	x.xxx_hidden_Disabled = v
+}
+
+type ToolConfig_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Whether the tool is disabled.
+	Disabled bool
+}
+
+func (b0 ToolConfig_builder) Build() *ToolConfig {
+	m0 := &ToolConfig{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Disabled = b.Disabled
+	return m0
+}
+
 type ProfileServiceConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
+	xxx_hidden_Tools       map[string]*ToolConfig `protobuf:"bytes,2,rep,name=tools" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -271,7 +330,7 @@ type ProfileServiceConfig struct {
 
 func (x *ProfileServiceConfig) Reset() {
 	*x = ProfileServiceConfig{}
-	mi := &file_proto_config_v1_profile_proto_msgTypes[1]
+	mi := &file_proto_config_v1_profile_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -283,7 +342,7 @@ func (x *ProfileServiceConfig) String() string {
 func (*ProfileServiceConfig) ProtoMessage() {}
 
 func (x *ProfileServiceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_profile_proto_msgTypes[1]
+	mi := &file_proto_config_v1_profile_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -301,9 +360,20 @@ func (x *ProfileServiceConfig) GetEnabled() bool {
 	return false
 }
 
+func (x *ProfileServiceConfig) GetTools() map[string]*ToolConfig {
+	if x != nil {
+		return x.xxx_hidden_Tools
+	}
+	return nil
+}
+
 func (x *ProfileServiceConfig) SetEnabled(v bool) {
 	x.xxx_hidden_Enabled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *ProfileServiceConfig) SetTools(v map[string]*ToolConfig) {
+	x.xxx_hidden_Tools = v
 }
 
 func (x *ProfileServiceConfig) HasEnabled() bool {
@@ -323,6 +393,8 @@ type ProfileServiceConfig_builder struct {
 
 	// Whether the service is enabled in this profile.
 	Enabled *bool
+	// Tool-specific configuration. Key is the tool name (e.g. "delete_file").
+	Tools map[string]*ToolConfig
 }
 
 func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
@@ -330,9 +402,10 @@ func (b0 ProfileServiceConfig_builder) Build() *ProfileServiceConfig {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Enabled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
 		x.xxx_hidden_Enabled = *b.Enabled
 	}
+	x.xxx_hidden_Tools = b.Tools
 	return m0
 }
 
@@ -352,7 +425,7 @@ type RateLimitConfig struct {
 
 func (x *RateLimitConfig) Reset() {
 	*x = RateLimitConfig{}
-	mi := &file_proto_config_v1_profile_proto_msgTypes[2]
+	mi := &file_proto_config_v1_profile_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -364,7 +437,7 @@ func (x *RateLimitConfig) String() string {
 func (*RateLimitConfig) ProtoMessage() {}
 
 func (x *RateLimitConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_profile_proto_msgTypes[2]
+	mi := &file_proto_config_v1_profile_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -515,9 +588,17 @@ const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\aProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12H\n" +
-	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"7\n" +
+	"\x0eauthentication\x18\x03 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\"(\n" +
+	"\n" +
+	"ToolConfig\x12\x1a\n" +
+	"\bdisabled\x18\x01 \x01(\bR\bdisabled\"\xd8\x01\n" +
 	"\x14ProfileServiceConfig\x12\x1f\n" +
-	"\aenabled\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x01R\aenabled\"\xa1\x06\n" +
+	"\aenabled\x18\x01 \x01(\bB\x05\xaa\x01\x02\b\x01R\aenabled\x12G\n" +
+	"\x05tools\x18\x02 \x03(\v21.mcpany.config.v1.ProfileServiceConfig.ToolsEntryR\x05tools\x1aV\n" +
+	"\n" +
+	"ToolsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x122\n" +
+	"\x05value\x18\x02 \x01(\v2\x1c.mcpany.config.v1.ToolConfigR\x05value:\x028\x01\"\xa1\x06\n" +
 	"\x0fRateLimitConfig\x12\x1e\n" +
 	"\n" +
 	"is_enabled\x18\x01 \x01(\bR\n" +
@@ -548,31 +629,35 @@ const file_proto_config_v1_profile_proto_rawDesc = "" +
 	"\x12COST_METRIC_TOKENS\x10\x01B-Z&github.com/mcpany/core/proto/config/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
 
 var file_proto_config_v1_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_config_v1_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_config_v1_profile_proto_goTypes = []any{
 	(RateLimitConfig_Storage)(0),    // 0: mcpany.config.v1.RateLimitConfig.Storage
 	(RateLimitConfig_KeyBy)(0),      // 1: mcpany.config.v1.RateLimitConfig.KeyBy
 	(RateLimitConfig_CostMetric)(0), // 2: mcpany.config.v1.RateLimitConfig.CostMetric
 	(*Profile)(nil),                 // 3: mcpany.config.v1.Profile
-	(*ProfileServiceConfig)(nil),    // 4: mcpany.config.v1.ProfileServiceConfig
-	(*RateLimitConfig)(nil),         // 5: mcpany.config.v1.RateLimitConfig
-	nil,                             // 6: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
-	(*Authentication)(nil),          // 7: mcpany.config.v1.Authentication
-	(*bus.RedisBus)(nil),            // 8: bus.RedisBus
+	(*ToolConfig)(nil),              // 4: mcpany.config.v1.ToolConfig
+	(*ProfileServiceConfig)(nil),    // 5: mcpany.config.v1.ProfileServiceConfig
+	(*RateLimitConfig)(nil),         // 6: mcpany.config.v1.RateLimitConfig
+	nil,                             // 7: mcpany.config.v1.ProfileServiceConfig.ToolsEntry
+	nil,                             // 8: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
+	(*Authentication)(nil),          // 9: mcpany.config.v1.Authentication
+	(*bus.RedisBus)(nil),            // 10: bus.RedisBus
 }
 var file_proto_config_v1_profile_proto_depIdxs = []int32{
-	7, // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.Authentication
-	0, // 1: mcpany.config.v1.RateLimitConfig.storage:type_name -> mcpany.config.v1.RateLimitConfig.Storage
-	8, // 2: mcpany.config.v1.RateLimitConfig.redis:type_name -> bus.RedisBus
-	1, // 3: mcpany.config.v1.RateLimitConfig.key_by:type_name -> mcpany.config.v1.RateLimitConfig.KeyBy
-	2, // 4: mcpany.config.v1.RateLimitConfig.cost_metric:type_name -> mcpany.config.v1.RateLimitConfig.CostMetric
-	6, // 5: mcpany.config.v1.RateLimitConfig.tool_limits:type_name -> mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
-	5, // 6: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	9,  // 0: mcpany.config.v1.Profile.authentication:type_name -> mcpany.config.v1.Authentication
+	7,  // 1: mcpany.config.v1.ProfileServiceConfig.tools:type_name -> mcpany.config.v1.ProfileServiceConfig.ToolsEntry
+	0,  // 2: mcpany.config.v1.RateLimitConfig.storage:type_name -> mcpany.config.v1.RateLimitConfig.Storage
+	10, // 3: mcpany.config.v1.RateLimitConfig.redis:type_name -> bus.RedisBus
+	1,  // 4: mcpany.config.v1.RateLimitConfig.key_by:type_name -> mcpany.config.v1.RateLimitConfig.KeyBy
+	2,  // 5: mcpany.config.v1.RateLimitConfig.cost_metric:type_name -> mcpany.config.v1.RateLimitConfig.CostMetric
+	8,  // 6: mcpany.config.v1.RateLimitConfig.tool_limits:type_name -> mcpany.config.v1.RateLimitConfig.ToolLimitsEntry
+	4,  // 7: mcpany.config.v1.ProfileServiceConfig.ToolsEntry.value:type_name -> mcpany.config.v1.ToolConfig
+	6,  // 8: mcpany.config.v1.RateLimitConfig.ToolLimitsEntry.value:type_name -> mcpany.config.v1.RateLimitConfig
+	9,  // [9:9] is the sub-list for method output_type
+	9,  // [9:9] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_profile_proto_init() }
@@ -587,7 +672,7 @@ func file_proto_config_v1_profile_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_profile_proto_rawDesc), len(file_proto_config_v1_profile_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

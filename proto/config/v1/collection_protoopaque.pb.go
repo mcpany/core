@@ -35,8 +35,6 @@ type Collection struct {
 	xxx_hidden_Authentication *Authentication           `protobuf:"bytes,6,opt,name=authentication"`
 	xxx_hidden_Services       *[]*UpstreamServiceConfig `protobuf:"bytes,7,rep,name=services"`
 	xxx_hidden_Skills         []string                  `protobuf:"bytes,8,rep,name=skills"`
-	xxx_hidden_Author         *string                   `protobuf:"bytes,9,opt,name=author"`
-	xxx_hidden_Tags           []string                  `protobuf:"bytes,10,rep,name=tags"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -138,46 +136,29 @@ func (x *Collection) GetSkills() []string {
 	return nil
 }
 
-func (x *Collection) GetAuthor() string {
-	if x != nil {
-		if x.xxx_hidden_Author != nil {
-			return *x.xxx_hidden_Author
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *Collection) GetTags() []string {
-	if x != nil {
-		return x.xxx_hidden_Tags
-	}
-	return nil
-}
-
 func (x *Collection) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *Collection) SetDescription(v string) {
 	x.xxx_hidden_Description = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *Collection) SetVersion(v string) {
 	x.xxx_hidden_Version = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *Collection) SetPriority(v int32) {
 	x.xxx_hidden_Priority = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
 }
 
 func (x *Collection) SetHttpUrl(v string) {
 	x.xxx_hidden_HttpUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 10)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
 }
 
 func (x *Collection) SetAuthentication(v *Authentication) {
@@ -190,15 +171,6 @@ func (x *Collection) SetServices(v []*UpstreamServiceConfig) {
 
 func (x *Collection) SetSkills(v []string) {
 	x.xxx_hidden_Skills = v
-}
-
-func (x *Collection) SetAuthor(v string) {
-	x.xxx_hidden_Author = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 10)
-}
-
-func (x *Collection) SetTags(v []string) {
-	x.xxx_hidden_Tags = v
 }
 
 func (x *Collection) HasName() bool {
@@ -243,13 +215,6 @@ func (x *Collection) HasAuthentication() bool {
 	return x.xxx_hidden_Authentication != nil
 }
 
-func (x *Collection) HasAuthor() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
-}
-
 func (x *Collection) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
@@ -279,11 +244,6 @@ func (x *Collection) ClearAuthentication() {
 	x.xxx_hidden_Authentication = nil
 }
 
-func (x *Collection) ClearAuthor() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
-	x.xxx_hidden_Author = nil
-}
-
 type Collection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -295,8 +255,6 @@ type Collection_builder struct {
 	Authentication *Authentication
 	Services       []*UpstreamServiceConfig
 	Skills         []string
-	Author         *string
-	Tags           []string
 }
 
 func (b0 Collection_builder) Build() *Collection {
@@ -304,33 +262,28 @@ func (b0 Collection_builder) Build() *Collection {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
 		x.xxx_hidden_Name = b.Name
 	}
 	if b.Description != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
 		x.xxx_hidden_Description = b.Description
 	}
 	if b.Version != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
 		x.xxx_hidden_Version = b.Version
 	}
 	if b.Priority != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
 		x.xxx_hidden_Priority = *b.Priority
 	}
 	if b.HttpUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 10)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
 		x.xxx_hidden_HttpUrl = b.HttpUrl
 	}
 	x.xxx_hidden_Authentication = b.Authentication
 	x.xxx_hidden_Services = &b.Services
 	x.xxx_hidden_Skills = b.Skills
-	if b.Author != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 10)
-		x.xxx_hidden_Author = b.Author
-	}
-	x.xxx_hidden_Tags = b.Tags
 	return m0
 }
 
@@ -338,7 +291,7 @@ var File_proto_config_v1_collection_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_collection_proto_rawDesc = "" +
 	"\n" +
-	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xe7\x02\n" +
+	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xbb\x02\n" +
 	"\n" +
 	"Collection\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
@@ -348,10 +301,7 @@ const file_proto_config_v1_collection_proto_rawDesc = "" +
 	"\bhttp_url\x18\x05 \x01(\tR\bhttp_url\x12H\n" +
 	"\x0eauthentication\x18\x06 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12C\n" +
 	"\bservices\x18\a \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\x12\x16\n" +
-	"\x06skills\x18\b \x03(\tR\x06skills\x12\x16\n" +
-	"\x06author\x18\t \x01(\tR\x06author\x12\x12\n" +
-	"\x04tags\x18\n" +
-	" \x03(\tR\x04tagsB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x06skills\x18\b \x03(\tR\x06skillsB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_collection_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_collection_proto_goTypes = []any{

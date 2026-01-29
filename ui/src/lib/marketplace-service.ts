@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { UpstreamServiceConfig, apiClient } from "@/lib/client";
+import { UpstreamServiceConfig } from "@/lib/client";
 
 /**
  * A collection of services, typically organized by theme or use case.
@@ -64,6 +64,56 @@ export interface CommunityServer {
     tags: string[];
 }
 
+// Mock Data for "Official" Collections until we have the repo up
+const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
+  {
+    name: "Data Engineering Stack",
+    description: "Essential tools for data pipelines (PostgreSQL, Filesystem, Python)",
+    author: "MCP Any Team",
+    version: "1.0.0",
+    services: [
+        {
+            id: "sqlite-db",
+            name: "SQLite Database",
+            version: "1.0.0",
+            commandLineService: {
+                command: "npx -y @modelcontextprotocol/server-sqlite",
+                env: { "DB_PATH": { plainText: "./data.db", validationRegex: "" } }, // placeholders
+                workingDirectory: "",
+                tools: [],
+                resources: [],
+                prompts: [],
+                calls: {},
+                communicationProtocol: 0,
+                local: false
+            },
+            disable: false,
+            sanitizedName: "sqlite-db",
+            priority: 0,
+            loadBalancingStrategy: 0,
+            callPolicies: [],
+            preCallHooks: [],
+            postCallHooks: [],
+            prompts: [],
+
+            autoDiscoverTool: false,
+            configError: "",
+            configurationSchema: "",
+            readOnly: false,
+            tags: []
+        }
+
+    ]
+  },
+  {
+    name: "Web Dev Assistant",
+    description: "GitHub, Browser, and Terminal tools for web development.",
+    author: "MCP Any Team",
+    version: "1.0.0",
+    services: []
+  }
+];
+
 const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
   {
     id: "mcpmarket",
@@ -90,14 +140,8 @@ export const marketplaceService = {
    * @returns A promise that resolves to a list of service collections.
    */
   fetchOfficialCollections: async (): Promise<ServiceCollection[]> => {
-    try {
-        const collections = await apiClient.listCollections();
-        // Filter for "Official" (e.g. Author is "MCP Any Team")
-        return collections.filter((c) => c.author === "MCP Any Team");
-    } catch (e) {
-        console.error("Failed to fetch official collections", e);
-        return [];
-    }
+    // In future: fetch('https://raw.githubusercontent.com/mcpany/marketplace/main/collections.json')
+    return new Promise(resolve => setTimeout(() => resolve(MOCK_OFFICIAL_COLLECTIONS), 500));
   },
 
   /**
@@ -129,7 +173,7 @@ export const marketplaceService = {
                     version: '1.0.0',
                     commandLineService: {
                         command: 'npx -y @modelcontextprotocol/server-linear',
-                        env: { "LINEAR_API_KEY": { plainText: "" } },
+                        env: { "LINEAR_API_KEY": { plainText: "", validationRegex: "" } },
                         workingDirectory: "",
                         tools: [],
                         resources: [],
@@ -149,6 +193,8 @@ export const marketplaceService = {
 
                     autoDiscoverTool: false,
                     configError: "",
+                    configurationSchema: "",
+                    readOnly: false,
                     tags: []
                 }
 

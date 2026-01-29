@@ -174,4 +174,31 @@ func TestHandleTopology(t *testing.T) {
 		app.handleTopology()(w, req)
 		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 	})
+
+	t.Run("NotModified", func(t *testing.T) {
+		// Setup mock data again for this run
+		services := []*configv1.UpstreamServiceConfig{}
+		mockRegistry.On("GetAllServices").Return(services, nil).Once()
+		mockTM.On("ListTools").Return([]tool.Tool{}).Once()
+
+		// 1. First request to get ETag
+		req1 := httptest.NewRequest(http.MethodGet, "/topology", nil)
+		w1 := httptest.NewRecorder()
+		app.handleTopology()(w1, req1)
+		assert.Equal(t, http.StatusOK, w1.Code)
+		etag := w1.Header().Get("ETag")
+		assert.NotEmpty(t, etag, "ETag header should be set")
+
+		// 2. Second request with If-None-Match
+		mockRegistry.On("GetAllServices").Return(services, nil).Once()
+		mockTM.On("ListTools").Return([]tool.Tool{}).Once()
+
+		req2 := httptest.NewRequest(http.MethodGet, "/topology", nil)
+		req2.Header.Set("If-None-Match", etag)
+		w2 := httptest.NewRecorder()
+
+		app.handleTopology()(w2, req2)
+		assert.Equal(t, http.StatusNotModified, w2.Code)
+		assert.Empty(t, w2.Body.String(), "Body should be empty for 304")
+	})
 }
