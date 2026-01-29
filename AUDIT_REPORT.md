@@ -1,7 +1,7 @@
 # Audit Report
 
 ## Executive Summary
-Perfored a "Truth Reconciliation Audit" on 10 sampled documentation files.
+Performed a "Truth Reconciliation Audit" on 10 sampled documentation files.
 Overall health is high. Most features are correctly implemented and documented.
 Found 3 instances of Documentation Drift where the code contains features (metrics, config fields) not present in the documentation.
 No missing code features (Roadmap Debt) were found in the sampled set.

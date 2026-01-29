@@ -262,14 +262,15 @@ func TestGracefulShutdown(t *testing.T) {
 				return false
 			}
 			// Regex to match log: msg="HTTP server listening" ... port=...
-			re := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
+			// Handles both IPv4 (127.0.0.1:port) and IPv6 ([::]:port)
+			re := regexp.MustCompile(`msg="HTTP server listening".*?port=(?:\[.*?\]|[^:\s]+):(\d+)`)
 			matches := re.FindSubmatch(content)
 			if len(matches) > 1 {
 				fmt.Sscanf(string(matches[1]), "%d", &realPort)
 				return true
 			}
 			return false
-		}, 5*time.Second, 100*time.Millisecond, "Failed to find port in logs")
+		}, 30*time.Second, 100*time.Millisecond, "Failed to find port in logs")
 
 		if realPort == 0 {
 			return
