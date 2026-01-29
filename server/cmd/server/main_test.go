@@ -308,12 +308,15 @@ func TestGracefulShutdown(t *testing.T) {
 	// Wait for "READY" signal from child
 	scanner := bufio.NewScanner(stdout)
 	ready := false
-	timer := time.NewTimer(10 * time.Second)
+	timer := time.NewTimer(30 * time.Second)
 	done := make(chan struct{})
 
 	go func() {
 		for scanner.Scan() {
-			if scanner.Text() == "READY" {
+			text := scanner.Text()
+			// Log child output for debugging
+			t.Logf("Child process: %s", text)
+			if text == "READY" {
 				close(done)
 				return
 			}

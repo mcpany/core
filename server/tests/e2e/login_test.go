@@ -113,9 +113,8 @@ global_settings:
 	// Try to get first
 	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(username)})
 	if err == nil && getResp.User.GetId() == username {
-		// User exists, just ensure password/roles if needed?
-		// For now we assume if exists it's fine, or we can update it.
-		// Let's update it to ensure password matches what we expect for login.
+		// User exists, check roles
+		require.Contains(t, getResp.User.GetRoles(), "admin", "User exists but missing admin role")
 		updateResp, err := adminClient.UpdateUser(ctx, &pb_admin.UpdateUserRequest{User: user})
 		require.NoError(t, err, "Failed to update existing user")
 		require.Equal(t, username, updateResp.User.GetId())
@@ -124,9 +123,15 @@ global_settings:
 		createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user})
 		require.NoError(t, err, "Failed to create user")
 		require.Equal(t, username, createResp.User.GetId())
+		require.Contains(t, createResp.User.GetRoles(), "admin")
 		// Ensure password was hashed (not equal to plaintext)
 		assert.NotEqual(t, password, createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash())
 	}
+
+	// Verify User in DB via gRPC to be sure it persisted
+	getResp, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(username)})
+	require.NoError(t, err)
+	require.Contains(t, getResp.User.GetRoles(), "admin", "Persisted user missing admin role")
 
 	// 2. Attempt Login via REST API
 	loginReq := map[string]string{
