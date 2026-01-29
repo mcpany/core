@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -21,12 +22,15 @@ func TestValidateFileExists(t *testing.T) {
 	require.NoError(t, err)
 	defer os.Remove(f.Name())
 
+	// Create context with allowed path for the temp file
+	ctx := validation.ContextWithAllowedPaths(context.Background(), []string{os.TempDir()})
+
 	// Case 1: File exists
-	err = validateFileExists(f.Name(), "")
+	err = validateFileExists(ctx, f.Name(), "")
 	assert.NoError(t, err)
 
 	// Case 2: File does not exist
-	err = validateFileExists("/path/to/non/existent/file", "")
+	err = validateFileExists(ctx, "/path/to/non/existent/file", "")
 	assert.Error(t, err)
 
 	// Case 3: Directory
@@ -34,28 +38,31 @@ func TestValidateFileExists(t *testing.T) {
 	require.NoError(t, err)
 	defer os.Remove(d)
 
-	err = validateFileExists(d, "")
+	ctxDir := validation.ContextWithAllowedPaths(context.Background(), []string{d})
+
+	err = validateFileExists(ctxDir, d, "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "is a directory")
 }
 
 func TestValidateAuditConfig(t *testing.T) {
+	ctx := context.Background()
 	// Case 1: Nil config
-	assert.NoError(t, validateAuditConfig(nil))
+	assert.NoError(t, validateAuditConfig(ctx, nil))
 
 	// Case 2: Disabled
-	assert.NoError(t, validateAuditConfig(configv1.AuditConfig_builder{
+	assert.NoError(t, validateAuditConfig(ctx, configv1.AuditConfig_builder{
 		Enabled: proto.Bool(false),
 	}.Build()))
 
-	err := validateAuditConfig(configv1.AuditConfig_builder{
+	err := validateAuditConfig(ctx, configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
 		StorageType: configv1.AuditConfig_STORAGE_TYPE_FILE.Enum(),
 	}.Build())
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "output_path is required")
 
-	err = validateAuditConfig(configv1.AuditConfig_builder{
+	err = validateAuditConfig(ctx, configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
 		StorageType: configv1.AuditConfig_STORAGE_TYPE_WEBHOOK.Enum(),
 	}.Build())
@@ -63,7 +70,7 @@ func TestValidateAuditConfig(t *testing.T) {
 	assert.Contains(t, err.Error(), "webhook_url is required")
 
 	// Case 5: Invalid webhook URL
-	err = validateAuditConfig(configv1.AuditConfig_builder{
+	err = validateAuditConfig(ctx, configv1.AuditConfig_builder{
 		Enabled:     proto.Bool(true),
 		StorageType: configv1.AuditConfig_STORAGE_TYPE_WEBHOOK.Enum(),
 		WebhookUrl:  proto.String("not-a-url"),
@@ -90,13 +97,14 @@ func TestValidateDLPConfig(t *testing.T) {
 }
 
 func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
+	ctx := context.Background()
 	// Empty URL
 	sv := configv1.SecretValue_builder{
 		RemoteContent: configv1.RemoteContent_builder{
 			HttpUrl: proto.String(""),
 		}.Build(),
 	}.Build()
-	err := validateSecretValue(sv)
+	err := validateSecretValue(ctx, sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty http_url")
 
@@ -106,12 +114,13 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 			HttpUrl: proto.String("ftp://example.com/secret"),
 		}.Build(),
 	}.Build()
-	err = validateSecretValue(sv)
+	err = validateSecretValue(ctx, sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid http_url scheme")
 }
 
 func TestValidateContainerEnvironment_Errors(t *testing.T) {
+	ctx := context.Background()
 	// Empty host path
 	env := configv1.ContainerEnvironment_builder{
 		Image: proto.String("alpine"),
@@ -119,7 +128,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 			"": "/container/path",
 		},
 	}.Build()
-	err := validateContainerEnvironment(env)
+	err := validateContainerEnvironment(ctx, env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "host path is empty")
 
@@ -127,7 +136,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 	env.SetVolumes(map[string]string{
 		"/host/path": "",
 	})
-	err = validateContainerEnvironment(env)
+	err = validateContainerEnvironment(ctx, env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container path is empty")
 }
@@ -262,16 +271,17 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 }
 
 func TestValidateGCSettings(t *testing.T) {
+	ctx := context.Background()
 	// Case 1: Invalid interval
 	gc := &configv1.GCSettings{}
 	gc.SetInterval("invalid")
-	err := validateGCSettings(gc)
+	err := validateGCSettings(ctx, gc)
 	assert.Error(t, err)
 
 	// Case 2: Invalid TTL
 	gc = &configv1.GCSettings{}
 	gc.SetTtl("invalid")
-	err = validateGCSettings(gc)
+	err = validateGCSettings(ctx, gc)
 	assert.Error(t, err)
 
 	// Case 3: Empty path in Paths
@@ -279,7 +289,7 @@ func TestValidateGCSettings(t *testing.T) {
 		Enabled: proto.Bool(true),
 		Paths:   []string{""},
 	}.Build()
-	err = validateGCSettings(gc)
+	err = validateGCSettings(ctx, gc)
 	assert.Error(t, err)
 
 	// Case 4: Relative path
@@ -287,7 +297,7 @@ func TestValidateGCSettings(t *testing.T) {
 		Enabled: proto.Bool(true),
 		Paths:   []string{"relative/path"},
 	}.Build()
-	err = validateGCSettings(gc)
+	err = validateGCSettings(ctx, gc)
 	assert.Error(t, err)
 }
 
@@ -360,13 +370,14 @@ func TestValidateAPIKeyAuth_Incoming_Errors(t *testing.T) {
 }
 
 func TestValidateMcpService_BundleErrors(t *testing.T) {
+	ctx := context.Background()
 	// Empty Bundle Path
 	s := configv1.McpUpstreamService_builder{
 		BundleConnection: configv1.McpBundleConnection_builder{
 			BundlePath: proto.String(""),
 		}.Build(),
 	}.Build()
-	err := validateMcpService(s)
+	err := validateMcpService(ctx, s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty bundle_path")
 }

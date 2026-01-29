@@ -53,8 +53,7 @@ func TestValidateSchema_Coverage(t *testing.T) {
 func TestValidateCommandExists_Coverage(t *testing.T) {
 	// Create a temporary directory and file
 	tmpDir := t.TempDir()
-	validation.SetAllowedPaths([]string{tmpDir})
-	defer validation.SetAllowedPaths(nil)
+	ctx := validation.ContextWithAllowedPaths(context.Background(), []string{tmpDir})
 
 	tmpFile := filepath.Join(tmpDir, "test-exec")
 	os.WriteFile(tmpFile, []byte("#!/bin/sh\nexit 0"), 0755)
@@ -80,35 +79,35 @@ func TestValidateCommandExists_Coverage(t *testing.T) {
 			workingDir: tmpDir,
 			expectErr:  "is a directory, not an executable",
 		},
-        {
-            name: "absolute_path_exists",
-            command: tmpFile,
-            workingDir: "",
-            expectErr: "",
-        },
-        {
-            name: "absolute_path_not_exists",
-            command: filepath.Join(tmpDir, "missing"),
-            workingDir: "",
-            expectErr: "executable not found",
-        },
-        {
-            name: "absolute_path_is_dir",
-            command: tmpDirExec,
-            workingDir: "",
-            expectErr: "is a directory, not an executable",
-        },
-        {
-            name: "command_not_in_path",
-            command: "nonexistentcommand123",
-            workingDir: "",
-            expectErr: "command \"nonexistentcommand123\" not found in PATH",
-        },
+		{
+			name:       "absolute_path_exists",
+			command:    tmpFile,
+			workingDir: "",
+			expectErr:  "",
+		},
+		{
+			name:       "absolute_path_not_exists",
+			command:    filepath.Join(tmpDir, "missing"),
+			workingDir: "",
+			expectErr:  "executable not found",
+		},
+		{
+			name:       "absolute_path_is_dir",
+			command:    tmpDirExec,
+			workingDir: "",
+			expectErr:  "is a directory, not an executable",
+		},
+		{
+			name:       "command_not_in_path",
+			command:    "nonexistentcommand123",
+			workingDir: "",
+			expectErr:  "command \"nonexistentcommand123\" not found in PATH",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateCommandExists(tt.command, tt.workingDir)
+			err := validateCommandExists(ctx, tt.command, tt.workingDir)
 			if tt.expectErr != "" {
 				assert.ErrorContains(t, err, tt.expectErr)
 			} else {
@@ -153,151 +152,155 @@ func TestValidateDirectoryExists_Coverage(t *testing.T) {
 }
 
 func TestValidateFileExists_Coverage(t *testing.T) {
-    tmpDir := t.TempDir()
-    tmpFile := filepath.Join(tmpDir, "test-file")
-    os.WriteFile(tmpFile, []byte("content"), 0644)
+	tmpDir := t.TempDir()
+	ctx := validation.ContextWithAllowedPaths(context.Background(), []string{tmpDir})
 
-    tests := []struct {
-        name string
-        path string
-        workingDir string
-        expectErr string
-    }{
-        {
-            name: "valid_file",
-            path: tmpFile,
-            workingDir: "",
-            expectErr: "",
-        },
-        {
-            name: "is_directory",
-            path: tmpDir,
-            workingDir: "",
-            expectErr: "is a directory, expected a file",
-        },
-        {
-            name: "does_not_exist",
-            path: "missing-file",
-            workingDir: tmpDir,
-            expectErr: "file not found",
-        },
-    }
+	tmpFile := filepath.Join(tmpDir, "test-file")
+	os.WriteFile(tmpFile, []byte("content"), 0644)
 
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := validateFileExists(tt.path, tt.workingDir)
-            if tt.expectErr != "" {
-                assert.ErrorContains(t, err, tt.expectErr)
-            } else {
-                assert.NoError(t, err)
-            }
-        })
-    }
+	tests := []struct {
+		name       string
+		path       string
+		workingDir string
+		expectErr  string
+	}{
+		{
+			name:       "valid_file",
+			path:       tmpFile,
+			workingDir: "",
+			expectErr:  "",
+		},
+		{
+			name:       "is_directory",
+			path:       tmpDir,
+			workingDir: "",
+			expectErr:  "is a directory, expected a file",
+		},
+		{
+			name:       "does_not_exist",
+			path:       "missing-file",
+			workingDir: tmpDir,
+			expectErr:  "file not found",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateFileExists(ctx, tt.path, tt.workingDir)
+			if tt.expectErr != "" {
+				assert.ErrorContains(t, err, tt.expectErr)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestValidateGCSettings_Coverage(t *testing.T) {
-    tests := []struct {
-        name string
-        gc *configv1.GCSettings
-        expectErr string
-    }{
-        {
-            name: "invalid_interval",
-            gc: configv1.GCSettings_builder{
-                Interval: proto.String("invalid"),
-            }.Build(),
-            expectErr: "invalid interval",
-        },
-        {
-            name: "invalid_ttl",
-            gc: configv1.GCSettings_builder{
-                Ttl: proto.String("invalid"),
-            }.Build(),
-            expectErr: "invalid ttl",
-        },
-        {
-            name: "empty_gc_path",
-            gc: configv1.GCSettings_builder{
-                Enabled: proto.Bool(true),
-                Paths:   []string{""},
-            }.Build(),
-            expectErr: "empty gc path",
-        },
-        {
-            name: "relative_gc_path",
-            gc: configv1.GCSettings_builder{
-                Enabled: proto.Bool(true),
-                Paths:   []string{"relative/path"},
-            }.Build(),
-            expectErr: "gc path \"relative/path\" must be absolute",
-        },
-    }
+	ctx := context.Background()
+	tests := []struct {
+		name      string
+		gc        *configv1.GCSettings
+		expectErr string
+	}{
+		{
+			name: "invalid_interval",
+			gc: configv1.GCSettings_builder{
+				Interval: proto.String("invalid"),
+			}.Build(),
+			expectErr: "invalid interval",
+		},
+		{
+			name: "invalid_ttl",
+			gc: configv1.GCSettings_builder{
+				Ttl: proto.String("invalid"),
+			}.Build(),
+			expectErr: "invalid ttl",
+		},
+		{
+			name: "empty_gc_path",
+			gc: configv1.GCSettings_builder{
+				Enabled: proto.Bool(true),
+				Paths:   []string{""},
+			}.Build(),
+			expectErr: "empty gc path",
+		},
+		{
+			name: "relative_gc_path",
+			gc: configv1.GCSettings_builder{
+				Enabled: proto.Bool(true),
+				Paths:   []string{"relative/path"},
+			}.Build(),
+			expectErr: "gc path \"relative/path\" must be absolute",
+		},
+	}
 
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := validateGCSettings(tt.gc)
-            if tt.expectErr != "" {
-                assert.ErrorContains(t, err, tt.expectErr)
-            } else {
-                assert.NoError(t, err)
-            }
-        })
-    }
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateGCSettings(ctx, tt.gc)
+			if tt.expectErr != "" {
+				assert.ErrorContains(t, err, tt.expectErr)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestValidateMcpService_Coverage(t *testing.T) {
-    tests := []struct {
-        name string
-        service *configv1.McpUpstreamService
-        expectErr string
-    }{
-        {
-            name: "http_empty_address",
+	ctx := context.Background()
+	tests := []struct {
+		name      string
+		service   *configv1.McpUpstreamService
+		expectErr string
+	}{
+		{
+			name: "http_empty_address",
 			service: configv1.McpUpstreamService_builder{
 				HttpConnection: configv1.McpStreamableHttpConnection_builder{
 					HttpAddress: proto.String(""),
 				}.Build(),
 			}.Build(),
 			expectErr: "mcp service with http_connection has empty http_address",
-        },
-        {
-            name: "http_invalid_address",
+		},
+		{
+			name: "http_invalid_address",
 			service: configv1.McpUpstreamService_builder{
 				HttpConnection: configv1.McpStreamableHttpConnection_builder{
 					HttpAddress: proto.String("not-a-url"),
 				}.Build(),
 			}.Build(),
-            expectErr: "invalid http_address",
-        },
-        {
-            name: "stdio_empty_command",
+			expectErr: "invalid http_address",
+		},
+		{
+			name: "stdio_empty_command",
 			service: configv1.McpUpstreamService_builder{
 				StdioConnection: configv1.McpStdioConnection_builder{
 					Command: proto.String(""),
 				}.Build(),
 			}.Build(),
 			expectErr: "mcp service with stdio_connection has empty command",
-        },
-        {
-            name: "bundle_empty_path",
+		},
+		{
+			name: "bundle_empty_path",
 			service: configv1.McpUpstreamService_builder{
 				BundleConnection: configv1.McpBundleConnection_builder{
 					BundlePath: proto.String(""),
 				}.Build(),
 			}.Build(),
 			expectErr: "mcp service with bundle_connection has empty bundle_path",
-        },
-        {
-            name: "bundle_insecure_path",
+		},
+		{
+			name: "bundle_insecure_path",
 			service: configv1.McpUpstreamService_builder{
 				BundleConnection: configv1.McpBundleConnection_builder{
 					BundlePath: proto.String("/etc/passwd"),
 				}.Build(),
 			}.Build(),
 			expectErr: "mcp service with bundle_connection has insecure bundle_path",
-        },
-        {
-            name: "bundle_invalid_env",
+		},
+		{
+			name: "bundle_invalid_env",
 			service: configv1.McpUpstreamService_builder{
 				BundleConnection: configv1.McpBundleConnection_builder{
 					BundlePath: proto.String("./bundle"),
@@ -309,14 +312,14 @@ func TestValidateMcpService_Coverage(t *testing.T) {
 				}.Build(),
 			}.Build(),
 			expectErr: "mcp service with bundle_connection has invalid secret environment variable",
-        },
-        {
-            name: "unknown_connection_type",
-            service: &configv1.McpUpstreamService{},
-            expectErr: "mcp service has no connection_type",
-        },
-        {
-            name: "input_schema_error",
+		},
+		{
+			name: "unknown_connection_type",
+			service: &configv1.McpUpstreamService{},
+			expectErr: "mcp service has no connection_type",
+		},
+		{
+			name: "input_schema_error",
 			service: configv1.McpUpstreamService_builder{
 				HttpConnection: configv1.McpStreamableHttpConnection_builder{
 					HttpAddress: proto.String("http://example.com"),
@@ -331,20 +334,20 @@ func TestValidateMcpService_Coverage(t *testing.T) {
 					}.Build(),
 				},
 			}.Build(),
-            expectErr: "input_schema error",
-        },
-    }
+			expectErr: "input_schema error",
+		},
+	}
 
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := validateMcpService(tt.service)
-            if tt.expectErr != "" {
-                assert.ErrorContains(t, err, tt.expectErr)
-            } else {
-                assert.NoError(t, err)
-            }
-        })
-    }
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateMcpService(ctx, tt.service)
+			if tt.expectErr != "" {
+				assert.ErrorContains(t, err, tt.expectErr)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestValidateHTTPService_Coverage(t *testing.T) {
@@ -519,18 +522,19 @@ func TestValidateWebSocketService_Coverage(t *testing.T) {
 }
 
 func TestValidateContainerEnvironment_Coverage(t *testing.T) {
-    tests := []struct {
-        name string
-        env *configv1.ContainerEnvironment
-        expectErr string
-    }{
-        {
-            name: "valid_no_image",
-            env: nil,
-            expectErr: "",
-        },
-        {
-            			name: "empty_host_path",
+	ctx := context.Background()
+	tests := []struct {
+		name      string
+		env       *configv1.ContainerEnvironment
+		expectErr string
+	}{
+		{
+			name:      "valid_no_image",
+			env:       nil,
+			expectErr: "",
+		},
+		{
+			name: "empty_host_path",
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -538,9 +542,9 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 				},
 			}.Build(),
 			expectErr: "container environment volume host path is empty",
-        },
-        {
-            			name: "empty_container_path",
+		},
+		{
+			name: "empty_container_path",
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -548,9 +552,9 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 				},
 			}.Build(),
 			expectErr: "container environment volume container path is empty",
-        },
-        {
-            			name: "insecure_host_path",
+		},
+		{
+			name: "insecure_host_path",
 			env: configv1.ContainerEnvironment_builder{
 				Image: proto.String("alpine"),
 				Volumes: map[string]string{
@@ -558,19 +562,19 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 				},
 			}.Build(),
 			expectErr: "not a secure path",
-        },
-    }
+		},
+	}
 
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            err := validateContainerEnvironment(tt.env)
-             if tt.expectErr != "" {
-                assert.ErrorContains(t, err, tt.expectErr)
-            } else {
-                assert.NoError(t, err)
-            }
-        })
-    }
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateContainerEnvironment(ctx, tt.env)
+			if tt.expectErr != "" {
+				assert.ErrorContains(t, err, tt.expectErr)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestValidateAPIKeyAuth_Coverage(t *testing.T) {

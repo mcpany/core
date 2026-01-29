@@ -90,7 +90,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	serviceNames := make(map[string]bool)
 
 	if gs := config.GetGlobalSettings(); gs != nil {
-		if err := validateGlobalSettings(gs, binaryType); err != nil {
+		if err := validateGlobalSettings(ctx, gs, binaryType); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: "global_settings",
 				Err:         err,
@@ -180,7 +180,7 @@ func validateCollection(ctx context.Context, collection *configv1.Collection) er
 	return nil
 }
 
-func validateStdioArgs(command string, args []string, workingDir string) error {
+func validateStdioArgs(ctx context.Context, command string, args []string, workingDir string) error {
 	// Only check for common interpreters to avoid false positives on arbitrary flags
 	baseCmd := filepath.Base(command)
 	isInterpreter := false
@@ -251,7 +251,7 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 		}
 
 		// Check if file exists
-		if err := validateFileExists(arg, workingDir); err != nil {
+		if err := validateFileExists(ctx, arg, workingDir); err != nil {
 			return WrapActionableError(fmt.Sprintf("argument %q looks like a script file but does not exist", arg), err)
 		}
 
@@ -262,12 +262,16 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 	return nil
 }
 
-func validateFileExists(path string, workingDir string) error {
+func validateFileExists(ctx context.Context, path string, workingDir string) error {
 	targetPath := path
 	// If path is relative and workingDir is set, join them.
 	// Note: If workingDir is empty, we check relative to CWD (process root), which is standard behavior.
 	if !filepath.IsAbs(path) && workingDir != "" {
 		targetPath = filepath.Join(workingDir, path)
+	}
+
+	if err := validation.IsAllowedPath(ctx, targetPath); err != nil {
+		return fmt.Errorf("file path %q is not allowed: %w", targetPath, err)
 	}
 
 	info, err := osStat(targetPath)
@@ -287,16 +291,16 @@ func validateFileExists(path string, workingDir string) error {
 	return nil
 }
 
-func validateSecretMap(secrets map[string]*configv1.SecretValue) error {
+func validateSecretMap(ctx context.Context, secrets map[string]*configv1.SecretValue) error {
 	for key, secret := range secrets {
-		if err := validateSecretValue(secret); err != nil {
+		if err := validateSecretValue(ctx, secret); err != nil {
 			return fmt.Errorf("%q: %w", key, err)
 		}
 	}
 	return nil
 }
 
-func validateSecretValue(secret *configv1.SecretValue) error {
+func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) error {
 	if secret == nil {
 		return nil
 	}
@@ -314,7 +318,7 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			}
 		}
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
+		if err := validation.IsAllowedPath(ctx, secret.GetFilePath()); err != nil {
 			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// Validate that the file actually exists to fail fast
@@ -372,7 +376,7 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 	return nil
 }
 
-func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
+func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, binaryType BinaryType) error {
 	switch binaryType {
 	case Server:
 		if gs.GetMcpListenAddress() != "" {
@@ -394,7 +398,7 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 		}
 	}
 
-	if err := validateAuditConfig(gs.GetAudit()); err != nil {
+	if err := validateAuditConfig(ctx, gs.GetAudit()); err != nil {
 		return fmt.Errorf("audit config error: %w", err)
 	}
 
@@ -402,7 +406,7 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 		return fmt.Errorf("dlp config error: %w", err)
 	}
 
-	if err := validateGCSettings(gs.GetGcSettings()); err != nil {
+	if err := validateGCSettings(ctx, gs.GetGcSettings()); err != nil {
 		return fmt.Errorf("gc settings error: %w", err)
 	}
 
@@ -446,7 +450,7 @@ func validateUpstreamService(ctx context.Context, service *configv1.UpstreamServ
 		return fmt.Errorf("service type not specified")
 	}
 
-	if err := validateServiceConfig(service); err != nil {
+	if err := validateServiceConfig(ctx, service); err != nil {
 		return err
 	}
 
@@ -475,7 +479,7 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 	case configv1.Authentication_BasicAuth_case:
 		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
 	case configv1.Authentication_Mtls_case:
-		return validateMtlsAuth(authConfig.GetMtls())
+		return validateMtlsAuth(ctx, authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
 		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	case configv1.Authentication_Oidc_case:
@@ -486,7 +490,7 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 	return nil
 }
 
-func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
+func validateServiceConfig(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if httpService := service.GetHttpService(); httpService != nil {
 		return validateHTTPService(httpService)
 	} else if websocketService := service.GetWebsocketService(); websocketService != nil {
@@ -496,9 +500,9 @@ func validateServiceConfig(service *configv1.UpstreamServiceConfig) error {
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
 		return validateOpenAPIService(openapiService)
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
-		return validateCommandLineService(commandLineService)
+		return validateCommandLineService(ctx, commandLineService)
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
-		return validateMcpService(mcpService)
+		return validateMcpService(ctx, mcpService)
 	} else if sqlService := service.GetSqlService(); sqlService != nil {
 		return validateSQLService(sqlService)
 	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
@@ -642,7 +646,7 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 	return nil
 }
 
-func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
+func validateCommandLineService(ctx context.Context, commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return &ActionableError{
 			Err:        fmt.Errorf("command_line_service has empty command"),
@@ -652,18 +656,18 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 
 	// Only validate command existence if not running in a container
 	if commandLineService.GetContainerEnvironment().GetImage() == "" {
-		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
+		if err := validateCommandExists(ctx, commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
 			return WrapActionableError("command_line_service command validation failed", err)
 		}
 	}
 
-	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
+	if err := validateContainerEnvironment(ctx, commandLineService.GetContainerEnvironment()); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
+func validateContainerEnvironment(ctx context.Context, env *configv1.ContainerEnvironment) error {
 	if env == nil {
 		return nil
 	}
@@ -679,7 +683,7 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 			// dest is the key (Host Path), src is the value (Container Path).
 			// We must validate the Host Path (dest) to ensure it is secure.
 			// It must be either relative to the CWD or in the allowed list.
-			if err := validation.IsAllowedPath(dest); err != nil {
+			if err := validation.IsAllowedPath(ctx, dest); err != nil {
 				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
 			}
 		}
@@ -688,7 +692,7 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 	return nil
 }
 
-func validateMcpService(mcpService *configv1.McpUpstreamService) error {
+func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamService) error {
 	switch mcpService.WhichConnectionType() {
 	case configv1.McpUpstreamService_HttpConnection_case:
 		httpConn := mcpService.GetHttpConnection()
@@ -721,16 +725,16 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
 		if stdioConn.GetContainerImage() == "" {
-			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
+			if err := validateCommandExists(ctx, stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
 				return WrapActionableError("mcp service with stdio_connection command validation failed", err)
 			}
 
-			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
+			if err := validateStdioArgs(ctx, stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
 				return WrapActionableError("mcp service with stdio_connection argument validation failed", err)
 			}
 
 			if stdioConn.GetWorkingDirectory() != "" {
-				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
+				if err := validation.IsAllowedPath(ctx, stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 				}
 				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
@@ -739,7 +743,7 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 			}
 		}
 
-		if err := validateSecretMap(stdioConn.GetEnv()); err != nil {
+		if err := validateSecretMap(ctx, stdioConn.GetEnv()); err != nil {
 			return fmt.Errorf("mcp service with stdio_connection has invalid secret environment variable: %w", err)
 		}
 	case configv1.McpUpstreamService_BundleConnection_case:
@@ -747,10 +751,10 @@ func validateMcpService(mcpService *configv1.McpUpstreamService) error {
 		if bundleConn.GetBundlePath() == "" {
 			return fmt.Errorf("mcp service with bundle_connection has empty bundle_path")
 		}
-		if err := validation.IsAllowedPath(bundleConn.GetBundlePath()); err != nil {
+		if err := validation.IsAllowedPath(ctx, bundleConn.GetBundlePath()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has insecure bundle_path %q: %w", bundleConn.GetBundlePath(), err)
 		}
-		if err := validateSecretMap(bundleConn.GetEnv()); err != nil {
+		if err := validateSecretMap(ctx, bundleConn.GetEnv()); err != nil {
 			return fmt.Errorf("mcp service with bundle_connection has invalid secret environment variable: %w", err)
 		}
 	default:
@@ -863,7 +867,7 @@ func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Au
 	case configv1.Authentication_BasicAuth_case:
 		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
 	case configv1.Authentication_Mtls_case:
-		return validateMtlsAuth(authConfig.GetMtls())
+		return validateMtlsAuth(ctx, authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
 		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	}
@@ -899,7 +903,7 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 	}
 
 	if apiKey.GetValue() != nil {
-		if err := validateSecretValue(apiKey.GetValue()); err != nil {
+		if err := validateSecretValue(ctx, apiKey.GetValue()); err != nil {
 			return WrapActionableError("api key secret validation failed", err)
 		}
 		apiKeyValue, err := util.ResolveSecret(ctx, apiKey.GetValue())
@@ -917,7 +921,7 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 }
 
 func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTokenAuth) error {
-	if err := validateSecretValue(bearerToken.GetToken()); err != nil {
+	if err := validateSecretValue(ctx, bearerToken.GetToken()); err != nil {
 		return WrapActionableError("bearer token validation failed", err)
 	}
 	tokenValue, err := util.ResolveSecret(ctx, bearerToken.GetToken())
@@ -940,7 +944,7 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error
 			Suggestion: "Set the 'username' field.",
 		}
 	}
-	if err := validateSecretValue(basicAuth.GetPassword()); err != nil {
+	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
 		return WrapActionableError("basic auth password validation failed", err)
 	}
 	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
@@ -987,7 +991,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		}
 	}
 
-	if err := validateSecretValue(oauth.GetClientId()); err != nil {
+	if err := validateSecretValue(ctx, oauth.GetClientId()); err != nil {
 		return WrapActionableError("oauth2 client_id validation failed", err)
 	}
 	clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
@@ -998,7 +1002,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return fmt.Errorf("oauth2 client_id is missing or empty")
 	}
 
-	if err := validateSecretValue(oauth.GetClientSecret()); err != nil {
+	if err := validateSecretValue(ctx, oauth.GetClientSecret()); err != nil {
 		return WrapActionableError("oauth2 client_secret validation failed", err)
 	}
 	clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())
@@ -1038,21 +1042,21 @@ func validateTrustedHeaderAuth(th *configv1.TrustedHeaderAuth) error {
 	return nil
 }
 
-func validateMtlsAuth(mtls *configv1.MTLSAuth) error {
+func validateMtlsAuth(ctx context.Context, mtls *configv1.MTLSAuth) error {
 	if mtls.GetClientCertPath() == "" {
 		return fmt.Errorf("mtls 'client_cert_path' is empty")
 	}
 	if mtls.GetClientKeyPath() == "" {
 		return fmt.Errorf("mtls 'client_key_path' is empty")
 	}
-	if err := validation.IsAllowedPath(mtls.GetClientCertPath()); err != nil {
+	if err := validation.IsAllowedPath(ctx, mtls.GetClientCertPath()); err != nil {
 		return fmt.Errorf("mtls 'client_cert_path' is not a secure path: %w", err)
 	}
-	if err := validation.IsAllowedPath(mtls.GetClientKeyPath()); err != nil {
+	if err := validation.IsAllowedPath(ctx, mtls.GetClientKeyPath()); err != nil {
 		return fmt.Errorf("mtls 'client_key_path' is not a secure path: %w", err)
 	}
 	if mtls.GetCaCertPath() != "" {
-		if err := validation.IsAllowedPath(mtls.GetCaCertPath()); err != nil {
+		if err := validation.IsAllowedPath(ctx, mtls.GetCaCertPath()); err != nil {
 			return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
 		}
 	}
@@ -1131,7 +1135,7 @@ func validateUser(ctx context.Context, user *configv1.User) error {
 	return nil
 }
 
-func validateAuditConfig(audit *configv1.AuditConfig) error {
+func validateAuditConfig(ctx context.Context, audit *configv1.AuditConfig) error {
 	if audit == nil {
 		return nil
 	}
@@ -1142,6 +1146,9 @@ func validateAuditConfig(audit *configv1.AuditConfig) error {
 	case configv1.AuditConfig_STORAGE_TYPE_FILE:
 		if audit.GetOutputPath() == "" {
 			return fmt.Errorf("output_path is required for file storage")
+		}
+		if err := validation.IsAllowedPath(ctx, audit.GetOutputPath()); err != nil {
+			return fmt.Errorf("audit output_path %q is not secure: %w", audit.GetOutputPath(), err)
 		}
 	case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
 		if audit.GetWebhookUrl() == "" {
@@ -1172,7 +1179,7 @@ func validateDLPConfig(dlp *configv1.DLPConfig) error {
 	return nil
 }
 
-func validateGCSettings(gc *configv1.GCSettings) error {
+func validateGCSettings(ctx context.Context, gc *configv1.GCSettings) error {
 	if gc == nil {
 		return nil
 	}
@@ -1191,7 +1198,7 @@ func validateGCSettings(gc *configv1.GCSettings) error {
 			if path == "" {
 				return fmt.Errorf("empty gc path")
 			}
-			if err := validation.IsAllowedPath(path); err != nil {
+			if err := validation.IsAllowedPath(ctx, path); err != nil {
 				return fmt.Errorf("gc path %q is not secure: %w", path, err)
 			}
 			// We might also checking if it's absolute?
@@ -1208,13 +1215,13 @@ func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 	return nil
 }
 
-func validateCommandExists(command string, workingDir string) error {
+func validateCommandExists(ctx context.Context, command string, workingDir string) error {
 	// If the command is an absolute path, check if it exists and is executable
 	if filepath.IsAbs(command) {
 		// Sentinel Security: Restrict execution to AllowedPaths or system PATH.
 		// This prevents probing arbitrary files or executing untrusted binaries.
 		allowed := false
-		if err := validation.IsAllowedPath(command); err == nil {
+		if err := validation.IsAllowedPath(ctx, command); err == nil {
 			allowed = true
 		} else {
 			// Check if the directory is in system PATH

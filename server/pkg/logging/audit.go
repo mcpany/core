@@ -22,18 +22,18 @@ type AuditHandler struct {
 }
 
 // NewAuditHandler creates a new AuditHandler.
-func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
+func NewAuditHandler(ctx context.Context, next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,
 		config: config,
 	}
 	if config != nil && config.GetEnabled() {
-		h.initializeStore(config)
+		h.initializeStore(ctx, config)
 	}
 	return h
 }
 
-func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
+func (h *AuditHandler) initializeStore(ctx context.Context, config *configv1.AuditConfig) {
 	storageType := config.GetStorageType()
 	if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED {
 		storageType = configv1.AuditConfig_STORAGE_TYPE_FILE
@@ -48,7 +48,7 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 	case configv1.AuditConfig_STORAGE_TYPE_SQLITE:
 		store, err = audit.NewSQLiteAuditStore(config.GetOutputPath())
 	case configv1.AuditConfig_STORAGE_TYPE_FILE:
-		store, err = audit.NewFileAuditStore(config.GetOutputPath())
+		store, err = audit.NewFileAuditStore(ctx, config.GetOutputPath())
 	case configv1.AuditConfig_STORAGE_TYPE_WEBHOOK:
 		store = audit.NewWebhookAuditStore(config.GetWebhookUrl(), config.GetWebhookHeaders())
 	case configv1.AuditConfig_STORAGE_TYPE_SPLUNK:
@@ -56,7 +56,7 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 	case configv1.AuditConfig_STORAGE_TYPE_DATADOG:
 		store = audit.NewDatadogAuditStore(config.GetDatadog())
 	default:
-		store, err = audit.NewFileAuditStore(config.GetOutputPath())
+		store, err = audit.NewFileAuditStore(ctx, config.GetOutputPath())
 	}
 
 	if err != nil {

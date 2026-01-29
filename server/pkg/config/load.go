@@ -11,6 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -57,6 +58,13 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		log.Error("Unknown binary type", "binary_type", binaryType)
 		return nil, fmt.Errorf("unknown binary type: %s", binaryType)
 	}
+
+	// 🔒 Security: Inject AllowedPaths from configuration into the context.
+	// This ensures that subsequent validation logic (which may be deeply nested or run in parallel)
+	// can access the allowed paths securely without relying on global state.
+	allowedPaths := fileConfig.GetGlobalSettings().GetAllowedFilePaths()
+	// Validation logic will use this context to check if paths are allowed.
+	ctx = validation.ContextWithAllowedPaths(ctx, allowedPaths)
 
 	validationErrors := Validate(ctx, fileConfig, bt)
 	if len(validationErrors) > 0 {

@@ -25,11 +25,11 @@ type FileAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
-func NewFileAuditStore(path string) (*FileAuditStore, error) {
+func NewFileAuditStore(ctx context.Context, path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
 	if path != "" {
-		if err := validation.IsAllowedPath(path); err != nil {
+		if err := validation.IsAllowedPath(ctx, path); err != nil {
 			return nil, fmt.Errorf("audit log file path not allowed: %w", err)
 		}
 		f, err = os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) //nolint:gosec

@@ -26,7 +26,7 @@ func TestReproFileSecretValidation(t *testing.T) {
 
 	oldIsAllowed := validation.IsAllowedPath
 	defer func() { validation.IsAllowedPath = oldIsAllowed }()
-	validation.IsAllowedPath = func(path string) error { return nil }
+	validation.IsAllowedPath = func(ctx context.Context, path string) error { return nil }
 
 	oldFileExists := validation.FileExists
 	defer func() { validation.FileExists = oldFileExists }()

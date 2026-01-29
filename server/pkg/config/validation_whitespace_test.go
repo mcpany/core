@@ -66,7 +66,7 @@ func TestValidationWhitespaceChecks(t *testing.T) {
 				httpConn := &configv1.McpStreamableHttpConnection{}
 				httpConn.SetHttpAddress(badURL)
 				svc.SetHttpConnection(httpConn)
-				return validateMcpService(svc)
+				return validateMcpService(ctx, svc)
 			},
 			errSubstr: "mcp http_address contains hidden whitespace",
 		},
@@ -95,7 +95,7 @@ func TestValidationWhitespaceChecks(t *testing.T) {
 				cfg.SetEnabled(true)
 				cfg.SetStorageType(configv1.AuditConfig_STORAGE_TYPE_WEBHOOK)
 				cfg.SetWebhookUrl(badURL)
-				return validateAuditConfig(cfg)
+				return validateAuditConfig(ctx, cfg)
 			},
 			errSubstr: "webhook_url contains hidden whitespace",
 		},

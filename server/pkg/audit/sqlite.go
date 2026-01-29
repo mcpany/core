@@ -30,11 +30,22 @@ type SQLiteAuditStore struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
+	return NewSQLiteAuditStoreWithContext(context.Background(), path)
+}
+
+// NewSQLiteAuditStoreWithContext creates a new SQLiteAuditStore with context.
+//
+// ctx is the context.
+// path is the path.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func NewSQLiteAuditStoreWithContext(ctx context.Context, path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
 
-	if err := validation.IsAllowedPath(path); err != nil {
+	if err := validation.IsAllowedPath(ctx, path); err != nil {
 		return nil, fmt.Errorf("sqlite audit path not allowed: %w", err)
 	}
 

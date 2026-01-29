@@ -90,7 +90,7 @@ type localExecutor struct{}
 // Returns an error if the operation fails.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
-		if err := validation.IsAllowedPath(workingDir); err != nil {
+		if err := validation.IsAllowedPath(ctx, workingDir); err != nil {
 			return nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
 		}
 	}
@@ -148,7 +148,7 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 // Returns an error if the operation fails.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
-		if err := validation.IsAllowedPath(workingDir); err != nil {
+		if err := validation.IsAllowedPath(ctx, workingDir); err != nil {
 			return nil, nil, nil, nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
 		}
 	}
@@ -255,7 +255,7 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
-			if err := validation.IsAllowedPath(dest); err != nil {
+			if err := validation.IsAllowedPath(ctx, dest); err != nil {
 				_ = cli.Close()
 				return nil, nil, nil, fmt.Errorf("invalid volume mount source %q: %w", dest, err)
 			}
@@ -389,7 +389,7 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
-			if err := validation.IsAllowedPath(dest); err != nil {
+			if err := validation.IsAllowedPath(ctx, dest); err != nil {
 				_ = cli.Close()
 				return nil, nil, nil, nil, fmt.Errorf("invalid volume mount source %q: %w", dest, err)
 			}

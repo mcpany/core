@@ -5,6 +5,7 @@
 package validation
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/url"
@@ -80,20 +81,29 @@ var IsSecurePath = func(path string) error {
 	return nil
 }
 
-var (
-	allowedPaths []string
-)
+type allowedPathsKey struct{}
 
-// SetAllowedPaths checks if a given file path is relative and does not contain any
-// path traversal sequences ("../").
-func SetAllowedPaths(paths []string) {
-	allowedPaths = paths
+// ContextWithAllowedPaths returns a new context with the given allowed paths.
+func ContextWithAllowedPaths(ctx context.Context, paths []string) context.Context {
+	return context.WithValue(ctx, allowedPathsKey{}, paths)
+}
+
+// AllowedPathsFromContext retrieves the allowed paths from the context.
+func AllowedPathsFromContext(ctx context.Context) []string {
+	if ctx == nil {
+		return nil
+	}
+	paths, ok := ctx.Value(allowedPathsKey{}).([]string)
+	if !ok {
+		return nil
+	}
+	return paths
 }
 
 // IsAllowedPath checks if a given file path is allowed (inside CWD or AllowedPaths)
 // and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
-var IsAllowedPath = func(path string) error {
+var IsAllowedPath = func(ctx context.Context, path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
 		return err
@@ -169,7 +179,8 @@ var IsAllowedPath = func(path string) error {
 		return nil
 	}
 
-	// 4. Check Allowed Paths
+	// 4. Check Allowed Paths from Context
+	allowedPaths := AllowedPathsFromContext(ctx)
 	for _, allowedDir := range allowedPaths {
 		allowedDir = strings.TrimSpace(allowedDir)
 		if allowedDir == "" {
