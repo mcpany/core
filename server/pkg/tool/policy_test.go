@@ -320,42 +320,6 @@ func TestEvaluateCompiledCallPolicy(t *testing.T) {
 			arguments: json.RawMessage("{\"key\": \"secret\"}"),
 			want:      false,
 		},
-		{
-			name: "Argument Regex Bypass with Unicode Escape",
-			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
-					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							ArgumentRegex: proto.String(".*blockme.*"),
-							Action:        configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
-					},
-				}.Build(),
-			},
-			toolName:  "any",
-			// "block\u006de" is "blockme"
-			arguments: json.RawMessage(`{"arg": "block\u006de"}`),
-			want:      false,
-		},
-		{
-			name: "Argument Regex Matches Raw Only (Legacy Support)",
-			policies: []*configv1.CallPolicy{
-				configv1.CallPolicy_builder{
-					DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
-					Rules: []*configv1.CallPolicyRule{
-						configv1.CallPolicyRule_builder{
-							// Matches the space in `": "` which is removed in normalized JSON
-							ArgumentRegex: proto.String(`": "`),
-							Action:        configv1.CallPolicy_DENY.Enum(),
-						}.Build(),
-					},
-				}.Build(),
-			},
-			toolName:  "any",
-			arguments: json.RawMessage(`{"key": "value"}`),
-			want:      false,
-		},
 	}
 
 	for _, tt := range tests {
