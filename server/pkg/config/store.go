@@ -41,7 +41,8 @@ type Engine interface {
 // ConfigurableEngine defines an interface for engines that support configuration options.
 type ConfigurableEngine interface {
 	Engine
-	// SetSkipValidation sets whether to skip schema validation.
+	// SetSkipValidation configures whether to bypass schema validation during unmarshaling.
+	// This is useful when loading partial configurations or when strict validation is not required.
 	SetSkipValidation(skip bool)
 }
 
@@ -73,7 +74,8 @@ type yamlEngine struct {
 	skipValidation bool
 }
 
-// SetSkipValidation sets whether to skip schema validation.
+// SetSkipValidation configures whether to bypass schema validation during unmarshaling.
+// This is useful when loading partial configurations or when strict validation is not required.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
@@ -492,12 +494,14 @@ type FileStore struct {
 	skipValidation   bool
 }
 
-// SetSkipValidation configures whether to skip schema validation during loading.
+// SetSkipValidation configures whether to bypass schema validation during loading.
+// This is useful when loading partial configurations or when strict validation is not required.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
-// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+// SetIgnoreMissingEnv configures whether to proceed with loading even if referenced environment variables are missing.
+// If set to true, missing variables will result in empty strings or default values (if provided) instead of an error.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }

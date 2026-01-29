@@ -16,6 +16,15 @@ interface SmartResultRendererProps {
     result: any;
 }
 
+/**
+ * SmartResultRenderer renders a tool execution result in a user-friendly format.
+ * It automatically detects tabular data and renders it as a sortable table,
+ * falling back to a raw JSON view or text view for other content types.
+ *
+ * @param props - The component props.
+ * @param props.result - The tool execution result to render (any type).
+ * @returns The rendered component.
+ */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
     const [copied, setCopied] = useState(false);

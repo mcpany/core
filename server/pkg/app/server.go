@@ -286,16 +286,20 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components. It initializes the core
-// services, loads configurations from the provided paths, starts background
-// workers for handling service registration and upstream service communication,
-// and launches the gRPC and JSON-RPC servers.
+// Run initializes and starts the MCP Any server.
+// It performs the following steps:
+// 1. Sets up the filesystem and configuration storage.
+// 2. Loads the initial configuration from database and/or files.
+// 3. Initializes core managers (Settings, Bus, Tools, Prompts, Resources, Auth, etc.).
+// 4. Starts background workers for upstream service management and registration.
+// 5. Launches the HTTP (JSON-RPC) and gRPC servers.
+// 6. Waits for shutdown signal or error.
 //
 // The server's lifecycle is managed by the provided context. A graceful
 // shutdown is initiated when the context is canceled.
 //
 // Parameters:
-//   - opts (RunOptions): The options for running the application.
+//   - opts (RunOptions): The configuration options for running the application.
 //
 // Returns:
 //   - (error): An error if any part of the startup or execution fails.
@@ -829,8 +833,10 @@ func (a *Application) Run(opts RunOptions) error {
 	return nil
 }
 
-// ReloadConfig reloads the configuration from the given paths and updates the
-// services.
+// ReloadConfig performs a hot reload of the application configuration.
+// It reads the configuration files from the specified paths, parses them, and updates
+// various components including Global Settings, Users, Profiles, and Upstream Services.
+// This allows for dynamic updates without restarting the server.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the reload operation.

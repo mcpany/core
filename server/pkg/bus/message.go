@@ -14,13 +14,16 @@ import (
 // implement. It provides a standard way to manage correlation IDs for tracking
 // requests and their corresponding responses.
 type Message interface {
-	// CorrelationID returns the unique identifier used to correlate messages.
+	// CorrelationID returns the unique identifier used to correlate messages across asynchronous boundaries.
+	// This ID allows tracking a request from its origin through various processing stages to the final response.
 	//
-	// Returns the result.
+	// Returns the correlation ID string.
 	CorrelationID() string
-	// SetCorrelationID sets the correlation identifier for the message.
+	// SetCorrelationID assigns a unique identifier to the message for correlation purposes.
+	// This is typically called when a new request is initiated or when propagating a trace context.
 	//
-	// id is the unique identifier.
+	// Parameters:
+	//   - id: The unique identifier string to assign.
 	SetCorrelationID(id string)
 }
 
@@ -31,15 +34,21 @@ type BaseMessage struct {
 	CID string `json:"cid"`
 }
 
-// CorrelationID returns the correlation ID of the message. This ID is used to
-// associate requests with their corresponding responses in asynchronous
-// workflows.
+// CorrelationID retrieves the unique identifier used to correlate messages across asynchronous workflows.
+// It enables tracking of a request throughout its lifecycle.
+//
+// Returns:
+//   - The correlation ID string.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
 
-// SetCorrelationID sets the correlation ID for the message. This is typically
-// called by the message publisher to assign a unique ID to a request.
+// SetCorrelationID assigns the unique identifier used to correlate messages.
+// This is typically invoked by the message publisher when initiating a request or by middleware
+// propagating a context.
+//
+// Parameters:
+//   - id: The unique identifier to assign.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }
