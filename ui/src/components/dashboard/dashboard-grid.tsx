@@ -77,8 +77,13 @@ export function DashboardGrid() {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
                 if (parsed.length > 0 && !parsed[0].instanceId) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                    interface LegacyWidget {
+                        id: string;
+                        title: string;
+                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+                        hidden?: boolean;
+                    }
+                    const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
                         title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
