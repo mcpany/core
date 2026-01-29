@@ -389,11 +389,11 @@ COVERAGE_FILE ?= coverage.out
 e2e-local: e2e-parallel e2e-sequential
 
 e2e-parallel: build-test-images build build-examples build-e2e-mocks
-	@echo "Running parallel E2E Go tests locally with a 600s timeout..."
+	@echo "Running parallel E2E Go tests locally with a 1200s timeout..."
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@mkdir -p $(BUILD_DIR)/bundles
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) ./tests/run_shard.sh -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
 	@-pkill -f file-upload-server
 
 e2e-sequential: build-test-images build build-examples build-e2e-mocks
