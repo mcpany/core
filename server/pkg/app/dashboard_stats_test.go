@@ -59,7 +59,7 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	app := &Application{
-		MetricsGatherer: registry,
+		MetricsGatherer: registry, statsCache: make(map[string]statsCacheEntry),
 	}
 
 	handler := app.handleDashboardToolFailures()
@@ -116,7 +116,7 @@ func TestHandleDashboardTopTools(t *testing.T) {
 	toolsCallTotal.WithLabelValues(tool2, "service1", "success", "").Add(50)
 
 	app := &Application{
-		MetricsGatherer: registry,
+		MetricsGatherer: registry, statsCache: make(map[string]statsCacheEntry),
 	}
 
 	handler := app.handleDashboardTopTools()
@@ -157,7 +157,7 @@ func TestHandleDashboardTraffic(t *testing.T) {
 	tm := topology.NewManager(mockRegistry, mockTM)
 
 	app := &Application{
-		TopologyManager: tm,
+		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
 	}
 
 	// Seed traffic relative to now to ensure it appears in GetTrafficHistory
@@ -199,7 +199,7 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 	tm := topology.NewManager(mockRegistry, mockTM)
 
 	app := &Application{
-		TopologyManager: tm,
+		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
 	}
 
 	points := []topology.TrafficPoint{
@@ -270,7 +270,7 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	mockRM.EXPECT().ListResources().Return([]resource.Resource{&TestMockResource{uri: "r1"}})
 
 	app := &Application{
-		TopologyManager: tm,
+		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
 		ServiceRegistry: mockRegistry,
 		ToolManager:     mockTM,
 		PromptManager:   mockPM,
@@ -332,7 +332,7 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	app := &Application{
-		MetricsGatherer: registry,
+		MetricsGatherer: registry, statsCache: make(map[string]statsCacheEntry),
 	}
 
 	handler := app.handleDashboardToolUsage()
