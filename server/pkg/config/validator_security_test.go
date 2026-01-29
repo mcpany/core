@@ -36,7 +36,7 @@ func TestValidate_Security_VolumeMounts(t *testing.T) {
 		]
 	}`
 
-	cfg := &configv1.McpAnyServerConfig{}
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(jsonConfig), cfg))
 
 	validationErrors := Validate(context.Background(), cfg, Server)

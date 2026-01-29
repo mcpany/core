@@ -41,7 +41,7 @@ func TestApplyEnvVars_Complex(t *testing.T) {
 	}
 
 	m := make(map[string]interface{})
-	cfg := &configv1.McpAnyServerConfig{}
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 
 	applyEnvVarsFromSlice(m, environ, cfg)
 
@@ -73,7 +73,7 @@ func TestResolveEnvValue_List_Mismatch(t *testing.T) {
 		"MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS__0__SUBFIELD=val",
 	}
 	m := make(map[string]interface{})
-	cfg := &configv1.McpAnyServerConfig{}
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	applyEnvVarsFromSlice(m, environ, cfg)
 
 	// Should result in: allowed_ips: { "0": { "subfield": "val" } } in map
@@ -93,7 +93,7 @@ func TestResolveEnvValue_CSV(t *testing.T) {
 		"MCPANY__GLOBAL_SETTINGS__ALLOWED_IPS=1.1.1.1,2.2.2.2",
 	}
 	m := make(map[string]interface{})
-	cfg := &configv1.McpAnyServerConfig{}
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	applyEnvVarsFromSlice(m, environ, cfg)
 
 	gs, ok := m["global_settings"].(map[string]interface{})
@@ -125,7 +125,7 @@ func TestFixTypes(t *testing.T) {
 		},
 	}
 
-	cfg := &configv1.McpAnyServerConfig{}
+	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	fixTypes(m, cfg.ProtoReflect().Descriptor())
 
 	// allowed_ips should be []interface{}

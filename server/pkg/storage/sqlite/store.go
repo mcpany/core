@@ -46,6 +46,7 @@ func (s *Store) HasConfigSources() bool {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+	// 1. Load services
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
@@ -53,6 +54,7 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	defer func() { _ = rows.Close() }()
 
 	var services []*configv1.UpstreamServiceConfig
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -60,21 +62,82 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		}
 
 		var service configv1.UpstreamServiceConfig
-		// Allow unknown fields to be safe against schema evolution
-		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
 		}
 		services = append(services, &service)
 	}
-
+	_ = rows.Close()
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %w", err)
+		return nil, fmt.Errorf("failed to iterate rows: %w", err)
 	}
 
-	return configv1.McpAnyServerConfig_builder{
+	// 2. Load users
+	userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query users: %w", err)
+	}
+	defer func() { _ = userRows.Close() }()
+
+	var users []*configv1.User
+	for userRows.Next() {
+		var configJSON string
+		if err := userRows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan user config_json: %w", err)
+		}
+
+		var user configv1.User
+		if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
+		}
+		users = append(users, &user)
+	}
+	_ = userRows.Close()
+	if err := userRows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate user rows: %w", err)
+	}
+
+	// 3. Load Global Settings
+	var settings *configv1.GlobalSettings
+	settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
+	var settingsJSON string
+	if err := settingsRow.Scan(&settingsJSON); err == nil {
+		var s configv1.GlobalSettings
+		if err := opts.Unmarshal([]byte(settingsJSON), &s); err == nil {
+			settings = &s
+		}
+	}
+
+	// 4. Load Collections
+	collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
+	var collections []*configv1.Collection
+	if err == nil {
+		defer func() { _ = collectionRows.Close() }()
+		for collectionRows.Next() {
+			var configJSON string
+			if err := collectionRows.Scan(&configJSON); err != nil {
+				continue
+			}
+			var c configv1.Collection
+			if err := opts.Unmarshal([]byte(configJSON), &c); err == nil {
+				collections = append(collections, &c)
+			}
+		}
+		if err := collectionRows.Err(); err != nil {
+			return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
+		}
+	}
+
+	builder := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: services,
-	}.Build(), nil
+		Users:            users,
+		Collections:      collections,
+	}
+	if settings != nil {
+		builder.GlobalSettings = settings
+	}
+
+	return builder.Build(), nil
 }
 
 // SaveService saves an upstream service configuration.
@@ -146,11 +209,32 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
-	cfg, err := s.Load(ctx)
+	query := "SELECT config_json FROM upstream_services"
+	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to query services: %w", err)
 	}
-	return cfg.GetUpstreamServices(), nil
+	defer func() { _ = rows.Close() }()
+
+	var services []*configv1.UpstreamServiceConfig
+	for rows.Next() {
+		var configJSON []byte
+		if err := rows.Scan(&configJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+		}
+
+		var service configv1.UpstreamServiceConfig
+		if err := protojson.Unmarshal(configJSON, &service); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
+		}
+		services = append(services, &service)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return services, nil
 }
 
 // DeleteService deletes an upstream service configuration by name.

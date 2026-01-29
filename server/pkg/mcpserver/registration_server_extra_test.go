@@ -33,7 +33,7 @@ func TestRegistrationServer_ValidateService(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Run("missing config", func(t *testing.T) {
-		req := &v1.ValidateServiceRequest{}
+		req := v1.ValidateServiceRequest_builder{}.Build()
 		_, err := registrationServer.ValidateService(ctx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -42,10 +42,10 @@ func TestRegistrationServer_ValidateService(t *testing.T) {
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
-		req := &v1.ValidateServiceRequest{}
-		config := &configv1.UpstreamServiceConfig{}
+		req := v1.ValidateServiceRequest_builder{}.Build()
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 
-		httpSvc := &configv1.HttpUpstreamService{}
+		httpSvc := configv1.HttpUpstreamService_builder{}.Build()
 		// No address -> invalid
 		config.SetHttpService(httpSvc)
 		config.SetName("invalid-svc")
@@ -60,13 +60,13 @@ func TestRegistrationServer_ValidateService(t *testing.T) {
 	})
 
 	t.Run("connection failure", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("bad-connection")
-		httpSvc := &configv1.HttpUpstreamService{}
+		httpSvc := configv1.HttpUpstreamService_builder{}.Build()
 		httpSvc.SetAddress("http://127.0.0.1:0") // Invalid port
 		config.SetHttpService(httpSvc)
 
-		req := &v1.ValidateServiceRequest{}
+		req := v1.ValidateServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		resp, err := registrationServer.ValidateService(ctx, req)
@@ -83,17 +83,17 @@ func TestRegistrationServer_ValidateService(t *testing.T) {
 		server, addr := startMockServer(t)
 		defer server.Stop()
 
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName("good-svc")
 
 		useReflection := true
-		grpcSvc := &configv1.GrpcUpstreamService{}
+		grpcSvc := configv1.GrpcUpstreamService_builder{}.Build()
 		grpcSvc.SetAddress(addr)
 		grpcSvc.SetUseReflection(useReflection)
 
 		config.SetGrpcService(grpcSvc)
 
-		req := &v1.ValidateServiceRequest{}
+		req := v1.ValidateServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		resp, err := registrationServer.ValidateService(ctx, req)

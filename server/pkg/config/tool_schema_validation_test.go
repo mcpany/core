@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -32,21 +33,23 @@ func TestValidate_InvalidJsonSchema(t *testing.T) {
 	address := "http://example.com"
 
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName(name)
-
-		httpSvc := &configv1.HttpUpstreamService{}
-		httpSvc.SetAddress(address)
-		httpSvc.SetCalls(map[string]*configv1.HttpCallDefinition{
-			"test-call": {
-				InputSchema: invalidSchema,
+		httpSvc := configv1.HttpUpstreamService_builder{
+			Address: proto.String(address),
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"test-call": configv1.HttpCallDefinition_builder{
+					InputSchema: invalidSchema,
+				}.Build(),
 			},
-		})
-		svc.SetHttpService(httpSvc)
+		}.Build()
 
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:        proto.String(name),
+			HttpService: httpSvc,
+		}.Build()
+
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	// Validate should return errors because the schema is invalid
