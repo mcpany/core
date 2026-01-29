@@ -395,6 +395,7 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*CompiledCallPolicy
 	callID            string
+	allowedParams     map[string]bool
 
 	// Cached fields for performance
 	initError            error
@@ -441,6 +442,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(cfg),
 		callID:            callID,
+		allowedParams:     make(map[string]bool, len(callDefinition.GetParameters())),
 	}
 
 	compiled, err := CompileCallPolicies(policies)
@@ -501,6 +503,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
 			name := schema.GetName()
+			t.allowedParams[name] = true
 			placeholder := "{{" + name + "}}"
 
 			if strings.Contains(pathStr, placeholder) {
@@ -768,10 +771,20 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	filtered := false
+	for k := range inputs {
+		if !t.allowedParams[k] {
+			delete(inputs, k)
+			filtered = true
+		}
+	}
+
 	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
 		return nil, "", false, err
 	}
+	inputsModified = inputsModified || filtered
 
 	var pathBuf strings.Builder
 	for _, seg := range t.pathSegments {
