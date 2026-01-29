@@ -308,10 +308,17 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 	if secret == nil {
 		return nil
 	}
+	// Security: If context requests skipping secret validation, we skip strict existence checks
+	// to prevent information leakage (oracle attacks) where a user can probe environment variables or files.
+	skipExistenceCheck, _ := ctx.Value(SkipSecretValidationKey).(bool)
+
 	switch secret.WhichValue() {
 	case configv1.SecretValue_EnvironmentVariable_case:
 		envVar := secret.GetEnvironmentVariable()
 		if _, exists := os.LookupEnv(envVar); !exists {
+			if skipExistenceCheck {
+				return nil
+			}
 			suggestion := fmt.Sprintf("Set the environment variable %q in your shell or .env file before starting the server.", envVar)
 			if similar := findSimilarEnvVar(envVar); similar != "" {
 				suggestion = fmt.Sprintf("Did you mean %q? %s", similar, suggestion)
@@ -326,10 +333,13 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
 		}
 		// Validate that the file actually exists to fail fast
-		if err := validation.FileExists(secret.GetFilePath()); err != nil {
-			return &ActionableError{
-				Err:        fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err),
-				Suggestion: fmt.Sprintf("Ensure the file exists at %q and the server process has read permissions.", secret.GetFilePath()),
+		// We skip this check if we are in validation mode to prevent file existence enumeration.
+		if !skipExistenceCheck {
+			if err := validation.FileExists(secret.GetFilePath()); err != nil {
+				return &ActionableError{
+					Err:        fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err),
+					Suggestion: fmt.Sprintf("Ensure the file exists at %q and the server process has read permissions.", secret.GetFilePath()),
+				}
 			}
 		}
 	case configv1.SecretValue_RemoteContent_case:
