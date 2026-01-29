@@ -43,9 +43,12 @@ func TestContextHelpers_Extra(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestCheckForAbsolutePath(t *testing.T) {
-	assert.Error(t, checkForAbsolutePath("/absolute"))
-	assert.NoError(t, checkForAbsolutePath("relative"))
+func TestCheckForLocalFileAccess(t *testing.T) {
+	assert.Error(t, checkForLocalFileAccess("/absolute"))
+	assert.Error(t, checkForLocalFileAccess("file:///etc/passwd"))
+	assert.Error(t, checkForLocalFileAccess("FILE:///etc/passwd"))
+	assert.Error(t, checkForLocalFileAccess("file:foo"))
+	assert.NoError(t, checkForLocalFileAccess("relative"))
 }
 
 func TestCheckForArgumentInjection(t *testing.T) {
