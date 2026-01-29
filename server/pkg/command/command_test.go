@@ -65,8 +65,12 @@ func canConnectToDocker(t *testing.T) bool {
 	if err != nil {
 		reader, err := cli.ImagePull(context.Background(), "alpine:latest", image.PullOptions{})
 		if err == nil {
-			defer reader.Close()
-			_, _ = io.Copy(io.Discard, reader)
+			func() {
+				defer func() {
+					_ = reader.Close()
+				}()
+				_, _ = io.Copy(io.Discard, reader)
+			}()
 		} else {
 			t.Logf("could not pull alpine:latest: %v", err)
 			return false
