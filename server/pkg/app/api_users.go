@@ -24,8 +24,9 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			// Sentinel Security: Only admins can list users
-			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+			// Sentinel Security: Only admins can list users. Global API Key (Super Admin) is also allowed.
+			_, hasAPIKey := auth.APIKeyFromContext(r.Context())
+			if !hasAPIKey && !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
 				http.Error(w, "Forbidden: Only admins can list users", http.StatusForbidden)
 				return
 			}
@@ -51,8 +52,9 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
-			// Sentinel Security: Only admins can create users via API
-			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+			// Sentinel Security: Only admins can create users via API. Global API Key (Super Admin) is also allowed.
+			_, hasAPIKey := auth.APIKeyFromContext(r.Context())
+			if !hasAPIKey && !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
 				http.Error(w, "Forbidden: Only admins can create users", http.StatusForbidden)
 				return
 			}
@@ -132,12 +134,13 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 		}
 
 		// Sentinel Security: Access Control (IDOR prevention)
-		// Allow if user is admin OR user is accessing their own profile
+		// Allow if user is admin OR user is accessing their own profile OR has API Key (Super Admin)
 		currentUser, ok := auth.UserFromContext(r.Context())
 		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
+		_, hasAPIKey := auth.APIKeyFromContext(r.Context())
 		isSelf := ok && currentUser == id
 
-		if !isAdmin && !isSelf {
+		if !isAdmin && !isSelf && !hasAPIKey {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}

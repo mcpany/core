@@ -576,10 +576,24 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 	}
 
 	am.usersMu.RLock()
-	defer am.usersMu.RUnlock()
+	user, ok := am.users[username]
+	am.usersMu.RUnlock()
+
+	// If not in memory, check storage if available
+	if !ok {
+		am.mu.RLock()
+		store := am.storage
+		am.mu.RUnlock()
+
+		if store != nil {
+			if u, err := store.GetUser(ctx, username); err == nil && u != nil {
+				user = u
+			}
+		}
+	}
 
 	// Direct lookup if user ID matches username
-	if user, ok := am.users[username]; ok {
+	if user != nil {
 		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
 			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
 				ctx = ContextWithUser(ctx, user.GetId())
