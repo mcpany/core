@@ -801,6 +801,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 
 	appRunner := app.NewApplication()
 	go func() {
+		defer cancel() // Ensure we cancel context if Run returns to unblock WaitForStartup
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              afero.NewOsFs(),
