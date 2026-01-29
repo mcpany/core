@@ -35,6 +35,11 @@ func TestHandleUsers_List(t *testing.T) {
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	req := httptest.NewRequest(http.MethodGet, "/users", nil)
+	// Authenticate as admin
+	ctx := auth.ContextWithUser(req.Context(), "admin")
+	ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 	handler(w, req)
 
@@ -64,6 +69,11 @@ func TestHandleUserDetail(t *testing.T) {
 
 	t.Run("Get User", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/user1", nil)
+		// Authenticate as admin
+		ctx := auth.ContextWithUser(req.Context(), "admin")
+		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 
@@ -76,6 +86,11 @@ func TestHandleUserDetail(t *testing.T) {
 
 	t.Run("Get Non-Existent User", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/unknown", nil)
+		// Authenticate as admin
+		ctx := auth.ContextWithUser(req.Context(), "admin")
+		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.Equal(t, http.StatusNotFound, w.Code)
@@ -101,6 +116,11 @@ func TestHandleUserDetail(t *testing.T) {
 		body, _ := json.Marshal(bodyMap)
 
 		req := httptest.NewRequest(http.MethodPut, "/users/user1", bytes.NewReader(body))
+		// Authenticate as admin
+		ctx := auth.ContextWithUser(req.Context(), "admin")
+		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 
@@ -116,6 +136,11 @@ func TestHandleUserDetail(t *testing.T) {
 
 	t.Run("Delete User", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodDelete, "/users/user1", nil)
+		// Authenticate as admin
+		ctx := auth.ContextWithUser(req.Context(), "admin")
+		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.Equal(t, http.StatusNoContent, w.Code)

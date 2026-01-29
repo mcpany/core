@@ -107,7 +107,7 @@ global_settings:
 				},
 			},
 		},
-		Roles: []string{"viewer"},
+		Roles: []string{"admin"},
 	}
 
 	// Try to get first
