@@ -50,7 +50,7 @@ func TestShellInjection_ScriptExecution(t *testing.T) {
 }
 
 func createTestScriptTool(command string) Tool {
-	toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
+	toolDef := v1.Tool_builder{Name: stringPtr("test-tool")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: &command,
 	}.Build()
@@ -58,9 +58,13 @@ func createTestScriptTool(command string) Tool {
 		Args: []string{"{{input}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{
 			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("input")}.Build(),
+				Schema: configv1.ParameterSchema_builder{Name: stringPtr("input")}.Build(),
 			}.Build(),
 		},
 	}.Build()
 	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+}
+
+func stringPtr(s string) *string {
+	return &s
 }
