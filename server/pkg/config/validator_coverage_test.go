@@ -96,7 +96,7 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 			HttpUrl: proto.String(""),
 		}.Build(),
 	}.Build()
-	err := validateSecretValue(context.Background(), sv)
+	err := validateSecretValue(sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty http_url")
 
@@ -106,7 +106,7 @@ func TestValidateSecretValue_RemoteContent_Errors(t *testing.T) {
 			HttpUrl: proto.String("ftp://example.com/secret"),
 		}.Build(),
 	}.Build()
-	err = validateSecretValue(context.Background(), sv)
+	err = validateSecretValue(sv)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid http_url scheme")
 }
@@ -366,7 +366,7 @@ func TestValidateMcpService_BundleErrors(t *testing.T) {
 			BundlePath: proto.String(""),
 		}.Build(),
 	}.Build()
-	err := validateMcpService(context.Background(), s)
+	err := validateMcpService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "empty bundle_path")
 }

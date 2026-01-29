@@ -15,14 +15,6 @@ interface SchemaFormProps {
   onChange: (value: Record<string, string>) => void;
 }
 
-/**
- * SchemaForm component.
- * @param props - The component props.
- * @param props.schema - The schema definition.
- * @param props.value - The current value.
- * @param props.onChange - Callback function when value changes.
- * @returns The rendered component.
- */
 export function SchemaForm({ schema, value, onChange }: SchemaFormProps) {
   if (!schema || !schema.properties) return null;
 

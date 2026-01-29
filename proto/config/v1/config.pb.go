@@ -182,7 +182,6 @@ type McpAnyServerConfig struct {
 	xxx_hidden_UpstreamServices *[]*UpstreamServiceConfig `protobuf:"bytes,2,rep,name=upstream_services"`
 	xxx_hidden_Collections      *[]*Collection            `protobuf:"bytes,3,rep,name=collections"`
 	xxx_hidden_Users            *[]*User                  `protobuf:"bytes,4,rep,name=users"`
-	xxx_hidden_MergeStrategy    *MergeStrategyConfig      `protobuf:"bytes,5,opt,name=merge_strategy"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
 }
@@ -246,13 +245,6 @@ func (x *McpAnyServerConfig) GetUsers() []*User {
 	return nil
 }
 
-func (x *McpAnyServerConfig) GetMergeStrategy() *MergeStrategyConfig {
-	if x != nil {
-		return x.xxx_hidden_MergeStrategy
-	}
-	return nil
-}
-
 func (x *McpAnyServerConfig) SetGlobalSettings(v *GlobalSettings) {
 	x.xxx_hidden_GlobalSettings = v
 }
@@ -269,10 +261,6 @@ func (x *McpAnyServerConfig) SetUsers(v []*User) {
 	x.xxx_hidden_Users = &v
 }
 
-func (x *McpAnyServerConfig) SetMergeStrategy(v *MergeStrategyConfig) {
-	x.xxx_hidden_MergeStrategy = v
-}
-
 func (x *McpAnyServerConfig) HasGlobalSettings() bool {
 	if x == nil {
 		return false
@@ -280,19 +268,8 @@ func (x *McpAnyServerConfig) HasGlobalSettings() bool {
 	return x.xxx_hidden_GlobalSettings != nil
 }
 
-func (x *McpAnyServerConfig) HasMergeStrategy() bool {
-	if x == nil {
-		return false
-	}
-	return x.xxx_hidden_MergeStrategy != nil
-}
-
 func (x *McpAnyServerConfig) ClearGlobalSettings() {
 	x.xxx_hidden_GlobalSettings = nil
-}
-
-func (x *McpAnyServerConfig) ClearMergeStrategy() {
-	x.xxx_hidden_MergeStrategy = nil
 }
 
 type McpAnyServerConfig_builder struct {
@@ -306,8 +283,6 @@ type McpAnyServerConfig_builder struct {
 	Collections []*Collection
 	// A list of users authorized to access the server.
 	Users []*User
-	// Configuration for how to merge lists when loading from multiple sources.
-	MergeStrategy *MergeStrategyConfig
 }
 
 func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
@@ -318,120 +293,6 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	x.xxx_hidden_UpstreamServices = &b.UpstreamServices
 	x.xxx_hidden_Collections = &b.Collections
 	x.xxx_hidden_Users = &b.Users
-	x.xxx_hidden_MergeStrategy = b.MergeStrategy
-	return m0
-}
-
-type MergeStrategyConfig struct {
-	state                          protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_UpstreamServiceList *string                `protobuf:"bytes,1,opt,name=upstream_service_list"`
-	xxx_hidden_ProfileList         *string                `protobuf:"bytes,2,opt,name=profile_list"`
-	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
-	XXX_presence                   [1]uint32
-	unknownFields                  protoimpl.UnknownFields
-	sizeCache                      protoimpl.SizeCache
-}
-
-func (x *MergeStrategyConfig) Reset() {
-	*x = MergeStrategyConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *MergeStrategyConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MergeStrategyConfig) ProtoMessage() {}
-
-func (x *MergeStrategyConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *MergeStrategyConfig) GetUpstreamServiceList() string {
-	if x != nil {
-		if x.xxx_hidden_UpstreamServiceList != nil {
-			return *x.xxx_hidden_UpstreamServiceList
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *MergeStrategyConfig) GetProfileList() string {
-	if x != nil {
-		if x.xxx_hidden_ProfileList != nil {
-			return *x.xxx_hidden_ProfileList
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *MergeStrategyConfig) SetUpstreamServiceList(v string) {
-	x.xxx_hidden_UpstreamServiceList = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *MergeStrategyConfig) SetProfileList(v string) {
-	x.xxx_hidden_ProfileList = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *MergeStrategyConfig) HasUpstreamServiceList() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *MergeStrategyConfig) HasProfileList() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *MergeStrategyConfig) ClearUpstreamServiceList() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_UpstreamServiceList = nil
-}
-
-func (x *MergeStrategyConfig) ClearProfileList() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_ProfileList = nil
-}
-
-type MergeStrategyConfig_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	// Strategy for merging upstream_services list ("extend" or "replace").
-	UpstreamServiceList *string
-	// Strategy for merging profiles list ("extend" or "replace").
-	ProfileList *string
-}
-
-func (b0 MergeStrategyConfig_builder) Build() *MergeStrategyConfig {
-	m0 := &MergeStrategyConfig{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.UpstreamServiceList != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_UpstreamServiceList = b.UpstreamServiceList
-	}
-	if b.ProfileList != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_ProfileList = b.ProfileList
-	}
 	return m0
 }
 
@@ -453,7 +314,7 @@ type Secret struct {
 
 func (x *Secret) Reset() {
 	*x = Secret{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[2]
+	mi := &file_proto_config_v1_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -465,7 +326,7 @@ func (x *Secret) String() string {
 func (*Secret) ProtoMessage() {}
 
 func (x *Secret) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[2]
+	mi := &file_proto_config_v1_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -728,7 +589,7 @@ type SecretList struct {
 
 func (x *SecretList) Reset() {
 	*x = SecretList{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	mi := &file_proto_config_v1_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -740,7 +601,7 @@ func (x *SecretList) String() string {
 func (*SecretList) ProtoMessage() {}
 
 func (x *SecretList) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[3]
+	mi := &file_proto_config_v1_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -815,7 +676,7 @@ type GlobalSettings struct {
 
 func (x *GlobalSettings) Reset() {
 	*x = GlobalSettings{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -827,7 +688,7 @@ func (x *GlobalSettings) String() string {
 func (*GlobalSettings) ProtoMessage() {}
 
 func (x *GlobalSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[4]
+	mi := &file_proto_config_v1_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1553,7 +1414,7 @@ type AlertConfig struct {
 
 func (x *AlertConfig) Reset() {
 	*x = AlertConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1565,7 +1426,7 @@ func (x *AlertConfig) String() string {
 func (*AlertConfig) ProtoMessage() {}
 
 func (x *AlertConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[5]
+	mi := &file_proto_config_v1_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1662,7 +1523,7 @@ type ContextOptimizerConfig struct {
 
 func (x *ContextOptimizerConfig) Reset() {
 	*x = ContextOptimizerConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1674,7 +1535,7 @@ func (x *ContextOptimizerConfig) String() string {
 func (*ContextOptimizerConfig) ProtoMessage() {}
 
 func (x *ContextOptimizerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[6]
+	mi := &file_proto_config_v1_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1738,7 +1599,7 @@ type DebuggerConfig struct {
 
 func (x *DebuggerConfig) Reset() {
 	*x = DebuggerConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1750,7 +1611,7 @@ func (x *DebuggerConfig) String() string {
 func (*DebuggerConfig) ProtoMessage() {}
 
 func (x *DebuggerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[7]
+	mi := &file_proto_config_v1_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1845,7 +1706,7 @@ type TelemetryConfig struct {
 
 func (x *TelemetryConfig) Reset() {
 	*x = TelemetryConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1857,7 +1718,7 @@ func (x *TelemetryConfig) String() string {
 func (*TelemetryConfig) ProtoMessage() {}
 
 func (x *TelemetryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[8]
+	mi := &file_proto_config_v1_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2026,7 +1887,7 @@ type OIDCConfig struct {
 
 func (x *OIDCConfig) Reset() {
 	*x = OIDCConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2038,7 +1899,7 @@ func (x *OIDCConfig) String() string {
 func (*OIDCConfig) ProtoMessage() {}
 
 func (x *OIDCConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[9]
+	mi := &file_proto_config_v1_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2203,7 +2064,7 @@ type GCSettings struct {
 
 func (x *GCSettings) Reset() {
 	*x = GCSettings{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2215,7 +2076,7 @@ func (x *GCSettings) String() string {
 func (*GCSettings) ProtoMessage() {}
 
 func (x *GCSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[10]
+	mi := &file_proto_config_v1_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2362,7 +2223,7 @@ type DLPConfig struct {
 
 func (x *DLPConfig) Reset() {
 	*x = DLPConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2374,7 +2235,7 @@ func (x *DLPConfig) String() string {
 func (*DLPConfig) ProtoMessage() {}
 
 func (x *DLPConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[11]
+	mi := &file_proto_config_v1_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2461,7 +2322,7 @@ type AuditConfig struct {
 
 func (x *AuditConfig) Reset() {
 	*x = AuditConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2473,7 +2334,7 @@ func (x *AuditConfig) String() string {
 func (*AuditConfig) ProtoMessage() {}
 
 func (x *AuditConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[12]
+	mi := &file_proto_config_v1_config_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2763,7 +2624,7 @@ type SplunkConfig struct {
 
 func (x *SplunkConfig) Reset() {
 	*x = SplunkConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[13]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2775,7 +2636,7 @@ func (x *SplunkConfig) String() string {
 func (*SplunkConfig) ProtoMessage() {}
 
 func (x *SplunkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[13]
+	mi := &file_proto_config_v1_config_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2972,7 +2833,7 @@ type DatadogConfig struct {
 
 func (x *DatadogConfig) Reset() {
 	*x = DatadogConfig{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2984,7 +2845,7 @@ func (x *DatadogConfig) String() string {
 func (*DatadogConfig) ProtoMessage() {}
 
 func (x *DatadogConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[14]
+	mi := &file_proto_config_v1_config_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3151,7 +3012,7 @@ type ProfileDefinition struct {
 
 func (x *ProfileDefinition) Reset() {
 	*x = ProfileDefinition{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3163,7 +3024,7 @@ func (x *ProfileDefinition) String() string {
 func (*ProfileDefinition) ProtoMessage() {}
 
 func (x *ProfileDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[15]
+	mi := &file_proto_config_v1_config_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3308,7 +3169,7 @@ type ProfileSelector struct {
 
 func (x *ProfileSelector) Reset() {
 	*x = ProfileSelector{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3320,7 +3181,7 @@ func (x *ProfileSelector) String() string {
 func (*ProfileSelector) ProtoMessage() {}
 
 func (x *ProfileSelector) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[16]
+	mi := &file_proto_config_v1_config_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3382,7 +3243,7 @@ type Middleware struct {
 
 func (x *Middleware) Reset() {
 	*x = Middleware{}
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3394,7 +3255,7 @@ func (x *Middleware) String() string {
 func (*Middleware) ProtoMessage() {}
 
 func (x *Middleware) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_config_proto_msgTypes[17]
+	mi := &file_proto_config_v1_config_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3514,16 +3375,12 @@ var File_proto_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a\x1aproto/config/v1/user.proto\"\xf4\x02\n" +
+	"\x1cproto/config/v1/config.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x13proto/bus/bus.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/profile.proto\x1a proto/config/v1/collection.proto\x1a\x1aproto/config/v1/user.proto\"\xa5\x02\n" +
 	"\x12McpAnyServerConfig\x12J\n" +
 	"\x0fglobal_settings\x18\x01 \x01(\v2 .mcpany.config.v1.GlobalSettingsR\x0fglobal_settings\x12U\n" +
 	"\x11upstream_services\x18\x02 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x11upstream_services\x12>\n" +
 	"\vcollections\x18\x03 \x03(\v2\x1c.mcpany.config.v1.CollectionR\vcollections\x12,\n" +
-	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\x12M\n" +
-	"\x0emerge_strategy\x18\x05 \x01(\v2%.mcpany.config.v1.MergeStrategyConfigR\x0emerge_strategy\"o\n" +
-	"\x13MergeStrategyConfig\x124\n" +
-	"\x15upstream_service_list\x18\x01 \x01(\tR\x15upstream_service_list\x12\"\n" +
-	"\fprofile_list\x18\x02 \x01(\tR\fprofile_list\"\xac\x01\n" +
+	"\x05users\x18\x04 \x03(\v2\x16.mcpany.config.v1.UserR\x05users\"\xac\x01\n" +
 	"\x06Secret\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12\x10\n" +
@@ -3667,77 +3524,75 @@ const file_proto_config_v1_config_proto_rawDesc = "" +
 	"\bdisabled\x18\x03 \x01(\bR\bdisabledB=B\vConfigProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_proto_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_proto_config_v1_config_proto_goTypes = []any{
 	(GlobalSettings_LogLevel)(0),   // 0: mcpany.config.v1.GlobalSettings.LogLevel
 	(GlobalSettings_LogFormat)(0),  // 1: mcpany.config.v1.GlobalSettings.LogFormat
 	(AuditConfig_StorageType)(0),   // 2: mcpany.config.v1.AuditConfig.StorageType
 	(*McpAnyServerConfig)(nil),     // 3: mcpany.config.v1.McpAnyServerConfig
-	(*MergeStrategyConfig)(nil),    // 4: mcpany.config.v1.MergeStrategyConfig
-	(*Secret)(nil),                 // 5: mcpany.config.v1.Secret
-	(*SecretList)(nil),             // 6: mcpany.config.v1.SecretList
-	(*GlobalSettings)(nil),         // 7: mcpany.config.v1.GlobalSettings
-	(*AlertConfig)(nil),            // 8: mcpany.config.v1.AlertConfig
-	(*ContextOptimizerConfig)(nil), // 9: mcpany.config.v1.ContextOptimizerConfig
-	(*DebuggerConfig)(nil),         // 10: mcpany.config.v1.DebuggerConfig
-	(*TelemetryConfig)(nil),        // 11: mcpany.config.v1.TelemetryConfig
-	(*OIDCConfig)(nil),             // 12: mcpany.config.v1.OIDCConfig
-	(*GCSettings)(nil),             // 13: mcpany.config.v1.GCSettings
-	(*DLPConfig)(nil),              // 14: mcpany.config.v1.DLPConfig
-	(*AuditConfig)(nil),            // 15: mcpany.config.v1.AuditConfig
-	(*SplunkConfig)(nil),           // 16: mcpany.config.v1.SplunkConfig
-	(*DatadogConfig)(nil),          // 17: mcpany.config.v1.DatadogConfig
-	(*ProfileDefinition)(nil),      // 18: mcpany.config.v1.ProfileDefinition
-	(*ProfileSelector)(nil),        // 19: mcpany.config.v1.ProfileSelector
-	(*Middleware)(nil),             // 20: mcpany.config.v1.Middleware
-	nil,                            // 21: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	nil,                            // 22: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	nil,                            // 23: mcpany.config.v1.ProfileDefinition.SecretsEntry
-	nil,                            // 24: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	(*UpstreamServiceConfig)(nil),  // 25: mcpany.config.v1.UpstreamServiceConfig
-	(*Collection)(nil),             // 26: mcpany.config.v1.Collection
-	(*User)(nil),                   // 27: mcpany.config.v1.User
-	(*bus.MessageBus)(nil),         // 28: bus.MessageBus
-	(*RateLimitConfig)(nil),        // 29: mcpany.config.v1.RateLimitConfig
-	(*ProfileServiceConfig)(nil),   // 30: mcpany.config.v1.ProfileServiceConfig
-	(*SecretValue)(nil),            // 31: mcpany.config.v1.SecretValue
+	(*Secret)(nil),                 // 4: mcpany.config.v1.Secret
+	(*SecretList)(nil),             // 5: mcpany.config.v1.SecretList
+	(*GlobalSettings)(nil),         // 6: mcpany.config.v1.GlobalSettings
+	(*AlertConfig)(nil),            // 7: mcpany.config.v1.AlertConfig
+	(*ContextOptimizerConfig)(nil), // 8: mcpany.config.v1.ContextOptimizerConfig
+	(*DebuggerConfig)(nil),         // 9: mcpany.config.v1.DebuggerConfig
+	(*TelemetryConfig)(nil),        // 10: mcpany.config.v1.TelemetryConfig
+	(*OIDCConfig)(nil),             // 11: mcpany.config.v1.OIDCConfig
+	(*GCSettings)(nil),             // 12: mcpany.config.v1.GCSettings
+	(*DLPConfig)(nil),              // 13: mcpany.config.v1.DLPConfig
+	(*AuditConfig)(nil),            // 14: mcpany.config.v1.AuditConfig
+	(*SplunkConfig)(nil),           // 15: mcpany.config.v1.SplunkConfig
+	(*DatadogConfig)(nil),          // 16: mcpany.config.v1.DatadogConfig
+	(*ProfileDefinition)(nil),      // 17: mcpany.config.v1.ProfileDefinition
+	(*ProfileSelector)(nil),        // 18: mcpany.config.v1.ProfileSelector
+	(*Middleware)(nil),             // 19: mcpany.config.v1.Middleware
+	nil,                            // 20: mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	nil,                            // 21: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	nil,                            // 22: mcpany.config.v1.ProfileDefinition.SecretsEntry
+	nil,                            // 23: mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	(*UpstreamServiceConfig)(nil),  // 24: mcpany.config.v1.UpstreamServiceConfig
+	(*Collection)(nil),             // 25: mcpany.config.v1.Collection
+	(*User)(nil),                   // 26: mcpany.config.v1.User
+	(*bus.MessageBus)(nil),         // 27: bus.MessageBus
+	(*RateLimitConfig)(nil),        // 28: mcpany.config.v1.RateLimitConfig
+	(*ProfileServiceConfig)(nil),   // 29: mcpany.config.v1.ProfileServiceConfig
+	(*SecretValue)(nil),            // 30: mcpany.config.v1.SecretValue
 }
 var file_proto_config_v1_config_proto_depIdxs = []int32{
-	7,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
-	25, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	26, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
-	27, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
-	4,  // 4: mcpany.config.v1.McpAnyServerConfig.merge_strategy:type_name -> mcpany.config.v1.MergeStrategyConfig
-	5,  // 5: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
-	0,  // 6: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
-	1,  // 7: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
-	28, // 8: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
-	15, // 9: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
-	14, // 10: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
-	13, // 11: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
-	12, // 12: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
-	29, // 13: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
-	11, // 14: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
-	18, // 15: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
-	20, // 16: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
-	9,  // 17: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
-	10, // 18: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
-	8,  // 19: mcpany.config.v1.GlobalSettings.alerts:type_name -> mcpany.config.v1.AlertConfig
-	2,  // 20: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
-	21, // 21: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
-	16, // 22: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
-	17, // 23: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
-	19, // 24: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
-	22, // 25: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
-	23, // 26: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
-	24, // 27: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
-	30, // 28: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
-	31, // 29: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
-	30, // [30:30] is the sub-list for method output_type
-	30, // [30:30] is the sub-list for method input_type
-	30, // [30:30] is the sub-list for extension type_name
-	30, // [30:30] is the sub-list for extension extendee
-	0,  // [0:30] is the sub-list for field type_name
+	6,  // 0: mcpany.config.v1.McpAnyServerConfig.global_settings:type_name -> mcpany.config.v1.GlobalSettings
+	24, // 1: mcpany.config.v1.McpAnyServerConfig.upstream_services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	25, // 2: mcpany.config.v1.McpAnyServerConfig.collections:type_name -> mcpany.config.v1.Collection
+	26, // 3: mcpany.config.v1.McpAnyServerConfig.users:type_name -> mcpany.config.v1.User
+	4,  // 4: mcpany.config.v1.SecretList.secrets:type_name -> mcpany.config.v1.Secret
+	0,  // 5: mcpany.config.v1.GlobalSettings.log_level:type_name -> mcpany.config.v1.GlobalSettings.LogLevel
+	1,  // 6: mcpany.config.v1.GlobalSettings.log_format:type_name -> mcpany.config.v1.GlobalSettings.LogFormat
+	27, // 7: mcpany.config.v1.GlobalSettings.message_bus:type_name -> bus.MessageBus
+	14, // 8: mcpany.config.v1.GlobalSettings.audit:type_name -> mcpany.config.v1.AuditConfig
+	13, // 9: mcpany.config.v1.GlobalSettings.dlp:type_name -> mcpany.config.v1.DLPConfig
+	12, // 10: mcpany.config.v1.GlobalSettings.gc_settings:type_name -> mcpany.config.v1.GCSettings
+	11, // 11: mcpany.config.v1.GlobalSettings.oidc:type_name -> mcpany.config.v1.OIDCConfig
+	28, // 12: mcpany.config.v1.GlobalSettings.rate_limit:type_name -> mcpany.config.v1.RateLimitConfig
+	10, // 13: mcpany.config.v1.GlobalSettings.telemetry:type_name -> mcpany.config.v1.TelemetryConfig
+	17, // 14: mcpany.config.v1.GlobalSettings.profile_definitions:type_name -> mcpany.config.v1.ProfileDefinition
+	19, // 15: mcpany.config.v1.GlobalSettings.middlewares:type_name -> mcpany.config.v1.Middleware
+	8,  // 16: mcpany.config.v1.GlobalSettings.context_optimizer:type_name -> mcpany.config.v1.ContextOptimizerConfig
+	9,  // 17: mcpany.config.v1.GlobalSettings.debugger:type_name -> mcpany.config.v1.DebuggerConfig
+	7,  // 18: mcpany.config.v1.GlobalSettings.alerts:type_name -> mcpany.config.v1.AlertConfig
+	2,  // 19: mcpany.config.v1.AuditConfig.storage_type:type_name -> mcpany.config.v1.AuditConfig.StorageType
+	20, // 20: mcpany.config.v1.AuditConfig.webhook_headers:type_name -> mcpany.config.v1.AuditConfig.WebhookHeadersEntry
+	15, // 21: mcpany.config.v1.AuditConfig.splunk:type_name -> mcpany.config.v1.SplunkConfig
+	16, // 22: mcpany.config.v1.AuditConfig.datadog:type_name -> mcpany.config.v1.DatadogConfig
+	18, // 23: mcpany.config.v1.ProfileDefinition.selector:type_name -> mcpany.config.v1.ProfileSelector
+	21, // 24: mcpany.config.v1.ProfileDefinition.service_config:type_name -> mcpany.config.v1.ProfileDefinition.ServiceConfigEntry
+	22, // 25: mcpany.config.v1.ProfileDefinition.secrets:type_name -> mcpany.config.v1.ProfileDefinition.SecretsEntry
+	23, // 26: mcpany.config.v1.ProfileSelector.tool_properties:type_name -> mcpany.config.v1.ProfileSelector.ToolPropertiesEntry
+	29, // 27: mcpany.config.v1.ProfileDefinition.ServiceConfigEntry.value:type_name -> mcpany.config.v1.ProfileServiceConfig
+	30, // 28: mcpany.config.v1.ProfileDefinition.SecretsEntry.value:type_name -> mcpany.config.v1.SecretValue
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_config_proto_init() }
@@ -3756,7 +3611,7 @@ func file_proto_config_v1_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_config_proto_rawDesc), len(file_proto_config_v1_config_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   22,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

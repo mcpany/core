@@ -624,22 +624,6 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 		if mergedConfig == nil {
 			mergedConfig = cfg
 		} else {
-			// Apply Merge Strategy if defined
-			if ms := cfg.GetMergeStrategy(); ms != nil {
-				if ms.GetUpstreamServiceList() == "replace" {
-					mergedConfig.SetUpstreamServices(nil)
-				}
-
-				if ms.GetProfileList() == "replace" {
-					if gs := mergedConfig.GetGlobalSettings(); gs != nil {
-						gs.SetProfiles(nil)
-						gs.SetProfileDefinitions(nil)
-					}
-				}
-
-				// Handle other lists if needed (e.g., users, collections) based on requirements
-				// For now, adhering to the documented strategies.
-			}
 			proto.Merge(mergedConfig, cfg)
 		}
 	}

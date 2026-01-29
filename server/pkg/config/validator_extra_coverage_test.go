@@ -40,7 +40,7 @@ func TestValidateSchema_InvalidJsonSchema(t *testing.T) {
 
 func TestMcpService_NoConnectionType(t *testing.T) {
 	s := &configv1.McpUpstreamService{}
-	err := validateMcpService(context.Background(), s)
+	err := validateMcpService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no connection_type")
 }

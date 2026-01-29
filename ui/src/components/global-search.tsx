@@ -78,8 +78,7 @@ export function GlobalSearch() {
             apiClient.listResources().catch(() => ({ resources: [] })),
             apiClient.listPrompts().catch(() => ({ prompts: [] }))
         ])
-
-        setServices(servicesData && (Array.isArray(servicesData) ? servicesData : servicesData.services) || [])
+        setServices(Array.isArray(servicesData) ? servicesData : servicesData?.services || [])
         setTools(toolsData?.tools || [])
         setResources(resourcesData?.resources || [])
         setPrompts(promptsData?.prompts || [])

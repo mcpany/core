@@ -66,7 +66,7 @@ func TestValidationWhitespaceChecks(t *testing.T) {
 				httpConn := &configv1.McpStreamableHttpConnection{}
 				httpConn.SetHttpAddress(badURL)
 				svc.SetHttpConnection(httpConn)
-				return validateMcpService(ctx, svc)
+				return validateMcpService(svc)
 			},
 			errSubstr: "mcp http_address contains hidden whitespace",
 		},
