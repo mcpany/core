@@ -14,7 +14,7 @@ services:
       ]
     environment:
       - MCPANY_API_KEY=test-token
-      - MCPANY_ADMIN_PASSWORD=password
+      - MCPANY_ADMIN_INIT_PASSWORD=password
       - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
       - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
     healthcheck:
