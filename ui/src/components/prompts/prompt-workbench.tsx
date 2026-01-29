@@ -62,10 +62,6 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const loadPrompts = () => {
       apiClient.listPrompts()
           .then((data) => {
-              if (!data) {
-                  setPrompts([]);
-                  return;
-              }
               setPrompts(data?.prompts || []);
           })
           .catch(err => {

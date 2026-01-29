@@ -7,8 +7,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
+import { SecretsManager } from "@/components/settings/secrets-manager";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
 import { ProfilesManager } from "@/components/settings/profiles-manager";
+
+import Link from "next/link";
 
 /**
  * SettingsPage component.
@@ -21,10 +24,15 @@ export default function SettingsPage() {
         <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
       </div>
 
-      <Tabs defaultValue="general" className="space-y-4 flex-1 flex flex-col">
+      <Tabs defaultValue="profiles" className="space-y-4 flex-1 flex flex-col">
         <TabsList>
-          <TabsTrigger value="general">Global Config</TabsTrigger>
+          <TabsTrigger value="profiles">Profiles</TabsTrigger>
+          <TabsTrigger value="webhooks" asChild>
+            <Link href="/settings/webhooks">Webhooks</Link>
+          </TabsTrigger>
+          <TabsTrigger value="secrets">Secrets & Keys</TabsTrigger>
           <TabsTrigger value="auth">Authentication</TabsTrigger>
+          <TabsTrigger value="general">General</TabsTrigger>
         </TabsList>
         <TabsContent value="profiles" className="space-y-4">
             <ProfilesManager />
