@@ -2600,6 +2600,13 @@ func isShellCommand(cmd string) bool {
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
 		"kubectl", "helm", "aws", "gcloud", "az", "terraform", "ansible", "ansible-playbook",
+		// Additional interpreters and compilers that can execute code
+		"R", "Rscript", "julia", "groovy", "jshell",
+		"scala", "kotlin", "swift",
+		"elixir", "iex", "erl", "escript",
+		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
+		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
+		"gcc", "g++", "clang", "java",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
