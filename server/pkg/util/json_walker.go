@@ -17,6 +17,13 @@ import (
 //
 //	replacement: the new bytes to replace 'raw' with, or nil to keep original.
 //	modified: true if replacement should be used.
+//
+// Parameters:
+//   - input: The JSON input to walk.
+//   - visitor: A function that visits every string value.
+//
+// Returns:
+//   - []byte: The potentially modified JSON output.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0

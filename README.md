@@ -283,6 +283,26 @@ After building, you can run the server locally:
 MCPANY_ENABLE_FILE_CONFIG=true ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
 ```
 
+## ⚙️ Configuration
+
+MCP Any uses a combination of configuration files and environment variables.
+
+### Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_MCP_LISTEN_ADDRESS` | Address to listen on for MCP connections. | `0.0.0.0:50051` |
+| `MCPANY_DEFAULT_HTTP_ADDR` | Address to listen on for HTTP connections. | `0.0.0.0:50050` |
+| `MCPANY_LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from YAML/JSON files. | `false` |
+| `MCPANY_TRUST_PROXY` | Trust `X-Forwarded-*` headers (useful behind LBs). | `false` |
+| `MCPANY_ADMIN_INIT_USERNAME` | Initial username for the admin user. | - |
+| `MCPANY_ADMIN_INIT_PASSWORD` | Initial password for the admin user. | - |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow tools to connect to local IP addresses. | `false` |
+| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow resources from loopback addresses. | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow resources from private networks. | `false` |
+| `MCPANY_ALLOW_UNSAFE_CONFIG` | Allow usage of potentially unsafe configuration options. | `false` |
+
 ### Project Structure
 
 The project is organized as follows:
