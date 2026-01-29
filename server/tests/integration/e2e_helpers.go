@@ -800,7 +800,12 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
+
+	// Create a separate context for Run to detect early exit
+	runCtx, runCancel := context.WithCancel(ctx)
+
 	go func() {
+		defer runCancel() // Ensure we unblock WaitForStartup if Run exits
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              afero.NewOsFs(),
@@ -817,9 +822,10 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 		}
 	}()
 
-	// Wait for startup which ensures ports are bound
-	err = appRunner.WaitForStartup(ctx)
-	require.NoError(t, err, "Failed to wait for application startup")
+	// Wait for startup which ensures ports are bound.
+	// We use runCtx so that if Run exits early, WaitForStartup returns immediately.
+	err = appRunner.WaitForStartup(runCtx)
+	require.NoError(t, err, "Failed to wait for application startup (did Run exit early?)")
 
 	// Retrieve dynamically allocated ports
 	jsonrpcPort := int(appRunner.BoundHTTPPort.Load())
