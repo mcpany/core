@@ -20,6 +20,12 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
       }
     });
 
+    // Mock new Collections API (replaces deprecated marketplace/official)
+    await page.route('/api/v1/collections', async route => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+    });
+
+    // Keeping deprecated mocks for safety, though they shouldn't be hit
     await page.route('/api/v1/marketplace/official', async route => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
     });
