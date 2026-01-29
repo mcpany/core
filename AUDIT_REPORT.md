@@ -1,42 +1,41 @@
-# Audit Report: Truth Reconciliation
+# Audit Report - 2025-05-15
 
 ## Executive Summary
-Performed a comprehensive "Truth Reconciliation Audit" on 10 sampled features (5 UI, 5 Server). The audit revealed a high level of code quality but identified discrepancies between the Documentation, Roadmap, and Implementation.
-- **Health Score**: 8/10 features aligned (after minor fixes).
-- **Major Finding**: Filesystem Health Checks were documented as automatic but were not implemented in the codebase.
-- **Action Taken**: Implemented the missing health check logic and refactored documentation location.
+A "Truth Reconciliation Audit" was performed to verify alignment between Documentation, Codebase, and Product Roadmap. The audit sampled 10 distinct features (3 Server, 7 UI).
+
+**Overall Health:** 90% Verification Rate.
+- **9/10 Features Verified:** Most features described in documentation are fully implemented and functional.
+- **1/10 Features Identified as Roadmap Debt:** The "Merge Strategy" feature described in documentation is only partially implemented (per-tool overrides exist, but the top-level list merge configuration is missing).
 
 ## Verification Matrix
 
-| Document Name | Status | Action Taken | Evidence |
+| Document Name | Status | Action Required | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Correct | None | Verified UI component and tests exist. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Correct | None | Verified `LogViewer` component. |
-| `ui/docs/features/native_file_upload_playground.md` | ✅ Correct | None | Verified `SchemaForm` logic. |
-| `ui/docs/features/server-health-history.md` | ⚠️ Roadmap Debt | Update Roadmap | Feature exists (client-side), updated Roadmap to reflect status. |
-| `ui/docs/features/tag-based-access-control.md` | ⚠️ Roadmap Debt | Update Roadmap | Feature exists, updated Roadmap to reflect status. |
-| `server/docs/features/context_optimizer.md` | ✅ Correct | None | Verified Middleware implementation. |
-| `server/docs/features/health-checks.md` | ❌ Code Missing | **Fixed Code** | Implemented `CheckHealth` for Filesystem upstream. |
-| `server/docs/features/tool_search_bar.md` | ❌ Doc Drift | **Moved Doc** | Moved to `ui/docs` to match implementation location. |
-| `server/docs/features/hot_reload.md` | ✅ Correct | None | Verified `ReloadConfig` logic. |
-| `server/docs/features/config_validator.md` | ✅ Correct | None | Verified API endpoint and UI existence. |
+| `server/docs/caching.md` | **Verified** | None | Implemented in `server/pkg/middleware/cache.go` and `server/pkg/config`. Tests exist. |
+| `server/docs/monitoring.md` | **Verified** | None | Implemented in `server/pkg/telemetry`. |
+| `server/docs/feature/merge_strategy.md` | **Roadmap Debt** | **Implement Code** | Top-level `merge_strategy` config missing in `proto/config/v1/config.proto`. Per-tool strategy exists in `ToolDefinition`. |
+| `ui/docs/features/playground.md` | **Verified** | None | Implemented in `ui/src/app/playground`. |
+| `ui/docs/features/services.md` | **Verified** | None | Implemented in `ui/src/app/upstream-services`. |
+| `ui/docs/features/dashboard.md` | **Verified** | Minor Doc Update | Implemented as `AddWidgetSheet` in `ui/src/components/dashboard`. Doc refers to "Gallery". |
+| `ui/docs/features/connection-diagnostics.md` | **Verified** | None | Implemented in `ui/src/app/diagnostics`. |
+| `ui/docs/features/secrets.md` | **Verified** | None | Implemented in `ui/src/app/secrets`. |
+| `ui/docs/features/traces.md` | **Verified** | None | Implemented in `ui/src/app/traces`. |
+| `ui/docs/features/stack-composer.md` | **Verified** | None | Implemented in `ui/src/app/stacks`. |
 
 ## Remediation Log
+*   **Total Issues Found:** 0
+*   **Case A (Doc Drift):** 0
+*   **Case B (Roadmap Debt):** 0
 
-### 1. Filesystem Health Check (Code Fix)
-- **Issue**: The documentation claimed filesystem health checks verify `root_paths`, but the `filesystem` upstream did not implement the `HealthChecker` interface.
-- **Fix**: Implemented `CheckHealth` method in `server/pkg/upstream/filesystem/upstream.go`.
-- **Details**: The check iterates over configured `root_paths` and performs `os.Stat` to verify existence. Added comprehensive unit tests in `upstream_test.go`.
+### 1. Merge Strategy (Case B: Roadmap Debt)
+*   **Condition:** Documentation `server/docs/feature/merge_strategy.md` describes a feature to control list merging behavior (extend/replace) via a top-level `merge_strategy` field.
+*   **Finding:** This field is missing from the `McpAnyServerConfig` Protobuf definition.
+*   **Action Plan:** Implement the missing `MergeStrategy` configuration in `proto/config/v1/config.proto` and generating the necessary code. Update config loading logic to respect this setting.
 
-### 2. Tool Search Bar (Documentation Refactor)
-- **Issue**: Documentation for the UI-only "Tool Search Bar" feature was located in `server/docs`.
-- **Fix**: Moved `server/docs/features/tool_search_bar.md` to `ui/docs/features/tool_search_bar.md`.
-
-### 3. Roadmap Alignment
-- **Issue**: `ui/roadmap.md` listed "Tag-based Access Control" and "Server Health History" as planned, but they are implemented.
-- **Fix**: Updated `ui/roadmap.md` to mark these features as Completed.
-- **Fix**: Updated `server/roadmap.md` to mark "Filesystem Health Check" as Completed.
+### 2. Dashboard Widget Gallery (Case A: Doc Drift)
+*   **Condition:** Doc refers to "Widget Gallery".
+*   **Finding:** UI component is named `AddWidgetSheet`.
+*   **Action Plan:** Update documentation to align terminology if necessary, or accept "Gallery" as a valid conceptual name. (Low priority).
 
 ## Security Scrub
-- Verified no PII, secrets, or internal IPs were included in the report or the code changes.
-- `CheckHealth` implementation uses standard `os.Stat` and does not expose file contents.
+*   No PII or secrets detected in this report.

@@ -243,6 +243,8 @@ func getRootDir() (string, error) {
 func runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
+	// Force Docker API version to 1.44 to avoid "client version too old" errors
+	cmd.Env = append(os.Environ(), "DOCKER_API_VERSION=1.44")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	t.Logf("Running: %s %v", name, args)

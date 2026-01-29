@@ -17,7 +17,7 @@ interface ServiceTemplateSelectorProps {
 }
 
 /**
- * List of available categories for service templates.
+ * List of available service template categories.
  */
 const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Cloud", "System", "Utility", "Other"];
 

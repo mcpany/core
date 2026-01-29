@@ -6,10 +6,10 @@
 import { UpstreamServiceConfig } from "./client";
 
 /**
- * Defines how secrets should be handled during sanitation.
- * - 'redact': Replace secrets with <REDACTED>.
- * - 'template': Replace secrets with ${KEY} placeholders.
- * - 'unsafe': Keep secrets as is.
+ * Defines the mode for handling secrets in configurations.
+ * - 'redact': Replaces secrets with '<REDACTED>'.
+ * - 'template': Replaces secrets with template placeholders (e.g., '${API_KEY}').
+ * - 'unsafe': Leaves secrets as plain text (use with caution).
  */
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 

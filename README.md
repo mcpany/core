@@ -44,6 +44,26 @@ Unlike traditional "Wrapper" MCP servers (like `mcp-server-postgres`, `mcp-serve
 
 Most "popular" MCP servers today are bespoke binaries. If the upstream API changes, you must wait for the maintainer to update the code, release a new version, and then you must redeploy. With **MCP Any**, you simply update your configuration file to match the new API signature—zero downtime, zero recompilation.
 
+### High-Level Architecture
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration]
+        Registry -->|Policy| Auth[Authentication & Policy]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
 ## ✨ Key Features
 
 - **Dynamic Config Reloading**: Automatically detects changes to configuration files (including atomic saves) and hot-swaps the registry without restarting the server.
@@ -74,24 +94,6 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 - **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
 - **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
 - **Extensible**: Designed to be easily extended with new service types and capabilities.
-
-## ⚙️ Configuration
-
-MCP Any can be configured via environment variables, CLI flags, and configuration files.
-
-### Environment Variables
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `MCPANY_MCP_LISTEN_ADDRESS` | Address for the MCP HTTP server. | `:50050` |
-| `MCPANY_GRPC_PORT` | Port for the gRPC registration server. | `50051` |
-| `MCPANY_LOG_LEVEL` | Log verbosity (`debug`, `info`, `warn`, `error`). | `info` |
-| `MCPANY_API_KEY` | **Secret**: Master API key for securing the server. | `""` |
-| `MCPANY_CONFIG_PATH` | Comma-separated paths to configuration files or directories. | `""` |
-| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from files (read-only mode). | `false` |
-| `MCPANY_DB_PATH` | Path to the SQLite database file. | `data/mcpany.db` |
-
-For a complete list of configuration options, see the [Configuration Reference](server/docs/reference/configuration.md).
 
 ## 🖥️ Management Dashboard
 
@@ -218,28 +220,11 @@ The AI will:
 
 For more complex examples, including gRPC, OpenAPI, and authentication, check out [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
 
-## ⚙️ Configuration
-
-MCP Any can be configured using command-line flags, environment variables, or a configuration file.
-
-### Environment Variables
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `MCPANY_API_KEY` | API key for securing the server. | `""` |
-| `MCPANY_CONFIG_PATH` | Path to configuration file(s). | `[]` |
-| `MCPANY_MCP_LISTEN_ADDRESS` | HTTP/JSON-RPC bind address. | `50050` |
-| `MCPANY_GRPC_PORT` | gRPC registration server port. | `""` |
-| `MCPANY_LOG_LEVEL` | Log level (`debug`, `info`, `warn`, `error`). | `info` |
-| `MCPANY_PROFILES` | Comma-separated list of active profiles. | `default` |
-| `MCPANY_DB_PATH` | Path to the SQLite database. | `data/mcpany.db` |
-
-### Configuration File
-
-For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
-
 ## 💡 More Usage
 
+Once the server is running, you can interact with it using its JSON-RPC API.
+
+- For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
 - For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](server/docs/integrations.md)**.
 - For hands-on examples, see the **[Examples](server/docs/examples.md)** and the **[Profile Authentication Example](server/examples/profile_example/README.md)**.
 - For monitoring metrics, see **[Monitoring](server/docs/monitoring.md)**.
@@ -345,6 +330,7 @@ We strive for high code quality. Please ensure the following before submitting a
 - **Documentation**:
   - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style). This includes a description of the purpose, parameters, and return values.
   - **TypeScript/React**: All exported components, functions, interfaces, and types must have JSDoc comments explaining their usage, props/parameters, and return values.
+  - **Quality Standard**: Avoid "empty calorie" comments (e.g., `// Sets ID` for `SetID`). Strive for clear, actionable descriptions.
   - **Strict Enforcement**: Documentation coverage is strictly enforced. Do not leave any public symbol undocumented.
   - You can verify Go documentation coverage with:
     ```bash

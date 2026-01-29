@@ -35,15 +35,14 @@ const getStatusColor = (status: string) => {
       case "healthy": return "border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400";
       case "degraded": return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400";
       case "unhealthy": return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400";
-      case "inactive": return "border-muted bg-muted/50 text-muted-foreground";
+      case "inactive": return "border-muted bg-muted/50 text-muted-foreground dark:bg-muted/80 dark:text-muted-foreground/80";
       default: return "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400";
     }
 };
 
 // ⚡ Bolt Optimization: Extracted diagnosis logic to a memoized component.
 /**
- * Displays a detailed diagnosis of a service connection error in a popover.
- * Analyzes the error message to provide actionable advice.
+ * Displays a popover with diagnostic information about a service error.
  *
  * @param props - The component props.
  * @param props.message - The raw error message to analyze.
@@ -78,11 +77,10 @@ const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message 
 });
 
 /**
- * Visualizes the historical health status of a service as a timeline of dots.
- * Each dot represents a check result at a specific point in time.
+ * Renders a visual timeline of service health status history.
  *
  * @param props - The component props.
- * @param props.history - Array of historical health data points.
+ * @param props.history - The list of historical health data points.
  * @returns The rendered timeline component.
  */
 const HealthTimeline = memo(function HealthTimeline({ history }: { history: HealthHistoryPoint[] }) {
@@ -96,7 +94,7 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
           case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;
           case "degraded": colorClass = "bg-amber-500/80 hover:bg-amber-500"; break;
           case "unhealthy": colorClass = "bg-red-500/80 hover:bg-red-500"; break;
-          case "inactive": colorClass = "bg-slate-200 dark:bg-slate-700 opacity-50"; break;
+          case "inactive": colorClass = "bg-slate-300 dark:bg-slate-600"; break;
         }
 
         return (
@@ -124,12 +122,12 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
 // ⚡ Bolt Optimization: Memoized individual service items.
 /**
- * Renders a single row in the service health dashboard, showing status, latency, and history.
+ * Renders a single row in the service health list, including status, metrics, and history timeline.
  *
  * @param props - The component props.
- * @param props.service - The service health status object.
- * @param props.history - The historical health data for this service.
- * @returns The rendered service item component.
+ * @param props.service - The current health status of the service.
+ * @param props.history - The historical health data for the service.
+ * @returns The rendered health item component.
  */
 const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
     return (

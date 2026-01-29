@@ -13,11 +13,9 @@ The `merge_strategy` field in `McpBundleConfig` controls this behavior.
 ```yaml
 merge_strategy:
   # "extend" (default) or "replace"
-  tool_list: extend
-  # "extend" (default) or "replace"
   profile_list: extend
   # "extend" (default) or "replace"
-  mcp_server_list: extend
+  upstream_service_list: extend
 ```
 
 ### Modes
@@ -34,31 +32,31 @@ merge_strategy:
 **Base Config:**
 
 ```yaml
-tools:
-  - name: "base-tool"
+upstream_services:
+  - name: "base-service"
 ```
 
 **Overlay Config (Extend):**
 
 ```yaml
 merge_strategy:
-  tool_list: extend
-tools:
-  - name: "overlay-tool"
+  upstream_service_list: extend
+upstream_services:
+  - name: "overlay-service"
 ```
 
-**Result:** `[base-tool, overlay-tool]`
+**Result:** `[base-service, overlay-service]`
 
 **Overlay Config (Replace):**
 
 ```yaml
 merge_strategy:
-  tool_list: replace
-tools:
-  - name: "overlay-tool"
+  upstream_service_list: replace
+upstream_services:
+  - name: "overlay-service"
 ```
 
-**Result:** `[overlay-tool]`
+**Result:** `[overlay-service]`
 
 ## Profile-Based Tool Selection
 

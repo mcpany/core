@@ -24,7 +24,6 @@ type Store struct {
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[string]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
-	maxTokens          int
 }
 
 // NewStore creates a new memory store.
@@ -39,7 +38,6 @@ func NewStore() *Store {
 		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[string]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
-		maxTokens:          10000,
 	}
 }
 
@@ -57,20 +55,7 @@ func tokenKey(userID, serviceID string) string {
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-
 	key := tokenKey(token.GetUserId(), token.GetServiceId())
-
-	// ⚡ BOLT: Prevent unbounded memory growth by evicting random tokens when limit is reached.
-	// Randomized Selection from Top 5 High-Impact Targets (Memory Category).
-	if _, exists := s.tokens[key]; !exists {
-		if len(s.tokens) >= s.maxTokens {
-			for k := range s.tokens {
-				delete(s.tokens, k)
-				break // Evict just one
-			}
-		}
-	}
-
 	s.tokens[key] = proto.Clone(token).(*configv1.UserToken)
 	return nil
 }

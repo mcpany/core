@@ -18,13 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 /**
- * Renders a dropdown menu button to toggle between light, dark, and system themes.
- *
- * @returns The rendered ThemeToggle component.
- *
- * @remarks
- * This component uses the `next-themes` library to manage theme state.
- * It modifies the global theme context when a selection is made.
+ * A dropdown menu button to toggle between light, dark, and system themes.
  */
 export function ThemeToggle() {
   const { setTheme } = useTheme()
