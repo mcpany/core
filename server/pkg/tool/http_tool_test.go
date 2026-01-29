@@ -424,7 +424,16 @@ func TestHTTPTool_Execute_Errors(t *testing.T) {
 			UnderlyingMethodFqn: &methodAndURL,
 		}.Build()
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, nil, nil, "")
+		paramMapping := configv1.HttpParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("id"),
+			}.Build(),
+		}.Build()
+		callDef := configv1.HttpCallDefinition_builder{
+			Parameters: []*configv1.HttpParameterMapping{paramMapping},
+		}.Build()
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 
 		inputs := json.RawMessage(`{"id": "123"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -787,7 +796,16 @@ func TestHTTPTool_Execute_WithRetry(t *testing.T) {
 		retryPolicy.SetBaseBackoff(durationpb.New(0))
 		resilience.SetRetryPolicy(retryPolicy)
 
-		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, &configv1.HttpCallDefinition{}, resilience, nil, "")
+		paramMapping := configv1.HttpParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("key"),
+			}.Build(),
+		}.Build()
+		callDef := configv1.HttpCallDefinition_builder{
+			Parameters: []*configv1.HttpParameterMapping{paramMapping},
+		}.Build()
+
+		httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, resilience, nil, "")
 		_, err := httpTool.Execute(context.Background(), &tool.ExecutionRequest{
 			ToolInputs: json.RawMessage(`{"key":"value"}`),
 		})
@@ -897,6 +915,63 @@ func TestHTTPTool_Execute_LargeFloatParameter(t *testing.T) {
 	// 2^63
 	// We pass it as a JSON string for integer to avoid any float parsing issues in test setup
 	inputs := json.RawMessage(`{"value": 9223372036854775808}`)
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
+	_, err := httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+}
+
+func TestHTTPTool_Execute_StripsUndefinedParameters(t *testing.T) {
+	t.Parallel()
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+
+		var bodyMap map[string]interface{}
+		err = json.Unmarshal(body, &bodyMap)
+		require.NoError(t, err)
+
+		// Check if defined param is present
+		assert.Equal(t, "value1", bodyMap["defined_param"], "defined_param should be present")
+
+		// Check if undefined param is present
+		// It should be filtered out by the tool.
+		_, hasUndefined := bodyMap["undefined_param"]
+		assert.False(t, hasUndefined, "undefined_param should NOT be present in the request body")
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{}`))
+	})
+
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	poolManager := pool.NewManager()
+	p, _ := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 1, 0, true)
+	poolManager.Register("test-service", p)
+
+	methodAndURL := "POST " + server.URL
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: &methodAndURL,
+	}.Build()
+
+	// Define only 'defined_param'
+	paramMapping := configv1.HttpParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{
+			Name: proto.String("defined_param"),
+		}.Build(),
+	}.Build()
+
+	callDef := configv1.HttpCallDefinition_builder{
+		Method:     configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
+		Parameters: []*configv1.HttpParameterMapping{paramMapping},
+	}.Build()
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+
+	inputs := json.RawMessage(`{"defined_param": "value1", "undefined_param": "malicious"}`)
 	req := &tool.ExecutionRequest{ToolInputs: inputs}
 	_, err := httpTool.Execute(context.Background(), req)
 	require.NoError(t, err)
