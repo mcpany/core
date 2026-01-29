@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Trace } from "@/types/trace";
+import { Trace, Span } from "@/types/trace";
 import { User, Cpu, Terminal, ArrowRight, ArrowLeft, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -45,48 +45,52 @@ interface Interaction {
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
 
-  // Derive interactions from the flat trace
-  // In the future, this would traverse the span tree.
-  const interactions: Interaction[] = [
-    {
-      id: 1,
-      from: "user",
-      to: "core",
-      label: "Execute Request",
-      type: "request",
-      payload: trace.rootSpan.input,
-      description: "Client requests tool execution",
-    },
-    {
-      id: 2,
-      from: "core",
-      to: "tool",
-      label: `Call ${trace.rootSpan.name}`,
-      type: "request",
-      payload: trace.rootSpan.input, // Assuming passed through
-      description: "MCP Core proxies request to tool",
-    },
-    {
-      id: 3,
-      from: "tool",
-      to: "core",
-      label: "Execution Result",
-      type: "response",
-      payload: trace.rootSpan.output,
-      status: trace.status,
-      description: "Tool returns execution result",
-    },
-    {
-      id: 4,
-      from: "core",
-      to: "user",
-      label: "Response",
-      type: "response",
-      payload: trace.rootSpan.output,
-      status: trace.status,
-      description: "MCP Core returns response to client",
-    },
-  ];
+  // Derive interactions from the trace
+  const interactions: Interaction[] = [];
+
+  function traverse(span: Span, parentSource: 'user' | 'core' | 'tool' = 'user') {
+      let from = parentSource;
+      let to: 'user' | 'core' | 'tool' = 'core';
+
+      if (span.type === 'core') {
+          to = 'core';
+          if (parentSource === 'user') from = 'user';
+      } else if (span.type === 'tool') {
+          to = 'tool';
+          from = 'core'; // Tools are called by Core
+      }
+
+      // Request
+      interactions.push({
+          id: interactions.length + 1,
+          from: from,
+          to: to,
+          label: span.name,
+          type: 'request',
+          payload: span.input,
+          description: `Request to ${span.name}`
+      });
+
+      // Children
+      if (span.children) {
+          span.children.forEach(child => traverse(child, to));
+      }
+
+      // Response
+      interactions.push({
+          id: interactions.length + 1,
+          from: to,
+          to: from,
+          label: `${span.name} Result`,
+          type: 'response',
+          payload: span.output,
+          status: span.status,
+          description: `Response from ${span.name}`
+      });
+  }
+
+  // Start traversal
+  traverse(trace.rootSpan, 'user');
 
   const participants = [
     { id: "user", label: "Client", icon: User, color: "text-blue-500", bg: "bg-blue-500/10" },
