@@ -19,8 +19,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
-                ]
+                    { name: "process_payment", description: "Process a payment", call_id: "pay", tags: ["payment"] }
+                ],
+                calls: {
+                    "pay": {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/v1/charges"
+                    }
+                }
             }
         },
         {
@@ -28,13 +34,18 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+                address: "http://localhost:50051", // Dummy address
                 tools: [
-                     { name: "get_user", description: "Get user details" }
-                ]
+                     { name: "get_user", description: "Get user details", call_id: "get" }
+                ],
+                calls: {
+                    "get": {
+                        method: "HTTP_METHOD_GET",
+                        endpoint_path: "/users"
+                    }
+                }
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
@@ -42,8 +53,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             http_service: {
                 address: "http://localhost:8080", // Dummy
                 tools: [
-                    { name: "calculator", description: "calc" }
-                ]
+                    { name: "calculator", description: "calc", call_id: "calc", tags: ["math"] }
+                ],
+                calls: {
+                    "calc": {
+                        method: "HTTP_METHOD_POST",
+                        endpoint_path: "/calc"
+                    }
+                }
             }
         }
     ];
