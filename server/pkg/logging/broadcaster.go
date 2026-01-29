@@ -12,6 +12,8 @@ type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan []byte]struct{}
 	history     [][]byte
+	head        int
+	full        bool
 	limit       int
 }
 
@@ -26,7 +28,7 @@ var (
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
 		subscribers: make(map[chan []byte]struct{}),
-		history:     make([][]byte, 0, 1000),
+		history:     make([][]byte, 1000),
 		limit:       1000,
 	}
 }
@@ -50,11 +52,27 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 	ch := make(chan []byte, 100)
 	b.subscribers[ch] = struct{}{}
 
-	result := make([][]byte, len(b.history))
-	for i, msg := range b.history {
+	count := b.limit
+	if !b.full {
+		count = b.head
+	}
+	result := make([][]byte, count)
+
+	idx := 0
+	if b.full {
+		idx = b.head
+	}
+
+	for i := 0; i < count; i++ {
+		msg := b.history[idx]
 		msgCopy := make([]byte, len(msg))
 		copy(msgCopy, msg)
 		result[i] = msgCopy
+
+		idx++
+		if idx >= b.limit {
+			idx = 0
+		}
 	}
 
 	return ch, result
@@ -82,12 +100,14 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 	// We make a copy of msg to ensure history persists even if caller reuses buffer
 	msgCopy := make([]byte, len(msg))
 	copy(msgCopy, msg)
-	b.history = append(b.history, msgCopy)
 
-	if len(b.history) > b.limit {
-		// Simple slicing is efficient and sufficient.
-		// Go's append will handle reallocation when capacity is reached.
-		b.history = b.history[1:]
+	// ⚡ BOLT: Ring Buffer Optimization
+	// Randomized Selection from Top 5 High-Impact Targets
+	b.history[b.head] = msgCopy
+	b.head++
+	if b.head >= b.limit {
+		b.head = 0
+		b.full = true
 	}
 
 	for ch := range b.subscribers {
@@ -104,11 +124,27 @@ func (b *Broadcaster) GetHistory() [][]byte {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 
-	result := make([][]byte, len(b.history))
-	for i, msg := range b.history {
+	count := b.limit
+	if !b.full {
+		count = b.head
+	}
+	result := make([][]byte, count)
+
+	idx := 0
+	if b.full {
+		idx = b.head
+	}
+
+	for i := 0; i < count; i++ {
+		msg := b.history[idx]
 		msgCopy := make([]byte, len(msg))
 		copy(msgCopy, msg)
 		result[i] = msgCopy
+
+		idx++
+		if idx >= b.limit {
+			idx = 0
+		}
 	}
 	return result
 }
