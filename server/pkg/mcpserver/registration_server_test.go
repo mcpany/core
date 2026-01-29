@@ -84,13 +84,13 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 
 	t.Run("successful registration", func(t *testing.T) {
 		serviceName := "testservice"
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName(serviceName)
-		httpService := &configv1.HttpUpstreamService{}
+		httpService := configv1.HttpUpstreamService_builder{}.Build()
 		httpService.SetAddress("http://127.0.0.1:8080")
 		config.SetHttpService(httpService)
 
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		resp, err := registrationServer.RegisterService(ctx, req)
@@ -108,7 +108,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	})
 
 	t.Run("missing config", func(t *testing.T) {
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		_, err := registrationServer.RegisterService(ctx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -117,8 +117,8 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 	})
 
 	t.Run("missing config name", func(t *testing.T) {
-		config := &configv1.UpstreamServiceConfig{}
-		req := &v1.RegisterServiceRequest{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 		_, err := registrationServer.RegisterService(ctx, req)
 		require.Error(t, err)
@@ -143,7 +143,7 @@ func TestRegistrationServer_RegisterService(t *testing.T) {
 			GrpcService: grpcService,
 		}.Build()
 
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		resp, err := registrationServer.RegisterService(ctx, req)
@@ -211,7 +211,7 @@ paths:
 			OpenapiService: openapiService,
 		}.Build()
 
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		resp, err := registrationServer.RegisterService(ctx, req)
@@ -267,7 +267,7 @@ paths:
 			WebsocketService: websocketService,
 		}.Build()
 
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		resp, err := registrationServer.RegisterService(ctx, req)
@@ -294,14 +294,14 @@ paths:
 
 	t.Run("registration failure", func(t *testing.T) {
 		serviceName := "failing-service"
-		config := &configv1.UpstreamServiceConfig{}
+		config := configv1.UpstreamServiceConfig_builder{}.Build()
 		config.SetName(serviceName)
 		// This address is invalid and will cause the registration to fail
-		httpService := &configv1.HttpUpstreamService{}
+		httpService := configv1.HttpUpstreamService_builder{}.Build()
 		httpService.SetAddress("http://invalid-url:port")
 		config.SetHttpService(httpService)
 
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(config)
 
 		_, err := registrationServer.RegisterService(ctx, req)
@@ -340,18 +340,18 @@ func TestListServices(t *testing.T) {
 
 	// Register a service to be listed
 	serviceName := "test-service-for-listing"
-	config := &configv1.UpstreamServiceConfig{}
+	config := configv1.UpstreamServiceConfig_builder{}.Build()
 	config.SetName(serviceName)
-	httpService := &configv1.HttpUpstreamService{}
+	httpService := configv1.HttpUpstreamService_builder{}.Build()
 	httpService.SetAddress("http://127.0.0.1:8080")
 	config.SetHttpService(httpService)
-	req := &v1.RegisterServiceRequest{}
+	req := v1.RegisterServiceRequest_builder{}.Build()
 	req.SetConfig(config)
 	_, err = registrationServer.RegisterService(ctx, req)
 	require.NoError(t, err)
 
 	// Now, list the services
-	listReq := &v1.ListServicesRequest{}
+	listReq := v1.ListServicesRequest_builder{}.Build()
 	resp, err := registrationServer.ListServices(ctx, listReq)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -378,7 +378,7 @@ func TestListServices(t *testing.T) {
 		shortCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 		defer cancel()
 
-		_, err = errorRegistrationServer.ListServices(shortCtx, &v1.ListServicesRequest{})
+		_, err = errorRegistrationServer.ListServices(shortCtx, v1.ListServicesRequest_builder{}.Build())
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
@@ -396,7 +396,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Run("UnregisterService", func(t *testing.T) {
-		_, err := registrationServer.UnregisterService(ctx, &v1.UnregisterServiceRequest{})
+		_, err := registrationServer.UnregisterService(ctx, v1.UnregisterServiceRequest_builder{}.Build())
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
@@ -406,7 +406,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 
 
 	t.Run("RegisterTools", func(t *testing.T) {
-		_, err := registrationServer.RegisterTools(ctx, &v1.RegisterToolsRequest{})
+		_, err := registrationServer.RegisterTools(ctx, v1.RegisterToolsRequest_builder{}.Build())
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
@@ -414,7 +414,7 @@ func TestRegistrationServer_Unimplemented(t *testing.T) {
 	})
 
 	t.Run("GetServiceStatus", func(t *testing.T) {
-		_, err := registrationServer.GetServiceStatus(ctx, &v1.GetServiceStatusRequest{})
+		_, err := registrationServer.GetServiceStatus(ctx, v1.GetServiceStatusRequest_builder{}.Build())
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
@@ -446,13 +446,13 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Run("RegisterService timeout", func(t *testing.T) {
-		httpSvc := &configv1.HttpUpstreamService{}
+		httpSvc := configv1.HttpUpstreamService_builder{}.Build()
 		httpSvc.SetAddress("http://127.0.0.1:8080")
-		cfg := &configv1.UpstreamServiceConfig{}
+		cfg := configv1.UpstreamServiceConfig_builder{}.Build()
 		cfg.SetName("timeout-test")
 		cfg.SetHttpService(httpSvc)
 
-		req := &v1.RegisterServiceRequest{}
+		req := v1.RegisterServiceRequest_builder{}.Build()
 		req.SetConfig(cfg)
 		_, err := registrationServer.RegisterService(ctx, req)
 		require.Error(t, err)
@@ -462,7 +462,7 @@ func TestRegistrationServer_Timeouts(t *testing.T) {
 	})
 
 	t.Run("ListServices timeout", func(t *testing.T) {
-		_, err := registrationServer.ListServices(ctx, &v1.ListServicesRequest{})
+		_, err := registrationServer.ListServices(ctx, v1.ListServicesRequest_builder{}.Build())
 		require.Error(t, err)
 		st, ok := status.FromError(err)
 		require.True(t, ok)
@@ -497,18 +497,18 @@ func TestGetService(t *testing.T) {
 
 	// Register a service to be retrieved
 	serviceName := "test-service-for-get"
-	config := &configv1.UpstreamServiceConfig{}
+	config := configv1.UpstreamServiceConfig_builder{}.Build()
 	config.SetName(serviceName)
-	httpService := &configv1.HttpUpstreamService{}
+	httpService := configv1.HttpUpstreamService_builder{}.Build()
 	httpService.SetAddress("http://127.0.0.1:8080")
 	config.SetHttpService(httpService)
-	req := &v1.RegisterServiceRequest{}
+	req := v1.RegisterServiceRequest_builder{}.Build()
 	req.SetConfig(config)
 	_, err = registrationServer.RegisterService(ctx, req)
 	require.NoError(t, err)
 
 	t.Run("get existing service", func(t *testing.T) {
-		req := &v1.GetServiceRequest{}
+		req := v1.GetServiceRequest_builder{}.Build()
 		req.SetServiceName(serviceName)
 		resp, err := registrationServer.GetService(ctx, req)
 		require.NoError(t, err)
@@ -518,7 +518,7 @@ func TestGetService(t *testing.T) {
 	})
 
 	t.Run("get non-existent service", func(t *testing.T) {
-		req := &v1.GetServiceRequest{}
+		req := v1.GetServiceRequest_builder{}.Build()
 		req.SetServiceName("non-existent")
 		_, err := registrationServer.GetService(ctx, req)
 		require.Error(t, err)
@@ -528,7 +528,7 @@ func TestGetService(t *testing.T) {
 	})
 
 	t.Run("missing service name", func(t *testing.T) {
-		req := &v1.GetServiceRequest{}
+		req := v1.GetServiceRequest_builder{}.Build()
 		_, err := registrationServer.GetService(ctx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -550,7 +550,7 @@ func TestGetService(t *testing.T) {
 		shortCtx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 		defer cancel()
 
-		req := &v1.GetServiceRequest{}
+		req := v1.GetServiceRequest_builder{}.Build()
 		req.SetServiceName(serviceName)
 		_, err = timeoutServer.GetService(shortCtx, req)
 		require.Error(t, err)

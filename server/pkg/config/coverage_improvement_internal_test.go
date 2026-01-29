@@ -11,6 +11,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestValidatorDirectoryExistsWithMock(t *testing.T) {
@@ -27,16 +28,15 @@ func TestValidatorDirectoryExistsWithMock(t *testing.T) {
 	f.Close()
 	defer os.Remove("config_test_dummy_file_internal")
 
-	stdio := &configv1.McpStdioConnection{}
-	stdio.SetCommand("dummycmd")
-	stdio.SetWorkingDirectory("config_test_dummy_file_internal")
-
-	mcpSvc := &configv1.McpUpstreamService{}
-	mcpSvc.SetStdioConnection(stdio)
-
-	cfg := &configv1.UpstreamServiceConfig{}
-	cfg.SetName("mcp-svc")
-	cfg.SetMcpService(mcpSvc)
+	cfg := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("mcp-svc"),
+		McpService: configv1.McpUpstreamService_builder{
+			StdioConnection: configv1.McpStdioConnection_builder{
+				Command:          proto.String("dummycmd"),
+				WorkingDirectory: proto.String("config_test_dummy_file_internal"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	// Should pass Command check (mocked) and fail Directory check
 	err = ValidateOrError(context.Background(), cfg)

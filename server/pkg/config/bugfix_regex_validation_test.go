@@ -12,6 +12,7 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestReproFileSecretValidation(t *testing.T) {
@@ -38,24 +39,23 @@ func TestReproFileSecretValidation(t *testing.T) {
 		return "/bin/ls", nil
 	}
 
-	stdio := &configv1.McpStdioConnection{}
-	stdio.SetCommand("ls")
-	secretVal := &configv1.SecretValue{}
-	secretVal.SetFilePath(tmpFile.Name())
-	secretVal.SetValidationRegex("^sk-[a-zA-Z0-9]{10}$")
-	stdio.SetEnv(map[string]*configv1.SecretValue{
-		"TEST_KEY": secretVal,
-	})
-
-	mcpSvc := &configv1.McpUpstreamService{}
-	mcpSvc.SetStdioConnection(stdio)
-
-	svcConfig := &configv1.UpstreamServiceConfig{}
-	svcConfig.SetName("test-file-secret")
-	svcConfig.SetMcpService(mcpSvc)
-
 	config := configv1.McpAnyServerConfig_builder{
-		UpstreamServices: []*configv1.UpstreamServiceConfig{svcConfig},
+		UpstreamServices: []*configv1.UpstreamServiceConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("test-file-secret"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String("ls"),
+						Env: map[string]*configv1.SecretValue{
+							"TEST_KEY": configv1.SecretValue_builder{
+								FilePath:        proto.String(tmpFile.Name()),
+								ValidationRegex: proto.String("^sk-[a-zA-Z0-9]{10}$"),
+							}.Build(),
+						},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		},
 	}.Build()
 
 	errs := Validate(context.Background(), config, Server)

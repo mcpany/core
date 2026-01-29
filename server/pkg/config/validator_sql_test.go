@@ -9,6 +9,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -22,24 +23,24 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 		{
 			name: "invalid sql service - call with empty query",
 			config: func() *configv1.McpAnyServerConfig {
-				c := &configv1.McpAnyServerConfig{}
-				svc := &configv1.UpstreamServiceConfig{}
-				svc.SetName("sql-empty-query")
+				sqlSvc := configv1.SqlUpstreamService_builder{
+					Driver: proto.String("postgres"),
+					Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
+					Calls: map[string]*configv1.SqlCallDefinition{
+						"my-query": configv1.SqlCallDefinition_builder{
+							Query: proto.String(""),
+						}.Build(),
+					},
+				}.Build()
 
-				sqlSvc := &configv1.SqlUpstreamService{}
-				sqlSvc.SetDriver("postgres")
-				sqlSvc.SetDsn("postgres://user:pass@127.0.0.1:5432/db")
-				sqlSvc.SetCalls(map[string]*configv1.SqlCallDefinition{
-					"my-query": func() *configv1.SqlCallDefinition {
-						callDef := &configv1.SqlCallDefinition{}
-						callDef.SetQuery("") // Empty query should be invalid
-						return callDef
-					}(),
-				})
-				svc.SetSqlService(sqlSvc)
+				svc := configv1.UpstreamServiceConfig_builder{
+					Name:       proto.String("sql-empty-query"),
+					SqlService: sqlSvc,
+				}.Build()
 
-				c.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-				return c
+				return configv1.McpAnyServerConfig_builder{
+					UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+				}.Build()
 			}(),
 			expectedErrorString: `service "sql-empty-query": sql call "my-query" query is empty`,
 			shouldFail:          true,
@@ -47,29 +48,29 @@ func TestValidateSQLService_MissingValidation(t *testing.T) {
 		{
 			name: "invalid sql service - call with invalid input schema",
 			config: func() *configv1.McpAnyServerConfig {
-				c := &configv1.McpAnyServerConfig{}
-				svc := &configv1.UpstreamServiceConfig{}
-				svc.SetName("sql-invalid-schema")
-
-				sqlSvc := &configv1.SqlUpstreamService{}
-				sqlSvc.SetDriver("postgres")
-				sqlSvc.SetDsn("postgres://user:pass@127.0.0.1:5432/db")
-				sqlSvc.SetCalls(map[string]*configv1.SqlCallDefinition{
-					"my-query": func() *configv1.SqlCallDefinition {
-						callDef := &configv1.SqlCallDefinition{}
-						callDef.SetQuery("SELECT * FROM users")
-						callDef.SetInputSchema(&structpb.Struct{
-							Fields: map[string]*structpb.Value{
-								"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}}, // Invalid type
+				sqlSvc := configv1.SqlUpstreamService_builder{
+					Driver: proto.String("postgres"),
+					Dsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
+					Calls: map[string]*configv1.SqlCallDefinition{
+						"my-query": configv1.SqlCallDefinition_builder{
+							Query: proto.String("SELECT * FROM users"),
+							InputSchema: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"type": {Kind: &structpb.Value_NumberValue{NumberValue: 123}}, // Invalid type
+								},
 							},
-						})
-						return callDef
-					}(),
-				})
-				svc.SetSqlService(sqlSvc)
+						}.Build(),
+					},
+				}.Build()
 
-				c.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-				return c
+				svc := configv1.UpstreamServiceConfig_builder{
+					Name:       proto.String("sql-invalid-schema"),
+					SqlService: sqlSvc,
+				}.Build()
+
+				return configv1.McpAnyServerConfig_builder{
+					UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+				}.Build()
 			}(),
 			expectedErrorString: `service "sql-invalid-schema": sql call "my-query" input_schema error: schema 'type' must be a string`,
 			shouldFail:          true,

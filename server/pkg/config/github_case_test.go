@@ -65,10 +65,10 @@ services:
 		}, nil
 	}
 
-	collection := &configv1.Collection{
+	collection := configv1.Collection_builder{
 		Name:    proto.String("test-collection"),
 		HttpUrl: proto.String("https://github.com/owner/repo/tree/main/path"),
-	}
+	}.Build()
 
 	err := m.loadAndMergeCollection(context.Background(), collection)
 	require.NoError(t, err)
