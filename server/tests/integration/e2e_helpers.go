@@ -312,6 +312,10 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 	}
 	cmd.Stdout = &mp.stdout
 	cmd.Stderr = &mp.stderr
+
+	// Ensure process is stopped when test ends to avoid race conditions on t.Logf
+	t.Cleanup(mp.Stop)
+
 	return mp
 }
 
@@ -801,6 +805,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 
 	appRunner := app.NewApplication()
 	go func() {
+		defer cancel() // Ensure WaitForStartup doesn't hang if Run returns
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              afero.NewOsFs(),
