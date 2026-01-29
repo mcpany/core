@@ -16,6 +16,17 @@ interface SmartResultRendererProps {
     result: any;
 }
 
+/**
+ * Renders a tool execution result in either a smart table view or a raw JSON view.
+ *
+ * It attempts to intelligently parse the result content to detect if it can be displayed
+ * as a table (list of objects). If so, it offers a toggle between Table and JSON views.
+ *
+ * @param props - The component props.
+ * @param props.result - The tool execution result to render. This can be a raw object,
+ *                       an MCP CallToolResult, or a JSON string.
+ * @returns A React component that renders the result.
+ */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
     const [copied, setCopied] = useState(false);

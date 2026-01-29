@@ -46,6 +46,13 @@ Most "popular" MCP servers today are bespoke binaries. If the upstream API chang
 
 ### High-Level Architecture
 
+**Technology Stack**
+
+*   **Core Server:** Go (Golang)
+*   **Frontend:** React, Next.js, Tailwind CSS
+*   **Protocol:** Model Context Protocol (MCP), gRPC, Protobuf
+*   **Infrastructure:** Docker, Kubernetes (Operator support)
+
 ```mermaid
 graph TD
     User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
