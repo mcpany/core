@@ -47,7 +47,16 @@ func readBodyWithLimit(w http.ResponseWriter, r *http.Request, limit int64) ([]b
 	return body, nil
 }
 
-// createAPIHandler creates a http.Handler for the config API.
+// createAPIHandler creates and configures the HTTP handler for the administrative API.
+// It sets up routes for managing services, tools, prompts, resources, secrets,
+// profiles, collections, users, credentials, and alerts. It also configures
+// authentication, rate limiting, and other middleware for the API endpoints.
+//
+// Parameters:
+//   - store: The storage backend used for persisting configuration.
+//
+// Returns:
+//   - (http.Handler): The configured HTTP handler for the API.
 func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux := http.NewServeMux()
 
@@ -155,6 +164,8 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	return mux
 }
 
+// handleServices returns a handler for the /services endpoint.
+// It delegates to handleListServices for GET requests and handleCreateService for POST requests.
 func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -168,6 +179,14 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleListServices retrieves a list of all upstream services.
+// It fetches services from the registry (or store fallback) and enriches the response
+// with runtime information such as last error status and tool counts.
+//
+// Parameters:
+//   - w: The HTTP response writer.
+//   - r: The HTTP request.
+//   - store: The storage backend (used as fallback).
 func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var services []*configv1.UpstreamServiceConfig
 	var err error
@@ -246,6 +265,14 @@ func (a *Application) handleListServices(w http.ResponseWriter, r *http.Request,
 	_, _ = w.Write(buf)
 }
 
+// handleCreateService processes a request to create a new upstream service.
+// It validates the configuration, checks for unsafe configurations (unless allowed),
+// saves the service to storage, and triggers a configuration reload.
+//
+// Parameters:
+//   - w: The HTTP response writer.
+//   - r: The HTTP request.
+//   - store: The storage backend.
 func (a *Application) handleCreateService(w http.ResponseWriter, r *http.Request, store storage.Storage) {
 	var svc configv1.UpstreamServiceConfig
 	body, err := readBodyWithLimit(w, r, 1048576)

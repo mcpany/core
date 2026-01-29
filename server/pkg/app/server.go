@@ -2256,12 +2256,15 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener for the server.
-// register is a function that registers the gRPC services with the server.
+// Parameters:
+//   - ctx: The context for managing the server's lifecycle.
+//   - wg: A WaitGroup to signal when the server has shut down.
+//   - errChan: A channel for reporting errors during startup.
+//   - readyChan: A channel to signal when the server is ready.
+//   - name: A descriptive name for the server, used in logging.
+//   - lis: The net.Listener for the server.
+//   - shutdownTimeout: Duration to wait for graceful shutdown before forcing stop.
+//   - server: The gRPC server instance to start.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -2338,12 +2341,16 @@ func wrapBindError(err error, serverType, address, flag string) error {
 // startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
 // shutdown when the context is canceled.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener on which the server will listen.
-// handler is the HTTP handler for processing requests.
+// Parameters:
+//   - ctx: The context for managing the server's lifecycle.
+//   - wg: A WaitGroup to signal when the server has shut down.
+//   - errChan: A channel for reporting errors during startup.
+//   - readyChan: A channel to signal when the server is ready.
+//   - name: A descriptive name for the server, used in logging.
+//   - lis: The net.Listener on which the server will listen.
+//   - handler: The HTTP handler for processing requests.
+//   - shutdownTimeout: Duration to wait for graceful shutdown.
+//   - connState: A callback function to track connection state.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,

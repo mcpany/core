@@ -13,9 +13,18 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface SmartResultRendererProps {
+    /** The raw result object from the tool execution. */
     result: any;
 }
 
+/**
+ * SmartResultRenderer attempts to render the tool execution result in a smart, tabular format.
+ * It automatically detects if the result is a list of objects and renders a table,
+ * otherwise falling back to a raw JSON view.
+ *
+ * @param props - The component props.
+ * @param props.result - The tool execution result to render.
+ */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
     const [copied, setCopied] = useState(false);

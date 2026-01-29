@@ -18,11 +18,13 @@ import (
 // registering its capabilities, such as tools, prompts, and resources, with the
 // appropriate managers.
 type Upstream interface {
-	// Shutdown gracefully terminates the upstream service.
+	// Shutdown gracefully terminates the upstream service connections and resources.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: The context for the shutdown operation.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - (error): An error if the shutdown fails.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
@@ -37,10 +39,10 @@ type Upstream interface {
 	//   - isReload: Indicates whether this is an initial registration or a reload.
 	//
 	// Returns:
-	//   - A unique service key.
-	//   - A list of discovered tool definitions.
-	//   - A list of discovered resource definitions.
-	//   - An error if registration fails.
+	//   - (string): A unique service key.
+	//   - ([]*configv1.ToolDefinition): A list of discovered tool definitions.
+	//   - ([]*configv1.ResourceDefinition): A list of discovered resource definitions.
+	//   - (error): An error if registration fails.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,

@@ -29,15 +29,9 @@ import (
 //
 //  1. Joining the strings with a "." separator.
 //
-//  2. Removing any characters that are not allowed (alphanumerics, "_", "-").
+//  2. Removing any characters that are not allowed.
 //     Allowed characters are: `[a-zA-Z0-9_-]`.
-//     Wait, checking the implementation:
-//     It allows a-z, A-Z, 0-9, _, -
-//     It seems to replace invalid chars with nothing.
-//     Actually it calculates `dirtyCount`.
-//     If `dirtyCount > 0`, it means we need to "sanitize" by removing them?
-//     Yes, `rawSanitizedLen := len(id) - dirtyCount`.
-//     And later it only writes if valid char.
+//     Invalid characters are removed.
 //
 //  3. Truncating the result to the specified maximum length.
 //
@@ -48,18 +42,17 @@ import (
 // the final identifier.
 //
 // Parameters:
-//
-//	ids: A slice of strings to be sanitized and joined. Each element of the slice
-//	     represents a part of the final identifier.
-//	alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
-//	                  sanitized string, regardless of whether it was modified.
-//	maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
-//	                          string before a hash is appended.
-//	reqHashLength: The desired length of the hexadecimal hash to be appended.
+//   - ids: A slice of strings to be sanitized and joined. Each element of the slice
+//     represents a part of the final identifier.
+//   - alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
+//     sanitized string, regardless of whether it was modified.
+//   - maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
+//     string before a hash is appended.
+//   - reqHashLength: The desired length of the hexadecimal hash to be appended.
 //
 // Returns:
-//
-//	A single string representing the sanitized and joined identifier.
+//   - (string): A single string representing the sanitized and joined identifier.
+//   - (error): An error if the IDs cannot be sanitized (e.g. empty).
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -387,14 +380,13 @@ func GetDockerCommand() (string, []string) {
 // It handles URL escaping of values unless specified otherwise.
 //
 // Parameters:
-//
-//	urlPath: The URL path containing placeholders in the format "{{key}}".
-//	params: A map of keys to values to replace placeholders with.
-//	noEscapeParams: A map of keys that should NOT be URL escaped.
+//   - urlPath: The URL path containing placeholders in the format "{{key}}".
+//   - params: A map of keys to values to replace placeholders with.
+//   - noEscapeParams: A map of keys that should NOT be URL escaped. If a key is present and true,
+//     the corresponding value in params will be inserted as-is without escaping.
 //
 // Returns:
-//
-//	The URL path with placeholders replaced.
+//   - (string): The URL path with placeholders replaced.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
 }
@@ -403,14 +395,13 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 // It handles URL query escaping of values unless specified otherwise.
 //
 // Parameters:
-//
-//	urlQuery: The URL query string containing placeholders in the format "{{key}}".
-//	params: A map of keys to values to replace placeholders with.
-//	noEscapeParams: A map of keys that should NOT be URL escaped.
+//   - urlQuery: The URL query string containing placeholders in the format "{{key}}".
+//   - params: A map of keys to values to replace placeholders with.
+//   - noEscapeParams: A map of keys that should NOT be URL escaped. If a key is present and true,
+//     the corresponding value in params will be inserted as-is without escaping.
 //
 // Returns:
-//
-//	The URL query string with placeholders replaced.
+//   - (string): The URL query string with placeholders replaced.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
 }
@@ -454,10 +445,13 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 }
 
 // IsNil checks if an interface value is nil or holds a nil pointer.
+// It safely handles typed nil pointers (e.g. (*int)(nil)) which are not equal to nil.
 //
-// i is the i.
+// Parameters:
+//   - i: The interface value to check.
 //
-// Returns true if successful.
+// Returns:
+//   - (bool): True if the value is nil or a nil pointer, false otherwise.
 func IsNil(i any) bool {
 	if i == nil {
 		return true
