@@ -19,21 +19,47 @@ import {
 import { JsonView } from "@/components/ui/json-view";
 import { Badge } from "@/components/ui/badge";
 
+/**
+ * Props for the SequenceDiagram component.
+ */
 interface SequenceDiagramProps {
+  /** The trace object containing the execution details. */
   trace: Trace;
 }
 
+/**
+ * Represents a single interaction (request or response) in the sequence diagram.
+ */
 interface Interaction {
+  /** Unique identifier for the interaction. */
   id: number;
+  /** The participant initiating the interaction. */
   from: "user" | "core" | "tool";
+  /** The participant receiving the interaction. */
   to: "user" | "core" | "tool";
+  /** A brief label describing the interaction. */
   label: string;
+  /** The type of interaction (request or response). */
   type: "request" | "response";
+  /** The data payload associated with the interaction. */
   payload: any;
+  /** The status of the interaction, if applicable (e.g., success, error). */
   status?: "success" | "error";
+  /** A more detailed description of what this interaction represents. */
   description?: string;
 }
 
+/**
+ * Visualizes the execution trace of an MCP request as a sequence diagram.
+ *
+ * This component renders a simplified sequence diagram showing the flow of
+ * messages between the Client (User), MCP Core, and the Tool. It allows
+ * users to click on interactions to view detailed payloads.
+ *
+ * @param props - The component props.
+ * @param props.trace - The trace data to visualize.
+ * @returns The rendered sequence diagram component.
+ */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
 

@@ -12,10 +12,25 @@ import { Code, Table as TableIcon, Copy, Check } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+/**
+ * Props for the SmartResultRenderer component.
+ */
 interface SmartResultRendererProps {
+    /** The result object to render. Can be any JSON-serializable value. */
     result: any;
 }
 
+/**
+ * Renders an execution result smartly, offering both a raw JSON view and a tabular view
+ * if the result structure permits (e.g., list of objects).
+ *
+ * It automatically detects if the result can be displayed as a table and provides
+ * a toggle to switch between views.
+ *
+ * @param props - The component props.
+ * @param props.result - The result data to render.
+ * @returns The rendered result component.
+ */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [viewMode, setViewMode] = useState<"smart" | "raw">("smart");
     const [copied, setCopied] = useState(false);
