@@ -4,103 +4,62 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './test-data';
 
 test.describe('Settings & Secrets', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock Global Settings API
-    await page.route(/\/api\/v1\/settings/, async route => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({
-          json: {
-            mcp_listen_address: ":8080",
-            log_level: 1, // INFO
-            log_format: 1, // TEXT
-            audit: { enabled: true },
-            dlp: { enabled: false },
-            gc_settings: { interval: "1h" },
-            read_only: false
-          }
-        });
-      } else if (route.request().method() === 'POST') {
-        await route.fulfill({ status: 200, json: {} });
-      } else {
-        await route.continue();
-      }
-    });
+  const username = 'settings-admin';
 
-    // Mock other noisy endpoints
-    await page.route(/\/api\/v1\/doctor/, async route => {
-        await route.fulfill({ status: 200, json: { status: "ok", checks: {} } });
-    });
-    await page.route(/\/api\/v1\/topology/, async route => {
-        await route.fulfill({ status: 200, json: { nodes: [], edges: [] } });
-    });
+  test.beforeEach(async ({ page, request }) => {
+    // Seed a user for testing
+    await seedUser(request, username);
 
-    // Mock Secrets API with state
-    const secretsStore: any[] = [];
-
-    await page.route(/\/api\/v1\/secrets/, async route => {
-      const method = route.request().method();
-
-      if (method === 'GET') {
-        await route.fulfill({
-          json: { secrets: [...secretsStore] }
-        });
-      } else if (method === 'POST') {
-        const data = route.request().postDataJSON();
-        const newSecret = {
-            id: `sec-${Date.now()}`,
-            name: data.name,
-            key: data.key,
-            provider: data.provider,
-            createdAt: new Date().toISOString(),
-            lastUsed: null,
-            value: '********' // masked
-        };
-        secretsStore.push(newSecret);
-
-        await route.fulfill({
-          status: 201,
-          json: newSecret
-        });
-      } else if (method === 'DELETE') {
-        await route.fulfill({ status: 200, json: {} });
-      } else {
-        await route.continue();
-      }
-    });
-
-    await page.route(/\/api\/v1\/secrets\/.+/, async route => {
-        if (route.request().method() === 'DELETE') {
-            const url = route.request().url();
-            const id = url.split('/').pop();
-            const index = secretsStore.findIndex(s => s.id === id);
-            if (index !== -1) {
-                secretsStore.splice(index, 1);
-            }
-            await route.fulfill({ status: 200, json: {} });
-        } else {
-            await route.continue();
-        }
-    });
+    // Login
+    await page.goto('/login');
+    await page.fill('input[name="username"]', username);
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL('/');
 
     await page.goto('/settings');
   });
 
+  test.afterEach(async ({ request }) => {
+    await cleanupUser(request, username);
+  });
+
   test('should manage global settings and secrets', async ({ page }) => {
-    // Global Settings (Log Level)
+    // 1. Global Settings (Log Level & Rate Limit)
     await page.getByRole('tab', { name: 'General' }).click();
-    const logLevelTrigger = page.getByRole('combobox').first();
+
+    // Change Log Level to DEBUG
+    const logLevelTrigger = page.locator('button[role="combobox"]').filter({ hasText: /INFO|WARN|ERROR|DEBUG/ }).first();
     await expect(logLevelTrigger).toBeVisible();
+    // Only click if not already DEBUG (though seed usually defaults to INFO)
     await logLevelTrigger.click();
     await page.getByRole('option', { name: 'DEBUG' }).click();
+
+    // Enable Rate Limit
+    // The switch for "Global Rate Limit"
+    const rateLimitSwitch = page.locator('button[role="switch"]').filter({ hasText: /Global Rate Limit/ }).first();
+    // Assuming label is nearby or aria-label matches.
+    // If we use shadcn Switch inside FormItem, the label is usually separate.
+    // Let's target by text "Global Rate Limit" parent
+    await page.getByLabel('Global Rate Limit').click();
+
     await page.getByRole('button', { name: 'Save Settings' }).click();
+    // Wait for save to complete (button disabled then enabled)
+    await expect(page.getByRole('button', { name: 'Saving...' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Save Settings' })).toBeEnabled();
 
-    // Secrets Management
+    // Verify persistence by reloading
+    await page.reload();
+    await page.getByRole('tab', { name: 'General' }).click();
+    await expect(page.getByRole('combobox').filter({ hasText: 'DEBUG' })).toBeVisible();
+    await expect(page.getByLabel('Global Rate Limit')).toBeChecked();
+
+
+    // 2. Secrets Management
     await page.getByRole('tab', { name: 'Secrets & Keys' }).click();
-
-    // Wait for empty state
-    await expect(page.getByText('No secrets found.')).toBeVisible({ timeout: 10000 });
 
     await page.getByRole('button', { name: 'Add Secret' }).click();
 
@@ -109,19 +68,16 @@ test.describe('Settings & Secrets', () => {
     await page.fill('input[id="key"]', 'TEST_KEY');
     await page.fill('input[id="value"]', 'TEST_VAL');
 
-    // Handle potential dialog animation
-    await page.waitForTimeout(500);
-
     await page.getByRole('button', { name: 'Save Secret' }).click();
     await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
 
     // Verify visibility
-    // Just wait for it to appear
     await expect(page.getByText(secretName)).toBeVisible({ timeout: 10000 });
 
     // Verify deletion
     const secretRow = page.locator('.group').filter({ hasText: secretName });
 
+    // Handle confirm dialog
     page.once('dialog', dialog => dialog.accept());
 
     await secretRow.getByLabel('Delete secret').click();

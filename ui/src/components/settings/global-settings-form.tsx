@@ -32,6 +32,17 @@ const settingsSchema = z.object({
   audit_enabled: z.boolean(),
   dlp_enabled: z.boolean(),
   gc_interval: z.string(),
+  // Rate Limit
+  rate_limit_enabled: z.boolean(),
+  rate_limit_rps: z.coerce.number().min(0.1),
+  rate_limit_burst: z.coerce.number().min(1),
+  // Telemetry
+  telemetry_traces: z.enum(["otlp", "stdout", "none"]),
+  telemetry_metrics: z.enum(["otlp", "stdout", "none"]),
+  telemetry_endpoint: z.string().optional(),
+  // Alerts
+  alerts_enabled: z.boolean(),
+  alerts_webhook: z.string().optional(),
 });
 
 type SettingsValues = z.infer<typeof settingsSchema>;
@@ -53,6 +64,14 @@ export function GlobalSettingsForm() {
       audit_enabled: true,
       dlp_enabled: false,
       gc_interval: "1h",
+      rate_limit_enabled: false,
+      rate_limit_rps: 10,
+      rate_limit_burst: 20,
+      telemetry_traces: "none",
+      telemetry_metrics: "none",
+      telemetry_endpoint: "",
+      alerts_enabled: false,
+      alerts_webhook: "",
     },
   });
 
@@ -61,14 +80,33 @@ export function GlobalSettingsForm() {
       try {
         const settings = await apiClient.getGlobalSettings();
         if (settings) {
+            const mapLogLevel = (l: any) => {
+                if (l === 4 || l === "DEBUG" || l === "LOG_LEVEL_DEBUG") return "DEBUG";
+                if (l === 3 || l === "ERROR" || l === "LOG_LEVEL_ERROR") return "ERROR";
+                if (l === 2 || l === "WARN" || l === "LOG_LEVEL_WARN") return "WARN";
+                return "INFO";
+            };
+            const mapLogFormat = (f: any) => {
+                if (f === 2 || f === "json" || f === "LOG_FORMAT_JSON") return "json";
+                return "text";
+            };
+
             // Map backend enum integers to strings if necessary
             form.reset({
                 mcp_listen_address: settings.mcp_listen_address || ":8080",
-                log_level: settings.log_level === 4 ? "DEBUG" : settings.log_level === 3 ? "ERROR" : settings.log_level === 2 ? "WARN" : "INFO",
-                log_format: settings.log_format === 2 ? "json" : "text",
+                log_level: mapLogLevel(settings.log_level),
+                log_format: mapLogFormat(settings.log_format),
                 audit_enabled: settings.audit?.enabled || false,
                 dlp_enabled: settings.dlp?.enabled || false,
                 gc_interval: settings.gc_settings?.interval || "1h",
+                rate_limit_enabled: settings.rate_limit?.is_enabled || false,
+                rate_limit_rps: settings.rate_limit?.requests_per_second || 10,
+                rate_limit_burst: settings.rate_limit?.burst || 20,
+                telemetry_traces: settings.telemetry?.traces_exporter || "none",
+                telemetry_metrics: settings.telemetry?.metrics_exporter || "none",
+                telemetry_endpoint: settings.telemetry?.otlp_endpoint || "",
+                alerts_enabled: settings.alerts?.enabled || false,
+                alerts_webhook: settings.alerts?.webhook_url || "",
             });
             if (settings.read_only) {
                 setIsReadOnly(true);
@@ -92,7 +130,21 @@ export function GlobalSettingsForm() {
            log_format: data.log_format === "json" ? 2 : 1,
            audit: { enabled: data.audit_enabled },
            dlp: { enabled: data.dlp_enabled },
-           gc_settings: { interval: data.gc_interval }
+           gc_settings: { interval: data.gc_interval },
+           rate_limit: {
+               is_enabled: data.rate_limit_enabled,
+               requests_per_second: data.rate_limit_rps,
+               burst: data.rate_limit_burst
+           },
+           telemetry: {
+               traces_exporter: data.telemetry_traces,
+               metrics_exporter: data.telemetry_metrics,
+               otlp_endpoint: data.telemetry_endpoint
+           },
+           alerts: {
+               enabled: data.alerts_enabled,
+               webhook_url: data.alerts_webhook
+           }
        };
        await apiClient.saveGlobalSettings(payload);
     } catch (e) {
@@ -245,6 +297,170 @@ export function GlobalSettingsForm() {
                     </FormItem>
                 )}
                 />
+
+                {/* Rate Limiting Section */}
+                <div className="space-y-4 pt-4 border-t">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Rate Limiting</h3>
+                    <FormField
+                        control={form.control}
+                        name="rate_limit_enabled"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">Global Rate Limit</FormLabel>
+                                <FormDescription>
+                                Limit the number of requests per second globally.
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={isReadOnly}
+                                />
+                            </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    {form.watch("rate_limit_enabled") && (
+                        <div className="grid grid-cols-2 gap-4 pl-4 border-l-2">
+                            <FormField
+                                control={form.control}
+                                name="rate_limit_rps"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Requests Per Second</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" step="0.1" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="rate_limit_burst"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Burst</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" step="1" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Telemetry Section */}
+                <div className="space-y-4 pt-4 border-t">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Telemetry & Monitoring</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="telemetry_traces"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Traces Exporter</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isReadOnly}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select exporter" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value="otlp">OTLP (OpenTelemetry)</SelectItem>
+                                    <SelectItem value="stdout">Stdout (Console)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="telemetry_metrics"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Metrics Exporter</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isReadOnly}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select exporter" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value="otlp">OTLP (OpenTelemetry)</SelectItem>
+                                    <SelectItem value="stdout">Stdout (Console)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    {(form.watch("telemetry_traces") === "otlp" || form.watch("telemetry_metrics") === "otlp") && (
+                        <FormField
+                            control={form.control}
+                            name="telemetry_endpoint"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>OTLP Endpoint</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="localhost:4317" {...field} />
+                                </FormControl>
+                                <FormDescription>gRPC endpoint for OpenTelemetry Collector</FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    )}
+                </div>
+
+                {/* Alerts Section */}
+                <div className="space-y-4 pt-4 border-t">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Alerting</h3>
+                    <FormField
+                        control={form.control}
+                        name="alerts_enabled"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">System Alerts</FormLabel>
+                                <FormDescription>
+                                Receive notifications for critical errors and health issues.
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={isReadOnly}
+                                />
+                            </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    {form.watch("alerts_enabled") && (
+                        <FormField
+                            control={form.control}
+                            name="alerts_webhook"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Webhook URL</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://hooks.slack.com/..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    )}
+                </div>
             </div>
             </fieldset>
 
