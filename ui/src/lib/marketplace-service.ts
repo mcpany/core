@@ -93,7 +93,7 @@ export const marketplaceService = {
     try {
         const collections = await apiClient.listCollections();
         // Filter for "Official" (e.g. Author is "MCP Any Team")
-        return collections.filter((c: any) => c.author === "MCP Any Team");
+        return collections.filter((c) => c.author === "MCP Any Team");
     } catch (e) {
         console.error("Failed to fetch official collections", e);
         return [];
