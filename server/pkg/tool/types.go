@@ -1648,7 +1648,9 @@ func NewLocalCommandTool(
 		// We use exec.Command directly here.
 		// Use --version because it exits successfully if supported.
 		// If --sandbox is not supported, sed usually exits with error "illegal option"
-		checkCmd := exec.Command(cmd, "--sandbox", "--version")
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version") //nolint:gosec // Trusted command from config
 		if err := checkCmd.Run(); err == nil {
 			t.sandboxArgs = []string{"--sandbox"}
 			logging.GetLogger().Info("Enabled sandbox mode for sed tool", "tool", tool.GetName())
