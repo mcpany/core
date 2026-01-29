@@ -1768,12 +1768,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -2076,12 +2070,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
 						}
 						args = append(args, argStr)
 					} else {
