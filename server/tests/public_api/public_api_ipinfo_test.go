@@ -8,6 +8,8 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -32,9 +34,23 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
+	// --- 1.1 Start Mock IP Info Server (Hermetic) ---
+	mockIPInfo := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Verify request path matches /json/{{ip}}
+		// Since we pass 8.8.8.8, path should be /json/8.8.8.8
+		if r.URL.Path != "/json/8.8.8.8" {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		// Return dummy response matching expectation
+		w.Write([]byte(`{"query": "8.8.8.8", "status": "success", "country": "United States"}`))
+	}))
+	defer mockIPInfo.Close()
+
 	// --- 2. Register IP Info Server with MCPANY ---
 	const ipInfoServiceID = "e2e_ipinfo"
-	ipInfoServiceEndpoint := "http://ip-api.com"
+	ipInfoServiceEndpoint := mockIPInfo.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", ipInfoServiceID, ipInfoServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
