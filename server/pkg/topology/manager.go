@@ -15,6 +15,15 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
+// activityEvent represents a single activity record event.
+type activityEvent struct {
+	SessionID string
+	Meta      map[string]interface{}
+	Latency   time.Duration
+	IsError   bool
+	ServiceID string
+}
+
 // Manager handles topology state tracking.
 type Manager struct {
 	mu              sync.RWMutex
@@ -22,6 +31,9 @@ type Manager struct {
 	trafficHistory  map[int64]*MinuteStats // Unix timestamp (minute) -> stats
 	serviceRegistry serviceregistry.ServiceRegistryInterface
 	toolManager     tool.ManagerInterface
+
+	activityCh chan activityEvent
+	shutdownCh chan struct{}
 }
 
 // SessionStats contains statistics about a topology session.
@@ -74,22 +86,40 @@ type TrafficPoint struct {
 //
 // Returns the result.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
-	return &Manager{
+	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
 		trafficHistory:  make(map[int64]*MinuteStats),
 		serviceRegistry: registry,
 		toolManager:     tm,
+		activityCh:      make(chan activityEvent, 1000), // Buffer of 1000 to handle bursts
+		shutdownCh:      make(chan struct{}),
+	}
+	go m.processLoop()
+	return m
+}
+
+// processLoop handles asynchronous activity recording to avoid locking the request path.
+func (m *Manager) processLoop() {
+	for {
+		select {
+		case <-m.shutdownCh:
+			return
+		case event := <-m.activityCh:
+			m.handleActivity(event)
+		}
 	}
 }
 
-// RecordActivity updates the session activity.
-//
-// sessionID is the sessionID.
-// meta is the meta.
-// serviceID is the serviceID (optional).
-func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string) {
+// handleActivity processes a single activity event.
+func (m *Manager) handleActivity(event activityEvent) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	sessionID := event.SessionID
+	meta := event.Meta
+	latency := event.Latency
+	isError := event.IsError
+	serviceID := event.ServiceID
 
 	if _, exists := m.sessions[sessionID]; !exists {
 		// Convert generic map to string map for proto compatibility
@@ -167,6 +197,40 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 			}
 		}
 	}
+}
+
+// RecordActivity updates the session activity.
+// ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
+// Randomized Selection from Top 5 High-Impact Targets
+//
+// sessionID is the sessionID.
+// meta is the meta.
+// serviceID is the serviceID (optional).
+func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string) {
+	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
+	metaCopy := make(map[string]interface{}, len(meta))
+	for k, v := range meta {
+		metaCopy[k] = v
+	}
+
+	select {
+	case m.activityCh <- activityEvent{
+		SessionID: sessionID,
+		Meta:      metaCopy,
+		Latency:   latency,
+		IsError:   isError,
+		ServiceID: serviceID,
+	}:
+		// Successfully queued
+	default:
+		// Buffer full, drop event to prevent blocking
+		logging.GetLogger().Warn("Topology manager activity buffer full, dropping event")
+	}
+}
+
+// Close stops the background worker.
+func (m *Manager) Close() {
+	close(m.shutdownCh)
 }
 
 // GetStats returns the aggregated stats.
