@@ -48,12 +48,9 @@ func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionR
 	serviceInfo, ok := m.toolManager.GetServiceInfo(serviceID)
 	if !ok {
 		// Service info not found, cannot enforce policies.
-		// Defaulting to allow or maybe log warning?
-		// Since we can't find policy, we assume allow (fail open) or deny (fail closed)?
-		// Standard practice for missing config is usually allow if it's not a critical auth failure.
-		// Given we found the tool but not service info, something is weird.
-		// Proceeding.
-		return next(ctx, req)
+		// We must fail closed to prevent policy bypass.
+		logging.GetLogger().Error("Service info not found for tool execution", "service_id", serviceID, "tool_name", req.ToolName)
+		return nil, fmt.Errorf("service info not found for service %s", serviceID)
 	}
 
 	compiledPolicies := serviceInfo.CompiledPolicies

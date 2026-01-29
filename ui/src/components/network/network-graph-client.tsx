@@ -112,9 +112,16 @@ const defaultEdgeOptions = {
 function Flow() {
   const router = useRouter();
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
-  const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // ⚡ BOLT: Derive selected node from current nodes list using ID to ensure live data updates.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const selectedNode = useMemo(() => {
+    if (!selectedNodeId) return null;
+    return nodes.find((n) => n.id === selectedNodeId) || null;
+  }, [nodes, selectedNodeId]);
   const [isControlsExpanded, setIsControlsExpanded] = useState(true);
 
   // Basic filtering state
@@ -147,7 +154,7 @@ function Flow() {
 
   // Optimization: Memoize onNodeClick to prevent unnecessary re-renders in ReactFlow
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-      setSelectedNode(node as Node<NodeData>);
+      setSelectedNodeId(node.id);
       setIsSheetOpen(true);
   }, []);
 
@@ -379,7 +386,7 @@ function Flow() {
  * @param props.intent - The intent property.
  * @returns The rendered component.
  */
-function MetricCard({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) {
+const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { label: string, value?: string, unit: string, intent?: "neutral" | "danger" | "success" }) => {
     return (
         <Card className={`p-3 bg-card/50 ${intent === 'danger' ? 'border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-900' : ''}`}>
             <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{label}</div>
@@ -388,7 +395,8 @@ function MetricCard({ label, value, unit, intent = "neutral" }: { label: string,
             </div>
         </Card>
     )
-}
+});
+MetricCard.displayName = 'MetricCard';
 
 /**
  * NetworkGraphClient component.

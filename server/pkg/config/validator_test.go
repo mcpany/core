@@ -185,7 +185,7 @@ func TestValidateSecretValue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateSecretValue(tt.secret)
+			err := validateSecretValue(context.Background(), tt.secret)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -421,7 +421,7 @@ func TestValidateSecretMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateSecretMap(tt.secrets)
+			err := validateSecretMap(context.Background(), tt.secrets)
 			if tt.expectErr {
 				require.Error(t, err)
 			} else {
@@ -597,7 +597,7 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateMcpService(tt.service)
+			err := validateMcpService(context.Background(), tt.service)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -797,7 +797,7 @@ func TestValidateMcpService_BundleConnection(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateMcpService(tt.service)
+			err := validateMcpService(context.Background(), tt.service)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
