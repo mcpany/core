@@ -7,8 +7,11 @@ package terraform
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 type ResourceMCPServer struct {
-	Name    string
-	Port    int
+	// Name is the name of the MCP server instance.
+	Name string
+	// Port is the port to run the server on.
+	Port int
+	// Enabled indicates whether the server is active.
 	Enabled bool
 }
 

@@ -14,6 +14,7 @@ import (
 
 // GuardrailsConfig defines patterns to block.
 type GuardrailsConfig struct {
+	// BlockedPhrases is a list of phrases that should trigger a block.
 	BlockedPhrases []string
 }
 

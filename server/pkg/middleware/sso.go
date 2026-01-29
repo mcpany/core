@@ -12,8 +12,10 @@ import (
 
 // SSOConfig defines the SSO configuration.
 type SSOConfig struct {
+	// Enabled indicates if SSO is enabled.
 	Enabled bool
-	IDPURL  string
+	// IDPURL is the URL of the Identity Provider.
+	IDPURL string
 }
 
 // SSOMiddleware creates a new SSO middleware.

@@ -21,6 +21,7 @@ import (
 // MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
 type MockOAuth2Server struct {
 	*httptest.Server
+	// PrivateKey is the RSA private key used for signing tokens.
 	PrivateKey *rsa.PrivateKey
 }
 

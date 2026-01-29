@@ -15,14 +15,19 @@ import (
 
 // ValidateRequest represents the request body for the validation endpoint.
 type ValidateRequest struct {
+	// Content is the configuration content to validate.
 	Content string `json:"content"`
-	Format  string `json:"format"` // "json" or "yaml"
+	// Format is the format of the content ("yaml" or "json").
+	Format string `json:"format"`
 }
 
 // ValidateResponse represents the response body for the validation endpoint.
 type ValidateResponse struct {
-	Valid   bool   `json:"valid"`
-	Error   string `json:"error,omitempty"`
+	// Valid indicates if the configuration is valid.
+	Valid bool `json:"valid"`
+	// Error contains the validation error message if invalid.
+	Error string `json:"error,omitempty"`
+	// Message provides additional information about the validation result.
 	Message string `json:"message,omitempty"`
 }
 

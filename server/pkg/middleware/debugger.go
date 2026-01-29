@@ -18,16 +18,26 @@ import (
 
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
-	ID              string        `json:"id"`
-	Timestamp       time.Time     `json:"timestamp"`
-	Method          string        `json:"method"`
-	Path            string        `json:"path"`
-	Status          int           `json:"status"`
-	Duration        time.Duration `json:"duration"`
-	RequestHeaders  http.Header   `json:"request_headers"`
-	ResponseHeaders http.Header   `json:"response_headers"`
-	RequestBody     string        `json:"request_body,omitempty"`
-	ResponseBody    string        `json:"response_body,omitempty"`
+	// ID is the unique identifier for the debug entry.
+	ID string `json:"id"`
+	// Timestamp is when the request was captured.
+	Timestamp time.Time `json:"timestamp"`
+	// Method is the HTTP method.
+	Method string `json:"method"`
+	// Path is the request URL path.
+	Path string `json:"path"`
+	// Status is the HTTP response status code.
+	Status int `json:"status"`
+	// Duration is how long the request took.
+	Duration time.Duration `json:"duration"`
+	// RequestHeaders contains the request headers.
+	RequestHeaders http.Header `json:"request_headers"`
+	// ResponseHeaders contains the response headers.
+	ResponseHeaders http.Header `json:"response_headers"`
+	// RequestBody is the captured request body content.
+	RequestBody string `json:"request_body,omitempty"`
+	// ResponseBody is the captured response body content.
+	ResponseBody string `json:"response_body,omitempty"`
 }
 
 // Debugger monitors and records traffic for inspection.

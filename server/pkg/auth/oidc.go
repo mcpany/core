@@ -16,10 +16,14 @@ import (
 
 // OIDCConfig holds the configuration for the OIDC provider.
 type OIDCConfig struct {
-	Issuer       string
-	ClientID     string
+	// Issuer is the OIDC issuer URL.
+	Issuer string
+	// ClientID is the OAuth2 client ID.
+	ClientID string
+	// ClientSecret is the OAuth2 client secret.
 	ClientSecret string
-	RedirectURL  string
+	// RedirectURL is the OAuth2 redirect URL.
+	RedirectURL string
 }
 
 // OIDCProvider handles OIDC authentication flow.

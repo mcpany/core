@@ -52,9 +52,12 @@ const (
 
 // ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
-	Name      string `json:"name"`
+	// Name is the name of the tool.
+	Name string `json:"name"`
+	// ServiceID is the ID of the service the tool belongs to.
 	ServiceID string `json:"serviceId"`
-	Count     int64  `json:"count"`
+	// Count is the number of times the tool was used.
+	Count int64 `json:"count"`
 }
 
 // handleDashboardTopTools returns the top used tools based on Prometheus metrics.
@@ -198,10 +201,14 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 
 // ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
-	Name        string  `json:"name"`
-	ServiceID   string  `json:"serviceId"`
+	// Name is the name of the tool.
+	Name string `json:"name"`
+	// ServiceID is the ID of the service the tool belongs to.
+	ServiceID string `json:"serviceId"`
+	// FailureRate is the rate of failure (Percentage 0-100).
 	FailureRate float64 `json:"failureRate"` // Percentage 0-100
-	TotalCalls  int64   `json:"totalCalls"`
+	// TotalCalls is the total number of calls made to the tool.
+	TotalCalls int64 `json:"totalCalls"`
 }
 
 // handleDashboardToolFailures returns the tools with highest failure rates based on Prometheus metrics.
@@ -318,9 +325,13 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 
 // ToolAnalytics represents detailed usage analytics for a tool.
 type ToolAnalytics struct {
-	Name        string  `json:"name"`
-	ServiceID   string  `json:"serviceId"`
-	TotalCalls  int64   `json:"totalCalls"`
+	// Name is the name of the tool.
+	Name string `json:"name"`
+	// ServiceID is the ID of the service the tool belongs to.
+	ServiceID string `json:"serviceId"`
+	// TotalCalls is the total number of calls made to the tool.
+	TotalCalls int64 `json:"totalCalls"`
+	// SuccessRate is the success rate of the tool (0.0 to 100.0).
 	SuccessRate float64 `json:"successRate"`
 }
 

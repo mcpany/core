@@ -13,9 +13,13 @@ import (
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 type MockTool struct {
-	ToolFunc           func() *v1.Tool
-	MCPToolFunc        func() *mcp.Tool
-	ExecuteFunc        func(ctx context.Context, req *ExecutionRequest) (any, error)
+	// ToolFunc mocks the Tool method.
+	ToolFunc func() *v1.Tool
+	// MCPToolFunc mocks the MCPTool method.
+	MCPToolFunc func() *mcp.Tool
+	// ExecuteFunc mocks the Execute method.
+	ExecuteFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
+	// GetCacheConfigFunc mocks the GetCacheConfig method.
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 

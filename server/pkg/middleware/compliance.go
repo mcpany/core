@@ -14,16 +14,22 @@ import (
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
 type JSONRPCError struct {
-	Code    int    `json:"code"`
+	// Code is the error code.
+	Code int `json:"code"`
+	// Message is the error message.
 	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
+	// Data is optional additional error data.
+	Data any `json:"data,omitempty"`
 }
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
 type JSONRPCResponse struct {
-	JSONRPC string        `json:"jsonrpc"`
-	ID      any           `json:"id"`
-	Error   *JSONRPCError `json:"error,omitempty"`
+	// JSONRPC is the protocol version (must be "2.0").
+	JSONRPC string `json:"jsonrpc"`
+	// ID is the request identifier.
+	ID any `json:"id"`
+	// Error is the error object if the request failed.
+	Error *JSONRPCError `json:"error,omitempty"`
 }
 
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
