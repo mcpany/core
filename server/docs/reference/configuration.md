@@ -116,6 +116,14 @@ global_settings:
     log_results: false
 ```
 
+### `ContextOptimizerConfig`
+
+Configuration for the Context Optimizer middleware, which truncates large outputs.
+
+| Field       | Type    | Description                                                                 |
+| ----------- | ------- | --------------------------------------------------------------------------- |
+| `max_chars` | `int32` | The maximum number of characters allowed in the tool output before truncating. |
+
 ### Use Case and Example
 
 ```yaml

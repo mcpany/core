@@ -119,3 +119,4 @@ The caching middleware exposes the following Prometheus metrics on the configure
 - `mcpany_cache_hits`: Counter of cache hits, labeled by `service` and `tool`.
 - `mcpany_cache_misses`: Counter of cache misses, labeled by `service` and `tool`.
 - `mcpany_cache_errors`: Counter of cache errors, labeled by `service` and `tool`.
+- `mcpany_cache_skips`: Counter of cache skips (e.g. when `DeleteCache` action is used), labeled by `service` and `tool`.

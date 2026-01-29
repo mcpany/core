@@ -1,41 +1,28 @@
-# Audit Report - 2025-05-15
+# Audit Report
 
 ## Executive Summary
-A "Truth Reconciliation Audit" was performed to verify alignment between Documentation, Codebase, and Product Roadmap. The audit sampled 10 distinct features (3 Server, 7 UI).
-
-**Overall Health:** 90% Verification Rate.
-- **9/10 Features Verified:** Most features described in documentation are fully implemented and functional.
-- **1/10 Features Identified as Roadmap Debt:** The "Merge Strategy" feature described in documentation is only partially implemented (per-tool overrides exist, but the top-level list merge configuration is missing).
+Perfored a "Truth Reconciliation Audit" on 10 sampled documentation files.
+Overall health is high. Most features are correctly implemented and documented.
+Found 3 instances of Documentation Drift where the code contains features (metrics, config fields) not present in the documentation.
+No missing code features (Roadmap Debt) were found in the sampled set.
 
 ## Verification Matrix
 
-| Document Name | Status | Action Required | Evidence |
+| Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/caching.md` | **Verified** | None | Implemented in `server/pkg/middleware/cache.go` and `server/pkg/config`. Tests exist. |
-| `server/docs/monitoring.md` | **Verified** | None | Implemented in `server/pkg/telemetry`. |
-| `server/docs/feature/merge_strategy.md` | **Roadmap Debt** | **Implement Code** | Top-level `merge_strategy` config missing in `proto/config/v1/config.proto`. Per-tool strategy exists in `ToolDefinition`. |
-| `ui/docs/features/playground.md` | **Verified** | None | Implemented in `ui/src/app/playground`. |
-| `ui/docs/features/services.md` | **Verified** | None | Implemented in `ui/src/app/upstream-services`. |
-| `ui/docs/features/dashboard.md` | **Verified** | Minor Doc Update | Implemented as `AddWidgetSheet` in `ui/src/components/dashboard`. Doc refers to "Gallery". |
-| `ui/docs/features/connection-diagnostics.md` | **Verified** | None | Implemented in `ui/src/app/diagnostics`. |
-| `ui/docs/features/secrets.md` | **Verified** | None | Implemented in `ui/src/app/secrets`. |
-| `ui/docs/features/traces.md` | **Verified** | None | Implemented in `ui/src/app/traces`. |
-| `ui/docs/features/stack-composer.md` | **Verified** | None | Implemented in `ui/src/app/stacks`. |
+| `server/docs/features/caching/README.md` | **Doc Drift** | Update Doc | Missing `mcpany_cache_skips` metric in doc. Code has it. |
+| `server/docs/features/monitoring/README.md` | **Doc Drift** | Update Doc | Missing several metrics (`input_bytes`, `output_bytes`, `tokens`, `in_flight`). Code has them. |
+| `server/docs/reference/configuration.md` | **Doc Drift** | Update Doc | Missing `ContextOptimizerConfig` details (max_chars). Proto has it. |
+| `server/docs/feature/merge_strategy.md` | **Pass** | None | Implementation matches documentation. |
+| `ui/docs/features/playground.md` | **Pass** | None | Implementation matches documentation. |
+| `ui/docs/features/connection-diagnostics.md` | **Pass** | None | Implementation matches documentation. |
+| `ui/docs/features/resources.md` | **Pass** | None | Implementation matches documentation. |
+| `ui/docs/features/secrets.md` | **Pass** | None | Implementation matches documentation. |
+| `ui/docs/features/logs.md` | **Pass** | None | Implementation matches documentation. |
+| `ui/docs/features/stack-composer.md` | **Pass** | None | Implementation matches documentation. |
 
 ## Remediation Log
-*   **Total Issues Found:** 0
-*   **Case A (Doc Drift):** 0
-*   **Case B (Roadmap Debt):** 0
 
-### 1. Merge Strategy (Case B: Roadmap Debt)
-*   **Condition:** Documentation `server/docs/feature/merge_strategy.md` describes a feature to control list merging behavior (extend/replace) via a top-level `merge_strategy` field.
-*   **Finding:** This field is missing from the `McpAnyServerConfig` Protobuf definition.
-*   **Action Plan:** Implement the missing `MergeStrategy` configuration in `proto/config/v1/config.proto` and generating the necessary code. Update config loading logic to respect this setting.
-
-### 2. Dashboard Widget Gallery (Case A: Doc Drift)
-*   **Condition:** Doc refers to "Widget Gallery".
-*   **Finding:** UI component is named `AddWidgetSheet`.
-*   **Action Plan:** Update documentation to align terminology if necessary, or accept "Gallery" as a valid conceptual name. (Low priority).
-
-## Security Scrub
-*   No PII or secrets detected in this report.
+1.  **Update `server/docs/features/caching/README.md`**: Add `mcpany_cache_skips` to Metrics section.
+2.  **Update `server/docs/features/monitoring/README.md`**: Add missing tool metrics.
+3.  **Update `server/docs/reference/configuration.md`**: Add `ContextOptimizerConfig` section.
