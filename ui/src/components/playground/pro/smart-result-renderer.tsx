@@ -12,7 +12,11 @@ import { Code, Table as TableIcon, Copy, Check } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+/**
+ * Props for the SmartResultRenderer component.
+ */
 interface SmartResultRendererProps {
+    /** The result object to render. Can be a JSON string, an object, or an array. */
     result: any;
 }
 

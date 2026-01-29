@@ -8,7 +8,7 @@
   <img src="server/docs/images/logo.png" alt="MCP Any Logo" width="200"/>
 </p>
 
-# MCP Any: Configuration-Driven MCP Server
+# MCP Any: The Universal MCP Adapter
 
 ## 🚀 Elevator Pitch
 
@@ -34,22 +34,15 @@ MCP Any operates as a centralized gateway that adapts upstream services into the
 
 ### High-Level Overview
 
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+### Commands
 
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration]
-        Registry -->|Policy| Auth[Authentication & Policy]
-    end
+**Option 1: Docker (Fastest)**
 
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
+```bash
+docker run -d --rm --name mcpany-server \
+  -p 50050:50050 \
+  ghcr.io/mcpany/server:dev-latest \
+  run --config-path https://raw.githubusercontent.com/mcpany/core/main/server/examples/popular_services/wttr.in/config.yaml
 ```
 
 | Feature | Traditional MCP Server | MCP Any |
