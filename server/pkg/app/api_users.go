@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
@@ -23,6 +24,12 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
+			// Sentinel Security: Only admins can list users
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden: Only admins can list users", http.StatusForbidden)
+				return
+			}
+
 			users, err := store.ListUsers(r.Context())
 			if err != nil {
 				logging.GetLogger().Error("failed to list users", "error", err)
@@ -44,6 +51,12 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
+			// Sentinel Security: Only admins can create users via API
+			if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+				http.Error(w, "Forbidden: Only admins can create users", http.StatusForbidden)
+				return
+			}
+
 			// Limit 1MB
 			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			body, err := io.ReadAll(r.Body)
@@ -115,6 +128,17 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 		id := strings.TrimPrefix(r.URL.Path, "/users/")
 		if id == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
+			return
+		}
+
+		// Sentinel Security: Access Control (IDOR prevention)
+		// Allow if user is admin OR user is accessing their own profile
+		currentUser, ok := auth.UserFromContext(r.Context())
+		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
+		isSelf := ok && currentUser == id
+
+		if !isAdmin && !isSelf {
+			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
 
