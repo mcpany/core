@@ -5,6 +5,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -66,7 +67,9 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", err))
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
-			validationErrors := config.Validate(r.Context(), cfg, config.Server)
+			// We skip secret validation (regex checks) to prevent oracle attacks where users probe secret values.
+			ctx := context.WithValue(r.Context(), config.SkipSecretValidationKey, true)
+			validationErrors := config.Validate(ctx, cfg, config.Server)
 			for _, ve := range validationErrors {
 				errors = append(errors, ve.Error())
 			}
