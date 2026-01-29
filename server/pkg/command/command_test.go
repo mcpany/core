@@ -48,6 +48,10 @@ func canConnectToDocker(t *testing.T) bool {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		return false
 	}
+	// Also skip if running in an environment that likely doesn't support Docker-in-Docker well (e.g. some CI runners)
+	// without explicit configuration.
+	// For now, we rely on SKIP_DOCKER_TESTS env var, but we can also check for specific failures.
+
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		t.Logf("could not create docker client: %v", err)
@@ -58,6 +62,27 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Try a simple container run to verify mounts and overlayfs work
+	ctx := context.Background()
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"echo", "hello"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("docker ping succeeded but container create failed (image might be missing or overlayfs issue): %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	err = cli.ContainerStart(ctx, resp.ID, container.StartOptions{})
+	if err != nil {
+		t.Logf("docker container start failed (likely overlayfs/mount issue): %v", err)
+		return false
+	}
+
 	return true
 }
 
