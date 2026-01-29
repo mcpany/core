@@ -16,14 +16,26 @@ const mockTrace: Trace = {
   trigger: "user",
   rootSpan: {
     id: "span-1",
-    name: "test-tool",
-    type: "tool",
+    name: "Execute Request",
+    type: "core",
     startTime: 1000,
     endTime: 1100,
     status: "success",
     input: { arg: "value" },
     output: { result: "ok" },
-    children: [],
+    children: [
+        {
+            id: "span-2",
+            name: "test-tool",
+            type: "tool",
+            startTime: 1010,
+            endTime: 1090,
+            status: "success",
+            input: { arg: "value" },
+            output: { result: "ok" },
+            children: []
+        }
+    ],
   },
 };
 
@@ -38,9 +50,9 @@ describe("SequenceDiagram", () => {
   it("renders interaction labels", () => {
     render(<SequenceDiagram trace={mockTrace} />);
     expect(screen.getByText("Execute Request")).toBeInTheDocument();
-    expect(screen.getByText("Call test-tool")).toBeInTheDocument();
-    expect(screen.getByText("Execution Result")).toBeInTheDocument();
-    expect(screen.getByText("Response")).toBeInTheDocument();
+    expect(screen.getByText("test-tool")).toBeInTheDocument();
+    expect(screen.getByText("test-tool Result")).toBeInTheDocument();
+    expect(screen.getByText("Execute Request Result")).toBeInTheDocument();
   });
 
   it("opens dialog on interaction click", () => {
@@ -53,7 +65,8 @@ describe("SequenceDiagram", () => {
     fireEvent.click(requestLabel);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Client requests tool execution")).toBeInTheDocument();
+    // The description is dynamic: "Request to Execute Request"
+    expect(screen.getByText("Request to Execute Request")).toBeInTheDocument();
     // Check payload
     expect(screen.getByText(/value/)).toBeInTheDocument();
   });

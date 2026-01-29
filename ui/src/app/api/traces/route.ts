@@ -66,52 +66,98 @@ export async function GET(request: Request) {
         try {
             output = JSON.parse(entry.response_body);
         } catch {
-            output = { raw: entry.response_body };
-        }
-
-        let errorMessage: string | undefined;
-        if (entry.status >= 400 && output) {
-            if (typeof output.error === 'string') {
-                errorMessage = output.error;
-            } else if (output.error && typeof output.error.message === 'string') {
-                errorMessage = output.error.message;
-            } else if (typeof output.message === 'string') {
-                errorMessage = output.message;
-            } else if (typeof output.detail === 'string') {
-                errorMessage = output.detail;
-            } else if (output.raw && typeof output.raw === 'string') {
-                // Truncate raw body if it's too long
-                errorMessage = output.raw.length > 200 ? output.raw.substring(0, 200) + '...' : output.raw;
+            // Try parsing SSE (event: message\ndata: {...})
+            const sseMatch = entry.response_body.match(/data: ({.*})/);
+            if (sseMatch && sseMatch[1]) {
+                try {
+                    output = JSON.parse(sseMatch[1]);
+                } catch {
+                    output = { raw: entry.response_body };
+                }
+            } else {
+                output = { raw: entry.response_body };
             }
         }
 
-        const span: Span = {
+        let errorMessage: string | undefined;
+        if (entry.status >= 400) {
+            // Check for HTTP error
+             errorMessage = `HTTP ${entry.status}`;
+        }
+
+        // Check for JSON-RPC error in output
+        if (output && output.error) {
+             if (typeof output.error === 'string') {
+                errorMessage = output.error;
+            } else if (output.error && typeof output.error.message === 'string') {
+                errorMessage = output.error.message;
+            }
+        } else if (output && typeof output.message === 'string' && entry.status >= 400) {
+             // Fallback for non-standard error responses
+             errorMessage = output.message;
+        }
+
+        // Detect JSON-RPC tool call
+        let isToolCall = false;
+        let toolName = "";
+        // Check for standard JSON-RPC request format
+        if (input && typeof input === 'object' && input.method === "tools/call" && input.params && typeof input.params === 'object' && input.params.name) {
+             isToolCall = true;
+             toolName = input.params.name;
+        }
+
+        // Base root span
+        const rootSpan: Span = {
             id: entry.id,
             name: `${entry.method} ${entry.path}`,
-            type: 'tool', // Assume tool call for now
+            type: 'core',
             startTime: startTime,
             endTime: startTime + durationMs,
-            status: entry.status >= 400 ? 'error' : 'success',
+            status: (entry.status >= 400 || errorMessage) ? 'error' : 'success',
             input: input,
             output: output,
             errorMessage: errorMessage,
             children: [],
-            serviceName: 'backend'
+            serviceName: 'mcp-any'
         };
+
+        if (isToolCall) {
+            rootSpan.name = "Execute Request";
+
+            // Calculate timing for the child span (tool execution)
+            // We assume a small overhead for the core processing
+            const overhead = Math.min(durationMs * 0.1, 20); // 10% or 20ms
+            const toolStartTime = startTime + (overhead / 2);
+            const toolEndTime = startTime + durationMs - (overhead / 2);
+
+            const toolSpan: Span = {
+                id: `${entry.id}-tool`,
+                name: toolName,
+                type: 'tool',
+                startTime: toolStartTime,
+                endTime: toolEndTime,
+                status: rootSpan.status,
+                input: input?.params?.arguments || {},
+                output: output?.result || output, // Use result if available (standard MCP), else raw output
+                errorMessage: errorMessage,
+                children: [],
+                serviceName: 'upstream'
+            };
+
+            rootSpan.children = [toolSpan];
+        }
 
         return {
             id: entry.id,
-            rootSpan: span,
+            rootSpan: rootSpan,
             timestamp: entry.timestamp,
             totalDuration: durationMs,
-            status: span.status,
+            status: rootSpan.status,
             trigger: 'user'
         };
     });
 
     // Sort by timestamp descending
-    // Optimization: Compare strings directly instead of creating Date objects.
-    // This is ~20x faster (1ms vs 24ms for 10k items).
     traces.sort((a, b) => (a.timestamp > b.timestamp ? -1 : (a.timestamp < b.timestamp ? 1 : 0)));
 
     return NextResponse.json(traces);
