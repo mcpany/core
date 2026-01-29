@@ -189,6 +189,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     // Give widgets extra time to render after data fetch
     await page.waitForTimeout(5000);
     await expect(page.locator('body')).toBeVisible();
+
+    // Check for specific widget content before screenshot
+    try {
+      await expect(page.locator('.recharts-responsive-container').first()).toBeVisible({ timeout: 5000 });
+    } catch {
+      console.log('Chart container not ready, proceeding anyway');
+    }
+
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
   });
 
@@ -457,6 +465,14 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
       await page.goto('/network');
       await page.waitForTimeout(2000); // Graph rendering
+
+      // Wait for graph canvas or nodes
+      try {
+        await expect(page.locator('canvas').or(page.locator('.react-flow__node'))).toBeVisible({ timeout: 5000 });
+      } catch {
+        console.log('Network graph nodes/canvas not detected, proceeding');
+      }
+
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_graph.png'), fullPage: true });
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network.png'), fullPage: true });
   });
