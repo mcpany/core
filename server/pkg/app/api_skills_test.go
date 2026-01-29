@@ -16,6 +16,7 @@ import (
 )
 
 func TestHandleUploadSkillAsset_Comprehensive(t *testing.T) {
+	// Setup a temporary directory for skills
 	tmpDir := t.TempDir()
 	sm, err := skill.NewManager(tmpDir)
 	require.NoError(t, err)
