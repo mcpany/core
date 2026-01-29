@@ -44,6 +44,22 @@ Connects to WebSocket servers.
 Connects to services via WebRTC data channels.
 -   **Features**: Low-latency peer-to-peer communication.
 
+### 9. Filesystem (`filesystem_service`)
+Exposes a filesystem as MCP resources and tools.
+-   **Features**: Read/Write files, List directories.
+-   **Backends**: Local OS, S3, GCS, SFTP, Zip, TmpFS.
+-   **Security**: Configure allowed/denied paths and read-only mode.
+
+### 10. SQL (`sql_service`)
+Connects to SQL databases to expose them as tools.
+-   **Drivers**: PostgreSQL, MySQL, SQLite.
+-   **Features**: Execute safe queries defined in configuration.
+
+### 11. Vector Database (`vector_service`)
+Connects to Vector Databases for semantic search.
+-   **Providers**: Pinecone, Milvus.
+-   **Features**: Query, Upsert, Delete vectors.
+
 ## Usage Examples
 
 ### Pain Point: "I want to use a Python script as a tool"
