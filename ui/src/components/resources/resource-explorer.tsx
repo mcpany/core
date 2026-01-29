@@ -109,7 +109,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         setContentLoading(true);
         try {
             const res = await apiClient.readResource(uri);
-            if (res.contents && res.contents.length > 0) {
+            if (res?.contents && res.contents.length > 0) {
                 setResourceContent(res.contents[0]);
             } else {
                 setResourceContent(null);
