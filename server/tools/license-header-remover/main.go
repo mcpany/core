@@ -1,4 +1,3 @@
-// Package main implements a tool to remove license headers.
 package main
 
 import (

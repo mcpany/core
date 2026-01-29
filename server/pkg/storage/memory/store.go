@@ -1,7 +1,5 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 // Package memory provides an in-memory storage implementation for testing.
+
 package memory
 
 import (

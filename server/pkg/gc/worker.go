@@ -1,8 +1,6 @@
-// Copyright 2025 Author(s) of MCP Any
-// SPDX-License-Identifier: Apache-2.0
-
 // Package gc provides a background worker for global garbage collection of
 // temporary files and directories.
+
 package gc
 
 import (

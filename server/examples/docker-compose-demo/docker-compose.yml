@@ -1,6 +1,3 @@
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 # This Docker Compose file provides an example setup for running the MCP Any server
 # along with a sample upstream service (http-echo-server) to demonstrate how they
 # can be connected within a Docker environment.

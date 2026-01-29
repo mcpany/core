@@ -1,6 +1,3 @@
-# Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
 # This is an example of an upstream service configuration that is secured
 # with OAuth2. The server will require a valid JWT from the specified
 # issuer to be presented in the Authorization header.
