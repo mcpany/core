@@ -125,6 +125,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// main starts the weather server.
 func main() {
 	if err := run(os.Args, make(chan os.Signal, 1), nil); err != nil {
 		log.Fatalf("Error: %v", err)
