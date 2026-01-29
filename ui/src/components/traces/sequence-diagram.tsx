@@ -34,6 +34,13 @@ interface Interaction {
   description?: string;
 }
 
+/**
+ * Renders a sequence diagram visualization for a specific trace.
+ *
+ * @param {SequenceDiagramProps} props - The component properties.
+ * @param {Trace} props.trace - The trace data to visualize. Must contain a valid root span.
+ * @returns {JSX.Element} The rendered sequence diagram component.
+ */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
 
