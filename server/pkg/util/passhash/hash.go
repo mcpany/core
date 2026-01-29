@@ -12,12 +12,10 @@ import (
 
 // Password hashes a password using bcrypt.
 //
-// Parameters:
-//   - password: The password to hash.
+// password is the password.
 //
-// Returns:
-//   - string: The hashed password.
-//   - error: An error if the hashing fails.
+// Returns the result.
+// Returns an error if the operation fails.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -30,12 +28,10 @@ func Password(password string) (string, error) {
 
 // CheckPassword checks if a password matches a hash.
 //
-// Parameters:
-//   - password: The password to check.
-//   - hash: The hash to compare against.
+// password is the password.
+// hash is the hash.
 //
-// Returns:
-//   - bool: True if the password matches the hash, false otherwise.
+// Returns true if successful.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

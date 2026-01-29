@@ -109,12 +109,6 @@ func init() {
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
-//
-// Parameters:
-//   - input: The JSON input to redact.
-//
-// Returns:
-//   - []byte: The redacted JSON output.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -137,12 +131,6 @@ func RedactJSON(input []byte) []byte {
 // If no sensitive keys are found, it returns the original map (zero allocation).
 // If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
 // Note: This aligns with RedactJSON behavior which returns original slice if clean.
-//
-// Parameters:
-//   - m: The map to redact.
-//
-// Returns:
-//   - map[string]interface{}: The potentially redacted map.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -251,11 +239,9 @@ var sensitiveKeys = []string{
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
-// Parameters:
-//   - key: The key name to check.
+// key is the key.
 //
-// Returns:
-//   - bool: True if the key is considered sensitive, false otherwise.
+// Returns true if successful.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -485,12 +471,6 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
-//
-// Parameters:
-//   - dsn: The DSN string to redact.
-//
-// Returns:
-//   - string: The redacted DSN string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -588,13 +568,6 @@ func RedactDSN(dsn string) string {
 }
 
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
-//
-// Parameters:
-//   - text: The text to redact.
-//   - secrets: A list of secret values to redact from the text.
-//
-// Returns:
-//   - string: The redacted text.
 func RedactSecrets(text string, secrets []string) string {
 	if text == "" || len(secrets) == 0 {
 		return text

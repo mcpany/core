@@ -261,15 +261,6 @@ type Application struct {
 	// MetricsGatherer is the interface for gathering metrics.
 	// Defaults to prometheus.DefaultGatherer.
 	MetricsGatherer prometheus.Gatherer
-
-	// statsCache for dashboard
-	statsCacheMu sync.RWMutex
-	statsCache   map[string]statsCacheEntry
-}
-
-type statsCacheEntry struct {
-	Data      any
-	ExpiresAt time.Time
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -292,7 +283,6 @@ func NewApplication() *Application {
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
 		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
 	}
 }
 
@@ -2129,7 +2119,7 @@ func (a *Application) runServerMode(
 	}
 
 	// Wait for servers to be ready
-	timeout := time.NewTimer(30 * time.Second) // Reasonable timeout for binding ports, increased for slow CI
+	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
 	defer timeout.Stop()
 
 	for i := 0; i < expectedReady; i++ {

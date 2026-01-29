@@ -312,10 +312,6 @@ func NewManagedProcess(t *testing.T, label, command string, args []string, env [
 	}
 	cmd.Stdout = &mp.stdout
 	cmd.Stderr = &mp.stderr
-
-	// Ensure process is stopped when test ends to avoid race conditions on t.Logf
-	t.Cleanup(mp.Stop)
-
 	return mp
 }
 
@@ -342,13 +338,10 @@ func (mp *ManagedProcess) Start() error {
 	mp.wg.Add(1)
 	go func() {
 		defer mp.wg.Done()
-		// Ensure we close waitDone AFTER all logging is complete to prevent data races
-		// where the test proceeds and finishes (invalidating 't') while we are still logging.
-		defer close(mp.waitDone)
-
 		err := mp.cmd.Wait()
+		close(mp.waitDone)
 		// Log output regardless of error, can be useful for debugging successful exits too
-		// mp.t.Logf("[%s] Process %s finished. Stdout:\n%s\nStderr:\n%s", mp.label, mp.cmd.Path, mp.stdout.String(), mp.stderr.String())
+		mp.t.Logf("[%s] Process %s finished. Stdout:\n%s\nStderr:\n%s", mp.label, mp.cmd.Path, mp.stdout.String(), mp.stderr.String())
 		if err != nil {
 			errStr := err.Error()
 			switch {
@@ -807,9 +800,7 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	t.Setenv("MCPANY_DB_PATH", dbPath)
 
 	appRunner := app.NewApplication()
-	runErrCh := make(chan error, 1)
 	go func() {
-		defer cancel() // Ensure WaitForStartup doesn't hang if Run returns
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              afero.NewOsFs(),
@@ -821,29 +812,14 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 			ShutdownTimeout: 5 * time.Second,
 		}
 		err := appRunner.Run(opts)
-		if err != nil {
-			if ctx.Err() == nil {
-				t.Logf("Application run error: %v", err)
-			}
-			runErrCh <- err
+		if err != nil && ctx.Err() == nil {
+			t.Logf("Application run error: %v", err)
 		}
-		close(runErrCh)
 	}()
 
-	// Wait for startup or failure
-	startupErrCh := make(chan error, 1)
-	go func() {
-		startupErrCh <- appRunner.WaitForStartup(ctx)
-	}()
-
-	select {
-	case err := <-startupErrCh:
-		require.NoError(t, err, "Failed to wait for application startup")
-	case err := <-runErrCh:
-		require.NoError(t, err, "Application run failed prematurely")
-	case <-time.After(McpAnyServerStartupTimeout):
-		require.Fail(t, "Startup timed out")
-	}
+	// Wait for startup which ensures ports are bound
+	err = appRunner.WaitForStartup(ctx)
+	require.NoError(t, err, "Failed to wait for application startup")
 
 	// Retrieve dynamically allocated ports
 	jsonrpcPort := int(appRunner.BoundHTTPPort.Load())

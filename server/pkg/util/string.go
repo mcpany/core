@@ -8,13 +8,6 @@ import "unicode/utf8"
 // LevenshteinDistance calculates the Levenshtein distance between two strings.
 // It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
 // required to change one string into the other.
-//
-// Parameters:
-//   - s1: The first string.
-//   - s2: The second string.
-//
-// Returns:
-//   - int: The Levenshtein distance.
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
 	// The maximum possible distance is max(len(s1), len(s2)).
@@ -24,14 +17,6 @@ func LevenshteinDistance(s1, s2 string) int {
 
 // LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
 // If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
-//
-// Parameters:
-//   - s1: The first string.
-//   - s2: The second string.
-//   - limit: The maximum distance to compute.
-//
-// Returns:
-//   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.

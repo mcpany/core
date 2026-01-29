@@ -127,14 +127,19 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 
 	// 3. Merge Profiles into Global Settings
 	if len(s.profileDefinitions) > 0 {
-		// ⚡ Bolt Optimization: Append directly to gs.ProfileDefinitions using accessors
-		// This avoids creating a temporary object and the overhead of proto.Merge.
-		// Randomized Selection from Top 5 High-Impact Targets
-		current := gs.GetProfileDefinitions()
+		profiles := make([]*configv1.ProfileDefinition, 0, len(s.profileDefinitions))
 		for _, p := range s.profileDefinitions {
-			current = append(current, proto.Clone(p).(*configv1.ProfileDefinition))
+			profiles = append(profiles, proto.Clone(p).(*configv1.ProfileDefinition))
 		}
-		gs.SetProfileDefinitions(current)
+
+		// Create a temporary GlobalSettings object containing just the profiles
+		profilesGS := configv1.GlobalSettings_builder{
+			ProfileDefinitions: profiles,
+		}.Build()
+
+		// Merge it into the main GlobalSettings object
+		// proto.Merge appends repeated fields, which matches the original logic
+		proto.Merge(gs, profilesGS)
 	}
 
 	// 4. Build final ServerConfig

@@ -56,33 +56,13 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
     const lastTopologyText = useRef<string>('');
     const lastGraph = useRef<Graph | null>(null);
-    const lastEtag = useRef<string | null>(null);
 
     const fetchTopology = useCallback(async () => {
         try {
             // Handle relative URL for fetch in jsdom/test env
             const url = typeof window !== 'undefined' ? '/api/v1/topology' : 'http://localhost/api/v1/topology';
-
-            // ⚡ Bolt: Optimize Polling with ETag (If-None-Match).
-            // Randomized Selection from Top 5 High-Impact Targets.
-            const headers: HeadersInit = {};
-            if (lastEtag.current) {
-                headers['If-None-Match'] = lastEtag.current;
-            }
-
-            const res = await fetch(url, { headers });
-
-            if (res.status === 304 && lastGraph.current) {
-                // Not modified, use cached graph
-                return;
-            }
-
+            const res = await fetch(url);
             if (!res.ok) return;
-
-            const etag = res.headers.get('ETag');
-            if (etag) {
-                lastEtag.current = etag;
-            }
 
             // ⚡ Bolt Optimization: Use text comparison to avoid expensive JSON operations.
             // res.text() + string comparison is much faster than res.json() + JSON.stringify().

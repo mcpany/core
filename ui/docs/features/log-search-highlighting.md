@@ -12,3 +12,7 @@ When filtering logs using the search bar, any matching text within the log messa
 2.  Enter a term in the **Search** input field (e.g., "error", "timeout", "http").
 3.  The log stream will automatically filter to show only matching logs.
 4.  Matches within the visible logs will be highlighted.
+
+## Screenshot
+
+![Log Search Highlighting](../../../.audit/ui/2026-01-23/log_search_highlighting.png)

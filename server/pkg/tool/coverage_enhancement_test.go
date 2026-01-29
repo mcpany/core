@@ -155,7 +155,7 @@ func TestLocalCommandTool_ShellInjection(t *testing.T) {
 		},
 		{
 			name:    "Safe Shell Command",
-			inputs:  `{"script": "whoami"}`,
+			inputs:  `{"script": "echo hi"}`,
 			wantErr: "",
 		},
 	}

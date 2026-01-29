@@ -36,20 +36,6 @@ export default function ProfilesPage() {
               const type = (allTags.find((t: string) => ["dev", "prod", "debug"].includes(t)) as "dev" | "prod" | "debug") || "dev";
               const additionalTags = allTags.filter((t: string) => !["dev", "prod", "debug"].includes(t));
 
-              const disabledTools: Record<string, string[]> = {};
-              if (p.serviceConfig) {
-                  Object.entries(p.serviceConfig).forEach(([svcName, cfg]: [string, any]) => {
-                      if (cfg.tools) {
-                          const disabled = Object.entries(cfg.tools)
-                              .filter(([_, tCfg]: [string, any]) => tCfg.disabled)
-                              .map(([tName, _]) => tName);
-                          if (disabled.length > 0) {
-                              disabledTools[svcName] = disabled;
-                          }
-                      }
-                  });
-              }
-
               return {
                   id: p.name, // Use name as ID
                   name: p.name,
@@ -57,8 +43,7 @@ export default function ProfilesPage() {
                   services: p.serviceConfig ? Object.keys(p.serviceConfig) : [],
                   type: type,
                   additionalTags: additionalTags,
-                  secrets: p.secrets,
-                  disabledTools: disabledTools
+                  secrets: p.secrets
               };
           });
           setProfiles(mapped);
