@@ -60,6 +60,10 @@ func TestIsAllowedPath(t *testing.T) {
 
 			err := IsAllowedPath(tt.path)
 			if (err != nil) != tt.wantErr {
+				// Debug logging for failure
+				if err != nil {
+					t.Logf("Error details: %v", err)
+				}
 				t.Errorf("IsAllowedPath(%q) allowList=%q error = %v, wantErr %v", tt.path, tt.allowList, err, tt.wantErr)
 			}
 		})

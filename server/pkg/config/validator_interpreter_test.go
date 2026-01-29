@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,6 +19,10 @@ func TestValidatorInterpreterDetection(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "mcp-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
+
+	// Allow the temp dir for execution validation
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
 
 	// Helper to create a dummy executable
 	createDummyCmd := func(name string) string {

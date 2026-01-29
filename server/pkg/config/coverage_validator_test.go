@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -52,6 +53,9 @@ func TestValidateSchema_Coverage(t *testing.T) {
 func TestValidateCommandExists_Coverage(t *testing.T) {
 	// Create a temporary directory and file
 	tmpDir := t.TempDir()
+	validation.SetAllowedPaths([]string{tmpDir})
+	defer validation.SetAllowedPaths(nil)
+
 	tmpFile := filepath.Join(tmpDir, "test-exec")
 	os.WriteFile(tmpFile, []byte("#!/bin/sh\nexit 0"), 0755)
 
