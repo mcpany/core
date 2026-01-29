@@ -50,9 +50,11 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			fmtStr = format[0]
 		}
 
+		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
+		// Randomized Selection from Top 5 High-Impact Targets
 		opts := &slog.HandlerOptions{
 			Level:     level,
-			AddSource: true,
+			AddSource: level == slog.LevelDebug,
 			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 				if util.IsSensitiveKey(a.Key) {
 					return slog.String(a.Key, "[REDACTED]")
@@ -94,7 +96,8 @@ func GetLogger() *slog.Logger {
 	once.Do(func() {
 		defaultLogger.Store(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 			Level:     slog.LevelInfo,
-			AddSource: true,
+			// ⚡ BOLT: Defaults to INFO, so AddSource is false by default.
+			AddSource: false,
 		})))
 	})
 	return defaultLogger.Load()
