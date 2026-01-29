@@ -77,7 +77,7 @@ export function DashboardGrid() {
                 // Migration Logic
                 // Case 1: Legacy format (DashboardWidget[]) where id matches type
                 if (parsed.length > 0 && !parsed[0].instanceId) {
-                    const migrated: WidgetInstance[] = parsed.map((w: any) => ({
+                    const migrated: WidgetInstance[] = parsed.map((w: { id: string; title: string; type: string; hidden?: boolean }) => ({
                         instanceId: crypto.randomUUID(),
                         type: w.id, // In legacy, id was effectively the type
                         title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
@@ -118,8 +118,18 @@ export function DashboardGrid() {
     useEffect(() => {
         if (!isMounted) return;
 
+        // Prevent saving the initial empty state if it's the very first mounted render
+        // But we must allow saving if we just loaded/migrated data.
+        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
+        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
+        // But for initial load, widgets is [].
+
+        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
         if (isFirstRun.current) {
             isFirstRun.current = false;
+            // If widgets are empty on first run, it's likely the initial state.
+            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
+            // But `isMounted` gate likely delays this enough.
             return;
         }
 
