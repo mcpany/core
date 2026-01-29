@@ -21,8 +21,6 @@ export interface Collection {
   authentication?: Authentication | undefined;
   services: UpstreamServiceConfig[];
   skills: string[];
-  author: string;
-  tags: string[];
 }
 
 function createBaseCollection(): Collection {
@@ -35,8 +33,6 @@ function createBaseCollection(): Collection {
     authentication: undefined,
     services: [],
     skills: [],
-    author: "",
-    tags: [],
   };
 }
 
@@ -65,12 +61,6 @@ export const Collection: MessageFns<Collection> = {
     }
     for (const v of message.skills) {
       writer.uint32(66).string(v!);
-    }
-    if (message.author !== "") {
-      writer.uint32(74).string(message.author);
-    }
-    for (const v of message.tags) {
-      writer.uint32(82).string(v!);
     }
     return writer;
   },
@@ -146,22 +136,6 @@ export const Collection: MessageFns<Collection> = {
           message.skills.push(reader.string());
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.author = reader.string();
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.tags.push(reader.string());
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -183,8 +157,6 @@ export const Collection: MessageFns<Collection> = {
         ? object.services.map((e: any) => UpstreamServiceConfig.fromJSON(e))
         : [],
       skills: globalThis.Array.isArray(object?.skills) ? object.skills.map((e: any) => globalThis.String(e)) : [],
-      author: isSet(object.author) ? globalThis.String(object.author) : "",
-      tags: globalThis.Array.isArray(object?.tags) ? object.tags.map((e: any) => globalThis.String(e)) : [],
     };
   },
 
@@ -214,12 +186,6 @@ export const Collection: MessageFns<Collection> = {
     if (message.skills?.length) {
       obj.skills = message.skills;
     }
-    if (message.author !== "") {
-      obj.author = message.author;
-    }
-    if (message.tags?.length) {
-      obj.tags = message.tags;
-    }
     return obj;
   },
 
@@ -238,8 +204,6 @@ export const Collection: MessageFns<Collection> = {
       : undefined;
     message.services = object.services?.map((e) => UpstreamServiceConfig.fromPartial(e)) || [];
     message.skills = object.skills?.map((e) => e) || [];
-    message.author = object.author ?? "";
-    message.tags = object.tags?.map((e) => e) || [];
     return message;
   },
 };

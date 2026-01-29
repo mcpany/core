@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { UpstreamServiceConfig } from "@/lib/client";
 
 /**
  * A collection of services, typically organized by theme or use case.
@@ -19,8 +19,6 @@ export interface ServiceCollection {
   version: string;
   /** The list of service configurations included in the collection. */
   services: UpstreamServiceConfig[];
-  /** Tags for categorization. */
-  tags?: string[];
 }
 
 /**
@@ -66,6 +64,54 @@ export interface CommunityServer {
     tags: string[];
 }
 
+// Mock Data for "Official" Collections until we have the repo up
+const MOCK_OFFICIAL_COLLECTIONS: ServiceCollection[] = [
+  {
+    name: "Data Engineering Stack",
+    description: "Essential tools for data pipelines (PostgreSQL, Filesystem, Python)",
+    author: "MCP Any Team",
+    version: "1.0.0",
+    services: [
+        {
+            id: "sqlite-db",
+            name: "SQLite Database",
+            version: "1.0.0",
+            commandLineService: {
+                command: "npx -y @modelcontextprotocol/server-sqlite",
+                env: { "DB_PATH": { plainText: "./data.db" } }, // placeholders
+                workingDirectory: "",
+                tools: [],
+                resources: [],
+                prompts: [],
+                calls: {},
+                communicationProtocol: 0,
+                local: false
+            },
+            disable: false,
+            sanitizedName: "sqlite-db",
+            priority: 0,
+            loadBalancingStrategy: 0,
+            callPolicies: [],
+            preCallHooks: [],
+            postCallHooks: [],
+            prompts: [],
+
+            autoDiscoverTool: false,
+            configError: "",
+            tags: []
+        }
+
+    ]
+  },
+  {
+    name: "Web Dev Assistant",
+    description: "GitHub, Browser, and Terminal tools for web development.",
+    author: "MCP Any Team",
+    version: "1.0.0",
+    services: []
+  }
+];
+
 const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
   {
     id: "mcpmarket",
@@ -92,14 +138,8 @@ export const marketplaceService = {
    * @returns A promise that resolves to a list of service collections.
    */
   fetchOfficialCollections: async (): Promise<ServiceCollection[]> => {
-    try {
-        const collections = await apiClient.listCollections();
-        // Filter for Official based on author or tag
-        return collections.filter((c: any) => c.author === "MCP Any Team" || (c.tags && c.tags.includes('official')));
-    } catch (e) {
-        console.error("Failed to fetch official collections", e);
-        return [];
-    }
+    // In future: fetch('https://raw.githubusercontent.com/mcpany/marketplace/main/collections.json')
+    return new Promise(resolve => setTimeout(() => resolve(MOCK_OFFICIAL_COLLECTIONS), 500));
   },
 
   /**

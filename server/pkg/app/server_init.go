@@ -22,13 +22,7 @@ import (
 
 func (a *Application) initializeDatabase(ctx context.Context, store config.Store) error {
 	log := logging.GetLogger()
-
-	// Seed Official Collections (Idempotent)
-	if err := a.seedOfficialCollections(ctx, store); err != nil {
-		log.Error("Failed to seed official collections", "error", err)
-	}
-
-	// Check if already initialized (for default services/settings)
+	// Check if already initialized
 	s, ok := store.(storage.Storage)
 	if !ok {
 		// Just Load using Store interface
@@ -187,70 +181,5 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 
 	logging.GetLogger().Info("Default admin user created successfully.", "username", username)
-	return nil
-}
-
-func (a *Application) seedOfficialCollections(ctx context.Context, store config.Store) error {
-	s, ok := store.(storage.Storage)
-	if !ok {
-		return nil
-	}
-
-	officialCollections := []*configv1.Collection{
-		configv1.Collection_builder{
-			Name:        proto.String("Data Engineering Stack"),
-			Description: proto.String("Essential tools for data pipelines (PostgreSQL, Filesystem, Python)"),
-			Version:     proto.String("1.0.0"),
-			Author:      proto.String("MCP Any Team"),
-			Tags:        []string{"data", "engineering", "official"},
-			Services: []*configv1.UpstreamServiceConfig{
-				configv1.UpstreamServiceConfig_builder{
-					Id:   proto.String("sqlite-db"),
-					Name: proto.String("SQLite Database"),
-					CommandLineService: configv1.CommandLineUpstreamService_builder{
-						Command: proto.String("npx -y @modelcontextprotocol/server-sqlite"),
-						Env: map[string]*configv1.SecretValue{
-							"DB_PATH": {
-								Value: &configv1.SecretValue_PlainText{PlainText: "./data.db"},
-							},
-						},
-					}.Build(),
-				}.Build(),
-			},
-		}.Build(),
-		configv1.Collection_builder{
-			Name:        proto.String("Web Dev Assistant"),
-			Description: proto.String("GitHub, Browser, and Terminal tools for web development."),
-			Version:     proto.String("1.0.0"),
-			Author:      proto.String("MCP Any Team"),
-			Tags:        []string{"web", "dev", "official"},
-			Services: []*configv1.UpstreamServiceConfig{
-				configv1.UpstreamServiceConfig_builder{
-					Id:   proto.String("weather-demo"),
-					Name: proto.String("Weather Service"),
-					CommandLineService: configv1.CommandLineUpstreamService_builder{
-						Command: proto.String("echo"),
-						Tools: []*configv1.ToolDefinition{
-							{
-								Name:        proto.String("get_weather"),
-								Description: proto.String("Get current weather"),
-							},
-						},
-					}.Build(),
-				}.Build(),
-			},
-		}.Build(),
-	}
-
-	for _, col := range officialCollections {
-		existing, err := s.GetServiceCollection(ctx, col.GetName())
-		if err == nil && existing != nil {
-			continue
-		}
-		if err := s.SaveServiceCollection(ctx, col); err != nil {
-			return err
-		}
-		logging.GetLogger().Info("Seeded official collection", "name", col.GetName())
-	}
 	return nil
 }

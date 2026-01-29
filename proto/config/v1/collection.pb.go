@@ -35,8 +35,6 @@ type Collection struct {
 	Authentication *Authentication          `protobuf:"bytes,6,opt,name=authentication" json:"authentication,omitempty"`
 	Services       []*UpstreamServiceConfig `protobuf:"bytes,7,rep,name=services" json:"services,omitempty"`
 	Skills         []string                 `protobuf:"bytes,8,rep,name=skills" json:"skills,omitempty"`
-	Author         *string                  `protobuf:"bytes,9,opt,name=author" json:"author,omitempty"`
-	Tags           []string                 `protobuf:"bytes,10,rep,name=tags" json:"tags,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -122,20 +120,6 @@ func (x *Collection) GetSkills() []string {
 	return nil
 }
 
-func (x *Collection) GetAuthor() string {
-	if x != nil && x.Author != nil {
-		return *x.Author
-	}
-	return ""
-}
-
-func (x *Collection) GetTags() []string {
-	if x != nil {
-		return x.Tags
-	}
-	return nil
-}
-
 func (x *Collection) SetName(v string) {
 	x.Name = &v
 }
@@ -166,14 +150,6 @@ func (x *Collection) SetServices(v []*UpstreamServiceConfig) {
 
 func (x *Collection) SetSkills(v []string) {
 	x.Skills = v
-}
-
-func (x *Collection) SetAuthor(v string) {
-	x.Author = &v
-}
-
-func (x *Collection) SetTags(v []string) {
-	x.Tags = v
 }
 
 func (x *Collection) HasName() bool {
@@ -218,13 +194,6 @@ func (x *Collection) HasAuthentication() bool {
 	return x.Authentication != nil
 }
 
-func (x *Collection) HasAuthor() bool {
-	if x == nil {
-		return false
-	}
-	return x.Author != nil
-}
-
 func (x *Collection) ClearName() {
 	x.Name = nil
 }
@@ -249,10 +218,6 @@ func (x *Collection) ClearAuthentication() {
 	x.Authentication = nil
 }
 
-func (x *Collection) ClearAuthor() {
-	x.Author = nil
-}
-
 type Collection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -264,8 +229,6 @@ type Collection_builder struct {
 	Authentication *Authentication
 	Services       []*UpstreamServiceConfig
 	Skills         []string
-	Author         *string
-	Tags           []string
 }
 
 func (b0 Collection_builder) Build() *Collection {
@@ -280,8 +243,6 @@ func (b0 Collection_builder) Build() *Collection {
 	x.Authentication = b.Authentication
 	x.Services = b.Services
 	x.Skills = b.Skills
-	x.Author = b.Author
-	x.Tags = b.Tags
 	return m0
 }
 
@@ -289,7 +250,7 @@ var File_proto_config_v1_collection_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_collection_proto_rawDesc = "" +
 	"\n" +
-	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xe7\x02\n" +
+	" proto/config/v1/collection.proto\x12\x10mcpany.config.v1\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/auth.proto\"\xbb\x02\n" +
 	"\n" +
 	"Collection\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
@@ -299,10 +260,7 @@ const file_proto_config_v1_collection_proto_rawDesc = "" +
 	"\bhttp_url\x18\x05 \x01(\tR\bhttp_url\x12H\n" +
 	"\x0eauthentication\x18\x06 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12C\n" +
 	"\bservices\x18\a \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices\x12\x16\n" +
-	"\x06skills\x18\b \x03(\tR\x06skills\x12\x16\n" +
-	"\x06author\x18\t \x01(\tR\x06author\x12\x12\n" +
-	"\x04tags\x18\n" +
-	" \x03(\tR\x04tagsB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x06skills\x18\b \x03(\tR\x06skillsB(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
 
 var file_proto_config_v1_collection_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_config_v1_collection_proto_goTypes = []any{
