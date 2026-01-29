@@ -1,24 +1,18 @@
-# Coverage Intervention Report
+# Coverage Intervention: Impact Report
 
-## Target
-**File:** `server/pkg/util/redact_fast.go`
-
-## Risk Profile
-This file was selected for intervention because it represents "Dark Matter" in the codebase:
-*   **High Complexity:** It implements a zero-allocation, streaming JSON parser manually (700 LOC). It handles complex logic like skipping whitespace/comments, unescaping strings, and buffer management.
-*   **Security Critical:** Its purpose is to redact sensitive information (PII, credentials) from logs. Failure here means leaking user secrets.
-*   **Low Coverage:** Initial analysis showed 0 lines of test code specifically dedicated to this file (though some indirect or fragmented coverage existed). It lacked a comprehensive, structured test suite defining its contract.
-
-## New Coverage
-A new test suite `server/pkg/util/redact_fast_test.go` was created, implementing robust Table-Driven Tests.
-Specific logic paths now guarded include:
-*   **Happy Path:** Standard JSON objects with known sensitive keys (`password`, `token`, etc.).
-*   **Recursion/Nesting:** Deeply nested objects and arrays to ensure the parser correctly maintains state/depth.
-*   **Edge Cases:** Handling of `null`, `true`, `false`, numbers, empty objects `{}`, and empty arrays `[]`.
-*   **Robustness:** Verification that malformed JSON (unclosed strings/braces, garbage input) does not crash the server and fails safe (redacting potential secrets even in broken JSON).
-*   **Performance/Buffer Management:** Large input tests to verify lazy allocation and buffer resizing logic.
-*   **Escaping:** Correct handling of escaped quotes `\"` and backslashes in keys and values.
-
-## Verification
-*   **Unit Tests:** `go test -v github.com/mcpany/core/server/pkg/util -run TestRedactJSONFast` passed successfully.
-*   **Regression:** The full package tests passed, ensuring no interference with existing `redact` logic.
+* **Target:** `server/pkg/health/auth_doctor.go`
+* **Risk Profile:**
+  *   **Why Selected:** This component contains logic for verifying the presence of critical authentication secrets (API keys, OAuth credentials) and masking them for display in health check reports.
+  *   **Risk:** Logic errors here could lead to false negatives (failing to alert on missing credentials) or, critically, **security leaks** where sensitive API keys are exposed in plain text in health check endpoints due to failed masking.
+  *   **Pre-existing State:** Zero unit test coverage.
+* **New Coverage:**
+  *   **Scenarios Guarded:**
+    *   **Missing Credentials:** Verifies correct "missing" or "not configured" status.
+    *   **Present Credentials:** Verifies correct "ok" status.
+    *   **Secret Masking:** Explicitly verifies that secrets are masked (e.g., "Present (...1234)") and not leaked.
+    *   **OAuth Configuration:** Verifies logic for complete vs. partial (warning) vs. missing configuration.
+    *   **Edge Cases:** Handles short secret values gracefully.
+* **Verification:**
+  *   New tests passed: `go test -v server/pkg/health/auth_doctor_test.go`
+  *   Regression suite passed: `go test ./server/pkg/health/...`
+  *   Lint checks passed.
