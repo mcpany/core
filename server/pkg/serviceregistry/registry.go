@@ -235,7 +235,7 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 // RegisterMockService registers a service for testing purposes without creating a real upstream.
 // It directly injects the service info into the ToolManager and stores the config.
-func (r *ServiceRegistry) RegisterMockService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) error {
+func (r *ServiceRegistry) RegisterMockService(_ context.Context, serviceConfig *config.UpstreamServiceConfig) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 

@@ -31,7 +31,7 @@ type SeedRequest struct {
 type SeedTool struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
-	ServiceId   string          `json:"serviceId"`
+	ServiceID   string          `json:"serviceId"`
 	InputSchema map[string]any  `json:"inputSchema"`
 	Output      json.RawMessage `json:"output"` // Pre-canned output
 }
@@ -78,7 +78,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 					return &v1.Tool{
 						Name:        proto.String(t.Name),
 						Description: proto.String(t.Description),
-						ServiceId:   proto.String(t.ServiceId),
+						ServiceId:   proto.String(t.ServiceID),
 						InputSchema: inputSchema,
 					}
 				},
@@ -89,7 +89,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 						InputSchema: t.InputSchema,
 					}
 				},
-				ExecuteFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+				ExecuteFunc: func(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 					// Return the pre-canned output
 					var output any
 					if len(t.Output) > 0 {
