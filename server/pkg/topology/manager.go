@@ -318,9 +318,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 //
 // Returns the result.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-
+	// Build Core Node (Services, Tools, Middleware) *outside* the lock to avoid deadlocks/contention
 	coreNode := topologyv1.Node_builder{
 		Id:     "mcp-core",
 		Label:  "MCP Any",
@@ -380,7 +378,6 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	}
 
 	// Add Middleware Nodes (Static or Dynamic)
-	// For now, these are static infrastructure components in the pipeline
 	middlewareNode := topologyv1.Node_builder{
 		Id:     "middleware-pipeline",
 		Label:  "Middleware Pipeline",
@@ -394,20 +391,21 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	coreNode.Children = append(coreNode.Children, middlewareNode)
 
 	// Add Webhooks Node
-	// This would ideally come from the WebhookManager
 	webhookNode := topologyv1.Node_builder{
 		Id:     "webhooks",
 		Label:  "Webhooks",
 		Type:   topologyv1.NodeType_NODE_TYPE_WEBHOOK,
 		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-		// Example configured webhook
 		Children: []*topologyv1.Node{
 			topologyv1.Node_builder{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
 	coreNode.Children = append(coreNode.Children, webhookNode)
 
-	// Build Clients list from active sessions
+	// Build Clients list from active sessions (requires lock)
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
 	clients := make([]*topologyv1.Node, 0, len(m.sessions))
 	for _, session := range m.sessions {
 		// Filter out old sessions > 1 hour
@@ -425,7 +423,6 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			Label:  label,
 			Type:   topologyv1.NodeType_NODE_TYPE_CLIENT,
 			Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-			// Clients rely on UI to draw link to Core
 		}.Build()
 		clients = append(clients, clientNode)
 	}
