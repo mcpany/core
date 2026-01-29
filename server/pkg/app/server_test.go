@@ -1925,6 +1925,9 @@ upstream_services:
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
 	}()
 
+	// Wait for startup to ensure servers are ready and Run has passed the readiness check
+	require.NoError(t, app.WaitForStartup(ctx))
+
 	time.Sleep(100 * time.Millisecond) // Allow time for publication.
 	cancel()                           // Trigger shutdown.
 
