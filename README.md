@@ -141,6 +141,118 @@ graph TD
 
 ---
 
-<p align="center">
-  Generated with ❤️ by the MCP Any Team.
-</p>
+## ⚙️ Configuration
+
+MCP Any uses a combination of configuration files and environment variables.
+
+### Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_MCP_LISTEN_ADDRESS` | Address to listen on for MCP connections. | `0.0.0.0:50051` |
+| `MCPANY_DEFAULT_HTTP_ADDR` | Address to listen on for HTTP connections. | `0.0.0.0:50050` |
+| `MCPANY_LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from YAML/JSON files. | `false` |
+| `MCPANY_TRUST_PROXY` | Trust `X-Forwarded-*` headers (useful behind LBs). | `false` |
+| `MCPANY_ADMIN_INIT_USERNAME` | Initial username for the admin user. | - |
+| `MCPANY_ADMIN_INIT_PASSWORD` | Initial password for the admin user. | - |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow tools to connect to local IP addresses. | `false` |
+| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow resources from loopback addresses. | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow resources from private networks. | `false` |
+| `MCPANY_ALLOW_UNSAFE_CONFIG` | Allow usage of potentially unsafe configuration options. | `false` |
+
+### Project Structure
+
+The project is organized as follows:
+
+- **`server/cmd/`**: Application entry points.
+  - `server/`: The main MCP Any server binary.
+- **`server/pkg/`**: Core library code.
+  - **`app/`**: Application lifecycle and wiring.
+  - **`config/`**: Configuration loading and validation.
+  - **`mcpserver/`**: Core MCP protocol implementation.
+  - **`upstream/`**: Adapters for upstream services (gRPC, HTTP, OpenAPI, Filesystem, etc.).
+- **`proto/`**: Protocol Buffer definitions for configuration and internal APIs.
+- **`server/examples/`**: Example configuration files and demo services.
+- **`server/docs/`**: Detailed documentation and guides.
+- **`ui/`**: The web-based management dashboard (Next.js/React).
+
+### Documentation
+
+For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
+
+### UI Development
+
+To work on the frontend dashboard:
+
+1.  **Navigate to the UI directory:**
+    ```bash
+    cd ui
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    The UI will be available at http://localhost:9002.
+
+For more details, see the [UI README](ui/README.md).
+
+### Code Standards
+
+We strive for high code quality. Please ensure the following before submitting a PR:
+
+- **Documentation**:
+  - **Go**: All exported functions, methods, types, and constants must have complete docstrings (GoDoc style). The format must include:
+    - **Summary**: Active-voice description of intent.
+    - **Parameters**: Name, Type, and Constraints.
+    - **Returns**: Type and Meaning.
+  - **TypeScript/React**: All exported components, functions, interfaces, and types must have JSDoc comments explaining their usage, props/parameters, and return values.
+  - **Quality Standard**: Avoid "empty calorie" comments (e.g., `// Sets ID` for `SetID`). Strive for clear, actionable descriptions.
+  - **Strict Enforcement**: Documentation coverage is strictly enforced. Do not leave any public symbol undocumented.
+  - You can verify Go documentation coverage with:
+    ```bash
+    go run server/tools/check_doc.go server/
+    ```
+  - You can auto-generate/fix TypeScript documentation with:
+    ```bash
+    python3 server/tools/fix_ts_docs.py
+    ```
+  - You can verify TypeScript documentation coverage with:
+    ```bash
+    python3 server/tools/check_ts_doc.py
+    ```
+  - **Note**: Ensure these checks pass before submitting your PR.
+- **Testing**: Add unit tests for new functionality. Run all tests with:
+  ```bash
+  make test
+  ```
+- **Linting**: Ensure the code is linted and formatted correctly:
+  ```bash
+  make lint
+  ```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+- **Protobuf Generation Errors**: If you encounter errors related to `protoc` or missing plugins, try running `make prepare` again to ensure all tools are correctly installed in `build/env/bin`.
+- **Docker Permission Denied**: If you cannot run Docker commands, ensure your user is in the `docker` group or try running with `sudo`.
+- **Port Conflicts**: Ensure ports `50050` (HTTP), `50051` (gRPC), and `9002` (UI) are free before starting the server.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to open an issue or submit a pull request.
+
+## 🗺️ Roadmap
+
+Check out our Roadmap to see what we're working on and what's coming next:
+- [Server Roadmap](server/roadmap.md)
+- [UI Roadmap](ui/roadmap.md)
+
+## 📄 License
+
+This project is licensed under the terms of the [LICENSE](LICENSE) file.
