@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -1603,6 +1604,7 @@ type LocalCommandTool struct {
 	callDefinition *configv1.CommandLineCallDefinition
 	policies       []*CompiledCallPolicy
 	callID         string
+	sandboxArgs    []string
 	initError      error
 }
 
@@ -1637,6 +1639,25 @@ func NewLocalCommandTool(
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	// Check if the command is sed and supports sandbox
+	cmd := service.GetCommand()
+	base := filepath.Base(cmd)
+	if base == "sed" || base == "gsed" {
+		// Check if sed supports --sandbox by running `sed --sandbox --version`
+		// We use exec.Command directly here.
+		// Use --version because it exits successfully if supported.
+		// If --sandbox is not supported, sed usually exits with error "illegal option"
+		checkCmd := exec.Command(cmd, "--sandbox", "--version")
+		if err := checkCmd.Run(); err == nil {
+			t.sandboxArgs = []string{"--sandbox"}
+			logging.GetLogger().Info("Enabled sandbox mode for sed tool", "tool", tool.GetName())
+		} else {
+			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
+			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
+		}
+	}
+
 	return t
 }
 
@@ -1701,6 +1722,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	args := []string{}
+	if len(t.sandboxArgs) > 0 {
+		args = append(args, t.sandboxArgs...)
+	}
+
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
