@@ -900,7 +900,31 @@ export const apiClient = {
     listCollections: async () => {
         const res = await fetchWithAuth('/api/v1/collections');
         if (!res.ok) throw new Error('Failed to list collections');
-        return res.json();
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+        return list.map((c: any) => ({
+            name: c.name,
+            description: c.description,
+            version: c.version,
+            priority: c.priority,
+            httpUrl: c.http_url,
+            author: c.author,
+            tags: c.tags || [],
+            services: (c.services || []).map((s: any) => ({
+                ...s,
+                connectionPool: s.connection_pool,
+                httpService: s.http_service,
+                grpcService: s.grpc_service,
+                commandLineService: s.command_line_service,
+                mcpService: s.mcp_service,
+                upstreamAuth: s.upstream_auth,
+                preCallHooks: s.pre_call_hooks,
+                postCallHooks: s.post_call_hooks,
+                toolExportPolicy: s.tool_export_policy,
+                promptExportPolicy: s.prompt_export_policy,
+                resourceExportPolicy: s.resource_export_policy,
+            }))
+        }));
     },
 
     /**

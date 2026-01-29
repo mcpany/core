@@ -34,23 +34,42 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			return nil // Already initialized
 		}
 	} else {
-		// Use Storage interface
+		// Use Storage interface to check for existing services
 		services, err := s.ListServices(ctx)
 		if err != nil {
 			return err
 		}
-		if len(services) > 0 {
-			return nil
-		}
-		// Also check global settings?
-		gs, err := s.GetGlobalSettings(ctx)
-		if err == nil && gs != nil {
-			return nil
+
+		// Only seed default services if none exist
+		if len(services) == 0 {
+			// Also check global settings?
+			gs, err := s.GetGlobalSettings(ctx)
+			if err == nil && gs == nil {
+				log.Info("Database appears empty, initializing with default configuration...")
+				if err := a.seedDefaultConfiguration(ctx, s); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
-	log.Info("Database appears empty, initializing with default configuration...")
+	// Always attempt to seed/update official collections (idempotent)
+	if err := a.initializeOfficialCollections(ctx, store); err != nil {
+		log.Error("Failed to initialize official collections", "error", err)
+		// Non-fatal?
+	}
 
+	// Initialize Admin User (checks if users exist internally)
+	if err := a.initializeAdminUser(ctx, store); err != nil {
+		log.Error("Failed to initialize admin user", "error", err)
+		// We don't fail hard here to allow server to start, but auth might be broken for admin
+	}
+
+	log.Info("Database initialization steps completed.")
+	return nil
+}
+
+func (a *Application) seedDefaultConfiguration(ctx context.Context, s storage.Storage) error {
 	// Default Configuration
 	defaultGS := configv1.GlobalSettings_builder{
 		ProfileDefinitions: []*configv1.ProfileDefinition{
@@ -105,25 +124,71 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		}.Build(),
 	}.Build()
 
-	// Save to DB
-	if s, ok := store.(storage.Storage); ok {
-		if err := s.SaveGlobalSettings(ctx, defaultGS); err != nil {
-			return fmt.Errorf("failed to save default global settings: %w", err)
-		}
-		if err := s.SaveService(ctx, weatherService); err != nil {
-			return fmt.Errorf("failed to save default weather service: %w", err)
-		}
-	} else {
-		log.Warn("Store/Storage does not support saving defaults.")
+	if err := s.SaveGlobalSettings(ctx, defaultGS); err != nil {
+		return fmt.Errorf("failed to save default global settings: %w", err)
+	}
+	if err := s.SaveService(ctx, weatherService); err != nil {
+		return fmt.Errorf("failed to save default weather service: %w", err)
+	}
+	return nil
+}
+
+func (a *Application) initializeOfficialCollections(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil
 	}
 
-	// Initialize Admin User
-	if err := a.initializeAdminUser(ctx, store); err != nil {
-		log.Error("Failed to initialize admin user", "error", err)
-		// We don't fail hard here to allow server to start, but auth might be broken for admin
+	officialCollections := []*configv1.Collection{
+		configv1.Collection_builder{
+			Name:        proto.String("Data Engineering Stack"),
+			Description: proto.String("Essential tools for data pipelines (PostgreSQL, Filesystem, Python)"),
+			Author:      proto.String("MCP Any Team"),
+			Version:     proto.String("1.0.0"),
+			Tags:        []string{"data", "engineering", "official"},
+			Services: []*configv1.UpstreamServiceConfig{
+				configv1.UpstreamServiceConfig_builder{
+					Id:   proto.String("sqlite-db"),
+					Name: proto.String("SQLite Database"),
+					Version: proto.String("1.0.0"),
+					CommandLineService: configv1.CommandLineUpstreamService_builder{
+						Command: proto.String("npx -y @modelcontextprotocol/server-sqlite"),
+						Env: map[string]*configv1.SecretValue{
+							"DB_PATH": {
+								Value: &configv1.SecretValue_PlainText{PlainText: "./data.db"},
+							},
+						},
+					}.Build(),
+					Disable: proto.Bool(false),
+					SanitizedName: proto.String("sqlite-db"),
+					AutoDiscoverTool: proto.Bool(false),
+				}.Build(),
+			},
+		}.Build(),
+		configv1.Collection_builder{
+			Name:        proto.String("Web Dev Assistant"),
+			Description: proto.String("GitHub, Browser, and Terminal tools for web development."),
+			Author:      proto.String("MCP Any Team"),
+			Version:     proto.String("1.0.0"),
+			Tags:        []string{"web", "dev", "official"},
+			Services:    []*configv1.UpstreamServiceConfig{}, // Empty for now as per original mock
+		}.Build(),
 	}
 
-	log.Info("Database initialized successfully.")
+	for _, col := range officialCollections {
+		// Check if exists
+		existing, err := s.GetServiceCollection(ctx, col.GetName())
+		if err == nil && existing != nil {
+			// Optional: We could update if version is newer?
+			// For now, assume if exists, don't overwrite user changes.
+			continue
+		}
+
+		if err := s.SaveServiceCollection(ctx, col); err != nil {
+			return fmt.Errorf("failed to save collection %s: %w", col.GetName(), err)
+		}
+		logging.GetLogger().Info("Seeded official collection", "name", col.GetName())
+	}
 	return nil
 }
 
