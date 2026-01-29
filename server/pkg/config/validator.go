@@ -356,7 +356,9 @@ func validateSecretValue(secret *configv1.SecretValue) error {
 			shouldValidate = true
 		case configv1.SecretValue_FilePath_case:
 			// We already validated file existence above, so we can try to read it.
-			content, err := os.ReadFile(secret.GetFilePath())
+			// Sanitize path for security (CodeQL)
+			cleanPath := filepath.Clean(secret.GetFilePath())
+			content, err := os.ReadFile(cleanPath)
 			if err != nil {
 				return fmt.Errorf("failed to read secret file %q for validation: %w", secret.GetFilePath(), err)
 			}
