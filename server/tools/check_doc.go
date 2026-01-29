@@ -88,6 +88,20 @@ func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
 							}
 						}
 					}
+					// Check fields in struct
+					if structType, ok := ts.Type.(*ast.StructType); ok {
+						for _, field := range structType.Fields.List {
+							if len(field.Names) > 0 {
+								for _, name := range field.Names {
+									if name.IsExported() {
+										if field.Doc == nil {
+											fmt.Printf("%s:%d: missing doc for struct field %s.%s\n", path, fset.Position(field.Pos()).Line, ts.Name.Name, name.Name)
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			case *ast.ValueSpec:
 				for _, name := range ts.Names {

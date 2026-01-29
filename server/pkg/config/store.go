@@ -485,9 +485,11 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 // formats (JSON, YAML, and textproto) and merges the configurations into a
 // single `McpAnyServerConfig`.
 type FileStore struct {
-	fs               afero.Fs
-	paths            []string
-	skipErrors       bool
+	fs         afero.Fs
+	paths      []string
+	skipErrors bool
+	// IgnoreMissingEnv, if true, will not return an error if an environment variable is missing
+	// during resolution. Instead, it will leave the variable as is or use an empty string.
 	IgnoreMissingEnv bool
 	skipValidation   bool
 }

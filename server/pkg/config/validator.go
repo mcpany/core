@@ -65,8 +65,10 @@ var (
 
 // ValidationError encapsulates a validation error for a specific service.
 type ValidationError struct {
+	// ServiceName is the name of the service that failed validation.
 	ServiceName string
-	Err         error
+	// Err is the validation error.
+	Err error
 }
 
 // Error returns the formatted error message.

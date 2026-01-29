@@ -38,45 +38,68 @@ type Manager struct {
 
 // SessionStats contains statistics about a topology session.
 type SessionStats struct {
-	ID             string
-	Metadata       map[string]string
-	LastActive     time.Time
-	RequestCount   int64
-	TotalLatency   time.Duration
-	ErrorCount     int64
-	ServiceCounts  map[string]int64         // Per service request count
-	ServiceErrors  map[string]int64         // Per service error count
-	ServiceLatency map[string]time.Duration // Per service latency
+	// ID is the unique identifier for the session.
+	ID string
+	// Metadata contains arbitrary key-value metadata for the session.
+	Metadata map[string]string
+	// LastActive is the timestamp of the last activity in the session.
+	LastActive time.Time
+	// RequestCount is the total number of requests in this session.
+	RequestCount int64
+	// TotalLatency is the accumulated latency of all requests in this session.
+	TotalLatency time.Duration
+	// ErrorCount is the total number of errors in this session.
+	ErrorCount int64
+	// ServiceCounts maps service IDs to request counts.
+	ServiceCounts map[string]int64
+	// ServiceErrors maps service IDs to error counts.
+	ServiceErrors map[string]int64
+	// ServiceLatency maps service IDs to total latency.
+	ServiceLatency map[string]time.Duration
 }
 
 // Stats aggregated metrics.
 type Stats struct {
+	// TotalRequests is the total number of requests processed.
 	TotalRequests int64
-	AvgLatency    time.Duration
-	ErrorRate     float64
+	// AvgLatency is the average latency per request.
+	AvgLatency time.Duration
+	// ErrorRate is the ratio of errors to total requests.
+	ErrorRate float64
 }
 
 // MinuteStats tracks stats for a single minute.
 type MinuteStats struct {
-	Requests     int64
-	Errors       int64
-	Latency      int64 // Total latency in ms
+	// Requests is the number of requests in this minute.
+	Requests int64
+	// Errors is the number of errors in this minute.
+	Errors int64
+	// Latency is the total latency in milliseconds for this minute.
+	Latency int64
+	// ServiceStats maps service IDs to traffic stats for this minute.
 	ServiceStats map[string]*ServiceTrafficStats
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
 type ServiceTrafficStats struct {
+	// Requests is the number of requests for this service.
 	Requests int64
-	Errors   int64
-	Latency  int64
+	// Errors is the number of errors for this service.
+	Errors int64
+	// Latency is the total latency in milliseconds for this service.
+	Latency int64
 }
 
 // TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
-	Time    string `json:"time"`
-	Total   int64  `json:"requests"` // mapped to "requests" for UI
-	Errors  int64  `json:"errors"`
-	Latency int64  `json:"latency"`
+	// Time is the formatted time string (e.g., "15:04").
+	Time string `json:"time"`
+	// Total is the total number of requests.
+	Total int64 `json:"requests"` // mapped to "requests" for UI
+	// Errors is the number of errors.
+	Errors int64 `json:"errors"`
+	// Latency is the average latency in milliseconds.
+	Latency int64 `json:"latency"`
 }
 
 // NewManager creates a new Topology Manager.

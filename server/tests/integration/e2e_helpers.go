@@ -272,16 +272,19 @@ func FindFreePort(t *testing.T) int {
 // --- Process Management for External Services ---
 // ManagedProcess manages an external process for testing.
 type ManagedProcess struct {
-	cmd                 *exec.Cmd
-	t                   *testing.T
-	wg                  sync.WaitGroup
-	stdout              threadSafeBuffer
-	stderr              threadSafeBuffer
-	waitDone            chan struct{}
-	label               string
+	cmd      *exec.Cmd
+	t        *testing.T
+	wg       sync.WaitGroup
+	stdout   threadSafeBuffer
+	stderr   threadSafeBuffer
+	waitDone chan struct{}
+	label    string
+	// IgnoreExitStatusOne indicates whether to ignore exit status 1.
 	IgnoreExitStatusOne bool
-	Port                int
-	Dir                 string
+	// Port is the port the process is listening on.
+	Port int
+	// Dir is the working directory for the process.
+	Dir string
 }
 
 // NewManagedProcess creates a new ManagedProcess instance.
@@ -650,25 +653,39 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 // --- MCPANY Server Helper (External Process) ---
 // MCPANYTestServerInfo contains information about a running MCP Any server instance for testing.
 type MCPANYTestServerInfo struct {
-	Process                  *ManagedProcess
-	JSONRPCEndpoint          string
-	HTTPEndpoint             string
+	// Process is the managed process for the server.
+	Process *ManagedProcess
+	// JSONRPCEndpoint is the JSON-RPC endpoint URL.
+	JSONRPCEndpoint string
+	// HTTPEndpoint is the HTTP endpoint URL.
+	HTTPEndpoint string
+	// GrpcRegistrationEndpoint is the gRPC registration endpoint address.
 	GrpcRegistrationEndpoint string
-	MetricsEndpoint          string
-	NatsURL                  string
-	SessionID                string
-	HTTPClient               *http.Client
-	GRPCRegConn              *grpc.ClientConn
-	RegistrationClient       apiv1.RegistrationServiceClient
-	CleanupFunc              func()
-	T                        *testing.T
+	// MetricsEndpoint is the metrics endpoint address.
+	MetricsEndpoint string
+	// NatsURL is the NATS server URL.
+	NatsURL string
+	// SessionID is the session ID.
+	SessionID string
+	// HTTPClient is the HTTP client used for requests.
+	HTTPClient *http.Client
+	// GRPCRegConn is the gRPC connection for registration.
+	GRPCRegConn *grpc.ClientConn
+	// RegistrationClient is the registration service client.
+	RegistrationClient apiv1.RegistrationServiceClient
+	// CleanupFunc cleans up resources.
+	CleanupFunc func()
+	// T is the testing instance.
+	T *testing.T
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
 // --- Websocket Echo Server Helper ---
 // WebsocketEchoServerInfo contains information about a running mock WebSocket echo server.
 type WebsocketEchoServerInfo struct {
-	URL         string
+	// URL is the WebSocket server URL.
+	URL string
+	// CleanupFunc cleans up resources.
 	CleanupFunc func()
 }
 

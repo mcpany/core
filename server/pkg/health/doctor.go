@@ -13,9 +13,13 @@ import (
 
 // CheckResult represents a single check result.
 type CheckResult struct {
+	// Status is the status of the check (e.g., "ok", "degraded").
 	Status  string `json:"status"`
+	// Message is a descriptive message about the check result.
 	Message string `json:"message,omitempty"`
+	// Latency is the duration of the check.
 	Latency string `json:"latency,omitempty"`
+	// Diff shows any configuration drift or errors.
 	Diff    string `json:"diff,omitempty"`
 }
 
@@ -24,8 +28,11 @@ type CheckFunc func(context.Context) CheckResult
 
 // DoctorReport represents the full doctor report.
 type DoctorReport struct {
+	// Status is the overall status of the system.
 	Status    string                 `json:"status"`
+	// Timestamp is the time the report was generated.
 	Timestamp time.Time              `json:"timestamp"`
+	// Checks maps check names to their results.
 	Checks    map[string]CheckResult `json:"checks"`
 }
 

@@ -24,9 +24,9 @@ type Provider interface {
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
-// OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+// OllamaProvider is a discovery provider for local Ollama instances.
 type OllamaProvider struct {
+	// Endpoint is the URL of the Ollama API (e.g., "http://localhost:11434").
 	Endpoint string // e.g., "http://localhost:11434"
 }
 

@@ -28,6 +28,7 @@ type Message interface {
 // includes a correlation ID field (`CID`) and can be embedded in other message
 // structs to provide a common mechanism for message tracking.
 type BaseMessage struct {
+	// CID is the correlation ID used for tracing requests.
 	CID string `json:"cid"`
 }
 
@@ -49,8 +50,10 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // configuration and the context for the request.
 type ServiceRegistrationRequest struct {
 	BaseMessage
+	// Context is the context for the request.
 	Context context.Context
-	Config  *configv1.UpstreamServiceConfig
+	// Config is the configuration of the service to be registered.
+	Config *configv1.UpstreamServiceConfig
 }
 
 // ServiceRegistrationResult is a message published in response to a
@@ -59,10 +62,14 @@ type ServiceRegistrationRequest struct {
 // discovered, or an error if the registration failed.
 type ServiceRegistrationResult struct {
 	BaseMessage
-	ServiceKey          string
-	DiscoveredTools     []*configv1.ToolDefinition
+	// ServiceKey is the unique key assigned to the registered service.
+	ServiceKey string
+	// DiscoveredTools is a list of tools discovered during registration.
+	DiscoveredTools []*configv1.ToolDefinition
+	// DiscoveredResources is a list of resources discovered during registration.
 	DiscoveredResources []*configv1.ResourceDefinition
-	Error               error
+	// Error indicates if the registration failed.
+	Error error
 }
 
 // ToolExecutionRequest is a message sent to the bus to request the execution of
@@ -70,8 +77,11 @@ type ServiceRegistrationResult struct {
 // its inputs in raw JSON format.
 type ToolExecutionRequest struct {
 	BaseMessage
-	Context    context.Context
-	ToolName   string
+	// Context is the context for the execution request.
+	Context context.Context
+	// ToolName is the name of the tool to execute.
+	ToolName string
+	// ToolInputs contains the input arguments for the tool in JSON format.
 	ToolInputs json.RawMessage
 }
 
@@ -80,8 +90,10 @@ type ToolExecutionRequest struct {
 // JSON format, or an error if the execution failed.
 type ToolExecutionResult struct {
 	BaseMessage
+	// Result contains the output of the tool execution in JSON format.
 	Result json.RawMessage
-	Error  error
+	// Error indicates if the execution failed.
+	Error error
 }
 
 // ServiceListRequest is a message sent to the bus to request a list of all
@@ -94,19 +106,24 @@ type ServiceListRequest struct {
 // ServiceListRequest. It contains a list of all registered services.
 type ServiceListResult struct {
 	BaseMessage
+	// Services is the list of registered upstream services.
 	Services []*configv1.UpstreamServiceConfig
-	Error    error
+	// Error indicates if the listing operation failed.
+	Error error
 }
 
 // ServiceGetRequest is a message sent to the bus to request a specific service.
 type ServiceGetRequest struct {
 	BaseMessage
+	// ServiceName is the name of the service to retrieve.
 	ServiceName string
 }
 
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
 type ServiceGetResult struct {
 	BaseMessage
+	// Service is the retrieved service configuration.
 	Service *configv1.UpstreamServiceConfig
-	Error   error
+	// Error indicates if the retrieval failed.
+	Error error
 }

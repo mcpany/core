@@ -39,9 +39,13 @@ const (
 
 // CheckResult represents the result of a single service check.
 type CheckResult struct {
+	// ServiceName is the name of the service being checked.
 	ServiceName string
+	// Status is the status of the check (e.g., "ok", "error").
 	Status      Status
+	// Message is a descriptive message about the check result.
 	Message     string
+	// Error is the error message if the check failed.
 	Error       error
 }
 

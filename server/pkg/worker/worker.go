@@ -15,7 +15,9 @@ import (
 
 // Config holds the configuration for the worker.
 type Config struct {
-	MaxWorkers   int
+	// MaxWorkers is the maximum number of concurrent workers.
+	MaxWorkers int
+	// MaxQueueSize is the maximum size of the job queue.
 	MaxQueueSize int
 }
 

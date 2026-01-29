@@ -16,6 +16,7 @@ import (
 // It prompts the user for input and uses templates to generate YAML configuration
 // for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
 type Generator struct {
+	// Reader is the source of input for the generator (usually os.Stdin).
 	Reader *bufio.Reader
 }
 

@@ -11,23 +11,33 @@ import (
 
 // JSONRPCRequest represents a JSON-RPC 2.0 request.
 type JSONRPCRequest struct {
-	JSONRPC string           `json:"jsonrpc"`
-	ID      *json.RawMessage `json:"id,omitempty"`
-	Method  string           `json:"method"`
-	Params  json.RawMessage  `json:"params,omitempty"`
+	// JSONRPC is the protocol version (must be "2.0").
+	JSONRPC string `json:"jsonrpc"`
+	// ID is the request identifier.
+	ID *json.RawMessage `json:"id,omitempty"`
+	// Method is the method name.
+	Method string `json:"method"`
+	// Params is the parameter object or array.
+	Params json.RawMessage `json:"params,omitempty"`
 }
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response.
 type JSONRPCResponse struct {
-	JSONRPC string           `json:"jsonrpc"`
-	ID      *json.RawMessage `json:"id,omitempty"`
-	Result  interface{}      `json:"result,omitempty"`
-	Error   *JSONRPCError    `json:"error,omitempty"`
+	// JSONRPC is the protocol version (must be "2.0").
+	JSONRPC string `json:"jsonrpc"`
+	// ID is the request identifier.
+	ID *json.RawMessage `json:"id,omitempty"`
+	// Result is the successful result.
+	Result interface{} `json:"result,omitempty"`
+	// Error is the error object.
+	Error *JSONRPCError `json:"error,omitempty"`
 }
 
 // JSONRPCError represents a JSON-RPC 2.0 error object.
 type JSONRPCError struct {
-	Code    int    `json:"code"`
+	// Code is the error code.
+	Code int `json:"code"`
+	// Message is the error message.
 	Message string `json:"message"`
 }
 

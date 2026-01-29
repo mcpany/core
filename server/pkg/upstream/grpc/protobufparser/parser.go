@@ -29,36 +29,56 @@ import (
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
 type ParsedMcpAnnotations struct {
-	Tools     []McpTool
-	Prompts   []McpPrompt
+	// Tools is a list of extracted MCP tools.
+	Tools []McpTool
+	// Prompts is a list of extracted MCP prompts.
+	Prompts []McpPrompt
+	// Resources is a list of extracted MCP resources.
 	Resources []McpResource
 }
 
 // McpTool represents the information extracted from a gRPC method that has been
 // annotated as an MCP tool.
 type McpTool struct {
-	Name            string
-	Description     string
-	ServiceName     string
-	MethodName      string
-	FullMethodName  string // e.g., /package.ServiceName/MethodName
-	RequestType     string // Fully qualified name
-	ResponseType    string // Fully qualified name
-	RequestFields   []McpField
-	ResponseFields  []McpField
-	ReadOnlyHint    bool
+	// Name is the name of the tool.
+	Name string
+	// Description is the description of what the tool does.
+	Description string
+	// ServiceName is the name of the gRPC service containing the tool.
+	ServiceName string
+	// MethodName is the name of the gRPC method.
+	MethodName string
+	// FullMethodName is the fully qualified method name (e.g., /package.ServiceName/MethodName).
+	FullMethodName string
+	// RequestType is the fully qualified name of the request message type.
+	RequestType string
+	// ResponseType is the fully qualified name of the response message type.
+	ResponseType string
+	// RequestFields is a list of fields in the request message.
+	RequestFields []McpField
+	// ResponseFields is a list of fields in the response message.
+	ResponseFields []McpField
+	// ReadOnlyHint indicates if the tool is read-only.
+	ReadOnlyHint bool
+	// DestructiveHint indicates if the tool operation is destructive.
 	DestructiveHint bool
-	IdempotentHint  bool
-	OpenWorldHint   bool
+	// IdempotentHint indicates if the tool operation is idempotent.
+	IdempotentHint bool
+	// OpenWorldHint indicates if the tool operates in an "open world" context.
+	OpenWorldHint bool
 }
 
 // McpField represents a field within a protobuf message, including its name,
 // description, type, and whether it is repeated.
 type McpField struct {
-	Name        string
+	// Name is the name of the field.
+	Name string
+	// Description is the description of the field.
 	Description string
-	Type        string
-	IsRepeated  bool
+	// Type is the protobuf type of the field.
+	Type string
+	// IsRepeated indicates if the field is a repeated field (list).
+	IsRepeated bool
 }
 
 // GetName returns the name of the McpField.
@@ -261,21 +281,32 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
 type McpPrompt struct {
-	Name           string
-	Description    string
-	Template       string
-	ServiceName    string
-	MethodName     string
+	// Name is the name of the prompt.
+	Name string
+	// Description is the description of the prompt.
+	Description string
+	// Template is the prompt template string.
+	Template string
+	// ServiceName is the name of the gRPC service containing the prompt.
+	ServiceName string
+	// MethodName is the name of the gRPC method.
+	MethodName string
+	// FullMethodName is the fully qualified method name.
 	FullMethodName string
-	RequestType    string
-	ResponseType   string
+	// RequestType is the fully qualified name of the request message type.
+	RequestType string
+	// ResponseType is the fully qualified name of the response message type.
+	ResponseType string
 }
 
 // McpResource represents a protobuf message that has been annotated as an MCP
 // resource.
 type McpResource struct {
-	Name        string
+	// Name is the name of the resource.
+	Name string
+	// Description is the description of the resource.
 	Description string
+	// MessageType is the fully qualified name of the protobuf message representing the resource.
 	MessageType string
 }
 
