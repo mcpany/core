@@ -47,6 +47,18 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	// Normalize arguments JSON to prevent bypasses via encoding (e.g. \uXXXX)
+	// We unmarshal and re-marshal to ensure canonical representation
+	normalizedArgs := arguments
+	if len(arguments) > 0 {
+		var obj interface{}
+		if err := fastJSON.Unmarshal(arguments, &obj); err == nil {
+			if normalized, err := fastJSON.Marshal(obj); err == nil {
+				normalizedArgs = normalized
+			}
+		}
+	}
+
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
 		if policy == nil {
@@ -71,7 +83,12 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 					// Cannot match argument regex at registration time
 					matched = false
 				} else {
-					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), arguments); !matchedArgs {
+					// Check both raw and normalized arguments to ensure:
+					// 1. We catch bypasses (normalized match)
+					// 2. We don't break existing rules relying on specific formatting (raw match)
+					matchRaw, _ := regexp.Match(rule.GetArgumentRegex(), arguments)
+					matchNorm, _ := regexp.Match(rule.GetArgumentRegex(), normalizedArgs)
+					if !matchRaw && !matchNorm {
 						matched = false
 					}
 				}
@@ -189,6 +206,18 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns true if successful.
 // Returns an error if the operation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	// Normalize arguments JSON to prevent bypasses via encoding (e.g. \uXXXX)
+	// We unmarshal and re-marshal to ensure canonical representation
+	normalizedArgs := arguments
+	if len(arguments) > 0 {
+		var obj interface{}
+		if err := fastJSON.Unmarshal(arguments, &obj); err == nil {
+			if normalized, err := fastJSON.Marshal(obj); err == nil {
+				normalizedArgs = normalized
+			}
+		}
+	}
+
 	for _, policy := range policies {
 		policyBlocked := false
 		matchedRule := false
@@ -209,8 +238,17 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 			if matched && rule.GetArgumentRegex() != "" {
 				if arguments == nil {
 					matched = false
-				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(arguments) {
+				} else if cRule.argumentRegex == nil {
 					matched = false
+				} else {
+					// Check both raw and normalized arguments to ensure:
+					// 1. We catch bypasses (normalized match)
+					// 2. We don't break existing rules relying on specific formatting (raw match)
+					matchRaw := cRule.argumentRegex.Match(arguments)
+					matchNorm := cRule.argumentRegex.Match(normalizedArgs)
+					if !matchRaw && !matchNorm {
+						matched = false
+					}
 				}
 			}
 
