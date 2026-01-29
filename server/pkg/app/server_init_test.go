@@ -243,6 +243,10 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
 
+	// Official Collections Seeding expectations
+	mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
+
 	mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
@@ -260,6 +264,10 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	mockStore := new(MockStore)
 	app := &Application{}
+
+	// Official Collections Seeding expectations (Always runs)
+	mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return(&configv1.Collection{}, nil) // Exists
+	// SaveServiceCollection should NOT be called if exists
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
 
@@ -316,6 +324,10 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
 
+		// Seed expectations
+		mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+		mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
+
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), errors.New("list services error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore)
@@ -326,6 +338,10 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 	t.Run("Storage SaveGlobalSettings Error", func(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
+
+		// Seed expectations
+		mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+		mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
@@ -339,6 +355,10 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 	t.Run("Storage SaveService Error", func(t *testing.T) {
 		mockStore := new(MockStore)
 		app := &Application{}
+
+		// Seed expectations
+		mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+		mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
