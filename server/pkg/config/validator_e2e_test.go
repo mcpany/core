@@ -9,6 +9,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 // TestGlobalSettings_InvalidBindAddress tests that an invalid bind address in global settings is rejected.
@@ -38,13 +39,11 @@ func TestGlobalSettings_InvalidBindAddress(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := func() *configv1.McpAnyServerConfig {
-				c := &configv1.McpAnyServerConfig{}
-				gs := &configv1.GlobalSettings{}
-				gs.SetMcpListenAddress(tc.bindAddress)
-				c.SetGlobalSettings(gs)
-				return c
-			}()
+			cfg := configv1.McpAnyServerConfig_builder{
+				GlobalSettings: configv1.GlobalSettings_builder{
+					McpListenAddress: proto.String(tc.bindAddress),
+				}.Build(),
+			}.Build()
 
 			// We use Server binary type to trigger the bind address validation
 			errs := Validate(context.Background(), cfg, Server)

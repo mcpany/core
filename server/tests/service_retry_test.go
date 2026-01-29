@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -41,22 +42,27 @@ func TestServiceRetry(t *testing.T) {
 	defer cancel()
 
 	// Create config object
-	httpConn := &configv1.McpStreamableHttpConnection{}
-	httpConn.SetHttpAddress(targetURL)
+	httpConn := configv1.McpStreamableHttpConnection_builder{
+		HttpAddress: proto.String(targetURL),
+	}.Build()
 
-	mcpSvc := &configv1.McpUpstreamService{}
-	mcpSvc.SetHttpConnection(httpConn)
+	mcpSvc := configv1.McpUpstreamService_builder{
+		HttpConnection: httpConn,
+	}.Build()
 
-	resilience := &configv1.ResilienceConfig{}
-	resilience.SetTimeout(durationpb.New(500 * time.Millisecond))
+	resilience := configv1.ResilienceConfig_builder{
+		Timeout: durationpb.New(500 * time.Millisecond),
+	}.Build()
 
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("delayed-mcp")
-	svc.SetMcpService(mcpSvc)
-	svc.SetResilience(resilience)
+	svc := configv1.UpstreamServiceConfig_builder{
+		Name:       proto.String("delayed-mcp"),
+		McpService: mcpSvc,
+		Resilience: resilience,
+	}.Build()
 
-	config := &configv1.McpAnyServerConfig{}
-	config.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+	config := configv1.McpAnyServerConfig_builder{
+		UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+	}.Build()
 
 	mockStore := new(MockStorage)
 	mockStore.On("Load", mock.Anything).Return(config, nil)

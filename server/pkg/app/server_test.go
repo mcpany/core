@@ -2252,6 +2252,8 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	// Set the API key
 	viper.Set("api-key", "test-api-key")
 	defer viper.Set("api-key", "")
+	viper.Set("db-path", ":memory:")
+	defer viper.Set("db-path", "")
 
 	// Get the address from the listener
 	l, err := net.Listen("tcp", "127.0.0.1:0")
