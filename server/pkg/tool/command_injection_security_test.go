@@ -98,11 +98,11 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Contains(t, err.Error(), "shell injection detected")
 	})
 
-	// Case 7: Standard mode allows safe chars in quotes (e.g. for python)
-	t.Run("standard_mode_allows_safe_chars_in_quotes", func(t *testing.T) {
+	// Case 7: Improved quote detection allows safe chars in quotes
+	t.Run("improved_quote_detection", func(t *testing.T) {
 		cmd := "python"
 		tool := createTestCommandToolWithTemplate(cmd, "print('Prefix: {{input}}')")
-		// This input is safe in python string and should be allowed in standard mode
+		// This input is safe in python string but blocked by strict check currently
 		req := &ExecutionRequest{
 			ToolName: "test",
 			ToolInputs: []byte(`{"input": "foo; bar"}`),

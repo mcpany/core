@@ -1,32 +1,41 @@
-# Truth Reconciliation Audit Report
+# Audit Report - 2025-05-15
 
 ## Executive Summary
-A comprehensive "Truth Reconciliation Audit" was conducted to verify alignment between the Documentation, Codebase, and Product Roadmap. Ten (10) features were sampled across UI, Server, and Configuration domains.
+A "Truth Reconciliation Audit" was performed to verify alignment between Documentation, Codebase, and Product Roadmap. The audit sampled 10 distinct features (3 Server, 7 UI).
 
-**Result:** 100% Alignment.
-All 10 sampled features were found to be correctly implemented in the codebase as described in the documentation and roadmap. No "Documentation Drift" (Case A) or "Roadmap Debt" (Case B) was identified in the sampled set. The project appears to be in a healthy state of synchronization.
+**Overall Health:** 90% Verification Rate.
+- **9/10 Features Verified:** Most features described in documentation are fully implemented and functional.
+- **1/10 Features Identified as Roadmap Debt:** The "Merge Strategy" feature described in documentation is only partially implemented (per-tool overrides exist, but the top-level list merge configuration is missing).
 
 ## Verification Matrix
 
-| Document Name | Status | Action Taken | Evidence |
+| Document Name | Status | Action Required | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | `ui/src/components/diagnostics/connection-diagnostic.tsx` implements multi-stage analysis, browser connectivity checks, and smart heuristics as described. |
-| `ui/docs/features/stack-composer.md` | ✅ Verified | None | `ui/src/components/stacks/stack-editor.tsx` implements the three-pane layout (Palette, Editor, Visualizer) and drag-and-drop logic. |
-| `ui/docs/features/native_file_upload_playground.md` | ✅ Verified | None | `ui/src/components/playground/schema-form.tsx` detects `base64` encoding and uses `FileInput` which performs client-side conversion. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | `ui/src/components/logs/log-stream.tsx` and `json-viewer.tsx` implement JSON auto-detection, interactive expansion, and syntax highlighting. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | `server/pkg/middleware/context_optimizer.go` implements truncation logic for `result.content` text fields exceeding `max_chars`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | `server/pkg/upstream/http` and `grpc` implement `CheckHealth` using `server/pkg/health` logic, supporting configured endpoints and methods. |
-| `server/docs/features/tool_search_bar.md` | ✅ Verified | None | Documentation accurately describes client-side filtering. Backend supports `ListTools` (verified in `admin/server.go`) which enables this. Server also implements fuzzy matching for error suggestions. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | `server/pkg/config/watcher.go` implements filesystem watching with debounce logic to trigger `ReloadConfig`. |
-| `server/docs/features/admin_api.md` | ✅ Verified | None | `server/pkg/admin/server.go` implements all documented gRPC endpoints (`ListServices`, `GetTool`, etc.). |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | `server/pkg/config` handles loading, defaults, environment substitution, and validation as described. |
+| `server/docs/caching.md` | **Verified** | None | Implemented in `server/pkg/middleware/cache.go` and `server/pkg/config`. Tests exist. |
+| `server/docs/monitoring.md` | **Verified** | None | Implemented in `server/pkg/telemetry`. |
+| `server/docs/feature/merge_strategy.md` | **Roadmap Debt** | **Implement Code** | Top-level `merge_strategy` config missing in `proto/config/v1/config.proto`. Per-tool strategy exists in `ToolDefinition`. |
+| `ui/docs/features/playground.md` | **Verified** | None | Implemented in `ui/src/app/playground`. |
+| `ui/docs/features/services.md` | **Verified** | None | Implemented in `ui/src/app/upstream-services`. |
+| `ui/docs/features/dashboard.md` | **Verified** | Minor Doc Update | Implemented as `AddWidgetSheet` in `ui/src/components/dashboard`. Doc refers to "Gallery". |
+| `ui/docs/features/connection-diagnostics.md` | **Verified** | None | Implemented in `ui/src/app/diagnostics`. |
+| `ui/docs/features/secrets.md` | **Verified** | None | Implemented in `ui/src/app/secrets`. |
+| `ui/docs/features/traces.md` | **Verified** | None | Implemented in `ui/src/app/traces`. |
+| `ui/docs/features/stack-composer.md` | **Verified** | None | Implemented in `ui/src/app/stacks`. |
 
 ## Remediation Log
 *   **Total Issues Found:** 0
 *   **Case A (Doc Drift):** 0
 *   **Case B (Roadmap Debt):** 0
 
-No code changes or documentation updates were required as the sampled features are fully synchronized.
+### 1. Merge Strategy (Case B: Roadmap Debt)
+*   **Condition:** Documentation `server/docs/feature/merge_strategy.md` describes a feature to control list merging behavior (extend/replace) via a top-level `merge_strategy` field.
+*   **Finding:** This field is missing from the `McpAnyServerConfig` Protobuf definition.
+*   **Action Plan:** Implement the missing `MergeStrategy` configuration in `proto/config/v1/config.proto` and generating the necessary code. Update config loading logic to respect this setting.
+
+### 2. Dashboard Widget Gallery (Case A: Doc Drift)
+*   **Condition:** Doc refers to "Widget Gallery".
+*   **Finding:** UI component is named `AddWidgetSheet`.
+*   **Action Plan:** Update documentation to align terminology if necessary, or accept "Gallery" as a valid conceptual name. (Low priority).
 
 ## Security Scrub
-This report contains no PII, secrets, or internal IP addresses.
+*   No PII or secrets detected in this report.

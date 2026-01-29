@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -48,7 +47,6 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
-  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -75,14 +73,14 @@ export default function ToolsPage() {
     }
   };
 
-  const fetchTools = useCallback(async () => {
+  const fetchTools = async () => {
     try {
       const res = await apiClient.listTools();
       setTools(res?.tools || []);
     } catch (e) {
       console.error("Failed to fetch tools", e);
     }
-  }, []);
+  };
 
   const fetchServices = async () => {
     try {
@@ -104,39 +102,6 @@ export default function ToolsPage() {
         fetchTools(); // Revert
     }
   };
-
-  const bulkToggleTool = useCallback(async (names: string[], enabled: boolean) => {
-    // Optimistic update
-    setTools(prev => prev.map(t => names.includes(t.name) ? { ...t, disable: !enabled } : t));
-
-    try {
-        await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
-        toast({
-            title: enabled ? "Tools Enabled" : "Tools Disabled",
-            description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
-        });
-    } catch (e) {
-        console.error("Failed to bulk toggle tools", e);
-        fetchTools(); // Revert
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Failed to update some tools."
-        });
-    }
-  }, [fetchTools, toast]);
-
-  const bulkPinTool = useCallback((names: string[], pinned: boolean) => {
-    names.forEach(name => {
-        const isCurrentPinned = isPinned(name);
-        if (pinned && !isCurrentPinned) togglePin(name);
-        if (!pinned && isCurrentPinned) togglePin(name);
-    });
-    toast({
-        title: pinned ? "Tools Pinned" : "Tools Unpinned",
-        description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`
-    });
-  }, [isPinned, togglePin, toast]);
 
   const toggleCompact = () => {
     const newState = !isCompact;
@@ -267,8 +232,6 @@ export default function ToolsPage() {
               toggleTool={toggleTool}
               openInspector={openInspector}
               usageStats={toolUsage}
-              onBulkToggle={bulkToggleTool}
-              onBulkPin={bulkPinTool}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -291,8 +254,6 @@ export default function ToolsPage() {
                       toggleTool={toggleTool}
                       openInspector={openInspector}
                       usageStats={toolUsage}
-                      onBulkToggle={bulkToggleTool}
-                      onBulkPin={bulkPinTool}
                     />
                   </AccordionContent>
                 </AccordionItem>
