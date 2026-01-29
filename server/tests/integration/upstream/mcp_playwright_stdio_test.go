@@ -30,7 +30,8 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"NPM_CONFIG_YES":                   "true",
 			}
 			cmd := "node"
-			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "debug"}
+			// Use 'error' level to avoid stdout pollution which can break MCP JSON-RPC
+			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "error"}
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp",
 			}
