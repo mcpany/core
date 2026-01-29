@@ -24,7 +24,7 @@ func TestValidatorActionableErrors(t *testing.T) {
 	}
 
 	// 2. Test missing command
-	err = validateCommandExists("non_existent_command_test", "")
+	err = validateCommandExists(context.Background(), "non_existent_command_test", "")
 	if err == nil {
 		t.Fatal("Expected error for missing command")
 	}
@@ -33,7 +33,7 @@ func TestValidatorActionableErrors(t *testing.T) {
 	}
 
 	// 3. Test missing file
-	err = validateFileExists("/non/existent/file/path/test", "")
+	err = validateFileExists(context.Background(), "/non/existent/file/path/test", "")
 	if err == nil {
 		t.Fatal("Expected error for missing file")
 	}

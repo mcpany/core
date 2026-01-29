@@ -22,11 +22,11 @@ func TestValidateFileExists(t *testing.T) {
 	defer os.Remove(f.Name())
 
 	// Case 1: File exists
-	err = validateFileExists(f.Name(), "")
+	err = validateFileExists(context.Background(), f.Name(), "")
 	assert.NoError(t, err)
 
 	// Case 2: File does not exist
-	err = validateFileExists("/path/to/non/existent/file", "")
+	err = validateFileExists(context.Background(), "/path/to/non/existent/file", "")
 	assert.Error(t, err)
 
 	// Case 3: Directory
@@ -34,7 +34,7 @@ func TestValidateFileExists(t *testing.T) {
 	require.NoError(t, err)
 	defer os.Remove(d)
 
-	err = validateFileExists(d, "")
+	err = validateFileExists(context.Background(), d, "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "is a directory")
 }
@@ -119,7 +119,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 			"": "/container/path",
 		},
 	}.Build()
-	err := validateContainerEnvironment(env)
+	err := validateContainerEnvironment(context.Background(), env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "host path is empty")
 
@@ -127,7 +127,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 	env.SetVolumes(map[string]string{
 		"/host/path": "",
 	})
-	err = validateContainerEnvironment(env)
+	err = validateContainerEnvironment(context.Background(), env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container path is empty")
 }
@@ -265,13 +265,13 @@ func TestValidateGCSettings(t *testing.T) {
 	// Case 1: Invalid interval
 	gc := &configv1.GCSettings{}
 	gc.SetInterval("invalid")
-	err := validateGCSettings(gc)
+	err := validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 
 	// Case 2: Invalid TTL
 	gc = &configv1.GCSettings{}
 	gc.SetTtl("invalid")
-	err = validateGCSettings(gc)
+	err = validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 
 	// Case 3: Empty path in Paths
@@ -279,7 +279,7 @@ func TestValidateGCSettings(t *testing.T) {
 		Enabled: proto.Bool(true),
 		Paths:   []string{""},
 	}.Build()
-	err = validateGCSettings(gc)
+	err = validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 
 	// Case 4: Relative path
@@ -287,7 +287,7 @@ func TestValidateGCSettings(t *testing.T) {
 		Enabled: proto.Bool(true),
 		Paths:   []string{"relative/path"},
 	}.Build()
-	err = validateGCSettings(gc)
+	err = validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 }
 
