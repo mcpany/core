@@ -53,11 +53,36 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
+	defer cli.Close()
+
 	_, err = cli.Ping(context.Background())
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Verify we can actually run a container (catches issues with overlayfs mounts in some envs)
+	ctx := context.Background()
+	// Ensure we have alpine:latest (best effort)
+	_, _ = cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("docker seems available but failed to create container: %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("docker seems available but failed to start container: %v", err)
+		return false
+	}
+
 	return true
 }
 
