@@ -36,6 +36,9 @@ all: gen
 	$(MAKE) -C server all
 	$(MAKE) -C ui build
 
+prepare:
+	$(MAKE) -C server prepare
+
 test: gen
 	$(MAKE) test-proto
 	$(MAKE) -C server test
