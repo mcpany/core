@@ -364,6 +364,12 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
+	// Initialize Official Collections (Idempotent)
+	if err := a.initializeOfficialCollections(opts.Ctx, storageStore); err != nil {
+		// Log but don't fail, as this is optional seeding
+		log.Error("Failed to initialize official collections", "error", err)
+	}
+
 	// Determine config sources
 	// Priority: Database < File (if enabled)
 	stores = append(stores, storageStore)
