@@ -210,6 +210,7 @@ The `service_config` oneof field can contain one of the following service types:
 - **`GraphqlUpstreamService`**: For GraphQL services.
 - **`WebsocketUpstreamService`**: For services that communicate over Websocket.
 - **`WebrtcUpstreamService`**: For services that communicate over WebRTC data channels.
+- **`SqlUpstreamService`**: For connecting to SQL databases (PostgreSQL, MySQL, SQLite).
 
 #### `GrpcUpstreamService`
 
@@ -513,6 +514,30 @@ Expose a WebRTC service for real-time communication, connecting to its signaling
 ```yaml
 webrtc_service:
   address: "https://signaling.example.com"
+```
+
+#### `SqlUpstreamService`
+
+| Field    | Type                            | Description                                                  |
+| -------- | ------------------------------- | ------------------------------------------------------------ |
+| `driver` | `string`                        | The database driver (`postgres`, `mysql`, `sqlite`).         |
+| `dsn`    | `SecretValue`                   | The Data Source Name (connection string).                    |
+| `calls`  | `map<string, SqlCallDefinition>`| A map of SQL queries exposed as tools.                       |
+
+##### Use Case and Example
+
+Expose a safe SQL query as a tool.
+
+```yaml
+sql_service:
+  driver: "postgres"
+  dsn:
+    environment_variable: "DB_DSN"
+  calls:
+    get_user:
+      query: "SELECT * FROM users WHERE id = :id"
+      arguments:
+        id: "int"
 ```
 
 ### Service Policies and Advanced Configuration
