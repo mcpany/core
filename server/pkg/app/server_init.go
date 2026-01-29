@@ -203,20 +203,13 @@ func (a *Application) initializeOfficialCollections(ctx context.Context, store c
 				configv1.UpstreamServiceConfig_builder{
 					Id:           proto.String("sqlite-db"),
 					Name:         proto.String("SQLite Database"),
-					Disable:      proto.Bool(false),
+					Disable:      proto.Bool(true), // Disabled by default to avoid auto-starting npx
 					CommandLineService: configv1.CommandLineUpstreamService_builder{
 						Command: proto.String("npx -y @modelcontextprotocol/server-sqlite"),
 						Env: map[string]*configv1.SecretValue{
 							"DB_PATH": {Value: &configv1.SecretValue_PlainText{PlainText: "./data.db"}},
 						},
 					}.Build(),
-					// Command line usually takes full string or separate args?
-					// configv1.CommandLineUpstreamService has `string command`.
-					// It usually implies full command line or executable?
-					// If `command` is "npx -y ...", server might split it.
-					// Let's assume full command string for now or check usage.
-					// server/pkg/upstream/command_line/provider.go: exec.CommandContext(ctx, parts[0], parts[1:]...)
-					// It splits by shell rules?
 				}.Build(),
 			},
 		}.Build(),
@@ -240,14 +233,5 @@ func (a *Application) initializeOfficialCollections(ctx context.Context, store c
 		}
 		log.Info("Initialized official collection", "name", col.GetName())
 	}
-	// Return nil even if errors occurred (we log them), as this is best-effort seeding.
-	// However, to satisfy linter (unparam), we could return error if ALL failed, or just ignore.
-	// But `unparam` complains if it's ALWAYS nil.
-	// We can return the last error if we want, or remove the return value if not needed by caller.
-	// But Caller expects error.
-	// Let's suppress unparam for this function or ensure it can return error.
-	// We return error inside the loop but we `continue`.
-	// Let's return the last error if any, or nil.
-	// Actually, just ignore unparam for this function via nolint.
 	return nil
 }
