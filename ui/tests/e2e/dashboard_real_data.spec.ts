@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
-    test.skip('should display seeded traffic data', async ({ page, request }) => {
+    test('should display seeded traffic data', async ({ page, request }) => {
         // 1. Seed data into the backend
         // We use the '/api/v1/debug/seed_traffic' endpoint which is proxied to the backend
         // traffic points: Time (HH:MM), Total, Errors, Latency
@@ -20,7 +20,8 @@ test.describe('Dashboard Real Data', () => {
         // Generate 60 points for the last 60 minutes
         for (let i = 59; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 60000);
-            const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            // Use UTC to match server assumption
+            const timeStr = t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' });
             trafficPoints.push({
                 time: timeStr,
                 requests: 100, // Constant request rate for easy verification
@@ -98,7 +99,7 @@ test.describe('Dashboard Real Data', () => {
          // 5 mins of high errors (100% errors) to cause "error" status
          for (let i = 0; i < 5; i++) {
              const t = new Date(now.getTime() - i * 60000);
-             const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+             const timeStr = t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' });
              trafficPoints.push({
                  time: timeStr,
                  requests: 100,
