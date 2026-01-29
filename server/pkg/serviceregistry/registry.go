@@ -62,6 +62,13 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// Returns the result.
 	// Returns true if successful.
 	GetServiceError(serviceID string) (string, bool)
+	// RegisterMockService registers a service for testing purposes without creating a real upstream.
+	//
+	// ctx is the context.
+	// serviceConfig is the config.
+	//
+	// Returns error.
+	RegisterMockService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) error
 }
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream
@@ -224,6 +231,38 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	}
 
 	return serviceID, discoveredTools, discoveredResources, nil
+}
+
+// RegisterMockService registers a service for testing purposes without creating a real upstream.
+// It directly injects the service info into the ToolManager and stores the config.
+func (r *ServiceRegistry) RegisterMockService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	serviceID, err := util.SanitizeServiceName(serviceConfig.GetName())
+	if err != nil {
+		return fmt.Errorf("failed to generate service key: %w", err)
+	}
+
+	// Register the config and clear error
+	r.serviceConfigs[serviceID] = serviceConfig
+	delete(r.serviceErrors, serviceID)
+	delete(r.healthErrors, serviceID)
+
+	// Construct ServiceInfo
+	info := &tool.ServiceInfo{
+		Name:         serviceConfig.GetName(),
+		Config:       serviceConfig,
+		HealthStatus: "healthy", // Mock services are always healthy
+	}
+
+	// Inject into ToolManager
+	r.toolManager.AddServiceInfo(serviceID, info)
+
+	// Add to serviceInfo map in registry too
+	r.serviceInfo[serviceID] = info
+
+	return nil
 }
 
 // AddServiceInfo stores metadata about a service, indexed by its ID.
