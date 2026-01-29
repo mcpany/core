@@ -16,9 +16,6 @@ interface ServiceTemplateSelectorProps {
   onSelect: (template: ServiceTemplate) => void;
 }
 
-/**
- * List of available service template categories.
- */
 const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Cloud", "System", "Utility", "Other"];
 
 /**

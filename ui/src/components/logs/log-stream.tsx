@@ -75,14 +75,6 @@ export interface LogEntry {
  */
 // Optimization: Memoize HighlightText to avoid unnecessary re-renders.
 // Accepting a regex instead of string prevents re-compiling the RegExp for every row.
-/**
- * Renders text with highlighted matches based on a regular expression.
- *
- * @param props - The component props.
- * @param props.text - The text content to display.
- * @param props.regex - The regular expression to match against the text for highlighting.
- * @returns The rendered component with highlighted matches.
- */
 const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
   if (!regex || !text) return <>{text}</>;
 
@@ -150,12 +142,11 @@ const safeParseJson = (str: string): unknown | null => {
 
 // Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
 /**
- * Renders a single log entry row, with support for expandable JSON content and text highlighting.
- *
+ * LogRow component.
  * @param props - The component props.
- * @param props.log - The log entry to display.
- * @param props.highlightRegex - The regex used to highlight matching search terms.
- * @returns The rendered log row component.
+ * @param props.log - The log property.
+ * @param props.highlightRegex - The regex for highlighting search terms.
+ * @returns The rendered component.
  */
 const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRegex: RegExp | null }) => {
   const duration = log.metadata?.duration as string | undefined

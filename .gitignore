@@ -62,4 +62,3 @@ proto/**/*.ts
 proto/google
 client_info.json
 oauth_env.sh
-AUDIT_REPORT.md

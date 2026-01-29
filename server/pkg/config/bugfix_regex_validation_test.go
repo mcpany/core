@@ -62,7 +62,6 @@ func TestReproFileSecretValidation(t *testing.T) {
 
 	assert.NotEmpty(t, errs, "Validation errors expected")
 	if len(errs) > 0 {
-		// Update: Regex validation for file paths is now disabled for security reasons (Blind File Read)
-		assert.Contains(t, errs[0].Err.Error(), "validation regex is not supported for secret file paths")
+		assert.Contains(t, errs[0].Err.Error(), "secret value does not match validation regex")
 	}
 }

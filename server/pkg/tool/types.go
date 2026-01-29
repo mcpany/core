@@ -1003,15 +1003,9 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 }
 
 func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (any, error) {
-	maxSize := getMaxHTTPResponseSize()
-	// Read up to maxSize + 1 to detect if it exceeds the limit
-	reader := io.LimitReader(resp.Body, maxSize+1)
-	respBody, err := io.ReadAll(reader)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
-	}
-	if int64(len(respBody)) > maxSize {
-		return nil, fmt.Errorf("response body exceeds maximum size of %d bytes", maxSize)
 	}
 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
@@ -1492,15 +1486,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	maxSize := getMaxHTTPResponseSize()
-	// Read up to maxSize + 1 to detect if it exceeds the limit
-	reader := io.LimitReader(resp.Body, maxSize+1)
-	respBody, err := io.ReadAll(reader)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read http response body: %w", err)
-	}
-	if int64(len(respBody)) > maxSize {
-		return nil, fmt.Errorf("response body exceeds maximum size of %d bytes", maxSize)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -2399,18 +2387,6 @@ func getMaxCommandOutputSize() int64 {
 		// Log error? For now just fallback.
 	}
 	return consts.DefaultMaxCommandOutputBytes
-}
-
-// getMaxHTTPResponseSize returns the maximum size of the HTTP response body in bytes.
-// It checks the MCPANY_MAX_HTTP_RESPONSE_SIZE environment variable.
-func getMaxHTTPResponseSize() int64 {
-	val := os.Getenv("MCPANY_MAX_HTTP_RESPONSE_SIZE")
-	if val != "" {
-		if size, err := strconv.ParseInt(val, 10, 64); err == nil {
-			return size
-		}
-	}
-	return consts.DefaultMaxHTTPResponseBytes
 }
 
 func isSensitiveHeader(key string) bool {
