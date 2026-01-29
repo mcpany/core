@@ -91,10 +91,10 @@ test.describe('Generate Detailed Docs Screenshots', () => {
      });
 
      // Mock Logs
-     await page.route('**/api/v1/logs/stream**', async route => {
-         // This might be WS, but if HTTP fallback:
-         await route.fulfill({ json: [] });
-     });
+     // await page.route('**/api/v1/logs/stream**', async route => {
+     //     // This might be WS, but if HTTP fallback:
+     //     await route.fulfill({ json: [] });
+     // });
 
      // Mock Health Check to prevent connection error banner
      await page.route('**/healthz', async route => {
@@ -187,7 +187,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         console.warn('Primary DB not visible, proceeding with screenshot of empty/error state');
     }
     // Give widgets extra time to render after data fetch
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(5000);
     await expect(page.locator('body')).toBeVisible();
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'dashboard_overview.png'), fullPage: true });
   });
@@ -438,6 +438,23 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Network Graph Screenshots', async ({ page }) => {
+      // Mock Topology for Network Graph
+      await page.route('**/api/v1/topology', async route => {
+          await route.fulfill({
+              json: {
+                  nodes: [
+                      { id: 'service-a', type: 'service', label: 'Service A', status: 'healthy' },
+                      { id: 'service-b', type: 'service', label: 'Service B', status: 'degraded' },
+                      { id: 'db-primary', type: 'resource', label: 'Primary DB', status: 'healthy' }
+                  ],
+                  edges: [
+                      { source: 'service-a', target: 'service-b', value: 100 },
+                      { source: 'service-b', target: 'db-primary', value: 50 }
+                  ]
+              }
+          });
+      });
+
       await page.goto('/network');
       await page.waitForTimeout(2000); // Graph rendering
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'network_graph.png'), fullPage: true });
@@ -587,15 +604,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.goto('/settings');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings.png'), fullPage: true });
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_profiles.png'), fullPage: true });
-      await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'profiles.png'), fullPage: true }); // Legacy alias
 
-      // Click General Tab
-      await page.getByRole('tab', { name: 'General' }).click();
+      // Click Global Config Tab
+      await page.getByRole('tab', { name: 'Global Config' }).click();
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_general.png'), fullPage: true });
 
-      // Legacy alias for Auth Settings (which is another tab)
+      // Auth Settings
       await page.getByRole('tab', { name: 'Authentication' }).click();
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'settings_auth.png'), fullPage: true });

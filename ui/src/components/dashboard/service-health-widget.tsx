@@ -35,7 +35,7 @@ const getStatusColor = (status: string) => {
       case "healthy": return "border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400";
       case "degraded": return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400";
       case "unhealthy": return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400";
-      case "inactive": return "border-muted bg-muted/50 text-muted-foreground";
+      case "inactive": return "border-muted bg-muted/50 text-muted-foreground dark:bg-muted/80 dark:text-muted-foreground/80";
       default: return "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-800/50 dark:text-gray-400";
     }
 };
@@ -80,7 +80,7 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
           case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;
           case "degraded": colorClass = "bg-amber-500/80 hover:bg-amber-500"; break;
           case "unhealthy": colorClass = "bg-red-500/80 hover:bg-red-500"; break;
-          case "inactive": colorClass = "bg-slate-200 dark:bg-slate-700 opacity-50"; break;
+          case "inactive": colorClass = "bg-slate-300 dark:bg-slate-600"; break;
         }
 
         return (
