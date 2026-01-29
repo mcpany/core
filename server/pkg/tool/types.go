@@ -2588,14 +2588,11 @@ func isShellCommand(cmd string) bool {
 		// Additional shells/runners found missing
 		"busybox", "expect", "tclsh", "wish",
 		"irb", "php-cgi", "perl5",
-		"openssl", "git", "hg", "svn",
-		"wget", "curl", "nc", "netcat", "ncat",
-		"socat", "telnet",
 		// Editors and pagers that can execute commands
 		"vi", "vim", "nvim", "emacs", "nano",
 		"less", "more", "man",
 		// Build tools and others that can execute commands
-		"tar", "find", "xargs", "tee",
+		"find", "xargs",
 		"make", "rake", "ant", "mvn", "gradle",
 		"npm", "yarn", "pnpm", "npx", "bunx", "go", "cargo", "pip",
 		// Cloud/DevOps tools that can execute commands or have sensitive flags
@@ -2663,7 +2660,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+	// We also block comma (,) because it is used as a delimiter in some interpreters (e.g. Perl qx).
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\,"
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
