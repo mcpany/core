@@ -21,9 +21,16 @@ message Profile {
   Authentication authentication = 3 [json_name = "authentication"];
 }
 
+message ToolConfig {
+  // Whether the tool is disabled.
+  bool disabled = 1 [json_name = "disabled"];
+}
+
 message ProfileServiceConfig {
   // Whether the service is enabled in this profile.
   bool enabled = 1 [features.field_presence = EXPLICIT];
+  // Tool-specific configuration. Key is the tool name (e.g. "delete_file").
+  map<string, ToolConfig> tools = 2 [json_name = "tools"];
   // Other service-specific overrides can be added here.
   // We explicitly removed upstream_authentication to use centralized secrets instead.
 }

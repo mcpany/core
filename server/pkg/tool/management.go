@@ -229,6 +229,11 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 	// 3. Check Service Config
 	if sc, ok := def.GetServiceConfig()[t.GetServiceId()]; ok {
 		if sc.GetEnabled() {
+			// Check if specific tool is disabled
+			if tc, ok := sc.GetTools()[t.GetName()]; ok && tc.GetDisabled() {
+				return false
+			}
+
 			// If selector has criteria, apply them.
 			if def.GetSelector() != nil {
 				hasCriteria := len(def.GetSelector().GetTags()) > 0 || len(def.GetSelector().GetToolProperties()) > 0
@@ -246,6 +251,11 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 		if info, found := tm.GetServiceInfo(t.GetServiceId()); found && info.Config != nil {
 			if sc, ok := def.GetServiceConfig()[info.Config.GetName()]; ok {
 				if sc.GetEnabled() {
+					// Check if specific tool is disabled
+					if tc, ok := sc.GetTools()[t.GetName()]; ok && tc.GetDisabled() {
+						return false
+					}
+
 					// If selector has criteria, apply them.
 					if def.GetSelector() != nil {
 						hasCriteria := len(def.GetSelector().GetTags()) > 0 || len(def.GetSelector().GetToolProperties()) > 0
@@ -699,13 +709,9 @@ func (tm *Manager) AddTool(tool Tool) error {
 		}
 
 		if tool.Tool().GetInputSchema() != nil {
-			b, err := tool.Tool().GetInputSchema().MarshalJSON()
-			if err != nil {
-				return fmt.Errorf("failed to marshal input schema: %w", err)
-			}
-			if err := json.Unmarshal(b, &mcpTool.InputSchema); err != nil {
-				return fmt.Errorf("failed to unmarshal input schema: %w", err)
-			}
+			// ⚡ BOLT: Direct Struct -> Map conversion avoids JSON serialization overhead
+			// Randomized Selection from Top 5 High-Impact Targets
+			mcpTool.InputSchema = tool.Tool().GetInputSchema().AsMap()
 		}
 
 

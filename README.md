@@ -8,43 +8,99 @@
   <img src="server/docs/images/logo.png" alt="MCP Any Logo" width="200"/>
 </p>
 
-# MCP Any: Configuration-Driven MCP Server
+# MCP Any: The Universal MCP Adapter
 
 **One server, Infinite possibilities.**
 
-MCP Any revolutionizes how you interact with the Model Context Protocol (MCP). It is not just another MCP proxy or aggregator—it is a powerful **Universal Adapter** that turns _any_ API into an MCP-compliant server through simple configuration.
+## 1. Project Identity
 
-Traditional MCP adoption requires running a separate server binary for every tool or service you want to expose. This leads to "binary fatigue," complex local setups, and maintenance nightmares.
+**What is this?**
+MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
 
-**MCP Any solves this with a Single Binary approach:**
+**Why does it exist?**
+Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
-1.  **Install once**: Run a single `mcpany` server instance.
-2.  **Configure everything**: Load lightweight YAML/JSON configurations to capability-enable different APIs (REST, gRPC, GraphQL, Command-line).
-3.  **Run anywhere**: No need for `npx`, `python`, or language-specific runtimes for each tool.
+**The Elevator Pitch:**
+Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## ❓ Philosophy: Configuration over Code
+## 2. Quick Start
 
-We believe you shouldn't have to write and maintain new code just to expose an existing API to your AI assistant.
+Get up and running with a weather service example in minutes.
 
-- **Metamcp / Onemcp vs. MCP Any**: While other tools might proxy existing MCP servers (aggregator pattern), **MCP Any** creates them from scratch using your existing upstream APIs.
-- **No More "Sidecar hell"**: Instead of running 10 different containers for 10 different tools, run 1 `mcpany` container loaded with 10 config files.
-- **Ops Friendly**: Centralize authentication, rate limiting, and observability in one robust layer.
+### Prerequisites
+*   [Go 1.23+](https://go.dev/doc/install)
+*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-### Comparison with Traditional MCP Servers
+### Commands
 
-Unlike traditional "Wrapper" MCP servers (like `mcp-server-postgres`, `mcp-server-github`, etc.) which are compiled binaries dedicated to a single service, **MCP Any** is a generic runtime.
+**Option 1: Docker (Fastest)**
 
-| Feature           | Traditional MCP Server (e.g., `mcp-server-postgres`)                    | MCP Any                                                                         |
-| :---------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------ |
-| **Architecture**  | **Code-Driven Wrapper**: Wraps internal API calls with MCP annotations. | **Config-Driven Adapter**: Maps existing API endpoints to MCP tools via config. |
-| **Deployment**    | **1 Binary per Service**: Need 10 different binaries for 10 services.   | **1 Binary for All**: One `mcpany` binary handles N services.                   |
-| **Updates**       | **Recompile & Redistribute**: Internal API change = New Binary release. | **Update Config**: API change = Edit YAML/JSON file & reload.                   |
-| **Maintenance**   | **High**: Manage dependencies/versions for N projects.                  | **Low**: Upgrade one core server; just swap config files.                       |
-| **Extensibility** | Write code (TypeScript/Python/Go).                                      | Write JSON/YAML.                                                                |
+```bash
+docker run -d --rm --name mcpany-server \
+  -p 50050:50050 \
+  ghcr.io/mcpany/server:dev-latest \
+  run --config-path https://raw.githubusercontent.com/mcpany/core/main/server/examples/popular_services/wttr.in/config.yaml
+```
 
-Most "popular" MCP servers today are bespoke binaries. If the upstream API changes, you must wait for the maintainer to update the code, release a new version, and then you must redeploy. With **MCP Any**, you simply update your configuration file to match the new API signature—zero downtime, zero recompilation.
+**Option 2: Build from Source**
 
-### High-Level Architecture
+```bash
+# 1. Clone the repository
+git clone https://github.com/mcpany/core.git
+cd core
+
+# 2. Install dependencies and build
+make prepare
+make build
+
+# 3. Run the server (using the example weather config)
+./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+```
+
+**Connect your Client:**
+Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `http://localhost:50050`.
+
+```bash
+gemini mcp add --transport http --trust mcpany http://localhost:50050
+```
+
+## 3. Developer Workflow
+
+For contributors and developers extending the core platform.
+
+**Run Tests**
+Execute all unit, integration, and end-to-end tests.
+```bash
+make test
+```
+
+**Lint Code**
+Ensure code quality and style compliance (Go & TypeScript).
+```bash
+make lint
+```
+
+**Build Artifacts**
+Compile the server binary and frontend assets.
+```bash
+make build
+```
+
+**Generate Code**
+Regenerate Protocol Buffers and other auto-generated files.
+```bash
+make gen
+```
+
+## 4. Architecture
+
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+
+**High-Level Summary:**
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration.
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
 
 ```mermaid
 graph TD
@@ -64,224 +120,26 @@ graph TD
     end
 ```
 
-## ✨ Key Features
+### Key Features
+*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
+*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
+*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
+*   **Network Topology**: Visual graph of clients, services, and tools.
+*   **Observability**: Real-time metrics and audit logging.
+*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
 
-- **Dynamic Config Reloading**: Automatically detects changes to configuration files (including atomic saves) and hot-swaps the registry without restarting the server.
-- **Dynamic Tool Registration & Auto-Discovery**: Automatically discover and register tools from various backend services. For gRPC and OpenAPI, simply provide the server URL or spec URL—MCP Any handles the rest (no manual tool definition required).
-- **Multiple Service Types**: Supports a wide range of service types, including:
-  - **gRPC**: Register services from `.proto` files or by using gRPC reflection.
-  - **OpenAPI**: Ingest OpenAPI (Swagger) specifications to expose RESTful APIs as tools.
-  - **HTTP**: Expose any HTTP endpoint as a tool.
-  - **GraphQL**: Expose a GraphQL API as a set of tools, with the ability to customize the selection set for each query.
-  - **SQL**: Connect to SQL databases (Postgres, SQLite, MySQL) and expose safe queries as tools.
-  - **WebSocket**: Connect to WebSocket servers.
-  - **WebRTC**: Connect to WebRTC services.
-- **Advanced Service & Safety Policies**:
-  - **Safety**: Control which tools are exposed to the AI to limit context (reduce hallucinations) and prevent dangerous actions (e.g., blocking `DELETE` operations).
-  - **Performance**: Configure [Caching](server/docs/caching.md) and Rate Limiting to optimize performance and protect upstream services.
-  - **Semantic Caching**: Intelligent caching using vector embeddings to serve similar requests from cache. Supports **SQLite persistence** to survive restarts.
-  - **Audit Logging**: Keep a tamper-evident record of all tool executions in a JSON file or **SQLite database** (using SHA-256 hash chaining) for compliance and security auditing.
-- **Network Topology Visualization**: Visualizes your entire MCP ecosystem (Clients, Core, Services, Tools, API Calls) in a 5-level hierarchical interactive graph with real-time QPS and Latency metrics.
-  ![Network Topology](ui/docs/screenshots/network.png)
-- **MCP Any Proxy**: Proxy and re-expose tools from another MCP Any instance.
-- **MCP Sampling Support**: Enables upstream tools to request sampling (LLM generation) from the connected client, fully supported via `mcp.Client` options.
-- **Upstream Authentication**: Securely connect to your backend services using:
-  - **API Keys**
-  - **Bearer Tokens**
-  - **Basic Auth**
-  - **mTLS**
-- **Unified API**: Interact with all registered tools through a single, consistent API based on the [Model Context Protocol](https://modelcontext.protocol.ai/).
-- **Multi-User & Multi-Profile**: Securely support multiple users with distinct profiles, each with its own set of enabled services and granular authentication.
-- **Advanced Configuration**: Customize tool behavior with [Merge Strategies and Profile Filtering](server/docs/feature/merge_strategy.md).
-- **Extensible**: Designed to be easily extended with new service types and capabilities.
+### Troubleshooting
+*   **Protobuf Errors**: Run `make prepare` to install dependencies.
+*   **Docker Issues**: Ensure user is in the `docker` group or use `sudo`.
+*   **Port Conflicts**: Check ports 50050, 50051, and 9002.
 
-## 🖥️ Management Dashboard
+### Key Documentation
+*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
+*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
+*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
+*   **[Examples](server/docs/examples.md)**: Hands-on examples.
 
-The **MCP Any UI** provides a powerful interface for managing your server, services, and configuration.
-
-### Dashboard
-Real-time metrics and system health at a glance.
-![Dashboard](ui/docs/screenshots/dashboard.png)
-
-### Services Management
-Manage upstream services (HTTP, gRPC, MCP, CMD), toggle them on/off, and configure their settings.
-![Services](ui/docs/screenshots/services.png)
-
-### Interactive Playground
-Test your registered tools directly from the browser with auto-generated forms.
-![Playground](ui/docs/screenshots/playground.png)
-
-### Configuration via UI
-You can manage core configuration directly from the UI without editing YAML files:
-- **General**: Configure server settings.
-- **Auth**: Manage users and authentication profiles.
-- **Secrets**: Securely manage API keys and credentials for upstream services.
-![Settings](ui/docs/screenshots/settings.png)
-
-## ⚡ Quick Start (5 Minutes)
-
-Ready to give your AI access to real-time data? Let's connect a public Weather API to **Gemini CLI** (or any MCP client) using MCP Any.
-
-### 1. Prerequisites
-
-- **Go**: Ensure you have [Go](https://go.dev/doc/install) installed (1.23+ recommended).
-- **Gemini CLI**: If not installed, see the [installation guide](https://docs.cloud.google.com/gemini/docs/codeassist/gemini-cli).
-
-_(Prefer building from source? See [Getting Started](server/docs/developer_guide.md) for build instructions.)_
-
-### 2. Configuration
-
-We will use the pre-built `wttr.in` configuration available in the examples directory: `server/examples/popular_services/wttr.in/config.yaml`.
-
-### Quick Start: Weather Service
-
-1.  **Run the Server:**
-
-    Choose one of the following methods to run the server.
-
-    **Option 1: Remote Configuration (Recommended)**
-
-    Fastest way to get started. No need to clone the repository.
-
-    ```bash
-    docker run -d --rm --name mcpany-server \
-      -p 50050:50050 \
-      ghcr.io/mcpany/server:dev-latest \
-      run --config-path https://raw.githubusercontent.com/mcpany/core/main/server/examples/popular_services/wttr.in/config.yaml
-    ```
-
-    **Option 2: Local Configuration**
-
-    Best if you want to modify the configuration or use your own. Requires cloning the repository.
-
-    ```bash
-    # Clone the repository
-    git clone https://github.com/mcpany/core.git
-    cd core
-
-    # Run with local config mounted
-    docker run -d --rm --name mcpany-server \
-      -p 50050:50050 \
-      -v $(pwd)/server/examples/popular_services/wttr.in/config.yaml:/config.yaml \
-      ghcr.io/mcpany/server:dev-latest \
-      run --config-path /config.yaml
-    ```
-
-    > **Tip:** Need detailed logs? Add the `--debug` flag to the end of the `run` command.
-
-    **Option 3: Local Installation (from Source)**
-
-    Run the server directly on your machine without Docker.
-
-    ```bash
-    # Clone the repository
-    git clone https://github.com/mcpany/core.git
-    cd core
-
-    # Install dependencies and build
-    make prepare
-    make build
-
-    # Run the server
-    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
-    ```
-
-2.  **Connect Gemini CLI:**
-
-    ```bash
-    gemini mcp add --transport http --trust mcpany http://localhost:50050
-    ```
-
-3.  **Chat!**
-
-    Ask your AI about the weather:
-
-    ```bash
-    gemini -m gemini-2.5-flash -p "What is the weather in London?"
-    ```
-
-    The AI will:
-
-    1.  **Call** the tool (e.g., `wttrin_<hash>.get_weather`).
-    2.  `mcpany` will **proxy** the request to `https://wttr.in`.
-    3.  The AI receives the JSON response and answers your question!
-
-Ask about the moon phase:
-
-```bash
-gemini -m gemini-2.5-flash -p "What is the moon phase?"
-```
-
-The AI will:
-
-1.  **Call** the `get_moon_phase` tool.
-2.  `mcpany` will **proxy** the request to `https://wttr.in/moon`.
-3.  The AI receives the ASCII art response and describes it!
-
-For more complex examples, including gRPC, OpenAPI, and authentication, check out [server/docs/reference/configuration.md](server/docs/reference/configuration.md).
-
-## 💡 More Usage
-
-Once the server is running, you can interact with it using its JSON-RPC API.
-
-- For detailed configuration options, see **[Configuration Reference](server/docs/reference/configuration.md)**.
-- For instructions on how to connect `mcpany` with your favorite AI coding assistant (Claude Desktop, Cursor, VS Code, JetBrains, Cline), see the **[Integration Guide](server/docs/integrations.md)**.
-- For hands-on examples, see the **[Examples](server/docs/examples.md)** and the **[Profile Authentication Example](server/examples/profile_example/README.md)**.
-- For monitoring metrics, see **[Monitoring](server/docs/monitoring.md)**.
-
-## 🛠️ Development Guide
-
-We welcome contributions to MCP Any! This section provides a brief overview of how to set up your development environment. For more detailed information, including code structure, service registration, and debugging tips, please refer to the [**Developer Guide**](server/docs/developer_guide.md).
-
-### Prerequisites
-
-- **Go**: Version 1.23+
-- **Docker**: For running tests and building images.
-- **Make**: For running build automation scripts.
-
-### Quick Setup
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/mcpany/core.git
-    cd core
-    ```
-
-2.  **Install dependencies and tools:**
-    The project uses a `Makefile` to automate the installation of all necessary development tools, including `protoc`, Go protobuf plugins, linters, and pre-commit hooks.
-    ```bash
-    make prepare
-    ```
-
-### Common Commands
-
-- **Build**: `make build`
-    - Compiles the server binary to `build/bin/server`.
-- **Test**: `make test`
-    - Runs all unit, integration, and E2E tests to ensure system stability.
-- **Lint**: `make lint`
-    - Runs `golangci-lint` and other static analysis tools to maintain code quality.
-- **Check Docs**:
-    - Go: `go run server/tools/check_doc.go server/`
-    - TypeScript: `python3 server/tools/check_ts_doc.py`
-- **Generate**: `make gen`
-    - Regenerates Go and TypeScript code from Protocol Buffers definitions.
-- **Clean**: `make clean`
-    - Removes build artifacts and generated files.
-
-### Running Locally
-
-After building, you can run the server locally:
-
-```bash
-./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
-```
-
-**Note:** By default, the server prioritizes database configuration. To load configuration from files (and enable read-only mode for those settings), set the `MCPANY_ENABLE_FILE_CONFIG` environment variable to `true`:
-
-```bash
-MCPANY_ENABLE_FILE_CONFIG=true ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
-```
+---
 
 ## ⚙️ Configuration
 
