@@ -348,7 +348,7 @@ func (mp *ManagedProcess) Start() error {
 
 		err := mp.cmd.Wait()
 		// Log output regardless of error, can be useful for debugging successful exits too
-		mp.t.Logf("[%s] Process %s finished. Stdout:\n%s\nStderr:\n%s", mp.label, mp.cmd.Path, mp.stdout.String(), mp.stderr.String())
+		// mp.t.Logf("[%s] Process %s finished. Stdout:\n%s\nStderr:\n%s", mp.label, mp.cmd.Path, mp.stdout.String(), mp.stderr.String())
 		if err != nil {
 			errStr := err.Error()
 			switch {
