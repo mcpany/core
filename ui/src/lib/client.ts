@@ -709,6 +709,19 @@ export const apiClient = {
     },
 
     /**
+     * Reveals a secret value.
+     * @param id The ID of the secret to reveal.
+     * @returns A promise that resolves to the secret value.
+     */
+    revealSecret: async (id: string): Promise<{ value: string }> => {
+        const res = await fetchWithAuth(`/api/v1/secrets/${id}/reveal`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to reveal secret');
+        return res.json();
+    },
+
+    /**
      * Saves a secret.
      * @param secret The secret definition to save.
      * @returns A promise that resolves to the saved secret.

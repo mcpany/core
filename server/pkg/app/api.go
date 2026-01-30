@@ -844,6 +844,16 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			return
 		}
 
+		if strings.HasSuffix(path, "/reveal") {
+			id := strings.TrimSuffix(path, "/reveal")
+			if id == "" {
+				http.Error(w, "id required", http.StatusBadRequest)
+				return
+			}
+			a.handleSecretReveal(w, r, id, store)
+			return
+		}
+
 		switch r.Method {
 		case http.MethodGet:
 			secret, err := store.GetSecret(r.Context(), path)
@@ -906,6 +916,33 @@ func (a *Application) handleSecretDetail(store storage.Storage) http.HandlerFunc
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func (a *Application) handleSecretReveal(w http.ResponseWriter, r *http.Request, id string, store storage.Storage) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	secret, err := store.GetSecret(r.Context(), id)
+	if err != nil {
+		logging.GetLogger().Error("failed to get secret for reveal", "id", id, "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if secret == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Log the access (Audit)
+	user, _ := auth.UserFromContext(r.Context())
+	logging.GetLogger().Info("Secret revealed", "id", id, "user", user)
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]string{
+		"value": secret.GetValue(),
+	})
 }
 
 func (a *Application) handleProfiles(store storage.Storage) http.HandlerFunc {

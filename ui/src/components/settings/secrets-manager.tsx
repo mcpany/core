@@ -270,15 +270,51 @@ export function SecretsManager() {
  * @returns The rendered component.
  */
 function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
-    const [isVisible, setIsVisible] = useState(false);
+    const [revealedValue, setRevealedValue] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
     const { toast } = useToast();
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(secret.value);
-        toast({
-            title: "Copied",
-            description: "Secret value copied to clipboard.",
-        });
+    const handleReveal = async () => {
+        if (revealedValue) {
+            setRevealedValue(null);
+            return;
+        }
+        setLoading(true);
+        try {
+            const res = await apiClient.revealSecret(secret.id);
+            setRevealedValue(res.value);
+        } catch (e) {
+            console.error(e);
+            toast({ title: "Error", description: "Failed to reveal secret", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCopy = async () => {
+        let value = revealedValue;
+        if (!value) {
+            setLoading(true);
+            try {
+                const res = await apiClient.revealSecret(secret.id);
+                value = res.value;
+                setRevealedValue(value);
+            } catch (e) {
+                console.error(e);
+                toast({ title: "Error", description: "Failed to copy secret", variant: "destructive" });
+                setLoading(false);
+                return;
+            }
+            setLoading(false);
+        }
+
+        if (value) {
+            navigator.clipboard.writeText(value);
+            toast({
+                title: "Copied",
+                description: "Secret value copied to clipboard.",
+            });
+        }
     };
 
     return (
@@ -301,24 +337,26 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
             </div>
 
             <div className="flex items-center gap-2">
-                 <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
+                <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2 py-1 border font-mono text-xs w-[200px] justify-between">
                     <span className="truncate">
-                        {isVisible ? secret.value : "•".repeat(24)}
+                        {loading ? <RefreshCw className="h-3 w-3 animate-spin" /> :
+                            revealedValue ? revealedValue : "•".repeat(24)}
                     </span>
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-4 w-4 hover:bg-transparent"
-                        onClick={() => setIsVisible(!isVisible)}
-                        aria-label={isVisible ? "Hide secret" : "Show secret"}
+                        onClick={handleReveal}
+                        disabled={loading}
+                        aria-label={revealedValue ? "Hide secret" : "Show secret"}
                     >
-                        {isVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                        {revealedValue ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={copyToClipboard} aria-label="Copy secret">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} disabled={loading} aria-label="Copy secret">
                     <Copy className="h-4 w-4 text-muted-foreground" />
                 </Button>
-                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10" onClick={() => onDelete(secret.id)} aria-label="Delete secret">
                     <Trash2 className="h-4 w-4" />
                 </Button>
             </div>
