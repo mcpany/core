@@ -14,6 +14,14 @@ type ActionableError struct {
 	Suggestion string
 }
 
+// LogFields returns structured fields for logging.
+func (e *ActionableError) LogFields() map[string]interface{} {
+	return map[string]interface{}{
+		"error":      e.Err.Error(),
+		"suggestion": e.Suggestion,
+	}
+}
+
 // Error implements the error interface.
 //
 // Returns the error message including the suggestion.

@@ -43,6 +43,8 @@ type CheckResult struct {
 	Status      Status
 	Message     string
 	Error       error
+	Latency     time.Duration
+	Fix         func() error
 }
 
 // RunChecks performs connectivity and health checks on the provided configuration.
@@ -77,6 +79,7 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 
 // CheckService performs a connectivity check for a single service.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
+	start := time.Now()
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -133,6 +136,7 @@ func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 	if authMsg != "" {
 		res.Message = authMsg + res.Message
 	}
+	res.Latency = time.Since(start)
 	return res
 }
 
@@ -469,11 +473,18 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 func checkFilesystemService(_ context.Context, s *configv1.FilesystemUpstreamService) CheckResult {
 	for vPath, hostPath := range s.GetRootPaths() {
 		if err := validation.FileExists(hostPath); err != nil {
-			return CheckResult{
+			res := CheckResult{
 				Status:  StatusError,
 				Message: fmt.Sprintf("Root path %q -> %q not found or inaccessible: %v", vPath, hostPath, err),
 				Error:   err,
 			}
+			// If missing, offer to create it
+			if os.IsNotExist(err) && !s.GetReadOnly() {
+				res.Fix = func() error {
+					return os.MkdirAll(hostPath, 0750)
+				}
+			}
+			return res
 		}
 	}
 	return CheckResult{

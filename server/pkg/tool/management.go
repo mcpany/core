@@ -152,6 +152,7 @@ type Manager struct {
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
 	allowedServicesCache map[string]map[string]bool
+	history              *ExecutionHistory
 }
 
 // NewManager creates and returns a new, empty Manager.
@@ -167,6 +168,7 @@ func NewManager(bus *bus.Provider) *Manager {
 		nameMap:              xsync.NewMap[string, string](),
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
 		allowedServicesCache: make(map[string]map[string]bool),
+		history:              NewExecutionHistory(100),
 	}
 }
 
@@ -558,11 +560,19 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	result, err := chain(ctx, req)
 	duration := time.Since(start)
 
+	record := ExecutionRecord{
+		ToolName:  req.ToolName,
+		Timestamp: start,
+		Duration:  duration.String(),
+		Success:   err == nil,
+	}
 	if err != nil {
+		record.Error = err.Error()
 		log.Error("Tool execution failed", "error", err, "duration", duration.String())
 	} else {
 		log.Info("Tool execution successful", "duration", duration.String())
 	}
+	tm.history.Add(record)
 	return result, err
 }
 
@@ -684,13 +694,19 @@ func (tm *Manager) AddTool(tool Tool) error {
 	// If the tool has a Service ID, we ONLY expose the namespaced version "service.tool"
 	// to prevent auth bypasses and collisions.
 	// If it doesn't have a Service ID (e.g. internal tools), we expose the short name.
+	var exposedName string
 	if tool.Tool().GetServiceId() == "" {
-		tm.nameMap.Store(tool.Tool().GetName(), toolID)
+		exposedName = tool.Tool().GetName()
 	} else {
 		// Enforce namespacing for service tools
-		fullExposedName := tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
-		tm.nameMap.Store(fullExposedName, toolID)
+		exposedName = tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
 	}
+
+	if _, exists := tm.nameMap.Load(exposedName); exists {
+		return fmt.Errorf("duplicate tool detected: %s", exposedName)
+	}
+
+	tm.nameMap.Store(exposedName, toolID)
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
@@ -899,6 +915,11 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 
 	tm.cachedMCPTools = mcpTools
 	return mcpTools
+}
+
+// GetHistory returns the execution history.
+func (tm *Manager) GetHistory() []ExecutionRecord {
+	return tm.history.List()
 }
 
 // ClearToolsForService removes all tools associated with a given service key from

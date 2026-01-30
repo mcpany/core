@@ -63,7 +63,12 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		// Map errors to services for logging
 		serviceErrors := make(map[string]string)
 		for _, e := range validationErrors {
-			log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+			var ae *ActionableError
+			if errors.As(e.Err, &ae) {
+				log.Error("Config validation error", "service", e.ServiceName, "error", ae.Err, "suggestion", ae.Suggestion)
+			} else {
+				log.Error("Config validation error", "service", e.ServiceName, "error", e.Err)
+			}
 			serviceErrors[e.ServiceName] = e.Err.Error()
 		}
 

@@ -5,7 +5,9 @@
 package main
 
 import (
+	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -376,32 +378,129 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 				return fmt.Errorf("failed to load configurations: %w", err)
 			}
 
-			fmt.Println("Running doctor checks...")
+			format, _ := cmd.Flags().GetString("format")
+			autoFix, _ := cmd.Flags().GetBool("fix")
+
+			const formatHTML = "html"
+
+			if format != formatHTML {
+				fmt.Println("Running doctor checks...")
+			}
 			results := doctor.RunChecks(context.Background(), configs)
 
-			doctor.PrintResults(cmd.OutOrStdout(), results)
+			if format == formatHTML {
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), doctor.GenerateHTML(results))
+			} else {
+				doctor.PrintResults(cmd.OutOrStdout(), results)
+			}
 
 			hasErrors := false
 			for _, res := range results {
 				if res.Status == doctor.StatusError {
 					hasErrors = true
-					break
+					if autoFix && res.Fix != nil {
+						fmt.Printf("🛠️  Attempting fix for %s...\n", res.ServiceName)
+						if err := res.Fix(); err != nil {
+							fmt.Printf("❌ Fix failed: %v\n", err)
+						} else {
+							fmt.Printf("✅ Fixed!\n")
+						}
+					}
 				}
 			}
 
 			if hasErrors {
 				return fmt.Errorf("doctor checks failed with errors")
 			}
-			fmt.Println("All checks passed!")
+			if format != formatHTML {
+				fmt.Println("All checks passed!")
+			}
 			return nil
 		},
 	}
+	doctorCmd.Flags().String("format", "text", "Output format (text, html)")
+	doctorCmd.Flags().Bool("fix", false, "Automatically attempt to fix simple issues")
 	rootCmd.AddCommand(doctorCmd)
 
 	configCmd := &cobra.Command{
 		Use:   "config",
 		Short: "Manage configuration",
 	}
+
+	fixEnvCmd := &cobra.Command{
+		Use:   "fix-env",
+		Short: "Interactively fix missing environment variables",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			osFs := afero.NewOsFs()
+			cfgSettings := config.GlobalSettings()
+			if err := cfgSettings.Load(cmd, osFs); err != nil {
+				return err
+			}
+
+			store := config.NewFileStore(osFs, cfgSettings.ConfigPaths())
+			store.SetIgnoreMissingEnv(true)
+			configs, err := config.LoadResolvedConfig(context.Background(), store)
+			if err != nil {
+				return fmt.Errorf("failed to load configurations: %w", err)
+			}
+
+			validationErrors := config.Validate(context.Background(), configs, config.Server)
+			if len(validationErrors) == 0 {
+				fmt.Println("✅ Configuration is valid. No missing environment variables detected.")
+				return nil
+			}
+
+			reader := bufio.NewReader(os.Stdin)
+			prompt := func(msg string) (string, error) {
+				fmt.Print(msg)
+				input, err := reader.ReadString('\n')
+				if err != nil {
+					return "", err
+				}
+				return strings.TrimSpace(input), nil
+			}
+
+			var fixedCount int
+			for _, vErr := range validationErrors {
+				var ae *config.ActionableError
+				if errors.As(vErr.Err, &ae) {
+					// Check if it looks like an env var issue
+					if strings.Contains(strings.ToLower(ae.Error()), "variable") || strings.Contains(strings.ToLower(ae.Suggestion), "env") {
+						fmt.Printf("\n❌ Issue: %v\n", ae.Err)
+						fmt.Printf("💡 Suggestion: %s\n", ae.Suggestion)
+
+						ans, _ := prompt("Add to .env? [y/N]: ")
+						if strings.ToLower(ans) == "y" {
+							key, _ := prompt("Enter Variable Name: ")
+							val, _ := prompt("Enter Value: ")
+							if key != "" && val != "" {
+								f, err := os.OpenFile(".env", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+								if err != nil {
+									fmt.Printf("Failed to open .env: %v\n", err)
+									continue
+								}
+								if _, err := fmt.Fprintf(f, "\n%s=%s\n", key, val); err != nil {
+									fmt.Printf("Failed to write to .env: %v\n", err)
+								} else {
+									fmt.Println("✅ Added to .env")
+									fixedCount++
+								}
+								_ = f.Close()
+							}
+						}
+					}
+				}
+			}
+
+			if fixedCount > 0 {
+				fmt.Printf("\n🎉 Fixed %d issues. Please run 'mcpany run' again.\n", fixedCount)
+			} else {
+				fmt.Println("\nNo changes made.")
+			}
+			return nil
+		},
+	}
+	configCmd.AddCommand(fixEnvCmd)
 
 	generateCmd := &cobra.Command{
 		Use:   "generate",
@@ -498,6 +597,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		Use:   "validate",
 		Short: "Validate the configuration file",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			interactive, _ := cmd.Flags().GetBool("interactive")
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, osFs); err != nil {
@@ -511,6 +611,18 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			var allErrors []string
 			if validationErrors := config.Validate(context.Background(), configs, config.Server); len(validationErrors) > 0 {
+				if interactive {
+					reader := bufio.NewReader(os.Stdin)
+					fmt.Printf("Found %d validation errors.\n", len(validationErrors))
+					for i, e := range validationErrors {
+						fmt.Printf("\n--- Error %d/%d ---\n", i+1, len(validationErrors))
+						fmt.Printf("Service: %s\n", e.ServiceName)
+						fmt.Printf("Error: %v\n", e.Err)
+						fmt.Print("Press Enter to continue...")
+						_, _ = reader.ReadString('\n')
+					}
+					return fmt.Errorf("configuration validation failed with %d errors", len(validationErrors))
+				}
 				for _, e := range validationErrors {
 					allErrors = append(allErrors, e.Error())
 				}
@@ -546,12 +658,34 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		},
 	}
 	validateCmd.Flags().Bool("check-connection", false, "Run connectivity checks for upstream services")
+	validateCmd.Flags().Bool("interactive", false, "Interactively walk through validation errors")
 	configCmd.AddCommand(validateCmd)
 
 	lintCmd := &cobra.Command{
 		Use:   "lint",
 		Short: "Lint the configuration file for best practices and security issues",
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			installHook, _ := cmd.Flags().GetBool("install-git-hook")
+			if installHook {
+				hookPath := ".git/hooks/pre-commit"
+				// Check if .git exists
+				if _, err := os.Stat(".git"); os.IsNotExist(err) {
+					return fmt.Errorf(".git directory not found. Are you in the root of a git repository?")
+				}
+				// Ensure .git/hooks exists
+				if err := os.MkdirAll(".git/hooks", 0750); err != nil {
+					return fmt.Errorf("failed to create hooks directory: %w", err)
+				}
+
+				content := "#!/bin/sh\n# Auto-generated by mcpany\n\necho \"Running mcpany lint...\"\nmcpany lint\nRESULT=$?\nif [ $RESULT -ne 0 ]; then\n  echo \"Linting failed. Please fix errors before committing.\"\n  exit 1\nfi\n"
+				//nolint:gosec // Git hooks must be executable
+				if err := os.WriteFile(hookPath, []byte(content), 0700); err != nil {
+					return fmt.Errorf("failed to write git hook: %w", err)
+				}
+				fmt.Printf("✅ Git hook installed at %s\n", hookPath)
+				return nil
+			}
+
 			osFs := afero.NewOsFs()
 			cfg := config.GlobalSettings()
 			if err := cfg.Load(cmd, osFs); err != nil {
@@ -588,6 +722,7 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			return nil
 		},
 	}
+	lintCmd.Flags().Bool("install-git-hook", false, "Install a git pre-commit hook to run linting automatically")
 	rootCmd.AddCommand(lintCmd)
 	rootCmd.AddCommand(configCmd)
 

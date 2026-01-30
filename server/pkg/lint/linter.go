@@ -8,6 +8,7 @@ package lint
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -115,7 +116,50 @@ func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// 5. Check for Missing Cache TTL (Info)
 	results = append(results, l.checkCacheSettings()...)
 
+	// 6. Check for Secret Patterns in Values (Warning)
+	results = append(results, l.checkSecretFormats()...)
+
 	return results, nil
+}
+
+func (l *Linter) checkSecretFormats() []Result {
+	var results []Result
+
+	patterns := []struct {
+		name string
+		re   *regexp.Regexp
+		msg  string
+	}{
+		{name: "OpenAI API Key", re: regexp.MustCompile(`sk-[a-zA-Z0-9]{32,}`), msg: "Value contains potential OpenAI API Key"},
+		{name: "GitHub Token", re: regexp.MustCompile(`ghp_[a-zA-Z0-9]{36}`), msg: "Value contains potential GitHub Token"},
+		{name: "AWS Access Key", re: regexp.MustCompile(`AKIA[0-9A-Z]{16}`), msg: "Value contains potential AWS Access Key"},
+	}
+
+	checkString := func(val, path, serviceName string) {
+		for _, p := range patterns {
+			if p.re.MatchString(val) {
+				results = append(results, Result{
+					Severity:    Warning,
+					ServiceName: serviceName,
+					Message:     p.msg,
+					Path:        path,
+				})
+			}
+		}
+	}
+
+	for _, s := range l.cfg.GetUpstreamServices() {
+		if http := s.GetHttpService(); http != nil {
+			checkString(http.GetAddress(), "http_service.address", s.GetName())
+		}
+		if sql := s.GetSqlService(); sql != nil {
+			checkString(sql.GetDsn(), "sql_service.dsn", s.GetName())
+		}
+		if cmd := s.GetCommandLineService(); cmd != nil {
+			checkString(cmd.GetCommand(), "command_line_service.command", s.GetName())
+		}
+	}
+	return results
 }
 
 func (l *Linter) checkPlainTextSecrets() []Result {
