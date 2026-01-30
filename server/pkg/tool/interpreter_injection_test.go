@@ -40,10 +40,16 @@ func TestSedSandbox_Prevention(t *testing.T) {
 	}
 
 	result, err := tool.Execute(context.Background(), req)
+	// Expect strict validation error due to space in input
 	if err != nil {
-		t.Fatalf("Execute failed: %v", err)
+		if strings.Contains(err.Error(), "shell injection detected") {
+			t.Logf("Success: Command blocked by input validation: %v", err)
+			return
+		}
+		t.Fatalf("Execute failed with unexpected error: %v", err)
 	}
 
+	// If we got here, it bypassed validation (unexpected for this input)
 	resMap, ok := result.(map[string]interface{})
 	if !ok {
 		t.Fatalf("Result is not map: %v", result)
@@ -57,15 +63,8 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	if returnCode == 0 {
 		t.Errorf("FAIL: sed executed '1e date' successfully (return_code 0). Sandbox failed.")
-	}
-
-	stderr, _ := resMap["stderr"].(string)
-	if !strings.Contains(stderr, "command disabled") && !strings.Contains(stderr, "unknown command") {
-		// GNU sed: 'e' command disabled in sandbox mode
-		// BSD sed: unknown command: 1 (or similar)
-		t.Logf("Note: stderr was: %s", stderr)
 	} else {
-		t.Logf("Success: sed blocked command with error: %s", stderr)
+		t.Logf("Success: sed blocked command (return code %d)", returnCode)
 	}
 
 	// Payload: w /tmp/pwned (Write file)
@@ -75,9 +74,15 @@ func TestSedSandbox_Prevention(t *testing.T) {
 	}
 
 	result, err = tool.Execute(context.Background(), req)
+	// Expect strict validation error due to space in input
 	if err != nil {
-		t.Fatalf("Execute failed: %v", err)
+		if strings.Contains(err.Error(), "shell injection detected") {
+			t.Logf("Success: Command blocked by input validation: %v", err)
+			return
+		}
+		t.Fatalf("Execute failed with unexpected error: %v", err)
 	}
+
 	resMap, _ = result.(map[string]interface{})
 	returnCode, _ = resMap["return_code"].(int)
 

@@ -29,12 +29,26 @@ import (
 
 func findMethodDescriptor(t *testing.T, serviceName, methodName string) protoreflect.MethodDescriptor {
 	t.Helper()
-	path := "../../../build/all.protoset"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		path = "/app/build/all.protoset"
+	// When running tests, we might be in server/pkg/tool or root depending on invocation.
+	// Try multiple paths.
+	candidates := []string{
+		"../../../build/all.protoset", // Relative from server/pkg/tool
+		"build/all.protoset",          // Relative from repo root
+		"/app/build/all.protoset",     // Absolute path in container
 	}
+
+	var path string
+	var err error
+	for _, p := range candidates {
+		if _, err = os.Stat(p); err == nil {
+			path = p
+			break
+		}
+	}
+
+	require.NoError(t, err, "Failed to find all.protoset in any candidate path. Ensure 'make gen' has been run.")
 	b, err := os.ReadFile(path)
-	require.NoError(t, err, "Failed to read protoset file at %s. Ensure 'make gen' has been run.", path)
+	require.NoError(t, err, "Failed to read protoset file at %s.", path)
 
 	fds := &descriptorpb.FileDescriptorSet{}
 	err = proto.Unmarshal(b, fds)
