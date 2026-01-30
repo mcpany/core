@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { DashboardView } from "@/components/dashboard/dashboard-view";
 import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
@@ -16,16 +16,16 @@ import { ServiceFilter } from "@/components/dashboard/service-filter";
 export default function DashboardPage() {
   return (
     <DashboardProvider>
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
+      <div className="flex-1 space-y-4 p-8 pt-6 h-full flex flex-col">
+        <div className="flex items-center justify-between space-y-2 shrink-0">
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <div className="flex items-center space-x-2">
             <ServiceFilter />
             <Button>Download Report</Button>
           </div>
         </div>
-        <div className="space-y-4">
-          <DashboardGrid />
+        <div className="flex-1 min-h-0">
+          <DashboardView />
         </div>
       </div>
     </DashboardProvider>
