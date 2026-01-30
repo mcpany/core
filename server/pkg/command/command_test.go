@@ -48,16 +48,59 @@ func canConnectToDocker(t *testing.T) bool {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		return false
 	}
+	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Smoke test: Try to create a container to verify the environment supports it.
+	// This catches issues like "overlay on overlay" mount failures in DinD.
+	resp, err := cli.ContainerCreate(ctx,
+		&container.Config{
+			Image: "hello-world", // Lightweight image for check
+		},
+		nil, nil, nil, "")
+
+	if err != nil {
+		// If hello-world isn't present, we might get an ImageNotFound error,
+		// but usually we want to test if we *can* create.
+		// If it's missing, let's try to pull it first, or just assume if we can't create it's broken.
+		// However, pulling might be slow.
+		// Let's assume failure to create implies broken env for our purpose,
+		// but distinguish between "image missing" (which we can fix) and "system error".
+		if client.IsErrNotFound(err) {
+			// Image missing, try to pull
+			reader, pullErr := cli.ImagePull(ctx, "hello-world", image.PullOptions{})
+			if pullErr == nil {
+				defer reader.Close()
+				io.Copy(io.Discard, reader)
+				// Retry create
+				resp, err = cli.ContainerCreate(ctx,
+					&container.Config{
+						Image: "hello-world",
+					},
+					nil, nil, nil, "")
+			}
+		}
+	}
+
+	if err != nil {
+		t.Logf("docker environment check failed (cannot create container): %v", err)
+		return false
+	}
+
+	// Clean up smoke test container
+	_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+
 	return true
 }
 

@@ -12,11 +12,17 @@ import (
 
 // Metric matches the UI interface.
 type Metric struct {
-	Label    string `json:"label"`
-	Value    string `json:"value"`
-	Change   string `json:"change"`
-	Trend    string `json:"trend"` // "up" | "down" | "neutral"
-	Icon     string `json:"icon"`
+	// Label is the display label for the metric.
+	Label string `json:"label"`
+	// Value is the value of the metric.
+	Value string `json:"value"`
+	// Change represents the change in value.
+	Change string `json:"change"`
+	// Trend indicates the direction of change ("up" | "down" | "neutral").
+	Trend string `json:"trend"` // "up" | "down" | "neutral"
+	// Icon is the icon associated with the metric.
+	Icon string `json:"icon"`
+	// SubLabel provides additional context for the metric.
 	SubLabel string `json:"subLabel"`
 }
 

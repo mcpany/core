@@ -70,8 +70,8 @@ graph TD
 Get up and running with a weather service example in minutes.
 
 ### Prerequisites
-*   [Go 1.23+](https://go.dev/doc/install)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
+*   [Docker](https://docs.docker.com/get-docker/) (recommended for easy deployment)
 
 ### Commands
 
@@ -113,25 +113,25 @@ For contributors and developers extending the core platform.
 ### Common Tasks
 
 **Run Tests**
-Execute all unit, integration, and end-to-end tests.
+Execute all unit, integration, and end-to-end tests to ensure system stability.
 ```bash
 make test
 ```
 
 **Lint Code**
-Ensure code quality and style compliance (Go & TypeScript).
+Ensure code quality and style compliance (Go & TypeScript). This runs `golangci-lint` and `eslint`.
 ```bash
 make lint
 ```
 
 **Build Artifacts**
-Compile the server binary and frontend assets.
+Compile the server binary and frontend assets. Binaries are placed in `build/bin/`.
 ```bash
 make build
 ```
 
 **Generate Code**
-Regenerate Protocol Buffers and other auto-generated files.
+Regenerate Protocol Buffers and other auto-generated files. Run this if you modify `.proto` files.
 ```bash
 make gen
 ```

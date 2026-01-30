@@ -196,6 +196,7 @@ const (
 
 // CacheControl is a mutable struct to pass cache control instructions via context.
 type CacheControl struct {
+	// Action is the cache action to perform.
 	Action Action
 }
 

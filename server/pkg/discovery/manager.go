@@ -14,10 +14,15 @@ import (
 
 // ProviderStatus represents the status of a discovery provider.
 type ProviderStatus struct {
-	Name            string
-	Status          string // "OK", "ERROR"
-	LastError       string
-	LastRunAt       time.Time
+	// Name is the name of the provider.
+	Name string
+	// Status is the current status of the provider (e.g., "running", "failed").
+	Status string
+	// LastError is the last error encountered by the provider.
+	LastError string
+	// LastRunAt is the timestamp of the last discovery run.
+	LastRunAt time.Time
+	// DiscoveredCount is the number of services discovered in the last run.
 	DiscoveredCount int
 }
 

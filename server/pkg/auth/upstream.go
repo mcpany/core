@@ -127,9 +127,12 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
 type APIKeyAuth struct {
+	// ParamName is the name of the parameter (header, query, cookie) to set.
 	ParamName string
-	Value     *configv1.SecretValue
-	Location  configv1.APIKeyAuth_Location
+	// Value is the API key value.
+	Value *configv1.SecretValue
+	// Location specifies where the API key should be sent (header, query, cookie).
+	Location configv1.APIKeyAuth_Location
 }
 
 // Authenticate adds the configured API key to the request's header, query, or cookie.
@@ -169,6 +172,7 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 // BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
 // authentication. It adds an "Authorization" header with a bearer token.
 type BearerTokenAuth struct {
+	// Token is the bearer token value.
 	Token *configv1.SecretValue
 }
 
@@ -194,7 +198,9 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 // BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
 // It adds an "Authorization" header with the username and password.
 type BasicAuth struct {
+	// Username is the basic auth username.
 	Username string
+	// Password is the basic auth password.
 	Password *configv1.SecretValue
 }
 
@@ -219,11 +225,16 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 
 // OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
 type OAuth2Auth struct {
-	ClientID     *configv1.SecretValue
+	// ClientID is the OAuth2 client ID.
+	ClientID *configv1.SecretValue
+	// ClientSecret is the OAuth2 client secret.
 	ClientSecret *configv1.SecretValue
-	TokenURL     string
-	IssuerURL    string
-	Scopes       []string
+	// TokenURL is the URL to fetch tokens from.
+	TokenURL string
+	// IssuerURL is the URL of the OIDC issuer (used for discovery).
+	IssuerURL string
+	// Scopes is the list of scopes to request.
+	Scopes []string
 
 	discoveryMu sync.Mutex
 }

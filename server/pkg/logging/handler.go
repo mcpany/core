@@ -17,11 +17,17 @@ import (
 // LogEntry is the structure for logs sent over WebSocket.
 // It matches the frontend expectation.
 type LogEntry struct {
+	// ID is the unique identifier for the log entry.
 	ID        string         `json:"id"`
+	// Timestamp is when the log entry was created.
 	Timestamp string         `json:"timestamp"`
+	// Level is the log severity level.
 	Level     string         `json:"level"`
+	// Message is the main log message.
 	Message   string         `json:"message"`
+	// Source is the component or service that generated the log.
 	Source    string         `json:"source,omitempty"`
+	// Metadata contains additional key-value pairs.
 	Metadata  map[string]any `json:"metadata,omitempty"`
 }
 

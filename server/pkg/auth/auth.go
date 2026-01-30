@@ -109,9 +109,12 @@ type Authenticator interface {
 // API key. It implements the `Authenticator` interface and checks for the
 // presence of a specific header, validating its value against a configured key.
 type APIKeyAuthenticator struct {
+	// ParamName is the name of the parameter (header, query, cookie) to check.
 	ParamName string
-	In        configv1.APIKeyAuth_Location
-	Value     string
+	// In specifies where to look for the API key (header, query, cookie).
+	In configv1.APIKeyAuth_Location
+	// Value is the expected API key value.
+	Value string
 }
 
 // NewAPIKeyAuthenticator creates a new APIKeyAuthenticator from the provided
@@ -171,8 +174,10 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 
 // BasicAuthenticator authenticates using HTTP Basic Auth and bcrypt password hashing.
 type BasicAuthenticator struct {
+	// PasswordHash is the bcrypt hash of the password.
 	PasswordHash string
-	Username     string
+	// Username is the expected username.
+	Username string
 }
 
 // NewBasicAuthenticator creates a new BasicAuthenticator.
@@ -221,8 +226,10 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 
 // TrustedHeaderAuthenticator authenticates using a trusted header (e.g., from an auth proxy).
 type TrustedHeaderAuthenticator struct {
-	HeaderName  string
-	HeaderValue string // Optional: if empty, just checks presence
+	// HeaderName is the name of the trusted header.
+	HeaderName string
+	// HeaderValue is the optional expected value of the header. If empty, only presence is checked.
+	HeaderValue string
 }
 
 // NewTrustedHeaderAuthenticator creates a new TrustedHeaderAuthenticator.

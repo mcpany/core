@@ -16,10 +16,14 @@ import (
 
 // Config defines the configuration for the GC Worker.
 type Config struct {
-	Enabled  bool
+	// Enabled indicates whether the garbage collector is enabled.
+	Enabled bool
+	// Interval is the duration between GC runs.
 	Interval time.Duration
-	TTL      time.Duration
-	Paths    []string
+	// TTL is the time-to-live for files before they are eligible for deletion.
+	TTL time.Duration
+	// Paths is a list of directories to clean up.
+	Paths []string
 }
 
 // Worker implements a background worker for garbage collection.

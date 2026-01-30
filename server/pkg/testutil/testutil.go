@@ -36,6 +36,7 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 
 // MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
 type MockAuthenticator struct {
+	// AuthenticateFunc mocks the Authenticate method.
 	AuthenticateFunc func(req *http.Request) error
 }
 

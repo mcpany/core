@@ -42,18 +42,30 @@ var portRegex = regexp.MustCompile(`(?:metricsPort=|Metrics server listening on 
 
 // E2ETestCase defines the structure for an end-to-end test case.
 type E2ETestCase struct {
-	Name                         string
-	UpstreamServiceType          string
-	BuildUpstream                func(t *testing.T) *integration.ManagedProcess
-	RegisterUpstream             func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
-	ValidateTool                 func(t *testing.T, mcpanyEndpoint string)
-	ValidateMiddlewares          func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
-	InvokeAIClient               func(t *testing.T, mcpanyEndpoint string)
+	// Name is the name of the test case.
+	Name string
+	// UpstreamServiceType is the type of upstream service.
+	UpstreamServiceType string
+	// BuildUpstream builds the upstream service.
+	BuildUpstream func(t *testing.T) *integration.ManagedProcess
+	// RegisterUpstream registers the upstream service.
+	RegisterUpstream func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string)
+	// ValidateTool validates the registered tool.
+	ValidateTool func(t *testing.T, mcpanyEndpoint string)
+	// ValidateMiddlewares validates the middlewares.
+	ValidateMiddlewares func(t *testing.T, mcpanyEndpoint string, upstreamEndpoint string)
+	// InvokeAIClient invokes the AI client.
+	InvokeAIClient func(t *testing.T, mcpanyEndpoint string)
+	// InvokeAIClientWithServerInfo invokes the AI client with server info.
 	InvokeAIClientWithServerInfo func(t *testing.T, serverInfo *integration.MCPANYTestServerInfo)
-	RegistrationMethods          []RegistrationMethod
-	GenerateUpstreamConfig       func(_ string) string
-	StartMCPANYServer            func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
-	RegisterUpstreamWithJSONRPC  func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
+	// RegistrationMethods is a list of registration methods to test.
+	RegistrationMethods []RegistrationMethod
+	// GenerateUpstreamConfig generates the upstream configuration.
+	GenerateUpstreamConfig func(_ string) string
+	// StartMCPANYServer starts the MCPANY server.
+	StartMCPANYServer func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo
+	// RegisterUpstreamWithJSONRPC registers the upstream service using JSON-RPC.
+	RegisterUpstreamWithJSONRPC func(t *testing.T, mcpanyEndpoint, upstreamEndpoint string)
 }
 
 // ValidateRegisteredTool validates that the expected tool is registered.

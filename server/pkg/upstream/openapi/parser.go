@@ -25,14 +25,18 @@ const (
 // ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
 // specification, such as metadata, server details, and the defined paths.
 type ParsedOpenAPIData struct {
-	Info    openapi3.Info
+	// Info provides metadata about the API (title, version, description).
+	Info openapi3.Info
+	// Servers is a list of servers defined in the API spec.
 	Servers openapi3.Servers
-	Paths   map[string]*PathItem
+	// Paths maps URL paths to their corresponding PathItem.
+	Paths map[string]*PathItem
 }
 
 // PathItem represents a single path within an OpenAPI specification and holds a
 // reference to its corresponding openapi3.PathItem.
 type PathItem struct {
+	// PathRef is the reference to the openapi3.PathItem.
 	PathRef *openapi3.PathItem
 }
 
@@ -40,20 +44,26 @@ type PathItem struct {
 // operation. It contains the essential details needed to convert an API
 // endpoint into an executable tool.
 type McpOperation struct {
+	// OperationID is the unique identifier for the operation.
 	OperationID string
-	Summary     string
+	// Summary is a short summary of what the operation does.
+	Summary string
+	// Description is a verbose explanation of the operation behavior.
 	Description string
-	Method      string // e.g., GET, POST
-	Path        string
-	// Simplified schema representation for request body
+	// Method is the HTTP method (e.g., GET, POST).
+	Method string
+	// Path is the URL path for the operation.
+	Path string
+	// RequestBodySchema maps content types to their schema references for the request body.
 	// Key: content type (e.g., "application/json")
 	// Value: schema reference
 	RequestBodySchema map[string]*openapi3.SchemaRef
-	// Simplified schema representation for responses
+	// ResponseSchemas maps status codes to content type schemas for responses.
 	// Key: status code (e.g., "200")
 	// Value: map of content type to schema reference
 	ResponseSchemas map[string]map[string]*openapi3.SchemaRef
-	Parameters      openapi3.Parameters // Store operation parameters (query, path, header, cookie)
+	// Parameters is a list of operation parameters (query, path, header, cookie).
+	Parameters openapi3.Parameters
 }
 
 // ParseOpenAPISpec loads and parses an OpenAPI specification from a byte slice.

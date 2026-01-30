@@ -25,14 +25,19 @@ type CopilotCLI struct {
 
 // MCPServerConfig defines the configuration for an MCP server.
 type MCPServerConfig struct {
-	Command string   `json:"command,omitempty"`
-	Args    []string `json:"args,omitempty"`
-	URL     string   `json:"url,omitempty"`
-	Type    string   `json:"type"` // "local", "http", "sse"
+	// Command is the command to run.
+	Command string `json:"command,omitempty"`
+	// Args are the arguments for the command.
+	Args []string `json:"args,omitempty"`
+	// URL is the URL of the server (if applicable).
+	URL string `json:"url,omitempty"`
+	// Type is the type of server (e.g., "local", "http", "sse").
+	Type string `json:"type"` // "local", "http", "sse"
 }
 
 // MCPConfig defines the configuration file structure.
 type MCPConfig struct {
+	// MCPServers is a map of server configurations.
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 

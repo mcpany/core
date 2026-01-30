@@ -35,12 +35,17 @@ var (
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
 type GitHub struct {
-	Owner         string
-	Repo          string
-	Path          string
-	Ref           string
-	URLType       string
-	log           *slog.Logger
+	// Owner is the GitHub organization or user.
+	Owner string
+	// Repo is the repository name.
+	Repo string
+	// Path is the path within the repository.
+	Path string
+	// Ref is the git reference (branch, tag, or commit).
+	Ref string
+	// URLType indicates the type of the URL (e.g., "blob", "tree").
+	URLType string
+	log     *slog.Logger
 	apiURL        string
 	rawContentURL string
 	httpClient    *http.Client

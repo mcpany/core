@@ -18,25 +18,40 @@ import (
 
 // Span represents a span in a trace.
 type Span struct {
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	Type         string         `json:"type"`
-	StartTime    int64          `json:"startTime"` // Unix millis
-	EndTime      int64          `json:"endTime"`   // Unix millis
-	Status       string         `json:"status"`    // success, error, pending
-	Input        map[string]any `json:"input,omitempty"`
-	Output       map[string]any `json:"output,omitempty"`
-	ErrorMessage string         `json:"errorMessage,omitempty"`
+	// ID is the unique identifier for the span.
+	ID string `json:"id"`
+	// Name is the name of the operation.
+	Name string `json:"name"`
+	// Type is the type of the span (e.g., "tool", "http").
+	Type string `json:"type"`
+	// StartTime is when the span started (Unix millis).
+	StartTime int64 `json:"startTime"` // Unix millis
+	// EndTime is when the span ended (Unix millis).
+	EndTime int64 `json:"endTime"` // Unix millis
+	// Status is the status of the operation (success, error, pending).
+	Status string `json:"status"` // success, error, pending
+	// Input is the input data for the operation.
+	Input map[string]any `json:"input,omitempty"`
+	// Output is the output data from the operation.
+	Output map[string]any `json:"output,omitempty"`
+	// ErrorMessage describes any error that occurred.
+	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
 // Trace represents a full trace.
 type Trace struct {
-	ID            string `json:"id"`
-	RootSpan      Span   `json:"rootSpan"`
-	Timestamp     string `json:"timestamp"` // ISO 8601
-	TotalDuration int64  `json:"totalDuration"`
-	Status        string `json:"status"`
-	Trigger       string `json:"trigger"`
+	// ID is the unique identifier for the trace.
+	ID string `json:"id"`
+	// RootSpan is the root span of the trace.
+	RootSpan Span `json:"rootSpan"`
+	// Timestamp is when the trace started (ISO 8601).
+	Timestamp string `json:"timestamp"` // ISO 8601
+	// TotalDuration is the total duration of the trace in milliseconds.
+	TotalDuration int64 `json:"totalDuration"`
+	// Status is the overall status of the trace.
+	Status string `json:"status"`
+	// Trigger describes what triggered the trace.
+	Trigger string `json:"trigger"`
 }
 
 const (

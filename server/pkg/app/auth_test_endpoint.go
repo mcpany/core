@@ -20,14 +20,19 @@ import (
 
 // AuthTestRequest defines the structure for an authentication test request.
 type AuthTestRequest struct {
-	CredentialID  string         `json:"credential_id"`
-	ServiceType   string         `json:"service_type"`
+	// CredentialID is the ID of the credential to test.
+	CredentialID string `json:"credential_id"`
+	// ServiceType is the type of service being tested.
+	ServiceType string `json:"service_type"`
+	// ServiceConfig is the configuration of the service.
 	ServiceConfig map[string]any `json:"service_config"`
 }
 
 // AuthTestResponse defines the structure for an authentication test response.
 type AuthTestResponse struct {
-	Success bool   `json:"success"`
+	// Success indicates if the authentication test was successful.
+	Success bool `json:"success"`
+	// Message provides details about the test result.
 	Message string `json:"message"`
 }
 

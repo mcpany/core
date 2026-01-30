@@ -55,6 +55,7 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 // WordTokenizer implements a word-based heuristic.
 // Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
 type WordTokenizer struct {
+	// Factor is the multiplier applied to the word count.
 	Factor float64
 }
 

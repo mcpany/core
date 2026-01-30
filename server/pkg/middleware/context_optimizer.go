@@ -16,6 +16,7 @@ import (
 
 // ContextOptimizer optimises the context size of responses.
 type ContextOptimizer struct {
+	// MaxChars is the maximum allowed characters in the response content.
 	MaxChars int
 }
 

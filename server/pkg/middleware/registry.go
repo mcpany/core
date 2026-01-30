@@ -113,11 +113,16 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 type StandardMiddlewares struct {
-	Audit            *AuditMiddleware
-	GlobalRateLimit  *GlobalRateLimitMiddleware
+	// Audit is the middleware for audit logging.
+	Audit *AuditMiddleware
+	// GlobalRateLimit is the middleware for global rate limiting.
+	GlobalRateLimit *GlobalRateLimitMiddleware
+	// ContextOptimizer is the middleware for optimizing response context size.
 	ContextOptimizer *ContextOptimizer
-	Debugger         *Debugger
-	Cleanup          func() error
+	// Debugger is the middleware for debugging and capturing traffic.
+	Debugger *Debugger
+	// Cleanup is a function to clean up resources used by the middlewares.
+	Cleanup func() error
 }
 
 // InitStandardMiddlewares registers standard middlewares.

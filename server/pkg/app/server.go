@@ -125,31 +125,29 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 // RunOptions configuration for starting the MCP Any application.
-//
-// Fields:
-//   - Ctx: The parent context for the application lifecycle.
-//   - Fs: The filesystem interface (afero.Fs) to use.
-//   - Stdio: If true, runs in Standard I/O mode (for single-client/CLI usage).
-//   - JSONRPCPort: The port to listen on for HTTP JSON-RPC requests.
-//   - GRPCPort: The port to listen on for gRPC registration requests.
-//   - ConfigPaths: List of paths to configuration files or directories.
-//   - APIKey: A static API key to enforce for global authentication.
-//   - ShutdownTimeout: Duration to wait for graceful shutdown.
-//   - TLSCert: Path to the TLS certificate file.
-//   - TLSKey: Path to the TLS private key file.
-//   - TLSClientCA: Path to the TLS Client CA file (for mTLS).
 type RunOptions struct {
-	Ctx             context.Context
-	Fs              afero.Fs
-	Stdio           bool
-	JSONRPCPort     string
-	GRPCPort        string
-	ConfigPaths     []string
-	APIKey          string
+	// Ctx is the parent context for the application lifecycle.
+	Ctx context.Context
+	// Fs is the filesystem interface (afero.Fs) to use.
+	Fs afero.Fs
+	// Stdio, if true, runs in Standard I/O mode (for single-client/CLI usage).
+	Stdio bool
+	// JSONRPCPort is the port to listen on for HTTP JSON-RPC requests.
+	JSONRPCPort string
+	// GRPCPort is the port to listen on for gRPC registration requests.
+	GRPCPort string
+	// ConfigPaths is a list of paths to configuration files or directories.
+	ConfigPaths []string
+	// APIKey is a static API key to enforce for global authentication.
+	APIKey string
+	// ShutdownTimeout is the duration to wait for graceful shutdown.
 	ShutdownTimeout time.Duration
-	TLSCert         string
-	TLSKey          string
-	TLSClientCA     string
+	// TLSCert is the path to the TLS certificate file.
+	TLSCert string
+	// TLSKey is the path to the TLS private key file.
+	TLSKey string
+	// TLSClientCA is the path to the TLS Client CA file (for mTLS).
+	TLSClientCA string
 }
 
 // Runner defines the interface for running the application.
@@ -183,17 +181,25 @@ type Runner interface {
 // method that starts the application.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
-	PromptManager    prompt.ManagerInterface
-	ToolManager      tool.ManagerInterface
-	ResourceManager  resource.ManagerInterface
-	ServiceRegistry  serviceregistry.ServiceRegistryInterface
-	TopologyManager  *topology.Manager
-	UpstreamFactory  factory.Factory
-	configFiles      map[string]string
-	fs               afero.Fs
-	configPaths      []string
-	Storage          storage.Storage
-	TemplateManager  *TemplateManager
+	// PromptManager manages prompts.
+	PromptManager prompt.ManagerInterface
+	// ToolManager manages tools.
+	ToolManager tool.ManagerInterface
+	// ResourceManager manages resources.
+	ResourceManager resource.ManagerInterface
+	// ServiceRegistry manages upstream services.
+	ServiceRegistry serviceregistry.ServiceRegistryInterface
+	// TopologyManager manages network topology.
+	TopologyManager *topology.Manager
+	// UpstreamFactory creates upstream service clients.
+	UpstreamFactory factory.Factory
+	configFiles     map[string]string
+	fs              afero.Fs
+	configPaths     []string
+	// Storage provides persistence.
+	Storage storage.Storage
+	// TemplateManager manages service templates.
+	TemplateManager *TemplateManager
 	// Store explicit API Key passed via CLI args
 	explicitAPIKey string
 

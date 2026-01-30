@@ -271,8 +271,11 @@ func (h *WebhookHook) ExecutePre(
 
 	// ResponseData is a helper struct for parsing the webhook response.
 	type ResponseData struct {
-		Allowed           bool            `json:"allowed"`
-		Status            *WebhookStatus  `json:"status,omitempty"`
+		// Allowed indicates if the request is allowed.
+		Allowed bool `json:"allowed"`
+		// Status contains the webhook status.
+		Status *WebhookStatus `json:"status,omitempty"`
+		// ReplacementObject contains the replacement input object if allowed.
 		ReplacementObject json.RawMessage `json:"replacement_object,omitempty"`
 	}
 
