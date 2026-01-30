@@ -50,9 +50,10 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+            if (!res.ok()) throw new Error(`Status ${res.status()}: ${await res.text()}`);
         } catch (e) {
-            console.log(`Failed to seed service ${svc.name}: ${e}`);
+            throw new Error(`Failed to seed service ${svc.name}: ${e}`);
         }
     }
 };
@@ -79,10 +80,10 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
     try {
         const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
         if (!res.ok()) {
-            console.log(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
+            throw new Error(`Status ${res.status()}: ${await res.text()}`);
         }
     } catch (e) {
-        console.log(`Failed to seed collection ${name}: ${e}`);
+        throw new Error(`Failed to seed collection ${name}: ${e}`);
     }
 };
 
@@ -92,9 +93,10 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
         { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
     ];
     try {
-        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        const res = await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+        if (!res.ok()) throw new Error(`Status ${res.status()}: ${await res.text()}`);
     } catch (e) {
-        console.log(`Failed to seed traffic: ${e}`);
+        throw new Error(`Failed to seed traffic: ${e}`);
     }
 };
 
@@ -132,9 +134,10 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
     };
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        const res = await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+        if (!res.ok()) throw new Error(`Status ${res.status()}: ${await res.text()}`);
     } catch (e) {
-        console.log(`Failed to seed user: ${e}`);
+        throw new Error(`Failed to seed user: ${e}`);
     }
 };
 
