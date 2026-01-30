@@ -157,12 +157,13 @@ global_settings:
 	require.NoError(t, err)
 	assert.Equal(t, fmt.Sprintf("%s:%s", username, password), string(decoded))
 
-	// 3. Use Token to Access Protected Endpoint (e.g. List Users)
+	// 3. Use Token to Access Protected Endpoint (e.g. Get Own User)
 	// We need a trusted client, but wait, AuthManager handles auth.
 	// If we use the token, it should work.
+	// Note: Listing users (/api/v1/users) is restricted to admin, so we fetch our own profile.
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("http://127.0.0.1:%d/api/v1/users", jsonrpcPort), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://127.0.0.1:%d/api/v1/users/%s", jsonrpcPort, username), nil)
 	require.NoError(t, err)
 
 	// Add Basic Auth header manually using the token
