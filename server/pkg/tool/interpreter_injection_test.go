@@ -44,12 +44,22 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		t.Fatalf("Execute failed: %v", err)
 	}
 
+	// Check if execution was blocked by the shell injection protection or if sed failed
+	if err != nil {
+		if strings.Contains(err.Error(), "shell injection detected") {
+			t.Logf("Success: shell injection blocked by sanitizer: %v", err)
+			return
+		}
+		// If it failed for other reasons, that might be okay too, but let's verify
+		t.Fatalf("Execute failed with unexpected error: %v", err)
+	}
+
 	resMap, ok := result.(map[string]interface{})
 	if !ok {
 		t.Fatalf("Result is not map: %v", result)
 	}
 
-	// Expect return code to be non-zero (sed error)
+	// Expect return code to be non-zero (sed error) if it actually ran
 	returnCode, ok := resMap["return_code"].(int)
 	if !ok {
 		t.Fatalf("return_code not int: %v", resMap["return_code"])
@@ -57,15 +67,9 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	if returnCode == 0 {
 		t.Errorf("FAIL: sed executed '1e date' successfully (return_code 0). Sandbox failed.")
-	}
-
-	stderr, _ := resMap["stderr"].(string)
-	if !strings.Contains(stderr, "command disabled") && !strings.Contains(stderr, "unknown command") {
-		// GNU sed: 'e' command disabled in sandbox mode
-		// BSD sed: unknown command: 1 (or similar)
-		t.Logf("Note: stderr was: %s", stderr)
 	} else {
-		t.Logf("Success: sed blocked command with error: %s", stderr)
+		stderr, _ := resMap["stderr"].(string)
+		t.Logf("Success: sed failed or blocked with stderr: %s", stderr)
 	}
 
 	// Payload: w /tmp/pwned (Write file)

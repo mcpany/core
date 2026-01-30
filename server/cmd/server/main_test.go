@@ -231,6 +231,10 @@ func findFreePort(t *testing.T) int {
 
 func TestGracefulShutdown(t *testing.T) {
 	if os.Getenv("GO_TEST_GRACEFUL_SHUTDOWN") == "1" {
+		// Ensure no config environment variables leak from other tests
+		os.Unsetenv("MCPANY_CONFIG_PATH")
+		os.Unsetenv("MCPANY_MCP_LISTEN_ADDRESS")
+
 		// Create a temporary log file to capture output and find the port
 		logFile, err := os.CreateTemp("", "mcpany-shutdown-test-*.log")
 		assert.NoError(t, err)

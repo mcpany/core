@@ -31,7 +31,8 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			}
 			cmd := "node"
 			// Use 'error' level to avoid stdout pollution which can break MCP JSON-RPC
-			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "error"}
+			// The binary for @playwright/mcp is 'playwright-mcp'
+			args := []string{"./node_modules/.bin/playwright-mcp", "--", "--console-level", "error"}
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp",
 			}
