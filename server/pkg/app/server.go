@@ -50,6 +50,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage/postgres"
 	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/mcpany/core/server/pkg/telemetry"
+	"github.com/mcpany/core/server/pkg/tracing"
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
@@ -206,6 +207,9 @@ type Application struct {
 	// DiscoveryManager manages auto-discovery providers
 	DiscoveryManager *discovery.Manager
 
+	// TraceExporter stores traces in memory
+	TraceExporter *tracing.InMemoryExporter
+
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
@@ -285,6 +289,7 @@ func NewApplication() *Application {
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 		AlertsManager:    alerts.NewManager(),
+		TraceExporter:    tracing.NewInMemoryExporter(1000),
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
@@ -312,6 +317,11 @@ func NewApplication() *Application {
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
+	// Ensure TraceExporter is initialized
+	if a.TraceExporter == nil {
+		a.TraceExporter = tracing.NewInMemoryExporter(1000)
+	}
+
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
 	if err != nil {
@@ -407,7 +417,7 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Initialize Telemetry with loaded config
-	shutdownTelemetry, err := telemetry.InitTelemetry(opts.Ctx, appconsts.Name, appconsts.Version, cfg.GetGlobalSettings().GetTelemetry(), os.Stderr)
+	shutdownTelemetry, err := telemetry.InitTelemetry(opts.Ctx, appconsts.Name, appconsts.Version, cfg.GetGlobalSettings().GetTelemetry(), os.Stderr, a.TraceExporter)
 	if err != nil {
 		// Log error but don't fail startup just for telemetry if we want resilience,
 		// but typically we might want to know.
@@ -419,6 +429,9 @@ func (a *Application) Run(opts RunOptions) error {
 			}
 		}()
 	}
+
+	// Seed Traces for Demo/Dev
+	a.TraceExporter.Seed(generateSeedTraces())
 
 	// Initialize Settings Manager
 	a.SettingsManager = NewGlobalSettingsManager(
@@ -2339,6 +2352,73 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+func generateSeedTraces() []*tracing.Trace {
+	now := time.Now().UnixMilli()
+
+	// Trace 1: Research Workflow
+	trace1ID := "seed-trace-1"
+
+	spanDB := &tracing.Span{
+		ID:        "span-db-1",
+		Name:      "postgres:query",
+		Type:      "resource",
+		StartTime: now - 800,
+		EndTime:   now - 700,
+		Status:    "success",
+		ParentID:  "span-tool-1",
+		Input:     map[string]any{"query": "SELECT * FROM users WHERE active = true"},
+		Output:    map[string]any{"rows": 5},
+	}
+
+	spanTool1 := &tracing.Span{
+		ID:        "span-tool-1",
+		Name:      "get_active_users",
+		Type:      "tool",
+		StartTime: now - 900,
+		EndTime:   now - 600,
+		Status:    "success",
+		ParentID:  "span-core",
+		Input:     map[string]any{"limit": 10},
+		Output:    map[string]any{"count": 5},
+		Children:  []*tracing.Span{spanDB},
+	}
+
+	spanLLM := &tracing.Span{
+		ID:        "span-llm-1",
+		Name:      "llm:summarize",
+		Type:      "tool",
+		StartTime: now - 500,
+		EndTime:   now - 200,
+		Status:    "success",
+		ParentID:  "span-core",
+		Input:     map[string]any{"text": "User data..."},
+		Output:    map[string]any{"summary": "5 active users found."},
+	}
+
+	spanCore := &tracing.Span{
+		ID:        "span-core",
+		Name:      "orchestrator",
+		Type:      "core",
+		StartTime: now - 1000,
+		EndTime:   now - 100,
+		Status:    "success",
+		Input:     map[string]any{"goal": "Summarize active users"},
+		Output:    map[string]any{"result": "5 active users found."},
+		Children:  []*tracing.Span{spanTool1, spanLLM},
+	}
+
+	trace1 := &tracing.Trace{
+		ID:            trace1ID,
+		RootSpan:      spanCore,
+		Timestamp:     time.UnixMilli(now - 1000).Format(time.RFC3339),
+		TotalDuration: 900,
+		Status:        "success",
+		Trigger:       "user",
+	}
+
+	return []*tracing.Trace{trace1}
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.
