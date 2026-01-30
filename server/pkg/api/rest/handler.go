@@ -68,7 +68,9 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
 			// We skip secret validation (regex checks) to prevent oracle attacks where users probe secret values.
+			// We also skip host validation (files, commands) to prevent file existence oracles.
 			ctx := context.WithValue(r.Context(), config.SkipSecretValidationKey, true)
+			ctx = context.WithValue(ctx, config.SkipHostValidationKey, true)
 			validationErrors := config.Validate(ctx, cfg, config.Server)
 			for _, ve := range validationErrors {
 				errors = append(errors, ve.Error())

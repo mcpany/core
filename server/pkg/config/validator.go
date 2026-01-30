@@ -56,6 +56,10 @@ const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
+
+	// SkipHostValidationKey is the context key to skip host-level validation (files, commands, directories).
+	// Value should be a boolean.
+	SkipHostValidationKey contextKey = "skip_host_validation"
 )
 
 var (
@@ -188,7 +192,7 @@ func validateCollection(ctx context.Context, collection *configv1.Collection) er
 	return nil
 }
 
-func validateStdioArgs(command string, args []string, workingDir string) error {
+func validateStdioArgs(ctx context.Context, command string, args []string, workingDir string) error {
 	// Only check for common interpreters to avoid false positives on arbitrary flags
 	baseCmd := filepath.Base(command)
 	isInterpreter := false
@@ -259,7 +263,7 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 		}
 
 		// Check if file exists
-		if err := validateFileExists(arg, workingDir); err != nil {
+		if err := validateFileExists(ctx, arg, workingDir); err != nil {
 			return WrapActionableError(fmt.Sprintf("argument %q looks like a script file but does not exist", arg), err)
 		}
 
@@ -270,7 +274,11 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 	return nil
 }
 
-func validateFileExists(path string, workingDir string) error {
+func validateFileExists(ctx context.Context, path string, workingDir string) error {
+	if skip, ok := ctx.Value(SkipHostValidationKey).(bool); ok && skip {
+		return nil
+	}
+
 	targetPath := path
 	// If path is relative and workingDir is set, join them.
 	// Note: If workingDir is empty, we check relative to CWD (process root), which is standard behavior.
@@ -516,7 +524,7 @@ func validateServiceConfig(ctx context.Context, service *configv1.UpstreamServic
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
 		return validateOpenAPIService(openapiService)
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
-		return validateCommandLineService(commandLineService)
+		return validateCommandLineService(ctx, commandLineService)
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
 		return validateMcpService(ctx, mcpService)
 	} else if sqlService := service.GetSqlService(); sqlService != nil {
@@ -662,7 +670,7 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 	return nil
 }
 
-func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
+func validateCommandLineService(ctx context.Context, commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return &ActionableError{
 			Err:        fmt.Errorf("command_line_service has empty command"),
@@ -672,7 +680,7 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 
 	// Only validate command existence if not running in a container
 	if commandLineService.GetContainerEnvironment().GetImage() == "" {
-		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
+		if err := validateCommandExists(ctx, commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
 			return WrapActionableError("command_line_service command validation failed", err)
 		}
 	}
@@ -741,11 +749,11 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
 		if stdioConn.GetContainerImage() == "" {
-			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
+			if err := validateCommandExists(ctx, stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
 				return WrapActionableError("mcp service with stdio_connection command validation failed", err)
 			}
 
-			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
+			if err := validateStdioArgs(ctx, stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
 				return WrapActionableError("mcp service with stdio_connection argument validation failed", err)
 			}
 
@@ -753,7 +761,7 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 				}
-				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
+				if err := validateDirectoryExists(ctx, stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection working_directory validation failed: %w", err)
 				}
 			}
@@ -1255,7 +1263,11 @@ func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 	return nil
 }
 
-func validateCommandExists(command string, workingDir string) error {
+func validateCommandExists(ctx context.Context, command string, workingDir string) error {
+	if skip, ok := ctx.Value(SkipHostValidationKey).(bool); ok && skip {
+		return nil
+	}
+
 	// If the command is an absolute path, check if it exists and is executable
 	if filepath.IsAbs(command) {
 		info, err := osStat(command)
@@ -1307,7 +1319,11 @@ func validateCommandExists(command string, workingDir string) error {
 	return nil
 }
 
-func validateDirectoryExists(path string) error {
+func validateDirectoryExists(ctx context.Context, path string) error {
+	if skip, ok := ctx.Value(SkipHostValidationKey).(bool); ok && skip {
+		return nil
+	}
+
 	info, err := osStat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
