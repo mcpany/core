@@ -124,32 +124,30 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions configuration for starting the MCP Any application.
-//
-// Fields:
-//   - Ctx: The parent context for the application lifecycle.
-//   - Fs: The filesystem interface (afero.Fs) to use.
-//   - Stdio: If true, runs in Standard I/O mode (for single-client/CLI usage).
-//   - JSONRPCPort: The port to listen on for HTTP JSON-RPC requests.
-//   - GRPCPort: The port to listen on for gRPC registration requests.
-//   - ConfigPaths: List of paths to configuration files or directories.
-//   - APIKey: A static API key to enforce for global authentication.
-//   - ShutdownTimeout: Duration to wait for graceful shutdown.
-//   - TLSCert: Path to the TLS certificate file.
-//   - TLSKey: Path to the TLS private key file.
-//   - TLSClientCA: Path to the TLS Client CA file (for mTLS).
+// RunOptions defines the configuration for starting the MCP Any application.
 type RunOptions struct {
-	Ctx             context.Context
-	Fs              afero.Fs
-	Stdio           bool
-	JSONRPCPort     string
-	GRPCPort        string
-	ConfigPaths     []string
-	APIKey          string
+	// Ctx is the parent context for the application lifecycle.
+	Ctx context.Context
+	// Fs is the filesystem interface (afero.Fs) to use.
+	Fs afero.Fs
+	// Stdio enables Standard I/O mode (for single-client/CLI usage).
+	Stdio bool
+	// JSONRPCPort is the port to listen on for HTTP JSON-RPC requests.
+	JSONRPCPort string
+	// GRPCPort is the port to listen on for gRPC registration requests.
+	GRPCPort string
+	// ConfigPaths is a list of paths to configuration files or directories.
+	ConfigPaths []string
+	// APIKey is a static API key to enforce for global authentication.
+	APIKey string
+	// ShutdownTimeout is the duration to wait for graceful shutdown.
 	ShutdownTimeout time.Duration
-	TLSCert         string
-	TLSKey          string
-	TLSClientCA     string
+	// TLSCert is the path to the TLS certificate file.
+	TLSCert string
+	// TLSKey is the path to the TLS private key file.
+	TLSKey string
+	// TLSClientCA is the path to the TLS Client CA file (for mTLS).
+	TLSClientCA string
 }
 
 // Runner defines the interface for running the application.
@@ -163,9 +161,8 @@ type Runner interface {
 	//   - (error): An error if the application fails to run.
 	Run(opts RunOptions) error
 
-	// ReloadConfig reloads the application configuration from the provided file system
-	// and paths. It updates the internal state of the application, such as
-	// service registries and managers, to reflect changes in the configuration files.
+	// ReloadConfig reloads the application configuration from the provided file system and paths.
+	// It updates the internal state of the application to reflect changes.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the reload operation.
@@ -177,10 +174,9 @@ type Runner interface {
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and
-// logic for the MCP Any server. It encapsulates the components required to run
-// the server, such as the stdio mode handler, and provides the main `Run`
-// method that starts the application.
+// Application is the main application struct.
+// It holds the dependencies and logic for the MCP Any server, encapsulating
+// the components required to run the server.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -296,13 +292,10 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components. It initializes the core
-// services, loads configurations from the provided paths, starts background
-// workers for handling service registration and upstream service communication,
+// Run starts the MCP Any server and all its components.
+// It initializes the core services, loads configurations, starts background workers,
 // and launches the gRPC and JSON-RPC servers.
-//
-// The server's lifecycle is managed by the provided context. A graceful
-// shutdown is initiated when the context is canceled.
+// The server's lifecycle is managed by the provided context.
 //
 // Parameters:
 //   - opts (RunOptions): The options for running the application.
@@ -839,8 +832,8 @@ func (a *Application) Run(opts RunOptions) error {
 	return nil
 }
 
-// ReloadConfig reloads the configuration from the given paths and updates the
-// services.
+// ReloadConfig reloads the application configuration from the provided file system and paths.
+// It updates the internal state of the application, including global settings and services.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the reload operation.
@@ -1325,13 +1318,8 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 	}
 }
 
-// HealthCheck performs a health check against a running server by sending an
-// HTTP GET request to its /healthz endpoint. This is useful for monitoring and
-// ensuring the server is operational.
-//
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
+// HealthCheck performs a health check against a running server.
+// It sends an HTTP GET request to the /healthz endpoint.
 //
 // Parameters:
 //   - out (io.Writer): The writer to which the success message will be written.
@@ -1339,22 +1327,15 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //   - timeout (time.Duration): The maximum duration to wait for the health check.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
-//     error if the health check fails for any reason (e.g., connection error,
-//     non-200 status code).
+//   - (error): nil if the server is healthy, or an error if the health check fails.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	return HealthCheckWithContext(ctx, out, addr)
 }
 
-// HealthCheckWithContext performs a health check against a running server by
-// sending an HTTP GET request to its /healthz endpoint. This is useful for
-// monitoring and ensuring the server is operational.
-//
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
+// HealthCheckWithContext performs a health check against a running server with a provided context.
+// It sends an HTTP GET request to the /healthz endpoint.
 //
 // Parameters:
 //   - ctx (context.Context): The context for managing the health check's lifecycle.
@@ -1362,9 +1343,7 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //   - addr (string): The address (host:port) on which the server is running.
 //
 // Returns:
-//   - (error): nil if the server is healthy (i.e., responds with a 200 OK), or an
-//     error if the health check fails for any reason (e.g., connection error,
-//     non-200 status code).
+//   - (error): nil if the server is healthy, or an error if the health check fails.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2263,15 +2242,18 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 	}
 }
 
-// startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startGrpcServer starts a gRPC server in a new goroutine.
+// It handles graceful shutdown when the context is canceled.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener for the server.
-// register is a function that registers the gRPC services with the server.
+// Parameters:
+//   - ctx (context.Context): The context for managing the server's lifecycle.
+//   - wg (*sync.WaitGroup): A WaitGroup to signal when the server has shut down.
+//   - errChan (chan<- error): A channel for reporting errors during startup.
+//   - readyChan (chan<- struct{}): A channel for signaling when the server is ready.
+//   - name (string): A descriptive name for the server, used in logging.
+//   - lis (net.Listener): The net.Listener for the server.
+//   - shutdownTimeout (time.Duration): The timeout for graceful shutdown.
+//   - server (*gogrpc.Server): The gRPC server instance.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -2345,15 +2327,19 @@ func wrapBindError(err error, serverType, address, flag string) error {
 	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }
 
-// startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startHTTPServer starts an HTTP server in a new goroutine.
+// It handles graceful shutdown when the context is canceled.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener on which the server will listen.
-// handler is the HTTP handler for processing requests.
+// Parameters:
+//   - ctx (context.Context): The context for managing the server's lifecycle.
+//   - wg (*sync.WaitGroup): A WaitGroup to signal when the server has shut down.
+//   - errChan (chan<- error): A channel for reporting errors during startup.
+//   - readyChan (chan<- struct{}): A channel for signaling when the server is ready.
+//   - name (string): A descriptive name for the server, used in logging.
+//   - lis (net.Listener): The net.Listener on which the server will listen.
+//   - handler (http.Handler): The HTTP handler for processing requests.
+//   - shutdownTimeout (time.Duration): The timeout for graceful shutdown.
+//   - connState (func(net.Conn, http.ConnState)): A callback for connection state changes.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
