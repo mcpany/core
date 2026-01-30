@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -23,7 +24,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AuditLogDetail, AuditLogEntry } from "./audit-log-detail";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+interface AuditLogEntry {
+    timestamp: string;
+    toolName: string;
+    userId: string;
+    profileId: string;
+    arguments: string;
+    result: string;
+    error: string;
+    duration: string;
+    durationMs: number;
+}
 
 /**
  * AuditLogViewer component.
@@ -55,6 +69,15 @@ export function AuditLogViewer() {
             if (endDate) filters.end_time = endDate.toISOString();
 
             const res = await apiClient.listAuditLogs(filters);
+            // Map snake_case to camelCase manually if needed, but assuming client returns what server sends.
+            // Server sends protobuf JSON which is camelCase by default for fields?
+            // Actually, grpc-gateway default uses snake_case for JSON unless configured otherwise.
+            // But I implemented manual marshalling in `server.go` using `AuditLogEntry` struct?
+            // No, I used `pb.AuditLogEntry`. Protobuf JSON serialization uses camelCase by default in Go (protojson).
+            // Let's assume camelCase.
+            // Wait, looking at `admin.proto`:
+            // string tool_name = 2;
+            // In JSON it will be `toolName`.
             setLogs(res.entries || []);
         } catch (e) {
             console.error("Failed to fetch audit logs", e);
@@ -66,6 +89,16 @@ export function AuditLogViewer() {
     useEffect(() => {
         fetchLogs();
     }, [fetchLogs]);
+
+    const formatJson = (jsonStr: string) => {
+        if (!jsonStr) return null;
+        try {
+            const obj = JSON.parse(jsonStr);
+            return JSON.stringify(obj, null, 2);
+        } catch (e) {
+            return jsonStr;
+        }
+    };
 
     return (
         <div className="space-y-4 h-full flex flex-col">
@@ -202,11 +235,68 @@ export function AuditLogViewer() {
             </Card>
 
             <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-                <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0 overflow-hidden gap-0">
-                    <DialogHeader className="sr-only">
+                <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
                         <DialogTitle>Audit Log Detail</DialogTitle>
+                        <DialogDescription>
+                            Execution details for {selectedLog?.toolName} at {selectedLog && new Date(selectedLog.timestamp).toLocaleString()}
+                        </DialogDescription>
                     </DialogHeader>
-                    {selectedLog && <AuditLogDetail entry={selectedLog} />}
+                    {selectedLog && (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span className="font-semibold block text-muted-foreground">User ID</span>
+                                    {selectedLog.userId || "N/A"}
+                                </div>
+                                <div>
+                                    <span className="font-semibold block text-muted-foreground">Profile ID</span>
+                                    {selectedLog.profileId || "N/A"}
+                                </div>
+                                <div>
+                                    <span className="font-semibold block text-muted-foreground">Duration</span>
+                                    {selectedLog.duration} ({selectedLog.durationMs}ms)
+                                </div>
+                                <div>
+                                    <span className="font-semibold block text-muted-foreground">Status</span>
+                                    {selectedLog.error ? <span className="text-red-500">Failed</span> : <span className="text-green-500">Success</span>}
+                                </div>
+                            </div>
+
+                            {selectedLog.error && (
+                                <div className="bg-red-900/20 border border-red-900/50 rounded-md p-3 text-red-200 text-sm">
+                                    <span className="font-semibold block mb-1">Error:</span>
+                                    {selectedLog.error}
+                                </div>
+                            )}
+
+                            <div>
+                                <h4 className="text-sm font-medium mb-2">Arguments</h4>
+                                <div className="rounded-md overflow-hidden border">
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vscDarkPlus}
+                                        customStyle={{ margin: 0, fontSize: '12px' }}
+                                    >
+                                        {formatJson(selectedLog.arguments) || "{}"}
+                                    </SyntaxHighlighter>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 className="text-sm font-medium mb-2">Result</h4>
+                                <div className="rounded-md overflow-hidden border">
+                                    <SyntaxHighlighter
+                                        language="json"
+                                        style={vscDarkPlus}
+                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
+                                    >
+                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
+                                    </SyntaxHighlighter>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

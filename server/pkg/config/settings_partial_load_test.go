@@ -46,7 +46,7 @@ upstream_services:
 	require.NoError(t, err)
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 
 	// We expect Load to NOT return an error here because Settings.Load

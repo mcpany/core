@@ -46,10 +46,10 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
 		Parameters: []*configv1.HttpParameterMapping{
 			{
-				Schema: &configv1.ParameterSchema{
+				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("text"),
 					Type: configv1.ParameterType_STRING.Enum(),
-				},
+				}.Build(),
 			},
 		},
 		InputTransformer: configv1.InputTransformer_builder{

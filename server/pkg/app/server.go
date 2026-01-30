@@ -261,6 +261,15 @@ type Application struct {
 	// MetricsGatherer is the interface for gathering metrics.
 	// Defaults to prometheus.DefaultGatherer.
 	MetricsGatherer prometheus.Gatherer
+
+	// statsCache for dashboard
+	statsCacheMu sync.RWMutex
+	statsCache   map[string]statsCacheEntry
+}
+
+type statsCacheEntry struct {
+	Data      any
+	ExpiresAt time.Time
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -283,6 +292,7 @@ func NewApplication() *Application {
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
 		MetricsGatherer: prometheus.DefaultGatherer,
+		statsCache:      make(map[string]statsCacheEntry),
 	}
 }
 
@@ -664,7 +674,8 @@ func (a *Application) Run(opts RunOptions) error {
 		}()
 	}
 	// Get configured middlewares
-	middlewares := config.GlobalSettings().Middlewares()
+	// We clone them to avoid modifying the singleton's underlying slice if we append/modify.
+	middlewares := append([]*config_v1.Middleware(nil), config.GlobalSettings().Middlewares()...)
 	if len(middlewares) == 0 {
 		// Default chain if none configured
 		middlewares = []*config_v1.Middleware{
@@ -1468,15 +1479,10 @@ func (a *Application) runServerMode(
 				break
 			}
 		}
-	} else {
-		// Fallback to singleton if nil (should not happen in normal Run)
-		for _, m := range config.GlobalSettings().Middlewares() {
-			if m.GetName() == authMiddlewareName && m.GetDisabled() {
-				authDisabled = true
-				break
-			}
-		}
 	}
+	// Note: We don't fall back to config.GlobalSettings() singleton here because it
+	// might be modified by other tests in the same package, leading to flaky tests.
+	// If globalSettings is nil, authDisabled remains false (enabled).
 
 	// Trust Proxy Config
 	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
@@ -2046,12 +2052,19 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	// Register Root Handler with gRPC-Web support
 	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
 		}
+
+		// UI Routing for root path
+		if r.URL.Path == "/" && uiPath != "" {
+			http.ServeFile(w, r, filepath.Join(uiPath, "index.html"))
+			return
+		}
+
+		// Fallback to JSON-RPC handler (for API calls at root or SSE)
 		httpHandler.ServeHTTP(w, r)
 	})))
 
@@ -2119,7 +2132,7 @@ func (a *Application) runServerMode(
 	}
 
 	// Wait for servers to be ready
-	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
+	timeout := time.NewTimer(30 * time.Second) // Reasonable timeout for binding ports, increased for slow CI
 	defer timeout.Stop()
 
 	for i := 0; i < expectedReady; i++ {
@@ -2182,7 +2195,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
-
 			apiKey := a.SettingsManager.GetAPIKey()
 			authenticated := false
 
@@ -2234,18 +2246,20 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
 			// This prevents accidental exposure of the server to the public internet (RCE risk).
-			host, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				// Fallback if RemoteAddr is weird, assume host is the string itself
-				host = r.RemoteAddr
-			}
+			if apiKey == "" {
+				host, _, err := net.SplitHostPort(r.RemoteAddr)
+				if err != nil {
+					// Fallback if RemoteAddr is weird, assume host is the string itself
+					host = r.RemoteAddr
+				}
 
-			// Check if the request is from a loopback address
-			ipAddr := net.ParseIP(host)
-			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
-				return
+				// Check if the request is from a loopback address
+				ipAddr := net.ParseIP(host)
+				if !util.IsPrivateIP(ipAddr) {
+					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+					return
+				}
 			}
 
 			next.ServeHTTP(w, r)

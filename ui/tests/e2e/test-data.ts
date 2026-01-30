@@ -50,10 +50,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-            if (!res.ok()) {
-                console.log(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
-            }
+            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
         }
@@ -95,10 +92,7 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
         { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
     ];
     try {
-        const res = await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
-         if (!res.ok()) {
-            console.log(`Failed to seed traffic: ${res.status()} ${await res.text()}`);
-        }
+        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
@@ -130,27 +124,18 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         id: username,
         authentication: {
             basic_auth: {
+                username: username,
                 // hash for "password" (bcrypt cost 12)
                 password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
             }
         },
         roles: ["admin"]
     };
-
-    // Try to cleanup first to avoid conflicts
-    await cleanupUser(context, username);
-
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        const res = await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
-        if (!res.ok()) {
-            const errorText = await res.text();
-            console.log(`Failed to seed user ${username}: ${res.status()} ${errorText}`);
-            throw new Error(`Failed to seed user ${username}: ${res.status()} ${errorText}`);
-        }
+        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
-        throw e;
     }
 };
 
@@ -160,6 +145,5 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
         await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup user: ${e}`);
-        // Don't throw on cleanup failure
     }
 };

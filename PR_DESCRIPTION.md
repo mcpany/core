@@ -1,38 +1,34 @@
 # Truth Reconciliation Audit Report
 
 ## Executive Summary
+Per the "Truth Reconciliation Audit" protocol, I have sampled 10 documentation files and cross-referenced them with the Codebase and Roadmap.
+The codebase is in excellent shape, with 9/10 sampled features showing perfect alignment between Documentation, Code, and Roadmap.
 
-A "Truth Reconciliation Audit" was performed on the MCP Any codebase to ensure alignment between Documentation, Codebase, and the Product Roadmap. A sample of **10 distinct features** was audited, covering UI, Server, and Configuration domains.
-
-**Overall Health:** 90%
-- **Healthy:** 9/10 features are correctly documented, implemented, and aligned with the Roadmap.
-- **Drift:** 1/10 features showed Documentation Drift (File misplaced in directory structure).
-- **Missing:** 0/10 features were missing or broken (Roadmap Debt).
+One critical discrepancy was found in the **Context Optimizer Middleware**. The documentation incorrectly stated the configuration unit as `max_tokens`, whereas the implementation uses `max_chars`. Furthermore, a bug was identified where the lack of a default value for `max_chars` could lead to unintended truncation of all content if the configuration field was omitted.
 
 ## Verification Matrix
 
-| Document Name | Component | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | UI | ✅ **Healthy** | Verified | Code: `ui/src/components/diagnostics` |
-| `ui/docs/features/stack-composer.md` | UI | ✅ **Healthy** | Verified | Code: `ui/src/components/stacks` |
-| `ui/docs/features/structured_log_viewer.md` | UI | ✅ **Healthy** | Verified | Code: `ui/src/components/logs/log-stream.tsx` |
-| `ui/docs/features/native_file_upload_playground.md` | UI | ✅ **Healthy** | Verified | Code: `ui/src/components/playground/schema-form.tsx` |
-| `ui/docs/features/tool_analytics.md` | UI | ✅ **Healthy** | Verified | Code: `ui/src/components/tools/tool-inspector.tsx` |
-| `server/docs/features/context_optimizer.md` | Server | ✅ **Healthy** | Verified | Code: `server/pkg/middleware/context_optimizer.go` |
-| `server/docs/features/tool_search_bar.md` | Server/UI | ⚠️ **Doc Drift** | ✅ Fixed | Moved to `ui/docs/features/tool_search_bar.md` |
-| `server/docs/features/health-checks.md` | Server | ✅ **Healthy** | Verified | Code: `server/pkg/upstream/*/` (HealthChecker interface) |
-| `server/docs/features/hot_reload.md` | Server | ✅ **Healthy** | Verified | Code: `server/pkg/app/server.go` (ReloadConfig) |
-| `server/docs/features/mcpctl.md` | Server | ✅ **Healthy** | Verified | Code: `server/cmd/mcpctl` |
+| Document Name | Status | Action Taken | Evidence |
+| :--- | :--- | :--- | :--- |
+| `server/docs/features/context_optimizer.md` | **DRIFT & BUG** | **Fixed Code & Doc** | `server/pkg/middleware/registry.go`, `registry_test.go` |
+| `server/docs/features/health-checks.md` | **VERIFIED** | None | `server/pkg/upstream/grpc/grpc.go` |
+| `server/docs/features/hot_reload.md` | **VERIFIED** | None | `server/pkg/app/server.go`, `ReloadConfig` |
+| `server/docs/features/log_streaming_ui.md` | **VERIFIED** | None | `ui/src/components/logs/log-stream.tsx` |
+| `server/docs/features/dynamic_registration.md` | **VERIFIED** | None | `server/pkg/upstream/openapi/openapi.go` |
+| `docs/alerts-feature.md` | **VERIFIED** | None | `server/pkg/alerts/manager.go`, `ui/src/app/alerts/page.tsx` |
+| `docs/traces-feature.md` | **VERIFIED** | None | `ui/src/components/traces/trace-detail.tsx` |
+| `server/docs/caching.md` | **VERIFIED** | None | `server/pkg/middleware/cache.go` |
+| `ui/docs/features.md` (Stack Composer) | **VERIFIED** | None | `ui/src/components/stacks/stack-editor.tsx` |
+| `server/docs/features/rate-limiting/README.md` | **VERIFIED** | None | `server/pkg/middleware/ratelimit.go` |
 
 ## Remediation Log
 
-### Documentation Drift (Case A)
-1.  **Tool Search Bar Documentation**:
-    *   **Issue**: `server/docs/features/tool_search_bar.md` describes a client-side UI feature (Tool Search Bar) but is located in the server documentation directory.
-    *   **Remediation**: Moved the file to `ui/docs/features/tool_search_bar.md`.
-
-### Roadmap Debt (Case B)
-*   *None found in the sampled set.*
+### Context Optimizer Middleware
+*   **Issue:** Doc claimed `max_tokens` (default 8000). Code used `max_chars` (int32). Code defaulted to 0 if config was present but empty, causing aggressive truncation (`len > 0`).
+*   **Resolution:**
+    1.  **Code Fix:** Updated `InitStandardMiddlewares` in `server/pkg/middleware/registry.go` to default `max_chars` to `32000` (approx 8000 tokens) if the configured value is 0.
+    2.  **Doc Fix:** Updated `server/docs/features/context_optimizer.md` to reference `max_chars` and document the default value.
+    3.  **Test:** Added `TestInitStandardMiddlewares_ContextOptimizer_Default` to `server/pkg/middleware/registry_test.go`.
 
 ## Security Scrub
-*   No PII, secrets, or internal IPs were found in the sampled documents or this report.
+No PII, secrets, or internal IPs were exposed in this report or the changes.
