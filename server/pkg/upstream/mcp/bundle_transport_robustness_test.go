@@ -24,6 +24,67 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// bundleMockDockerClient for robustness tests
+// Defined here to avoid dependency on other test files which might not be compiled or available in all contexts.
+type bundleMockDockerClient struct {
+	ImagePullFunc       func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
+	ContainerCreateFunc func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
+	ContainerAttachFunc func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
+	ContainerStartFunc  func(ctx context.Context, container string, options container.StartOptions) error
+	ContainerStopFunc   func(ctx context.Context, containerID string, options container.StopOptions) error
+	ContainerRemoveFunc func(ctx context.Context, containerID string, options container.RemoveOptions) error
+	CloseFunc           func() error
+}
+
+func (m *bundleMockDockerClient) ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+	if m.ImagePullFunc != nil {
+		return m.ImagePullFunc(ctx, ref, options)
+	}
+	return io.NopCloser(strings.NewReader("")), nil
+}
+
+func (m *bundleMockDockerClient) ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+	if m.ContainerCreateFunc != nil {
+		return m.ContainerCreateFunc(ctx, config, hostConfig, networkingConfig, platform, containerName)
+	}
+	return container.CreateResponse{ID: "mock-container-id"}, nil
+}
+
+func (m *bundleMockDockerClient) ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+	if m.ContainerAttachFunc != nil {
+		return m.ContainerAttachFunc(ctx, container, options)
+	}
+	return types.HijackedResponse{}, nil
+}
+
+func (m *bundleMockDockerClient) ContainerStart(ctx context.Context, container string, options container.StartOptions) error {
+	if m.ContainerStartFunc != nil {
+		return m.ContainerStartFunc(ctx, container, options)
+	}
+	return nil
+}
+
+func (m *bundleMockDockerClient) ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error {
+	if m.ContainerStopFunc != nil {
+		return m.ContainerStopFunc(ctx, containerID, options)
+	}
+	return nil
+}
+
+func (m *bundleMockDockerClient) ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error {
+	if m.ContainerRemoveFunc != nil {
+		return m.ContainerRemoveFunc(ctx, containerID, options)
+	}
+	return nil
+}
+
+func (m *bundleMockDockerClient) Close() error {
+	if m.CloseFunc != nil {
+		return m.CloseFunc()
+	}
+	return nil
+}
+
 func TestBundleDockerConn_Read_Robustness(t *testing.T) {
 	c1, c2 := net.Pipe()
 	defer func() { _ = c1.Close(); _ = c2.Close() }()
@@ -107,7 +168,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 
 	t.Run("ImagePull_Fail", func(t *testing.T) {
 		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
-			return &mockDockerClient{
+			return &bundleMockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return nil, errors.New("pull failed")
 				},
@@ -133,7 +194,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 
 	t.Run("ContainerCreate_Fail", func(t *testing.T) {
 		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
-			return &mockDockerClient{
+			return &bundleMockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
 				},
@@ -150,7 +211,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 	t.Run("ContainerAttach_Fail", func(t *testing.T) {
 		removedID := ""
 		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
-			return &mockDockerClient{
+			return &bundleMockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
 				},
@@ -175,7 +236,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 	t.Run("ContainerStart_Fail", func(t *testing.T) {
 		removedID := ""
 		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
-			return &mockDockerClient{
+			return &bundleMockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
 				},
