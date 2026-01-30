@@ -22,7 +22,10 @@ import {
 
 import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic";
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+// ⚡ Bolt Optimization: Lazy load Virtuoso to avoid SSR issues.
+// react-virtuoso uses window/DOM which can cause hydration mismatches or server-side crashes.
+// By loading it client-side only (ssr: false), we ensure stability in the K8s container.
+const Virtuoso = dynamic(() => import("react-virtuoso").then((m) => m.Virtuoso), { ssr: false });
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
