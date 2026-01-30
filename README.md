@@ -12,7 +12,7 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Project Identity
+## Elevator Pitch
 
 **What is this?**
 MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
@@ -23,7 +23,42 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 **The Solution:**
 Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Quick Start
+## Architecture
+
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+
+**High-Level Summary:**
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration.
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration]
+        Registry -->|Policy| Auth[Authentication & Policy]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
+### Key Features
+*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
+*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
+*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
+*   **Observability**: Real-time metrics and audit logging.
+*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
+
+## Getting Started
 
 Follow these steps to get up and running immediately.
 
@@ -62,7 +97,7 @@ Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `ht
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 3. Developer Workflow
+## Development
 
 Use these commands to maintain code quality and build the project.
 
@@ -89,48 +124,6 @@ Regenerate Protocol Buffers and other auto-generated files.
 ```bash
 make gen
 ```
-
-## 4. Architecture
-
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
-
-**High-Level Summary:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration.
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration]
-        Registry -->|Policy| Auth[Authentication & Policy]
-    end
-
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
-```
-
-### Key Features
-*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
-*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
-*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
-*   **Network Topology**: Visual graph of clients, services, and tools.
-*   **Observability**: Real-time metrics and audit logging.
-*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
-
-## Key Documentation
-*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
-*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
-*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
-*   **[Examples](server/docs/examples.md)**: Hands-on examples.
 
 ## Configuration
 
@@ -159,16 +152,15 @@ For production deployments, ensure the following secrets are set:
 *   **`MCPANY_ADMIN_INIT_PASSWORD`**: Sets the initial password for the admin user.
 *   **`MCPANY_API_KEY`** (Recommended): Sets a global API key to secure the server endpoint.
 
-### Documentation
+## Key Documentation
+*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
+*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
+*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
+*   **[Examples](server/docs/examples.md)**: Hands-on examples.
 
-For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
-
----
-
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
-
 - **Protobuf Generation Errors**: If you encounter errors related to `protoc` or missing plugins, try running `make prepare` again to ensure all tools are correctly installed in `build/env/bin`.
 - **Docker Permission Denied**: If you cannot run Docker commands, ensure your user is in the `docker` group or try running with `sudo`.
 - **Port Conflicts**: Ensure ports `50050` (HTTP), `50051` (gRPC), and `9002` (UI) are free before starting the server.
