@@ -63,7 +63,17 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
-		if err := engine.Unmarshal([]byte(req.Content), cfg); err != nil {
+		var err error
+
+		if mu, ok := engine.(config.MapUnmarshaler); ok {
+			// ⚡ BOLT: Reuse parsed map to avoid double parsing.
+			// Randomized Selection from Top 5 High-Impact Targets
+			err = mu.UnmarshalMap([]byte(req.Content), rawConfig, cfg)
+		} else {
+			err = engine.Unmarshal([]byte(req.Content), cfg)
+		}
+
+		if err != nil {
 			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", err))
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
