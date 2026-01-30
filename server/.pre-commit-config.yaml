@@ -35,6 +35,18 @@ repos:
         language: system
         files: ^k8s/helm/
         pass_filenames: false
+    -   id: check-go-doc
+        name: check-go-doc
+        entry: go run server/tools/check_doc.go server/
+        language: system
+        files: \.go$
+        pass_filenames: false
+    -   id: check-ts-doc
+        name: check-ts-doc
+        entry: python3 server/tools/check_ts_doc.py
+        language: system
+        files: \.tsx?$
+        pass_filenames: false
 -   repo: https://github.com/google/addlicense
     rev: v1.2.0
     hooks:
