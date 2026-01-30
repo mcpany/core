@@ -2687,6 +2687,26 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
+// isStrictShell returns true if the command is a shell that splits arguments on whitespace.
+// For these commands, we must block spaces in unquoted arguments to prevent argument injection.
+func isStrictShell(cmd string) bool {
+	base := filepath.Base(cmd)
+	strictShells := []string{
+		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
+		"ssh", "su", // ssh and su invoke shells/commands where space splits arguments
+		"busybox",
+	}
+	for _, s := range strictShells {
+		if base == s {
+			return true
+		}
+		// Handle versioned shells (e.g. python3.10 is NOT a shell, but bash-5.0 IS)
+		// Assuming python is not strict shell (interpreter).
+	}
+	return false
+}
+
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
@@ -2714,8 +2734,13 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+	dangerousChars := ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+
+	// If the command is a strict shell (like sh, bash), we MUST block spaces to prevent argument injection
+	// (e.g. turning `curl {{url}}` into `curl http://... -o /etc/passwd`)
+	if isStrictShell(command) {
+		dangerousChars += " "
+	}
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
