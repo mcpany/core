@@ -16,6 +16,8 @@ services:
       - MCPANY_API_KEY=test-token
       - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
       - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
+      - MCPANY__GLOBAL_SETTINGS__DEBUGGER__ENABLED=true
+      - MCPANY__GLOBAL_SETTINGS__DEBUGGER__SIZE=1000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s

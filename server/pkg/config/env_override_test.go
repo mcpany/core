@@ -93,3 +93,33 @@ global_settings:
 	require.NotNil(t, cfg.GetGlobalSettings().GetLogLevel())
 	assert.Equal(t, configv1.GlobalSettings_LOG_LEVEL_DEBUG, cfg.GetGlobalSettings().GetLogLevel())
 }
+
+func TestEnvVarDebuggerOverride(t *testing.T) {
+	// Create a temporary config file based on config.minimal.yaml structure
+	fs := afero.NewMemMapFs()
+	configContent := `
+global_settings:
+  allowed_origins:
+    - "*"
+`
+	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0644)
+	require.NoError(t, err)
+
+	// Set environment variables to enable debugger
+	os.Setenv("MCPANY__GLOBAL_SETTINGS__DEBUGGER__ENABLED", "true")
+	os.Setenv("MCPANY__GLOBAL_SETTINGS__DEBUGGER__SIZE", "1000")
+	defer func() {
+		os.Unsetenv("MCPANY__GLOBAL_SETTINGS__DEBUGGER__ENABLED")
+		os.Unsetenv("MCPANY__GLOBAL_SETTINGS__DEBUGGER__SIZE")
+	}()
+
+	// Load the config
+	store := config.NewFileStore(fs, []string{"/config.yaml"})
+	cfg, err := store.Load(context.Background())
+	require.NoError(t, err)
+
+	// Verify debugger is enabled
+	require.NotNil(t, cfg.GetGlobalSettings().GetDebugger())
+	assert.True(t, cfg.GetGlobalSettings().GetDebugger().GetEnabled())
+	assert.Equal(t, int32(1000), cfg.GetGlobalSettings().GetDebugger().GetSize())
+}

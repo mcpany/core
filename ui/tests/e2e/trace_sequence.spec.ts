@@ -75,6 +75,6 @@ test.describe('Trace Sequence Diagram', () => {
     await expect(page.getByText('Execute Request Result')).toBeVisible();
 
     // Take verification screenshot
-    await page.screenshot({ path: 'verification_sequence.png', fullPage: true });
+    // await page.screenshot({ path: 'verification_sequence.png', fullPage: true });
   });
 });
