@@ -169,7 +169,7 @@ const JsonTreeNode = ({ name, value, isLast, depth, defaultExpandDepth }: JsonTr
                         <JsonTreeNode
                             key={key}
                             name={isArray ? undefined : key} // Don't show index keys for arrays
-                            value={(value as any)[key]}
+                            value={(value as Record<string, unknown>)[key]}
                             isLast={index === keys.length - 1}
                             depth={depth + 1}
                             defaultExpandDepth={defaultExpandDepth}
