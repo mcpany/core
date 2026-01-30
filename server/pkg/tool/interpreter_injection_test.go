@@ -33,10 +33,13 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
-	// Payload: 1e date (Execute 'date')
+	// Payload: 1e (Execute command).
+	// We avoid spaces ("1e date") because LocalCommandTool's shell injection protection
+	// forbids spaces in unquoted arguments for shell-like commands (including sed).
+	// The sandbox should still block 'e' even without arguments (or with different args).
 	req := &ExecutionRequest{
 		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "1e date"}`),
+		ToolInputs: []byte(`{"script": "1e"}`),
 	}
 
 	result, err := tool.Execute(context.Background(), req)
@@ -49,14 +52,14 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		t.Fatalf("Result is not map: %v", result)
 	}
 
-	// Expect return code to be non-zero (sed error)
+	// Expect return code to be non-zero (sed error or sandbox violation)
 	returnCode, ok := resMap["return_code"].(int)
 	if !ok {
 		t.Fatalf("return_code not int: %v", resMap["return_code"])
 	}
 
 	if returnCode == 0 {
-		t.Errorf("FAIL: sed executed '1e date' successfully (return_code 0). Sandbox failed.")
+		t.Errorf("FAIL: sed executed '1e' successfully (return_code 0). Sandbox failed.")
 	}
 
 	stderr, _ := resMap["stderr"].(string)
@@ -68,10 +71,12 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		t.Logf("Success: sed blocked command with error: %s", stderr)
 	}
 
-	// Payload: w /tmp/pwned (Write file)
+	// Payload: w/tmp/pwned (Write file)
+	// We avoid space ("w /tmp/pwned") to pass shell injection check.
+	// sed usually accepts concatenated filename.
 	req = &ExecutionRequest{
 		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "w /tmp/pwned"}`),
+		ToolInputs: []byte(`{"script": "w/tmp/pwned"}`),
 	}
 
 	result, err = tool.Execute(context.Background(), req)
@@ -82,7 +87,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 	returnCode, _ = resMap["return_code"].(int)
 
 	if returnCode == 0 {
-		t.Errorf("FAIL: sed executed 'w /tmp/pwned' successfully. Sandbox failed.")
+		t.Errorf("FAIL: sed executed 'w/tmp/pwned' successfully. Sandbox failed.")
 	}
 }
 
@@ -103,36 +108,21 @@ func TestSedSandbox_ValidUsage(t *testing.T) {
 
 	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
-	// Valid replacement (needs input, but sed waits for stdin if file not provided)
-	// We pass empty input via echo? No, LocalCommandTool doesn't easily pipe stdin in this test setup unless we use communication protocol JSON?
-	// But sed -e 's/a/b/' will wait for input.
-	// So it will timeout.
-
-	// We can use 'sed --help' or something?
-	// But arguments are fixed.
-
-	// Maybe use 'version' command if sed has it as script? No.
-	// Use 'q' (quit).
+	// Valid replacement: 'q' (quit) has no spaces and is safe.
 	req := &ExecutionRequest{
 		ToolName: "sed-tool",
 		ToolInputs: []byte(`{"script": "q"}`),
 	}
 
-	// Since sed is waiting for input (no files), 'q' might not trigger immediately unless it processes line 1.
-	// But without input...
-	// Actually, sed without input files reads from stdin.
-	// LocalCommandTool passes nil stdin (closed).
-	// So sed reads EOF.
-	// 'q' on EOF?
-
-	// Let's rely on timeout if it hangs.
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond) // Short timeout
+	// We use a short timeout because sed might wait for input if 'q' is not processed immediately (though it should be).
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	result, err := tool.Execute(ctx, req)
 	if err != nil {
-		// Timeout is expected or success?
-		// If sed exits 0, it's success.
+		// Timeout might happen if sed waits for stdin before executing 'q' (depending on implementation)
+		// but 'q' usually quits immediately.
+		// If it times out or fails, we log it.
 		t.Logf("Execute result: %v, err: %v", result, err)
 	} else {
 		resMap, _ := result.(map[string]interface{})
