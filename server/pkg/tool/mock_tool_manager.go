@@ -176,6 +176,24 @@ func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
 }
 
+// GetToolCounts mocks base method.
+//
+// Returns the result.
+func (m *MockManagerInterface) GetToolCounts() map[string]int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetToolCounts")
+	ret0, _ := ret[0].(map[string]int)
+	return ret0
+}
+
+// GetToolCounts indicates an expected call of GetToolCounts.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) GetToolCounts() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetToolCounts", reflect.TypeOf((*MockManagerInterface)(nil).GetToolCounts))
+}
+
 // GetServiceInfo mocks base method.
 //
 // serviceID is the serviceID.

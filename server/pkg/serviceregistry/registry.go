@@ -253,7 +253,10 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 	if info.Config != nil {
 		clonedConfig := proto.Clone(info.Config).(*config.UpstreamServiceConfig)
 		util.StripSecretsFromService(clonedConfig)
-		r.injectRuntimeInfo(clonedConfig)
+		// We still need tool counts for single service lookup.
+		// GetToolCounts() is O(Tools), same as filtering ListTools().
+		counts := r.toolManager.GetToolCounts()
+		r.injectRuntimeInfo(clonedConfig, counts[serviceID])
 		clonedInfo.Config = clonedConfig
 	}
 	return &clonedInfo, true
@@ -275,7 +278,9 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 	}
 	cloned := proto.Clone(serviceConfig).(*config.UpstreamServiceConfig)
 	util.StripSecretsFromService(cloned)
-	r.injectRuntimeInfo(cloned)
+	// We still need tool counts for single service lookup.
+	counts := r.toolManager.GetToolCounts()
+	r.injectRuntimeInfo(cloned, counts[serviceID])
 	return cloned, true
 }
 
@@ -413,11 +418,15 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
+	// ⚡ BOLT: Optimization - Fetch tool counts once to avoid O(N*M) loop
+	// Randomized Selection from Top 5 High-Impact Targets
+	toolCounts := r.toolManager.GetToolCounts()
+
 	services := make([]*config.UpstreamServiceConfig, 0, len(r.serviceConfigs))
-	for _, service := range r.serviceConfigs {
+	for key, service := range r.serviceConfigs {
 		cloned := proto.Clone(service).(*config.UpstreamServiceConfig)
 		util.StripSecretsFromService(cloned)
-		r.injectRuntimeInfo(cloned)
+		r.injectRuntimeInfo(cloned, toolCounts[key])
 		services = append(services, cloned)
 	}
 	return services, nil
@@ -425,7 +434,7 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 
 // injectRuntimeInfo populates runtime information (error status, tool count) into the config.
 // Caller MUST hold r.mu lock (Read or Write).
-func (r *ServiceRegistry) injectRuntimeInfo(config *config.UpstreamServiceConfig) {
+func (r *ServiceRegistry) injectRuntimeInfo(config *config.UpstreamServiceConfig, toolCount int) {
 	if config == nil {
 		return
 	}
@@ -443,15 +452,6 @@ func (r *ServiceRegistry) injectRuntimeInfo(config *config.UpstreamServiceConfig
 	}
 
 	// Tool Count
-	// r.toolManager is thread-safe (xsync.Map based) so calling ListTools is safe.
-	// However, ListTools acquires its own locks.
-	tools := r.toolManager.ListTools()
-	count := 0
-	for _, t := range tools {
-		if t.Tool().GetServiceId() == key {
-			count++
-		}
-	}
 	//nolint:gosec // Tool count is unlikely to exceed int32 max
-	config.SetToolCount(int32(count))
+	config.SetToolCount(int32(toolCount))
 }

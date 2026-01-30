@@ -74,6 +74,7 @@ func (m *mockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 	return nil, nil
 }
 func (m *mockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
+func (m *mockToolManager) GetToolCounts() map[string]int                         { return nil }
 
 func TestNew(t *testing.T) {
 	pm := pool.NewManager()
@@ -457,6 +458,16 @@ func (m *threadSafeToolManager) ListTools() []tool.Tool {
 		tools = append(tools, t)
 	}
 	return tools
+}
+
+func (m *threadSafeToolManager) GetToolCounts() map[string]int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	counts := make(map[string]int)
+	for _, t := range m.tools {
+		counts[t.Tool().GetServiceId()]++
+	}
+	return counts
 }
 
 func TestServiceRegistry_RegisterService_DuplicateNameDoesNotClearExisting(t *testing.T) {

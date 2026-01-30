@@ -119,6 +119,10 @@ type ManagerInterface interface {
 	// Returns the result.
 	// Returns true if successful.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
+	// GetToolCounts returns a map of tool counts per service.
+	//
+	// Returns the result.
+	GetToolCounts() map[string]int
 }
 
 // ExecutionMiddleware defines the interface for tool execution middleware.
@@ -324,6 +328,18 @@ func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool
 
 	allowed, ok := tm.allowedServicesCache[profileID]
 	return allowed, ok
+}
+
+// GetToolCounts returns a map of tool counts per service.
+//
+// Returns the result.
+func (tm *Manager) GetToolCounts() map[string]int {
+	tools := tm.ListTools()
+	counts := make(map[string]int)
+	for _, t := range tools {
+		counts[t.Tool().GetServiceId()]++
+	}
+	return counts
 }
 
 func (tm *Manager) matchesSelector(t *v1.Tool, selector *configv1.ProfileSelector) bool {

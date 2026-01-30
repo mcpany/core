@@ -96,7 +96,7 @@ func TestInjectRuntimeInfo_Fallback(t *testing.T) {
 	registry := New(nil, &mockToolManager{}, nil, nil, nil)
 
 	// Case 1: Config is nil
-	registry.injectRuntimeInfo(nil)
+	registry.injectRuntimeInfo(nil, 0)
 	// No panic implies success
 
 	// Case 2: Config has no sanitized name (should trigger fallback)
@@ -112,7 +112,7 @@ func TestInjectRuntimeInfo_Fallback(t *testing.T) {
 	registry.mu.Unlock()
 
 	registry.mu.Lock()
-	registry.injectRuntimeInfo(config)
+	registry.injectRuntimeInfo(config, 0)
 	registry.mu.Unlock()
 
 	assert.Equal(t, "fallback error", config.GetLastError())
