@@ -493,7 +493,7 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.Authentication_BasicAuth_case:
-		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
+		return validateBasicAuth(ctx, authConfig.GetBasicAuth(), authCtx)
 	case configv1.Authentication_Mtls_case:
 		return validateMtlsAuth(authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
@@ -502,6 +502,42 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 		return validateOIDCAuth(ctx, authConfig.GetOidc())
 	case configv1.Authentication_TrustedHeader_case:
 		return validateTrustedHeaderAuth(authConfig.GetTrustedHeader())
+	}
+	return nil
+}
+
+func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth, authCtx AuthValidationContext) error {
+	if basicAuth.GetUsername() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'username' is empty"),
+			Suggestion: "Set the 'username' field.",
+		}
+	}
+
+	// For incoming auth (Users), we accept either a plain text password (for seeding) OR a hash.
+	if authCtx == AuthValidationContextIncoming && basicAuth.GetPasswordHash() != "" {
+		return nil
+	}
+
+	if basicAuth.GetPassword() == nil {
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'password' is missing"),
+			Suggestion: "Set the 'password' field.",
+		}
+	}
+
+	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
+		return WrapActionableError("basic auth password validation failed", err)
+	}
+	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
+	if err != nil {
+		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
+	}
+	if passwordValue == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'password' is empty"),
+			Suggestion: "Check that the environment variable or file providing the password is not empty.",
+		}
 	}
 	return nil
 }
@@ -881,7 +917,7 @@ func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Au
 	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.Authentication_BasicAuth_case:
-		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
+		return validateBasicAuth(ctx, authConfig.GetBasicAuth(), authCtx)
 	case configv1.Authentication_Mtls_case:
 		return validateMtlsAuth(authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
@@ -964,34 +1000,6 @@ func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTo
 		return &ActionableError{
 			Err:        fmt.Errorf("bearer token 'token' is empty"),
 			Suggestion: "Check that the environment variable or file providing the Bearer token is not empty.",
-		}
-	}
-	return nil
-}
-
-func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error {
-	if basicAuth.GetUsername() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'username' is empty"),
-			Suggestion: "Set the 'username' field.",
-		}
-	}
-	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
-		return WrapActionableError("basic auth password validation failed", err)
-	}
-
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
-		return nil
-	}
-
-	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
-	if err != nil {
-		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
-	}
-	if passwordValue == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'password' is empty"),
-			Suggestion: "Check that the environment variable or file providing the password is not empty.",
 		}
 	}
 	return nil

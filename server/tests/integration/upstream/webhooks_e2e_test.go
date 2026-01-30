@@ -60,11 +60,11 @@ func TestWebhooksE2E(t *testing.T) {
 
 	t.Run("MarkdownConversion", func(t *testing.T) {
 		url := fmt.Sprintf("http://127.0.0.1:%d/markdown", port)
-		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
+		hook := tool.NewWebhookHook(configv1.WebhookConfig_builder{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
 			WebhookSecret: secretPtr,
-		})
+		}.Build())
 
 		ctx := context.Background()
 		req := &tool.ExecutionRequest{
@@ -101,11 +101,11 @@ func TestWebhooksE2E(t *testing.T) {
 
 	t.Run("TextTruncation", func(t *testing.T) {
 		url := fmt.Sprintf("http://127.0.0.1:%d/truncate?max_chars=5", port)
-		hook := tool.NewWebhookHook(&configv1.WebhookConfig{
+		hook := tool.NewWebhookHook(configv1.WebhookConfig_builder{
 			Url:           url,
 			Timeout:       TIMESTAMPCB.New(5 * time.Second),
 			WebhookSecret: secretPtr,
-		})
+		}.Build())
 
 		ctx := context.Background()
 		req := &tool.ExecutionRequest{
