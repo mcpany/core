@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package tracing provides functionality for handling and exporting traces.
 package tracing
 
 import (
@@ -124,11 +125,12 @@ func (e *InMemoryExporter) GetTraces() []*Trace {
 				// attr.Value.AsString() is safe
 				val := attr.Value.AsString()
 				// Basic heuristic
-				if key == "input" || key == "arguments" {
+				switch {
+				case key == "input" || key == "arguments":
 					_ = json.Unmarshal([]byte(val), &input)
-				} else if key == "output" || key == "result" {
+				case key == "output" || key == "result":
 					_ = json.Unmarshal([]byte(val), &output)
-				} else {
+				default:
 					input[key] = val
 				}
 			}
@@ -163,10 +165,9 @@ func (e *InMemoryExporter) GetTraces() []*Trace {
 				parent, ok := spanMap[span.ParentID]
 				if ok {
 					parent.Children = append(parent.Children, span)
-				} else {
-					if root == nil {
-						root = span
-					}
+				} else if root == nil {
+					// Fallback: If parent not found (orphaned in this view), make it root
+					root = span
 				}
 			} else {
 				root = span
@@ -178,7 +179,7 @@ func (e *InMemoryExporter) GetTraces() []*Trace {
 				ID:            tid,
 				RootSpan:      root,
 				Timestamp:     "", // TODO: Format time
-				TotalDuration: 0, // TODO: Calc duration
+				TotalDuration: 0,  // TODO: Calc duration
 				Status:        root.Status,
 				Trigger:       "user",
 			}

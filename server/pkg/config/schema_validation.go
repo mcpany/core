@@ -23,7 +23,7 @@ var (
 func ensureSchema() (*jsonschema.Schema, error) {
 	schemaOnce.Do(func() {
 		// 1. Generate JSON Schema from the Proto definition
-		cfg := configv1.McpAnyServerConfig_builder{}.Build()
+		cfg := &configv1.McpAnyServerConfig{}
 		var err error
 		compiledSchema, err = GenerateSchemaFromProto(cfg.ProtoReflect())
 		if err != nil {
@@ -58,7 +58,7 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 // Returns the result.
 // Returns an error if the operation fails.
 func GenerateJSONSchemaBytes() ([]byte, error) {
-	cfg := configv1.McpAnyServerConfig_builder{}.Build()
+	cfg := &configv1.McpAnyServerConfig{}
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())
 	return json.MarshalIndent(schemaMap, "", "  ")
 }

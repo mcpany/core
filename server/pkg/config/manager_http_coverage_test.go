@@ -24,9 +24,7 @@ func TestLoadFromURL_Success(t *testing.T) {
 
 	m := NewUpstreamServiceManager(nil)
 	m.httpClient = http.DefaultClient // Allow 127.0.0.1
-	collection := configv1.Collection_builder{
-		Name: proto.String("test"),
-	}.Build()
+	collection := &configv1.Collection{Name: proto.String("test")}
 
 	err := m.loadFromURL(context.Background(), ts.URL, collection)
 	require.NoError(t, err)
@@ -46,16 +44,18 @@ func TestLoadFromURL_Auth(t *testing.T) {
 
 	m := NewUpstreamServiceManager(nil)
 	m.httpClient = http.DefaultClient // Allow 127.0.0.1
-	collection := configv1.Collection_builder{
+	collection := &configv1.Collection{
 		Name: proto.String("test"),
-		Authentication: configv1.Authentication_builder{
-			BearerToken: configv1.BearerTokenAuth_builder{
-				Token: configv1.SecretValue_builder{
-					PlainText: proto.String("token"),
-				}.Build(),
-			}.Build(),
-		}.Build(),
-	}.Build()
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BearerToken{
+				BearerToken: &configv1.BearerTokenAuth{
+					Token: &configv1.SecretValue{
+						Value: &configv1.SecretValue_PlainText{PlainText: "token"},
+					},
+				},
+			},
+		},
+	}
 
 	err := m.loadFromURL(context.Background(), ts.URL, collection)
 	require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestLoadFromURL_Error(t *testing.T) {
 
 	m := NewUpstreamServiceManager(nil)
 	m.httpClient = http.DefaultClient // Allow 127.0.0.1
-	collection := configv1.Collection_builder{Name: proto.String("test")}.Build()
+	collection := &configv1.Collection{Name: proto.String("test")}
 
 	err := m.loadFromURL(context.Background(), ts.URL, collection)
 	assert.Error(t, err)
@@ -78,7 +78,7 @@ func TestLoadFromURL_Error(t *testing.T) {
 
 func TestLoadFromURL_RequestFail(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
-	collection := configv1.Collection_builder{Name: proto.String("test")}.Build()
+	collection := &configv1.Collection{Name: proto.String("test")}
 
 	// Invalid URL
 	err := m.loadFromURL(context.Background(), "http://invalid-url", collection)
@@ -88,16 +88,18 @@ func TestLoadFromURL_RequestFail(t *testing.T) {
 func TestLoadFromURL_BadAuth(t *testing.T) {
 	m := NewUpstreamServiceManager(nil)
 	// Env var that doesn't exist
-	collection := configv1.Collection_builder{
+	collection := &configv1.Collection{
 		Name: proto.String("test"),
-		Authentication: configv1.Authentication_builder{
-			BearerToken: configv1.BearerTokenAuth_builder{
-				Token: configv1.SecretValue_builder{
-					EnvironmentVariable: proto.String("MISSING_VAR"),
-				}.Build(),
-			}.Build(),
-		}.Build(),
-	}.Build()
+		Authentication: &configv1.Authentication{
+			AuthMethod: &configv1.Authentication_BearerToken{
+				BearerToken: &configv1.BearerTokenAuth{
+					Token: &configv1.SecretValue{
+						Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_VAR"},
+					},
+				},
+			},
+		},
+	}
 	// We need context with config that fails?
 	// ResolveSecret checks os.LookupEnv.
 

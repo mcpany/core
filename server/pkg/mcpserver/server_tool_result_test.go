@@ -8,9 +8,6 @@ import (
 	"encoding/base64"
 	"testing"
 
-	bus_pb "github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -21,6 +18,9 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
+	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -34,18 +34,18 @@ type mockMapResultTool struct {
 }
 
 func (m *mockMapResultTool) Tool() *v1.Tool {
-	return v1.Tool_builder{
+	return &v1.Tool{
 		Name:      proto.String(m.name),
 		ServiceId: proto.String("test-service"),
-		Annotations: v1.ToolAnnotations_builder{
+		Annotations: &v1.ToolAnnotations{
 			InputSchema: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"type":       structpb.NewStringValue("object"),
 					"properties": structpb.NewStructValue(&structpb.Struct{}),
 				},
 			},
-		}.Build(),
-	}.Build()
+		},
+	}
 }
 
 func (m *mockMapResultTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

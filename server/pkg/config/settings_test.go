@@ -15,7 +15,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestSettings_Load(t *testing.T) {
@@ -52,7 +51,7 @@ upstream_services: []
 	require.NoError(t, err)
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	err = settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -77,7 +76,7 @@ func TestSettings_Defaults(t *testing.T) {
 	cmd := &cobra.Command{}
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -92,7 +91,7 @@ func TestSettings_SetAPIKey(t *testing.T) {
 	// But `GlobalSettings` returns singleton.
 	// Let's use a fresh instance.
 	s := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	s.SetAPIKey("new-key")
 	assert.Equal(t, "new-key", s.APIKey())
@@ -112,7 +111,7 @@ func TestSettings_LoggingInit(t *testing.T) {
 	viper.Set("logfile", tmpFile.Name())
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	// We can't Mock os.OpenFile easily without separate function.
 	// So we tested with a real file path.
@@ -141,7 +140,7 @@ global_settings:
 	require.NoError(t, err)
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	err = settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -171,7 +170,7 @@ global_settings:
 	require.NoError(t, err)
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	// We need to ensure viper reads the env var.
 	// Since we can't easily re-bind flags in this test context without full setup,
@@ -199,7 +198,7 @@ func TestSettings_GetDbDsn(t *testing.T) {
 	viper.Set("db-dsn", "postgres://user:pass@127.0.0.1:5432/db")
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -215,7 +214,7 @@ func TestSettings_GetDbDriver(t *testing.T) {
 	viper.Set("db-driver", "postgres")
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -227,12 +226,11 @@ func TestSettings_GetDlp(t *testing.T) {
 	enabled := true
 	settings := &Settings{
 		proto: func() *configv1.GlobalSettings {
-			dlp := configv1.DLPConfig_builder{
-				Enabled: proto.Bool(enabled),
-			}.Build()
-			return configv1.GlobalSettings_builder{
-				Dlp: dlp,
-			}.Build()
+			gs := &configv1.GlobalSettings{}
+			dlp := &configv1.DLPConfig{}
+			dlp.SetEnabled(enabled)
+			gs.SetDlp(dlp)
+			return gs
 		}(),
 	}
 	assert.NotNil(t, settings.GetDlp())
@@ -246,18 +244,18 @@ func TestSettings_ExtraGetters(t *testing.T) {
 	// Create a Settings instance manually with populated fields
 	middlewares := []*configv1.Middleware{
 		func() *configv1.Middleware {
-			return configv1.Middleware_builder{
-				Name: proto.String("test-middleware"),
-			}.Build()
+			m := &configv1.Middleware{}
+			m.SetName("test-middleware")
+			return m
 		}(),
 	}
 
 	s := &Settings{
 		dbPath: "/path/to/db.sqlite",
 		proto: func() *configv1.GlobalSettings {
-			return configv1.GlobalSettings_builder{
-				Middlewares: middlewares,
-			}.Build()
+			gs := &configv1.GlobalSettings{}
+			gs.SetMiddlewares(middlewares)
+			return gs
 		}(),
 	}
 

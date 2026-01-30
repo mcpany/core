@@ -308,7 +308,7 @@ func TestValidateMcpService_Coverage(t *testing.T) {
         },
         {
             name: "unknown_connection_type",
-            service: configv1.McpUpstreamService_builder{}.Build(),
+            service: &configv1.McpUpstreamService{},
             expectErr: "mcp service has no connection_type",
         },
         {
@@ -730,7 +730,7 @@ func TestValidateBasicAuth_Coverage(t *testing.T) {
     }
      for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateBasicAuth(ctx, tt.auth, AuthValidationContextOutgoing)
+            err := validateBasicAuth(ctx, tt.auth)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {

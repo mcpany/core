@@ -11,7 +11,7 @@ import (
 )
 
 func TestGenerateSchemaMapFromProto(t *testing.T) {
-	cfg := configv1.McpAnyServerConfig_builder{}.Build()
+	cfg := &configv1.McpAnyServerConfig{}
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())
 	assert.NotNil(t, schemaMap)
 	assert.Equal(t, "https://json-schema.org/draft/2020-12/schema", schemaMap["$schema"])

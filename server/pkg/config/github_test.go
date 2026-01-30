@@ -12,7 +12,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestIsGitHubURL(t *testing.T) {
@@ -147,13 +146,12 @@ func TestGitHub_List(t *testing.T) {
 		httpClient: &http.Client{},
 	}
 
-	auth := configv1.Authentication_builder{
-		BearerToken: configv1.BearerTokenAuth_builder{
-			Token: configv1.SecretValue_builder{
-				PlainText: proto.String("my-secret-token"),
-			}.Build(),
-		}.Build(),
-	}.Build()
+	auth := &configv1.Authentication{}
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("my-secret-token")
+	bearer := &configv1.BearerTokenAuth{}
+	bearer.SetToken(secret)
+	auth.SetBearerToken(bearer)
 
 	contents, err := g.List(context.Background(), auth)
 	if err != nil {
@@ -277,14 +275,11 @@ func TestGitHub_List_Auth_Variants(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("APIKey", func(t *testing.T) {
-		auth := configv1.Authentication_builder{
-			ApiKey: configv1.APIKeyAuth_builder{
-				ParamName: proto.String("X-API-Key"),
-				Value: configv1.SecretValue_builder{
-					PlainText: proto.String("my-api-key"),
-				}.Build(),
-			}.Build(),
-		}.Build()
+		auth := &configv1.Authentication{}
+		apiKey := &configv1.APIKeyAuth{}
+		apiKey.SetValue(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "my-api-key"}})
+		apiKey.SetParamName("X-API-Key")
+		auth.SetApiKey(apiKey)
 
 		_, err := g.List(ctx, auth)
 		if err != nil {
@@ -293,14 +288,11 @@ func TestGitHub_List_Auth_Variants(t *testing.T) {
 	})
 
 	t.Run("BasicAuth", func(t *testing.T) {
-		auth := configv1.Authentication_builder{
-			BasicAuth: configv1.BasicAuth_builder{
-				Username: proto.String("user"),
-				Password: configv1.SecretValue_builder{
-					PlainText: proto.String("pass"),
-				}.Build(),
-			}.Build(),
-		}.Build()
+		auth := &configv1.Authentication{}
+		basic := &configv1.BasicAuth{}
+		basic.SetUsername("user")
+		basic.SetPassword(&configv1.SecretValue{Value: &configv1.SecretValue_PlainText{PlainText: "pass"}})
+		auth.SetBasicAuth(basic)
 
 		_, err := g.List(ctx, auth)
 		if err != nil {

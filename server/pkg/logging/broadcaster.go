@@ -147,24 +147,3 @@ func (b *Broadcaster) GetHistory() [][]byte {
 	}
 	return result
 }
-
-// Hydrate populates the history buffer with messages.
-// It is intended to be called at startup. Messages are NOT broadcasted to subscribers,
-// as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
-func (b *Broadcaster) Hydrate(messages [][]byte) {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-
-	for _, msg := range messages {
-		// Copy msg to ensure ownership
-		msgCopy := make([]byte, len(msg))
-		copy(msgCopy, msg)
-
-		b.history[b.head] = msgCopy
-		b.head++
-		if b.head >= b.limit {
-			b.head = 0
-			b.full = true
-		}
-	}
-}

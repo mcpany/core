@@ -14,12 +14,12 @@ import (
 	_ "github.com/lib/pq"
 	_ "modernc.org/sqlite"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
@@ -106,14 +106,14 @@ func (u *Upstream) Register(
 			return "", nil, nil, fmt.Errorf("invalid tool name %s: %w", toolName, err)
 		}
 
-		t := v1.Tool_builder{
+		t := &v1.Tool{
 			Name:         ptr(sanitizedToolName),
 			Description:  ptr(fmt.Sprintf("Execute SQL query: %s", id)),
 			InputSchema:  callDef.GetInputSchema(),
 			OutputSchema: callDef.GetOutputSchema(),
 			ServiceId:    ptr(serviceConfig.GetId()),
 			Tags:         []string{"upstream:sql"},
-		}.Build()
+		}
 
 		sqlTool := NewTool(t, u.db, callDef, serviceConfig.GetCallPolicies(), id)
 
@@ -121,13 +121,13 @@ func (u *Upstream) Register(
 			return "", nil, nil, fmt.Errorf("failed to add tool %s: %w", toolName, err)
 		}
 
-		toolDefs = append(toolDefs, configv1.ToolDefinition_builder{
+		toolDefs = append(toolDefs, &configv1.ToolDefinition{
 			Name:        ptr(sanitizedToolName),
-			Description: ptr(t.GetDescription()),
+			Description: ptr(*t.Description),
 			ServiceId:   ptr(serviceConfig.GetId()),
 			InputSchema: callDef.GetInputSchema(),
 			CallId:      ptr(id),
-		}.Build())
+		})
 	}
 
 	return serviceConfig.GetId(), toolDefs, nil, nil

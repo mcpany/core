@@ -37,7 +37,7 @@ func TestUnmarshal_NaN(t *testing.T) {
 	// So map["global_settings"]["log_level"] = NaN (float64).
 	// json.Marshal will fail.
 
-	cfg := configv1.McpAnyServerConfig_builder{}.Build()
+	cfg := &configv1.McpAnyServerConfig{}
 	err := engine.Unmarshal(yamlData, cfg)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to marshal map to JSON")

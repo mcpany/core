@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -46,7 +46,6 @@ interface Message {
   toolName?: string;
   toolArgs?: Record<string, unknown>;
   toolResult?: unknown;
-  previousResult?: unknown;
   duration?: number;
   timestamp: Date;
 }
@@ -69,7 +68,6 @@ export function PlaygroundClient() {
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const lastExecutionRef = useRef<{ toolName: string; args: string; result: unknown } | null>(null);
 
   useEffect(() => {
     // Load tools on mount
@@ -207,32 +205,11 @@ export function PlaygroundClient() {
           const endTime = performance.now();
           const duration = Math.round(endTime - startTime);
 
-          let previousResult: unknown | undefined;
-          const currentArgsStr = JSON.stringify(toolArgs);
-
-          if (lastExecutionRef.current) {
-              const last = lastExecutionRef.current;
-              if (last.toolName === toolName && last.args === currentArgsStr) {
-                  const lastResultStr = JSON.stringify(last.result);
-                  const currentResultStr = JSON.stringify(result);
-                  if (lastResultStr !== currentResultStr) {
-                      previousResult = last.result;
-                  }
-              }
-          }
-
-          lastExecutionRef.current = {
-              toolName,
-              args: currentArgsStr,
-              result
-          };
-
           setMessages(prev => [...prev, {
               id: Date.now().toString() + "-result",
               type: "tool-result",
               toolName: toolName,
               toolResult: result,
-              previousResult,
               duration: duration,
               timestamp: new Date(),
           }]);
@@ -395,8 +372,6 @@ export function PlaygroundClient() {
  * @returns The rendered component.
  */
 const MessageItem = memo(function MessageItem({ message }: { message: Message }) {
-    const [showDiff, setShowDiff] = useState(false);
-
     if (message.type === "user") {
         return (
             <div className="flex justify-end gap-3 pl-10">
@@ -457,25 +432,12 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                                 </Badge>
                             )}
                         </div>
-                        <div className="flex items-center gap-2">
-                            {message.previousResult && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-5 px-2 text-[10px] gap-1"
-                                    onClick={() => setShowDiff(true)}
-                                >
-                                    <FileDiff className="size-3" />
-                                    Show Changes
-                                </Button>
-                            )}
-                            <CollapsibleTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                    <span className="sr-only">Toggle</span>
-                                    <span className="text-[10px] underline group-data-[state=open]:no-underline">+/-</span>
-                                </Button>
-                            </CollapsibleTrigger>
-                        </div>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                <span className="sr-only">Toggle</span>
+                                <span className="text-[10px] underline group-data-[state=open]:no-underline">+/-</span>
+                            </Button>
+                        </CollapsibleTrigger>
                     </div>
                     <CollapsibleContent className="">
                         <pre className="text-xs bg-black text-green-400 p-3 rounded-b-md border border-t-0 border-green-900/30 font-mono overflow-x-auto shadow-inner">
@@ -483,31 +445,6 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                         </pre>
                     </CollapsibleContent>
                 </Collapsible>
-
-                <Dialog open={showDiff} onOpenChange={setShowDiff}>
-                    <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
-                        <DialogHeader>
-                            <DialogTitle>Output Differences</DialogTitle>
-                            <DialogDescription>
-                                Comparing previous execution result with current result.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex-1 grid grid-cols-2 gap-4 overflow-hidden min-h-0">
-                            <div className="flex flex-col gap-2 overflow-hidden">
-                                <div className="text-xs font-semibold text-muted-foreground text-center">Previous Output</div>
-                                <div className="flex-1 rounded-md border bg-muted/50 p-4 overflow-auto font-mono text-xs">
-                                    <pre>{JSON.stringify(message.previousResult, null, 2)}</pre>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-2 overflow-hidden">
-                                <div className="text-xs font-semibold text-muted-foreground text-center">Current Output</div>
-                                <div className="flex-1 rounded-md border bg-background p-4 overflow-auto font-mono text-xs text-green-600 dark:text-green-400">
-                                    <pre>{JSON.stringify(message.toolResult, null, 2)}</pre>
-                                </div>
-                            </div>
-                        </div>
-                    </DialogContent>
-                </Dialog>
             </div>
         );
     }

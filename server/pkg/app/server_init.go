@@ -66,7 +66,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			configv1.Middleware_builder{
 				Name:     proto.String("auth"),
 				Priority: proto.Int32(1),
-				Disabled: proto.Bool(false),
+				Disabled: proto.Bool(true),
 			}.Build(),
 		},
 	}.Build()

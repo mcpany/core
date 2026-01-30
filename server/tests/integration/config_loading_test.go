@@ -68,7 +68,7 @@ func TestConfigLoading(t *testing.T) {
 			client := v1.NewRegistrationServiceClient(conn)
 
 			require.Eventually(t, func() bool {
-				resp, err := client.ListServices(context.Background(), v1.ListServicesRequest_builder{}.Build())
+				resp, err := client.ListServices(context.Background(), &v1.ListServicesRequest{})
 				require.NoError(t, err)
 
 				var serviceFound bool
@@ -102,7 +102,7 @@ func TestDisabledHierarchyConfig(t *testing.T) {
 
 	// Verify Services
 	require.Eventually(t, func() bool {
-		resp, err := client.ListServices(context.Background(), v1.ListServicesRequest_builder{}.Build())
+		resp, err := client.ListServices(context.Background(), &v1.ListServicesRequest{})
 		require.NoError(t, err)
 
 		services := make(map[string]bool)

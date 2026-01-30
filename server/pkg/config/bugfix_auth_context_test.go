@@ -9,7 +9,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestValidate_UpstreamApiKeyMissingValue(t *testing.T) {
@@ -17,26 +16,20 @@ func TestValidate_UpstreamApiKeyMissingValue(t *testing.T) {
 
 	// Upstream Service with API Key auth that has verification_value but NO value.
 	// This should be invalid for an UPSTREAM service (outgoing).
-	// Upstream Service with API Key auth that has verification_value but NO value.
-	// This should be invalid for an UPSTREAM service (outgoing).
-	httpSvc := configv1.HttpUpstreamService_builder{
-		Address: proto.String("http://example.com"),
-	}.Build()
+	httpSvc := &configv1.HttpUpstreamService{}
+	httpSvc.SetAddress("http://example.com")
 
-	apiKey := configv1.APIKeyAuth_builder{
-		ParamName:         proto.String("X-API-Key"),
-		VerificationValue: proto.String("some-value"),
-	}.Build()
+	apiKey := &configv1.APIKeyAuth{}
+	apiKey.SetParamName("X-API-Key")
+	apiKey.SetVerificationValue("some-value")
 
-	authConfig := configv1.Authentication_builder{
-		ApiKey: apiKey,
-	}.Build()
+	authConfig := &configv1.Authentication{}
+	authConfig.SetApiKey(apiKey)
 
-	svcConfig := configv1.UpstreamServiceConfig_builder{
-		Name:         proto.String("test-service"),
-		HttpService:  httpSvc,
-		UpstreamAuth: authConfig,
-	}.Build()
+	svcConfig := &configv1.UpstreamServiceConfig{}
+	svcConfig.SetName("test-service")
+	svcConfig.SetHttpService(httpSvc)
+	svcConfig.SetUpstreamAuth(authConfig)
 
 	config := configv1.McpAnyServerConfig_builder{
 		UpstreamServices: []*configv1.UpstreamServiceConfig{svcConfig},

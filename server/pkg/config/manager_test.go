@@ -13,19 +13,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestUpstreamServiceManager_LoadAndMergeServices(t *testing.T) {
 	// Local service definitions
-	localService1 := configv1.UpstreamServiceConfig_builder{
-		Name:    proto.String("service1"),
-		Version: proto.String("1.0"),
-	}.Build()
-	localService2 := configv1.UpstreamServiceConfig_builder{
-		Name:    proto.String("service2"),
-		Version: proto.String("1.0"),
-	}.Build()
+	localService1 := &configv1.UpstreamServiceConfig{}
+	localService1.SetName("service1")
+	localService1.SetVersion("1.0")
+	localService2 := &configv1.UpstreamServiceConfig{}
+	localService2.SetName("service2")
+	localService2.SetVersion("1.0")
 
 	// Create a mock HTTP server to serve the remote collections
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -86,9 +83,9 @@ services:
 	}{
 		{
 			name: "local services only",
-			initialConfig: configv1.McpAnyServerConfig_builder{
+			initialConfig: (configv1.McpAnyServerConfig_builder{
 				UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-			}.Build(),
+			}).Build(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "1.0",
 				"service2": "1.0",
@@ -97,16 +94,16 @@ services:
 		{
 			name: "local and remote services, remote has higher priority",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:     proto.String("collection1"),
-					HttpUrl:  proto.String(server.URL + "/collection1"),
-					Priority: proto.Int32(-1),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1, localService2})
 
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-					Collections:      []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection1")
+				col.SetHttpUrl(server.URL + "/collection1")
+				col.SetPriority(-1)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "2.0",
@@ -116,16 +113,16 @@ services:
 		{
 			name: "local and remote services, local has higher priority",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:     proto.String("collection1"),
-					HttpUrl:  proto.String(server.URL + "/collection1"),
-					Priority: proto.Int32(1),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1, localService2})
 
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-					Collections:      []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection1")
+				col.SetHttpUrl(server.URL + "/collection1")
+				col.SetPriority(1)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "1.0",
@@ -135,28 +132,26 @@ services:
 		{
 			name: "multiple remote collections, mixed priorities",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col1 := configv1.Collection_builder{
-					Name:     proto.String("collection1"),
-					HttpUrl:  proto.String(server.URL + "/collection1"),
-					Priority: proto.Int32(1),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1, localService2})
 
-				col2 := configv1.Collection_builder{
-					Name:     proto.String("collection2"),
-					HttpUrl:  proto.String(server.URL + "/collection2"),
-					Priority: proto.Int32(-1),
-				}.Build()
+				col1 := &configv1.Collection{}
+				col1.SetName("collection1")
+				col1.SetHttpUrl(server.URL + "/collection1")
+				col1.SetPriority(1)
 
-				col3 := configv1.Collection_builder{
-					Name:     proto.String("collection3"),
-					HttpUrl:  proto.String(server.URL + "/collection3"),
-					Priority: proto.Int32(-2),
-				}.Build()
+				col2 := &configv1.Collection{}
+				col2.SetName("collection2")
+				col2.SetHttpUrl(server.URL + "/collection2")
+				col2.SetPriority(-1)
 
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{localService1, localService2},
-					Collections:      []*configv1.Collection{col1, col2, col3},
-				}.Build()
+				col3 := &configv1.Collection{}
+				col3.SetName("collection3")
+				col3.SetHttpUrl(server.URL + "/collection3")
+				col3.SetPriority(-2)
+
+				cfg.SetCollections([]*configv1.Collection{col1, col2, col3})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "3.0",
@@ -167,16 +162,16 @@ services:
 		{
 			name: "same priority, first one wins",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:     proto.String("collection1"),
-					HttpUrl:  proto.String(server.URL + "/collection1"),
-					Priority: proto.Int32(0),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{localService1})
 
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{localService1},
-					Collections:      []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection1")
+				col.SetHttpUrl(server.URL + "/collection1")
+				col.SetPriority(0)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "1.0",
@@ -185,15 +180,15 @@ services:
 		{
 			name: "invalid semver",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:     proto.String("collection-invalid-semver"),
-					HttpUrl:  proto.String(server.URL + "/collection-invalid-semver"),
-					Priority: proto.Int32(0),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
 
-				return configv1.McpAnyServerConfig_builder{
-					Collections: []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection-invalid-semver")
+				col.SetHttpUrl(server.URL + "/collection-invalid-semver")
+				col.SetPriority(0)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{},
 			expectLoadError:                 false, // The manager logs a warning but doesn't return an error
@@ -201,15 +196,15 @@ services:
 		{
 			name: "yaml content type",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:     proto.String("collection-yaml"),
-					HttpUrl:  proto.String(server.URL + "/collection-yaml"),
-					Priority: proto.Int32(0),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
 
-				return configv1.McpAnyServerConfig_builder{
-					Collections: []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection-yaml")
+				col.SetHttpUrl(server.URL + "/collection-yaml")
+				col.SetPriority(0)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "2.0",
@@ -218,21 +213,22 @@ services:
 		{
 			name: "authenticated collection",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:    proto.String("collection-authed"),
-					HttpUrl: proto.String(server.URL + "/collection-authed"),
-					Authentication: configv1.Authentication_builder{
-						BearerToken: configv1.BearerTokenAuth_builder{
-							Token: configv1.SecretValue_builder{
-								PlainText: proto.String("my-secret-token"),
-							}.Build(),
-						}.Build(),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
 
-				return configv1.McpAnyServerConfig_builder{
-					Collections: []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection-authed")
+				col.SetHttpUrl(server.URL + "/collection-authed")
+
+				auth := &configv1.Authentication{}
+				bearer := &configv1.BearerTokenAuth{}
+				val := &configv1.SecretValue{}
+				val.SetPlainText("my-secret-token")
+				bearer.SetToken(val)
+				auth.SetBearerToken(bearer)
+				col.SetAuthentication(auth)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "4.0",
@@ -241,22 +237,23 @@ services:
 		{
 			name: "api key authenticated collection",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:    proto.String("collection-apikey"),
-					HttpUrl: proto.String(server.URL + "/collection-apikey"),
-					Authentication: configv1.Authentication_builder{
-						ApiKey: configv1.APIKeyAuth_builder{
-							ParamName: proto.String("X-API-Key"),
-							Value: configv1.SecretValue_builder{
-								PlainText: proto.String("my-api-key"),
-							}.Build(),
-						}.Build(),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
 
-				return configv1.McpAnyServerConfig_builder{
-					Collections: []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection-apikey")
+				col.SetHttpUrl(server.URL + "/collection-apikey")
+
+				auth := &configv1.Authentication{}
+				apiKey := &configv1.APIKeyAuth{}
+				apiKey.SetParamName("X-API-Key")
+				val := &configv1.SecretValue{}
+				val.SetPlainText("my-api-key")
+				apiKey.SetValue(val)
+				auth.SetApiKey(apiKey)
+				col.SetAuthentication(auth)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "5.0",
@@ -265,22 +262,23 @@ services:
 		{
 			name: "basic auth authenticated collection",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:    proto.String("collection-basicauth"),
-					HttpUrl: proto.String(server.URL + "/collection-basicauth"),
-					Authentication: configv1.Authentication_builder{
-						BasicAuth: configv1.BasicAuth_builder{
-							Username: proto.String("testuser"),
-							Password: configv1.SecretValue_builder{
-								PlainText: proto.String("testpass"),
-							}.Build(),
-						}.Build(),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
 
-				return configv1.McpAnyServerConfig_builder{
-					Collections: []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection-basicauth")
+				col.SetHttpUrl(server.URL + "/collection-basicauth")
+
+				auth := &configv1.Authentication{}
+				basic := &configv1.BasicAuth{}
+				basic.SetUsername("testuser")
+				val := &configv1.SecretValue{}
+				val.SetPlainText("testpass")
+				basic.SetPassword(val)
+				auth.SetBasicAuth(basic)
+				col.SetAuthentication(auth)
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "6.0",
@@ -289,14 +287,14 @@ services:
 		{
 			name: "no content type assumes yaml",
 			initialConfig: func() *configv1.McpAnyServerConfig {
-				col := configv1.Collection_builder{
-					Name:    proto.String("collection-no-content-type"),
-					HttpUrl: proto.String(server.URL + "/collection-no-content-type"),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
 
-				return configv1.McpAnyServerConfig_builder{
-					Collections: []*configv1.Collection{col},
-				}.Build()
+				col := &configv1.Collection{}
+				col.SetName("collection-no-content-type")
+				col.SetHttpUrl(server.URL + "/collection-no-content-type")
+
+				cfg.SetCollections([]*configv1.Collection{col})
+				return cfg
 			}(),
 			expectedServiceNamesAndVersions: map[string]string{
 				"service1": "7.0",
@@ -335,59 +333,61 @@ services:
 func TestUpstreamServiceManager_Profiles_Overrides(t *testing.T) {
 	// Config with 2 services and profile definitions
 	config := func() *configv1.McpAnyServerConfig {
-		profDev := configv1.ProfileDefinition_builder{
-			Name: proto.String("dev"),
-			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"dev-service": configv1.ProfileServiceConfig_builder{
-					Enabled: proto.Bool(true),
-				}.Build(),
-				"prod-service": configv1.ProfileServiceConfig_builder{
-					Enabled: proto.Bool(false),
-				}.Build(),
-			},
-		}.Build()
+		cfg := &configv1.McpAnyServerConfig{}
 
-		profProd := configv1.ProfileDefinition_builder{
-			Name: proto.String("prod"),
-			ServiceConfig: map[string]*configv1.ProfileServiceConfig{
-				"dev-service": configv1.ProfileServiceConfig_builder{
-					Enabled: proto.Bool(false),
-				}.Build(),
-				"prod-service": configv1.ProfileServiceConfig_builder{
-					Enabled: proto.Bool(true),
-				}.Build(),
-			},
-		}.Build()
+		gs := &configv1.GlobalSettings{}
 
-		gs := configv1.GlobalSettings_builder{
-			ProfileDefinitions: []*configv1.ProfileDefinition{profDev, profProd},
-		}.Build()
+		profDev := &configv1.ProfileDefinition{}
+		profDev.SetName("dev")
 
-		svc1 := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("dev-service"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: proto.String("http://dev"),
-			}.Build(),
-		}.Build()
+		svcOverlapDev := &configv1.ProfileServiceConfig{}
+		svcOverlapDev.SetEnabled(true)
 
-		svc2 := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("prod-service"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: proto.String("http://prod"),
-			}.Build(),
-		}.Build()
+		svcOverlapProd := &configv1.ProfileServiceConfig{}
+		svcOverlapProd.SetEnabled(false)
 
-		svc3 := configv1.UpstreamServiceConfig_builder{
-			Name: proto.String("common-service"),
-			HttpService: configv1.HttpUpstreamService_builder{
-				Address: proto.String("http://common"),
-			}.Build(),
-		}.Build()
+		profDev.SetServiceConfig(map[string]*configv1.ProfileServiceConfig{
+			"dev-service": svcOverlapDev,
+			"prod-service": svcOverlapProd,
+		})
 
-		return configv1.McpAnyServerConfig_builder{
-			GlobalSettings:   gs,
-			UpstreamServices: []*configv1.UpstreamServiceConfig{svc1, svc2, svc3},
-		}.Build()
+		profProd := &configv1.ProfileDefinition{}
+		profProd.SetName("prod")
+
+		svcOverlapDev2 := &configv1.ProfileServiceConfig{}
+		svcOverlapDev2.SetEnabled(false)
+
+		svcOverlapProd2 := &configv1.ProfileServiceConfig{}
+		svcOverlapProd2.SetEnabled(true)
+
+		profProd.SetServiceConfig(map[string]*configv1.ProfileServiceConfig{
+			"dev-service": svcOverlapDev2,
+			"prod-service": svcOverlapProd2,
+		})
+
+		gs.SetProfileDefinitions([]*configv1.ProfileDefinition{profDev, profProd})
+		cfg.SetGlobalSettings(gs)
+
+		svc1 := &configv1.UpstreamServiceConfig{}
+		svc1.SetName("dev-service")
+		http1 := &configv1.HttpUpstreamService{}
+		http1.SetAddress("http://dev")
+		svc1.SetHttpService(http1)
+
+		svc2 := &configv1.UpstreamServiceConfig{}
+		svc2.SetName("prod-service")
+		http2 := &configv1.HttpUpstreamService{}
+		http2.SetAddress("http://prod")
+		svc2.SetHttpService(http2)
+
+		svc3 := &configv1.UpstreamServiceConfig{}
+		svc3.SetName("common-service")
+		http3 := &configv1.HttpUpstreamService{}
+		http3.SetAddress("http://common")
+		svc3.SetHttpService(http3)
+
+		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc1, svc2, svc3})
+		return cfg
 	}()
 
 	tests := []struct {
