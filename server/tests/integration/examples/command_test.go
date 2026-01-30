@@ -201,7 +201,7 @@ upstream_services:
   command_line_service:
     command: "date"
     container_environment:
-      image: "alpine:latest"
+      image: "mirror.gcr.io/library/alpine:latest"
     calls:
     - schema:
         name: "get_current_date"
