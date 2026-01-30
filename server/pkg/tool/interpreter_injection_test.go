@@ -5,137 +5,86 @@ package tool
 
 import (
 	"context"
-	"strings"
 	"testing"
-	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
 
-func TestSedSandbox_Prevention(t *testing.T) {
-	cmd := "sed"
+func TestInterpreterInjection(t *testing.T) {
+	// Case 1: Perl Array Interpolation Injection
+	// Perl interpolates arrays (@array) in double-quoted strings.
+	// Attack: @{[system("echo pwned")]}
+	t.Run("perl_array_interpolation", func(t *testing.T) {
+		cmd := "perl"
+		tool := createInterpreterTestTool(cmd, []string{"-e", "print \"{{input}}\""})
 
-	// Create tool for sed -e {{script}}
-	toolDef := v1.Tool_builder{Name: proto.String("sed-tool")}.Build()
-	service := configv1.CommandLineUpstreamService_builder{
-		Command: &cmd,
-	}.Build()
-	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-e", "{{script}}"},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("script")}.Build(),
-			}.Build(),
-		},
-	}.Build()
+		input := "@{[system('echo pwned')]}"
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "` + input + `"}`),
+		}
 
-	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+		_, err := tool.Execute(context.Background(), req)
 
-	// Payload: 1e/bin/date (Execute '/bin/date') - avoiding spaces to pass strict input validation
-	req := &ExecutionRequest{
-		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "1e/bin/date"}`),
-	}
+		if assert.Error(t, err, "Expected security error, but execution proceeded (vulnerability exists)") {
+			assert.Contains(t, err.Error(), "shell injection detected", "Perl array interpolation should be blocked")
+		}
+	})
 
-	result, err := tool.Execute(context.Background(), req)
-	if err != nil {
-		t.Fatalf("Execute failed: %v", err)
-	}
+	// Case 2: Tcl Command Substitution Injection
+	// Tcl/Expect interpolates commands ([cmd]) in double-quoted strings.
+	t.Run("tcl_command_substitution", func(t *testing.T) {
+		cmd := "expect"
+		tool := createInterpreterTestTool(cmd, []string{"-c", "puts \"{{input}}\""})
 
-	resMap, ok := result.(map[string]interface{})
-	if !ok {
-		t.Fatalf("Result is not map: %v", result)
-	}
+		input := "[exec echo pwned]"
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "` + input + `"}`),
+		}
 
-	// Expect return code to be non-zero (sed error)
-	returnCode, ok := resMap["return_code"].(int)
-	if !ok {
-		t.Fatalf("return_code not int: %v", resMap["return_code"])
-	}
+		_, err := tool.Execute(context.Background(), req)
 
-	if returnCode == 0 {
-		t.Errorf("FAIL: sed executed '1e/bin/date' successfully (return_code 0). Sandbox failed.")
-	}
+		if assert.Error(t, err, "Expected security error, but execution proceeded (vulnerability exists)") {
+			assert.Contains(t, err.Error(), "shell injection detected", "Tcl command substitution should be blocked")
+		}
+	})
 
-	stderr, _ := resMap["stderr"].(string)
-	if !strings.Contains(stderr, "command disabled") && !strings.Contains(stderr, "unknown command") {
-		// GNU sed: 'e' command disabled in sandbox mode
-		// BSD sed: unknown command: 1 (or similar)
-		t.Logf("Note: stderr was: %s", stderr)
-	} else {
-		t.Logf("Success: sed blocked command with error: %s", stderr)
-	}
+	// Case 3: Ruby Interpolation Injection
+	// Ruby interpolates #{...} in double-quoted strings.
+	t.Run("ruby_interpolation", func(t *testing.T) {
+		cmd := "ruby"
+		tool := createInterpreterTestTool(cmd, []string{"-e", "puts \"{{input}}\""})
 
-	// Payload: w/tmp/pwned (Write file) - avoiding spaces
-	req = &ExecutionRequest{
-		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "w/tmp/pwned"}`),
-	}
+		input := "#{system('echo pwned')}"
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "` + input + `"}`),
+		}
 
-	result, err = tool.Execute(context.Background(), req)
-	if err != nil {
-		t.Fatalf("Execute failed: %v", err)
-	}
-	resMap, _ = result.(map[string]interface{})
-	returnCode, _ = resMap["return_code"].(int)
+		_, err := tool.Execute(context.Background(), req)
 
-	if returnCode == 0 {
-		t.Errorf("FAIL: sed executed 'w/tmp/pwned' successfully. Sandbox failed.")
-	}
+		if assert.Error(t, err, "Expected security error, but execution proceeded (vulnerability exists)") {
+			assert.Contains(t, err.Error(), "shell injection detected", "Ruby interpolation should be blocked")
+		}
+	})
 }
 
-func TestSedSandbox_ValidUsage(t *testing.T) {
-	cmd := "sed"
-	toolDef := v1.Tool_builder{Name: proto.String("sed-tool")}.Build()
+func createInterpreterTestTool(command string, args []string) Tool {
+	toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: &cmd,
+		Command: &command,
 	}.Build()
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-e", "{{script}}"},
+		Args: args,
 		Parameters: []*configv1.CommandLineParameterMapping{
 			configv1.CommandLineParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{Name: proto.String("script")}.Build(),
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("input")}.Build(),
 			}.Build(),
 		},
 	}.Build()
-
-	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
-
-	// Valid replacement (needs input, but sed waits for stdin if file not provided)
-	// We pass empty input via echo? No, LocalCommandTool doesn't easily pipe stdin in this test setup unless we use communication protocol JSON?
-	// But sed -e 's/a/b/' will wait for input.
-	// So it will timeout.
-
-	// We can use 'sed --help' or something?
-	// But arguments are fixed.
-
-	// Maybe use 'version' command if sed has it as script? No.
-	// Use 'q' (quit).
-	req := &ExecutionRequest{
-		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "q"}`),
-	}
-
-	// Since sed is waiting for input (no files), 'q' might not trigger immediately unless it processes line 1.
-	// But without input...
-	// Actually, sed without input files reads from stdin.
-	// LocalCommandTool passes nil stdin (closed).
-	// So sed reads EOF.
-	// 'q' on EOF?
-
-	// Let's rely on timeout if it hangs.
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond) // Short timeout
-	defer cancel()
-
-	result, err := tool.Execute(ctx, req)
-	if err != nil {
-		// Timeout is expected or success?
-		// If sed exits 0, it's success.
-		t.Logf("Execute result: %v, err: %v", result, err)
-	} else {
-		resMap, _ := result.(map[string]interface{})
-		t.Logf("Success: valid command executed. Return code: %v", resMap["return_code"])
-	}
+	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 }

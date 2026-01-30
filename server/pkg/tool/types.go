@@ -2704,7 +2704,24 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// In double quotes, dangerous characters are double quote, $, and backtick
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
-		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
+		charsToCheck := "\"$`\\%"
+
+		// Sentinel Security Update: Block interpreter-specific injection vectors in double-quoted strings
+		base := filepath.Base(command)
+		// Perl interpolates arrays (@array) in double quotes
+		if strings.HasPrefix(base, "perl") {
+			charsToCheck += "@"
+		}
+		// Tcl/Expect interpolates commands ([cmd]) in double quotes
+		if strings.HasPrefix(base, "tclsh") || strings.HasPrefix(base, "expect") || strings.HasPrefix(base, "wish") {
+			charsToCheck += "[]"
+		}
+		// Ruby interpolates #{...} in double quotes
+		if strings.HasPrefix(base, "ruby") {
+			charsToCheck += "#"
+		}
+
+		if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
 		return nil
