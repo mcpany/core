@@ -12,7 +12,7 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Project Identity
+## 1. Elevator Pitch
 
 **What is this?**
 MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
@@ -20,10 +20,52 @@ MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (RE
 **Why does it exist?**
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
-**The Elevator Pitch:**
+**The Solution:**
 Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Quick Start
+## 2. Architecture
+
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+
+**High-Level Summary:**
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration.
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration]
+        Registry -->|Policy| Auth[Authentication & Policy]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
+### Key Features
+*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
+*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
+*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
+*   **Network Topology**: Visual graph of clients, services, and tools.
+*   **Observability**: Real-time metrics and audit logging.
+*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
+
+### Key Documentation
+*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
+*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
+*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
+*   **[Examples](server/docs/examples.md)**: Hands-on examples.
+
+## 3. Getting Started
 
 Get up and running with a weather service example in minutes.
 
@@ -64,9 +106,11 @@ Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `ht
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 3. Developer Workflow
+## 4. Development
 
 For contributors and developers extending the core platform.
+
+### Common Tasks
 
 **Run Tests**
 Execute all unit, integration, and end-to-end tests.
@@ -92,75 +136,6 @@ Regenerate Protocol Buffers and other auto-generated files.
 make gen
 ```
 
-## 4. Architecture
-
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
-
-**High-Level Summary:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration.
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration]
-        Registry -->|Policy| Auth[Authentication & Policy]
-    end
-
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
-```
-
-### Key Features
-*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
-*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
-*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
-*   **Network Topology**: Visual graph of clients, services, and tools.
-*   **Observability**: Real-time metrics and audit logging.
-*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
-
-### Troubleshooting
-*   **Protobuf Errors**: Run `make prepare` to install dependencies.
-*   **Docker Issues**: Ensure user is in the `docker` group or use `sudo`.
-*   **Port Conflicts**: Check ports 50050, 50051, and 9002.
-
-### Key Documentation
-*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
-*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
-*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
-*   **[Examples](server/docs/examples.md)**: Hands-on examples.
-
----
-
-## ⚙️ Configuration
-
-MCP Any uses a combination of configuration files and environment variables.
-
-### Environment Variables
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `MCPANY_MCP_LISTEN_ADDRESS` | Address to listen on for MCP connections. | `0.0.0.0:50051` |
-| `MCPANY_DEFAULT_HTTP_ADDR` | Address to listen on for HTTP connections. | `0.0.0.0:50050` |
-| `MCPANY_LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`). | `info` |
-| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from YAML/JSON files. | `false` |
-| `MCPANY_TRUST_PROXY` | Trust `X-Forwarded-*` headers (useful behind LBs). | `false` |
-| `MCPANY_ADMIN_INIT_USERNAME` | Initial username for the admin user. | - |
-| `MCPANY_ADMIN_INIT_PASSWORD` | Initial password for the admin user. | - |
-| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow tools to connect to local IP addresses. | `false` |
-| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow resources from loopback addresses. | `false` |
-| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow resources from private networks. | `false` |
-| `MCPANY_ALLOW_UNSAFE_CONFIG` | Allow usage of potentially unsafe configuration options. | `false` |
-
 ### Project Structure
 
 The project is organized as follows:
@@ -176,10 +151,6 @@ The project is organized as follows:
 - **`server/examples/`**: Example configuration files and demo services.
 - **`server/docs/`**: Detailed documentation and guides.
 - **`ui/`**: The web-based management dashboard (Next.js/React).
-
-### Documentation
-
-For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
 
 ### UI Development
 
@@ -234,6 +205,39 @@ We strive for high code quality. Please ensure the following before submitting a
   ```bash
   make lint
   ```
+
+## 5. Configuration
+
+MCP Any uses a combination of configuration files and environment variables.
+
+### Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MCPANY_MCP_LISTEN_ADDRESS` | Address to listen on for MCP connections. | `0.0.0.0:50051` |
+| `MCPANY_DEFAULT_HTTP_ADDR` | Address to listen on for HTTP connections. | `0.0.0.0:50050` |
+| `MCPANY_LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`). | `info` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from YAML/JSON files. | `false` |
+| `MCPANY_TRUST_PROXY` | Trust `X-Forwarded-*` headers (useful behind LBs). | `false` |
+| `MCPANY_ADMIN_INIT_USERNAME` | Initial username for the admin user. | - |
+| `MCPANY_ADMIN_INIT_PASSWORD` | Initial password for the admin user. | - |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow tools to connect to local IP addresses. | `false` |
+| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow resources from loopback addresses. | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow resources from private networks. | `false` |
+| `MCPANY_ALLOW_UNSAFE_CONFIG` | Allow usage of potentially unsafe configuration options. | `false` |
+
+### Required Secrets
+
+For production deployments, ensure the following secrets are set:
+
+*   **`MCPANY_ADMIN_INIT_PASSWORD`**: Sets the initial password for the admin user.
+*   **`MCPANY_API_KEY`** (Recommended): Sets a global API key to secure the server endpoint.
+
+### Documentation
+
+For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
+
+---
 
 ## 🔧 Troubleshooting
 

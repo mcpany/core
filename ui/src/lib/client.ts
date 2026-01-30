@@ -854,10 +854,15 @@ export const apiClient = {
 
     /**
      * Gets the latest execution traces.
+     * @param options Optional parameters.
      * @returns A promise that resolves to the traces list.
      */
-    getTraces: async (): Promise<any[]> => {
-        const res = await fetchWithAuth('/api/v1/debug/traces'); // Use consistent API v1 prefix
+    getTraces: async (options?: { limit?: number }): Promise<any[]> => {
+        let url = '/api/v1/traces';
+        if (options?.limit) {
+            url += `?limit=${options.limit}`;
+        }
+        const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch traces');
         return res.json();
     },

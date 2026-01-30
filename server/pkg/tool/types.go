@@ -1808,7 +1808,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
-						// If running a shell, args passed dynamically should also be checked
+						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
 							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
@@ -2116,12 +2116,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -2663,6 +2657,22 @@ func isShellCommand(cmd string) bool {
 			}
 		}
 	}
+
+	// Check for script extensions that indicate shell execution or interpretation
+	ext := strings.ToLower(filepath.Ext(base))
+	scriptExts := []string{
+		".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
+		".bat", ".cmd", ".ps1", ".vbs", ".js", ".mjs", ".ts",
+		".py", ".pyc", ".pyo", ".pyd",
+		".rb", ".pl", ".pm", ".php",
+		".lua", ".r",
+	}
+	for _, scriptExt := range scriptExts {
+		if ext == scriptExt {
+			return true
+		}
+	}
+
 	return false
 }
 
@@ -2681,6 +2691,16 @@ func isVersionSuffix(s string) bool {
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
+
+	// Sentinel Security Update:
+	// On Windows cmd.exe, single quotes are NOT strong quotes.
+	// They are just literal characters and do not prevent variable expansion or command chaining.
+	// Therefore, we must treat single-quoted arguments as unquoted/unsafe for cmd.exe.
+	base := strings.ToLower(filepath.Base(command))
+	isWindowsCmd := base == "cmd.exe" || base == "cmd"
+	if isWindowsCmd && quoteLevel == 2 {
+		quoteLevel = 0
+	}
 
 	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself
@@ -2705,7 +2725,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables

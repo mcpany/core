@@ -42,7 +42,11 @@ var fastJSON = jsoniter.Config{
 	ValidateJsonRawMessage: true,
 }.Froze()
 
-// AddReceivingMiddlewareHook is a hook for adding receiving middleware.
+// AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+// It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
+//
+// Side Effects:
+//   - When set, this function is called synchronously during Server() access.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application. It orchestrates the handling of
@@ -66,6 +70,9 @@ type Server struct {
 // Server returns the underlying *mcp.Server instance, which provides access to
 // the core MCP server functionality. This can be used for advanced
 // configurations or direct interaction with the MCP server.
+//
+// Returns:
+//   - *mcp.Server: The underlying server instance.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -92,7 +99,9 @@ func (s *Server) Server() *mcp.Server {
 //   - serviceRegistry: Keeps track of all registered upstream services.
 //   - bus: The event bus used for asynchronous communication between components.
 //
-// Returns a new instance of the Server and an error if initialization fails.
+// Returns:
+//   - *Server: A new instance of the Server.
+//   - error: An error if initialization fails.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,

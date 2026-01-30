@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/appconsts"
 	"github.com/mcpany/core/server/pkg/config"
@@ -120,6 +121,18 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			configPaths := cfg.ConfigPaths()
 
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
+
+			// Track 2: Product Gap - Log Persistence
+			// Hydrate logs from file if configured for JSON.
+			if cfg.LogFormat() == configv1.GlobalSettings_LOG_FORMAT_JSON && cfg.LogFile() != "" {
+				go func() {
+					if err := logging.HydrateFromFile(cfg.LogFile()); err != nil {
+						log.Warn("Failed to hydrate logs from file", "error", err)
+					} else {
+						log.Info("Hydrated log history from file")
+					}
+				}()
+			}
 
 			// Track 1: Friction Fighter - Verify config files exist before proceeding
 			if len(configPaths) > 0 {

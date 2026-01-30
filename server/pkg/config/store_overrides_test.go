@@ -28,7 +28,7 @@ func TestApplySetOverrides(t *testing.T) {
 					"log_level": "debug",
 				},
 			},
-			protoMsg: &configv1.McpAnyServerConfig{},
+			protoMsg: configv1.McpAnyServerConfig_builder{}.Build(),
 		},
 		{
 			name:      "Nested key value",
@@ -44,7 +44,7 @@ func TestApplySetOverrides(t *testing.T) {
 					},
 				},
 			},
-			protoMsg: &configv1.McpAnyServerConfig{},
+			protoMsg: configv1.McpAnyServerConfig_builder{}.Build(),
 		},
 		{
 			name: "Override existing value",
@@ -59,14 +59,14 @@ func TestApplySetOverrides(t *testing.T) {
 					"log_level": "debug",
 				},
 			},
-			protoMsg: &configv1.McpAnyServerConfig{},
+			protoMsg: configv1.McpAnyServerConfig_builder{}.Build(),
 		},
 		{
 			name:      "Invalid set format",
 			initial:   map[string]interface{}{},
 			setValues: []string{"invalid_format"},
 			expected:  map[string]interface{}{},
-			protoMsg:  &configv1.McpAnyServerConfig{},
+			protoMsg:  configv1.McpAnyServerConfig_builder{}.Build(),
 		},
 		{
 			name: "Oneof clearing",
@@ -90,7 +90,7 @@ func TestApplySetOverrides(t *testing.T) {
 					},
 				},
 			},
-			protoMsg: &configv1.McpAnyServerConfig{},
+			protoMsg: configv1.McpAnyServerConfig_builder{}.Build(),
 		},
 	}
 

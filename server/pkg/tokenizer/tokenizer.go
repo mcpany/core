@@ -249,6 +249,10 @@ func countWordsInValueFast(v interface{}) (int, bool) {
 			count += countWords(item)
 		}
 		return count, true
+	case []byte:
+		// ⚡ BOLT: Optimization for []byte to avoid expensive reflection and Sprintf fallback.
+		// Randomized Selection from Top 5 High-Impact Targets
+		return countWords(string(val)), true
 	}
 	return 0, false
 }
@@ -337,6 +341,17 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 			count += vc
 		}
 		return count, true, nil
+	case []byte:
+		// ⚡ BOLT: Optimization for []byte to avoid expensive reflection and Sprintf fallback.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if len(val) == 0 {
+			return 0, true, nil
+		}
+		c := len(val) / 4
+		if c < 1 {
+			c = 1
+		}
+		return c, true, nil
 	}
 	// Fallback to generic unhandled case
 	return 0, false, nil
