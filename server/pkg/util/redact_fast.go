@@ -6,6 +6,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"encoding/json"
+	"math"
 )
 
 // maxUnescapeLimit is the maximum size of a key that we will attempt to unescape
@@ -182,11 +183,13 @@ func redactJSONFast(input []byte) []byte {
 						if extra < 128 {
 							extra = 128
 						}
-						targetCap := len(input) + extra
-						if targetCap < len(input) {
-							targetCap = len(input)
+						// Use int64 for calculation to avoid overflow before comparison
+						targetCap := int64(len(input)) + int64(extra)
+						// Check against max int to be safe on 32-bit systems, though slices are limited by arch
+						if targetCap > math.MaxInt || targetCap < int64(len(input)) {
+							targetCap = int64(len(input))
 						}
-						out = make([]byte, 0, targetCap)
+						out = make([]byte, 0, int(targetCap))
 					}
 
 					// Determine value end
