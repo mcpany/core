@@ -2698,91 +2698,18 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		quoteLevel = 0
 	}
 
-	// Unquoted (or unknown quoting): strict check
-	// Block common shell metacharacters and globbing/expansion characters
-	// % and ^ are Windows CMD metacharacters
-	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
-	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
-
 	// Sentinel Security Update: Interpreter Injection Protection
-	// Interpreters (Python, Ruby, Node, etc.) have additional injection vectors inside strings (interpolation).
-	// We must block interpolation characters even inside quotes if the command is an interpreter.
 	if isInterpreter(command) {
-		// Python: Check for f-string prefix in template
-		isPython := strings.HasPrefix(base, "python")
-		if isPython {
-			// Scan template to find the prefix of the quote containing the placeholder
-			// analyzeQuoteContext found the placeholder, but didn't return prefix.
-			// We can re-scan or just search for f-string patterns in the template.
-			// Re-scanning is safer to associate prefix with the *correct* quote.
-			// For robustness here, we scan the template for ANY f-string start that precedes a quote.
-			// But correct approach is to check if the specific quote we are in is an f-string.
-			// Given analyzeQuoteContext complexity, we'll use a heuristic: if template contains f" or f', enforce checks.
-			// Updated to handle raw f-strings (fr, rf) as well.
-			hasFString := false
-			for i := 0; i < len(template)-1; i++ {
-				if template[i+1] == '\'' || template[i+1] == '"' {
-					prefix := strings.ToLower(getPrefix(template, i+1))
-					if prefix == "f" || prefix == "fr" || prefix == "rf" {
-						hasFString = true
-						break
-					}
-				}
-			}
-			if hasFString {
-				if strings.ContainsAny(val, "{}") {
-					return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
-				}
-			}
-		}
-
-		// Ruby: #{...} works in double quotes
-		isRuby := strings.HasPrefix(base, "ruby")
-		if isRuby && quoteLevel == 1 { // Double Quoted
-			if strings.Contains(val, "#{") {
-				return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
-			}
-		}
-
-		// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
-		isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
-		isPerl := strings.HasPrefix(base, "perl")
-		isPhp := strings.HasPrefix(base, "php")
-
-		if isNode && quoteLevel == 3 { // Backtick
-			if strings.Contains(val, "${") {
-				return fmt.Errorf("javascript template literal injection detected: value contains '${'")
-			}
-		}
-		if (isPerl || isPhp) && quoteLevel == 1 { // Double Quoted
-			if strings.Contains(val, "${") {
-				return fmt.Errorf("variable interpolation injection detected: value contains '${'")
-			}
+		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+			return err
 		}
 	}
 
 	if quoteLevel == 3 { // Backticked
-		// Backticks in Shell are command substitution (Level 0 danger).
-		// Unless it is a known interpreter that uses backticks safely (like JS template literals),
-		// we must enforce strict checks.
-		if !isInterpreter(command) {
-			// Fallback to strict checks for Shell backticks
-			if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
-				return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
-			}
-		}
-		// For interpreters (like JS), we already handled specific injections above.
-		// We should still prevent breaking out of backticks.
-		if strings.Contains(val, "`") {
-			return fmt.Errorf("backtick injection detected")
-		}
-		return nil
+		return checkBacktickInjection(val, command)
 	}
 
 	if quoteLevel == 2 { // Single Quoted
-		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
@@ -2798,6 +2725,83 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		return nil
 	}
+
+	return checkUnquotedInjection(val, command)
+}
+
+func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Python: Check for f-string prefix in template
+	if strings.HasPrefix(base, "python") {
+		// Scan template to find the prefix of the quote containing the placeholder
+		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+		hasFString := false
+		for i := 0; i < len(template)-1; i++ {
+			if template[i+1] == '\'' || template[i+1] == '"' {
+				prefix := strings.ToLower(getPrefix(template, i+1))
+				if prefix == "f" || prefix == "fr" || prefix == "rf" {
+					hasFString = true
+					break
+				}
+			}
+		}
+		if hasFString {
+			if strings.ContainsAny(val, "{}") {
+				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+			}
+		}
+	}
+
+	// Ruby: #{...} works in double quotes
+	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+		}
+	}
+
+	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
+	isPerl := strings.HasPrefix(base, "perl")
+	isPhp := strings.HasPrefix(base, "php")
+
+	if isNode && quoteLevel == 3 { // Backtick
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+		}
+	}
+	if (isPerl || isPhp) && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+		}
+	}
+	return nil
+}
+
+func checkBacktickInjection(val, command string) error {
+	// Backticks in Shell are command substitution (Level 0 danger).
+	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
+	// we must enforce strict checks.
+	if !isInterpreter(command) {
+		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+		if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
+		}
+	}
+	// For interpreters (like JS), we already handled specific injections above.
+	// We should still prevent breaking out of backticks.
+	if strings.Contains(val, "`") {
+		return fmt.Errorf("backtick injection detected")
+	}
+	return nil
+}
+
+func checkUnquotedInjection(val, command string) error {
+	// Unquoted (or unknown quoting): strict check
+	// Block common shell metacharacters and globbing/expansion characters
+	// % and ^ are Windows CMD metacharacters
+	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
+	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
+	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
@@ -2859,11 +2863,12 @@ func analyzeQuoteContext(template, placeholder string) int {
 		if strings.HasPrefix(template[i:], placeholder) {
 			foundAny = true
 			currentLevel := 0
-			if inSingle {
+			switch {
+			case inSingle:
 				currentLevel = 2
-			} else if inDouble {
+			case inDouble:
 				currentLevel = 1
-			} else if inBacktick {
+			case inBacktick:
 				currentLevel = 3
 			}
 
@@ -2888,12 +2893,19 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-		} else if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-		} else if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
+		switch char {
+		case '\'':
+			if !inDouble && !inBacktick {
+				inSingle = !inSingle
+			}
+		case '"':
+			if !inSingle && !inBacktick {
+				inDouble = !inDouble
+			}
+		case '`':
+			if !inSingle && !inDouble {
+				inBacktick = !inBacktick
+			}
 		}
 	}
 
