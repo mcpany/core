@@ -13,13 +13,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ⚡ BOLT: Optimized map key to avoid string allocation/concatenation.
-// Randomized Selection from Top 5 High-Impact Targets.
-type tokenKey struct {
-	userID    string
-	serviceID string
-}
-
 // Store implements storage.Storage in memory.
 type Store struct {
 	mu                 sync.RWMutex
@@ -29,7 +22,7 @@ type Store struct {
 	profileDefinitions map[string]*configv1.ProfileDefinition
 	serviceCollections map[string]*configv1.Collection
 	globalSettings     *configv1.GlobalSettings
-	tokens             map[tokenKey]*configv1.UserToken
+	tokens             map[string]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
 }
 
@@ -43,9 +36,14 @@ func NewStore() *Store {
 		users:              make(map[string]*configv1.User),
 		profileDefinitions: make(map[string]*configv1.ProfileDefinition),
 		serviceCollections: make(map[string]*configv1.Collection),
-		tokens:             make(map[tokenKey]*configv1.UserToken),
+		tokens:             make(map[string]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
 	}
+}
+
+// Helper to generate token key.
+func tokenKey(userID, serviceID string) string {
+	return userID + "|" + serviceID
 }
 
 // SaveToken saves a user token.
@@ -57,10 +55,7 @@ func NewStore() *Store {
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	key := tokenKey{
-		userID:    token.GetUserId(),
-		serviceID: token.GetServiceId(),
-	}
+	key := tokenKey(token.GetUserId(), token.GetServiceId())
 	s.tokens[key] = proto.Clone(token).(*configv1.UserToken)
 	return nil
 }
@@ -76,10 +71,7 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	key := tokenKey{
-		userID:    userID,
-		serviceID: serviceID,
-	}
+	key := tokenKey(userID, serviceID)
 	if token, ok := s.tokens[key]; ok {
 		return proto.Clone(token).(*configv1.UserToken), nil
 	}
@@ -96,10 +88,7 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	key := tokenKey{
-		userID:    userID,
-		serviceID: serviceID,
-	}
+	key := tokenKey(userID, serviceID)
 	delete(s.tokens, key)
 	return nil
 }

@@ -64,6 +64,11 @@ func TestWaitForText(t *testing.T) {
 func TestDockerHelpers(t *testing.T) {
 	// t.Skip("Skipping test due to DockerHub rate limiting issues")
 	t.Parallel()
+	// Skip entirely if running in CI environments that struggle with dind/overlayfs
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping Docker helpers test in CI due to potential overlayfs issues")
+	}
+
 	if !IsDockerSocketAccessible() {
 		// t.Skip("Docker is not available")
 	}
