@@ -98,8 +98,7 @@ func TestBundleDockerConn_Write_Robustness(t *testing.T) {
 }
 
 func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
-	originalNewDockerClient := newDockerClient
-	defer func() { newDockerClient = originalNewDockerClient }()
+	// No global variable swapping anymore!
 
 	transport := &BundleDockerTransport{
 		Image:   "test-image",
@@ -107,7 +106,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 	}
 
 	t.Run("ImagePull_Fail", func(t *testing.T) {
-		newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
 			return &mockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return nil, errors.New("pull failed")
@@ -133,7 +132,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 	})
 
 	t.Run("ContainerCreate_Fail", func(t *testing.T) {
-		newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
 			return &mockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
@@ -150,7 +149,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 
 	t.Run("ContainerAttach_Fail", func(t *testing.T) {
 		removedID := ""
-		newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
 			return &mockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
@@ -175,7 +174,7 @@ func TestBundleDockerTransport_Connect_Robustness(t *testing.T) {
 
 	t.Run("ContainerStart_Fail", func(t *testing.T) {
 		removedID := ""
-		newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
 			return &mockDockerClient{
 				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
