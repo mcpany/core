@@ -38,3 +38,8 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 	info, ok := m.serviceInfo[serviceID]
 	return info, ok
 }
+
+// GetToolCounts implements tool.ManagerInterface.
+func (m *TemporaryToolManager) GetToolCounts() map[string]int {
+	return nil
+}
