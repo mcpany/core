@@ -23,7 +23,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		Command: &cmd,
 	}.Build()
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-e", "{{script}}"},
+		Args: []string{"-e", "{{script}}", "/etc/hosts"},
 		Parameters: []*configv1.CommandLineParameterMapping{
 			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{Name: proto.String("script")}.Build(),

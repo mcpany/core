@@ -183,109 +183,110 @@ func TestValidatorCoverageMore(t *testing.T) {
 func TestSecretsHydration(t *testing.T) {
     // Test HydrateSecretsInService with various types to hit coverage
     secrets := map[string]*configv1.SecretValue{
-        "MY_SECRET": {
-            Value: &configv1.SecretValue_PlainText{PlainText: "real_secret"},
-        },
+        "MY_SECRET": configv1.SecretValue_builder{
+			PlainText: proto.String("real_secret"),
+		}.Build(),
     }
 
-    // Command Line Service
-    cmdService := func() *configv1.UpstreamServiceConfig {
-        svc := &configv1.UpstreamServiceConfig{}
-        svc.SetName("cmd-svc")
-        cmd := &configv1.CommandLineUpstreamService{}
-        cmd.SetEnv(map[string]*configv1.SecretValue{
-            "API_KEY": func() *configv1.SecretValue {
-                s := &configv1.SecretValue{}
-                s.SetEnvironmentVariable("MY_SECRET")
-                return s
-            }(),
-        })
-        ce := &configv1.ContainerEnvironment{}
-        ce.SetEnv(map[string]*configv1.SecretValue{
-            "CONTAINER_KEY": func() *configv1.SecretValue {
-                s := &configv1.SecretValue{}
-                s.SetEnvironmentVariable("MY_SECRET")
-                return s
-            }(),
-        })
-        cmd.SetContainerEnvironment(ce)
-        svc.SetCommandLineService(cmd)
-        return svc
-    }()
-    config.HydrateSecretsInService(cmdService, secrets)
+    	// Command Line Service
+	cmdService := func() *configv1.UpstreamServiceConfig {
+		cmd := configv1.CommandLineUpstreamService_builder{
+			Env: map[string]*configv1.SecretValue{
+				"API_KEY": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MY_SECRET"),
+				}.Build(),
+			},
+			ContainerEnvironment: configv1.ContainerEnvironment_builder{
+				Env: map[string]*configv1.SecretValue{
+					"CONTAINER_KEY": configv1.SecretValue_builder{
+						EnvironmentVariable: proto.String("MY_SECRET"),
+					}.Build(),
+				},
+			}.Build(),
+		}.Build()
 
-    // Verify hydration
-    envVal := cmdService.GetCommandLineService().GetEnv()["API_KEY"].GetPlainText()
-    assert.Equal(t, "real_secret", envVal)
+		return configv1.UpstreamServiceConfig_builder{
+			Name:               proto.String("cmd-svc"),
+			CommandLineService: cmd,
+		}.Build()
+	}()
+	config.HydrateSecretsInService(cmdService, secrets)
 
-    // Mcp Service Stdio
-    mcpStdio := func() *configv1.UpstreamServiceConfig {
-        svc := &configv1.UpstreamServiceConfig{}
-        svc.SetName("mcp-stdio")
-        mcp := &configv1.McpUpstreamService{}
+	// Verify hydration
+	envVal := cmdService.GetCommandLineService().GetEnv()["API_KEY"].GetPlainText()
+	assert.Equal(t, "real_secret", envVal)
 
-        conn := &configv1.McpStdioConnection{}
-        conn.SetEnv(map[string]*configv1.SecretValue{
-            "KEY": func() *configv1.SecretValue {
-                s := &configv1.SecretValue{}
-                s.SetEnvironmentVariable("MY_SECRET")
-                return s
-            }(),
-        })
-        mcp.SetStdioConnection(conn)
-        svc.SetMcpService(mcp)
-        return svc
-    }()
-    config.HydrateSecretsInService(mcpStdio, secrets)
-    assert.Equal(t, "real_secret", mcpStdio.GetMcpService().GetStdioConnection().GetEnv()["KEY"].GetPlainText())
+	// Mcp Service Stdio
+	mcpStdio := func() *configv1.UpstreamServiceConfig {
+		conn := configv1.McpStdioConnection_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MY_SECRET"),
+				}.Build(),
+			},
+		}.Build()
 
-    // Mcp Service Bundle
-    mcpBundle := func() *configv1.UpstreamServiceConfig {
-        svc := &configv1.UpstreamServiceConfig{}
-        svc.SetName("mcp-bundle")
-        mcp := &configv1.McpUpstreamService{}
+		mcp := configv1.McpUpstreamService_builder{
+			StdioConnection: conn,
+		}.Build()
 
-        conn := &configv1.McpBundleConnection{}
-        conn.SetEnv(map[string]*configv1.SecretValue{
-            "KEY": func() *configv1.SecretValue {
-                s := &configv1.SecretValue{}
-                s.SetEnvironmentVariable("MY_SECRET")
-                return s
-            }(),
-        })
-        mcp.SetBundleConnection(conn)
-        svc.SetMcpService(mcp)
-        return svc
-    }()
-    config.HydrateSecretsInService(mcpBundle, secrets)
-    assert.Equal(t, "real_secret", mcpBundle.GetMcpService().GetBundleConnection().GetEnv()["KEY"].GetPlainText())
+		return configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("mcp-stdio"),
+			McpService: mcp,
+		}.Build()
+	}()
+	config.HydrateSecretsInService(mcpStdio, secrets)
+	assert.Equal(t, "real_secret", mcpStdio.GetMcpService().GetStdioConnection().GetEnv()["KEY"].GetPlainText())
 
-    // HTTP Service
-    httpSvc := func() *configv1.UpstreamServiceConfig {
-        svc := &configv1.UpstreamServiceConfig{}
-        svc.SetName("http-svc")
-        h := &configv1.HttpUpstreamService{}
+	// Mcp Service Bundle
+	mcpBundle := func() *configv1.UpstreamServiceConfig {
+		conn := configv1.McpBundleConnection_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("MY_SECRET"),
+				}.Build(),
+			},
+		}.Build()
 
-        callDef := &configv1.HttpCallDefinition{}
+		mcp := configv1.McpUpstreamService_builder{
+			BundleConnection: conn,
+		}.Build()
 
-        param := &configv1.HttpParameterMapping{}
-        schema := &configv1.ParameterSchema{}
-        schema.SetName("p1")
-        param.SetSchema(schema)
+		return configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("mcp-bundle"),
+			McpService: mcp,
+		}.Build()
+	}()
+	config.HydrateSecretsInService(mcpBundle, secrets)
+	assert.Equal(t, "real_secret", mcpBundle.GetMcpService().GetBundleConnection().GetEnv()["KEY"].GetPlainText())
 
-        sec := &configv1.SecretValue{}
-        sec.SetEnvironmentVariable("MY_SECRET")
-        param.SetSecret(sec)
+	// HTTP Service
+	httpSvc := func() *configv1.UpstreamServiceConfig {
+		param := configv1.HttpParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("p1"),
+			}.Build(),
+			Secret: configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("MY_SECRET"),
+			}.Build(),
+		}.Build()
 
-        callDef.SetParameters([]*configv1.HttpParameterMapping{param})
+		callDef := configv1.HttpCallDefinition_builder{
+			Parameters: []*configv1.HttpParameterMapping{param},
+		}.Build()
 
-        h.SetCalls(map[string]*configv1.HttpCallDefinition{
-            "call1": callDef,
-        })
-        svc.SetHttpService(h)
-        return svc
-    }()
-    config.HydrateSecretsInService(httpSvc, secrets)
+		h := configv1.HttpUpstreamService_builder{
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"call1": callDef,
+			},
+		}.Build()
+
+		return configv1.UpstreamServiceConfig_builder{
+			Name:        proto.String("http-svc"),
+			HttpService: h,
+		}.Build()
+	}()
+	config.HydrateSecretsInService(httpSvc, secrets)
     assert.Equal(t, "real_secret", httpSvc.GetHttpService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText())
 }
 
@@ -354,15 +355,17 @@ func TestValidatorCommandExists(t *testing.T) {
     f.Close()
     os.Chmod(exePath, 0755)
 
-    // Valid command absolute path
-    cfg := func() *configv1.UpstreamServiceConfig {
-        svc := &configv1.UpstreamServiceConfig{}
-        svc.SetName("cmd-svc")
-        cmd := &configv1.CommandLineUpstreamService{}
-        cmd.SetCommand(exePath)
-        svc.SetCommandLineService(cmd)
-        return svc
-    }()
+    	// Valid command absolute path
+	cfg := func() *configv1.UpstreamServiceConfig {
+		cmd := configv1.CommandLineUpstreamService_builder{
+			Command: proto.String(exePath),
+		}.Build()
+
+		return configv1.UpstreamServiceConfig_builder{
+			Name:               proto.String("cmd-svc"),
+			CommandLineService: cmd,
+		}.Build()
+	}()
     // We can't call validateCommandExists directly as it is private, but we can call ValidateOrError
     err = config.ValidateOrError(context.Background(), cfg)
     assert.NoError(t, err)

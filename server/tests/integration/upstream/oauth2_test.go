@@ -157,16 +157,14 @@ func TestUpstreamService_HTTP_WithOAuth2(t *testing.T) {
 			clientSecret := configv1.SecretValue_builder{
 				PlainText: proto.String(clientSecretVal),
 			}.Build()
-			oauth2AuthConfig := &configv1.OAuth2Auth{
-				TokenUrl:     &tokenURL,
+			oauth2AuthConfig := configv1.OAuth2Auth_builder{
+				TokenUrl:     proto.String(tokenURL),
 				ClientId:     clientID,
 				ClientSecret: clientSecret,
-			}
-			authConfig := &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_Oauth2{
-					Oauth2: oauth2AuthConfig,
-				},
-			}
+			}.Build()
+			authConfig := configv1.Authentication_builder{
+				Oauth2: oauth2AuthConfig,
+			}.Build()
 			integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
@@ -215,16 +213,14 @@ func TestUpstreamService_HTTP_WithOAuth2_InvalidCredentials(t *testing.T) {
 			clientSecret := configv1.SecretValue_builder{
 				PlainText: proto.String("test-client-secret"),
 			}.Build()
-			oauth2AuthConfig := &configv1.OAuth2Auth{
-				TokenUrl:     &tokenURL,
+			oauth2AuthConfig := configv1.OAuth2Auth_builder{
+				TokenUrl:     proto.String(tokenURL),
 				ClientId:     clientID,
 				ClientSecret: clientSecret,
-			}
-			authConfig := &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_Oauth2{
-					Oauth2: oauth2AuthConfig,
-				},
-			}
+			}.Build()
+			authConfig := configv1.Authentication_builder{
+				Oauth2: oauth2AuthConfig,
+			}.Build()
 			integration.RegisterHTTPService(t, registrationClient, serviceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, authConfig)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
