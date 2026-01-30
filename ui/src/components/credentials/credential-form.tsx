@@ -169,13 +169,13 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
             auth.apiKey = {
                 paramName: values.apiKeyParamName || "X-API-Key",
                 in: parseInt(values.apiKeyLocation || "0") as APIKeyAuth_Location,
-                value: { plainText: values.apiKeyValue || "" },
+                value: { plainText: values.apiKeyValue || "", validationRegex: "" },
                 verificationValue: ""
             }
         } else if (values.authType === "bearer_token") {
-             auth.bearerToken = { token: { plainText: values.bearerToken || "" } }
+             auth.bearerToken = { token: { plainText: values.bearerToken || "", validationRegex: "" } }
         } else if (values.authType === "basic_auth") {
-            auth.basicAuth = { username: values.basicUsername || "", password: { plainText: values.basicPassword || "" }, passwordHash: "" }
+            auth.basicAuth = { username: values.basicUsername || "", password: { plainText: values.basicPassword || "", validationRegex: "" }, passwordHash: "" }
         } else if (values.authType === "oauth2") {
              // For OAuth2, test connection might mean using the stored token?
              // Or verifying the config?
@@ -197,8 +197,8 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                  // So `testAuth` for OAuth might be tricky without token.
                  // Let's defer OAuth test logic or just basic config check.
                  auth.oauth2 = {
-                    clientId: { plainText: values.oauthClientId || "" },
-                    clientSecret: { plainText: values.oauthClientSecret || "" },
+                    clientId: { plainText: values.oauthClientId || "", validationRegex: "" },
+                    clientSecret: { plainText: values.oauthClientSecret || "", validationRegex: "" },
                     authorizationUrl: values.oauthAuthUrl || "",
                     tokenUrl: values.oauthTokenUrl || "",
                     scopes: values.oauthScopes || "",

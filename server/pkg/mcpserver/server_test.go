@@ -1045,39 +1045,6 @@ func (m *smartToolManager) GetAllowedServiceIDs(profileID string) (map[string]bo
 	}, true
 }
 
-func (m *smartToolManager) ListMCPToolsForProfile(profileID string) []*mcp.Tool {
-	// Simulate the logic of ListMCPToolsForProfile using the smart manager's data
-	toolsSource := m.ListTools()
-	allowedServices, _ := m.GetAllowedServiceIDs(profileID)
-
-	filteredMCPTools := make([]*mcp.Tool, 0, len(toolsSource))
-	for _, toolInstance := range toolsSource {
-		serviceID := toolInstance.Tool().GetServiceId()
-		if allowedServices != nil {
-			if !allowedServices[serviceID] {
-				continue
-			}
-		}
-
-		if mt := toolInstance.MCPTool(); mt != nil {
-			if serviceID != "" {
-				expectedName := serviceID + "." + toolInstance.Tool().GetName()
-				if mt.Name != expectedName {
-					// We need to clone to avoid modifying the cached tool if we were caching,
-					// but here we are in a test mock, so it might be fine,
-					// but let's be consistent with the real implementation to avoid side effects in tests.
-					mtClone := *mt
-					mtClone.Name = expectedName
-					filteredMCPTools = append(filteredMCPTools, &mtClone)
-					continue
-				}
-			}
-			filteredMCPTools = append(filteredMCPTools, mt)
-		}
-	}
-	return filteredMCPTools
-}
-
 func TestServer_MiddlewareChain(t *testing.T) {
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
