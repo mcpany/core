@@ -7,8 +7,8 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
-import { Duration } from "../../../google/protobuf/duration";
-import { Struct, Value } from "../../../google/protobuf/struct";
+import { Duration } from "../../../proto/google/protobuf/duration";
+import { Struct, Value } from "../../../proto/google/protobuf/struct";
 import { SecretValue } from "./auth";
 import { WebhookConfig } from "./webhook";
 

@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
-import { Struct } from "../../../google/protobuf/struct";
+import { Struct } from "../../../proto/google/protobuf/struct";
 import { Profile } from "./profile";
 import { ResourceAnnotation, ResourceDefinition } from "./resource";
 

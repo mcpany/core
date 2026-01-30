@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
-import { Duration } from "../../../google/protobuf/duration";
+import { Duration } from "../../../proto/google/protobuf/duration";
 import { Authentication, SecretValue } from "./auth";
 import {
   CacheConfig,
