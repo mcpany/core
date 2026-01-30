@@ -47,8 +47,8 @@ test.describe('Secrets Manager', () => {
     await expect(secretRow.locator('button[aria-label="Hide secret"]')).toBeVisible();
 
     // Find the span containing the value and check text
-    // The server redacts values in the list API, so we expect [REDACTED]
-    await expect(secretRow.getByText('[REDACTED]')).toBeVisible({ timeout: 5000 });
+    // The server redacts values in the list API, but after reveal we expect the real value
+    await expect(secretRow.getByText(secretValue)).toBeVisible({ timeout: 5000 });
 
     // Delete the secret
     await secretRow.locator('button[aria-label="Delete secret"]').click();

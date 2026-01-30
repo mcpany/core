@@ -11,6 +11,7 @@ const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 
 test.describe('MCP Any UI E2E Tests', () => {
+  test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ request, page }) => {
       await seedServices(request);
