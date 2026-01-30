@@ -134,7 +134,8 @@ func (a *Application) seedDefaultConfiguration(ctx context.Context, s storage.St
 }
 
 func (a *Application) initializeOfficialCollections(ctx context.Context, store config.Store) error {
-	if os.Getenv("MCPANY_SKIP_SEEDING") == "true" {
+	const trueStr = "true"
+	if os.Getenv("MCPANY_SKIP_SEEDING") == trueStr {
 		logging.GetLogger().Info("Skipping official collections seeding (MCPANY_SKIP_SEEDING=true)")
 		return nil
 	}
