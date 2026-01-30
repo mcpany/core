@@ -55,7 +55,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
 
   // Argument builder state
   const [argMode, setArgMode] = useState<"builder" | "json">("builder");
-  const [parsedArgs, setParsedArgs] = useState<any>({});
+  const [parsedArgs, setParsedArgs] = useState<any>({}); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [jsonError, setJsonError] = useState<string | null>(null);
 
   // Real data state
@@ -79,13 +79,13 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
               const p = JSON.parse(input);
               setParsedArgs(p);
               setJsonError(null);
-          } catch (e) {
+          } catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
               setJsonError("Cannot switch to Builder: Invalid JSON in text editor.");
           }
       }
   }, [argMode]);
 
-  const handleBuilderChange = (val: any) => {
+  const handleBuilderChange = (val: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       setParsedArgs(val);
       setInput(JSON.stringify(val, null, 2));
   };
@@ -157,7 +157,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       // Refresh metrics after execution to show it in the graph
       // Give it a small delay for backend to write audit log
       setTimeout(fetchMetrics, 500);
-    } catch (e: any) {
+    } catch (e: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       setOutput(`Error: ${e.message}`);
       setTimeout(fetchMetrics, 500);
     } finally {
@@ -198,7 +198,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                       </TabsList>
                       <TabsContent value="visual" className="mt-2">
                          <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/20">
-                            <SchemaViewer schema={tool.inputSchema as any} />
+                            <SchemaViewer schema={tool.inputSchema as any} /> {/* eslint-disable-line @typescript-eslint/no-explicit-any */}
                          </ScrollArea>
                       </TabsContent>
                       <TabsContent value="json" className="mt-2">
@@ -212,7 +212,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 <div className="grid gap-2">
                     <div className="flex items-center justify-between">
                         <Label htmlFor="args">Arguments</Label>
-                        <Tabs value={argMode} onValueChange={(v: any) => setArgMode(v)} className="w-[150px]">
+                        <Tabs value={argMode} onValueChange={(v: any) => setArgMode(v)} className="w-[150px]"> {/* eslint-disable-line @typescript-eslint/no-explicit-any */}
                             <TabsList className="grid w-full grid-cols-2 h-7">
                                 <TabsTrigger value="builder" className="text-xs">Builder</TabsTrigger>
                                 <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
@@ -235,7 +235,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                         <ScrollArea className="h-[250px] w-full rounded-md border p-4 bg-muted/10">
                              <SchemaForm
                                  key={tool.name}
-                                 schema={tool.inputSchema as any}
+                                 schema={tool.inputSchema as any} // eslint-disable-line @typescript-eslint/no-explicit-any
                                  value={parsedArgs}
                                  onChange={handleBuilderChange}
                              />

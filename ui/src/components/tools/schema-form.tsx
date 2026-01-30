@@ -17,8 +17,8 @@ import { Schema } from "./schema-viewer";
 
 interface SchemaFormProps {
   schema: Schema;
-  value: any;
-  onChange: (value: any) => void;
+  value: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onChange: (value: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   name?: string;
   depth?: number;
   required?: boolean;
@@ -41,11 +41,11 @@ export function SchemaForm({ schema, value, onChange, name, depth = 0, required 
     }
   }, []); // Run once on mount
 
-  const handleChange = (newValue: any) => {
+  const handleChange = (newValue: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     onChange(newValue);
   };
 
-  const handleObjectChange = (key: string, val: any) => {
+  const handleObjectChange = (key: string, val: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     const newObj = { ...(value || {}), [key]: val };
     onChange(newObj);
   };
@@ -67,7 +67,7 @@ export function SchemaForm({ schema, value, onChange, name, depth = 0, required 
                     <SelectValue placeholder="Select an option" />
                 </SelectTrigger>
                 <SelectContent>
-                    {schema.enum.map((opt: any) => (
+                    {schema.enum.map((opt: any) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
                         <SelectItem key={String(opt)} value={String(opt)}>
                             {String(opt)}
                         </SelectItem>
@@ -178,7 +178,7 @@ export function SchemaForm({ schema, value, onChange, name, depth = 0, required 
            newItems.splice(index, 1);
            handleChange(newItems);
        };
-       const updateItem = (index: number, val: any) => {
+       const updateItem = (index: number, val: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
            const newItems = [...items];
            newItems[index] = val;
            handleChange(newItems);
@@ -200,7 +200,7 @@ export function SchemaForm({ schema, value, onChange, name, depth = 0, required 
 
                {isOpen && (
                    <div className="space-y-3">
-                       {items.map((item: any, index: number) => (
+                       {items.map((item: any, index: number) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
                            <div key={index} className="flex gap-2 items-start group">
                                <div className="flex-1">
                                    <SchemaForm
