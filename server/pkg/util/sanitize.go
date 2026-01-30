@@ -13,12 +13,6 @@ import (
 const RedactedString = "REDACTED"
 
 // SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
-//
-// Parameters:
-//   - u: The user object to sanitize.
-//
-// Returns:
-//   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
 func SanitizeUser(u *configv1.User) *configv1.User {
 	if u == nil {
 		return nil
@@ -34,12 +28,6 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 }
 
 // SanitizeCredential creates a sanitized copy of the credential object with sensitive data redacted.
-//
-// Parameters:
-//   - c: The credential object to sanitize.
-//
-// Returns:
-//   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	if c == nil {
 		return nil
@@ -59,12 +47,6 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 
 // SanitizeAuthentication sanitizes the authentication object.
 // It modifies the object in place (assumes it's already a clone).
-//
-// Parameters:
-//   - a: The authentication object to sanitize.
-//
-// Returns:
-//   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
 	if a == nil {
 		return nil
@@ -107,12 +89,6 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 }
 
 // SanitizeUserToken sanitizes the user token.
-//
-// Parameters:
-//   - t: The user token to sanitize.
-//
-// Returns:
-//   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
@@ -127,12 +103,6 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 }
 
 // SanitizeSecretValue sanitizes a SecretValue.
-//
-// Parameters:
-//   - s: The secret value to sanitize.
-//
-// Returns:
-//   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 	if s == nil {
 		return nil

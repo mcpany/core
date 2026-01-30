@@ -48,17 +48,18 @@ import (
 // the final identifier.
 //
 // Parameters:
-//   - ids: A slice of strings to be sanitized and joined. Each element of the slice
-//     represents a part of the final identifier.
-//   - alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
-//     sanitized string, regardless of whether it was modified.
-//   - maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
-//     string before a hash is appended.
-//   - reqHashLength: The desired length of the hexadecimal hash to be appended.
+//
+//	ids: A slice of strings to be sanitized and joined. Each element of the slice
+//	     represents a part of the final identifier.
+//	alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
+//	                  sanitized string, regardless of whether it was modified.
+//	maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
+//	                          string before a hash is appended.
+//	reqHashLength: The desired length of the hexadecimal hash to be appended.
 //
 // Returns:
-//   - string: A single string representing the sanitized and joined identifier.
-//   - error: An error if the sanitization fails (e.g., if ids is empty).
+//
+//	A single string representing the sanitized and joined identifier.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -215,13 +216,6 @@ func isValidChar(c byte) bool {
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
-//
-// Parameters:
-//   - name: The service name to sanitize.
-//
-// Returns:
-//   - string: The sanitized service name.
-//   - error: An error if sanitization fails.
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -230,13 +224,6 @@ func SanitizeServiceName(name string) (string, error) {
 // It ensures that the name is a valid identifier by removing disallowed characters
 // and appending a hash if the name is too long or contains illegal characters.
 // This function calls SanitizeID with alwaysAppendHash set to false.
-//
-// Parameters:
-//   - name: The tool name to sanitize.
-//
-// Returns:
-//   - string: The sanitized tool name.
-//   - error: An error if sanitization fails.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -282,7 +269,7 @@ const TrueStr = "true"
 //
 // Returns:
 //
-//	string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
+//	A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
 func GenerateUUID() string {
 	return uuid.New().String()
 }
@@ -291,13 +278,9 @@ func GenerateUUID() string {
 // and bare tool name components. It splits the name using the standard
 // separator.
 //
-// Parameters:
-//   - toolName: The fully qualified tool name to parse.
-//
-// Returns:
-//   - service: The service key part of the tool name.
-//   - bareToolName: The tool name part without the service key.
-//   - err: An error if parsing fails (currently always nil).
+// toolName is the fully qualified tool name.
+// It returns the service key, the bare tool name, and an error if parsing fails
+// (though the current implementation does not return an error).
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {
@@ -311,11 +294,8 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 // hexadecimal hash of that sequence, ensuring uniqueness while preserving as
 // much of the original string as possible.
 //
-// Parameters:
-//   - input: The string to be sanitized.
-//
-// Returns:
-//   - string: The sanitized string.
+// input is the string to be sanitized.
+// It returns the sanitized string.
 func SanitizeOperationID(input string) string {
 	// Fast path: check if valid without allocating
 	isClean := true
@@ -383,12 +363,6 @@ func stringToBytes(s string) []byte {
 
 // BytesToString converts a byte slice to a string without allocation.
 // IMPORTANT: The byte slice must not be modified while the string is in use.
-//
-// Parameters:
-//   - b: The byte slice to convert.
-//
-// Returns:
-//   - string: The resulting string.
 func BytesToString(b []byte) string {
 	return unsafe.String(unsafe.SliceData(b), len(b)) //nolint:gosec // Standard zero-copy conversion
 }
@@ -481,11 +455,9 @@ func replacePlaceholders(input string, params map[string]interface{}, noEscapePa
 
 // IsNil checks if an interface value is nil or holds a nil pointer.
 //
-// Parameters:
-//   - i: The interface value to check.
+// i is the i.
 //
-// Returns:
-//   - bool: True if the value is nil or a nil pointer, false otherwise.
+// Returns true if successful.
 func IsNil(i any) bool {
 	if i == nil {
 		return true
@@ -505,12 +477,6 @@ func IsNil(i any) bool {
 // without using reflection when possible.
 // Optimization: We manually handle all standard Go numeric types to avoid the overhead
 // of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
-//
-// Parameters:
-//   - v: The value to convert to a string.
-//
-// Returns:
-//   - string: The string representation of the value.
 func ToString(v any) string {
 	return toStringRecursive(v, 0)
 }
@@ -608,9 +574,6 @@ func toStringRecursive(v any, depth int) string {
 
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
 // It uses the global math/rand source.
-//
-// Returns:
-//   - float64: A random float64 value.
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
 }
@@ -618,12 +581,6 @@ func RandomFloat64() float64 {
 // SanitizeFilename cleans a filename to ensure it is safe to use.
 // It removes any directory components, null bytes, and restricts characters
 // to alphanumeric, dots, dashes, and underscores.
-//
-// Parameters:
-//   - filename: The filename to sanitize.
-//
-// Returns:
-//   - string: The sanitized filename.
 func SanitizeFilename(filename string) string {
 	// 1. Base name only
 	filename = filepath.Base(filename)

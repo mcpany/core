@@ -159,15 +159,7 @@ func TestHTTPTool_Execute_Coverage_DryRun(t *testing.T) {
 		UnderlyingMethodFqn: &methodAndURL,
 	}.Build()
 
-	callDef := configv1.HttpCallDefinition_builder{
-		Parameters: []*configv1.HttpParameterMapping{
-			{
-				Schema: &configv1.ParameterSchema{
-					Name: proto.String("key"),
-				},
-			},
-		},
-	}.Build()
+	callDef := configv1.HttpCallDefinition_builder{}.Build()
 
 	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
 

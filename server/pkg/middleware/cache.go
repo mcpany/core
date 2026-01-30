@@ -318,18 +318,9 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 
 	// Set cache if we have embedding
 	if embedding != nil {
-		// ⚡ BOLT: Offload cache write to background to avoid blocking the response.
-		// Randomized Selection from Top 5 High-Impact Targets
-		go func() {
-			// Detach context so write completes even if request context is canceled.
-			// Add timeout to prevent hanging.
-			bgCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
-			defer cancel()
-
-			if err := semCache.Set(bgCtx, req.ToolName, embedding, result, config.GetTtl().AsDuration()); err != nil {
-				logging.GetLogger().Error("Failed to set semantic cache", "error", err)
-			}
-		}()
+		if err := semCache.Set(ctx, req.ToolName, embedding, result, config.GetTtl().AsDuration()); err != nil {
+			logging.GetLogger().Error("Failed to set semantic cache", "error", err)
+		}
 	}
 
 	return result, nil

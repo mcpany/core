@@ -9,8 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, X, Eye, EyeOff, Lock, Unlock, Key } from "lucide-react";
-import { SecretPicker } from "@/components/secrets/secret-picker";
+import { Plus, X, Eye, EyeOff, Lock } from "lucide-react";
 
 interface EnvVar {
   key: string;
@@ -72,28 +71,11 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
           if (i === index) {
               const updated = { ...v, [field]: value };
               // If user edits value of a secret ref, it becomes plain text unless we implement secret picker
-              if (field === 'secretId') {
-                  updated.secretId = value as string;
+              if (field === 'value' && v.isSecretRef) {
+                  updated.isSecretRef = false;
+                  updated.secretId = undefined;
               }
               return updated;
-          }
-          return v;
-      });
-      setEnvVars(newVars);
-      updateParent(newVars);
-  };
-
-  const toggleSecretMode = (index: number) => {
-      const newVars = envVars.map((v, i) => {
-          if (i === index) {
-              const newIsSecretRef = !v.isSecretRef;
-              return {
-                  ...v,
-                  isSecretRef: newIsSecretRef,
-                  // If switching to secret, clear value. If to text, clear secretId.
-                  value: newIsSecretRef ? "" : "",
-                  secretId: newIsSecretRef ? "" : undefined
-              };
           }
           return v;
       });
@@ -131,20 +113,14 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                   />
                   <div className="relative flex-1">
                       {v.isSecretRef ? (
-                           <SecretPicker
-                                value={v.secretId}
-                                onSelect={(key) => updateVar(i, "secretId", key)}
-                           >
-                                <div className="relative cursor-pointer group">
-                                    <Input
-                                        value={v.secretId || ""}
-                                        readOnly
-                                        className="pr-8 bg-muted/50 cursor-pointer text-primary font-medium focus-visible:ring-primary"
-                                        placeholder="Select a secret..."
-                                    />
-                                    <Key className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
-                                </div>
-                           </SecretPicker>
+                           <div className="relative">
+                               <Input
+                                  value={`Secret: ${v.secretId}`}
+                                  disabled
+                                  className="pr-8 bg-muted text-muted-foreground"
+                               />
+                               <Lock className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                           </div>
                       ) : (
                           <>
                            <Input
@@ -152,12 +128,12 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                               type={showValues[i] ? "text" : "password"}
                               value={v.value}
                               onChange={(e) => updateVar(i, "value", e.target.value)}
-                              className="pr-10"
+                              className="pr-8"
                           />
                            <button
                               type="button"
                               onClick={() => toggleShowValue(i)}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                            >
                               {showValues[i] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                            </button>
@@ -165,18 +141,7 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
                       )}
                   </div>
 
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => toggleSecretMode(i)}
-                    className={v.isSecretRef ? "text-primary hover:text-primary/80" : "text-muted-foreground"}
-                    title={v.isSecretRef ? "Switch to Plain Text" : "Switch to Secret Reference"}
-                  >
-                      {v.isSecretRef ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                  </Button>
-
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removeVar(i)} className="text-destructive/50 hover:text-destructive">
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeVar(i)}>
                       <X className="h-4 w-4" />
                   </Button>
               </div>

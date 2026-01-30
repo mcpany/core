@@ -109,12 +109,6 @@ func init() {
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
 // If the input is not valid JSON object or array, it returns the input as is.
-//
-// Parameters:
-//   - input: The JSON input to redact.
-//
-// Returns:
-//   - []byte: The redacted JSON output.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -137,12 +131,6 @@ func RedactJSON(input []byte) []byte {
 // If no sensitive keys are found, it returns the original map (zero allocation).
 // If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
 // Note: This aligns with RedactJSON behavior which returns original slice if clean.
-//
-// Parameters:
-//   - m: The map to redact.
-//
-// Returns:
-//   - map[string]interface{}: The potentially redacted map.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -251,11 +239,9 @@ var sensitiveKeys = []string{
 
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
-// Parameters:
-//   - key: The key name to check.
+// key is the key.
 //
-// Returns:
-//   - bool: True if the key is considered sensitive, false otherwise.
+// Returns true if successful.
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -485,12 +471,6 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
-//
-// Parameters:
-//   - dsn: The DSN string to redact.
-//
-// Returns:
-//   - string: The redacted DSN string.
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -587,27 +567,16 @@ func RedactDSN(dsn string) string {
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
-// redactInterval represents a range of text to be redacted.
-type redactInterval struct {
-	start, end int
-}
-
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
-//
-// Parameters:
-//   - text: The text to redact.
-//   - secrets: A list of secret values to redact from the text.
-//
-// Returns:
-//   - string: The redacted text.
 func RedactSecrets(text string, secrets []string) string {
 	if text == "" || len(secrets) == 0 {
 		return text
 	}
 
-	// ⚡ BOLT: Optimization - Use interval merging instead of O(N) boolean mask.
-	// Randomized Selection from Top 5 High-Impact Targets
-	var intervals []redactInterval
+	// Use a mask approach to avoid recursive replacement issues (where a secret is a substring of the placeholder)
+	// and to correctly handle overlapping/adjacent secrets by merging them into a single redaction block.
+	var mask []bool
+	foundAny := false
 
 	for _, secret := range secrets {
 		if secret == "" {
@@ -622,54 +591,43 @@ func RedactSecrets(text string, secrets []string) string {
 			}
 			absoluteIdx := start + idx
 			end := absoluteIdx + len(secret)
-			intervals = append(intervals, redactInterval{start: absoluteIdx, end: end})
+
+			if mask == nil {
+				mask = make([]bool, len(text))
+			}
+
+			// Mark bytes as sensitive
+			for i := absoluteIdx; i < end; i++ {
+				mask[i] = true
+			}
+			foundAny = true
+
 			// Advance by len(secret) to avoid finding overlapping instances of the *same* secret
-			// (e.g. "aaaa" with secret "aa" -> match at 0, next search starts at 2).
+			// (e.g. "aaaa" with secret "aa" -> mask 0-1, 2-3).
 			start = end
 		}
 	}
 
-	if len(intervals) == 0 {
+	if !foundAny {
 		return text
 	}
 
-	// Sort intervals by start position
-	sort.Slice(intervals, func(i, j int) bool {
-		return intervals[i].start < intervals[j].start
-	})
-
-	// Merge overlapping or adjacent intervals
-	var merged []redactInterval
-	if len(intervals) > 0 {
-		current := intervals[0]
-		for i := 1; i < len(intervals); i++ {
-			next := intervals[i]
-			// If overlaps or touches (next.start <= current.end)
-			// Touching intervals (e.g. [0,3) and [3,6)) should be merged into one [0,6)
-			// so they result in a single [REDACTED] placeholder.
-			if next.start <= current.end {
-				if next.end > current.end {
-					current.end = next.end
-				}
-			} else {
-				merged = append(merged, current)
-				current = next
-			}
-		}
-		merged = append(merged, current)
-	}
-
-	// Build result string
 	var sb strings.Builder
 	sb.Grow(len(text))
 
-	lastIdx := 0
-	for _, interval := range merged {
-		sb.WriteString(text[lastIdx:interval.start])
-		sb.WriteString(redactedPlaceholder)
-		lastIdx = interval.end
+	i := 0
+	n := len(text)
+	for i < n {
+		if mask[i] {
+			sb.WriteString(redactedPlaceholder)
+			// Skip until end of masked region
+			for i < n && mask[i] {
+				i++
+			}
+		} else {
+			sb.WriteByte(text[i])
+			i++
+		}
 	}
-	sb.WriteString(text[lastIdx:])
-
 	return sb.String()
 }

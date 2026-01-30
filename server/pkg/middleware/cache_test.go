@@ -479,35 +479,13 @@ func TestCachingMiddleware_SemanticCache(t *testing.T) {
 	assert.Equal(t, successResult, res1)
 	assert.Equal(t, 1, testTool.executeCount)
 
-	// ⚡ BOLT: Wait for async cache write to complete
-	// Retry until cache hit (executeCount doesn't increase)
+	// 2. Second call with "hi" (should match "hello")
 	req2 := &tool.ExecutionRequest{
 		ToolName:   testServiceToolName,
 		ToolInputs: []byte("hi"),
 	}
-
-	var res2 any
-	start := time.Now()
-	for {
-		if time.Since(start) > 2*time.Second {
-			break
-		}
-
-		// Reset execution count to 1 (state after first successful request)
-		// If the previous iteration missed, count would be 2. We reset to try again.
-		testTool.executeCount = 1
-
-		res2, err = cacheMiddleware.Execute(ctx, req2, nextFunc)
-		require.NoError(t, err)
-
-		if testTool.executeCount == 1 {
-			// It didn't increment! Cache hit.
-			break
-		}
-
-		time.Sleep(50 * time.Millisecond)
-	}
-
+	res2, err := cacheMiddleware.Execute(ctx, req2, nextFunc)
+	require.NoError(t, err)
 	assert.Equal(t, successResult, res2)
 	assert.Equal(t, 1, testTool.executeCount, "Should be semantic cache hit")
 }

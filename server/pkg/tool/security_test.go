@@ -343,7 +343,7 @@ func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {
 		{"Tab", "hello\tworld", true}, // We want to block this as it can split args in unquoted context
 		{"VerticalTab", "hello\vworld", true},
 		{"FormFeed", "hello\fworld", true},
-		{"Safe", "helloworld", false}, // Space is currently allowed
+		{"Safe", "hello world", false}, // Space is currently allowed
 	}
 
 	for _, tc := range testCases {

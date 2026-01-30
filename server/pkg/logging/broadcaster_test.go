@@ -75,9 +75,16 @@ func TestBroadcaster_HistoryIntegrity(t *testing.T) {
 		t.Errorf("Unexpected message")
 	}
 
-	// Note: We intentionally allow GetHistory to return references to internal buffers for zero-copy performance.
-	// Callers must not modify the returned data.
-	// The previous test checking for deep-copy isolation is removed.
+	// Modify returned buffer
+	history[0][0] = 'X'
+
+	// Get history again
+	history2 := b.GetHistory()
+	if string(history2[0]) == "Xriginal" {
+		t.Errorf("Internal history was modified by caller!")
+	} else if string(history2[0]) != "original" {
+		t.Errorf("Unexpected history content: %s", string(history2[0]))
+	}
 
 	// Test that reusing buffer in Broadcast doesn't affect history
 	buf := []byte("hello")

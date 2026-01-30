@@ -64,11 +64,10 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 	}
 
 	for i := 0; i < count; i++ {
-		// ⚡ BOLT: Zero-copy optimization.
-		// We share the slice reference because b.history entries are immutable (only replaced).
-		// This avoids allocations and copies under lock.
-		// Randomized Selection from Top 5 High-Impact Targets
-		result[i] = b.history[idx]
+		msg := b.history[idx]
+		msgCopy := make([]byte, len(msg))
+		copy(msgCopy, msg)
+		result[i] = msgCopy
 
 		idx++
 		if idx >= b.limit {
@@ -94,13 +93,13 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 // Broadcast sends a message to all subscribers.
 // This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
 func (b *Broadcaster) Broadcast(msg []byte) {
-	// We make a copy of msg to ensure history persists even if caller reuses buffer.
-	// Doing this outside the lock reduces contention.
-	msgCopy := make([]byte, len(msg))
-	copy(msgCopy, msg)
-
 	b.mu.Lock()
 	defer b.mu.Unlock()
+
+	// Append to history
+	// We make a copy of msg to ensure history persists even if caller reuses buffer
+	msgCopy := make([]byte, len(msg))
+	copy(msgCopy, msg)
 
 	// ⚡ BOLT: Ring Buffer Optimization
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -137,8 +136,10 @@ func (b *Broadcaster) GetHistory() [][]byte {
 	}
 
 	for i := 0; i < count; i++ {
-		// ⚡ BOLT: Zero-copy optimization.
-		result[i] = b.history[idx]
+		msg := b.history[idx]
+		msgCopy := make([]byte, len(msg))
+		copy(msgCopy, msg)
+		result[i] = msgCopy
 
 		idx++
 		if idx >= b.limit {

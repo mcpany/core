@@ -7,41 +7,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"sort"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/prometheus/client_golang/prometheus"
 )
-
-// getStatsCache returns cached data if valid.
-func (a *Application) getStatsCache(key string) (any, bool) {
-	a.statsCacheMu.RLock()
-	defer a.statsCacheMu.RUnlock()
-	entry, ok := a.statsCache[key]
-	if !ok || time.Now().After(entry.ExpiresAt) {
-		return nil, false
-	}
-	return entry.Data, true
-}
-
-// setStatsCache sets the cache with 5s TTL.
-func (a *Application) setStatsCache(key string, data any) {
-	a.statsCacheMu.Lock()
-	defer a.statsCacheMu.Unlock()
-
-	// ⚡ Bolt Security: Prevent DoS by bounding cache size.
-	if len(a.statsCache) > 100 {
-		// Simple eviction: Clear all if limit reached.
-		// This is safe and effective for this use case.
-		a.statsCache = make(map[string]statsCacheEntry)
-	}
-
-	a.statsCache[key] = statsCacheEntry{
-		Data:      data,
-		ExpiresAt: time.Now().Add(5 * time.Second),
-	}
-}
 
 const (
 	metricToolsCallTotal = "mcpany_tools_call_total"
@@ -65,16 +35,6 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			return
 		}
 
-		filterServiceID := r.URL.Query().Get("serviceId")
-		cacheKey := "dashboard_top_tools:" + filterServiceID
-
-		// ⚡ Bolt Optimization: Check cache
-		if data, ok := a.getStatsCache(cacheKey); ok {
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(data)
-			return
-		}
-
 		gatherer := a.MetricsGatherer
 		if gatherer == nil {
 			gatherer = prometheus.DefaultGatherer
@@ -87,6 +47,7 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			return
 		}
 
+		filterServiceID := r.URL.Query().Get("serviceId")
 		toolCounts := make(map[string]*ToolUsageStats)
 
 		for _, mf := range mfs {
@@ -136,9 +97,6 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 		if len(stats) > 10 {
 			stats = stats[:10]
 		}
-
-		// ⚡ Bolt Optimization: Update cache
-		a.setStatsCache(cacheKey, stats)
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(stats)
@@ -212,16 +170,6 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			return
 		}
 
-		filterServiceID := r.URL.Query().Get("serviceId")
-		cacheKey := "dashboard_tool_failures:" + filterServiceID
-
-		// ⚡ Bolt Optimization: Check cache
-		if data, ok := a.getStatsCache(cacheKey); ok {
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(data)
-			return
-		}
-
 		gatherer := a.MetricsGatherer
 		if gatherer == nil {
 			gatherer = prometheus.DefaultGatherer
@@ -241,6 +189,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			Error     int64
 		}
 
+		filterServiceID := r.URL.Query().Get("serviceId")
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
@@ -308,9 +257,6 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			stats = stats[:5]
 		}
 
-		// ⚡ Bolt Optimization: Update cache
-		a.setStatsCache(cacheKey, stats)
-
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(stats)
 	}
@@ -329,16 +275,6 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-
-		filterServiceID := r.URL.Query().Get("serviceId")
-		cacheKey := "dashboard_tool_usage:" + filterServiceID
-
-		// ⚡ Bolt Optimization: Check cache
-		if data, ok := a.getStatsCache(cacheKey); ok {
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(data)
 			return
 		}
 
@@ -361,6 +297,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 			Error     int64
 		}
 
+		filterServiceID := r.URL.Query().Get("serviceId")
 		toolStats := make(map[string]*aggregatedStats)
 
 		for _, mf := range mfs {
@@ -421,9 +358,6 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		sort.Slice(analytics, func(i, j int) bool {
 			return analytics[i].Name < analytics[j].Name
 		})
-
-		// ⚡ Bolt Optimization: Update cache
-		a.setStatsCache(cacheKey, analytics)
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(analytics)

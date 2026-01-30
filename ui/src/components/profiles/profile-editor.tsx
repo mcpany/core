@@ -21,10 +21,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Search, Loader2, X, Plus, ChevronRight, ChevronDown } from "lucide-react";
+import { Search, Loader2, X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ToolDefinition } from "@/lib/client";
 
 /**
  * Represents a user profile configuration in the UI.
@@ -44,8 +43,6 @@ export interface Profile {
     additionalTags: string[];
     /** Optional secrets associated with the profile. */
     secrets?: Record<string, string>;
-    /** Map of serviceName -> List of disabled tool names. */
-    disabledTools?: Record<string, string[]>;
 }
 
 interface ProfileData {
@@ -85,10 +82,6 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
     const [isLoadingServices, setIsLoadingServices] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
-    const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
-    const [serviceTools, setServiceTools] = useState<Record<string, ToolDefinition[]>>({});
-    const [disabledTools, setDisabledTools] = useState<Record<string, Set<string>>>({});
-
     // Load initial data when profile changes or opens
     useEffect(() => {
         if (open) {
@@ -99,15 +92,6 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                 setType(profile.type);
                 setAdditionalTags(profile.additionalTags || []);
                 setSelectedServices(new Set(profile.services));
-
-                // Load disabled tools
-                const dt: Record<string, Set<string>> = {};
-                if (profile.disabledTools) {
-                    Object.entries(profile.disabledTools).forEach(([svc, tools]) => {
-                        dt[svc] = new Set(tools);
-                    });
-                }
-                setDisabledTools(dt);
             } else {
                 // Reset for new profile
                 setName("");
@@ -115,47 +99,9 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                 setType("dev");
                 setAdditionalTags([]);
                 setSelectedServices(new Set());
-                setDisabledTools({});
             }
-            // Reset expanded state
-            setExpandedServices(new Set());
-            setServiceTools({});
         }
     }, [open, profile]);
-
-    const toggleExpandService = async (svcName: string) => {
-        const newExpanded = new Set(expandedServices);
-        if (newExpanded.has(svcName)) {
-            newExpanded.delete(svcName);
-        } else {
-            newExpanded.add(svcName);
-            // Fetch tools if not already fetched
-            if (!serviceTools[svcName]) {
-                try {
-                    const res = await apiClient.listTools();
-                    // Filter by service ID (svcName matches ID usually)
-                    const tools = res.tools.filter((t: ToolDefinition) => t.serviceId === svcName);
-                    setServiceTools(prev => ({ ...prev, [svcName]: tools }));
-                } catch (e) {
-                    console.error("Failed to fetch tools", e);
-                }
-            }
-        }
-        setExpandedServices(newExpanded);
-    };
-
-    const toggleTool = (svcName: string, toolName: string, checked: boolean) => {
-        const currentDisabled = disabledTools[svcName] || new Set();
-        const newDisabled = new Set(currentDisabled);
-        if (checked) {
-            // Enabled -> Remove from disabled set
-            newDisabled.delete(toolName);
-        } else {
-            // Disabled -> Add to disabled set
-            newDisabled.add(toolName);
-        }
-        setDisabledTools(prev => ({ ...prev, [svcName]: newDisabled }));
-    };
 
     const fetchServices = async () => {
         setIsLoadingServices(true);
@@ -181,17 +127,7 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
             // Construct backend ProfileDefinition
             const serviceConfig: Record<string, any> = {};
             selectedServices.forEach(svc => {
-                const toolsConfig: Record<string, any> = {};
-                if (disabledTools[svc]) {
-                    disabledTools[svc].forEach(tName => {
-                        toolsConfig[tName] = { disabled: true };
-                    });
-                }
-
-                serviceConfig[svc] = {
-                    enabled: true,
-                    tools: toolsConfig
-                };
+                serviceConfig[svc] = {}; // Default config
             });
 
             const profileData = {
@@ -391,81 +327,32 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                                             const isSelected = isImplicit || isExplicit;
 
                                             return (
-                                                <div key={svc.name} className="flex flex-col p-2 hover:bg-muted/50 rounded transition-colors">
-                                                    <div className="flex items-start space-x-3">
-                                                        <Checkbox
-                                                            id={`svc-${svc.name}`}
-                                                            checked={isSelected}
-                                                            disabled={isImplicit}
-                                                            onCheckedChange={(c) => toggleService(svc.name, !!c)}
-                                                        />
-                                                        <div className="grid gap-1.5 leading-none flex-1">
-                                                            <div className="flex items-center gap-2">
-                                                                <label
-                                                                    htmlFor={`svc-${svc.name}`}
-                                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                                                >
-                                                                    {svc.name}
-                                                                </label>
-                                                                {isImplicit && <Badge variant="secondary" className="text-[10px] h-4 px-1">Auto</Badge>}
-                                                                {isSelected && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="h-4 w-4 ml-auto"
-                                                                        onClick={() => toggleExpandService(svc.name)}
-                                                                    >
-                                                                        {expandedServices.has(svc.name) ? (
-                                                                            <ChevronDown className="h-3 w-3" />
-                                                                        ) : (
-                                                                            <ChevronRight className="h-3 w-3" />
-                                                                        )}
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex flex-wrap gap-1 mt-1">
-                                                                {svc.tags && svc.tags.map(tag => (
-                                                                    <Badge key={tag} variant="outline" className="text-[9px] h-3 px-1">{tag}</Badge>
-                                                                ))}
-                                                            </div>
-                                                            <p className="text-xs text-muted-foreground mt-0.5">
-                                                                {svc.commandLineService ? "Command" : svc.httpService ? "HTTP" : "Remote"} • v{svc.version || "1.0.0"}
-                                                            </p>
+                                                <div key={svc.name} className="flex items-start space-x-3 p-2 hover:bg-muted/50 rounded transition-colors">
+                                                    <Checkbox
+                                                        id={`svc-${svc.name}`}
+                                                        checked={isSelected}
+                                                        disabled={isImplicit}
+                                                        onCheckedChange={(c) => toggleService(svc.name, !!c)}
+                                                    />
+                                                    <div className="grid gap-1.5 leading-none flex-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <label
+                                                                htmlFor={`svc-${svc.name}`}
+                                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                            >
+                                                                {svc.name}
+                                                            </label>
+                                                            {isImplicit && <Badge variant="secondary" className="text-[10px] h-4 px-1">Auto</Badge>}
                                                         </div>
+                                                        <div className="flex flex-wrap gap-1 mt-1">
+                                                            {svc.tags && svc.tags.map(tag => (
+                                                                <Badge key={tag} variant="outline" className="text-[9px] h-3 px-1">{tag}</Badge>
+                                                            ))}
+                                                        </div>
+                                                        <p className="text-xs text-muted-foreground mt-0.5">
+                                                            {svc.commandLineService ? "Command" : svc.httpService ? "HTTP" : "Remote"} • v{svc.version || "1.0.0"}
+                                                        </p>
                                                     </div>
-
-                                                    {/* Tool List */}
-                                                    {isSelected && expandedServices.has(svc.name) && (
-                                                        <div className="ml-8 mt-2 space-y-2 border-l pl-3">
-                                                            {!serviceTools[svc.name] ? (
-                                                                <div className="flex items-center text-xs text-muted-foreground">
-                                                                    <Loader2 className="mr-2 h-3 w-3 animate-spin" /> Loading tools...
-                                                                </div>
-                                                            ) : serviceTools[svc.name].length === 0 ? (
-                                                                <div className="text-xs text-muted-foreground">No tools found.</div>
-                                                            ) : (
-                                                                serviceTools[svc.name].map(tool => {
-                                                                    const isDisabled = disabledTools[svc.name]?.has(tool.name);
-                                                                    return (
-                                                                        <div key={tool.name} className="flex items-center space-x-2">
-                                                                            <Checkbox
-                                                                                id={`tool-${svc.name}-${tool.name}`}
-                                                                                checked={!isDisabled}
-                                                                                onCheckedChange={(c) => toggleTool(svc.name, tool.name, !!c)}
-                                                                                className="h-3 w-3"
-                                                                            />
-                                                                            <label
-                                                                                htmlFor={`tool-${svc.name}-${tool.name}`}
-                                                                                className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                                                            >
-                                                                                {tool.name}
-                                                                            </label>
-                                                                        </div>
-                                                                    );
-                                                                })
-                                                            )}
-                                                        </div>
-                                                    )}
                                                 </div>
                                             );
                                         })}

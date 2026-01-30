@@ -4,8 +4,6 @@
 package app
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"net/http"
 
 	"github.com/mcpany/core/server/pkg/logging"
@@ -25,18 +23,6 @@ func (a *Application) handleTopology() http.HandlerFunc {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
-
-			// ⚡ Bolt Optimization: Compute ETag to allow client-side caching and reduce bandwidth.
-			// Randomized Selection from Top 5 High-Impact Targets
-			hash := sha256.Sum256(b)
-			etag := hex.EncodeToString(hash[:])
-
-			if r.Header.Get("If-None-Match") == etag {
-				w.WriteHeader(http.StatusNotModified)
-				return
-			}
-
-			w.Header().Set("ETag", etag)
 			_, _ = w.Write(b)
 
 		default:

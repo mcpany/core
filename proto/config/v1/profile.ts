@@ -21,21 +21,9 @@ export interface Profile {
   authentication?: Authentication | undefined;
 }
 
-export interface ToolConfig {
-  /** Whether the tool is disabled. */
-  disabled: boolean;
-}
-
 export interface ProfileServiceConfig {
   /** Whether the service is enabled in this profile. */
   enabled: boolean;
-  /** Tool-specific configuration. Key is the tool name (e.g. "delete_file"). */
-  tools: { [key: string]: ToolConfig };
-}
-
-export interface ProfileServiceConfig_ToolsEntry {
-  key: string;
-  value?: ToolConfig | undefined;
 }
 
 export interface RateLimitConfig {
@@ -276,66 +264,8 @@ export const Profile: MessageFns<Profile> = {
   },
 };
 
-function createBaseToolConfig(): ToolConfig {
-  return { disabled: false };
-}
-
-export const ToolConfig: MessageFns<ToolConfig> = {
-  encode(message: ToolConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.disabled !== false) {
-      writer.uint32(8).bool(message.disabled);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ToolConfig {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseToolConfig();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.disabled = reader.bool();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ToolConfig {
-    return { disabled: isSet(object.disabled) ? globalThis.Boolean(object.disabled) : false };
-  },
-
-  toJSON(message: ToolConfig): unknown {
-    const obj: any = {};
-    if (message.disabled !== false) {
-      obj.disabled = message.disabled;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ToolConfig>, I>>(base?: I): ToolConfig {
-    return ToolConfig.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ToolConfig>, I>>(object: I): ToolConfig {
-    const message = createBaseToolConfig();
-    message.disabled = object.disabled ?? false;
-    return message;
-  },
-};
-
 function createBaseProfileServiceConfig(): ProfileServiceConfig {
-  return { enabled: false, tools: {} };
+  return { enabled: false };
 }
 
 export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
@@ -343,9 +273,6 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
     if (message.enabled !== false) {
       writer.uint32(8).bool(message.enabled);
     }
-    globalThis.Object.entries(message.tools).forEach(([key, value]: [string, ToolConfig]) => {
-      ProfileServiceConfig_ToolsEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).join();
-    });
     return writer;
   },
 
@@ -364,17 +291,6 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
           message.enabled = reader.bool();
           continue;
         }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          const entry2 = ProfileServiceConfig_ToolsEntry.decode(reader, reader.uint32());
-          if (entry2.value !== undefined) {
-            message.tools[entry2.key] = entry2.value;
-          }
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -385,33 +301,13 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   },
 
   fromJSON(object: any): ProfileServiceConfig {
-    return {
-      enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false,
-      tools: isObject(object.tools)
-        ? (globalThis.Object.entries(object.tools) as [string, any][]).reduce(
-          (acc: { [key: string]: ToolConfig }, [key, value]: [string, any]) => {
-            acc[key] = ToolConfig.fromJSON(value);
-            return acc;
-          },
-          {},
-        )
-        : {},
-    };
+    return { enabled: isSet(object.enabled) ? globalThis.Boolean(object.enabled) : false };
   },
 
   toJSON(message: ProfileServiceConfig): unknown {
     const obj: any = {};
     if (message.enabled !== false) {
       obj.enabled = message.enabled;
-    }
-    if (message.tools) {
-      const entries = globalThis.Object.entries(message.tools) as [string, ToolConfig][];
-      if (entries.length > 0) {
-        obj.tools = {};
-        entries.forEach(([k, v]) => {
-          obj.tools[k] = ToolConfig.toJSON(v);
-        });
-      }
     }
     return obj;
   },
@@ -422,95 +318,6 @@ export const ProfileServiceConfig: MessageFns<ProfileServiceConfig> = {
   fromPartial<I extends Exact<DeepPartial<ProfileServiceConfig>, I>>(object: I): ProfileServiceConfig {
     const message = createBaseProfileServiceConfig();
     message.enabled = object.enabled ?? false;
-    message.tools = (globalThis.Object.entries(object.tools ?? {}) as [string, ToolConfig][]).reduce(
-      (acc: { [key: string]: ToolConfig }, [key, value]: [string, ToolConfig]) => {
-        if (value !== undefined) {
-          acc[key] = ToolConfig.fromPartial(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    return message;
-  },
-};
-
-function createBaseProfileServiceConfig_ToolsEntry(): ProfileServiceConfig_ToolsEntry {
-  return { key: "", value: undefined };
-}
-
-export const ProfileServiceConfig_ToolsEntry: MessageFns<ProfileServiceConfig_ToolsEntry> = {
-  encode(message: ProfileServiceConfig_ToolsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== undefined) {
-      ToolConfig.encode(message.value, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProfileServiceConfig_ToolsEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProfileServiceConfig_ToolsEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = ToolConfig.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProfileServiceConfig_ToolsEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? ToolConfig.fromJSON(object.value) : undefined,
-    };
-  },
-
-  toJSON(message: ProfileServiceConfig_ToolsEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== undefined) {
-      obj.value = ToolConfig.toJSON(message.value);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ProfileServiceConfig_ToolsEntry>, I>>(base?: I): ProfileServiceConfig_ToolsEntry {
-    return ProfileServiceConfig_ToolsEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ProfileServiceConfig_ToolsEntry>, I>>(
-    object: I,
-  ): ProfileServiceConfig_ToolsEntry {
-    const message = createBaseProfileServiceConfig_ToolsEntry();
-    message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? ToolConfig.fromPartial(object.value)
-      : undefined;
     return message;
   },
 };

@@ -66,9 +66,6 @@ type Server struct {
 // Server returns the underlying *mcp.Server instance, which provides access to
 // the core MCP server functionality. This can be used for advanced
 // configurations or direct interaction with the MCP server.
-//
-// Returns:
-//   - *mcp.Server: The underlying server instance.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -95,9 +92,7 @@ func (s *Server) Server() *mcp.Server {
 //   - serviceRegistry: Keeps track of all registered upstream services.
 //   - bus: The event bus used for asynchronous communication between components.
 //
-// Returns:
-//   - *Server: A new instance of the Server.
-//   - error: An error if initialization fails.
+// Returns a new instance of the Server and an error if initialization fails.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,

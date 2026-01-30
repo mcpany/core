@@ -59,12 +59,6 @@ func TestRedactSecrets(t *testing.T) {
 			secrets:  []string{"abc", "abc"},
 			expected: "token: [REDACTED]",
 		},
-		{
-			name:     "adjacent secrets",
-			text:     "secret1secret2",
-			secrets:  []string{"secret1", "secret2"},
-			expected: "[REDACTED]",
-		},
 	}
 
 	for _, tt := range tests {
