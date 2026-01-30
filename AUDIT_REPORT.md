@@ -1,41 +1,59 @@
-# Audit Report - 2025-05-15
+# Truth Reconciliation Audit Report
 
-## Executive Summary
-A "Truth Reconciliation Audit" was performed to verify alignment between Documentation, Codebase, and Product Roadmap. The audit sampled 10 distinct features (3 Server, 7 UI).
+**Date:** 2025-05-15
+**Auditor:** Jules (Principal Software Engineer)
 
-**Overall Health:** 90% Verification Rate.
-- **9/10 Features Verified:** Most features described in documentation are fully implemented and functional.
-- **1/10 Features Identified as Roadmap Debt:** The "Merge Strategy" feature described in documentation is only partially implemented (per-tool overrides exist, but the top-level list merge configuration is missing).
+## 1. Executive Summary
 
-## Verification Matrix
+A "Truth Reconciliation Audit" was performed on the MCP Any project to align Documentation, Codebase, and Roadmap. A sample of 10 key documentation files was verified against the codebase.
 
-| Document Name | Status | Action Required | Evidence |
+**Overall Health:** Good. The core architecture and features are well-implemented.
+**Key Findings:**
+- **Configuration Drift:** `server/docs/reference/configuration.md` was missing several `GlobalSettings` fields defined in the Protobuf schema (`telemetry`, `alerts`, `dlp`, etc.).
+- **Debugging Info Outdated:** `server/docs/debugging.md` incorrectly claimed full JSON-RPC body logging, which was optimized away in the code.
+- **Caching Details Missing:** `server/docs/features/caching/README.md` lacked details on the implemented Semantic Caching feature.
+- **Tag Mismatch:** `server/docs/integrations.md` referenced `latest` tags instead of `dev-latest` used in the README.
+- **UI & Observability:** UI features and Observability docs were found to be accurate and well-aligned with the codebase.
+
+## 2. Verification Matrix
+
+| Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/caching.md` | **Verified** | None | Implemented in `server/pkg/middleware/cache.go` and `server/pkg/config`. Tests exist. |
-| `server/docs/monitoring.md` | **Verified** | None | Implemented in `server/pkg/telemetry`. |
-| `server/docs/feature/merge_strategy.md` | **Roadmap Debt** | **Implement Code** | Top-level `merge_strategy` config missing in `proto/config/v1/config.proto`. Per-tool strategy exists in `ToolDefinition`. |
-| `ui/docs/features/playground.md` | **Verified** | None | Implemented in `ui/src/app/playground`. |
-| `ui/docs/features/services.md` | **Verified** | None | Implemented in `ui/src/app/upstream-services`. |
-| `ui/docs/features/dashboard.md` | **Verified** | Minor Doc Update | Implemented as `AddWidgetSheet` in `ui/src/components/dashboard`. Doc refers to "Gallery". |
-| `ui/docs/features/connection-diagnostics.md` | **Verified** | None | Implemented in `ui/src/app/diagnostics`. |
-| `ui/docs/features/secrets.md` | **Verified** | None | Implemented in `ui/src/app/secrets`. |
-| `ui/docs/features/traces.md` | **Verified** | None | Implemented in `ui/src/app/traces`. |
-| `ui/docs/features/stack-composer.md` | **Verified** | None | Implemented in `ui/src/app/stacks`. |
+| `server/docs/reference/configuration.md` | **Drift** | **Fixed** | Updated `GlobalSettings` table with missing fields from `config.proto`. |
+| `server/docs/debugging.md` | **Drift** | **Fixed** | Updated to reflect actual structured logging behavior (no full JSON body). |
+| `server/docs/features/caching/README.md` | **Incomplete** | **Fixed** | Added "Semantic Caching" configuration section matching `cache.go`. |
+| `server/docs/integrations.md` | **Drift** | **Fixed** | Updated Docker tags to `ghcr.io/mcpany/server:dev-latest`. |
+| `ui/README.md` | **Broken Link** | **Fixed** | Fixed link to `docs/features/playground.md`. |
+| `server/docs/monitoring.md` | **Verified** | None | Metric names match `server/pkg/middleware/tool_metrics.go`. |
+| `docs/traces-feature.md` | **Verified** | None | accurately describes UI Inspector feature. |
+| `docs/alerts-feature.md` | **Verified** | None | accurately describes In-Memory Alerts implementation. |
+| `server/docs/developer_guide.md` | **Verified** | None | `make prepare` works via root Makefile delegation. |
+| `server/docs/examples.md` | **Verified** | None | Referenced example paths exist. |
+| `ui/docs/features.md` | **Verified** | None | UI structure in `ui/src/app` matches documented features. |
 
-## Remediation Log
-*   **Total Issues Found:** 0
-*   **Case A (Doc Drift):** 0
-*   **Case B (Roadmap Debt):** 0
+## 3. Remediation Log
 
-### 1. Merge Strategy (Case B: Roadmap Debt)
-*   **Condition:** Documentation `server/docs/feature/merge_strategy.md` describes a feature to control list merging behavior (extend/replace) via a top-level `merge_strategy` field.
-*   **Finding:** This field is missing from the `McpAnyServerConfig` Protobuf definition.
-*   **Action Plan:** Implement the missing `MergeStrategy` configuration in `proto/config/v1/config.proto` and generating the necessary code. Update config loading logic to respect this setting.
+### Fix 1: Configuration Documentation (`server/docs/reference/configuration.md`)
+- **Issue:** The documentation for `GlobalSettings` was missing 20+ fields present in `proto/config/v1/config.proto`, including `telemetry`, `alerts`, `dlp`, `oidc`, and `gc_settings`.
+- **Action:** Updated the `GlobalSettings` table to include all fields and added configuration reference sections for the new nested structs (`TelemetryConfig`, `AlertConfig`, etc.).
 
-### 2. Dashboard Widget Gallery (Case A: Doc Drift)
-*   **Condition:** Doc refers to "Widget Gallery".
-*   **Finding:** UI component is named `AddWidgetSheet`.
-*   **Action Plan:** Update documentation to align terminology if necessary, or accept "Gallery" as a valid conceptual name. (Low priority).
+### Fix 2: Debugging Documentation (`server/docs/debugging.md`)
+- **Issue:** The documentation claimed that enabling debug mode would log the full JSON-RPC request/response bodies. The code (`server/pkg/middleware/logging.go`) explicitly removed this as an optimization.
+- **Action:** Updated the documentation to describe the actual behavior: detailed logging of request completion, duration, status, and source code location, but not the full payload.
 
-## Security Scrub
-*   No PII or secrets detected in this report.
+### Fix 3: Caching Documentation (`server/docs/features/caching/README.md`)
+- **Issue:** The code supports "Semantic Caching" with OpenAI/Ollama providers and Vector Store persistence, but the documentation only mentioned the `strategy` field without examples or configuration details.
+- **Action:** Added a "Semantic Caching" section with configuration tables and YAML examples for OpenAI and Ollama.
+
+### Fix 4: Integrations Documentation (`server/docs/integrations.md`)
+- **Issue:** The documentation used the `ghcr.io/mcpany/server:latest` tag, while the project `README.md` and build process use `dev-latest`.
+- **Action:** Standardized on `ghcr.io/mcpany/server:dev-latest`.
+
+### Fix 5: UI Documentation Link (`ui/README.md`)
+- **Issue:** The link to the Playground documentation was `docs/playground.md` (404), but the file is located at `docs/features/playground.md`.
+- **Action:** Corrected the link.
+
+## 4. Security Scrub
+- **PII Check:** No PII found in report or changed files.
+- **Secrets Check:** No secrets found.
+- **Internal IPs:** No internal IPs exposed.

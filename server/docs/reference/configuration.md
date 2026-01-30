@@ -82,15 +82,89 @@ upstream_service_collections:
 
 Contains server-wide operational parameters.
 
-| Field                | Type         | Description                                                                   |
-| -------------------- | ------------ | ----------------------------------------------------------------------------- |
-| `mcp_listen_address` | `string`     | The address and port the server should bind to (e.g., "0.0.0.0:8080").        |
-| `log_level`          | `enum`       | The logging level for the server. Can be `INFO`, `WARN`, `ERROR`, or `DEBUG`. |
-| `log_format`         | `enum`       | The logging format. Can be `text` or `json`.                                  |
-| `message_bus`        | `MessageBus` | The message bus configuration.                                                |
-| `api_key`            | `string`     | The API key for securing the MCP server.                                      |
-| `audit`              | `AuditConfig`| Audit logging configuration.                                                  |
-| `db_path`            | `string`     | The path to the SQLite database file.                                         |
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `mcp_listen_address` | `string` | The address the MCP server listens on. |
+| `log_level` | `enum` | The logging level for the server. |
+| `api_key` | `string` | The API key used for authentication. |
+| `log_format` | `enum` | The logging format for the server. |
+| `db_path` | `string` | The path to the database file. |
+| `db_dsn` | `string` | The database connection string (DSN). |
+| `db_driver` | `string` | The database driver (sqlite, postgres). |
+| `github_api_url` | `string` | GitHub API URL for self-updates (optional). |
+| `use_sudo_for_docker` | `bool` | Whether to use sudo for Docker commands. |
+| `message_bus` | `MessageBus` | The message bus configuration. |
+| `audit` | `AuditConfig` | Audit logging configuration. |
+| `dlp` | `DLPConfig` | DLP configuration. |
+| `gc_settings` | `GCSettings` | Garbage Collection configuration. |
+| `oidc` | `OIDCConfig` | OIDC Configuration. |
+| `rate_limit` | `RateLimitConfig` | Rate limiting configuration for the server. |
+| `telemetry` | `TelemetryConfig` | Telemetry configuration. |
+| `profiles` | `repeated string` | The profiles to enable. |
+| `allowed_ips` | `repeated string` | The allowed IPs to access the server. |
+| `profile_definitions` | `repeated ProfileDefinition` | The definitions of profiles. |
+| `middlewares` | `repeated Middleware` | The list of middlewares to enable and their configuration. |
+| `allowed_file_paths` | `repeated string` | Allowed file paths for validation. |
+| `allowed_origins` | `repeated string` | Allowed origins for CORS. |
+| `context_optimizer` | `ContextOptimizerConfig` | Context Optimizer configuration. |
+| `debugger` | `DebuggerConfig` | Debugger configuration. |
+| `read_only` | `bool` | If true, the configuration is read-only. |
+| `auto_discover_local` | `bool` | Whether to auto-discover local services (e.g. Ollama). |
+| `alerts` | `AlertConfig` | Alert configuration. |
+
+### `AlertConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `enabled` | `bool` | Whether alerts are enabled. |
+| `webhook_url` | `string` | The webhook URL to send alerts to. |
+
+### `ContextOptimizerConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `max_chars` | `int32` | Maximum characters allowed in context. |
+
+### `DebuggerConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `enabled` | `bool` | Whether the debugger is enabled. |
+| `size` | `int32` | Size of the debug buffer. |
+
+### `TelemetryConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `traces_exporter` | `string` | Traces exporter ("otlp", "stdout", "none"). |
+| `metrics_exporter` | `string` | Metrics exporter ("otlp", "stdout", "none"). |
+| `otlp_endpoint` | `string` | OTLP endpoint. |
+| `service_name` | `string` | Service name override. |
+
+### `OIDCConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `issuer` | `string` | OIDC Issuer URL. |
+| `client_id` | `string` | Client ID. |
+| `client_secret` | `string` | Client Secret. |
+| `redirect_url` | `string` | Redirect URL. |
+
+### `GCSettings`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `enabled` | `bool` | Whether GC is enabled. |
+| `interval` | `string` | GC interval (e.g., "1h"). |
+| `ttl` | `string` | Time-to-live for temporary files. |
+| `paths` | `repeated string` | Paths to scan for cleanup. |
+
+### `DLPConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `enabled` | `bool` | Whether DLP is enabled. |
+| `custom_patterns` | `repeated string` | Additional regex patterns to redact. |
 
 ### `AuditConfig`
 

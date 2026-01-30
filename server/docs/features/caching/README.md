@@ -46,6 +46,55 @@ upstream_services:
       ttl: "5m"
 ```
 
+## Semantic Caching
+
+Semantic caching allows you to cache requests based on the *meaning* of the input rather than exact matches. This is particularly useful for LLM prompts where "Describe the weather in London" and "London weather description" should likely yield the same cached result.
+
+### Configuration
+
+To enable semantic caching, set `strategy: "semantic"` and provide the `semantic_config`.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `provider` | `string` | The embedding provider ("openai", "ollama", "http"). |
+| `model` | `string` | The embedding model to use (e.g., "text-embedding-3-small"). |
+| `similarity_threshold` | `float` | The cosine similarity threshold (0.0 to 1.0) to consider a match. Default: 0.9. |
+| `persistence_path` | `string` | Path to SQLite file or Postgres DSN for vector storage. |
+| `api_key` | `SecretValue` | API Key for the embedding provider (if required). |
+| `openai` | `OpenAIConfig` | Specific configuration for OpenAI. |
+| `ollama` | `OllamaConfig` | Specific configuration for Ollama. |
+| `http` | `HttpConfig` | Specific configuration for HTTP providers. |
+
+### Example: Semantic Caching with OpenAI
+
+```yaml
+cache:
+  is_enabled: true
+  strategy: "semantic"
+  ttl: "1h"
+  semantic_config:
+    similarity_threshold: 0.95
+    persistence_path: "data/vector_store.sqlite"
+    openai:
+      model: "text-embedding-3-small"
+      api_key:
+        environment_variable: "OPENAI_API_KEY"
+```
+
+### Example: Semantic Caching with Ollama (Local)
+
+```yaml
+cache:
+  is_enabled: true
+  strategy: "semantic"
+  ttl: "1h"
+  semantic_config:
+    persistence_path: "data/vector_store.sqlite"
+    ollama:
+      base_url: "http://localhost:11434"
+      model: "nomic-embed-text"
+```
+
 ## Use Case
 
 Imagine you have a weather service that users query frequently. The weather forecast doesn't change every second, so querying the upstream API for every user request is inefficient and might consume your API rate limits.

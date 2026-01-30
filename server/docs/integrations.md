@@ -114,7 +114,7 @@ The repository includes a `docker-compose.yml` file that starts `mcpany` and a s
    Or, to run it in **stdio mode** via Docker (slower than HTTP mode, but more secure):
 
    ```bash
-   gemini mcp add --transport stdio mcpany-docker docker -- run -i --rm -v /absolute/path/to/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio
+   gemini mcp add --transport stdio mcpany-docker docker -- run -i --rm -v /absolute/path/to/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:dev-latest run --config-path /etc/mcpany/config.yaml --stdio
    ```
 
    For clients with a UI (like VS Code or JetBrains), look for an option to add an "HTTP" or "Remote" MCP server and point it to `http://localhost:50050`.
@@ -177,7 +177,7 @@ Add the following to your `claude_desktop_config.json`:
         "--rm",
         "-v",
         "/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml",
-        "ghcr.io/mcpany/server:latest",
+        "ghcr.io/mcpany/server:dev-latest",
         "run",
         "--config-path",
         "/etc/mcpany/config.yaml",
@@ -235,7 +235,7 @@ gh copilot explain "how does this code work?"
 You can add `mcpany` to GitHub Copilot in VS Code using the command line:
 
 ```bash
-code --add-mcp '{"name":"mcpany","command":"docker","args":["run","-i","--rm","-v","/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml","ghcr.io/mcpany/server:latest","run","--config-path","/etc/mcpany/config.yaml","--stdio"]}'
+code --add-mcp '{"name":"mcpany","command":"docker","args":["run","-i","--rm","-v","/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml","ghcr.io/mcpany/server:dev-latest","run","--config-path","/etc/mcpany/config.yaml","--stdio"]}'
 ```
 
 Alternatively, you can manually edit your VS Code `settings.json` or use the **"Add MCP Server"** command in the command palette.
@@ -251,7 +251,7 @@ To integrate with [Cursor](https://cursor.sh/):
 3.  Fill in the details:
     - **Name**: `mcpany`
     - **Type**: `command`
-    - **Command**: `docker run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio`
+    - **Command**: `docker run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:dev-latest run --config-path /etc/mcpany/config.yaml --stdio`
 4.  Click **Add**.
 
 ---
@@ -266,7 +266,7 @@ To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
 4.  Configure the server:
     - **Name**: `mcpany`
     - **Command**: `docker`
-    - **Args**: `run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:latest run --config-path /etc/mcpany/config.yaml --stdio`
+    - **Args**: `run -i --rm -v /absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml ghcr.io/mcpany/server:dev-latest run --config-path /etc/mcpany/config.yaml --stdio`
 5.  Click **OK** or **Apply**.
 
 ---
@@ -291,7 +291,7 @@ To use `mcpany` with [Cline](https://github.com/cline/cline):
         "--rm",
         "-v",
         "/absolute/path/to/your/config.yaml:/etc/mcpany/config.yaml",
-        "ghcr.io/mcpany/server:latest",
+        "ghcr.io/mcpany/server:dev-latest",
         "run",
         "--config-path",
         "/etc/mcpany/config.yaml",

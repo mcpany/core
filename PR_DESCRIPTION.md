@@ -1,34 +1,59 @@
 # Truth Reconciliation Audit Report
 
-## Executive Summary
-Per the "Truth Reconciliation Audit" protocol, I have sampled 10 documentation files and cross-referenced them with the Codebase and Roadmap.
-The codebase is in excellent shape, with 9/10 sampled features showing perfect alignment between Documentation, Code, and Roadmap.
+**Date:** 2025-05-15
+**Auditor:** Jules (Principal Software Engineer)
 
-One critical discrepancy was found in the **Context Optimizer Middleware**. The documentation incorrectly stated the configuration unit as `max_tokens`, whereas the implementation uses `max_chars`. Furthermore, a bug was identified where the lack of a default value for `max_chars` could lead to unintended truncation of all content if the configuration field was omitted.
+## 1. Executive Summary
 
-## Verification Matrix
+A "Truth Reconciliation Audit" was performed on the MCP Any project to align Documentation, Codebase, and Roadmap. A sample of 10 key documentation files was verified against the codebase.
+
+**Overall Health:** Good. The core architecture and features are well-implemented.
+**Key Findings:**
+- **Configuration Drift:** `server/docs/reference/configuration.md` was missing several `GlobalSettings` fields defined in the Protobuf schema (`telemetry`, `alerts`, `dlp`, etc.).
+- **Debugging Info Outdated:** `server/docs/debugging.md` incorrectly claimed full JSON-RPC body logging, which was optimized away in the code.
+- **Caching Details Missing:** `server/docs/features/caching/README.md` lacked details on the implemented Semantic Caching feature.
+- **Tag Mismatch:** `server/docs/integrations.md` referenced `latest` tags instead of `dev-latest` used in the README.
+- **UI & Observability:** UI features and Observability docs were found to be accurate and well-aligned with the codebase.
+
+## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/features/context_optimizer.md` | **DRIFT & BUG** | **Fixed Code & Doc** | `server/pkg/middleware/registry.go`, `registry_test.go` |
-| `server/docs/features/health-checks.md` | **VERIFIED** | None | `server/pkg/upstream/grpc/grpc.go` |
-| `server/docs/features/hot_reload.md` | **VERIFIED** | None | `server/pkg/app/server.go`, `ReloadConfig` |
-| `server/docs/features/log_streaming_ui.md` | **VERIFIED** | None | `ui/src/components/logs/log-stream.tsx` |
-| `server/docs/features/dynamic_registration.md` | **VERIFIED** | None | `server/pkg/upstream/openapi/openapi.go` |
-| `docs/alerts-feature.md` | **VERIFIED** | None | `server/pkg/alerts/manager.go`, `ui/src/app/alerts/page.tsx` |
-| `docs/traces-feature.md` | **VERIFIED** | None | `ui/src/components/traces/trace-detail.tsx` |
-| `server/docs/caching.md` | **VERIFIED** | None | `server/pkg/middleware/cache.go` |
-| `ui/docs/features.md` (Stack Composer) | **VERIFIED** | None | `ui/src/components/stacks/stack-editor.tsx` |
-| `server/docs/features/rate-limiting/README.md` | **VERIFIED** | None | `server/pkg/middleware/ratelimit.go` |
+| `server/docs/reference/configuration.md` | **Drift** | **Fixed** | Updated `GlobalSettings` table with missing fields from `config.proto`. |
+| `server/docs/debugging.md` | **Drift** | **Fixed** | Updated to reflect actual structured logging behavior (no full JSON body). |
+| `server/docs/features/caching/README.md` | **Incomplete** | **Fixed** | Added "Semantic Caching" configuration section matching `cache.go`. |
+| `server/docs/integrations.md` | **Drift** | **Fixed** | Updated Docker tags to `ghcr.io/mcpany/server:dev-latest`. |
+| `ui/README.md` | **Broken Link** | **Fixed** | Fixed link to `docs/features/playground.md`. |
+| `server/docs/monitoring.md` | **Verified** | None | Metric names match `server/pkg/middleware/tool_metrics.go`. |
+| `docs/traces-feature.md` | **Verified** | None | accurately describes UI Inspector feature. |
+| `docs/alerts-feature.md` | **Verified** | None | accurately describes In-Memory Alerts implementation. |
+| `server/docs/developer_guide.md` | **Verified** | None | `make prepare` works via root Makefile delegation. |
+| `server/docs/examples.md` | **Verified** | None | Referenced example paths exist. |
+| `ui/docs/features.md` | **Verified** | None | UI structure in `ui/src/app` matches documented features. |
 
-## Remediation Log
+## 3. Remediation Log
 
-### Context Optimizer Middleware
-*   **Issue:** Doc claimed `max_tokens` (default 8000). Code used `max_chars` (int32). Code defaulted to 0 if config was present but empty, causing aggressive truncation (`len > 0`).
-*   **Resolution:**
-    1.  **Code Fix:** Updated `InitStandardMiddlewares` in `server/pkg/middleware/registry.go` to default `max_chars` to `32000` (approx 8000 tokens) if the configured value is 0.
-    2.  **Doc Fix:** Updated `server/docs/features/context_optimizer.md` to reference `max_chars` and document the default value.
-    3.  **Test:** Added `TestInitStandardMiddlewares_ContextOptimizer_Default` to `server/pkg/middleware/registry_test.go`.
+### Fix 1: Configuration Documentation (`server/docs/reference/configuration.md`)
+- **Issue:** The documentation for `GlobalSettings` was missing 20+ fields present in `proto/config/v1/config.proto`, including `telemetry`, `alerts`, `dlp`, `oidc`, and `gc_settings`.
+- **Action:** Updated the `GlobalSettings` table to include all fields and added configuration reference sections for the new nested structs (`TelemetryConfig`, `AlertConfig`, etc.).
 
-## Security Scrub
-No PII, secrets, or internal IPs were exposed in this report or the changes.
+### Fix 2: Debugging Documentation (`server/docs/debugging.md`)
+- **Issue:** The documentation claimed that enabling debug mode would log the full JSON-RPC request/response bodies. The code (`server/pkg/middleware/logging.go`) explicitly removed this as an optimization.
+- **Action:** Updated the documentation to describe the actual behavior: detailed logging of request completion, duration, status, and source code location, but not the full payload.
+
+### Fix 3: Caching Documentation (`server/docs/features/caching/README.md`)
+- **Issue:** The code supports "Semantic Caching" with OpenAI/Ollama providers and Vector Store persistence, but the documentation only mentioned the `strategy` field without examples or configuration details.
+- **Action:** Added a "Semantic Caching" section with configuration tables and YAML examples for OpenAI and Ollama.
+
+### Fix 4: Integrations Documentation (`server/docs/integrations.md`)
+- **Issue:** The documentation used the `ghcr.io/mcpany/server:latest` tag, while the project `README.md` and build process use `dev-latest`.
+- **Action:** Standardized on `ghcr.io/mcpany/server:dev-latest`.
+
+### Fix 5: UI Documentation Link (`ui/README.md`)
+- **Issue:** The link to the Playground documentation was `docs/playground.md` (404), but the file is located at `docs/features/playground.md`.
+- **Action:** Corrected the link.
+
+## 4. Security Scrub
+- **PII Check:** No PII found in report or changed files.
+- **Secrets Check:** No secrets found.
+- **Internal IPs:** No internal IPs exposed.

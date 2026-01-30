@@ -17,21 +17,21 @@ export MCPANY_DEBUG=true
 ./build/bin/server run
 ```
 
-When debug mode is enabled, the server will log the full JSON-RPC request and response for each tool call. The logs will be printed to standard output or to the file specified by the `--logfile` flag.
+When debug mode is enabled, the server will log detailed information about each tool call, including source code locations. It logs the start and completion (or failure) of requests, along with duration.
 
 ## Example Log Output
 
 Here is an example of the log output when debug mode is enabled (using structured logging):
 
 ```text
-level=DEBUG msg="MCP Request" method=tools/list request="{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":1}"
-level=DEBUG msg="MCP Response" method=tools/list response="{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"tools\":[{\"name\":\"my-tool\"}]}}"
+level=INFO msg="Request completed" method=tools/list duration=1.2ms
+level=ERROR msg="Request failed" method=tools/call duration=45.2ms error="tool execution failed"
 ```
 
 The log output includes the following information:
 
 - **method**: The name of the MCP method that was called.
-- **request**: The full JSON-RPC request.
-- **response**: The full JSON-RPC response.
+- **duration**: The time taken to process the request.
+- **error**: The error message if the request failed.
 
 By inspecting the log output, you can identify any issues with your configuration and ensure that the server is behaving as expected.

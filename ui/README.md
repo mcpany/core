@@ -64,7 +64,7 @@ npx playwright test
 
 - **Network Topology**: Visualize your MCP ecosystem.
 - **Service Management**: Add, edit, and monitor upstream services.
-- **[Interactive Playground](docs/playground.md)**: Test tools with auto-generated forms supporting complex schemas.
+- **[Interactive Playground](docs/features/playground.md)**: Test tools with auto-generated forms supporting complex schemas.
 - **Observability**: Real-time metrics and logs.
 
 ## 📚 Learn More
