@@ -11,12 +11,17 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * Props for the JsonTree component.
+ */
 export interface JsonTreeProps {
+  /** The data object to be rendered as a tree. */
   data: unknown;
   /** Initial depth to expand. Default is 1. */
   defaultExpandDepth?: number;
   /** Whether to show the root object braces/brackets. Default true. */
   showRoot?: boolean;
+  /** Optional CSS class names. */
   className?: string;
 }
 

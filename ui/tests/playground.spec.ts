@@ -74,7 +74,8 @@ test.describe('Playground Tool Configuration', () => {
 
     // Verify result (mock result)
     // "Mock execution result"
-    await expect(page.getByText('Mock execution result')).toBeVisible();
+    // Note: JsonView renders strings with quotes
+    await expect(page.getByText('"Mock execution result"')).toBeVisible();
   });
 
   test('should display smart error diagnostics and allow retry', async ({ page }) => {
