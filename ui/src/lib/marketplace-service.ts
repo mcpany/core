@@ -132,12 +132,20 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
 ];
 
 /**
- * Service for interacting with internal and external marketplaces.
+ * A singleton service responsible for managing interactions with various server marketplaces and collection sources.
+ *
+ * This service handles fetching official curated collections, discovering public marketplaces,
+ * listing external servers, and managing locally stored user collections.
  */
 export const marketplaceService = {
   /**
-   * Fetches the official collections provided by MCP Any.
-   * @returns A promise that resolves to a list of service collections.
+   * Retrieves the official "Gold Standard" service collections curated by the MCP Any team.
+   *
+   * These collections serve as the default starting point for users and include essential tools
+   * and configurations.
+   *
+   * @returns {Promise<ServiceCollection[]>} A promise that resolves to a list of curated ServiceCollection objects.
+   * @throws {Error} If the network request fails or the data is malformed.
    */
   fetchOfficialCollections: async (): Promise<ServiceCollection[]> => {
     // In future: fetch('https://raw.githubusercontent.com/mcpany/marketplace/main/collections.json')
@@ -145,17 +153,22 @@ export const marketplaceService = {
   },
 
   /**
-   * Fetches the list of known public marketplaces.
-   * @returns A promise that resolves to a list of external marketplaces.
+   * Retrieves the list of known public MCP marketplaces.
+   *
+   * These marketplaces are external sources where additional community servers can be found.
+   *
+   * @returns {Promise<ExternalMarketplace[]>} A promise that resolves to a list of ExternalMarketplace objects.
    */
   fetchPublicMarketplaces: async (): Promise<ExternalMarketplace[]> => {
     return PUBLIC_MARKETPLACES;
   },
 
   /**
-   * Fetches available servers from a specific external marketplace.
-   * @param marketplaceId The ID of the marketplace to query.
-   * @returns A promise that resolves to a list of external servers.
+   * Queries a specific external marketplace for available servers.
+   *
+   * @param {string} marketplaceId - The unique identifier of the marketplace to query.
+   * @returns {Promise<ExternalServer[]>} A promise that resolves to a list of servers available in the specified marketplace.
+   * @throws {Error} If the marketplace ID is invalid or the upstream request fails.
    */
   fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
     // Mock fetching from external source
@@ -205,8 +218,13 @@ export const marketplaceService = {
   },
 
   /**
-   * Fetches and parses the Awesome MCP Servers list from GitHub.
-   * @returns A promise that resolves to a list of CommunityServer objects.
+   * Scrapes and parses the community-maintained "Awesome MCP Servers" list from GitHub.
+   *
+   * This method downloads the README.md file from the remote repository, parses the Markdown
+   * to extract server links, categories, and tags, and returns them as structured objects.
+   *
+   * @returns {Promise<CommunityServer[]>} A promise that resolves to a list of community-contributed servers.
+   * @throws {Error} If the fetch fails or parsing encounters unexpected structure.
    */
   fetchCommunityServers: async (): Promise<CommunityServer[]> => {
       try {
@@ -268,9 +286,14 @@ export const marketplaceService = {
 
 
   /**
-   * Imports a collection from a URL.
-   * @param url The URL of the collection to import.
-   * @returns A promise that resolves to the imported collection.
+   * Imports a remote service collection from a given URL.
+   *
+   * This allows users to share configuration bundles. The method validates the downloaded
+   * JSON against the ServiceCollection schema before returning it.
+   *
+   * @param {string} url - The URL pointing to the collection JSON file.
+   * @returns {Promise<ServiceCollection>} A promise that resolves to the validated ServiceCollection.
+   * @throws {Error} If the URL is invalid, the fetch fails, or the content is not a valid collection.
    */
   importCollection: async (url: string): Promise<ServiceCollection> => {
      // Fetch from URL, validate, return
@@ -287,8 +310,12 @@ export const marketplaceService = {
   // Local Storage Logic
 
   /**
-   * Fetches collections stored locally in the browser.
-   * @returns A list of locally stored service collections.
+   * Retrieves user-defined collections stored in the browser's LocalStorage.
+   *
+   * This provides persistence for custom configurations across browser sessions.
+   *
+   * @returns {ServiceCollection[]} A list of locally stored ServiceCollection objects.
+   * @sideeffects Reads from `localStorage` key 'mcp_local_collections'.
    */
   fetchLocalCollections: (): ServiceCollection[] => {
       if (typeof window === 'undefined') return [];
@@ -302,8 +329,12 @@ export const marketplaceService = {
   },
 
   /**
-   * Saves a collection to local storage.
-   * @param collection The collection to save.
+   * Persists a service collection to the browser's LocalStorage.
+   *
+   * If a collection with the same name already exists, it is overwritten.
+   *
+   * @param {ServiceCollection} collection - The collection object to save.
+   * @sideeffects Writes to `localStorage` key 'mcp_local_collections'.
    */
   saveLocalCollection: (collection: ServiceCollection) => {
       if (typeof window === 'undefined') return;
@@ -319,8 +350,10 @@ export const marketplaceService = {
   },
 
   /**
-   * Deletes a locally stored collection.
-   * @param name The name of the collection to delete.
+   * Removes a service collection from LocalStorage by name.
+   *
+   * @param {string} name - The unique name of the collection to delete.
+   * @sideeffects Modifies `localStorage` key 'mcp_local_collections'.
    */
   deleteLocalCollection: (name: string) => {
       if (typeof window === 'undefined') return;

@@ -14,10 +14,18 @@ import { UpstreamServiceConfig } from "./client";
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
- * Sanitizes a service configuration by redacting or templating potential secrets.
- * @param service The service configuration to sanitize.
- * @param mode The secret handling mode.
- * @returns A sanitized copy of the configuration.
+ * Creates a sanitized copy of a service configuration by handling sensitive fields according to the specified mode.
+ *
+ * This function performs a deep clone of the configuration and iterates through known secret fields
+ * (e.g., environment variables, API keys) to prevent accidental leakage in logs or UI displays.
+ *
+ * @param {UpstreamServiceConfig} service - The original service configuration to sanitize.
+ * @param {SecretHandlingMode} mode - The strategy for handling secrets:
+ *   - 'redact': Replaces secrets with '<REDACTED>' (useful for logs).
+ *   - 'template': Replaces secrets with template placeholders like '${API_KEY}' (useful for export).
+ *   - 'unsafe': Returns the secrets as-is (use with extreme caution).
+ * @returns {UpstreamServiceConfig} A new configuration object with secrets processed.
+ * @sideeffects None (the input object is not mutated).
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original

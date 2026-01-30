@@ -18,23 +18,39 @@ import (
 // ErrPromptNotFound is returned when a requested prompt is not found.
 var ErrPromptNotFound = errors.New("prompt not found")
 
-// Prompt is the fundamental interface for any executable prompt in the system.
+// Prompt defines the standard interface for executable prompts within the MCP Any system.
+//
+// Prompts are pre-configured text templates or interactive workflows that help guide the AI agent.
+// Implementations of this interface manage the metadata and execution logic for a specific prompt.
 type Prompt interface {
-	// Prompt returns the MCP prompt definition.
+	// Prompt returns the metadata describing this prompt.
 	//
-	// Returns the result.
+	// This includes the prompt's name, description, and the schema for any arguments it accepts.
+	//
+	// Returns:
+	//   - *mcp.Prompt: The MCP prompt definition.
 	Prompt() *mcp.Prompt
-	// Service returns the ID of the service that provides this prompt.
+
+	// Service returns the identifier of the upstream service that provides this prompt.
 	//
-	// Returns the result.
+	// This is used for access control and organization of prompts by their source.
+	//
+	// Returns:
+	//   - string: The unique service ID.
 	Service() string
-	// Get executes the prompt with the provided arguments.
+
+	// Get executes the prompt with the provided arguments to generate the messages.
 	//
-	// ctx is the context for the request.
-	// args is the args.
+	// It uses the inputs to render the prompt template and produce a list of messages (roles and content)
+	// that can be sent to the LLM.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: The context for the execution, including timeout and cancellation.
+	//   - args: The raw JSON arguments provided by the client.
+	//
+	// Returns:
+	//   - *mcp.GetPromptResult: The result containing the generated messages and description.
+	//   - error: An error if the prompt execution fails (e.g., invalid arguments, rendering error).
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
