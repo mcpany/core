@@ -1,34 +1,35 @@
 # Truth Reconciliation Audit Report
 
 ## Executive Summary
-Per the "Truth Reconciliation Audit" protocol, I have sampled 10 documentation files and cross-referenced them with the Codebase and Roadmap.
-The codebase is in excellent shape, with 9/10 sampled features showing perfect alignment between Documentation, Code, and Roadmap.
-
-One critical discrepancy was found in the **Context Optimizer Middleware**. The documentation incorrectly stated the configuration unit as `max_tokens`, whereas the implementation uses `max_chars`. Furthermore, a bug was identified where the lack of a default value for `max_chars` could lead to unintended truncation of all content if the configuration field was omitted.
+A comprehensive audit of 10 sampled features (3 UI, 7 Backend) revealed a high degree of alignment between Documentation, Roadmap, and Codebase. The project is in a healthy state, with 9/10 features fully verified as accurate. One critical discrepancy was identified regarding the "Prototype" status of Webhooks, which was flagged in the Roadmap for remediation. This has been addressed by graduating the code to a proper package structure.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/features/context_optimizer.md` | **DRIFT & BUG** | **Fixed Code & Doc** | `server/pkg/middleware/registry.go`, `registry_test.go` |
-| `server/docs/features/health-checks.md` | **VERIFIED** | None | `server/pkg/upstream/grpc/grpc.go` |
-| `server/docs/features/hot_reload.md` | **VERIFIED** | None | `server/pkg/app/server.go`, `ReloadConfig` |
-| `server/docs/features/log_streaming_ui.md` | **VERIFIED** | None | `ui/src/components/logs/log-stream.tsx` |
-| `server/docs/features/dynamic_registration.md` | **VERIFIED** | None | `server/pkg/upstream/openapi/openapi.go` |
-| `docs/alerts-feature.md` | **VERIFIED** | None | `server/pkg/alerts/manager.go`, `ui/src/app/alerts/page.tsx` |
-| `docs/traces-feature.md` | **VERIFIED** | None | `ui/src/components/traces/trace-detail.tsx` |
-| `server/docs/caching.md` | **VERIFIED** | None | `server/pkg/middleware/cache.go` |
-| `ui/docs/features.md` (Stack Composer) | **VERIFIED** | None | `ui/src/components/stacks/stack-editor.tsx` |
-| `server/docs/features/rate-limiting/README.md` | **VERIFIED** | None | `server/pkg/middleware/ratelimit.go` |
+| `ui/docs/features/playground.md` | ✅ Verified | None | `ToolPresets` component exists in `ui/src/components/playground`. |
+| `ui/docs/features/stack-composer.md` | ✅ Verified | None | `StackEditor` with 3-pane layout exists in `ui/src/components/stacks`. |
+| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | `LogStream` uses `JsonViewer` and auto-detection logic in `ui/src/components/logs`. |
+| `server/docs/features/health-checks.md` | ✅ Verified | None | `Upstream` interface supports `HealthChecker`; impl in `http`/`grpc` packages. |
+| `server/docs/features/dynamic_registration.md` | ✅ Verified | None | `openapi` and `grpc` reflection support found in `server/pkg/upstream`. |
+| `server/docs/features/rate-limiting/README.md` | ✅ Verified | None | `RateLimitMiddleware` in `server/pkg/middleware` implements Token Bucket & Redis. |
+| `server/docs/features/webhooks/README.md` | ⚠️ Remediation | **Refactored Code** | Moved `cmd/webhooks/hooks` to `pkg/sidecar/webhooks` to match Roadmap. |
+| `server/docs/features/authentication/README.md` | ✅ Verified | None | Incoming/Outgoing auth config and `secrets.go` implementation verified. |
+| `server/docs/reference/configuration.md` | ✅ Verified | None | `pkg/config` matches the extensive options described. |
+| `server/docs/debugging.md` | ✅ Verified | None | `--debug` flag binding found in `server/pkg/config/config.go`. |
 
 ## Remediation Log
 
-### Context Optimizer Middleware
-*   **Issue:** Doc claimed `max_tokens` (default 8000). Code used `max_chars` (int32). Code defaulted to 0 if config was present but empty, causing aggressive truncation (`len > 0`).
-*   **Resolution:**
-    1.  **Code Fix:** Updated `InitStandardMiddlewares` in `server/pkg/middleware/registry.go` to default `max_chars` to `32000` (approx 8000 tokens) if the configured value is 0.
-    2.  **Doc Fix:** Updated `server/docs/features/context_optimizer.md` to reference `max_chars` and document the default value.
-    3.  **Test:** Added `TestInitStandardMiddlewares_ContextOptimizer_Default` to `server/pkg/middleware/registry_test.go`.
+### Case B: Roadmap Debt (Webhooks)
+*   **Issue**: The Roadmap flagged `server/cmd/webhooks` as a "Prototype" that needed graduation to `server/pkg/sidecar/webhooks`.
+*   **Action**:
+    1.  Created `server/pkg/sidecar/webhooks`.
+    2.  Moved `server/cmd/webhooks/hooks/*` to the new location.
+    3.  Refactored package name from `hooks` to `webhooks`.
+    4.  Updated `server/cmd/webhooks/main.go` to import the new package.
+    5.  Updated `server/roadmap.md` to remove the critical warning.
+*   **Outcome**: The code is now structured as a reusable library component, compliant with the architectural vision.
 
 ## Security Scrub
-No PII, secrets, or internal IPs were exposed in this report or the changes.
+*   No PII, secrets, or internal IPs were found in the report or the remediated code.
+*   Tests use mock data and environment variables for secrets.
