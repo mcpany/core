@@ -266,6 +266,28 @@ func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
 }
 
+// ListMCPToolsForProfile mocks base method.
+//
+// profileID is the profileID.
+//
+// Returns the result.
+func (m *MockManagerInterface) ListMCPToolsForProfile(profileID string) []*mcp.Tool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListMCPToolsForProfile", profileID)
+	ret0, _ := ret[0].([]*mcp.Tool)
+	return ret0
+}
+
+// ListMCPToolsForProfile indicates an expected call of ListMCPToolsForProfile.
+//
+// profileID is the profileID.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) ListMCPToolsForProfile(profileID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPToolsForProfile", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPToolsForProfile), profileID)
+}
+
 // ListServices mocks base method.
 //
 // Returns the result.
