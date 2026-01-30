@@ -62,9 +62,20 @@ func TestValidateConfigHandler(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 		},
 		{
-			name:           "Semantic Error (Missing Command)",
+			// Previously "Semantic Error (Missing Command)"
+			// Now we expect this to PASS because we skip file/command checks in the validation handler
+			// to prevent Oracle Attacks (probing file existence).
+			name:           "Missing Command (Ignored due to Oracle Protection)",
 			method:         http.MethodPost,
 			body:           `{"content": "upstream_services:\n  - name: broken-service\n    command_line_service:\n      command: /this/path/definitely/does/not/exist/12345"}`,
+			expectedStatus: http.StatusOK,
+			expectedValid:  true,
+			expectError:    false,
+		},
+		{
+			name:           "Semantic Error (Invalid URL)",
+			method:         http.MethodPost,
+			body:           `{"content": "upstream_services:\n  - name: bad-scheme-service\n    http_service:\n      address: ftp://invalid-scheme.com"}`,
 			expectedStatus: http.StatusOK,
 			expectedValid:  false,
 			expectError:    true,
@@ -94,6 +105,9 @@ func TestValidateConfigHandler(t *testing.T) {
 
 				if tt.expectError && len(resp.Errors) == 0 {
 					t.Error("expected errors but got none")
+				}
+				if !tt.expectError && len(resp.Errors) > 0 {
+					t.Errorf("expected no errors but got: %v", resp.Errors)
 				}
 			}
 		})
