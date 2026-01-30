@@ -41,7 +41,7 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByText('get_weather').first()).toBeVisible();
 
   // Check if schema is displayed (using the new Sheet layout)
-  await expect(page.getByText('Schema', { exact: true })).toBeVisible();
+  await expect(page.getByText('Schema Reference', { exact: true })).toBeVisible();
 
   // Switch to JSON tab to verify raw schema
   await page.getByRole('tab', { name: 'JSON' }).click();
