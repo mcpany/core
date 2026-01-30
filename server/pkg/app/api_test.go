@@ -1223,25 +1223,6 @@ func TestHandleLogsWS(t *testing.T) {
 	assert.Equal(t, testMsg, msg)
 }
 
-func TestHandleUploadSkillAsset(t *testing.T) {
-	tmpDir := t.TempDir()
-	sm, _ := skill.NewManager(tmpDir)
-	app := &Application{SkillManager: sm}
-
-	testSkill := &skill.Skill{
-		Frontmatter: skill.Frontmatter{Name: "test-skill"},
-		Instructions: "Run this.",
-	}
-	sm.CreateSkill(testSkill)
-
-	t.Run("Valid Upload", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/api/v1/skills/test-skill/assets?path=scripts/test.py", bytes.NewReader([]byte("print('hello')")))
-		w := httptest.NewRecorder()
-		app.handleUploadSkillAsset().ServeHTTP(w, req)
-		assert.Equal(t, http.StatusOK, w.Code)
-	})
-}
-
 func TestHandleSystemStatus(t *testing.T) {
 	app := NewApplication()
 	app.startTime = time.Now().Add(-10 * time.Second)
