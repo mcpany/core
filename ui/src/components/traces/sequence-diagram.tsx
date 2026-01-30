@@ -5,9 +5,9 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { Trace } from "@/types/trace";
-import { User, Cpu, Terminal, ArrowRight, ArrowLeft, MessageSquare } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Trace, Span } from "@/types/trace";
+import { User, Cpu, Terminal, ArrowRight, ArrowLeft, MessageSquare, Globe, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -25,13 +25,21 @@ interface SequenceDiagramProps {
 
 interface Interaction {
   id: number;
-  from: "user" | "core" | "tool";
-  to: "user" | "core" | "tool";
+  from: string;
+  to: string;
   label: string;
   type: "request" | "response";
   payload: any;
-  status?: "success" | "error";
+  status?: "success" | "error" | "pending";
   description?: string;
+}
+
+interface Participant {
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  bg: string;
 }
 
 /**
@@ -45,62 +53,112 @@ interface Interaction {
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
 
-  // Derive interactions from the flat trace
-  // In the future, this would traverse the span tree.
-  const interactions: Interaction[] = [
-    {
-      id: 1,
-      from: "user",
-      to: "core",
-      label: "Execute Request",
-      type: "request",
-      payload: trace.rootSpan.input,
-      description: "Client requests tool execution",
-    },
-    {
-      id: 2,
-      from: "core",
-      to: "tool",
-      label: `Call ${trace.rootSpan.name}`,
-      type: "request",
-      payload: trace.rootSpan.input, // Assuming passed through
-      description: "MCP Core proxies request to tool",
-    },
-    {
-      id: 3,
-      from: "tool",
-      to: "core",
-      label: "Execution Result",
-      type: "response",
-      payload: trace.rootSpan.output,
-      status: trace.status,
-      description: "Tool returns execution result",
-    },
-    {
-      id: 4,
-      from: "core",
-      to: "user",
-      label: "Response",
-      type: "response",
-      payload: trace.rootSpan.output,
-      status: trace.status,
-      description: "MCP Core returns response to client",
-    },
-  ];
+  const { interactions, participants } = useMemo(() => {
+    const parts = new Map<string, Participant>();
+    const acts: Interaction[] = [];
+    let actId = 1;
 
-  const participants = [
-    { id: "user", label: "Client", icon: User, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { id: "core", label: "MCP Core", icon: Cpu, color: "text-purple-500", bg: "bg-purple-500/10" },
-    { id: "tool", label: "Tool", icon: Terminal, color: "text-amber-500", bg: "bg-amber-500/10" },
-  ];
+    // Default Participants
+    parts.set("user", { id: "user", label: "Client", icon: User, color: "text-blue-500", bg: "bg-blue-500/10" });
+    parts.set("core", { id: "core", label: "MCP Core", icon: Cpu, color: "text-purple-500", bg: "bg-purple-500/10" });
+
+    // Helper to get or create participant
+    const getParticipant = (span: Span): string => {
+      let id = span.serviceName ? `svc:${span.serviceName}` : `tool:${span.name}`;
+      // Sanitize ID
+      id = id.replace(/[^a-zA-Z0-9-_:]/g, "_");
+
+      if (!parts.has(id)) {
+        let icon = Terminal;
+        let color = "text-amber-500";
+        let bg = "bg-amber-500/10";
+        let label = span.name;
+
+        if (span.type === 'service') {
+            icon = Globe;
+            color = "text-indigo-500";
+            bg = "bg-indigo-500/10";
+            label = span.serviceName || span.name;
+        } else if (span.type === 'resource') {
+            icon = Database;
+            color = "text-cyan-500";
+            bg = "bg-cyan-500/10";
+        }
+
+        parts.set(id, { id, label, icon, color, bg });
+      }
+      return id;
+    };
+
+    // Initial Trigger
+    acts.push({
+        id: actId++,
+        from: "user",
+        to: "core",
+        label: "Execute Request",
+        type: "request",
+        payload: trace.rootSpan.input,
+        description: "Client requests execution",
+    });
+
+    // Recursive traversal
+    const traverse = (span: Span, caller: string) => {
+        const callee = getParticipant(span);
+
+        // Request
+        acts.push({
+            id: actId++,
+            from: caller,
+            to: callee,
+            label: span.type === 'tool' ? `Call ${span.name}` : `Access ${span.name}`,
+            type: "request",
+            payload: span.input,
+            description: `${caller} calls ${callee}`,
+        });
+
+        // Children
+        if (span.children && span.children.length > 0) {
+            span.children.forEach(child => traverse(child, callee));
+        }
+
+        // Response
+        acts.push({
+            id: actId++,
+            from: callee,
+            to: caller,
+            label: "Result",
+            type: "response",
+            payload: span.output,
+            status: span.status,
+            description: `${callee} returns result`,
+        });
+    };
+
+    // Start traversal from Root Span (Caller is Core)
+    traverse(trace.rootSpan, "core");
+
+    // Final Response
+    acts.push({
+        id: actId++,
+        from: "core",
+        to: "user",
+        label: "Response",
+        type: "response",
+        payload: trace.rootSpan.output,
+        status: trace.status,
+        description: "MCP Core returns response to client",
+    });
+
+    return { interactions: acts, participants: Array.from(parts.values()) };
+  }, [trace]);
 
   // Config
-  const svgHeight = 400;
-  const svgWidth = 800; // Responsive via viewBox
-  const startY = 80;
   const stepHeight = 70;
+  const svgHeight = Math.max(400, (interactions.length + 1) * stepHeight * 0.8 + 100);
   const colWidth = 250;
   const paddingX = 100;
+  const svgWidth = Math.max(800, paddingX * 2 + (participants.length - 1) * colWidth);
+  const startY = 80;
 
   const getX = (id: string) => {
     const idx = participants.findIndex((p) => p.id === id);
@@ -109,10 +167,12 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
   return (
     <div className="w-full flex flex-col items-center py-8 select-none">
-      <div className="relative w-full max-w-4xl overflow-x-auto">
+      <div className="relative w-full overflow-x-auto">
         <svg
+          width={svgWidth}
+          height={svgHeight}
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-auto min-w-[600px] font-sans"
+          className="font-sans mx-auto"
         >
           {/* Lifelines */}
           {participants.map((p) => {
@@ -142,7 +202,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
                     >
                       <p.icon className={cn("w-6 h-6", p.color)} />
                     </div>
-                    <span className="text-xs font-semibold text-muted-foreground">
+                    <span className="text-xs font-semibold text-muted-foreground truncate w-full text-center">
                       {p.label}
                     </span>
                   </div>
@@ -157,12 +217,47 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
             const x1 = getX(interaction.from);
             const x2 = getX(interaction.to);
             const isRight = x2 > x1;
+
+            // Loopback (self-call) handling
+            const isSelf = x1 === x2;
+
             const color =
               interaction.status === "error"
                 ? "text-red-500"
                 : "text-primary";
             const strokeColor =
               interaction.status === "error" ? "#ef4444" : "currentColor";
+
+            if (isSelf) {
+                 return (
+                    <g
+                        key={interaction.id}
+                        className="group cursor-pointer"
+                        onClick={() => setSelectedInteraction(interaction)}
+                    >
+                        <path
+                            d={`M ${x1} ${y} L ${x1+40} ${y} L ${x1+40} ${y+20} L ${x1} ${y+20}`}
+                            fill="none"
+                            stroke={strokeColor}
+                            strokeWidth={2}
+                            markerEnd={`url(#arrowhead-${interaction.status === "error" ? "error" : "default"})`}
+                        />
+                         <foreignObject
+                            x={x1 + 50}
+                            y={y - 5}
+                            width={150}
+                            height={30}
+                        >
+                            <span className={cn(
+                                "text-[10px] font-medium px-2 py-0.5 rounded-full bg-background border shadow-sm",
+                                color
+                            )}>
+                                {interaction.label}
+                            </span>
+                        </foreignObject>
+                    </g>
+                 )
+            }
 
             return (
               <g
@@ -213,7 +308,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
                 </foreignObject>
 
                 {/* Payload Icon (on hover) */}
-                {interaction.payload && (
+                {(interaction.payload || interaction.status === "error") && (
                    <foreignObject
                         x={x1 + (x2 - x1) / 2 - 10}
                         y={y + 5}
@@ -270,12 +365,14 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
             <div className="flex items-center justify-between text-sm">
                  <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">From:</span>
-                    <Badge variant="outline" className="uppercase">{selectedInteraction?.from}</Badge>
+                    <Badge variant="outline" className="uppercase">{selectedInteraction?.from.split(':')[0]}</Badge>
+                    <span className="font-mono text-xs">{selectedInteraction?.from.split(':')[1] || selectedInteraction?.from}</span>
                  </div>
                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
                  <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">To:</span>
-                    <Badge variant="outline" className="uppercase">{selectedInteraction?.to}</Badge>
+                    <Badge variant="outline" className="uppercase">{selectedInteraction?.to.split(':')[0]}</Badge>
+                    <span className="font-mono text-xs">{selectedInteraction?.to.split(':')[1] || selectedInteraction?.to}</span>
                  </div>
             </div>
 
