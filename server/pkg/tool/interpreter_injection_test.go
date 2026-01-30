@@ -42,6 +42,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 	result, err := tool.Execute(context.Background(), req)
 	// Expect strict validation error due to space in input
 	if err != nil {
+		// Verify strict validation blocks the command
 		if strings.Contains(err.Error(), "shell injection detected") {
 			t.Logf("Success: Command blocked by input validation: %v", err)
 			return
