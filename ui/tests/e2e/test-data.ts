@@ -101,9 +101,28 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
+        // Fetch all current services to ensure comprehensive cleanup
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const services = Array.isArray(data) ? data : (data.services || []);
+
+            for (const svc of services) {
+                // Delete each service found
+                const name = svc.name;
+                if (name) {
+                    await context.delete(`/api/v1/services/${name}`, { headers: HEADERS });
+                }
+            }
+        } else {
+            console.log(`Failed to list services for cleanup: ${res.status()}`);
+            // Fallback: Try deleting known services if listing fails
+            await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
+            await context.delete('/api/v1/services/User Service', { headers: HEADERS });
+            await context.delete('/api/v1/services/Math', { headers: HEADERS });
+            await context.delete('/api/v1/services/weather-service', { headers: HEADERS });
+            await context.delete('/api/v1/services/time-service', { headers: HEADERS });
+        }
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }

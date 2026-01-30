@@ -786,7 +786,8 @@ export const apiClient = {
         const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
     },
 
     // Alerts
@@ -812,7 +813,8 @@ export const apiClient = {
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
     },
 
     /**
@@ -825,7 +827,8 @@ export const apiClient = {
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
     },
 
 
@@ -857,9 +860,10 @@ export const apiClient = {
      * @returns A promise that resolves to the traces list.
      */
     getTraces: async (): Promise<any[]> => {
-        const res = await fetchWithAuth('/api/v1/debug/traces'); // Use consistent API v1 prefix
+        const res = await fetchWithAuth('/api/v1/traces');
         if (!res.ok) throw new Error('Failed to fetch traces');
-        return res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
     },
 
     /**

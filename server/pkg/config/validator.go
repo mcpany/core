@@ -1264,20 +1264,31 @@ func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 }
 
 func validateCommandExists(command string, workingDir string) error {
+	if command == "" {
+		return fmt.Errorf("command is empty")
+	}
+
+	// Split command to get the executable
+	parts := strings.Fields(command)
+	if len(parts) == 0 {
+		return fmt.Errorf("command is empty or invalid")
+	}
+	executable := parts[0]
+
 	// If the command is an absolute path, check if it exists and is executable
-	if filepath.IsAbs(command) {
-		info, err := osStat(command)
+	if filepath.IsAbs(executable) {
+		info, err := osStat(executable)
 		if err != nil {
 			if os.IsNotExist(err) {
 				return &ActionableError{
-					Err:        fmt.Errorf("executable not found at %q", command),
-					Suggestion: fmt.Sprintf("Check if the file exists at %q.", command),
+					Err:        fmt.Errorf("executable not found at %q", executable),
+					Suggestion: fmt.Sprintf("Check if the file exists at %q.", executable),
 				}
 			}
-			return fmt.Errorf("failed to check executable %q: %w", command, err)
+			return fmt.Errorf("failed to check executable %q: %w", executable, err)
 		}
 		if info.IsDir() {
-			return fmt.Errorf("%q is a directory, not an executable", command)
+			return fmt.Errorf("%q is a directory, not an executable", executable)
 		}
 		// Check for executable permission bit (simplified)
 		// Note: os.Access(path, unix.X_OK) is better but unix package adds dependency.
@@ -1287,29 +1298,29 @@ func validateCommandExists(command string, workingDir string) error {
 
 	// If workingDir is provided and the command contains path separators (relative path),
 	// check if it exists relative to workingDir.
-	if workingDir != "" && (filepath.Base(command) != command) {
-		fullPath := filepath.Join(workingDir, command)
+	if workingDir != "" && (filepath.Base(executable) != executable) {
+		fullPath := filepath.Join(workingDir, executable)
 		info, err := osStat(fullPath)
 		if err == nil {
 			if info.IsDir() {
-				return fmt.Errorf("%q is a directory, not an executable (relative to %q)", command, workingDir)
+				return fmt.Errorf("%q is a directory, not an executable (relative to %q)", executable, workingDir)
 			}
 			// Command exists relative to working dir
 			return nil
 		}
 		if !os.IsNotExist(err) {
-			return fmt.Errorf("failed to check executable %q (relative to %q): %w", command, workingDir, err)
+			return fmt.Errorf("failed to check executable %q (relative to %q): %w", executable, workingDir, err)
 		}
 		// If not found relative to workingDir, fall through to LookPath (which might find it in PATH or CWD)
 	}
 
 	// exec.LookPath searches for the executable in the directories named by the PATH environment variable.
 	// If the file contains a slash, it is tried directly and the PATH is not consulted.
-	_, err := execLookPath(command)
+	_, err := execLookPath(executable)
 	if err != nil {
 		return &ActionableError{
-			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
-			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),
+			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", executable, err),
+			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", executable),
 		}
 	}
 	return nil
