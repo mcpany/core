@@ -485,7 +485,7 @@ func TestValidateContainerEnvironment_Volumes(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateContainerEnvironment(tt.env)
+			err := validateContainerEnvironment(context.Background(), tt.env)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -658,7 +658,7 @@ func TestValidateCommandExists(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateCommandExists(tt.command, "")
+			err := validateCommandExists(context.Background(), tt.command, "")
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
@@ -710,7 +710,7 @@ func TestValidateDirectoryExists(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateDirectoryExists(tt.path)
+			err := validateDirectoryExists(context.Background(), tt.path)
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errMsg)
