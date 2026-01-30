@@ -25,6 +25,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
+import { CallPolicyEditor } from "@/components/services/editor/call-policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { SourceEditor } from "@/components/services/editor/source-editor";
 import yaml from "js-yaml";
@@ -362,6 +363,12 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
 
                         <TabsContent value="policies" className="space-y-4 mt-0">
                             <div className="grid grid-cols-1 gap-6">
+                                <CallPolicyEditor
+                                    policies={service.callPolicies}
+                                    onChange={(policies) => updateService({ callPolicies: policies })}
+                                />
+                                <Separator className="my-2" />
+                                <h3 className="text-lg font-medium">Export Policies</h3>
                                 <PolicyEditor
                                     title="Tool Export Policy"
                                     description="Control which tools are exposed to the AI client."

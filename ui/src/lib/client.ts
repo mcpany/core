@@ -12,7 +12,7 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, CallPolicy } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -36,7 +36,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, CallPolicy };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -246,6 +246,7 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            callPolicies: s.call_policies?.map((p: any) => CallPolicy.fromJSON(p)),
         }));
     },
 
@@ -282,6 +283,7 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         callPolicies: s.call_policies?.map((p: any) => CallPolicy.fromJSON(p)),
                      };
                  }
                  return data;
@@ -379,6 +381,18 @@ export const apiClient = {
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
         }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map(p => ({
+                default_action: p.defaultAction,
+                rules: p.rules.map(r => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex,
+                }))
+            }));
+        }
 
         const response = await fetchWithAuth('/api/v1/services', {
             method: 'POST',
@@ -439,6 +453,18 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map(p => ({
+                default_action: p.defaultAction,
+                rules: p.rules.map(r => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex,
+                }))
+            }));
         }
 
         const response = await fetchWithAuth(`/api/v1/services/${config.name}`, {
@@ -515,6 +541,18 @@ export const apiClient = {
         }
         if (config.resourceExportPolicy) {
             payload.resource_export_policy = config.resourceExportPolicy;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map(p => ({
+                default_action: p.defaultAction,
+                rules: p.rules.map(r => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex,
+                }))
+            }));
         }
 
         const response = await fetchWithAuth('/api/v1/services/validate', {
