@@ -9,8 +9,7 @@ import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check } from "lucide-react";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { JsonView } from "@/components/ui/json-view";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -93,24 +92,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const hasSmartView = tableData !== null;
 
     const renderRaw = () => (
-        <div className="relative group/code max-h-[400px] overflow-auto">
-            <SyntaxHighlighter
-                language="json"
-                style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', minHeight: '100%' }}
-                wrapLines={true}
-                wrapLongLines={true}
-            >
-                {JSON.stringify(result, null, 2)}
-            </SyntaxHighlighter>
-            <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover/code:opacity-100 transition-opacity bg-muted/20 hover:bg-muted/50 text-white"
-                onClick={copyToClipboard}
-            >
-                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-            </Button>
+        <div className="max-h-[400px] overflow-auto">
+            <JsonView data={result} defaultExpandDepth={2} className="h-full" />
         </div>
     );
 

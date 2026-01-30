@@ -10,10 +10,12 @@ import { Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { JsonTree } from "./json-tree";
 
 interface JsonViewProps {
   data: unknown;
   className?: string;
+  defaultExpandDepth?: number;
 }
 
 /**
@@ -21,9 +23,10 @@ interface JsonViewProps {
  * @param props - The component props.
  * @param props.data - The data to display.
  * @param props.className - The className.
+ * @param props.defaultExpandDepth - The default expansion depth.
  * @returns The rendered component.
  */
-export function JsonView({ data, className }: JsonViewProps) {
+export function JsonView({ data, className, defaultExpandDepth = 1 }: JsonViewProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
@@ -45,19 +48,19 @@ export function JsonView({ data, className }: JsonViewProps) {
   }
 
   return (
-    <div className={cn("relative group", className)}>
+    <div className={cn("relative group bg-muted/20 border rounded-md overflow-hidden", className)}>
         <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background"
+            className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background z-10"
             onClick={handleCopy}
             title="Copy JSON"
         >
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </Button>
-        <pre className="text-[10px] md:text-xs font-mono bg-muted/50 p-3 rounded-md overflow-x-auto text-foreground/90 border">
-            {JSON.stringify(data, null, 2)}
-        </pre>
+        <div className="p-3 text-xs overflow-auto max-h-[inherit]">
+             <JsonTree data={data} defaultExpandDepth={defaultExpandDepth} />
+        </div>
     </div>
   );
 }
