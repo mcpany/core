@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -14,7 +15,8 @@ import (
 
 // Store implements config.Store using SQLite.
 type Store struct {
-	db *DB
+	db    *DB
+	cache sync.Map
 }
 
 // NewStore creates a new SQLite store.
@@ -47,85 +49,27 @@ func (s *Store) HasConfigSources() bool {
 // Returns an error if the operation fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	// 1. Load services
-	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
+	services, err := s.ListServices(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
-	}
-	defer func() { _ = rows.Close() }()
-
-	var services []*configv1.UpstreamServiceConfig
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-	for rows.Next() {
-		var configJSON string
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
-		}
-
-		var service configv1.UpstreamServiceConfig
-		if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
-		}
-		services = append(services, &service)
-	}
-	_ = rows.Close()
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate rows: %w", err)
+		return nil, fmt.Errorf("failed to list services: %w", err)
 	}
 
 	// 2. Load users
-	userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+	users, err := s.ListUsers(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query users: %w", err)
-	}
-	defer func() { _ = userRows.Close() }()
-
-	var users []*configv1.User
-	for userRows.Next() {
-		var configJSON string
-		if err := userRows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan user config_json: %w", err)
-		}
-
-		var user configv1.User
-		if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
-		}
-		users = append(users, &user)
-	}
-	_ = userRows.Close()
-	if err := userRows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate user rows: %w", err)
+		return nil, fmt.Errorf("failed to list users: %w", err)
 	}
 
 	// 3. Load Global Settings
-	var settings *configv1.GlobalSettings
-	settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
-	var settingsJSON string
-	if err := settingsRow.Scan(&settingsJSON); err == nil {
-		var s configv1.GlobalSettings
-		if err := opts.Unmarshal([]byte(settingsJSON), &s); err == nil {
-			settings = &s
-		}
+	settings, err := s.GetGlobalSettings(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get global settings: %w", err)
 	}
 
 	// 4. Load Collections
-	collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
-	var collections []*configv1.Collection
-	if err == nil {
-		defer func() { _ = collectionRows.Close() }()
-		for collectionRows.Next() {
-			var configJSON string
-			if err := collectionRows.Scan(&configJSON); err != nil {
-				continue
-			}
-			var c configv1.Collection
-			if err := opts.Unmarshal([]byte(configJSON), &c); err == nil {
-				collections = append(collections, &c)
-			}
-		}
-		if err := collectionRows.Err(); err != nil {
-			return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
-		}
+	collections, err := s.ListServiceCollections(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list service collections: %w", err)
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
@@ -173,6 +117,7 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	if err != nil {
 		return fmt.Errorf("failed to save service: %w", err)
 	}
+	s.cache.Delete("services")
 	return nil
 }
 
@@ -209,6 +154,12 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	// ⚡ BOLT: Check cache first to avoid expensive deserialization
+	// Randomized Selection from Top 5 High-Impact Targets
+	if v, ok := s.cache.Load("services"); ok {
+		return v.([]*configv1.UpstreamServiceConfig), nil
+	}
+
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
@@ -217,6 +168,7 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 	defer func() { _ = rows.Close() }()
 
 	var services []*configv1.UpstreamServiceConfig
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON []byte
 		if err := rows.Scan(&configJSON); err != nil {
@@ -224,7 +176,7 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 		}
 
 		var service configv1.UpstreamServiceConfig
-		if err := protojson.Unmarshal(configJSON, &service); err != nil {
+		if err := opts.Unmarshal(configJSON, &service); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
 		}
 		services = append(services, &service)
@@ -234,6 +186,7 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
 
+	s.cache.Store("services", services)
 	return services, nil
 }
 
@@ -248,6 +201,7 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete service: %w", err)
 	}
+	s.cache.Delete("services")
 	return nil
 }
 
@@ -258,6 +212,10 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
+	if v, ok := s.cache.Load("global_settings"); ok {
+		return v.(*configv1.GlobalSettings), nil
+	}
+
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
 
@@ -270,9 +228,12 @@ func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings
 	}
 
 	var settings configv1.GlobalSettings
-	if err := protojson.Unmarshal([]byte(configJSON), &settings); err != nil {
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err := opts.Unmarshal([]byte(configJSON), &settings); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal global settings: %w", err)
 	}
+
+	s.cache.Store("global_settings", &settings)
 	return &settings, nil
 }
 
@@ -300,6 +261,7 @@ func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.Globa
 	if err != nil {
 		return fmt.Errorf("failed to save global settings: %w", err)
 	}
+	s.cache.Delete("global_settings")
 	return nil
 }
 
@@ -330,6 +292,7 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	if err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
 	}
+	s.cache.Delete("users")
 	return nil
 }
 
@@ -366,6 +329,10 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
+	if v, ok := s.cache.Load("users"); ok {
+		return v.([]*configv1.User), nil
+	}
+
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query users: %w", err)
@@ -373,6 +340,7 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	defer func() { _ = rows.Close() }()
 
 	var users []*configv1.User
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -380,7 +348,7 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 		}
 
 		var user configv1.User
-		if err := protojson.Unmarshal([]byte(configJSON), &user); err != nil {
+		if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
 		}
 		users = append(users, &user)
@@ -390,6 +358,7 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
 
+	s.cache.Store("users", users)
 	return users, nil
 }
 
@@ -426,6 +395,7 @@ func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 	if rowsAffected == 0 {
 		return fmt.Errorf("user not found")
 	}
+	s.cache.Delete("users")
 	return nil
 }
 
@@ -440,6 +410,7 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
+	s.cache.Delete("users")
 	return nil
 }
 
@@ -452,6 +423,10 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
+	if v, ok := s.cache.Load("secrets"); ok {
+		return v.([]*configv1.Secret), nil
+	}
+
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query secrets: %w", err)
@@ -459,6 +434,7 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	defer func() { _ = rows.Close() }()
 
 	var secrets []*configv1.Secret
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -466,7 +442,7 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 		}
 
 		var secret configv1.Secret
-		if err := protojson.Unmarshal([]byte(configJSON), &secret); err != nil {
+		if err := opts.Unmarshal([]byte(configJSON), &secret); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal secret: %w", err)
 		}
 		secrets = append(secrets, &secret)
@@ -474,6 +450,8 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
+
+	s.cache.Store("secrets", secrets)
 	return secrets, nil
 }
 
@@ -533,6 +511,7 @@ func (s *Store) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
 	if err != nil {
 		return fmt.Errorf("failed to save secret: %w", err)
 	}
+	s.cache.Delete("secrets")
 	return nil
 }
 
@@ -547,6 +526,7 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete secret: %w", err)
 	}
+	s.cache.Delete("secrets")
 	return nil
 }
 
@@ -559,6 +539,10 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
+	if v, ok := s.cache.Load("profiles"); ok {
+		return v.([]*configv1.ProfileDefinition), nil
+	}
+
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query profile_definitions: %w", err)
@@ -566,6 +550,7 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 	defer func() { _ = rows.Close() }()
 
 	var profiles []*configv1.ProfileDefinition
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -573,7 +558,7 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 		}
 
 		var profile configv1.ProfileDefinition
-		if err := protojson.Unmarshal([]byte(configJSON), &profile); err != nil {
+		if err := opts.Unmarshal([]byte(configJSON), &profile); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal profile config: %w", err)
 		}
 		profiles = append(profiles, &profile)
@@ -581,6 +566,8 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
+
+	s.cache.Store("profiles", profiles)
 	return profiles, nil
 }
 
@@ -640,6 +627,7 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 	if err != nil {
 		return fmt.Errorf("failed to save profile: %w", err)
 	}
+	s.cache.Delete("profiles")
 	return nil
 }
 
@@ -654,6 +642,7 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete profile: %w", err)
 	}
+	s.cache.Delete("profiles")
 	return nil
 }
 
@@ -666,6 +655,10 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
+	if v, ok := s.cache.Load("service_collections"); ok {
+		return v.([]*configv1.Collection), nil
+	}
+
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query service_collections: %w", err)
@@ -673,6 +666,7 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 	defer func() { _ = rows.Close() }()
 
 	var collections []*configv1.Collection
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -680,7 +674,7 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 		}
 
 		var collection configv1.Collection
-		if err := protojson.Unmarshal([]byte(configJSON), &collection); err != nil {
+		if err := opts.Unmarshal([]byte(configJSON), &collection); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal collection config: %w", err)
 		}
 		collections = append(collections, &collection)
@@ -688,6 +682,8 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
+
+	s.cache.Store("service_collections", collections)
 	return collections, nil
 }
 
@@ -747,6 +743,7 @@ func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.
 	if err != nil {
 		return fmt.Errorf("failed to save collection: %w", err)
 	}
+	s.cache.Delete("service_collections")
 	return nil
 }
 
@@ -761,6 +758,7 @@ func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error 
 	if err != nil {
 		return fmt.Errorf("failed to delete collection: %w", err)
 	}
+	s.cache.Delete("service_collections")
 	return nil
 }
 
@@ -848,6 +846,10 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
+	if v, ok := s.cache.Load("credentials"); ok {
+		return v.([]*configv1.Credential), nil
+	}
+
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query credentials: %w", err)
@@ -855,6 +857,7 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 	defer func() { _ = rows.Close() }()
 
 	var credentials []*configv1.Credential
+	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 	for rows.Next() {
 		var configJSON string
 		if err := rows.Scan(&configJSON); err != nil {
@@ -862,7 +865,7 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 		}
 
 		var cred configv1.Credential
-		if err := protojson.Unmarshal([]byte(configJSON), &cred); err != nil {
+		if err := opts.Unmarshal([]byte(configJSON), &cred); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal credential: %w", err)
 		}
 		credentials = append(credentials, &cred)
@@ -870,6 +873,8 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
+
+	s.cache.Store("credentials", credentials)
 	return credentials, nil
 }
 
@@ -928,6 +933,7 @@ func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) e
 	if err != nil {
 		return fmt.Errorf("failed to save credential: %w", err)
 	}
+	s.cache.Delete("credentials")
 	return nil
 }
 
@@ -942,5 +948,6 @@ func (s *Store) DeleteCredential(ctx context.Context, id string) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete credential: %w", err)
 	}
+	s.cache.Delete("credentials")
 	return nil
 }
