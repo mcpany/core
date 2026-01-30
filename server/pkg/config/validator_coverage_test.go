@@ -22,11 +22,11 @@ func TestValidateFileExists(t *testing.T) {
 	defer os.Remove(f.Name())
 
 	// Case 1: File exists
-	err = validateFileExists(f.Name(), "")
+	err = validateFileExists(context.Background(), f.Name(), "")
 	assert.NoError(t, err)
 
 	// Case 2: File does not exist
-	err = validateFileExists("/path/to/non/existent/file", "")
+	err = validateFileExists(context.Background(), "/path/to/non/existent/file", "")
 	assert.Error(t, err)
 
 	// Case 3: Directory
@@ -34,7 +34,7 @@ func TestValidateFileExists(t *testing.T) {
 	require.NoError(t, err)
 	defer os.Remove(d)
 
-	err = validateFileExists(d, "")
+	err = validateFileExists(context.Background(), d, "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "is a directory")
 }

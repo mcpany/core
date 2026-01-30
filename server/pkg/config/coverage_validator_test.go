@@ -104,7 +104,7 @@ func TestValidateCommandExists_Coverage(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateCommandExists(tt.command, tt.workingDir)
+			err := validateCommandExists(context.Background(), tt.command, tt.workingDir)
 			if tt.expectErr != "" {
 				assert.ErrorContains(t, err, tt.expectErr)
 			} else {
@@ -138,7 +138,7 @@ func TestValidateDirectoryExists_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateDirectoryExists(tt.path)
+            err := validateDirectoryExists(context.Background(), tt.path)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
@@ -181,7 +181,7 @@ func TestValidateFileExists_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateFileExists(tt.path, tt.workingDir)
+            err := validateFileExists(context.Background(), tt.path, tt.workingDir)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
