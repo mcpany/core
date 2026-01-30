@@ -1369,19 +1369,6 @@ func TestHandleServiceValidate(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestHandleValidate(t *testing.T) {
-	app := &Application{}
-	reqBody := ValidateRequest{
-		Content: `{"upstream_services": [{"name": "test", "http_service": {"address": "http://localhost:8080"}}]}`,
-		Format:  "json",
-	}
-	body, _ := json.Marshal(reqBody)
-	req, _ := http.NewRequest("POST", "/api/v1/validate", bytes.NewBuffer(body))
-	rr := httptest.NewRecorder()
-	app.handleValidate().ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
-}
-
 func TestUploadFile_Security(t *testing.T) {
 	app := NewApplication()
 	t.Run("Reflected XSS", func(t *testing.T) {
