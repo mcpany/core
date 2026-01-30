@@ -250,6 +250,9 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	// Admin User Init expectations
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
+	// Official Collections expectations
+	mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
@@ -262,6 +265,11 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	app := &Application{}
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	// Official Collections expectations
+	mockStore.On("GetServiceCollection", mock.Anything, mock.Anything).Return((*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
+	// Admin User Init expectations
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{{}}, nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)

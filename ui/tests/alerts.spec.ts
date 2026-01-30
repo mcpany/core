@@ -61,7 +61,9 @@ test.describe('Alerts Page', () => {
     await row.getByRole('button', { name: 'Open menu' }).click();
 
     // Click "Acknowledge"
-    await page.getByRole('menuitem', { name: 'Acknowledge' }).click();
+    const acknowledgeItem = page.getByRole('menuitem', { name: 'Acknowledge' });
+    await expect(acknowledgeItem).toBeEnabled({ timeout: 10000 });
+    await acknowledgeItem.click();
 
     // Verify status changes to "acknowledged"
     await expect(row.getByText('acknowledged')).toBeVisible();
@@ -77,7 +79,9 @@ test.describe('Alerts Page', () => {
     await row.getByRole('button', { name: 'Open menu' }).click();
 
     // Click "Resolve"
-    await page.getByRole('menuitem', { name: 'Resolve' }).click();
+    const resolveItem = page.getByRole('menuitem', { name: 'Resolve' });
+    await expect(resolveItem).toBeEnabled({ timeout: 10000 });
+    await resolveItem.click();
 
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
