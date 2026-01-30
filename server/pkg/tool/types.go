@@ -64,18 +64,29 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the execution.
+	//   - req: The execution request.
+	//
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if the execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -126,17 +137,21 @@ type ExecutionRequest struct {
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
-	// toolName is the toolName.
+	// Parameters:
+	//   - toolName: The name of the tool.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if found.
 	GetTool(toolName string) (Tool, bool)
 	// GetServiceInfo retrieves metadata for a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The unique service identifier.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *ServiceInfo: The service metadata.
+	//   - bool: True if found.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -149,20 +164,24 @@ const toolContextKey = contextKey("tool")
 
 // NewContextWithTool creates a new context with the given tool.
 //
-// ctx is the context for the request.
-// t is the t.
+// Parameters:
+//   - ctx: The context for the request.
+//   - t: The tool instance.
 //
-// Returns the result.
+// Returns:
+//   - context.Context: The new context.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
 // GetFromContext retrieves a tool from the context.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - Tool: The tool instance.
+//   - bool: True if found.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -172,11 +191,13 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - req: The execution request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if the operation fails.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 

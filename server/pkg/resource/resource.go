@@ -20,20 +20,32 @@ var ErrResourceNotFound = errors.New("resource not found")
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its
 	// metadata.
+	//
+	// Returns:
+	//   - *mcp.Resource: The MCP resource definition.
 	Resource() *mcp.Resource
 	// Service returns the ID of the service that provides this resource.
 	//
-	// Returns the result.
+	// Returns:
+	//   - string: The service ID.
 	Service() string
 	// Read retrieves the content of the resource.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: The context for the request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - *mcp.ReadResourceResult: The content of the resource.
+	//   - error: An error if the operation fails.
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 	// Subscribe establishes a subscription to the resource, allowing for
 	// receiving updates.
+	//
+	// Parameters:
+	//   - ctx: The context for the subscription.
+	//
+	// Returns:
+	//   - error: An error if the subscription fails.
 	Subscribe(ctx context.Context) error
 }
 
@@ -43,29 +55,38 @@ type Resource interface {
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
-	// uri is the uri.
+	// Parameters:
+	//   - uri: The URI of the resource.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Resource: The resource instance.
+	//   - bool: True if found.
 	GetResource(uri string) (Resource, bool)
 	// AddResource adds a new resource to the manager.
 	//
-	// resource is the resource.
+	// Parameters:
+	//   - resource: The resource to add.
 	AddResource(resource Resource)
 	// RemoveResource removes a resource from the manager by its URI.
 	//
-	// uri is the uri.
+	// Parameters:
+	//   - uri: The URI of the resource to remove.
 	RemoveResource(uri string)
 	// ListResources returns a slice of all resources currently in the manager.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Resource: A list of all resources.
 	ListResources() []Resource
 	// OnListChanged registers a callback function to be called when the list of
 	// resources changes.
-	OnListChanged(func())
+	//
+	// Parameters:
+	//   - f: The callback function.
+	OnListChanged(f func())
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The service ID.
 	ClearResourcesForService(serviceID string)
 }
 

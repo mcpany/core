@@ -331,7 +331,9 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 //   - ctx: The context for the request.
 //   - req: The "prompts/list" request from the client.
 //
-// Returns a list of available prompts or an error if the retrieval fails.
+// Returns:
+//   - *mcp.ListPromptsResult: A list of available prompts.
+//   - error: An error if the retrieval fails.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -351,6 +353,14 @@ func (s *Server) ListPrompts(
 // CreateMessage requests a message creation from the client (sampling).
 // This method exposes sampling to the Server instance if a session is available.
 // Note: In a stateless request context without a persistent session, this might fail.
+//
+// Parameters:
+//   - ctx: The context for the request.
+//   - params: The sampling parameters.
+//
+// Returns:
+//   - *mcp.CreateMessageResult: The result from the client.
+//   - error: An error if the operation fails.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -369,8 +379,9 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 //   - req: The "prompts/get" request from the client, containing the prompt
 //     name and arguments.
 //
-// Returns the result of the prompt execution or an error if the prompt is not
-// found or execution fails.
+// Returns:
+//   - *mcp.GetPromptResult: The result of the prompt execution.
+//   - error: An error if the prompt is not found or execution fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -406,7 +417,9 @@ func (s *Server) GetPrompt(
 //   - ctx: The context for the request.
 //   - req: The "resources/list" request from the client.
 //
-// Returns a list of available resources or an error if the retrieval fails.
+// Returns:
+//   - *mcp.ListResourcesResult: A list of available resources.
+//   - error: An error if the retrieval fails.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -433,8 +446,9 @@ func (s *Server) ListResources(
 //   - req: The "resources/read" request from the client, containing the URI
 //     of the resource to be read.
 //
-// Returns the content of the resource or an error if the resource is not found
-// or reading fails.
+// Returns:
+//   - *mcp.ReadResourceResult: The content of the resource.
+//   - error: An error if the resource is not found or reading fails.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -864,6 +878,9 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
+//
+// Returns:
+//   - slog.Value: The logged value.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -876,6 +893,9 @@ type LazyLogResult struct {
 }
 
 // LogValue implements slog.LogValuer.
+//
+// Returns:
+//   - slog.Value: The logged value.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

@@ -22,19 +22,23 @@ var ErrPromptNotFound = errors.New("prompt not found")
 type Prompt interface {
 	// Prompt returns the MCP prompt definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Prompt: The MCP prompt definition.
 	Prompt() *mcp.Prompt
 	// Service returns the ID of the service that provides this prompt.
 	//
-	// Returns the result.
+	// Returns:
+	//   - string: The service ID.
 	Service() string
 	// Get executes the prompt with the provided arguments.
 	//
-	// ctx is the context for the request.
-	// args is the args.
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - args: The JSON-encoded arguments for the prompt.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - *mcp.GetPromptResult: The result of the prompt execution.
+	//   - error: An error if the execution fails.
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
@@ -44,7 +48,8 @@ type Prompt interface {
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Server: The MCP server instance.
 	Server() *mcp.Server
 }
 

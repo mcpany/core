@@ -38,86 +38,108 @@ type MCPServerProvider interface {
 type ManagerInterface interface {
 	// AddTool registers a new tool.
 	//
-	// tool represents the tool definition.
+	// Parameters:
+	//   - tool: The tool to register.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	AddTool(tool Tool) error
 	// GetTool retrieves a tool by name.
 	//
-	// toolName is the toolName.
+	// Parameters:
+	//   - toolName: The name of the tool.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if found.
 	GetTool(toolName string) (Tool, bool)
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Tool: A list of all tools.
 	ListTools() []Tool
 	// ListMCPTools returns all registered tools in MCP format.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*mcp.Tool: A list of all MCP tools.
 	ListMCPTools() []*mcp.Tool
 	// ClearToolsForService removes all tools for a given service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The service ID.
 	ClearToolsForService(serviceID string)
 	// ExecuteTool executes a tool with the given request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Parameters:
+	//   - ctx: The context for the request.
+	//   - req: The execution request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if the operation fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
 	// SetMCPServer sets the MCP server provider.
 	//
-	// mcpServer is the mcpServer.
+	// Parameters:
+	//   - mcpServer: The MCP server provider.
 	SetMCPServer(mcpServer MCPServerProvider)
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
-	// middleware is the middleware.
+	// Parameters:
+	//   - middleware: The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
 	// AddServiceInfo adds metadata for a service.
 	//
-	// serviceID is the serviceID.
-	// info is the info.
+	// Parameters:
+	//   - serviceID: The service ID.
+	//   - info: The service metadata.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
 	// GetServiceInfo retrieves metadata for a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The service ID.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *ServiceInfo: The service metadata.
+	//   - bool: True if found.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 	// ListServices returns all registered services.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*ServiceInfo: A list of all services.
 	ListServices() []*ServiceInfo
 	// SetProfiles sets the enabled profiles and their definitions.
 	//
-	// enabled is the enabled.
-	// defs is the defs.
+	// Parameters:
+	//   - enabled: The list of enabled profile names.
+	//   - defs: The list of profile definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
 	// IsServiceAllowed checks if a service is allowed for a given profile.
 	//
-	// serviceID is the serviceID.
-	// profileID is the profileID.
+	// Parameters:
+	//   - serviceID: The service ID.
+	//   - profileID: The profile ID.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if allowed.
 	IsServiceAllowed(serviceID, profileID string) bool
 	// ToolMatchesProfile checks if a tool matches a given profile.
 	//
-	// tool represents the tool definition.
-	// profileID is the profileID.
+	// Parameters:
+	//   - tool: The tool to check.
+	//   - profileID: The profile ID.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the tool matches.
 	ToolMatchesProfile(tool Tool, profileID string) bool
 	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
 	//
-	// profileID is the profileID.
+	// Parameters:
+	//   - profileID: The profile ID.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - map[string]bool: A map of allowed service IDs.
+	//   - bool: True if the profile exists.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 }
 
