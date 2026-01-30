@@ -20,6 +20,9 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
+/**
+ * Form component provided by react-hook-form.
+ */
 const Form = FormProvider
 
 type FormFieldContextValue<
@@ -33,6 +36,11 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+/**
+ * FormField component to handle field registration and state.
+ * @param props - The controller props.
+ * @returns The rendered component.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -46,6 +54,10 @@ const FormField = <
   )
 }
 
+/**
+ * Hook to access form field context.
+ * @returns The form field context including id, name, and field state.
+ */
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
