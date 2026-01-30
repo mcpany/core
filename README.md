@@ -122,17 +122,10 @@ graph TD
 *   **Dynamic Config Reloading**: Hot-swap registry without restarts.
 *   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
 *   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
-*   **Network Topology**: Visual graph of clients, services, and tools.
 *   **Observability**: Real-time metrics and audit logging.
 *   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
 
-## Key Documentation
-*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
-*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
-*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
-*   **[Examples](server/docs/examples.md)**: Hands-on examples.
-
-## Configuration
+## 5. Configuration
 
 MCP Any uses a combination of configuration files and environment variables.
 
@@ -159,13 +152,7 @@ For production deployments, ensure the following secrets are set:
 *   **`MCPANY_ADMIN_INIT_PASSWORD`**: Sets the initial password for the admin user.
 *   **`MCPANY_API_KEY`** (Recommended): Sets a global API key to secure the server endpoint.
 
-### Documentation
-
-For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
-
----
-
-## 🔧 Troubleshooting
+## 6. Troubleshooting
 
 ### Common Issues
 
@@ -173,15 +160,15 @@ For more comprehensive documentation, including detailed architecture and contri
 - **Docker Permission Denied**: If you cannot run Docker commands, ensure your user is in the `docker` group or try running with `sudo`.
 - **Port Conflicts**: Ensure ports `50050` (HTTP), `50051` (gRPC), and `9002` (UI) are free before starting the server.
 
-## Contributing
+## 7. Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
 
-## Roadmap
-
-Check out our Roadmap to see what we're working on and what's coming next:
-- [Server Roadmap](server/roadmap.md)
-- [UI Roadmap](ui/roadmap.md)
+## Key Documentation
+*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
+*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
+*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
+*   **[Examples](server/docs/examples.md)**: Hands-on examples.
 
 ## License
 
