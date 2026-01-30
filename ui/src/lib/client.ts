@@ -222,7 +222,9 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
+     *
      * @returns A promise that resolves to a list of services.
+     * @throws Error if the fetch fails.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -251,8 +253,10 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
+     *
+     * @param id - The ID of the service to retrieve.
      * @returns A promise that resolves to the service configuration.
+     * @throws Error if the fetch fails.
      */
     getService: async (id: string) => {
          try {
@@ -292,9 +296,14 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
-     * @param name The name of the service.
-     * @param disable True to disable the service, false to enable it.
+     *
+     * @param name - The name of the service.
+     * @param disable - True to disable the service, false to enable it.
      * @returns A promise that resolves to the updated service status.
+     * @throws Error if the update fails.
+     *
+     * @sideEffects
+     * - Modifies the service state on the server.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -308,8 +317,10 @@ export const apiClient = {
 
     /**
      * Gets the status of a service.
-     * @param name The name of the service.
+     *
+     * @param name - The name of the service.
      * @returns A promise that resolves to the service status.
+     * @throws Error if the fetch fails.
      */
     getServiceStatus: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
@@ -319,8 +330,13 @@ export const apiClient = {
 
     /**
      * Restarts a service.
-     * @param name The name of the service to restart.
+     *
+     * @param name - The name of the service to restart.
      * @returns A promise that resolves when the service is restarted.
+     * @throws Error if the restart fails.
+     *
+     * @sideEffects
+     * - Restarts the upstream service process/connection.
      */
     restartService: async (name: string) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
@@ -332,8 +348,13 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
+     *
+     * @param config - The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
+     * @throws Error if registration fails.
+     *
+     * @sideEffects
+     * - Adds a new service to the registry.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -395,8 +416,13 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
-     * @param config The updated configuration of the service.
+     *
+     * @param config - The updated configuration of the service.
      * @returns A promise that resolves to the updated service configuration.
+     * @throws Error if the update fails.
+     *
+     * @sideEffects
+     * - Updates the service configuration in the registry.
      */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
@@ -456,8 +482,13 @@ export const apiClient = {
 
     /**
      * Unregisters (deletes) an upstream service.
-     * @param id The ID of the service to unregister.
+     *
+     * @param id - The ID of the service to unregister.
      * @returns A promise that resolves when the service is unregistered.
+     * @throws Error if unregistration fails.
+     *
+     * @sideEffects
+     * - Removes the service from the registry.
      */
     unregisterService: async (id: string) => {
          const response = await fetchWithAuth(`/api/v1/services/${id}`, {
@@ -469,8 +500,10 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
-     * @param config The service configuration to validate.
+     *
+     * @param config - The service configuration to validate.
      * @returns A promise that resolves to the validation result.
+     * @throws Error if validation request fails (network error).
      */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -547,7 +580,9 @@ export const apiClient = {
 
     /**
      * Lists all available tools.
+     *
      * @returns A promise that resolves to a list of tools.
+     * @throws Error if fetch fails.
      */
     listTools: async () => {
         const res = await fetchWithAuth('/api/v1/tools');
@@ -566,9 +601,14 @@ export const apiClient = {
 
     /**
      * Executes a tool with the provided arguments.
-     * @param request The execution request (tool name, arguments, etc.).
-     * @param dryRun If true, performs a dry run without side effects.
+     *
+     * @param request - The execution request (tool name, arguments, etc.).
+     * @param dryRun - If true, performs a dry run without side effects.
      * @returns A promise that resolves to the execution result.
+     * @throws Error if execution fails.
+     *
+     * @sideEffects
+     * - Executes the tool on the backend (unless dryRun is true).
      */
     executeTool: async (request: any, dryRun?: boolean) => {
         try {

@@ -41,6 +41,10 @@ func ForTestsOnlyResetLogger() {
 //   - output: The `io.Writer` to which log entries will be written (e.g.,
 //     `os.Stdout`).
 //   - format: Optional format string ("json" or "text"). Defaults to "text".
+//
+// Side Effects:
+//   - Initializes the global logger instance.
+//   - Sets up redacting writer if JSON format is used.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -83,7 +87,10 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 // with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
 // Returns:
-//   - The global `*slog.Logger` instance.
+//   - *slog.Logger: The global logger instance.
+//
+// Side Effects:
+//   - May initialize the logger if it wasn't already initialized.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -109,7 +116,7 @@ func GetLogger() *slog.Logger {
 //   - level: The log level from the configuration.
 //
 // Returns:
-//   - The corresponding slog.Level.
+//   - slog.Level: The corresponding slog.Level.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

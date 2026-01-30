@@ -135,7 +135,9 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
 export const marketplaceService = {
   /**
    * Fetches the official collections provided by MCP Any.
+   *
    * @returns A promise that resolves to a list of service collections.
+   * @throws Error if the fetch fails (in future implementation).
    */
   fetchOfficialCollections: async (): Promise<ServiceCollection[]> => {
     // In future: fetch('https://raw.githubusercontent.com/mcpany/marketplace/main/collections.json')
@@ -152,8 +154,10 @@ export const marketplaceService = {
 
   /**
    * Fetches available servers from a specific external marketplace.
-   * @param marketplaceId The ID of the marketplace to query.
+   *
+   * @param marketplaceId - The ID of the marketplace to query.
    * @returns A promise that resolves to a list of external servers.
+   * @throws Error if the fetch fails.
    */
   fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
     // Mock fetching from external source
@@ -202,7 +206,9 @@ export const marketplaceService = {
 
   /**
    * Fetches and parses the Awesome MCP Servers list from GitHub.
+   *
    * @returns A promise that resolves to a list of CommunityServer objects.
+   * @throws Error if the fetch or parsing fails.
    */
   fetchCommunityServers: async (): Promise<CommunityServer[]> => {
       try {
@@ -265,8 +271,13 @@ export const marketplaceService = {
 
   /**
    * Imports a collection from a URL.
-   * @param url The URL of the collection to import.
+   *
+   * @param url - The URL of the collection to import.
    * @returns A promise that resolves to the imported collection.
+   * @throws Error if the import fails.
+   *
+   * @sideEffects
+   * - Makes a network request to the URL.
    */
   importCollection: async (url: string): Promise<ServiceCollection> => {
      // Fetch from URL, validate, return
@@ -284,7 +295,11 @@ export const marketplaceService = {
 
   /**
    * Fetches collections stored locally in the browser.
+   *
    * @returns A list of locally stored service collections.
+   *
+   * @sideEffects
+   * - Reads from localStorage.
    */
   fetchLocalCollections: (): ServiceCollection[] => {
       if (typeof window === 'undefined') return [];
@@ -299,7 +314,11 @@ export const marketplaceService = {
 
   /**
    * Saves a collection to local storage.
-   * @param collection The collection to save.
+   *
+   * @param collection - The collection to save.
+   *
+   * @sideEffects
+   * - Writes to localStorage.
    */
   saveLocalCollection: (collection: ServiceCollection) => {
       if (typeof window === 'undefined') return;
@@ -316,7 +335,11 @@ export const marketplaceService = {
 
   /**
    * Deletes a locally stored collection.
-   * @param name The name of the collection to delete.
+   *
+   * @param name - The name of the collection to delete.
+   *
+   * @sideEffects
+   * - Removes items from localStorage.
    */
   deleteLocalCollection: (name: string) => {
       if (typeof window === 'undefined') return;

@@ -28,37 +28,19 @@ import (
 // It performs the following operations:
 //
 //  1. Joining the strings with a "." separator.
-//
 //  2. Removing any characters that are not allowed (alphanumerics, "_", "-").
-//     Allowed characters are: `[a-zA-Z0-9_-]`.
-//     Wait, checking the implementation:
-//     It allows a-z, A-Z, 0-9, _, -
-//     It seems to replace invalid chars with nothing.
-//     Actually it calculates `dirtyCount`.
-//     If `dirtyCount > 0`, it means we need to "sanitize" by removing them?
-//     Yes, `rawSanitizedLen := len(id) - dirtyCount`.
-//     And later it only writes if valid char.
-//
 //  3. Truncating the result to the specified maximum length.
-//
-//  4. Optionally, appending a hash of the original string to ensure uniqueness,
-//     especially when truncation occurs or when illegal characters are present.
-//
-// After sanitizing each string individually, it joins them with a "." separator to form
-// the final identifier.
+//  4. Optionally, appending a hash of the original string to ensure uniqueness.
 //
 // Parameters:
-//   - ids: A slice of strings to be sanitized and joined. Each element of the slice
-//     represents a part of the final identifier.
-//   - alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
-//     sanitized string, regardless of whether it was modified.
-//   - maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
-//     string before a hash is appended.
-//   - reqHashLength: The desired length of the hexadecimal hash to be appended.
+//   - ids: A slice of strings to be sanitized and joined.
+//   - alwaysAppendHash: If true, forces a hash to be appended to each part.
+//   - maxSanitizedPrefixLength: The maximum length for the sanitized prefix before hashing.
+//   - reqHashLength: The desired length of the hash to be appended.
 //
 // Returns:
-//   - string: A single string representing the sanitized and joined identifier.
-//   - error: An error if the sanitization fails (e.g., if ids is empty).
+//   - string: A sanitized and joined identifier.
+//   - error: An error if sanitization fails (e.g., empty input).
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -212,9 +194,6 @@ func isValidChar(c byte) bool {
 }
 
 // SanitizeServiceName sanitizes the given service name.
-// It ensures that the name is a valid identifier by removing disallowed characters
-// and appending a hash if the name is too long or contains illegal characters.
-// This function calls SanitizeID with alwaysAppendHash set to false.
 //
 // Parameters:
 //   - name: The service name to sanitize.
@@ -227,9 +206,6 @@ func SanitizeServiceName(name string) (string, error) {
 }
 
 // SanitizeToolName sanitizes the given tool name.
-// It ensures that the name is a valid identifier by removing disallowed characters
-// and appending a hash if the name is too long or contains illegal characters.
-// This function calls SanitizeID with alwaysAppendHash set to false.
 //
 // Parameters:
 //   - name: The tool name to sanitize.
@@ -281,15 +257,13 @@ const TrueStr = "true"
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Returns:
-//
-//	string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
+//   - string: A string representation of the UUID.
 func GenerateUUID() string {
 	return uuid.New().String()
 }
 
 // ParseToolName deconstructs a fully qualified tool name into its service key
-// and bare tool name components. It splits the name using the standard
-// separator.
+// and bare tool name components.
 //
 // Parameters:
 //   - toolName: The fully qualified tool name to parse.
@@ -307,9 +281,7 @@ func ParseToolName(toolName string) (service, bareToolName string, err error) {
 }
 
 // SanitizeOperationID cleans an input string to make it suitable for use as an
-// operation ID. It replaces any sequence of disallowed characters with a short
-// hexadecimal hash of that sequence, ensuring uniqueness while preserving as
-// much of the original string as possible.
+// operation ID.
 //
 // Parameters:
 //   - input: The string to be sanitized.
@@ -394,13 +366,13 @@ func BytesToString(b []byte) string {
 }
 
 // GetDockerCommand returns the command and base arguments for running Docker.
-// It checks the USE_SUDO_FOR_DOCKER environment variable to determine if
-// "sudo" should be prepended to the command.
 //
 // Returns:
+//   - string: The command to run (e.g., "docker" or "sudo").
+//   - []string: The arguments for the command (e.g., [] or ["docker"]).
 //
-//	string: The command to run (e.g., "docker" or "sudo").
-//	[]string: The arguments for the command (e.g., [] or ["docker"]).
+// Side Effects:
+//   - Checks the USE_SUDO_FOR_DOCKER environment variable.
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
@@ -410,33 +382,27 @@ func GetDockerCommand() (string, []string) {
 }
 
 // ReplaceURLPath replaces placeholders in a URL path with values from a params map.
-// It handles URL escaping of values unless specified otherwise.
 //
 // Parameters:
-//
-//	urlPath: The URL path containing placeholders in the format "{{key}}".
-//	params: A map of keys to values to replace placeholders with.
-//	noEscapeParams: A map of keys that should NOT be URL escaped.
+//   - urlPath: The URL path containing placeholders in the format "{{key}}".
+//   - params: A map of keys to values to replace placeholders with.
+//   - noEscapeParams: A map of keys that should NOT be URL escaped.
 //
 // Returns:
-//
-//	The URL path with placeholders replaced.
+//   - string: The URL path with placeholders replaced.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
 }
 
 // ReplaceURLQuery replaces placeholders in a URL query string with values from a params map.
-// It handles URL query escaping of values unless specified otherwise.
 //
 // Parameters:
-//
-//	urlQuery: The URL query string containing placeholders in the format "{{key}}".
-//	params: A map of keys to values to replace placeholders with.
-//	noEscapeParams: A map of keys that should NOT be URL escaped.
+//   - urlQuery: The URL query string containing placeholders in the format "{{key}}".
+//   - params: A map of keys to values to replace placeholders with.
+//   - noEscapeParams: A map of keys that should NOT be URL escaped.
 //
 // Returns:
-//
-//	The URL query string with placeholders replaced.
+//   - string: The URL query string with placeholders replaced.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
 }
@@ -501,10 +467,6 @@ func IsNil(i any) bool {
 }
 
 // ToString converts a value to a string representation efficiently.
-// It handles common types like string, json.Number, int, float, and bool
-// without using reflection when possible.
-// Optimization: We manually handle all standard Go numeric types to avoid the overhead
-// of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
 //
 // Parameters:
 //   - v: The value to convert to a string.
@@ -607,17 +569,17 @@ func toStringRecursive(v any, depth int) string {
 }
 
 // RandomFloat64 returns a random float64 in [0.0, 1.0).
-// It uses the global math/rand source.
 //
 // Returns:
 //   - float64: A random float64 value.
+//
+// Side Effects:
+//   - Uses the global math/rand source.
 func RandomFloat64() float64 {
 	return rand.Float64() //nolint:gosec // Weak random is sufficient for jitter
 }
 
 // SanitizeFilename cleans a filename to ensure it is safe to use.
-// It removes any directory components, null bytes, and restricts characters
-// to alphanumeric, dots, dashes, and underscores.
 //
 // Parameters:
 //   - filename: The filename to sanitize.

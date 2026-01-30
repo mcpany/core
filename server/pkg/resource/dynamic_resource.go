@@ -23,11 +23,13 @@ type DynamicResource struct {
 
 // NewDynamicResource creates a new instance of DynamicResource.
 //
-// def is the def.
-// t is the t.
+// Parameters:
+//   - def: The resource definition.
+//   - t: The tool associated with the resource.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *DynamicResource: The created dynamic resource.
+//   - error: An error if the definition or tool is nil.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -50,24 +52,28 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 
 // Resource returns the MCP representation of the resource.
 //
-// Returns the result.
+// Returns:
+//   - *mcp.Resource: The MCP resource definition.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
 // Service returns the ID of the service that provides this resource.
 //
-// Returns the result.
+// Returns:
+//   - string: The service ID.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }
 
 // Read executes the associated tool to fetch the resource content.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *mcp.ReadResourceResult: The content of the resource.
+//   - error: An error if the tool execution fails or returns an unsupported format.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
@@ -122,9 +128,11 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 
 // Subscribe is not yet implemented for dynamic resources.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _: The context (unused).
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: Always returns an error indicating not implemented.
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

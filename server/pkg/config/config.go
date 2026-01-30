@@ -25,6 +25,10 @@ import (
 //
 // Parameters:
 //   - cmd: The cobra command to bind flags to.
+//
+// Side Effects:
+//   - Modifies the provided command's persistent flags.
+//   - Configures Viper environment variable handling.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
@@ -83,6 +87,9 @@ func BindRootFlags(cmd *cobra.Command) {
 //
 // Parameters:
 //   - cmd: The cobra command to bind flags to.
+//
+// Side Effects:
+//   - Modifies the provided command's flags.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -122,6 +129,9 @@ func BindServerFlags(cmd *cobra.Command) {
 //
 // Parameters:
 //   - cmd: The cobra command to bind flags to.
+//
+// Side Effects:
+//   - Calls BindRootFlags and BindServerFlags.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

@@ -24,30 +24,45 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
-	// ctx is the context for the publish operation.
-	// topic is the topic to publish the message to.
-	// msg is the message to be sent.
+// Parameters:
+//   - ctx: The context for the publish operation.
+//   - topic: The topic to publish the message to.
+//   - msg: The message to be sent.
+//
+// Returns:
+//   - error: An error if the publish fails.
 	Publish(ctx context.Context, topic string, msg T) error
 
 	// Subscribe registers a handler function for a given topic. It starts a
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
-	// ctx is the context for the subscribe operation.
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler.
+// Parameters:
+//   - ctx: The context for the subscribe operation.
+//   - topic: The topic to subscribe to.
+//   - handler: The function to be called with the message.
+//
+// Returns:
+//   - func(): A function that can be called to unsubscribe the handler.
+//
+// Side Effects:
+//   - Starts a goroutine to handle messages.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
 	// SubscribeOnce registers a handler function that will be invoked only once
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
-	// ctx is the context for the subscribe operation.
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler
-	// before it has been invoked.
+// Parameters:
+//   - ctx: The context for the subscribe operation.
+//   - topic: The topic to subscribe to.
+//   - handler: The function to be called with the message.
+//
+// Returns:
+//   - func(): A function that can be called to unsubscribe the handler before it has been invoked.
+//
+// Side Effects:
+//   - Starts a goroutine to handle messages.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
@@ -71,11 +86,11 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // multiple topic-based bus instances.
 //
 // Parameters:
-//   messageBus: The configuration for the message bus.
+//   - messageBus: The configuration for the message bus.
 //
 // Returns:
-//   *Provider: The created Provider.
-//   error: An error if creation fails.
+//   - *Provider: The created Provider.
+//   - error: An error if creation fails.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -120,12 +135,15 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // type safety for each topic.
 //
 // Parameters:
-//   p: The Provider instance.
-//   topic: The topic name.
+//   - p: The Provider instance.
+//   - topic: The topic name.
 //
 // Returns:
-//   Bus[T]: The requested Bus instance.
-//   error: An error if retrieval or creation fails.
+//   - Bus[T]: The requested Bus instance.
+//   - error: An error if retrieval or creation fails.
+//
+// Side Effects:
+//   - May create and initialize a new bus instance if one doesn't exist for the topic.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

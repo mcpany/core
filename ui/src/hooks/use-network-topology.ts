@@ -68,8 +68,12 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
 /**
  * Hook to fetch and manage network topology data.
- * It periodically polls the backend for topology updates and handles layouting.
+ * It subscribes to global topology context updates and handles graph layouting using Dagre.
+ *
  * @returns The network graph state and actions.
+ *
+ * @sideEffects
+ * - Updates graph nodes and edges based on topology data.
  */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -246,7 +250,8 @@ export function useNetworkTopology() {
 
 /**
  * Calculates the layout style for a node based on its type.
- * @param node The topology node.
+ *
+ * @param node - The topology node.
  * @returns The style object.
  */
 function getNodeLayout(node: TopologyNode) {
@@ -266,7 +271,8 @@ function getNodeLayout(node: TopologyNode) {
 
 /**
  * Determines the CSS class name for a node based on its type and theme.
- * @param node The topology node.
+ *
+ * @param node - The topology node.
  * @returns The Tailwind CSS class string.
  */
 function getNodeClassName(node: TopologyNode): string {
