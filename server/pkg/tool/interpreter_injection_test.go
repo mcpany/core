@@ -33,10 +33,10 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
-	// Payload: 1e date (Execute 'date')
+	// Payload: 1e/bin/date (Execute '/bin/date') - avoiding spaces to pass strict input validation
 	req := &ExecutionRequest{
 		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "1e date"}`),
+		ToolInputs: []byte(`{"script": "1e/bin/date"}`),
 	}
 
 	result, err := tool.Execute(context.Background(), req)
@@ -46,6 +46,28 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		} else {
 			t.Fatalf("Execute failed: %v", err)
 		}
+	}
+
+	resMap, ok := result.(map[string]interface{})
+	if !ok {
+		t.Fatalf("Result is not map: %v", result)
+	}
+
+	// Expect return code to be non-zero (sed error)
+	returnCode, ok := resMap["return_code"].(int)
+	if !ok {
+		t.Fatalf("return_code not int: %v", resMap["return_code"])
+	}
+
+	if returnCode == 0 {
+		t.Errorf("FAIL: sed executed '1e/bin/date' successfully (return_code 0). Sandbox failed.")
+	}
+
+	stderr, _ := resMap["stderr"].(string)
+	if !strings.Contains(stderr, "command disabled") && !strings.Contains(stderr, "unknown command") {
+		// GNU sed: 'e' command disabled in sandbox mode
+		// BSD sed: unknown command: 1 (or similar)
+		t.Logf("Note: stderr was: %s", stderr)
 	} else {
 		resMap, ok := result.(map[string]interface{})
 		if !ok {
@@ -72,10 +94,10 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		}
 	}
 
-	// Payload: w /tmp/pwned (Write file)
+	// Payload: w/tmp/pwned (Write file) - avoiding spaces
 	req = &ExecutionRequest{
 		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "w /tmp/pwned"}`),
+		ToolInputs: []byte(`{"script": "w/tmp/pwned"}`),
 	}
 
 	result, err = tool.Execute(context.Background(), req)
@@ -89,9 +111,9 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		resMap, _ := result.(map[string]interface{})
 		returnCode, _ := resMap["return_code"].(int)
 
-		if returnCode == 0 {
-			t.Errorf("FAIL: sed executed 'w /tmp/pwned' successfully. Sandbox failed.")
-		}
+  	if returnCode == 0 {
+	  	t.Errorf("FAIL: sed executed 'w/tmp/pwned' successfully. Sandbox failed.")
+    }
 	}
 }
 
