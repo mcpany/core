@@ -45,6 +45,14 @@ type ConfigurableEngine interface {
 	SetSkipValidation(skip bool)
 }
 
+// MapUnmarshaler defines an interface for engines that support unmarshaling from a generic map.
+// This allows optimizations where the map is already parsed (e.g. for validation).
+type MapUnmarshaler interface {
+	// UnmarshalMap populates the provided proto.Message using the given map.
+	// b is the original raw bytes, used for error reporting (line numbers).
+	UnmarshalMap(b []byte, m map[string]interface{}, v proto.Message) error
+}
+
 // NewEngine returns a configuration engine capable of unmarshaling the format
 // indicated by the file extension of the given path. It supports `.json`,
 // `.yaml`, `.yml`, and `.textproto` file formats.
@@ -97,6 +105,14 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 		}
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
+
+	return e.UnmarshalMap(b, yamlMap, v)
+}
+
+// UnmarshalMap populates the provided proto.Message using the given map.
+func (e *yamlEngine) UnmarshalMap(b []byte, yamlMap map[string]interface{}, v proto.Message) error {
+	// ⚡ BOLT: Reuse parsed map to avoid double parsing.
+	// Randomized Selection from Top 5 High-Impact Targets
 
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 	// This allows overriding any configuration value using environment variables.
