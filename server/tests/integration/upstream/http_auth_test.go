@@ -64,14 +64,12 @@ func TestUpstreamService_HTTP_WithIncorrectAPIKeyAuth(t *testing.T) {
 			secret := configv1.SecretValue_builder{
 				PlainText: proto.String("wrong-key"),
 			}.Build()
-			wrongAuthConfig := &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_ApiKey{
-					ApiKey: &configv1.APIKeyAuth{
-						ParamName: proto.String("X-Api-Key"),
-						Value:     secret,
-					},
-				},
-			}
+			wrongAuthConfig := configv1.Authentication_builder{
+				ApiKey: configv1.APIKeyAuth_builder{
+					ParamName: proto.String("X-Api-Key"),
+					Value:     secret,
+				}.Build(),
+			}.Build()
 			integration.RegisterHTTPService(t, registrationClient, wrongAuthServiceID, upstreamEndpoint, "echo", "/echo", http.MethodPost, wrongAuthConfig)
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {

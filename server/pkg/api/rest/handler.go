@@ -63,12 +63,24 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
-		if err := engine.Unmarshal([]byte(req.Content), cfg); err != nil {
-			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", err))
+
+		// ⚡ BOLT: Avoid double YAML parsing if engine supports map input.
+		// Randomized Selection from Top 5 High-Impact Targets.
+		var unmarshalErr error
+		if structured, ok := engine.(config.StructuredEngine); ok {
+			unmarshalErr = structured.UnmarshalFromMap(rawConfig, cfg, []byte(req.Content))
+		} else {
+			unmarshalErr = engine.Unmarshal([]byte(req.Content), cfg)
+		}
+
+		if unmarshalErr != nil {
+			errors = append(errors, fmt.Sprintf("Failed to unmarshal config: %v", unmarshalErr))
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
 			// We skip secret validation (regex checks) to prevent oracle attacks where users probe secret values.
 			ctx := context.WithValue(r.Context(), config.SkipSecretValidationKey, true)
+			// We also skip filesystem existence checks to prevent filesystem enumeration attacks.
+			ctx = context.WithValue(ctx, config.SkipFilesystemCheckKey, true)
 			validationErrors := config.Validate(ctx, cfg, config.Server)
 			for _, ve := range validationErrors {
 				errors = append(errors, ve.Error())

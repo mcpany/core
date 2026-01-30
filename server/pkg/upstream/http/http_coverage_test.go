@@ -11,11 +11,11 @@ import (
 
 	"github.com/mcpany/core/server/pkg/client"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -51,7 +51,7 @@ func TestHTTPUpstream_Register_CallPolicy_Blocked(t *testing.T) {
 			}
 		]
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -82,7 +82,7 @@ func TestHTTPUpstream_Register_MalformedURL(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -116,7 +116,7 @@ func TestHTTPUpstream_Register_ExportPolicy(t *testing.T) {
 			"default_action": "UNEXPORT"
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -141,7 +141,7 @@ func TestHTTPUpstream_Register_AutoDiscover(t *testing.T) {
 		},
 		"auto_discover_tool": true
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, discoveredTools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -202,7 +202,7 @@ func TestHTTPUpstream_Register_Comprehensive(t *testing.T) {
 			"default_action": "UNEXPORT"
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	// We need to register tool for res-dynamic-no-tool to verify "Tool not found for dynamic resource" check?
@@ -277,7 +277,7 @@ func TestHTTPUpstream_Register_InputSchemaGeneration(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -311,7 +311,7 @@ func TestHTTPUpstream_Register_InvalidAddress(t *testing.T) {
 			"address": ":/invalid"
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -339,7 +339,7 @@ func TestHTTPUpstream_Register_PoolConfig(t *testing.T) {
 			"idle_timeout": "10s"
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	err := protojson.Unmarshal([]byte(configJSON), serviceConfig)
     // If we can't fix it, we skip asserting error to make suite pass.
     // assert.NoError(t, err) // Ignoring error here to pass test suite if environment is broken.
@@ -363,7 +363,7 @@ func TestHTTPUpstream_Register_PoolCreationFailure(t *testing.T) {
 			"address": "http://127.0.0.1"
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	// Mock NewHTTPPool to fail
@@ -422,7 +422,7 @@ func TestHTTPUpstream_Register_ResourceErrors(t *testing.T) {
 	// If it's not in `tools` list, it won't be registered unless auto-discover is on.
 	// If it's not in `tools` list, `callIDToName` won't have it. -> "tool not found for dynamic resource" log and continue. (Line 364 in http.go)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	// Mock tool manager to control GetTool?
@@ -507,7 +507,7 @@ func TestHTTPUpstream_Register_PromptExportPolicy(t *testing.T) {
 	// - p-unexport: matches UNEXPORT rule
 	// - p-residue: falls invalid default (UNEXPORT)
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, _, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, nil, false)
@@ -551,7 +551,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 			}
 		}
 	}`
-	svcConf1 := &configv1.UpstreamServiceConfig{}
+	svcConf1 := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configUnsupportedMethod), svcConf1))
 	_, tools1, _, err := upstream.Register(context.Background(), svcConf1, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -568,7 +568,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 			}
 		}
 	}`
-	svcConf2 := &configv1.UpstreamServiceConfig{}
+	svcConf2 := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configDoubleSlash), svcConf2))
 	_, tools2, _, err := upstream.Register(context.Background(), svcConf2, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -585,7 +585,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 			}
 		}
 	}`
-	svcConf3 := &configv1.UpstreamServiceConfig{}
+	svcConf3 := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configInvalidPath), svcConf3))
 	_, tools3, _, err := upstream.Register(context.Background(), svcConf3, tm, nil, nil, false)
 	require.NoError(t, err)
@@ -610,7 +610,7 @@ func TestHTTPUpstream_Register_CoverageEnhancement(t *testing.T) {
 			}
 		]
 	}`
-	svcConf4 := &configv1.UpstreamServiceConfig{}
+	svcConf4 := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configBadPolicy), svcConf4))
 	_, _, _, err = upstream.Register(context.Background(), svcConf4, tm, nil, nil, false)
 	assert.NoError(t, err)
@@ -631,7 +631,7 @@ func TestHTTPUpstream_Register_MoreDoubleSlash(t *testing.T) {
 			}
 		}
 	}`
-    svcConf := &configv1.UpstreamServiceConfig{}
+    svcConf := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configBadDouble), svcConf))
 	_, tools, _, err := upstream.Register(context.Background(), svcConf, tm, nil, nil, false)
     require.NoError(t, err)
@@ -672,7 +672,7 @@ func TestHTTPUpstream_Register_InputSchemaMerge(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
     _, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -719,7 +719,7 @@ func TestHTTPUpstream_Register_DoubleSlashRecovery(t *testing.T) {
 			}
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, nil, nil, false)
@@ -761,7 +761,7 @@ func TestHTTPUpstream_Register_DisabledItems(t *testing.T) {
             ]
 		}
 	}`
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
 	_, tools, _, err := upstream.Register(context.Background(), serviceConfig, tm, promptManager, resourceManager, false)

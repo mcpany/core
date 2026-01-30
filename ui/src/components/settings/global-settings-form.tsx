@@ -32,6 +32,8 @@ const settingsSchema = z.object({
   audit_enabled: z.boolean(),
   dlp_enabled: z.boolean(),
   gc_interval: z.string(),
+  merge_strategy_upstream: z.enum(["extend", "replace"]).optional(),
+  merge_strategy_profile: z.enum(["extend", "replace"]).optional(),
 });
 
 type SettingsValues = z.infer<typeof settingsSchema>;
@@ -53,6 +55,8 @@ export function GlobalSettingsForm() {
       audit_enabled: true,
       dlp_enabled: false,
       gc_interval: "1h",
+      merge_strategy_upstream: "extend",
+      merge_strategy_profile: "extend",
     },
   });
 
@@ -69,6 +73,8 @@ export function GlobalSettingsForm() {
                 audit_enabled: settings.audit?.enabled || false,
                 dlp_enabled: settings.dlp?.enabled || false,
                 gc_interval: settings.gc_settings?.interval || "1h",
+                merge_strategy_upstream: (settings.merge_strategy?.upstream_service_list as "extend" | "replace") || "extend",
+                merge_strategy_profile: (settings.merge_strategy?.profile_list as "extend" | "replace") || "extend",
             });
             if (settings.read_only) {
                 setIsReadOnly(true);
@@ -92,7 +98,11 @@ export function GlobalSettingsForm() {
            log_format: data.log_format === "json" ? 2 : 1,
            audit: { enabled: data.audit_enabled },
            dlp: { enabled: data.dlp_enabled },
-           gc_settings: { interval: data.gc_interval }
+           gc_settings: { interval: data.gc_interval },
+           merge_strategy: {
+               upstream_service_list: data.merge_strategy_upstream,
+               profile_list: data.merge_strategy_profile
+           }
        };
        await apiClient.saveGlobalSettings(payload);
     } catch (e) {
@@ -195,6 +205,57 @@ export function GlobalSettingsForm() {
                             <SelectItem value="json">JSON</SelectItem>
                             </SelectContent>
                         </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <FormField
+                    control={form.control}
+                    name="merge_strategy_upstream"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Upstream Services Merge Strategy</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isReadOnly}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select strategy" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            <SelectItem value="extend">Extend (Merge)</SelectItem>
+                            <SelectItem value="replace">Replace (Override)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormDescription>
+                            How to merge services from multiple config sources.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                     <FormField
+                    control={form.control}
+                    name="merge_strategy_profile"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Profiles Merge Strategy</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isReadOnly}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select strategy" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            <SelectItem value="extend">Extend (Merge)</SelectItem>
+                            <SelectItem value="replace">Replace (Override)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormDescription>
+                            How to merge profiles from multiple config sources.
+                        </FormDescription>
                         <FormMessage />
                         </FormItem>
                     )}

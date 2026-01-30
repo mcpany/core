@@ -11,6 +11,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestValidatorInterpreterDetection(t *testing.T) {
@@ -32,19 +33,23 @@ func TestValidatorInterpreterDetection(t *testing.T) {
 	// Helper to run validation
 	validate := func(cmd string, args []string) []ValidationError {
 		config := func() *configv1.McpAnyServerConfig {
-			cfg := &configv1.McpAnyServerConfig{}
-			svc := &configv1.UpstreamServiceConfig{}
-			svc.SetName("test-service")
+			conn := configv1.McpStdioConnection_builder{
+				Command: proto.String(cmd),
+				Args:    args,
+			}.Build()
 
-			mcp := &configv1.McpUpstreamService{}
-			conn := &configv1.McpStdioConnection{}
-			conn.SetCommand(cmd)
-			conn.SetArgs(args)
-			mcp.SetStdioConnection(conn)
-			svc.SetMcpService(mcp)
+			mcp := configv1.McpUpstreamService_builder{
+				StdioConnection: conn,
+			}.Build()
 
-			cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-			return cfg
+			svc := configv1.UpstreamServiceConfig_builder{
+				Name:       proto.String("test-service"),
+				McpService: mcp,
+			}.Build()
+
+			return configv1.McpAnyServerConfig_builder{
+				UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+			}.Build()
 		}()
 		return Validate(context.Background(), config, Server)
 	}

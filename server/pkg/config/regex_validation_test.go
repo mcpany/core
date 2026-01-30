@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func mockExecLookPath() func() {
@@ -25,27 +26,30 @@ func TestPlainTextSecretValidation(t *testing.T) {
 	defer cleanup()
 
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName("test-plaintext-secret")
+		secret := configv1.SecretValue_builder{
+			PlainText:       proto.String("invalid-key"),
+			ValidationRegex: proto.String("^sk-[a-zA-Z0-9]{10}$"),
+		}.Build()
 
-		mcp := &configv1.McpUpstreamService{}
-		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("ls")
+		stdio := configv1.McpStdioConnection_builder{
+			Command: proto.String("ls"),
+			Env: map[string]*configv1.SecretValue{
+				"TEST_KEY": secret,
+			},
+		}.Build()
 
-		secret := &configv1.SecretValue{}
-		secret.SetPlainText("invalid-key")
-		secret.SetValidationRegex("^sk-[a-zA-Z0-9]{10}$")
+		mcp := configv1.McpUpstreamService_builder{
+			StdioConnection: stdio,
+		}.Build()
 
-		stdio.SetEnv(map[string]*configv1.SecretValue{
-			"TEST_KEY": secret,
-		})
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("test-plaintext-secret"),
+			McpService: mcp,
+		}.Build()
 
-		mcp.SetStdioConnection(stdio)
-		svc.SetMcpService(mcp)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	errs := Validate(context.Background(), config, Server)
@@ -64,27 +68,30 @@ func TestEnvSecretValidation(t *testing.T) {
 	defer os.Unsetenv("TEST_ENV_KEY")
 
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName("test-env-secret")
+		secret := configv1.SecretValue_builder{
+			EnvironmentVariable: proto.String("TEST_ENV_KEY"),
+			ValidationRegex:     proto.String("^sk-[a-zA-Z0-9]{10}$"),
+		}.Build()
 
-		mcp := &configv1.McpUpstreamService{}
-		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("ls")
+		stdio := configv1.McpStdioConnection_builder{
+			Command: proto.String("ls"),
+			Env: map[string]*configv1.SecretValue{
+				"TEST_KEY": secret,
+			},
+		}.Build()
 
-		secret := &configv1.SecretValue{}
-		secret.SetEnvironmentVariable("TEST_ENV_KEY")
-		secret.SetValidationRegex("^sk-[a-zA-Z0-9]{10}$")
+		mcp := configv1.McpUpstreamService_builder{
+			StdioConnection: stdio,
+		}.Build()
 
-		stdio.SetEnv(map[string]*configv1.SecretValue{
-			"TEST_KEY": secret,
-		})
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("test-env-secret"),
+			McpService: mcp,
+		}.Build()
 
-		mcp.SetStdioConnection(stdio)
-		svc.SetMcpService(mcp)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	errs := Validate(context.Background(), config, Server)
@@ -100,27 +107,30 @@ func TestEmptyPlainTextSecretValidation(t *testing.T) {
 	defer cleanup()
 
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName("test-empty-plaintext")
+		secret := configv1.SecretValue_builder{
+			PlainText:       proto.String(""),
+			ValidationRegex: proto.String("^.+$"),
+		}.Build()
 
-		mcp := &configv1.McpUpstreamService{}
-		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("ls")
+		stdio := configv1.McpStdioConnection_builder{
+			Command: proto.String("ls"),
+			Env: map[string]*configv1.SecretValue{
+				"TEST_KEY": secret,
+			},
+		}.Build()
 
-		secret := &configv1.SecretValue{}
-		secret.SetPlainText("")
-		secret.SetValidationRegex("^.+$")
+		mcp := configv1.McpUpstreamService_builder{
+			StdioConnection: stdio,
+		}.Build()
 
-		stdio.SetEnv(map[string]*configv1.SecretValue{
-			"TEST_KEY": secret,
-		})
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("test-empty-plaintext"),
+			McpService: mcp,
+		}.Build()
 
-		mcp.SetStdioConnection(stdio)
-		svc.SetMcpService(mcp)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	errs := Validate(context.Background(), config, Server)
@@ -141,27 +151,30 @@ func TestWhitespaceInEnvVar_WithRegex(t *testing.T) {
 	defer os.Unsetenv("TEST_WHITESPACE_KEY")
 
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName("test-whitespace")
+		secret := configv1.SecretValue_builder{
+			EnvironmentVariable: proto.String("TEST_WHITESPACE_KEY"),
+			ValidationRegex:     proto.String("^valid-key$"),
+		}.Build()
 
-		mcp := &configv1.McpUpstreamService{}
-		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("ls")
+		stdio := configv1.McpStdioConnection_builder{
+			Command: proto.String("ls"),
+			Env: map[string]*configv1.SecretValue{
+				"TEST_KEY": secret,
+			},
+		}.Build()
 
-		secret := &configv1.SecretValue{}
-		secret.SetEnvironmentVariable("TEST_WHITESPACE_KEY")
-		secret.SetValidationRegex("^valid-key$")
+		mcp := configv1.McpUpstreamService_builder{
+			StdioConnection: stdio,
+		}.Build()
 
-		stdio.SetEnv(map[string]*configv1.SecretValue{
-			"TEST_KEY": secret,
-		})
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("test-whitespace"),
+			McpService: mcp,
+		}.Build()
 
-		mcp.SetStdioConnection(stdio)
-		svc.SetMcpService(mcp)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	errs := Validate(context.Background(), config, Server)
@@ -175,27 +188,30 @@ func TestWhitespaceInPlainText_WithRegex(t *testing.T) {
 	defer cleanup()
 
 	config := func() *configv1.McpAnyServerConfig {
-		cfg := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName("test-whitespace-plain")
+		secret := configv1.SecretValue_builder{
+			PlainText:       proto.String("  valid-key  "),
+			ValidationRegex: proto.String("^valid-key$"),
+		}.Build()
 
-		mcp := &configv1.McpUpstreamService{}
-		stdio := &configv1.McpStdioConnection{}
-		stdio.SetCommand("ls")
+		stdio := configv1.McpStdioConnection_builder{
+			Command: proto.String("ls"),
+			Env: map[string]*configv1.SecretValue{
+				"TEST_KEY": secret,
+			},
+		}.Build()
 
-		secret := &configv1.SecretValue{}
-		secret.SetPlainText("  valid-key  ")
-		secret.SetValidationRegex("^valid-key$")
+		mcp := configv1.McpUpstreamService_builder{
+			StdioConnection: stdio,
+		}.Build()
 
-		stdio.SetEnv(map[string]*configv1.SecretValue{
-			"TEST_KEY": secret,
-		})
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:       proto.String("test-whitespace-plain"),
+			McpService: mcp,
+		}.Build()
 
-		mcp.SetStdioConnection(stdio)
-		svc.SetMcpService(mcp)
-
-		cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return cfg
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	errs := Validate(context.Background(), config, Server)

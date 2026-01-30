@@ -104,7 +104,7 @@ func TestValidateCommandExists_Coverage(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validateCommandExists(tt.command, tt.workingDir)
+			err := validateCommandExists(context.Background(), tt.command, tt.workingDir)
 			if tt.expectErr != "" {
 				assert.ErrorContains(t, err, tt.expectErr)
 			} else {
@@ -138,7 +138,7 @@ func TestValidateDirectoryExists_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateDirectoryExists(tt.path)
+            err := validateDirectoryExists(context.Background(), tt.path)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
@@ -181,7 +181,7 @@ func TestValidateFileExists_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateFileExists(tt.path, tt.workingDir)
+            err := validateFileExists(context.Background(), tt.path, tt.workingDir)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
@@ -231,7 +231,7 @@ func TestValidateGCSettings_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateGCSettings(tt.gc)
+            err := validateGCSettings(context.Background(), tt.gc)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
@@ -308,7 +308,7 @@ func TestValidateMcpService_Coverage(t *testing.T) {
         },
         {
             name: "unknown_connection_type",
-            service: &configv1.McpUpstreamService{},
+            service: configv1.McpUpstreamService_builder{}.Build(),
             expectErr: "mcp service has no connection_type",
         },
         {
@@ -559,7 +559,7 @@ func TestValidateContainerEnvironment_Coverage(t *testing.T) {
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateContainerEnvironment(tt.env)
+            err := validateContainerEnvironment(context.Background(), tt.env)
              if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {
@@ -730,7 +730,7 @@ func TestValidateBasicAuth_Coverage(t *testing.T) {
     }
      for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := validateBasicAuth(ctx, tt.auth)
+            err := validateBasicAuth(ctx, tt.auth, AuthValidationContextOutgoing)
             if tt.expectErr != "" {
                 assert.ErrorContains(t, err, tt.expectErr)
             } else {

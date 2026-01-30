@@ -36,7 +36,7 @@ func TestSettings_StdioLogging(t *testing.T) {
 	defer func() { os.Stderr = originalStderr }()
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)

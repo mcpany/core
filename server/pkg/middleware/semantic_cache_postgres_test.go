@@ -14,6 +14,69 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNewPostgresVectorStoreWithDB(t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
+		db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
+		require.NoError(t, err)
+		defer db.Close()
+
+		mock.ExpectPing()
+		mock.ExpectExec("CREATE EXTENSION IF NOT EXISTS vector").WillReturnResult(sqlmock.NewResult(0, 0))
+		// Use a loose regex to match the table creation and indices
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS semantic_cache_entries").WillReturnResult(sqlmock.NewResult(0, 0))
+
+		store, err := NewPostgresVectorStoreWithDB(db)
+		assert.NoError(t, err)
+		assert.NotNil(t, store)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("PingFailure", func(t *testing.T) {
+		db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
+		require.NoError(t, err)
+		defer db.Close()
+
+		mock.ExpectPing().WillReturnError(assert.AnError)
+
+		store, err := NewPostgresVectorStoreWithDB(db)
+		assert.Error(t, err)
+		assert.Nil(t, store)
+		assert.Contains(t, err.Error(), "failed to ping postgres")
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("ExtensionFailure", func(t *testing.T) {
+		db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
+		require.NoError(t, err)
+		defer db.Close()
+
+		mock.ExpectPing()
+		mock.ExpectExec("CREATE EXTENSION IF NOT EXISTS vector").WillReturnError(assert.AnError)
+
+		store, err := NewPostgresVectorStoreWithDB(db)
+		assert.Error(t, err)
+		assert.Nil(t, store)
+		assert.Contains(t, err.Error(), "failed to create vector extension")
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("SchemaFailure", func(t *testing.T) {
+		db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
+		require.NoError(t, err)
+		defer db.Close()
+
+		mock.ExpectPing()
+		mock.ExpectExec("CREATE EXTENSION IF NOT EXISTS vector").WillReturnResult(sqlmock.NewResult(0, 0))
+		mock.ExpectExec("CREATE TABLE IF NOT EXISTS semantic_cache_entries").WillReturnError(assert.AnError)
+
+		store, err := NewPostgresVectorStoreWithDB(db)
+		assert.Error(t, err)
+		assert.Nil(t, store)
+		assert.Contains(t, err.Error(), "failed to create semantic_cache_entries table")
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+}
+
 func TestPostgresVectorStore_Add(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)

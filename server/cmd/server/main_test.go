@@ -261,12 +261,20 @@ func TestGracefulShutdown(t *testing.T) {
 			if err != nil {
 				return false
 			}
-			// Regex to match log: msg="HTTP server listening" ... port=...
-			re := regexp.MustCompile(`msg="HTTP server listening".*?port=[^:]+:(\d+)`)
-			matches := re.FindSubmatch(content)
-			if len(matches) > 1 {
-				fmt.Sscanf(string(matches[1]), "%d", &realPort)
-				return true
+			// Scan line by line to find the listener log
+			scanner := bufio.NewScanner(bytes.NewReader(content))
+			for scanner.Scan() {
+				line := scanner.Text()
+				if strings.Contains(line, "HTTP server listening") {
+					// Regex to match port regardless of position
+					// port=[^:]+:(\d+) matches port=IP:PORT
+					re := regexp.MustCompile(`port=[^:]+:(\d+)`)
+					matches := re.FindStringSubmatch(line)
+					if len(matches) > 1 {
+						fmt.Sscanf(matches[1], "%d", &realPort)
+						return true
+					}
+				}
 			}
 			return false
 		}, 15*time.Second, 100*time.Millisecond, "Failed to find port in logs")

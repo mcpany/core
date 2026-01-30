@@ -93,3 +93,44 @@ func TestBroadcaster_HistoryIntegrity(t *testing.T) {
 		t.Errorf("History was affected by caller modifying buffer after broadcast: got %s, expected hello", string(lastMsg))
 	}
 }
+
+func TestBroadcaster_Hydrate(t *testing.T) {
+	b := NewBroadcaster()
+	b.limit = 5
+
+	messages := [][]byte{
+		[]byte("h1"),
+		[]byte("h2"),
+		[]byte("h3"),
+	}
+	b.Hydrate(messages)
+
+	// Check history
+	history := b.GetHistory()
+	if len(history) != 3 {
+		t.Errorf("Expected history length 3, got %d", len(history))
+	}
+	if string(history[0]) != "h1" {
+		t.Errorf("Unexpected history content")
+	}
+
+	// Add more (overflow)
+	moreMessages := [][]byte{
+		[]byte("h4"),
+		[]byte("h5"),
+		[]byte("h6"),
+	}
+	b.Hydrate(moreMessages)
+
+	// Should have h2, h3, h4, h5, h6
+	history = b.GetHistory()
+	if len(history) != 5 {
+		t.Errorf("Expected history length 5, got %d", len(history))
+	}
+	if string(history[0]) != "h2" {
+		t.Errorf("Expected h2, got %s", string(history[0]))
+	}
+	if string(history[4]) != "h6" {
+		t.Errorf("Expected h6, got %s", string(history[4]))
+	}
+}
