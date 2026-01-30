@@ -433,8 +433,8 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 
 // ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                      `json:"services"`
-	History  map[string][]health.HealthHistoryPoint `json:"history"`
+	Services []ServiceHealth                 `json:"services"`
+	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
 // ServiceHealth represents the health status of a service.
@@ -470,21 +470,31 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		history := health.GetHealthHistory()
 		var serviceHealths []ServiceHealth
 
+		const (
+			statusInactive  = "inactive"
+			statusUnhealthy = "unhealthy"
+			statusUnknown   = "unknown"
+			statusHealthy   = "healthy"
+			statusDegraded  = "degraded"
+		)
+
 		for _, svc := range services {
 			name := svc.GetName()
 			hPoints := history[name]
-			status := "inactive"
-			if len(hPoints) > 0 {
+			var status string
+
+			switch {
+			case len(hPoints) > 0:
 				status = hPoints[len(hPoints)-1].Status
-			} else if svc.GetDisable() {
-				status = "inactive"
-			} else {
+			case svc.GetDisable():
+				status = statusInactive
+			default:
 				// If no history but enabled, assume pending or unknown?
 				// Or check if we have an error in registry
 				if _, ok := a.ServiceRegistry.GetServiceError(svc.GetId()); ok {
-					status = "unhealthy"
+					status = statusUnhealthy
 				} else {
-					status = "unknown"
+					status = statusUnknown
 				}
 			}
 
@@ -492,24 +502,24 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			// health package uses "up", "down"?
 			// health.go uses health.AvailabilityStatus which is "up", "down".
 			// UI expects "healthy", "unhealthy", "degraded", "inactive".
-			uiStatus := "inactive"
+			var uiStatus string
 			switch status {
 			case "up", "UP":
-				uiStatus = "healthy"
+				uiStatus = statusHealthy
 			case "down", "DOWN":
-				uiStatus = "unhealthy"
-			case "inactive":
-				uiStatus = "inactive"
+				uiStatus = statusUnhealthy
+			case statusInactive:
+				uiStatus = statusInactive
 			default:
-				uiStatus = "unknown"
+				uiStatus = statusUnknown
 			}
 
 			// Get error message if any
 			var msg string
 			if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetId()); ok {
 				msg = errMsg
-				if uiStatus == "healthy" {
-					uiStatus = "degraded" // If up but has error (maybe partial?)
+				if uiStatus == statusHealthy {
+					uiStatus = statusDegraded // If up but has error (maybe partial?)
 				}
 			}
 
@@ -524,7 +534,7 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		}
 
 		// Remap history to be keyed by Service ID for the frontend
-		historyByID := make(map[string][]health.HealthHistoryPoint)
+		historyByID := make(map[string][]health.HistoryPoint)
 		for _, svc := range services {
 			if h, ok := history[svc.GetName()]; ok {
 				historyByID[svc.GetId()] = h

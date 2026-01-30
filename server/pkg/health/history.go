@@ -8,23 +8,20 @@ import (
 	"time"
 )
 
-// HealthHistoryPoint represents a single point in time for a service's health.
-type HealthHistoryPoint struct {
+// HistoryPoint represents a single point in time for a service's health.
+type HistoryPoint struct {
 	Timestamp int64  `json:"timestamp"` // Unix millis
 	Status    string `json:"status"`
 }
 
 // ServiceHealthHistory stores the history for a service.
 type ServiceHealthHistory struct {
-	Points []HealthHistoryPoint
+	Points []HistoryPoint
 }
 
 var (
 	historyStore = make(map[string]*ServiceHealthHistory)
 	historyMu    sync.RWMutex
-	maxHistory   = 1440 // Store last 24h at 1 min interval (approx) or 4h at 10s.
-	// UI asks for 24h. If check interval is 10s, that's 8640 points.
-	// Let's cap at 1000 for now to be safe on memory.
 )
 
 // AddHealthStatus adds a status point to the history.
@@ -34,7 +31,7 @@ func AddHealthStatus(serviceName string, status string) {
 
 	hist, ok := historyStore[serviceName]
 	if !ok {
-		hist = &ServiceHealthHistory{Points: make([]HealthHistoryPoint, 0, 100)}
+		hist = &ServiceHealthHistory{Points: make([]HistoryPoint, 0, 100)}
 		historyStore[serviceName] = hist
 	}
 
@@ -52,7 +49,7 @@ func AddHealthStatus(serviceName string, status string) {
 
 	// Let's just append the point.
 	now := time.Now().UnixMilli()
-	hist.Points = append(hist.Points, HealthHistoryPoint{
+	hist.Points = append(hist.Points, HistoryPoint{
 		Timestamp: now,
 		Status:    status,
 	})
@@ -64,13 +61,13 @@ func AddHealthStatus(serviceName string, status string) {
 }
 
 // GetHealthHistory returns the history for all services.
-func GetHealthHistory() map[string][]HealthHistoryPoint {
+func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()
 
-	result := make(map[string][]HealthHistoryPoint)
+	result := make(map[string][]HistoryPoint)
 	for name, hist := range historyStore {
-		points := make([]HealthHistoryPoint, len(hist.Points))
+		points := make([]HistoryPoint, len(hist.Points))
 		copy(points, hist.Points)
 		result[name] = points
 	}
