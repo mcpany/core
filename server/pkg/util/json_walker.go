@@ -110,3 +110,83 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 	out = append(out, input[lastWrite:]...)
 	return out
 }
+
+// WalkStandardJSONStrings visits every string value in the JSON input.
+// ⚡ Bolt: Optimized for standard JSON (no comments).
+// It assumes the input is standard JSON (no comments) and skips comment detection logic
+// for significantly improved performance on mixed payloads.
+// visitor is called for every string value (not keys).
+func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
+	var out []byte
+	i := 0
+	lastWrite := 0
+	n := len(input)
+
+	for i < n {
+		// Scan for the next quote which might start a string
+		nextQuote := bytes.IndexByte(input[i:], '"')
+		if nextQuote == -1 {
+			break
+		}
+		quotePos := i + nextQuote
+
+		// Optimization: Standard JSON has no comments, so we skip the expensive slash scan loop.
+
+		// Find end of string using the shared skipString helper
+		endQuote := skipString(input, quotePos)
+		if endQuote > n {
+			endQuote = n
+		}
+
+		// Check if this string is a key.
+		// It is a key if it is followed by a colon (ignoring whitespace)
+		isKey := false
+		j := skipWhitespace(input, endQuote)
+		if j < n && input[j] == ':' {
+			isKey = true
+		}
+
+		if !isKey {
+			// It is a value
+			raw := input[quotePos:endQuote]
+			replacement, modified := visitor(raw)
+			if modified {
+				if out == nil {
+					// Allocate buffer
+					// Heuristic: start with input size + small buffer
+					extra := len(input) / 10
+					if extra < 128 {
+						extra = 128
+					}
+					out = make([]byte, 0, len(input)+extra)
+				}
+				out = append(out, input[lastWrite:quotePos]...)
+				out = append(out, replacement...)
+				lastWrite = endQuote
+			}
+		}
+
+		i = endQuote
+	}
+
+	if out == nil {
+		return input
+	}
+	out = append(out, input[lastWrite:]...)
+	return out
+}
+
+// skipWhitespace returns the index of the first non-whitespace character starting from start.
+func skipWhitespace(input []byte, start int) int {
+	i := start
+	n := len(input)
+	for i < n {
+		c := input[i]
+		if c == ' ' || c == '\n' || c == '\t' || c == '\r' {
+			i++
+			continue
+		}
+		break
+	}
+	return i
+}
