@@ -6,6 +6,9 @@ set -e
 
 # Usage: SHARD=1/4 ./run_shard.sh [additional go test args]
 
+# Skip seeding official collections during E2E tests to ensure clean state
+export MCPANY_SKIP_SEEDING=true
+
 if [ -z "$SHARD" ]; then
     echo "SHARD env var not set, running all tests..."
     SHARD_INDEX=1
