@@ -166,6 +166,7 @@ export default function MarketplacePage() {
 
       // Resolve schema from registry
       const registryItem = resolveServerConfig(server.url);
+      // Ensure the schema is stringified so it can be passed in the config object
       const configurationSchema = registryItem ? JSON.stringify(registryItem.schema) : "";
 
       const tags = [...server.tags];

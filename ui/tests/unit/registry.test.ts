@@ -26,7 +26,7 @@ describe('Server Registry', () => {
                 command: 'npx -y @modelcontextprotocol/server-filesystem',
                 env: {}
             }
-        } as any;
+        } as UpstreamServiceConfig;
 
         const values = { "ALLOWED_PATHS": "/tmp/test" };
         const result = item!.configure(baseConfig, values);
@@ -47,12 +47,12 @@ describe('Server Registry', () => {
                 command: 'npx -y @modelcontextprotocol/server-github',
                 env: {}
             }
-        } as any;
+        } as UpstreamServiceConfig;
 
         const values = { "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_123" };
         const result = item!.configure(baseConfig, values);
 
         expect(result.commandLineService?.env?.["GITHUB_PERSONAL_ACCESS_TOKEN"]).toBeDefined();
-        expect((result.commandLineService?.env?.["GITHUB_PERSONAL_ACCESS_TOKEN"] as any).plainText).toBe('ghp_123');
+        expect(result.commandLineService?.env?.["GITHUB_PERSONAL_ACCESS_TOKEN"]?.plainText).toBe('ghp_123');
     });
 });

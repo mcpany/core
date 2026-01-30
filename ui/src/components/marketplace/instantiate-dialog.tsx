@@ -86,10 +86,20 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                 setSchemaValues({});
             }
 
-            // Parse Schema if available
-            if (templateConfig.configurationSchema) {
+            // Parse Schema if available (either from config or registry lookup)
+            let schemaToUse = templateConfig.configurationSchema;
+            if (!schemaToUse) {
+                const registryTag = templateConfig.tags?.find(t => t.startsWith("registry:"));
+                const registryId = registryTag ? registryTag.split(":")[1] : null;
+                const registryItem = registryId ? getRegistryItemById(registryId) : null;
+                if (registryItem) {
+                    schemaToUse = JSON.stringify(registryItem.schema);
+                }
+            }
+
+            if (schemaToUse) {
                 try {
-                    const schema = JSON.parse(templateConfig.configurationSchema);
+                    const schema = JSON.parse(schemaToUse);
                     setParsedSchema(schema);
 
                     // Apply defaults if value not already present
