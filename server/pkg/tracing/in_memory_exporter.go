@@ -125,10 +125,10 @@ func (e *InMemoryExporter) GetTraces() []*Trace {
 				// attr.Value.AsString() is safe
 				val := attr.Value.AsString()
 				// Basic heuristic
-				switch {
-				case key == "input" || key == "arguments":
+				switch key {
+				case "input", "arguments":
 					_ = json.Unmarshal([]byte(val), &input)
-				case key == "output" || key == "result":
+				case "output", "result":
 					_ = json.Unmarshal([]byte(val), &output)
 				default:
 					input[key] = val
@@ -141,14 +141,14 @@ func (e *InMemoryExporter) GetTraces() []*Trace {
 			}
 
 			span := &Span{
-				ID:        s.SpanContext().SpanID().String(),
-				Name:      s.Name(),
-				Type:      "tool", // Default
-				StartTime: start,
-				EndTime:   end,
-				Status:    status,
-				Input:     input,
-				Output:    output,
+				ID:           s.SpanContext().SpanID().String(),
+				Name:         s.Name(),
+				Type:         "tool", // Default
+				StartTime:    start,
+				EndTime:      end,
+				Status:       status,
+				Input:        input,
+				Output:       output,
 				ErrorMessage: s.Status().Description,
 			}
 
