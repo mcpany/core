@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { SchemaForm } from "./schema-form";
+import { getRegistryItemById } from "@/lib/server-registry";
 
 interface InstantiateDialogProps {
     open: boolean;
@@ -149,24 +150,34 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         if (!templateConfig) return;
         setLoading(true);
         try {
-            const newConfig = { ...templateConfig };
+            let newConfig = { ...templateConfig };
             newConfig.name = name;
             newConfig.id = name; // ID is name for now
+
+            // Check if this is a known registry item
+            const registryTag = newConfig.tags?.find(t => t.startsWith("registry:"));
+            const registryId = registryTag ? registryTag.split(":")[1] : null;
+            const registryItem = registryId ? getRegistryItemById(registryId) : null;
 
             // Update CLI specific fields if applicable
             if (newConfig.commandLineService) {
                 newConfig.commandLineService.command = command;
 
-                // Map EnvVars back to API format
-                const apiEnv: Record<string, any> = {};
-                Object.entries(envVars).forEach(([k, v]) => {
-                    if (v.plainText) {
-                        apiEnv[k] = { plainText: v.plainText };
-                    } else if (v.secretId) {
-                        // Secret handling placeholder
-                    }
-                });
-                newConfig.commandLineService.env = apiEnv;
+                if (registryItem) {
+                    // Use the registry configuration logic
+                    newConfig = registryItem.configure(newConfig, schemaValues);
+                } else {
+                    // Map EnvVars back to API format
+                    const apiEnv: Record<string, any> = {};
+                    Object.entries(envVars).forEach(([k, v]) => {
+                        if (v.plainText) {
+                            apiEnv[k] = { plainText: v.plainText };
+                        } else if (v.secretId) {
+                            // Secret handling placeholder
+                        }
+                    });
+                    newConfig.commandLineService.env = apiEnv;
+                }
             }
 
             if (authId !== 'none') {

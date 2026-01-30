@@ -25,6 +25,7 @@ import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
+import { resolveServerConfig } from "@/lib/server-registry";
 
 /**
  * MarketplacePage component.
@@ -163,47 +164,13 @@ export default function MarketplacePage() {
           command = isPython ? "uvx package-name" : "npx -y package-name";
       }
 
-      // Smart Schema Injection
-      let configurationSchema = "";
+      // Resolve schema from registry
+      const registryItem = resolveServerConfig(server.url);
+      const configurationSchema = registryItem ? JSON.stringify(registryItem.schema) : "";
 
-      // Cloudflare
-      if (repoMatch && (repoMatch[2] === "mcp-server-cloudflare" || server.name.toLowerCase().includes("cloudflare"))) {
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "Cloudflare Configuration",
-              properties: {
-                  "CLOUDFLARE_API_TOKEN": {
-                      type: "string",
-                      title: "Cloudflare API Token",
-                      description: "Your Cloudflare API Token (Account.Read permissions required)",
-                  },
-                  "CLOUDFLARE_ACCOUNT_ID": {
-                      type: "string",
-                      title: "Account ID",
-                      description: "Your Cloudflare Account ID"
-                  }
-              },
-              required: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
-          });
-      }
-
-      // Postgres
-      if (repoMatch && (repoMatch[2] === "server-postgres" || server.name.toLowerCase().includes("postgres"))) {
-           // PostgreSQL usually takes args but some wrappers use env.
-           // For the official one, it takes connection string as arg.
-           // But let's assume we can pass it via env if we wrap it, or just for demo of the UI capability.
-           configurationSchema = JSON.stringify({
-              type: "object",
-              title: "PostgreSQL Configuration",
-              properties: {
-                  "POSTGRES_URL": {
-                      type: "string",
-                      title: "Connection URL",
-                      description: "postgresql://user:pass@host:5432/db",
-                  }
-              },
-              required: ["POSTGRES_URL"]
-          });
+      const tags = [...server.tags];
+      if (registryItem) {
+          tags.push(`registry:${registryItem.id}`);
       }
 
       const config: UpstreamServiceConfig = {
@@ -232,7 +199,7 @@ export default function MarketplacePage() {
           prompts: [],
           autoDiscoverTool: true,
           configError: "",
-          tags: server.tags,
+          tags: tags,
           readOnly: false
       };
 
