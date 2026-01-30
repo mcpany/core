@@ -1808,6 +1808,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
+						// If running a shell, validate that inputs are safe for shell execution
+						if isShellCommand(t.service.GetCommand()) {
+							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -2609,7 +2615,7 @@ func isShellCommand(cmd string) bool {
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
-		// "lua", "awk", "gawk", "nawk", "sed",
+		"lua", "awk", "gawk", "nawk",
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
