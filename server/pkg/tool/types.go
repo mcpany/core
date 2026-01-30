@@ -2710,7 +2710,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
 	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
