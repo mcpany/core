@@ -182,6 +182,7 @@ We strive for high code quality. Please ensure the following before submitting a
     - **Parameters**: Name, Type, and Constraints.
     - **Returns**: Type and Meaning.
   - **TypeScript/React**: All exported components, functions, interfaces, and types must have JSDoc comments explaining their usage, props/parameters, and return values.
+  - **Protocol Buffers**: All services, methods, messages, and fields must have complete docstrings explaining their purpose and usage.
   - **Quality Standard**: Avoid "empty calorie" comments (e.g., `// Sets ID` for `SetID`). Strive for clear, actionable descriptions.
   - **Strict Enforcement**: Documentation coverage is strictly enforced. Do not leave any public symbol undocumented.
   - You can verify Go documentation coverage with:

@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
-import { Duration } from "../../google/protobuf/duration";
+import { Duration } from "../../../google/protobuf/duration";
 import { Authentication, SecretValue } from "./auth";
 import {
   CacheConfig,
@@ -87,41 +87,47 @@ export function loadBalancingStrategyToJSON(object: LoadBalancingStrategy): stri
 export interface UpstreamServiceConfig {
   /**
    * The original user-provided name for the upstream service.
-   * This name is used for identification, logging, and metrics.
+   * This name is used for identification in logs, metrics, and the UI.
    */
   name: string;
   /**
-   * The full SHA256 hash of the service name, used as a unique identifier.
+   * The full SHA256 hash of the service name, used as a unique immutable identifier.
    * This ensures that for the same service name, the ID is always the same.
    */
   id: string;
   /**
-   * A sanitized version of the service name, conforming to identifier rules.
+   * A sanitized version of the service name, conforming to identifier rules (e.g., alphanumeric, dashes).
    * @inject_tag: yaml:"-"
    *
    * This field is managed internally and should not be set by the user.
    */
   sanitizedName: string;
-  /** The version of the upstream service, if known (e.g., "v1.2.3"). */
+  /**
+   * The version of the upstream service, if known (e.g., "v1.2.3").
+   * This is primarily for documentation and version tracking.
+   */
   version: string;
-  /** The priority of the service. Lower numbers have higher priority. */
+  /**
+   * The priority of the service when resolving tool naming conflicts.
+   * Lower numbers have higher priority (e.g., 0 is higher priority than 10).
+   */
   priority: number;
-  /** If true, this upstream service is disabled. */
+  /** If true, this upstream service is disabled and will not be loaded or registered. */
   disable: boolean;
-  /** If true, automatically convert all API calls to tools. */
+  /** If true, automatically attempts to convert all available API endpoints to MCP tools. */
   autoDiscoverTool: boolean;
   /**
-   * The configuration error if the service failed validation.
+   * The configuration error message if the service failed validation.
    * @inject_tag: yaml:"-"
    */
   configError: string;
   /**
-   * If true, this service configuration is read-only (e.g., loaded from a file).
+   * If true, this service configuration is read-only (e.g., loaded from a file or immutable source).
    * @inject_tag: yaml:"-"
    */
   readOnly: boolean;
   /**
-   * The last error message encountered by the service (e.g. health check failure).
+   * The last error message encountered by the service (e.g., health check failure).
    * @inject_tag: yaml:"-"
    */
   lastError: string;
@@ -134,7 +140,7 @@ export interface UpstreamServiceConfig {
   connectionPool?:
     | ConnectionPoolConfig
     | undefined;
-  /** Authentication configuration for mcpany to use when connecting to the upstream service (outgoing). */
+  /** Authentication configuration for mcpany to use when connecting OUT to the upstream service. */
   upstreamAuth?:
     | Authentication
     | undefined;
@@ -148,17 +154,23 @@ export interface UpstreamServiceConfig {
     | undefined;
   /** Strategy for distributing requests among multiple instances of the service. */
   loadBalancingStrategy: LoadBalancingStrategy;
-  /** Advanced resiliency features to handle failures gracefully. */
+  /** Advanced resiliency features to handle failures gracefully (circuit breakers, retries). */
   resilience?:
     | ResilienceConfig
     | undefined;
-  /** Authentication configuration for securing access to this service (incoming). */
+  /** Authentication configuration for securing access IN to this service from clients. */
   authentication?:
     | Authentication
     | undefined;
-  /** Policies to control what is exported to the client. */
-  toolExportPolicy?: ExportPolicy | undefined;
-  promptExportPolicy?: ExportPolicy | undefined;
+  /** Policy to control which tools are exported to the client. */
+  toolExportPolicy?:
+    | ExportPolicy
+    | undefined;
+  /** Policy to control which prompts are exported to the client. */
+  promptExportPolicy?:
+    | ExportPolicy
+    | undefined;
+  /** Policy to control which resources are exported to the client. */
   resourceExportPolicy?: ExportPolicy | undefined;
   mcpService?: McpUpstreamService | undefined;
   httpService?: HttpUpstreamService | undefined;
@@ -173,15 +185,15 @@ export interface UpstreamServiceConfig {
   vectorService?:
     | VectorUpstreamService
     | undefined;
-  /** Policy to control which calls can be made. */
+  /** Policy to control which specific calls/actions are allowed. */
   callPolicies: CallPolicy[];
-  /** List of hooks to execute before the call. */
+  /** List of hooks to execute before the call is made to the upstream. */
   preCallHooks: CallHook[];
-  /** List of hooks to execute after the call. */
+  /** List of hooks to execute after the call returns from the upstream. */
   postCallHooks: CallHook[];
   /** The prompts provided by this upstream service. */
   prompts: PromptDefinition[];
-  /** Tags for organizing and filtering services. */
+  /** Tags for organizing and filtering services (e.g., "production", "data-science"). */
   tags: string[];
   /**
    * JSON Schema string defining the configuration parameters (env vars, args) required by this service.
@@ -190,10 +202,11 @@ export interface UpstreamServiceConfig {
   configurationSchema: string;
 }
 
+/** CallPolicy defines a rule for allowing or denying specific calls. */
 export interface CallPolicy {
   /** Default action if no rules match. */
   defaultAction: CallPolicy_Action;
-  /** List of rules to apply. First match wins. */
+  /** List of rules to apply. First matching rule wins. */
   rules: CallPolicyRule[];
 }
 
@@ -242,9 +255,11 @@ export function callPolicy_ActionToJSON(object: CallPolicy_Action): string {
   }
 }
 
+/** CallPolicyRule defines criteria for a call policy. */
 export interface CallPolicyRule {
+  /** The action to take if the rule matches. */
   action: CallPolicy_Action;
-  /** Regex to match the call name. Empty means match all. */
+  /** Regex to match the call/tool name. Empty means match all. */
   nameRegex: string;
   /**
    * Regex to match request arguments (JSON stringified). Empty means match all.
@@ -257,8 +272,11 @@ export interface CallPolicyRule {
   callIdRegex: string;
 }
 
+/** ExportPolicy defines rules for exporting items (tools, prompts, resources) to clients. */
 export interface ExportPolicy {
+  /** The default action if no rules match. */
   defaultAction: ExportPolicy_Action;
+  /** List of rules to apply. First matching rule wins. */
   rules: ExportRule[];
 }
 
@@ -301,13 +319,17 @@ export function exportPolicy_ActionToJSON(object: ExportPolicy_Action): string {
   }
 }
 
+/** ExportRule defines a single rule for export policy. */
 export interface ExportRule {
   /** Regex to match the name (tool, prompt, or resource). */
   nameRegex: string;
+  /** The action to take (EXPORT or UNEXPORT). */
   action: ExportPolicy_Action;
 }
 
+/** CallHook defines a hook to be executed around a call. */
 export interface CallHook {
+  /** The name of the hook. */
   name: string;
   webhook?: WebhookConfig | undefined;
   callPolicy?: CallPolicy | undefined;
@@ -346,29 +368,33 @@ export interface GrpcUpstreamService_CallsEntry {
   value?: GrpcCallDefinition | undefined;
 }
 
+/** ProtoDefinition allows specifying a protobuf source. */
 export interface ProtoDefinition {
   protoFile?: ProtoFile | undefined;
   protoDescriptor?: ProtoDescriptor | undefined;
 }
 
+/** ProtoFile represents a single protobuf file. */
 export interface ProtoFile {
   fileName: string;
   fileContent?: string | undefined;
   filePath?: string | undefined;
 }
 
+/** ProtoDescriptor represents a protobuf file descriptor set. */
 export interface ProtoDescriptor {
   fileName: string;
   filePath?: string | undefined;
 }
 
+/** ProtoCollection defines a way to collect multiple proto files. */
 export interface ProtoCollection {
   rootPath: string;
   pathMatchRegex: string;
   isRecursive: boolean;
 }
 
-/** HttpUpstreamService defines an upstream service that speaks HTTP. */
+/** HttpUpstreamService defines an upstream service that speaks HTTP (REST/JSON). */
 export interface HttpUpstreamService {
   /** The base URL of the HTTP service (e.g., "https://api.example.com"). */
   address: string;
@@ -480,9 +506,9 @@ export interface OpenapiUpstreamService_CallsEntry {
   value?: OpenAPICallDefinition | undefined;
 }
 
-/** CommandLineUpstreamService defines a service that communicates over standard I/O. */
+/** CommandLineUpstreamService defines a service that communicates over standard I/O (stdin/stdout). */
 export interface CommandLineUpstreamService {
-  /** The command to execute the service. */
+  /** The command to execute the service (e.g., "python3", "npx"). */
   command: string;
   /** The working directory for the command. */
   workingDirectory: string;
@@ -496,7 +522,7 @@ export interface CommandLineUpstreamService {
   cache?:
     | CacheConfig
     | undefined;
-  /** Container environment to run the command in. */
+  /** Container environment to run the command in (Docker support). */
   containerEnvironment?:
     | ContainerEnvironment
     | undefined;
@@ -510,8 +536,9 @@ export interface CommandLineUpstreamService {
   calls: { [key: string]: CommandLineCallDefinition };
   /** A list of prompts served by this service. */
   prompts: PromptDefinition[];
+  /** The protocol used to communicate with the command. */
   communicationProtocol: CommandLineUpstreamService_CommunicationProtocol;
-  /** If true, the command will be executed on the local filesystem. */
+  /** If true, the command will be executed on the local filesystem directly (not in a container/sandbox). */
   local: boolean;
   /** Environment variables to set for the command (supports secrets). */
   env: { [key: string]: SecretValue };
@@ -519,6 +546,7 @@ export interface CommandLineUpstreamService {
 
 export enum CommandLineUpstreamService_CommunicationProtocol {
   COMMUNICATION_PROTOCOL_UNSPECIFIED = 0,
+  /** COMMUNICATION_PROTOCOL_JSON - Use JSON-RPC over stdio. */
   COMMUNICATION_PROTOCOL_JSON = 1,
   UNRECOGNIZED = -1,
 }
@@ -750,7 +778,10 @@ export interface MilvusVectorDB {
   apiKey: string;
 }
 
-/** McpUpstreamService defines an upstream that is already an MCP-compliant service. */
+/**
+ * McpUpstreamService defines an upstream that is already an MCP-compliant service.
+ * This is the most common type, acting as a direct proxy or bridge.
+ */
 export interface McpUpstreamService {
   httpConnection?:
     | McpStreamableHttpConnection
@@ -782,22 +813,22 @@ export interface McpUpstreamService_CallsEntry {
 
 /** McpStdioConnection defines the parameters for a stdio-based connection. */
 export interface McpStdioConnection {
-  /** The command and arguments to execute the service. */
+  /** The command to execute the service (e.g., "node", "python"). */
   command: string;
   /** The working directory for the command. */
   workingDirectory: string;
   /**
    * Optional: The container image to use. If not provided, an image will be
-   * selected based on the command.
+   * selected based on the command or run locally.
    */
   containerImage: string;
   /** Arguments to the command. */
   args: string[];
   /** Optional: A list of commands to run as setup before the main command. */
   setupCommands: string[];
-  /** Optional: Environment variables to set in the container. */
+  /** Optional: Environment variables to set in the container or process. */
   env: { [key: string]: SecretValue };
-  /** Optional: Validation rules for the environment. */
+  /** Optional: Validation rules for the environment variables. */
   validation?: EnvValidation | undefined;
 }
 
@@ -812,7 +843,7 @@ export interface EnvValidation {
 }
 
 export interface McpStreamableHttpConnection {
-  /** Connect via HTTP. */
+  /** Connect via HTTP (SSE). */
   httpAddress: string;
   /** TLS configuration, applicable if using an http_address. */
   tlsConfig?:
@@ -822,7 +853,10 @@ export interface McpStreamableHttpConnection {
   allowHttpRedirect: boolean;
 }
 
-/** McpBundleConnection defines the parameters for a bundle-based connection. */
+/**
+ * McpBundleConnection defines the parameters for a bundle-based connection.
+ * Bundles are self-contained archives of MCP servers.
+ */
 export interface McpBundleConnection {
   /** The path to the bundle file. */
   bundlePath: string;
@@ -915,7 +949,7 @@ export interface RetryConfig {
 
 /** TLSConfig defines the TLS settings for connecting to an upstream service. */
 export interface TLSConfig {
-  /** The server name to use for SNI. */
+  /** The server name to use for SNI (Server Name Indication). */
   serverName: string;
   /** Path to the CA certificate file for verifying the server's certificate. */
   caCertPath: string;
@@ -923,7 +957,10 @@ export interface TLSConfig {
   clientCertPath: string;
   /** Path to the client private key file for mTLS. */
   clientKeyPath: string;
-  /** If true, the client will not verify the server's certificate chain. Use with caution. */
+  /**
+   * If true, the client will not verify the server's certificate chain.
+   * Warning: This makes the connection susceptible to Man-in-the-Middle attacks.
+   */
   insecureSkipVerify: boolean;
 }
 

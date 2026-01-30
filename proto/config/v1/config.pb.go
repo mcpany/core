@@ -25,6 +25,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// LogLevel defines the verbosity of logs.
 type GlobalSettings_LogLevel int32
 
 const (
@@ -75,6 +76,7 @@ func (x GlobalSettings_LogLevel) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// LogFormat defines the structure of log output.
 type GlobalSettings_LogFormat int32
 
 const (
@@ -119,6 +121,7 @@ func (x GlobalSettings_LogFormat) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// StorageType defines the destination for audit logs.
 type AuditConfig_StorageType int32
 
 const (
@@ -176,6 +179,7 @@ func (x AuditConfig_StorageType) Number() protoreflect.EnumNumber {
 }
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
+// It aggregates global settings, upstream services, user definitions, and merge strategies.
 type McpAnyServerConfig struct {
 	state                       protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_GlobalSettings   *GlobalSettings           `protobuf:"bytes,1,opt,name=global_settings"`
@@ -298,15 +302,18 @@ func (x *McpAnyServerConfig) ClearMergeStrategy() {
 type McpAnyServerConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Server-wide operational parameters.
+	// Server-wide operational parameters such as network listeners, logging, and security policies.
 	GlobalSettings *GlobalSettings
 	// A list of all configured upstream services that MCP Any can proxy to.
+	// Each entry defines a connection to an external tool or API.
 	UpstreamServices []*UpstreamServiceConfig
 	// A list of upstream service collections to load from.
+	// Collections allow grouping and reusing service definitions.
 	Collections []*Collection
 	// A list of users authorized to access the server.
+	// This includes their roles, authentication methods, and profile associations.
 	Users []*User
-	// Configuration for how to merge lists when loading from multiple sources.
+	// Configuration for how to merge lists when loading from multiple sources (e.g., config files and database).
 	MergeStrategy *MergeStrategyConfig
 }
 
@@ -322,6 +329,7 @@ func (b0 McpAnyServerConfig_builder) Build() *McpAnyServerConfig {
 	return m0
 }
 
+// MergeStrategyConfig defines how to resolve conflicts when merging configurations from multiple sources.
 type MergeStrategyConfig struct {
 	state                          protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_UpstreamServiceList *string                `protobuf:"bytes,1,opt,name=upstream_service_list"`
@@ -414,9 +422,11 @@ func (x *MergeStrategyConfig) ClearProfileList() {
 type MergeStrategyConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Strategy for merging upstream_services list ("extend" or "replace").
+	// Strategy for merging upstream_services list.
+	// Options: "extend" (append new services) or "replace" (overwrite existing list).
 	UpstreamServiceList *string
-	// Strategy for merging profiles list ("extend" or "replace").
+	// Strategy for merging profiles list.
+	// Options: "extend" (append new profiles) or "replace" (overwrite existing list).
 	ProfileList *string
 }
 
@@ -435,7 +445,7 @@ func (b0 MergeStrategyConfig_builder) Build() *MergeStrategyConfig {
 	return m0
 }
 
-// Secret defines a secret value.
+// Secret defines a sensitive value that should be handled securely.
 type Secret struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -668,19 +678,20 @@ func (x *Secret) ClearCreatedAt() {
 type Secret_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// name is the human-readable name of the secret.
+	// The human-readable name of the secret, used for display purposes.
 	Name *string
-	// id is the unique identifier for the secret.
+	// The unique identifier for the secret, used for referencing it in configurations.
 	Id *string
-	// key is the key used to reference the secret (e.g. env var name).
+	// The key used to reference the secret (e.g., the environment variable name).
 	Key *string
-	// value is the secret value (encrypted or raw depending on context).
+	// The actual value of the secret.
+	// Note: This may be encrypted or raw depending on the context.
 	Value *string
-	// provider is the source of the secret (e.g. "openai", "aws").
+	// The provider source of the secret (e.g., "openai", "aws", "vault").
 	Provider *string
-	// last_used is the timestamp when the secret was last used using RFC3339 format.
+	// The timestamp when the secret was last accessed, in RFC3339 format.
 	LastUsed *string
-	// created_at is the timestamp when the secret was created using RFC3339 format.
+	// The timestamp when the secret was created, in RFC3339 format.
 	CreatedAt *string
 }
 
@@ -719,6 +730,7 @@ func (b0 Secret_builder) Build() *Secret {
 	return m0
 }
 
+// SecretList is a container for a list of secrets.
 type SecretList struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Secrets *[]*Secret             `protobuf:"bytes,1,rep,name=secrets"`
@@ -767,6 +779,7 @@ func (x *SecretList) SetSecrets(v []*Secret) {
 type SecretList_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of secrets.
 	Secrets []*Secret
 }
 
@@ -778,6 +791,7 @@ func (b0 SecretList_builder) Build() *SecretList {
 	return m0
 }
 
+// GlobalSettings defines server-wide operational parameters.
 type GlobalSettings struct {
 	state                         protoimpl.MessageState   `protogen:"opaque.v1"`
 	xxx_hidden_McpListenAddress   *string                  `protobuf:"bytes,1,opt,name=mcp_listen_address"`
@@ -1417,60 +1431,60 @@ func (x *GlobalSettings) ClearAlerts() {
 type GlobalSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The address the MCP server listens on.
+	// The address (host:port) on which the MCP server listens for incoming connections (e.g., "0.0.0.0:50051").
 	McpListenAddress *string
-	// The log level for the server.
+	// The minimum log level to output. Logs below this level will be discarded.
 	LogLevel *GlobalSettings_LogLevel
-	// The API key used for authentication.
+	// The master API key used for global authentication to the server.
 	ApiKey *string
-	// The log format for the server.
+	// The format to use for log output (text or JSON).
 	LogFormat *GlobalSettings_LogFormat
-	// The path to the database file.
+	// The file path to the persistent database (e.g., "mcpany.db").
 	DbPath *string
-	// The database connection string (DSN).
+	// The database connection string (DSN) for connecting to external databases like PostgreSQL.
 	DbDsn *string
-	// The database driver (sqlite, postgres).
+	// The database driver to use (e.g., "sqlite", "postgres").
 	DbDriver *string
-	// GitHub API URL for self-updates (optional).
+	// The GitHub API URL to use for checking for self-updates (optional).
 	GithubApiUrl *string
-	// Whether to use sudo for Docker commands.
+	// If true, the server will prepend "sudo" to Docker commands.
 	UseSudoForDocker *bool
-	// The message bus configuration.
+	// Configuration for the internal message bus used for component communication.
 	MessageBus *bus.MessageBus
-	// Audit logging configuration.
+	// Configuration for audit logging of user actions and API calls.
 	Audit *AuditConfig
-	// DLP configuration.
+	// Configuration for Data Loss Prevention (DLP) features.
 	Dlp *DLPConfig
-	// Garbage Collection configuration.
+	// Configuration for Garbage Collection of temporary resources.
 	GcSettings *GCSettings
-	// OIDC Configuration.
+	// Configuration for OpenID Connect (OIDC) authentication.
 	Oidc *OIDCConfig
-	// Rate limiting configuration for the server.
+	// Configuration for global rate limiting to protect the server.
 	RateLimit *RateLimitConfig
-	// Telemetry configuration.
+	// Configuration for telemetry (metrics and tracing).
 	Telemetry *TelemetryConfig
-	// The profiles to enable.
+	// A list of profile names to enable globally.
 	Profiles []string
-	// The allowed IPs to access the server.
+	// A list of IP addresses or CIDR ranges allowed to access the server.
 	AllowedIps []string
-	// The definitions of profiles.
+	// Definitions of available profiles that define access control and resource grouping.
 	ProfileDefinitions []*ProfileDefinition
 	// The list of middlewares to enable and their configuration.
 	Middlewares []*Middleware
-	// Allowed file paths for validation.
+	// A list of file paths that are explicitly allowed for validation or access.
 	AllowedFilePaths []string
-	// Allowed origins for CORS.
+	// A list of allowed origins for Cross-Origin Resource Sharing (CORS).
 	AllowedOrigins []string
-	// Context Optimizer configuration.
+	// Configuration for the Context Optimizer, which reduces prompt size.
 	ContextOptimizer *ContextOptimizerConfig
-	// Debugger configuration.
+	// Configuration for the Debugger, allowing inspection of internal state.
 	Debugger *DebuggerConfig
-	// If true, the configuration is read-only (e.g., loaded from a file).
+	// If true, the configuration is considered read-only and cannot be modified via API.
 	// @inject_tag: yaml:"-"
 	ReadOnly *bool
-	// Whether to auto-discover local services (e.g. Ollama).
+	// If true, the server will attempt to auto-discover local services (e.g., Ollama).
 	AutoDiscoverLocal *bool
-	// Alert configuration.
+	// Configuration for system health alerts.
 	Alerts *AlertConfig
 }
 
@@ -1541,6 +1555,7 @@ func (b0 GlobalSettings_builder) Build() *GlobalSettings {
 	return m0
 }
 
+// AlertConfig defines settings for system alerts.
 type AlertConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -1630,9 +1645,9 @@ func (x *AlertConfig) ClearWebhookUrl() {
 type AlertConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Whether alerts are enabled.
+	// If true, system alerts are enabled.
 	Enabled *bool
-	// The webhook URL to send alerts to.
+	// The webhook URL to which alerts should be sent (e.g., Slack, Discord).
 	WebhookUrl *string
 }
 
@@ -1651,6 +1666,7 @@ func (b0 AlertConfig_builder) Build() *AlertConfig {
 	return m0
 }
 
+// ContextOptimizerConfig defines settings for optimizing context size.
 type ContextOptimizerConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_MaxChars    int32                  `protobuf:"varint,1,opt,name=max_chars"`
@@ -1712,6 +1728,7 @@ func (x *ContextOptimizerConfig) ClearMaxChars() {
 type ContextOptimizerConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The maximum number of characters allowed in the context.
 	MaxChars *int32
 }
 
@@ -1726,6 +1743,7 @@ func (b0 ContextOptimizerConfig_builder) Build() *ContextOptimizerConfig {
 	return m0
 }
 
+// DebuggerConfig defines settings for the internal debugger.
 type DebuggerConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -1812,8 +1830,10 @@ func (x *DebuggerConfig) ClearSize() {
 type DebuggerConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// If true, the debugger is enabled.
 	Enabled *bool
-	Size    *int32
+	// The maximum size of the debug buffer (number of entries).
+	Size *int32
 }
 
 func (b0 DebuggerConfig_builder) Build() *DebuggerConfig {
@@ -1831,6 +1851,7 @@ func (b0 DebuggerConfig_builder) Build() *DebuggerConfig {
 	return m0
 }
 
+// TelemetryConfig defines settings for observability.
 type TelemetryConfig struct {
 	state                      protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_TracesExporter  *string                `protobuf:"bytes,1,opt,name=traces_exporter"`
@@ -1979,13 +2000,13 @@ func (x *TelemetryConfig) ClearServiceName() {
 type TelemetryConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Tracing configuration
+	// The exporter to use for traces (e.g., "otlp", "stdout", "none").
 	TracesExporter *string
-	// Metrics configuration
+	// The exporter to use for metrics (e.g., "otlp", "stdout", "none").
 	MetricsExporter *string
-	// OTLP endpoint (shared for now, or can be split)
+	// The OTLP endpoint URL for sending telemetry data (shared for traces and metrics if applicable).
 	OtlpEndpoint *string
-	// Service name override (optional)
+	// An optional override for the service name in telemetry data.
 	ServiceName *string
 }
 
@@ -2012,6 +2033,7 @@ func (b0 TelemetryConfig_builder) Build() *TelemetryConfig {
 	return m0
 }
 
+// OIDCConfig defines settings for OpenID Connect authentication.
 type OIDCConfig struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Issuer       *string                `protobuf:"bytes,1,opt,name=issuer"`
@@ -2160,10 +2182,14 @@ func (x *OIDCConfig) ClearRedirectUrl() {
 type OIDCConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Issuer       *string
-	ClientId     *string
+	// The OIDC issuer URL (e.g., "https://accounts.google.com").
+	Issuer *string
+	// The Client ID for the OIDC application.
+	ClientId *string
+	// The Client Secret for the OIDC application.
 	ClientSecret *string
-	RedirectUrl  *string
+	// The callback URL where the OIDC provider redirects after authentication.
+	RedirectUrl *string
 }
 
 func (b0 OIDCConfig_builder) Build() *OIDCConfig {
@@ -2189,6 +2215,7 @@ func (b0 OIDCConfig_builder) Build() *OIDCConfig {
 	return m0
 }
 
+// GCSettings defines settings for Garbage Collection.
 type GCSettings struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled     bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -2318,15 +2345,14 @@ func (x *GCSettings) ClearTtl() {
 type GCSettings_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Whether the global GC worker is enabled.
+	// If true, the global GC worker is enabled.
 	Enabled *bool
-	// How often the GC worker runs (e.g., "1h", "10m").
+	// The interval at which the GC worker runs (e.g., "1h", "10m").
 	Interval *string
-	// The time-to-live for temporary files (e.g., "24h").
-	// Files older than this duration will be deleted.
+	// The time-to-live for temporary files. Files older than this duration will be deleted.
 	Ttl *string
 	// A list of absolute paths to directories that should be scanned for cleanup.
-	// The worker will not traverse outside these directories.
+	// The worker will strictly confine its operations to these directories.
 	Paths []string
 }
 
@@ -2350,6 +2376,7 @@ func (b0 GCSettings_builder) Build() *GCSettings {
 	return m0
 }
 
+// DLPConfig defines settings for Data Loss Prevention.
 type DLPConfig struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Enabled        bool                   `protobuf:"varint,1,opt,name=enabled"`
@@ -2423,10 +2450,10 @@ func (x *DLPConfig) ClearEnabled() {
 type DLPConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Whether DLP is enabled.
+	// If true, DLP features are enabled.
 	Enabled *bool
-	// Additional regex patterns to redact.
-	// Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+	// A list of custom regex patterns to redact from logs and outputs.
+	// Note: Standard patterns (Email, Credit Card, SSN) are enabled by default if DLP is on.
 	CustomPatterns []string
 }
 
@@ -2442,6 +2469,7 @@ func (b0 DLPConfig_builder) Build() *DLPConfig {
 	return m0
 }
 
+// AuditConfig defines settings for audit logging.
 type AuditConfig struct {
 	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_Enabled        bool                    `protobuf:"varint,1,opt,name=enabled"`
@@ -2694,23 +2722,25 @@ func (x *AuditConfig) ClearDatadog() {
 type AuditConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Whether audit logging is enabled.
+	// If true, audit logging is enabled.
 	Enabled *bool
-	// The file path to write audit logs to.
+	// The file path to write audit logs to (used if storage_type is FILE).
 	OutputPath *string
-	// Whether to log input arguments (caution: might contain secrets).
+	// If true, input arguments to API calls will be logged.
+	// Warning: This may log sensitive information including secrets.
 	LogArguments *bool
-	// Whether to log output results (caution: might contain sensitive data).
+	// If true, output results from API calls will be logged.
+	// Warning: This may log sensitive data returned by tools.
 	LogResults *bool
-	// The storage type to use.
+	// The storage backend to use for audit logs.
 	StorageType *AuditConfig_StorageType
-	// The webhook URL for STORAGE_TYPE_WEBHOOK.
+	// The webhook URL to send audit events to (used if storage_type is WEBHOOK).
 	WebhookUrl *string
-	// Additional headers to send with the webhook.
+	// Additional HTTP headers to include in webhook requests.
 	WebhookHeaders map[string]string
-	// Splunk configuration.
+	// Configuration for Splunk integration.
 	Splunk *SplunkConfig
-	// Datadog configuration.
+	// Configuration for Datadog integration.
 	Datadog *DatadogConfig
 }
 
@@ -2748,6 +2778,7 @@ func (b0 AuditConfig_builder) Build() *AuditConfig {
 	return m0
 }
 
+// SplunkConfig defines settings for Splunk integration.
 type SplunkConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_HecUrl      *string                `protobuf:"bytes,1,opt,name=hec_url"`
@@ -2924,10 +2955,15 @@ func (x *SplunkConfig) ClearSourcetype() {
 type SplunkConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	HecUrl     *string
-	Token      *string
-	Index      *string
-	Source     *string
+	// The Splunk HTTP Event Collector (HEC) URL.
+	HecUrl *string
+	// The Splunk HEC token.
+	Token *string
+	// The Splunk index to send events to.
+	Index *string
+	// The source value to attach to events.
+	Source *string
+	// The sourcetype value to attach to events.
 	Sourcetype *string
 }
 
@@ -2958,6 +2994,7 @@ func (b0 SplunkConfig_builder) Build() *SplunkConfig {
 	return m0
 }
 
+// DatadogConfig defines settings for Datadog integration.
 type DatadogConfig struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ApiKey      *string                `protobuf:"bytes,1,opt,name=api_key"`
@@ -3106,10 +3143,14 @@ func (x *DatadogConfig) ClearTags() {
 type DatadogConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	ApiKey  *string
-	Site    *string
+	// The Datadog API key.
+	ApiKey *string
+	// The Datadog site (e.g., "datadoghq.com", "datadoghq.eu").
+	Site *string
+	// The service name to tag logs with.
 	Service *string
-	Tags    *string
+	// A comma-separated list of tags to attach to logs.
+	Tags *string
 }
 
 func (b0 DatadogConfig_builder) Build() *DatadogConfig {
@@ -3135,6 +3176,7 @@ func (b0 DatadogConfig_builder) Build() *DatadogConfig {
 	return m0
 }
 
+// ProfileDefinition defines a set of permissions and configurations for a group of users or tools.
 type ProfileDefinition struct {
 	state                       protoimpl.MessageState           `protogen:"opaque.v1"`
 	xxx_hidden_Name             *string                          `protobuf:"bytes,1,opt,name=name"`
@@ -3270,15 +3312,17 @@ func (x *ProfileDefinition) ClearSelector() {
 type ProfileDefinition_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name     *string
+	// The unique name of the profile.
+	Name *string
+	// The selector criteria used to match this profile.
 	Selector *ProfileSelector
-	// List of roles required to access this profile.
+	// A list of roles that a user must possess to access this profile.
 	RequiredRoles []string
-	// Parent profile IDs for inheritance.
+	// A list of parent profile IDs to inherit configuration from.
 	ParentProfileIds []string
-	// Service-specific configurations for this profile.
+	// Service-specific configurations override for this profile.
 	ServiceConfig map[string]*ProfileServiceConfig
-	// Secrets available to services in this profile.
+	// Secrets available to services running under this profile.
 	Secrets map[string]*SecretValue
 }
 
@@ -3298,6 +3342,7 @@ func (b0 ProfileDefinition_builder) Build() *ProfileDefinition {
 	return m0
 }
 
+// ProfileSelector defines criteria for selecting a profile.
 type ProfileSelector struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Tags           []string               `protobuf:"bytes,1,rep,name=tags"`
@@ -3356,7 +3401,9 @@ func (x *ProfileSelector) SetToolProperties(v map[string]string) {
 type ProfileSelector_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Tags           []string
+	// A list of tags that must be present.
+	Tags []string
+	// A map of tool properties that must match.
 	ToolProperties map[string]string
 }
 
@@ -3369,6 +3416,7 @@ func (b0 ProfileSelector_builder) Build() *ProfileSelector {
 	return m0
 }
 
+// Middleware defines the configuration for a specific middleware component.
 type Middleware struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -3485,9 +3533,10 @@ type Middleware_builder struct {
 
 	// The name of the middleware (e.g., "logging", "auth", "ratelimit").
 	Name *string
-	// The priority of the middleware. Lower values run first (outermost).
+	// The priority of the middleware in the execution chain.
+	// Lower values run earlier (outermost in the chain).
 	Priority *int32
-	// Whether this middleware is disabled.
+	// If true, this middleware is disabled.
 	Disabled *bool
 }
 

@@ -14,49 +14,54 @@ option go_package = "github.com/mcpany/core/proto/admin/v1";
 option java_outer_classname = "AdminProto";
 
 // AdminService provides administrative operations for the MCP Any server.
+// It allows managing users, services, caches, and viewing audit logs.
 service AdminService {
-  // ClearCache clears all cached data in the server.
+  // ClearCache invalidates all cached data stored in the server's internal memory or configured cache backend.
+  // This is useful for forcing a refresh of data from upstream services.
   rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
 
-  // ListServices returns all registered services.
+  // ListServices retrieves a list of all upstream services currently registered in the server.
+  // It includes their configuration and current health state.
   rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
 
-  // GetService returns a specific service by ID.
+  // GetService retrieves details about a specific upstream service by its ID.
   rpc GetService(GetServiceRequest) returns (GetServiceResponse);
 
-  // ListTools returns all registered tools.
+  // ListTools retrieves a list of all available tools across all services.
   rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
 
-  // GetTool returns a specific tool by name.
+  // GetTool retrieves details about a specific tool by its name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
 
   // ===================================================================
   // User Management
   // ===================================================================
 
-  // CreateUser creates a new user.
+  // CreateUser registers a new user in the system.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 
-  // GetUser returns a specific user by ID.
+  // GetUser retrieves details about a specific user by their ID.
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
 
-  // ListUsers returns all registered users.
+  // ListUsers retrieves a list of all registered users.
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
 
-  // UpdateUser updates an existing user.
+  // UpdateUser modifies an existing user's configuration.
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 
-  // DeleteUser deletes a user by ID.
+  // DeleteUser permanently removes a user from the system.
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 
-  // GetDiscoveryStatus returns the status of auto-discovery providers.
+  // GetDiscoveryStatus returns the current status of all configured auto-discovery providers.
+  // This includes last run times, error states, and discovery counts.
   rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
 
   // ===================================================================
   // Audit Logs
   // ===================================================================
 
-  // ListAuditLogs returns audit logs matching the filter.
+  // ListAuditLogs retrieves a historical record of actions performed on the server.
+  // Supports filtering by time range, user, tool, and profile.
   rpc ListAuditLogs(ListAuditLogsRequest) returns (ListAuditLogsResponse) {
     option (google.api.http) = {
       get: "/api/v1/audit/logs"
@@ -64,123 +69,192 @@ service AdminService {
   }
 }
 
+// ClearCacheRequest is the request to clear the cache.
 message ClearCacheRequest {}
 
+// ClearCacheResponse is the response after clearing the cache.
 message ClearCacheResponse {}
 
+// ListServicesRequest is the request to list services.
 message ListServicesRequest {}
 
+// ListServicesResponse contains the list of services and their states.
 message ListServicesResponse {
+  // Deprecated: Use service_states instead.
   repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
+  // A list of services with their current operational state.
   repeated ServiceState service_states = 2;
 }
 
+// ServiceState represents the runtime state of a service.
 message ServiceState {
+  // The static configuration of the service.
   mcpany.config.v1.UpstreamServiceConfig config = 1;
-  string status = 2; // "OK", "ERROR", "CONNECTING"
+  // The current status of the service (e.g., "OK", "ERROR", "CONNECTING").
+  string status = 2;
+  // If the status is ERROR, this contains the error message.
   string error = 3;
 }
 
+// GetServiceRequest identifies the service to retrieve.
 message GetServiceRequest {
+  // The unique ID of the service.
   string service_id = 1;
 }
 
+// GetServiceResponse contains the service details.
 message GetServiceResponse {
+  // Deprecated: Use service_state instead.
   mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
+  // The current operational state of the service.
   ServiceState service_state = 2;
 }
 
+// ListToolsRequest is the request to list tools.
 message ListToolsRequest {}
 
+// ListToolsResponse contains the list of tools.
 message ListToolsResponse {
+  // The list of available tools.
   repeated mcpany.mcp_router.v1.Tool tools = 1;
 }
 
+// GetToolRequest identifies the tool to retrieve.
 message GetToolRequest {
+  // The name of the tool.
   string tool_name = 1;
 }
 
+// GetToolResponse contains the tool details.
 message GetToolResponse {
+  // The tool definition.
   mcpany.mcp_router.v1.Tool tool = 1;
 }
 
 // User Management Messages
 
+// CreateUserRequest contains the details of the user to create.
 message CreateUserRequest {
+  // The user configuration.
   mcpany.config.v1.User user = 1;
 }
 
+// CreateUserResponse contains the created user.
 message CreateUserResponse {
+  // The created user with assigned ID.
   mcpany.config.v1.User user = 1;
 }
 
+// GetUserRequest identifies the user to retrieve.
 message GetUserRequest {
+  // The unique ID of the user.
   string user_id = 1;
 }
 
+// GetUserResponse contains the user details.
 message GetUserResponse {
+  // The user configuration.
   mcpany.config.v1.User user = 1;
 }
 
+// ListUsersRequest is the request to list users.
 message ListUsersRequest {}
 
+// ListUsersResponse contains the list of users.
 message ListUsersResponse {
+  // The list of registered users.
   repeated mcpany.config.v1.User users = 1;
 }
 
+// UpdateUserRequest contains the updated user details.
 message UpdateUserRequest {
+  // The user configuration to update. The ID must match an existing user.
   mcpany.config.v1.User user = 1;
   // Field mask to specify which fields to update (optional for now, full replace).
 }
 
+// UpdateUserResponse contains the updated user.
 message UpdateUserResponse {
+  // The updated user configuration.
   mcpany.config.v1.User user = 1;
 }
 
+// DeleteUserRequest identifies the user to delete.
 message DeleteUserRequest {
+  // The unique ID of the user to delete.
   string user_id = 1;
 }
 
+// DeleteUserResponse is the empty response after deletion.
 message DeleteUserResponse {}
 
+// GetDiscoveryStatusRequest is the request to get discovery status.
 message GetDiscoveryStatusRequest {}
 
+// GetDiscoveryStatusResponse contains the status of all providers.
 message GetDiscoveryStatusResponse {
+  // A list of status objects for each discovery provider.
   repeated DiscoveryProviderStatus providers = 1;
 }
 
+// DiscoveryProviderStatus represents the state of a single discovery provider.
 message DiscoveryProviderStatus {
+  // The name of the provider (e.g., "ollama", "k8s").
   string name = 1;
-  string status = 2; // "OK", "ERROR"
+  // The operational status (e.g., "OK", "ERROR").
+  string status = 2;
+  // The last error encountered, if any.
   string last_error = 3;
-  string last_run_at = 4; // ISO 8601
+  // The timestamp of the last discovery run (ISO 8601).
+  string last_run_at = 4;
+  // The number of services discovered in the last run.
   int32 discovered_count = 5;
 }
 
 // Audit Log Messages
 
+// ListAuditLogsRequest defines filters for retrieving audit logs.
 message ListAuditLogsRequest {
-  string start_time = 1; // ISO 8601
-  string end_time = 2;   // ISO 8601
+  // Start time of the window (ISO 8601).
+  string start_time = 1;
+  // End time of the window (ISO 8601).
+  string end_time = 2;
+  // Filter by tool name (exact match).
   string tool_name = 3;
+  // Filter by user ID (exact match).
   string user_id = 4;
+  // Filter by profile ID (exact match).
   string profile_id = 5;
+  // Maximum number of logs to return.
   int32 limit = 6;
+  // Offset for pagination.
   int32 offset = 7;
 }
 
+// ListAuditLogsResponse contains the matching audit logs.
 message ListAuditLogsResponse {
+  // The list of audit log entries.
   repeated AuditLogEntry entries = 1;
 }
 
+// AuditLogEntry represents a single audit event.
 message AuditLogEntry {
-  string timestamp = 1; // ISO 8601
+  // The time the event occurred (ISO 8601).
+  string timestamp = 1;
+  // The name of the tool involved.
   string tool_name = 2;
+  // The ID of the user who performed the action.
   string user_id = 3;
+  // The ID of the profile used.
   string profile_id = 4;
-  string arguments = 5; // JSON string
-  string result = 6;    // JSON string
+  // The input arguments to the action (JSON string).
+  string arguments = 5;
+  // The result of the action (JSON string).
+  string result = 6;
+  // Error message if the action failed.
   string error = 7;
+  // Human-readable duration string (e.g., "150ms").
   string duration = 8;
+  // Duration in milliseconds.
   int64 duration_ms = 9;
 }

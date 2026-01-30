@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
-import { Struct } from "../../google/protobuf/struct";
+import { Struct } from "../../../google/protobuf/struct";
 import { Profile } from "./profile";
 
 export const protobufPackage = "mcpany.config.v1";

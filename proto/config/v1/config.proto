@@ -23,49 +23,61 @@ option features.(pb.go).api_level = API_OPAQUE;
 import "proto/config/v1/user.proto";
 
 // McpAnyServerConfig is the root configuration for the entire MCPANY server.
+// It aggregates global settings, upstream services, user definitions, and merge strategies.
 message McpAnyServerConfig {
-  // Server-wide operational parameters.
+  // Server-wide operational parameters such as network listeners, logging, and security policies.
   GlobalSettings global_settings = 1 [json_name = "global_settings"];
   // A list of all configured upstream services that MCP Any can proxy to.
+  // Each entry defines a connection to an external tool or API.
   repeated UpstreamServiceConfig upstream_services = 2 [json_name = "upstream_services"];
   // A list of upstream service collections to load from.
+  // Collections allow grouping and reusing service definitions.
   repeated Collection collections = 3 [json_name = "collections"];
   // A list of users authorized to access the server.
+  // This includes their roles, authentication methods, and profile associations.
   repeated User users = 4 [json_name = "users"];
-  // Configuration for how to merge lists when loading from multiple sources.
+  // Configuration for how to merge lists when loading from multiple sources (e.g., config files and database).
   MergeStrategyConfig merge_strategy = 5 [json_name = "merge_strategy"];
 }
 
+// MergeStrategyConfig defines how to resolve conflicts when merging configurations from multiple sources.
 message MergeStrategyConfig {
-  // Strategy for merging upstream_services list ("extend" or "replace").
+  // Strategy for merging upstream_services list.
+  // Options: "extend" (append new services) or "replace" (overwrite existing list).
   string upstream_service_list = 1 [json_name = "upstream_service_list"];
-  // Strategy for merging profiles list ("extend" or "replace").
+  // Strategy for merging profiles list.
+  // Options: "extend" (append new profiles) or "replace" (overwrite existing list).
   string profile_list = 2 [json_name = "profile_list"];
 }
 
-// Secret defines a secret value.
+// Secret defines a sensitive value that should be handled securely.
 message Secret {
-  // name is the human-readable name of the secret.
+  // The human-readable name of the secret, used for display purposes.
   string name = 1;
-  // id is the unique identifier for the secret.
+  // The unique identifier for the secret, used for referencing it in configurations.
   string id = 2;
-  // key is the key used to reference the secret (e.g. env var name).
+  // The key used to reference the secret (e.g., the environment variable name).
   string key = 3;
-  // value is the secret value (encrypted or raw depending on context).
+  // The actual value of the secret.
+  // Note: This may be encrypted or raw depending on the context.
   string value = 4;
-  // provider is the source of the secret (e.g. "openai", "aws").
+  // The provider source of the secret (e.g., "openai", "aws", "vault").
   string provider = 5;
-  // last_used is the timestamp when the secret was last used using RFC3339 format.
+  // The timestamp when the secret was last accessed, in RFC3339 format.
   string last_used = 6;
-  // created_at is the timestamp when the secret was created using RFC3339 format.
+  // The timestamp when the secret was created, in RFC3339 format.
   string created_at = 7;
 }
 
+// SecretList is a container for a list of secrets.
 message SecretList {
+  // The list of secrets.
   repeated Secret secrets = 1;
 }
 
+// GlobalSettings defines server-wide operational parameters.
 message GlobalSettings {
+  // LogLevel defines the verbosity of logs.
   enum LogLevel {
     LOG_LEVEL_UNSPECIFIED = 0;
     LOG_LEVEL_INFO = 1;
@@ -74,127 +86,143 @@ message GlobalSettings {
     LOG_LEVEL_DEBUG = 4;
   }
 
+  // LogFormat defines the structure of log output.
   enum LogFormat {
     LOG_FORMAT_UNSPECIFIED = 0;
     LOG_FORMAT_TEXT = 1;
     LOG_FORMAT_JSON = 2;
   }
 
-  // The address the MCP server listens on.
+  // The address (host:port) on which the MCP server listens for incoming connections (e.g., "0.0.0.0:50051").
   string mcp_listen_address = 1 [json_name = "mcp_listen_address"];
-  // The log level for the server.
+  // The minimum log level to output. Logs below this level will be discarded.
   LogLevel log_level = 2 [json_name = "log_level"];
-  // The API key used for authentication.
+  // The master API key used for global authentication to the server.
   string api_key = 3 [json_name = "api_key"];
-  // The log format for the server.
+  // The format to use for log output (text or JSON).
   LogFormat log_format = 4 [json_name = "log_format"];
-  // The path to the database file.
+  // The file path to the persistent database (e.g., "mcpany.db").
   string db_path = 5 [json_name = "db_path"];
-  // The database connection string (DSN).
+  // The database connection string (DSN) for connecting to external databases like PostgreSQL.
   string db_dsn = 6 [json_name = "db_dsn"];
-  // The database driver (sqlite, postgres).
+  // The database driver to use (e.g., "sqlite", "postgres").
   string db_driver = 7 [json_name = "db_driver"];
-  // GitHub API URL for self-updates (optional).
+  // The GitHub API URL to use for checking for self-updates (optional).
   string github_api_url = 8 [json_name = "github_api_url"];
-  // Whether to use sudo for Docker commands.
+  // If true, the server will prepend "sudo" to Docker commands.
   bool use_sudo_for_docker = 9 [json_name = "use_sudo_for_docker"];
 
-  // The message bus configuration.
+  // Configuration for the internal message bus used for component communication.
   bus.MessageBus message_bus = 10 [json_name = "message_bus"];
-  // Audit logging configuration.
+  // Configuration for audit logging of user actions and API calls.
   AuditConfig audit = 11 [json_name = "audit"];
-  // DLP configuration.
+  // Configuration for Data Loss Prevention (DLP) features.
   DLPConfig dlp = 12 [json_name = "dlp"];
-  // Garbage Collection configuration.
+  // Configuration for Garbage Collection of temporary resources.
   GCSettings gc_settings = 13 [json_name = "gc_settings"];
-  // OIDC Configuration.
+  // Configuration for OpenID Connect (OIDC) authentication.
   OIDCConfig oidc = 14 [json_name = "oidc"];
-  // Rate limiting configuration for the server.
+  // Configuration for global rate limiting to protect the server.
   RateLimitConfig rate_limit = 15 [json_name = "rate_limit"];
-  // Telemetry configuration.
+  // Configuration for telemetry (metrics and tracing).
   TelemetryConfig telemetry = 16 [json_name = "telemetry"];
 
-  // The profiles to enable.
+  // A list of profile names to enable globally.
   repeated string profiles = 17 [json_name = "profiles"];
-  // The allowed IPs to access the server.
+  // A list of IP addresses or CIDR ranges allowed to access the server.
   repeated string allowed_ips = 18 [json_name = "allowed_ips"];
-  // The definitions of profiles.
+  // Definitions of available profiles that define access control and resource grouping.
   repeated ProfileDefinition profile_definitions = 19 [json_name = "profile_definitions"];
   // The list of middlewares to enable and their configuration.
   repeated Middleware middlewares = 20 [json_name = "middlewares"];
-  // Allowed file paths for validation.
+  // A list of file paths that are explicitly allowed for validation or access.
   repeated string allowed_file_paths = 21 [json_name = "allowed_file_paths"];
-  // Allowed origins for CORS.
+  // A list of allowed origins for Cross-Origin Resource Sharing (CORS).
   repeated string allowed_origins = 22 [json_name = "allowed_origins"];
-  // Context Optimizer configuration.
+  // Configuration for the Context Optimizer, which reduces prompt size.
   ContextOptimizerConfig context_optimizer = 23 [json_name = "context_optimizer"];
-  // Debugger configuration.
+  // Configuration for the Debugger, allowing inspection of internal state.
   DebuggerConfig debugger = 24 [json_name = "debugger"];
-  // If true, the configuration is read-only (e.g., loaded from a file).
+  // If true, the configuration is considered read-only and cannot be modified via API.
   // @inject_tag: yaml:"-"
   bool read_only = 25 [json_name = "read_only"];
-  // Whether to auto-discover local services (e.g. Ollama).
+  // If true, the server will attempt to auto-discover local services (e.g., Ollama).
   bool auto_discover_local = 26 [json_name = "auto_discover_local"];
-  // Alert configuration.
+  // Configuration for system health alerts.
   AlertConfig alerts = 27 [json_name = "alerts"];
 }
 
+// AlertConfig defines settings for system alerts.
 message AlertConfig {
-  // Whether alerts are enabled.
+  // If true, system alerts are enabled.
   bool enabled = 1 [json_name = "enabled"];
-  // The webhook URL to send alerts to.
+  // The webhook URL to which alerts should be sent (e.g., Slack, Discord).
   string webhook_url = 2 [json_name = "webhook_url"];
 }
 
+// ContextOptimizerConfig defines settings for optimizing context size.
 message ContextOptimizerConfig {
+  // The maximum number of characters allowed in the context.
   int32 max_chars = 1 [json_name = "max_chars"];
 }
 
+// DebuggerConfig defines settings for the internal debugger.
 message DebuggerConfig {
+  // If true, the debugger is enabled.
   bool enabled = 1 [json_name = "enabled"];
+  // The maximum size of the debug buffer (number of entries).
   int32 size = 2 [json_name = "size"];
 }
 
+// TelemetryConfig defines settings for observability.
 message TelemetryConfig {
-  // Tracing configuration
-  string traces_exporter = 1 [json_name = "traces_exporter"]; // "otlp", "stdout", "none"
-  // Metrics configuration
-  string metrics_exporter = 2 [json_name = "metrics_exporter"]; // "otlp", "stdout", "none"
-  // OTLP endpoint (shared for now, or can be split)
+  // The exporter to use for traces (e.g., "otlp", "stdout", "none").
+  string traces_exporter = 1 [json_name = "traces_exporter"];
+  // The exporter to use for metrics (e.g., "otlp", "stdout", "none").
+  string metrics_exporter = 2 [json_name = "metrics_exporter"];
+  // The OTLP endpoint URL for sending telemetry data (shared for traces and metrics if applicable).
   string otlp_endpoint = 3 [json_name = "otlp_endpoint"];
-  // Service name override (optional)
+  // An optional override for the service name in telemetry data.
   string service_name = 4 [json_name = "service_name"];
 }
 
+// OIDCConfig defines settings for OpenID Connect authentication.
 message OIDCConfig {
+  // The OIDC issuer URL (e.g., "https://accounts.google.com").
   string issuer = 1 [json_name = "issuer"];
+  // The Client ID for the OIDC application.
   string client_id = 2 [json_name = "client_id"];
+  // The Client Secret for the OIDC application.
   string client_secret = 3 [json_name = "client_secret"];
+  // The callback URL where the OIDC provider redirects after authentication.
   string redirect_url = 4 [json_name = "redirect_url"];
 }
 
+// GCSettings defines settings for Garbage Collection.
 message GCSettings {
-  // Whether the global GC worker is enabled.
+  // If true, the global GC worker is enabled.
   bool enabled = 1 [json_name = "enabled"];
-  // How often the GC worker runs (e.g., "1h", "10m").
+  // The interval at which the GC worker runs (e.g., "1h", "10m").
   string interval = 2 [json_name = "interval"];
-  // The time-to-live for temporary files (e.g., "24h").
-  // Files older than this duration will be deleted.
+  // The time-to-live for temporary files. Files older than this duration will be deleted.
   string ttl = 3 [json_name = "ttl"];
   // A list of absolute paths to directories that should be scanned for cleanup.
-  // The worker will not traverse outside these directories.
+  // The worker will strictly confine its operations to these directories.
   repeated string paths = 4 [json_name = "paths"];
 }
 
+// DLPConfig defines settings for Data Loss Prevention.
 message DLPConfig {
-  // Whether DLP is enabled.
+  // If true, DLP features are enabled.
   bool enabled = 1 [json_name = "enabled"];
-  // Additional regex patterns to redact.
-  // Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+  // A list of custom regex patterns to redact from logs and outputs.
+  // Note: Standard patterns (Email, Credit Card, SSN) are enabled by default if DLP is on.
   repeated string custom_patterns = 2 [json_name = "custom_patterns"];
 }
 
+// AuditConfig defines settings for audit logging.
 message AuditConfig {
+  // StorageType defines the destination for audit logs.
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;
     STORAGE_TYPE_FILE = 1;
@@ -205,64 +233,85 @@ message AuditConfig {
     STORAGE_TYPE_DATADOG = 6;
   }
 
-  // Whether audit logging is enabled.
+  // If true, audit logging is enabled.
   bool enabled = 1 [json_name = "enabled"];
-  // The file path to write audit logs to.
+  // The file path to write audit logs to (used if storage_type is FILE).
   string output_path = 2 [json_name = "output_path"];
-  // Whether to log input arguments (caution: might contain secrets).
+  // If true, input arguments to API calls will be logged.
+  // Warning: This may log sensitive information including secrets.
   bool log_arguments = 3 [json_name = "log_arguments"];
-  // Whether to log output results (caution: might contain sensitive data).
+  // If true, output results from API calls will be logged.
+  // Warning: This may log sensitive data returned by tools.
   bool log_results = 4 [json_name = "log_results"];
-  // The storage type to use.
+  // The storage backend to use for audit logs.
   StorageType storage_type = 5 [json_name = "storage_type"];
-  // The webhook URL for STORAGE_TYPE_WEBHOOK.
+  // The webhook URL to send audit events to (used if storage_type is WEBHOOK).
   string webhook_url = 6 [json_name = "webhook_url"];
-  // Additional headers to send with the webhook.
+  // Additional HTTP headers to include in webhook requests.
   map<string, string> webhook_headers = 7 [json_name = "webhook_headers"];
-  // Splunk configuration.
+  // Configuration for Splunk integration.
   SplunkConfig splunk = 8 [json_name = "splunk"];
-  // Datadog configuration.
+  // Configuration for Datadog integration.
   DatadogConfig datadog = 9 [json_name = "datadog"];
 }
 
+// SplunkConfig defines settings for Splunk integration.
 message SplunkConfig {
+  // The Splunk HTTP Event Collector (HEC) URL.
   string hec_url = 1 [json_name = "hec_url"];
+  // The Splunk HEC token.
   string token = 2 [json_name = "token"];
+  // The Splunk index to send events to.
   string index = 3 [json_name = "index"];
+  // The source value to attach to events.
   string source = 4 [json_name = "source"];
+  // The sourcetype value to attach to events.
   string sourcetype = 5 [json_name = "sourcetype"];
 }
 
+// DatadogConfig defines settings for Datadog integration.
 message DatadogConfig {
+  // The Datadog API key.
   string api_key = 1 [json_name = "api_key"];
+  // The Datadog site (e.g., "datadoghq.com", "datadoghq.eu").
   string site = 2 [json_name = "site"];
+  // The service name to tag logs with.
   string service = 3 [json_name = "service"];
+  // A comma-separated list of tags to attach to logs.
   string tags = 4 [json_name = "tags"];
 }
 
+// ProfileDefinition defines a set of permissions and configurations for a group of users or tools.
 message ProfileDefinition {
+  // The unique name of the profile.
   string name = 1;
+  // The selector criteria used to match this profile.
   ProfileSelector selector = 2;
-  // List of roles required to access this profile.
+  // A list of roles that a user must possess to access this profile.
   repeated string required_roles = 3 [json_name = "required_roles"];
-  // Parent profile IDs for inheritance.
+  // A list of parent profile IDs to inherit configuration from.
   repeated string parent_profile_ids = 4 [json_name = "parent_profile_ids"];
-  // Service-specific configurations for this profile.
+  // Service-specific configurations override for this profile.
   map<string, ProfileServiceConfig> service_config = 5 [json_name = "service_config"];
-  // Secrets available to services in this profile.
+  // Secrets available to services running under this profile.
   map<string, SecretValue> secrets = 6 [json_name = "secrets"];
 }
 
+// ProfileSelector defines criteria for selecting a profile.
 message ProfileSelector {
+  // A list of tags that must be present.
   repeated string tags = 1;
+  // A map of tool properties that must match.
   map<string, string> tool_properties = 2 [json_name = "tool_properties"];
 }
 
+// Middleware defines the configuration for a specific middleware component.
 message Middleware {
   // The name of the middleware (e.g., "logging", "auth", "ratelimit").
   string name = 1 [json_name = "name"];
-  // The priority of the middleware. Lower values run first (outermost).
+  // The priority of the middleware in the execution chain.
+  // Lower values run earlier (outermost in the chain).
   int32 priority = 2 [json_name = "priority"];
-  // Whether this middleware is disabled.
+  // If true, this middleware is disabled.
   bool disabled = 3 [json_name = "disabled"];
 }
