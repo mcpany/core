@@ -45,9 +45,15 @@ const (
 )
 
 // loadEnv loads environment variables from a .env file.
-// It checks for the --env-file flag and loads the specified file.
-// If no flag is provided, it attempts to load .env from the current directory.
-// If the default .env exists but fails to parse, an error is returned.
+//
+// Parameters:
+//   - cmd: The cobra command containing flags.
+//
+// Returns:
+//   - error: An error if the env file cannot be loaded or parsed.
+//
+// Side Effects:
+//   - Sets environment variables in the process.
 func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
 	if envFile != "" {
@@ -72,19 +78,14 @@ func loadEnv(cmd *cobra.Command) error {
 }
 
 // newRootCmd creates and configures the main command for the application.
-// It sets up the command-line flags for configuring the server, such as ports,
-// configuration paths, and operational modes (e.g., stdio). It also handles
-// environment variable binding, allowing for configuration through both flags
-// and environment variables.
 //
-// The command's main execution logic initializes the logger, sets up a context
-// for graceful shutdown, and starts the application runner with the parsed
-// configuration.
+// Returns:
+//   - *cobra.Command: The configured root command.
 //
-// Additionally, it adds subcommands for `version` to print the application's
-// version and `health` to perform a health check against a running server.
-//
-// Returns the configured root command, ready to be executed.
+// Side Effects:
+//   - Configures command-line flags.
+//   - Sets up environment variable binding.
+//   - Initializes the logger and application runner.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
@@ -609,12 +610,12 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 	return rootCmd
 }
 
-// main is the entry point for the MCP Any server application. It initializes and
-// executes the root command, which is responsible for parsing command-line
-// arguments, loading configuration, and starting the server.
+// main is the entry point for the MCP Any server application.
 //
-// The application will exit with a non-zero status code if an error occurs
-// during the execution of the command.
+// Side Effects:
+//   - Parses command-line arguments.
+//   - Starts the server.
+//   - Exits the process with a status code.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)
