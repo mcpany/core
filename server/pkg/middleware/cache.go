@@ -35,6 +35,7 @@ var (
 	metricCacheMisses = []string{"cache", "misses"}
 	metricCacheSkips  = []string{"cache", "skips"}
 	metricCacheErrors = []string{"cache", "errors"}
+	metricCacheDrops  = []string{"cache", "drops"}
 )
 
 // CachingMiddleware handles caching of tool execution results.
@@ -45,6 +46,7 @@ type CachingMiddleware struct {
 	initMu          sync.Mutex // Guards semantic cache initialization
 	providerFactory ProviderFactory
 	hasherPool      *sync.Pool
+	writeQueue      chan func() // Bounded queue for async cache writes
 }
 
 // NewCachingMiddleware creates a new CachingMiddleware.
@@ -55,7 +57,8 @@ type CachingMiddleware struct {
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
-	return &CachingMiddleware{
+
+	m := &CachingMiddleware{
 		cache:       cacheManager,
 		toolManager: toolManager,
 		hasherPool: &sync.Pool{
@@ -63,6 +66,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 				return fnv.New128a()
 			},
 		},
+		writeQueue: make(chan func(), 100), // Buffer size 100 to absorb bursts
 		providerFactory: func(conf *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error) {
 			// Check OneOf provider_config first
 			if conf.GetOpenai() != nil {
@@ -108,6 +112,11 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 			return nil, fmt.Errorf("unknown provider: %s", providerType)
 		},
 	}
+
+	// Start background worker
+	go m.processWrites()
+
+	return m
 }
 
 // SetProviderFactory allows overriding the default provider factory for testing.
@@ -115,6 +124,18 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 // factory is the factory.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
+}
+
+// Stop stops the background worker.
+func (m *CachingMiddleware) Stop() {
+	close(m.writeQueue)
+}
+
+// processWrites processes cache write tasks from the queue.
+func (m *CachingMiddleware) processWrites() {
+	for task := range m.writeQueue {
+		task()
+	}
 }
 
 // Execute executes the caching middleware.
@@ -318,9 +339,8 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 
 	// Set cache if we have embedding
 	if embedding != nil {
-		// ⚡ BOLT: Offload cache write to background to avoid blocking the response.
-		// Randomized Selection from Top 5 High-Impact Targets
-		go func() {
+		// Define task
+		writeTask := func() {
 			// Detach context so write completes even if request context is canceled.
 			// Add timeout to prevent hanging.
 			bgCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
@@ -329,7 +349,18 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 			if err := semCache.Set(bgCtx, req.ToolName, embedding, result, config.GetTtl().AsDuration()); err != nil {
 				logging.GetLogger().Error("Failed to set semantic cache", "error", err)
 			}
-		}()
+		}
+
+		// ⚡ BOLT: Offload cache write to bounded queue to prevent goroutine leaks.
+		// Randomized Selection from Top 5 High-Impact Targets
+		select {
+		case m.writeQueue <- writeTask:
+			// Enqueued
+		default:
+			// Dropped
+			metrics.IncrCounterWithLabels(metricCacheDrops, 1, labels)
+			logging.GetLogger().Warn("Semantic cache write queue full, dropping write", "tool", t.Tool().GetName())
+		}
 	}
 
 	return result, nil
