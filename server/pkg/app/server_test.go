@@ -3245,11 +3245,19 @@ func TestTemplateManager_Persistence(t *testing.T) {
 
 	tm2 := NewTemplateManager(tmpDir)
 	list2 := tm2.ListTemplates()
-	require.Len(t, list2, 1)
-	assert.Equal(t, "svc1", list2[0].GetName())
+	require.Len(t, list2, len(BuiltinTemplates)+1)
+
+	found := false
+	for _, tmpl := range list2 {
+		if tmpl.GetId() == "id1" {
+			found = true
+			assert.Equal(t, "svc1", tmpl.GetName())
+		}
+	}
+	assert.True(t, found)
 
 	tm.DeleteTemplate("id1")
-	assert.Empty(t, tm.ListTemplates())
+	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
 }
 
 func TestTemplateManager_LoadCorrupt(t *testing.T) {
@@ -3258,6 +3266,10 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 	os.WriteFile(path, []byte("{invalid json"), 0600)
 
 	tm := NewTemplateManager(tmpDir)
+	// If load fails (corrupt file), it logs error and starts empty.
+	// Since file exists (but is corrupt), IsNotExist is false.
+	// Logic: ReadFile -> OK. Unmarshal -> Error. Returns Error.
+	// Seeding block is NOT reached.
 	assert.Empty(t, tm.ListTemplates())
 }
 

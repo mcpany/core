@@ -18,7 +18,7 @@ func TestNewTemplateManager_Empty(t *testing.T) {
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	assert.NotNil(t, tm)
-	assert.Empty(t, tm.ListTemplates())
+	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
 }
 
 func TestSaveTemplate_New(t *testing.T) {
@@ -34,9 +34,18 @@ func TestSaveTemplate_New(t *testing.T) {
 	require.NoError(t, err)
 
 	list := tm.ListTemplates()
-	assert.Len(t, list, 1)
-	assert.Equal(t, "Test Service", list[0].GetName())
-	assert.Equal(t, "test-id", list[0].GetId())
+	assert.Len(t, list, len(BuiltinTemplates)+1)
+
+	// Find the new template
+	found := false
+	for _, tmpl := range list {
+		if tmpl.GetId() == "test-id" {
+			found = true
+			assert.Equal(t, "Test Service", tmpl.GetName())
+			break
+		}
+	}
+	assert.True(t, found, "Newly saved template not found")
 
 	// Verify file existence
 	content, err := os.ReadFile(filepath.Join(tempDir, "templates.json"))
@@ -62,8 +71,13 @@ func TestSaveTemplate_Update(t *testing.T) {
 	require.NoError(t, err)
 
 	list := tm.ListTemplates()
-	assert.Len(t, list, 1)
-	assert.Equal(t, "1.0.1", list[0].GetVersion())
+	assert.Len(t, list, len(BuiltinTemplates)+1)
+
+	for _, tmpl := range list {
+		if tmpl.GetId() == "test-id" {
+			assert.Equal(t, "1.0.1", tmpl.GetVersion())
+		}
+	}
 }
 
 func TestSaveTemplate_Persistence(t *testing.T) {
@@ -80,8 +94,16 @@ func TestSaveTemplate_Persistence(t *testing.T) {
 	// Create new manager pointing to same dir
 	tm2 := NewTemplateManager(tempDir)
 	list := tm2.ListTemplates()
-	assert.Len(t, list, 1)
-	assert.Equal(t, "Persistent Service", list[0].GetName())
+	assert.Len(t, list, len(BuiltinTemplates)+1)
+
+	found := false
+	for _, tmpl := range list {
+		if tmpl.GetId() == "persist-id" {
+			found = true
+			assert.Equal(t, "Persistent Service", tmpl.GetName())
+		}
+	}
+	assert.True(t, found)
 }
 
 func TestDeleteTemplate(t *testing.T) {
@@ -99,18 +121,30 @@ func TestDeleteTemplate(t *testing.T) {
 	require.NoError(t, tm.SaveTemplate(tmpl1))
 	require.NoError(t, tm.SaveTemplate(tmpl2))
 
-	assert.Len(t, tm.ListTemplates(), 2)
+	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates)+2)
 
 	err := tm.DeleteTemplate("id1")
 	require.NoError(t, err)
 
 	list := tm.ListTemplates()
-	assert.Len(t, list, 1)
-	assert.Equal(t, "S2", list[0].GetName())
+	assert.Len(t, list, len(BuiltinTemplates)+1)
+
+	foundS2 := false
+	foundS1 := false
+	for _, tmpl := range list {
+		if tmpl.GetId() == "id2" {
+			foundS2 = true
+		}
+		if tmpl.GetId() == "id1" {
+			foundS1 = true
+		}
+	}
+	assert.True(t, foundS2)
+	assert.False(t, foundS1)
 
 	// Verify persistence
 	tm2 := NewTemplateManager(tempDir)
-	assert.Len(t, tm2.ListTemplates(), 1)
+	assert.Len(t, tm2.ListTemplates(), len(BuiltinTemplates)+1)
 }
 
 func TestDeleteTemplate_NotFound(t *testing.T) {
@@ -125,7 +159,7 @@ func TestDeleteTemplate_NotFound(t *testing.T) {
 
 	err := tm.DeleteTemplate("non-existent")
 	require.NoError(t, err)
-	assert.Len(t, tm.ListTemplates(), 1)
+	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates)+1)
 }
 
 func TestConcurrency_Safe(t *testing.T) {

@@ -43,6 +43,7 @@ func (tm *TemplateManager) load() error {
 	data, err := os.ReadFile(tm.filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
+			tm.templates = append(tm.templates, BuiltinTemplates...)
 			return nil
 		}
 		return err
@@ -62,6 +63,12 @@ func (tm *TemplateManager) load() error {
 		}
 		tm.templates = append(tm.templates, &svc)
 	}
+
+	// Seed with built-in templates if empty
+	if len(tm.templates) == 0 {
+		tm.templates = append(tm.templates, BuiltinTemplates...)
+	}
+
 	return nil
 }
 
