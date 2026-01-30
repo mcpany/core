@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -46,73 +47,123 @@ func (s *Store) HasConfigSources() bool {
 // Returns the result.
 // Returns an error if the operation fails.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+	var (
+		services    []*configv1.UpstreamServiceConfig
+		users       []*configv1.User
+		settings    *configv1.GlobalSettings
+		collections []*configv1.Collection
+
+		wg   sync.WaitGroup
+		mu   sync.Mutex
+		errs []error
+	)
+
+	// ⚡ BOLT: Parallelized data loading (4 concurrent queries) to reduce latency.
+	// Randomized Selection from Top 5 High-Impact Targets
+
+	wg.Add(4)
+
 	// 1. Load services
-	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
-	if err != nil {
-		return nil, fmt.Errorf("failed to query upstream_services: %w", err)
-	}
-	defer func() { _ = rows.Close() }()
-
-	var services []*configv1.UpstreamServiceConfig
-	opts := protojson.UnmarshalOptions{DiscardUnknown: true}
-	for rows.Next() {
-		var configJSON string
-		if err := rows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan config_json: %w", err)
+	go func() {
+		defer wg.Done()
+		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM upstream_services")
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to query upstream_services: %w", err))
+			mu.Unlock()
+			return
 		}
+		defer func() { _ = rows.Close() }()
 
-		var service configv1.UpstreamServiceConfig
-		if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal service config: %w", err)
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		for rows.Next() {
+			var configJSON string
+			if err := rows.Scan(&configJSON); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to scan config_json: %w", err))
+				mu.Unlock()
+				return
+			}
+
+			var service configv1.UpstreamServiceConfig
+			if err := opts.Unmarshal([]byte(configJSON), &service); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to unmarshal service config: %w", err))
+				mu.Unlock()
+				return
+			}
+			services = append(services, &service)
 		}
-		services = append(services, &service)
-	}
-	_ = rows.Close()
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate rows: %w", err)
-	}
+		if err := rows.Err(); err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to iterate rows: %w", err))
+			mu.Unlock()
+		}
+	}()
 
 	// 2. Load users
-	userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
-	if err != nil {
-		return nil, fmt.Errorf("failed to query users: %w", err)
-	}
-	defer func() { _ = userRows.Close() }()
-
-	var users []*configv1.User
-	for userRows.Next() {
-		var configJSON string
-		if err := userRows.Scan(&configJSON); err != nil {
-			return nil, fmt.Errorf("failed to scan user config_json: %w", err)
+	go func() {
+		defer wg.Done()
+		userRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to query users: %w", err))
+			mu.Unlock()
+			return
 		}
+		defer func() { _ = userRows.Close() }()
 
-		var user configv1.User
-		if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user config: %w", err)
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		for userRows.Next() {
+			var configJSON string
+			if err := userRows.Scan(&configJSON); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to scan user config_json: %w", err))
+				mu.Unlock()
+				return
+			}
+
+			var user configv1.User
+			if err := opts.Unmarshal([]byte(configJSON), &user); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to unmarshal user config: %w", err))
+				mu.Unlock()
+				return
+			}
+			users = append(users, &user)
 		}
-		users = append(users, &user)
-	}
-	_ = userRows.Close()
-	if err := userRows.Err(); err != nil {
-		return nil, fmt.Errorf("failed to iterate user rows: %w", err)
-	}
+		if err := userRows.Err(); err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to iterate user rows: %w", err))
+			mu.Unlock()
+		}
+	}()
 
 	// 3. Load Global Settings
-	var settings *configv1.GlobalSettings
-	settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
-	var settingsJSON string
-	if err := settingsRow.Scan(&settingsJSON); err == nil {
-		var s configv1.GlobalSettings
-		if err := opts.Unmarshal([]byte(settingsJSON), &s); err == nil {
-			settings = &s
+	go func() {
+		defer wg.Done()
+		settingsRow := s.db.QueryRowContext(ctx, "SELECT config_json FROM global_settings WHERE id = 1")
+		var settingsJSON string
+		if err := settingsRow.Scan(&settingsJSON); err == nil {
+			var s configv1.GlobalSettings
+			opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+			if err := opts.Unmarshal([]byte(settingsJSON), &s); err == nil {
+				settings = &s
+			}
 		}
-	}
+	}()
 
 	// 4. Load Collections
-	collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
-	var collections []*configv1.Collection
-	if err == nil {
+	go func() {
+		defer wg.Done()
+		collectionRows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
+		if err != nil {
+			// Ignore error as in original code
+			return
+		}
 		defer func() { _ = collectionRows.Close() }()
+
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 		for collectionRows.Next() {
 			var configJSON string
 			if err := collectionRows.Scan(&configJSON); err != nil {
@@ -124,8 +175,16 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 			}
 		}
 		if err := collectionRows.Err(); err != nil {
-			return nil, fmt.Errorf("failed to iterate collection rows: %w", err)
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to iterate collection rows: %w", err))
+			mu.Unlock()
 		}
+	}()
+
+	wg.Wait()
+
+	if len(errs) > 0 {
+		return nil, errs[0]
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
