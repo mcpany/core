@@ -132,3 +132,28 @@ func TestLevenshteinDistanceWithLimit(t *testing.T) {
 		}
 	}
 }
+
+func TestLevenshteinDistanceWithLimit_StackBoundary(t *testing.T) {
+	// Test boundary conditions for stack allocation (256 runes)
+	// Case 1: 256 runes (fits in stack)
+	s256a := strings.Repeat("a", 256)
+	s256b := strings.Repeat("a", 255) + "b"
+	if got := LevenshteinDistanceWithLimit(s256a, s256b, 5); got != 1 {
+		t.Errorf("LevenshteinDistanceWithLimit 256 boundary failed: got %d, want 1", got)
+	}
+
+	// Case 2: 257 runes (falls back to heap)
+	s257a := strings.Repeat("a", 257)
+	s257b := strings.Repeat("a", 256) + "b"
+	if got := LevenshteinDistanceWithLimit(s257a, s257b, 5); got != 1 {
+		t.Errorf("LevenshteinDistanceWithLimit 257 boundary failed: got %d, want 1", got)
+	}
+
+	// Case 3: Mixed unicode at boundary
+	// "世" is 3 bytes. 256 * 3 = 768 bytes, but 256 runes.
+	u256a := strings.Repeat("世", 256)
+	u256b := strings.Repeat("世", 255) + "界"
+	if got := LevenshteinDistanceWithLimit(u256a, u256b, 5); got != 1 {
+		t.Errorf("LevenshteinDistanceWithLimit unicode 256 boundary failed: got %d, want 1", got)
+	}
+}
