@@ -44,10 +44,11 @@ func (a *Application) setStatsCache(key string, data any) {
 }
 
 const (
-	metricToolsCallTotal = "mcpany_tools_call_total"
-	labelTool            = "tool"
-	labelServiceID       = "service_id"
-	labelStatus          = "status"
+	metricToolsCallTotal   = "mcpany_tools_call_total"
+	metricToolsCallLatency = "mcpany_tools_call_latency"
+	labelTool              = "tool"
+	labelServiceID         = "service_id"
+	labelStatus            = "status"
 )
 
 // ToolUsageStats represents usage statistics for a tool.
@@ -322,6 +323,8 @@ type ToolAnalytics struct {
 	ServiceID   string  `json:"serviceId"`
 	TotalCalls  int64   `json:"totalCalls"`
 	SuccessRate float64 `json:"successRate"`
+	AvgLatency  float64 `json:"avgLatency"` // in milliseconds
+	ErrorCount  int64   `json:"errorCount"`
 }
 
 // handleDashboardToolUsage returns detailed usage statistics for all tools.
@@ -355,10 +358,12 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		}
 
 		type aggregatedStats struct {
-			Name      string
-			ServiceID string
-			Success   int64
-			Error     int64
+			Name         string
+			ServiceID    string
+			Success      int64
+			Error        int64
+			LatencySum   float64
+			LatencyCount uint64
 		}
 
 		toolStats := make(map[string]*aggregatedStats)
@@ -399,6 +404,37 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 						}
 					}
 				}
+			} else if mf.GetName() == metricToolsCallLatency {
+				for _, m := range mf.GetMetric() {
+					var toolName, serviceID string
+					for _, label := range m.GetLabel() {
+						if label.GetName() == labelTool {
+							toolName = label.GetValue()
+						}
+						if label.GetName() == labelServiceID {
+							serviceID = label.GetValue()
+						}
+					}
+
+					if filterServiceID != "" && serviceID != filterServiceID {
+						continue
+					}
+
+					if toolName != "" {
+						key := toolName + "@" + serviceID
+						if _, exists := toolStats[key]; !exists {
+							toolStats[key] = &aggregatedStats{
+								Name:      toolName,
+								ServiceID: serviceID,
+							}
+						}
+						// Summary metrics from armon/go-metrics
+						if summary := m.GetSummary(); summary != nil {
+							toolStats[key].LatencySum += summary.GetSampleSum()
+							toolStats[key].LatencyCount += summary.GetSampleCount()
+						}
+					}
+				}
 			}
 		}
 
@@ -409,11 +445,18 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 			if total > 0 {
 				rate = (float64(s.Success) / float64(total)) * 100.0
 			}
+			avgLatency := 0.0
+			if s.LatencyCount > 0 {
+				avgLatency = s.LatencySum / float64(s.LatencyCount)
+			}
+
 			analytics = append(analytics, ToolAnalytics{
 				Name:        s.Name,
 				ServiceID:   s.ServiceID,
 				TotalCalls:  total,
 				SuccessRate: rate,
+				ErrorCount:  s.Error,
+				AvgLatency:  avgLatency,
 			})
 		}
 

@@ -163,6 +163,8 @@ export interface ToolAnalytics {
     serviceId: string;
     totalCalls: number;
     successRate: number;
+    avgLatency: number;
+    errorCount: number;
 }
 
 

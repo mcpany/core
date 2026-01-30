@@ -312,9 +312,19 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 		[]string{"tool", "service_id", "status", "error_type"},
 	)
 
+	// Define summary for latency
+	toolsCallLatency := prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
+			Name: "mcpany_tools_call_latency",
+			Help: "Tool call latency",
+		},
+		[]string{"tool", "service_id"},
+	)
+
 	// Use a local registry for isolation
 	registry := prometheus.NewRegistry()
 	require.NoError(t, registry.Register(toolsCallTotal))
+	require.NoError(t, registry.Register(toolsCallLatency))
 
 	toolA := "tool_usage_A"
 	toolB := "tool_usage_B"
@@ -323,8 +333,15 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 	toolsCallTotal.WithLabelValues(toolA, "service1", "success", "").Add(5)
 	toolsCallTotal.WithLabelValues(toolA, "service1", "error", "some_error").Add(5)
 
+	// Tool A Latency: 2 calls observed, 100ms and 200ms -> Avg 150ms
+	toolsCallLatency.WithLabelValues(toolA, "service1").Observe(100)
+	toolsCallLatency.WithLabelValues(toolA, "service1").Observe(200)
+
 	// Tool B: 10 success, 0 error => 100% success
 	toolsCallTotal.WithLabelValues(toolB, "service1", "success", "").Add(10)
+
+	// Tool B Latency: 1 call observed, 50ms -> Avg 50ms
+	toolsCallLatency.WithLabelValues(toolB, "service1").Observe(50)
 
 	// Create Request
 	req, err := http.NewRequest("GET", "/dashboard/tool-usage", nil)
@@ -358,8 +375,12 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 	assert.Equal(t, toolA, myStats[0].Name)
 	assert.Equal(t, int64(10), myStats[0].TotalCalls)
 	assert.Equal(t, 50.0, myStats[0].SuccessRate)
+	assert.Equal(t, int64(5), myStats[0].ErrorCount)
+	assert.Equal(t, 150.0, myStats[0].AvgLatency)
 
 	assert.Equal(t, toolB, myStats[1].Name)
 	assert.Equal(t, int64(10), myStats[1].TotalCalls)
 	assert.Equal(t, 100.0, myStats[1].SuccessRate)
+	assert.Equal(t, int64(0), myStats[1].ErrorCount)
+	assert.Equal(t, 50.0, myStats[1].AvgLatency)
 }
