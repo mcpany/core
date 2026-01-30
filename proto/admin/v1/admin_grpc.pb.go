@@ -41,30 +41,35 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // AdminService provides administrative operations for the MCP Any server.
+// It allows managing users, services, caches, and viewing audit logs.
 type AdminServiceClient interface {
-	// ClearCache clears all cached data in the server.
+	// ClearCache invalidates all cached data stored in the server's internal memory or configured cache backend.
+	// This is useful for forcing a refresh of data from upstream services.
 	ClearCache(ctx context.Context, in *ClearCacheRequest, opts ...grpc.CallOption) (*ClearCacheResponse, error)
-	// ListServices returns all registered services.
+	// ListServices retrieves a list of all upstream services currently registered in the server.
+	// It includes their configuration and current health state.
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
-	// GetService returns a specific service by ID.
+	// GetService retrieves details about a specific upstream service by its ID.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
-	// ListTools returns all registered tools.
+	// ListTools retrieves a list of all available tools across all services.
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
-	// GetTool returns a specific tool by name.
+	// GetTool retrieves details about a specific tool by its name.
 	GetTool(ctx context.Context, in *GetToolRequest, opts ...grpc.CallOption) (*GetToolResponse, error)
-	// CreateUser creates a new user.
+	// CreateUser registers a new user in the system.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
-	// GetUser returns a specific user by ID.
+	// GetUser retrieves details about a specific user by their ID.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	// ListUsers returns all registered users.
+	// ListUsers retrieves a list of all registered users.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
-	// UpdateUser updates an existing user.
+	// UpdateUser modifies an existing user's configuration.
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
-	// DeleteUser deletes a user by ID.
+	// DeleteUser permanently removes a user from the system.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
-	// GetDiscoveryStatus returns the status of auto-discovery providers.
+	// GetDiscoveryStatus returns the current status of all configured auto-discovery providers.
+	// This includes last run times, error states, and discovery counts.
 	GetDiscoveryStatus(ctx context.Context, in *GetDiscoveryStatusRequest, opts ...grpc.CallOption) (*GetDiscoveryStatusResponse, error)
-	// ListAuditLogs returns audit logs matching the filter.
+	// ListAuditLogs retrieves a historical record of actions performed on the server.
+	// Supports filtering by time range, user, tool, and profile.
 	ListAuditLogs(ctx context.Context, in *ListAuditLogsRequest, opts ...grpc.CallOption) (*ListAuditLogsResponse, error)
 }
 
@@ -201,30 +206,35 @@ func (c *adminServiceClient) ListAuditLogs(ctx context.Context, in *ListAuditLog
 // for forward compatibility.
 //
 // AdminService provides administrative operations for the MCP Any server.
+// It allows managing users, services, caches, and viewing audit logs.
 type AdminServiceServer interface {
-	// ClearCache clears all cached data in the server.
+	// ClearCache invalidates all cached data stored in the server's internal memory or configured cache backend.
+	// This is useful for forcing a refresh of data from upstream services.
 	ClearCache(context.Context, *ClearCacheRequest) (*ClearCacheResponse, error)
-	// ListServices returns all registered services.
+	// ListServices retrieves a list of all upstream services currently registered in the server.
+	// It includes their configuration and current health state.
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
-	// GetService returns a specific service by ID.
+	// GetService retrieves details about a specific upstream service by its ID.
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
-	// ListTools returns all registered tools.
+	// ListTools retrieves a list of all available tools across all services.
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
-	// GetTool returns a specific tool by name.
+	// GetTool retrieves details about a specific tool by its name.
 	GetTool(context.Context, *GetToolRequest) (*GetToolResponse, error)
-	// CreateUser creates a new user.
+	// CreateUser registers a new user in the system.
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
-	// GetUser returns a specific user by ID.
+	// GetUser retrieves details about a specific user by their ID.
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-	// ListUsers returns all registered users.
+	// ListUsers retrieves a list of all registered users.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
-	// UpdateUser updates an existing user.
+	// UpdateUser modifies an existing user's configuration.
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
-	// DeleteUser deletes a user by ID.
+	// DeleteUser permanently removes a user from the system.
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
-	// GetDiscoveryStatus returns the status of auto-discovery providers.
+	// GetDiscoveryStatus returns the current status of all configured auto-discovery providers.
+	// This includes last run times, error states, and discovery counts.
 	GetDiscoveryStatus(context.Context, *GetDiscoveryStatusRequest) (*GetDiscoveryStatusResponse, error)
-	// ListAuditLogs returns audit logs matching the filter.
+	// ListAuditLogs retrieves a historical record of actions performed on the server.
+	// Supports filtering by time range, user, tool, and profile.
 	ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }

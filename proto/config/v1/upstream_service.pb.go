@@ -169,7 +169,8 @@ type CommandLineUpstreamService_CommunicationProtocol int32
 
 const (
 	CommandLineUpstreamService_COMMUNICATION_PROTOCOL_UNSPECIFIED CommandLineUpstreamService_CommunicationProtocol = 0
-	CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON        CommandLineUpstreamService_CommunicationProtocol = 1
+	// Use JSON-RPC over stdio.
+	CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON CommandLineUpstreamService_CommunicationProtocol = 1
 )
 
 // Enum value maps for CommandLineUpstreamService_CommunicationProtocol.
@@ -1317,31 +1318,33 @@ type UpstreamServiceConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// The original user-provided name for the upstream service.
-	// This name is used for identification, logging, and metrics.
+	// This name is used for identification in logs, metrics, and the UI.
 	Name *string
-	// The full SHA256 hash of the service name, used as a unique identifier.
+	// The full SHA256 hash of the service name, used as a unique immutable identifier.
 	// This ensures that for the same service name, the ID is always the same.
 	Id *string
-	// A sanitized version of the service name, conforming to identifier rules.
+	// A sanitized version of the service name, conforming to identifier rules (e.g., alphanumeric, dashes).
 	// @inject_tag: yaml:"-"
 	//
 	// This field is managed internally and should not be set by the user.
 	SanitizedName *string
 	// The version of the upstream service, if known (e.g., "v1.2.3").
+	// This is primarily for documentation and version tracking.
 	Version *string
-	// The priority of the service. Lower numbers have higher priority.
+	// The priority of the service when resolving tool naming conflicts.
+	// Lower numbers have higher priority (e.g., 0 is higher priority than 10).
 	Priority *int32
-	// If true, this upstream service is disabled.
+	// If true, this upstream service is disabled and will not be loaded or registered.
 	Disable *bool
-	// If true, automatically convert all API calls to tools.
+	// If true, automatically attempts to convert all available API endpoints to MCP tools.
 	AutoDiscoverTool *bool
-	// The configuration error if the service failed validation.
+	// The configuration error message if the service failed validation.
 	// @inject_tag: yaml:"-"
 	ConfigError *string
-	// If true, this service configuration is read-only (e.g., loaded from a file).
+	// If true, this service configuration is read-only (e.g., loaded from a file or immutable source).
 	// @inject_tag: yaml:"-"
 	ReadOnly *bool
-	// The last error message encountered by the service (e.g. health check failure).
+	// The last error message encountered by the service (e.g., health check failure).
 	// @inject_tag: yaml:"-"
 	LastError *string
 	// The number of tools registered for this service.
@@ -1349,7 +1352,7 @@ type UpstreamServiceConfig_builder struct {
 	ToolCount *int32
 	// Configuration for the pool of connections to the upstream service.
 	ConnectionPool *ConnectionPoolConfig
-	// Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
+	// Authentication configuration for mcpany to use when connecting OUT to the upstream service.
 	UpstreamAuth *Authentication
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
@@ -1357,13 +1360,15 @@ type UpstreamServiceConfig_builder struct {
 	RateLimit *RateLimitConfig
 	// Strategy for distributing requests among multiple instances of the service.
 	LoadBalancingStrategy *LoadBalancingStrategy
-	// Advanced resiliency features to handle failures gracefully.
+	// Advanced resiliency features to handle failures gracefully (circuit breakers, retries).
 	Resilience *ResilienceConfig
-	// Authentication configuration for securing access to this service (incoming).
+	// Authentication configuration for securing access IN to this service from clients.
 	Authentication *Authentication
-	// Policies to control what is exported to the client.
-	ToolExportPolicy     *ExportPolicy
-	PromptExportPolicy   *ExportPolicy
+	// Policy to control which tools are exported to the client.
+	ToolExportPolicy *ExportPolicy
+	// Policy to control which prompts are exported to the client.
+	PromptExportPolicy *ExportPolicy
+	// Policy to control which resources are exported to the client.
 	ResourceExportPolicy *ExportPolicy
 	// The specific configuration for the type of upstream service.
 
@@ -1380,15 +1385,15 @@ type UpstreamServiceConfig_builder struct {
 	FilesystemService  *FilesystemUpstreamService
 	VectorService      *VectorUpstreamService
 	// -- end of xxx_hidden_ServiceConfig
-	// Policy to control which calls can be made.
+	// Policy to control which specific calls/actions are allowed.
 	CallPolicies []*CallPolicy
-	// List of hooks to execute before the call.
+	// List of hooks to execute before the call is made to the upstream.
 	PreCallHooks []*CallHook
-	// List of hooks to execute after the call.
+	// List of hooks to execute after the call returns from the upstream.
 	PostCallHooks []*CallHook
 	// The prompts provided by this upstream service.
 	Prompts []*PromptDefinition
-	// Tags for organizing and filtering services.
+	// Tags for organizing and filtering services (e.g., "production", "data-science").
 	Tags []string
 	// JSON Schema string defining the configuration parameters (env vars, args) required by this service.
 	// This is used by the UI to generate a configuration form.
@@ -1581,6 +1586,7 @@ func (*upstreamServiceConfig_FilesystemService) isUpstreamServiceConfig_ServiceC
 
 func (*upstreamServiceConfig_VectorService) isUpstreamServiceConfig_ServiceConfig() {}
 
+// CallPolicy defines a rule for allowing or denying specific calls.
 type CallPolicy struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_DefaultAction CallPolicy_Action      `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.CallPolicy_Action"`
@@ -1660,7 +1666,7 @@ type CallPolicy_builder struct {
 
 	// Default action if no rules match.
 	DefaultAction *CallPolicy_Action
-	// List of rules to apply. First match wins.
+	// List of rules to apply. First matching rule wins.
 	Rules []*CallPolicyRule
 }
 
@@ -1676,6 +1682,7 @@ func (b0 CallPolicy_builder) Build() *CallPolicy {
 	return m0
 }
 
+// CallPolicyRule defines criteria for a call policy.
 type CallPolicyRule struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Action        CallPolicy_Action      `protobuf:"varint,1,opt,name=action,enum=mcpany.config.v1.CallPolicy_Action"`
@@ -1851,8 +1858,9 @@ func (x *CallPolicyRule) ClearCallIdRegex() {
 type CallPolicyRule_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The action to take if the rule matches.
 	Action *CallPolicy_Action
-	// Regex to match the call name. Empty means match all.
+	// Regex to match the call/tool name. Empty means match all.
 	NameRegex *string
 	// Regex to match request arguments (JSON stringified). Empty means match all.
 	// This is a simple regex match on the JSON representation of arguments.
@@ -1890,6 +1898,7 @@ func (b0 CallPolicyRule_builder) Build() *CallPolicyRule {
 	return m0
 }
 
+// ExportPolicy defines rules for exporting items (tools, prompts, resources) to clients.
 type ExportPolicy struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_DefaultAction ExportPolicy_Action    `protobuf:"varint,1,opt,name=default_action,json=defaultAction,enum=mcpany.config.v1.ExportPolicy_Action"`
@@ -1967,8 +1976,10 @@ func (x *ExportPolicy) ClearDefaultAction() {
 type ExportPolicy_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The default action if no rules match.
 	DefaultAction *ExportPolicy_Action
-	Rules         []*ExportRule
+	// List of rules to apply. First matching rule wins.
+	Rules []*ExportRule
 }
 
 func (b0 ExportPolicy_builder) Build() *ExportPolicy {
@@ -1983,6 +1994,7 @@ func (b0 ExportPolicy_builder) Build() *ExportPolicy {
 	return m0
 }
 
+// ExportRule defines a single rule for export policy.
 type ExportRule struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_NameRegex   *string                `protobuf:"bytes,1,opt,name=name_regex"`
@@ -2076,7 +2088,8 @@ type ExportRule_builder struct {
 
 	// Regex to match the name (tool, prompt, or resource).
 	NameRegex *string
-	Action    *ExportPolicy_Action
+	// The action to take (EXPORT or UNEXPORT).
+	Action *ExportPolicy_Action
 }
 
 func (b0 ExportRule_builder) Build() *ExportRule {
@@ -2094,6 +2107,7 @@ func (b0 ExportRule_builder) Build() *ExportRule {
 	return m0
 }
 
+// CallHook defines a hook to be executed around a call.
 type CallHook struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
@@ -2250,7 +2264,10 @@ func (x *CallHook) WhichHookConfig() case_CallHook_HookConfig {
 type CallHook_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The name of the hook.
 	Name *string
+	// The configuration for the hook.
+
 	// Fields of oneof xxx_hidden_HookConfig:
 	Webhook    *WebhookConfig
 	CallPolicy *CallPolicy
@@ -2563,6 +2580,7 @@ func (b0 GrpcUpstreamService_builder) Build() *GrpcUpstreamService {
 	return m0
 }
 
+// ProtoDefinition allows specifying a protobuf source.
 type ProtoDefinition struct {
 	state               protoimpl.MessageState     `protogen:"opaque.v1"`
 	xxx_hidden_ProtoRef isProtoDefinition_ProtoRef `protobuf_oneof:"proto_ref"`
@@ -2734,6 +2752,7 @@ func (*protoDefinition_ProtoFile) isProtoDefinition_ProtoRef() {}
 
 func (*protoDefinition_ProtoDescriptor) isProtoDefinition_ProtoRef() {}
 
+// ProtoFile represents a single protobuf file.
 type ProtoFile struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_FileName    *string                `protobuf:"bytes,1,opt,name=file_name"`
@@ -2932,6 +2951,7 @@ func (*protoFile_FileContent) isProtoFile_FileRef() {}
 
 func (*protoFile_FilePath) isProtoFile_FileRef() {}
 
+// ProtoDescriptor represents a protobuf file descriptor set.
 type ProtoDescriptor struct {
 	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_FileName    *string                   `protobuf:"bytes,1,opt,name=file_name"`
@@ -3090,6 +3110,7 @@ type protoDescriptor_FilePath struct {
 
 func (*protoDescriptor_FilePath) isProtoDescriptor_FileRef() {}
 
+// ProtoCollection defines a way to collect multiple proto files.
 type ProtoCollection struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_RootPath       *string                `protobuf:"bytes,1,opt,name=root_path"`
@@ -3231,7 +3252,7 @@ func (b0 ProtoCollection_builder) Build() *ProtoCollection {
 	return m0
 }
 
-// HttpUpstreamService defines an upstream service that speaks HTTP.
+// HttpUpstreamService defines an upstream service that speaks HTTP (REST/JSON).
 type HttpUpstreamService struct {
 	state                  protoimpl.MessageState         `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                        `protobuf:"bytes,1,opt,name=address"`
@@ -4147,7 +4168,7 @@ func (*openapiUpstreamService_SpecContent) isOpenapiUpstreamService_SpecSource()
 
 func (*openapiUpstreamService_SpecUrl) isOpenapiUpstreamService_SpecSource() {}
 
-// CommandLineUpstreamService defines a service that communicates over standard I/O.
+// CommandLineUpstreamService defines a service that communicates over standard I/O (stdin/stdout).
 type CommandLineUpstreamService struct {
 	state                            protoimpl.MessageState                           `protogen:"opaque.v1"`
 	xxx_hidden_Command               *string                                          `protobuf:"bytes,1,opt,name=command"`
@@ -4450,7 +4471,7 @@ func (x *CommandLineUpstreamService) ClearLocal() {
 type CommandLineUpstreamService_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The command to execute the service.
+	// The command to execute the service (e.g., "python3", "npx").
 	Command *string
 	// The working directory for the command.
 	WorkingDirectory *string
@@ -4460,7 +4481,7 @@ type CommandLineUpstreamService_builder struct {
 	HealthCheck *CommandLineHealthCheck
 	// Caching configuration to improve performance and reduce load on the upstream.
 	Cache *CacheConfig
-	// Container environment to run the command in.
+	// Container environment to run the command in (Docker support).
 	ContainerEnvironment *ContainerEnvironment
 	// Timeout for the command execution.
 	Timeout *durationpb.Duration
@@ -4469,9 +4490,10 @@ type CommandLineUpstreamService_builder struct {
 	// A map of call definitions, keyed by their unique ID.
 	Calls map[string]*CommandLineCallDefinition
 	// A list of prompts served by this service.
-	Prompts               []*PromptDefinition
+	Prompts []*PromptDefinition
+	// The protocol used to communicate with the command.
 	CommunicationProtocol *CommandLineUpstreamService_CommunicationProtocol
-	// If true, the command will be executed on the local filesystem.
+	// If true, the command will be executed on the local filesystem directly (not in a container/sandbox).
 	Local *bool
 	// Environment variables to set for the command (supports secrets).
 	Env map[string]*SecretValue
@@ -6740,6 +6762,7 @@ func (b0 MilvusVectorDB_builder) Build() *MilvusVectorDB {
 }
 
 // McpUpstreamService defines an upstream that is already an MCP-compliant service.
+// This is the most common type, acting as a direct proxy or bridge.
 type McpUpstreamService struct {
 	state                        protoimpl.MessageState              `protogen:"opaque.v1"`
 	xxx_hidden_ConnectionType    isMcpUpstreamService_ConnectionType `protobuf_oneof:"connection_type"`
@@ -7240,20 +7263,20 @@ func (x *McpStdioConnection) ClearValidation() {
 type McpStdioConnection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The command and arguments to execute the service.
+	// The command to execute the service (e.g., "node", "python").
 	Command *string
 	// The working directory for the command.
 	WorkingDirectory *string
 	// Optional: The container image to use. If not provided, an image will be
-	// selected based on the command.
+	// selected based on the command or run locally.
 	ContainerImage *string
 	// Arguments to the command.
 	Args []string
 	// Optional: A list of commands to run as setup before the main command.
 	SetupCommands []string
-	// Optional: Environment variables to set in the container.
+	// Optional: Environment variables to set in the container or process.
 	Env map[string]*SecretValue
-	// Optional: Validation rules for the environment.
+	// Optional: Validation rules for the environment variables.
 	Validation *EnvValidation
 }
 
@@ -7450,7 +7473,7 @@ func (x *McpStreamableHttpConnection) ClearAllowHttpRedirect() {
 type McpStreamableHttpConnection_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Connect via HTTP.
+	// Connect via HTTP (SSE).
 	HttpAddress *string
 	// TLS configuration, applicable if using an http_address.
 	TlsConfig *TLSConfig
@@ -7475,6 +7498,7 @@ func (b0 McpStreamableHttpConnection_builder) Build() *McpStreamableHttpConnecti
 }
 
 // McpBundleConnection defines the parameters for a bundle-based connection.
+// Bundles are self-contained archives of MCP servers.
 type McpBundleConnection struct {
 	state                     protoimpl.MessageState  `protogen:"opaque.v1"`
 	xxx_hidden_BundlePath     *string                 `protobuf:"bytes,1,opt,name=bundle_path"`
@@ -8497,7 +8521,7 @@ func (x *TLSConfig) ClearInsecureSkipVerify() {
 type TLSConfig_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The server name to use for SNI.
+	// The server name to use for SNI (Server Name Indication).
 	ServerName *string
 	// Path to the CA certificate file for verifying the server's certificate.
 	CaCertPath *string
@@ -8505,7 +8529,8 @@ type TLSConfig_builder struct {
 	ClientCertPath *string
 	// Path to the client private key file for mTLS.
 	ClientKeyPath *string
-	// If true, the client will not verify the server's certificate chain. Use with caution.
+	// If true, the client will not verify the server's certificate chain.
+	// Warning: This makes the connection susceptible to Man-in-the-Middle attacks.
 	InsecureSkipVerify *bool
 }
 

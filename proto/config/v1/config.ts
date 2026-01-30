@@ -16,129 +16,155 @@ import { User } from "./user";
 
 export const protobufPackage = "mcpany.config.v1";
 
-/** McpAnyServerConfig is the root configuration for the entire MCPANY server. */
+/**
+ * McpAnyServerConfig is the root configuration for the entire MCPANY server.
+ * It aggregates global settings, upstream services, user definitions, and merge strategies.
+ */
 export interface McpAnyServerConfig {
-  /** Server-wide operational parameters. */
+  /** Server-wide operational parameters such as network listeners, logging, and security policies. */
   globalSettings?:
     | GlobalSettings
     | undefined;
-  /** A list of all configured upstream services that MCP Any can proxy to. */
+  /**
+   * A list of all configured upstream services that MCP Any can proxy to.
+   * Each entry defines a connection to an external tool or API.
+   */
   upstreamServices: UpstreamServiceConfig[];
-  /** A list of upstream service collections to load from. */
+  /**
+   * A list of upstream service collections to load from.
+   * Collections allow grouping and reusing service definitions.
+   */
   collections: Collection[];
-  /** A list of users authorized to access the server. */
+  /**
+   * A list of users authorized to access the server.
+   * This includes their roles, authentication methods, and profile associations.
+   */
   users: User[];
-  /** Configuration for how to merge lists when loading from multiple sources. */
+  /** Configuration for how to merge lists when loading from multiple sources (e.g., config files and database). */
   mergeStrategy?: MergeStrategyConfig | undefined;
 }
 
+/** MergeStrategyConfig defines how to resolve conflicts when merging configurations from multiple sources. */
 export interface MergeStrategyConfig {
-  /** Strategy for merging upstream_services list ("extend" or "replace"). */
+  /**
+   * Strategy for merging upstream_services list.
+   * Options: "extend" (append new services) or "replace" (overwrite existing list).
+   */
   upstreamServiceList: string;
-  /** Strategy for merging profiles list ("extend" or "replace"). */
+  /**
+   * Strategy for merging profiles list.
+   * Options: "extend" (append new profiles) or "replace" (overwrite existing list).
+   */
   profileList: string;
 }
 
-/** Secret defines a secret value. */
+/** Secret defines a sensitive value that should be handled securely. */
 export interface Secret {
-  /** name is the human-readable name of the secret. */
+  /** The human-readable name of the secret, used for display purposes. */
   name: string;
-  /** id is the unique identifier for the secret. */
+  /** The unique identifier for the secret, used for referencing it in configurations. */
   id: string;
-  /** key is the key used to reference the secret (e.g. env var name). */
+  /** The key used to reference the secret (e.g., the environment variable name). */
   key: string;
-  /** value is the secret value (encrypted or raw depending on context). */
+  /**
+   * The actual value of the secret.
+   * Note: This may be encrypted or raw depending on the context.
+   */
   value: string;
-  /** provider is the source of the secret (e.g. "openai", "aws"). */
+  /** The provider source of the secret (e.g., "openai", "aws", "vault"). */
   provider: string;
-  /** last_used is the timestamp when the secret was last used using RFC3339 format. */
+  /** The timestamp when the secret was last accessed, in RFC3339 format. */
   lastUsed: string;
-  /** created_at is the timestamp when the secret was created using RFC3339 format. */
+  /** The timestamp when the secret was created, in RFC3339 format. */
   createdAt: string;
 }
 
+/** SecretList is a container for a list of secrets. */
 export interface SecretList {
+  /** The list of secrets. */
   secrets: Secret[];
 }
 
+/** GlobalSettings defines server-wide operational parameters. */
 export interface GlobalSettings {
-  /** The address the MCP server listens on. */
+  /** The address (host:port) on which the MCP server listens for incoming connections (e.g., "0.0.0.0:50051"). */
   mcpListenAddress: string;
-  /** The log level for the server. */
+  /** The minimum log level to output. Logs below this level will be discarded. */
   logLevel: GlobalSettings_LogLevel;
-  /** The API key used for authentication. */
+  /** The master API key used for global authentication to the server. */
   apiKey: string;
-  /** The log format for the server. */
+  /** The format to use for log output (text or JSON). */
   logFormat: GlobalSettings_LogFormat;
-  /** The path to the database file. */
+  /** The file path to the persistent database (e.g., "mcpany.db"). */
   dbPath: string;
-  /** The database connection string (DSN). */
+  /** The database connection string (DSN) for connecting to external databases like PostgreSQL. */
   dbDsn: string;
-  /** The database driver (sqlite, postgres). */
+  /** The database driver to use (e.g., "sqlite", "postgres"). */
   dbDriver: string;
-  /** GitHub API URL for self-updates (optional). */
+  /** The GitHub API URL to use for checking for self-updates (optional). */
   githubApiUrl: string;
-  /** Whether to use sudo for Docker commands. */
+  /** If true, the server will prepend "sudo" to Docker commands. */
   useSudoForDocker: boolean;
-  /** The message bus configuration. */
+  /** Configuration for the internal message bus used for component communication. */
   messageBus?:
     | MessageBus
     | undefined;
-  /** Audit logging configuration. */
+  /** Configuration for audit logging of user actions and API calls. */
   audit?:
     | AuditConfig
     | undefined;
-  /** DLP configuration. */
+  /** Configuration for Data Loss Prevention (DLP) features. */
   dlp?:
     | DLPConfig
     | undefined;
-  /** Garbage Collection configuration. */
+  /** Configuration for Garbage Collection of temporary resources. */
   gcSettings?:
     | GCSettings
     | undefined;
-  /** OIDC Configuration. */
+  /** Configuration for OpenID Connect (OIDC) authentication. */
   oidc?:
     | OIDCConfig
     | undefined;
-  /** Rate limiting configuration for the server. */
+  /** Configuration for global rate limiting to protect the server. */
   rateLimit?:
     | RateLimitConfig
     | undefined;
-  /** Telemetry configuration. */
+  /** Configuration for telemetry (metrics and tracing). */
   telemetry?:
     | TelemetryConfig
     | undefined;
-  /** The profiles to enable. */
+  /** A list of profile names to enable globally. */
   profiles: string[];
-  /** The allowed IPs to access the server. */
+  /** A list of IP addresses or CIDR ranges allowed to access the server. */
   allowedIps: string[];
-  /** The definitions of profiles. */
+  /** Definitions of available profiles that define access control and resource grouping. */
   profileDefinitions: ProfileDefinition[];
   /** The list of middlewares to enable and their configuration. */
   middlewares: Middleware[];
-  /** Allowed file paths for validation. */
+  /** A list of file paths that are explicitly allowed for validation or access. */
   allowedFilePaths: string[];
-  /** Allowed origins for CORS. */
+  /** A list of allowed origins for Cross-Origin Resource Sharing (CORS). */
   allowedOrigins: string[];
-  /** Context Optimizer configuration. */
+  /** Configuration for the Context Optimizer, which reduces prompt size. */
   contextOptimizer?:
     | ContextOptimizerConfig
     | undefined;
-  /** Debugger configuration. */
+  /** Configuration for the Debugger, allowing inspection of internal state. */
   debugger?:
     | DebuggerConfig
     | undefined;
   /**
-   * If true, the configuration is read-only (e.g., loaded from a file).
+   * If true, the configuration is considered read-only and cannot be modified via API.
    * @inject_tag: yaml:"-"
    */
   readOnly: boolean;
-  /** Whether to auto-discover local services (e.g. Ollama). */
+  /** If true, the server will attempt to auto-discover local services (e.g., Ollama). */
   autoDiscoverLocal: boolean;
-  /** Alert configuration. */
+  /** Configuration for system health alerts. */
   alerts?: AlertConfig | undefined;
 }
 
+/** LogLevel defines the verbosity of logs. */
 export enum GlobalSettings_LogLevel {
   LOG_LEVEL_UNSPECIFIED = 0,
   LOG_LEVEL_INFO = 1,
@@ -190,6 +216,7 @@ export function globalSettings_LogLevelToJSON(object: GlobalSettings_LogLevel): 
   }
 }
 
+/** LogFormat defines the structure of log output. */
 export enum GlobalSettings_LogFormat {
   LOG_FORMAT_UNSPECIFIED = 0,
   LOG_FORMAT_TEXT = 1,
@@ -229,90 +256,109 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
   }
 }
 
+/** AlertConfig defines settings for system alerts. */
 export interface AlertConfig {
-  /** Whether alerts are enabled. */
+  /** If true, system alerts are enabled. */
   enabled: boolean;
-  /** The webhook URL to send alerts to. */
+  /** The webhook URL to which alerts should be sent (e.g., Slack, Discord). */
   webhookUrl: string;
 }
 
+/** ContextOptimizerConfig defines settings for optimizing context size. */
 export interface ContextOptimizerConfig {
+  /** The maximum number of characters allowed in the context. */
   maxChars: number;
 }
 
+/** DebuggerConfig defines settings for the internal debugger. */
 export interface DebuggerConfig {
+  /** If true, the debugger is enabled. */
   enabled: boolean;
+  /** The maximum size of the debug buffer (number of entries). */
   size: number;
 }
 
+/** TelemetryConfig defines settings for observability. */
 export interface TelemetryConfig {
-  /** Tracing configuration */
+  /** The exporter to use for traces (e.g., "otlp", "stdout", "none"). */
   tracesExporter: string;
-  /** Metrics configuration */
+  /** The exporter to use for metrics (e.g., "otlp", "stdout", "none"). */
   metricsExporter: string;
-  /** OTLP endpoint (shared for now, or can be split) */
+  /** The OTLP endpoint URL for sending telemetry data (shared for traces and metrics if applicable). */
   otlpEndpoint: string;
-  /** Service name override (optional) */
+  /** An optional override for the service name in telemetry data. */
   serviceName: string;
 }
 
+/** OIDCConfig defines settings for OpenID Connect authentication. */
 export interface OIDCConfig {
+  /** The OIDC issuer URL (e.g., "https://accounts.google.com"). */
   issuer: string;
+  /** The Client ID for the OIDC application. */
   clientId: string;
+  /** The Client Secret for the OIDC application. */
   clientSecret: string;
+  /** The callback URL where the OIDC provider redirects after authentication. */
   redirectUrl: string;
 }
 
+/** GCSettings defines settings for Garbage Collection. */
 export interface GCSettings {
-  /** Whether the global GC worker is enabled. */
+  /** If true, the global GC worker is enabled. */
   enabled: boolean;
-  /** How often the GC worker runs (e.g., "1h", "10m"). */
+  /** The interval at which the GC worker runs (e.g., "1h", "10m"). */
   interval: string;
-  /**
-   * The time-to-live for temporary files (e.g., "24h").
-   * Files older than this duration will be deleted.
-   */
+  /** The time-to-live for temporary files. Files older than this duration will be deleted. */
   ttl: string;
   /**
    * A list of absolute paths to directories that should be scanned for cleanup.
-   * The worker will not traverse outside these directories.
+   * The worker will strictly confine its operations to these directories.
    */
   paths: string[];
 }
 
+/** DLPConfig defines settings for Data Loss Prevention. */
 export interface DLPConfig {
-  /** Whether DLP is enabled. */
+  /** If true, DLP features are enabled. */
   enabled: boolean;
   /**
-   * Additional regex patterns to redact.
-   * Default patterns (Email, Credit Card, SSN) are always enabled if DLP is enabled.
+   * A list of custom regex patterns to redact from logs and outputs.
+   * Note: Standard patterns (Email, Credit Card, SSN) are enabled by default if DLP is on.
    */
   customPatterns: string[];
 }
 
+/** AuditConfig defines settings for audit logging. */
 export interface AuditConfig {
-  /** Whether audit logging is enabled. */
+  /** If true, audit logging is enabled. */
   enabled: boolean;
-  /** The file path to write audit logs to. */
+  /** The file path to write audit logs to (used if storage_type is FILE). */
   outputPath: string;
-  /** Whether to log input arguments (caution: might contain secrets). */
+  /**
+   * If true, input arguments to API calls will be logged.
+   * Warning: This may log sensitive information including secrets.
+   */
   logArguments: boolean;
-  /** Whether to log output results (caution: might contain sensitive data). */
+  /**
+   * If true, output results from API calls will be logged.
+   * Warning: This may log sensitive data returned by tools.
+   */
   logResults: boolean;
-  /** The storage type to use. */
+  /** The storage backend to use for audit logs. */
   storageType: AuditConfig_StorageType;
-  /** The webhook URL for STORAGE_TYPE_WEBHOOK. */
+  /** The webhook URL to send audit events to (used if storage_type is WEBHOOK). */
   webhookUrl: string;
-  /** Additional headers to send with the webhook. */
+  /** Additional HTTP headers to include in webhook requests. */
   webhookHeaders: { [key: string]: string };
-  /** Splunk configuration. */
+  /** Configuration for Splunk integration. */
   splunk?:
     | SplunkConfig
     | undefined;
-  /** Datadog configuration. */
+  /** Configuration for Datadog integration. */
   datadog?: DatadogConfig | undefined;
 }
 
+/** StorageType defines the destination for audit logs. */
 export enum AuditConfig_StorageType {
   STORAGE_TYPE_UNSPECIFIED = 0,
   STORAGE_TYPE_FILE = 1,
@@ -381,33 +427,47 @@ export interface AuditConfig_WebhookHeadersEntry {
   value: string;
 }
 
+/** SplunkConfig defines settings for Splunk integration. */
 export interface SplunkConfig {
+  /** The Splunk HTTP Event Collector (HEC) URL. */
   hecUrl: string;
+  /** The Splunk HEC token. */
   token: string;
+  /** The Splunk index to send events to. */
   index: string;
+  /** The source value to attach to events. */
   source: string;
+  /** The sourcetype value to attach to events. */
   sourcetype: string;
 }
 
+/** DatadogConfig defines settings for Datadog integration. */
 export interface DatadogConfig {
+  /** The Datadog API key. */
   apiKey: string;
+  /** The Datadog site (e.g., "datadoghq.com", "datadoghq.eu"). */
   site: string;
+  /** The service name to tag logs with. */
   service: string;
+  /** A comma-separated list of tags to attach to logs. */
   tags: string;
 }
 
+/** ProfileDefinition defines a set of permissions and configurations for a group of users or tools. */
 export interface ProfileDefinition {
+  /** The unique name of the profile. */
   name: string;
+  /** The selector criteria used to match this profile. */
   selector?:
     | ProfileSelector
     | undefined;
-  /** List of roles required to access this profile. */
+  /** A list of roles that a user must possess to access this profile. */
   requiredRoles: string[];
-  /** Parent profile IDs for inheritance. */
+  /** A list of parent profile IDs to inherit configuration from. */
   parentProfileIds: string[];
-  /** Service-specific configurations for this profile. */
+  /** Service-specific configurations override for this profile. */
   serviceConfig: { [key: string]: ProfileServiceConfig };
-  /** Secrets available to services in this profile. */
+  /** Secrets available to services running under this profile. */
   secrets: { [key: string]: SecretValue };
 }
 
@@ -421,8 +481,11 @@ export interface ProfileDefinition_SecretsEntry {
   value?: SecretValue | undefined;
 }
 
+/** ProfileSelector defines criteria for selecting a profile. */
 export interface ProfileSelector {
+  /** A list of tags that must be present. */
   tags: string[];
+  /** A map of tool properties that must match. */
   toolProperties: { [key: string]: string };
 }
 
@@ -431,12 +494,16 @@ export interface ProfileSelector_ToolPropertiesEntry {
   value: string;
 }
 
+/** Middleware defines the configuration for a specific middleware component. */
 export interface Middleware {
   /** The name of the middleware (e.g., "logging", "auth", "ratelimit"). */
   name: string;
-  /** The priority of the middleware. Lower values run first (outermost). */
+  /**
+   * The priority of the middleware in the execution chain.
+   * Lower values run earlier (outermost in the chain).
+   */
   priority: number;
-  /** Whether this middleware is disabled. */
+  /** If true, this middleware is disabled. */
   disabled: boolean;
 }
 
