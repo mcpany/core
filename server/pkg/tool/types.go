@@ -2692,6 +2692,16 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
+	// Sentinel Security Update:
+	// On Windows cmd.exe, single quotes are NOT strong quotes.
+	// They are just literal characters and do not prevent variable expansion or command chaining.
+	// Therefore, we must treat single-quoted arguments as unquoted/unsafe for cmd.exe.
+	base := strings.ToLower(filepath.Base(command))
+	isWindowsCmd := base == "cmd.exe" || base == "cmd"
+	if isWindowsCmd && quoteLevel == 2 {
+		quoteLevel = 0
+	}
+
 	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
