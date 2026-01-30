@@ -402,7 +402,7 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	}
 
 	// Fallback: Check Global User Basic Auth
-	if ctx, err := am.checkBasicAuthWithUsers(ctx, r); err == nil {
+	if ctx, err := am.CheckBasicAuthWithUsers(ctx, r); err == nil {
 		return ctx, nil
 	}
 
@@ -562,14 +562,14 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 	}
 }
 
-// checkBasicAuthWithUsers checks if the request has valid Basic Auth credentials
+// CheckBasicAuthWithUsers checks if the request has valid Basic Auth credentials
 // matching any of the configured users.
 //
 // ctx is the context.
 // r is the request.
 //
 // Returns the updated context or an error.
-func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
+func (am *Manager) CheckBasicAuthWithUsers(ctx context.Context, r *http.Request) (context.Context, error) {
 	username, password, ok := r.BasicAuth()
 	if !ok {
 		return ctx, fmt.Errorf("no basic auth provided")
@@ -579,21 +579,8 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 	user, ok := am.users[username]
 	am.usersMu.RUnlock()
 
-	// If not in memory, check storage if available
-	if !ok {
-		am.mu.RLock()
-		store := am.storage
-		am.mu.RUnlock()
-
-		if store != nil {
-			if u, err := store.GetUser(ctx, username); err == nil && u != nil {
-				user = u
-			}
-		}
-	}
-
 	// Direct lookup if user ID matches username
-	if user != nil {
+	if ok {
 		if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
 			if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
 				ctx = ContextWithUser(ctx, user.GetId())
@@ -605,6 +592,24 @@ func (am *Manager) checkBasicAuthWithUsers(ctx context.Context, r *http.Request)
 		}
 	}
 
-	// Fallback: Iterate all users (in case username is not ID, but we assume ID==Username for now)
+	// Fallback: Check persistent storage
+	am.mu.RLock()
+	store := am.storage
+	am.mu.RUnlock()
+
+	if store != nil {
+		if user, err := store.GetUser(ctx, username); err == nil && user != nil {
+			if basicAuth := user.GetAuthentication().GetBasicAuth(); basicAuth != nil {
+				if passhash.CheckPassword(password, basicAuth.GetPasswordHash()) {
+					ctx = ContextWithUser(ctx, user.GetId())
+					if len(user.GetRoles()) > 0 {
+						ctx = ContextWithRoles(ctx, user.GetRoles())
+					}
+					return ctx, nil
+				}
+			}
+		}
+	}
+
 	return ctx, fmt.Errorf("invalid credentials")
 }

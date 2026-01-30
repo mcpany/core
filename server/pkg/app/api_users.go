@@ -22,15 +22,16 @@ import (
 
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// RBAC: Require admin role or Super Admin (API Key)
+		enforcer := auth.NewRBACEnforcer()
+		_, hasAPIKey := auth.APIKeyFromContext(r.Context())
+		if !hasAPIKey && !enforcer.HasRoleInContext(r.Context(), "admin") {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
 		switch r.Method {
 		case http.MethodGet:
-			// Sentinel Security: Only admins can list users. Global API Key (Super Admin) is also allowed.
-			_, hasAPIKey := auth.APIKeyFromContext(r.Context())
-			if !hasAPIKey && !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
-				http.Error(w, "Forbidden: Only admins can list users", http.StatusForbidden)
-				return
-			}
-
 			users, err := store.ListUsers(r.Context())
 			if err != nil {
 				logging.GetLogger().Error("failed to list users", "error", err)
@@ -52,13 +53,6 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			_, _ = w.Write(buf)
 
 		case http.MethodPost:
-			// Sentinel Security: Only admins can create users via API. Global API Key (Super Admin) is also allowed.
-			_, hasAPIKey := auth.APIKeyFromContext(r.Context())
-			if !hasAPIKey && !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
-				http.Error(w, "Forbidden: Only admins can create users", http.StatusForbidden)
-				return
-			}
-
 			// Limit 1MB
 			r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 			body, err := io.ReadAll(r.Body)
@@ -105,13 +99,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			// Reload auth manager
-			a.AuthManager.SetUsers([]*configv1.User{&user}) // Wait, this replaces ALL users?
-			// We need to reload usage from config. But ListUsers comes from Storage.
-			// AuthManager might be using config-based users OR storage-based users.
-			// api.go ReloadConfig: a.AuthManager.SetUsers(cfg.GetUsers())
-			// LoadServices loads from store too.
-
+			// Reload config to sync state (though AuthManager has fallback now)
 			if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
 				logging.GetLogger().Error("failed to reload config after user create", "error", err)
 			}
@@ -133,14 +121,15 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		// Sentinel Security: Access Control (IDOR prevention)
-		// Allow if user is admin OR user is accessing their own profile OR has API Key (Super Admin)
-		currentUser, ok := auth.UserFromContext(r.Context())
-		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
+		// RBAC: Admin OR Self (if ID matches UserFromContext) OR API Key
+		enforcer := auth.NewRBACEnforcer()
+		userID, hasUser := auth.UserFromContext(r.Context())
 		_, hasAPIKey := auth.APIKeyFromContext(r.Context())
-		isSelf := ok && currentUser == id
 
-		if !isAdmin && !isSelf && !hasAPIKey {
+		isSelf := hasUser && userID == id
+		isAdmin := enforcer.HasRoleInContext(r.Context(), "admin")
+
+		if !hasAPIKey && !isAdmin && !isSelf {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
@@ -212,6 +201,12 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			writeJSON(w, http.StatusOK, util.SanitizeUser(&user))
 
 		case http.MethodDelete:
+			// Delete requires Admin or API Key
+			if !hasAPIKey && !isAdmin {
+				http.Error(w, "Forbidden", http.StatusForbidden)
+				return
+			}
+
 			if err := store.DeleteUser(r.Context(), id); err != nil {
 				logging.GetLogger().Error("failed to delete user", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)

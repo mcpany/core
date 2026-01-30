@@ -13,6 +13,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ⚡ BOLT: Optimized map key to avoid string allocation/concatenation.
+// Randomized Selection from Top 5 High-Impact Targets.
+type tokenKey struct {
+	userID    string
+	serviceID string
+}
+
 // Store implements storage.Storage in memory.
 type Store struct {
 	mu                 sync.RWMutex
@@ -22,7 +29,7 @@ type Store struct {
 	profileDefinitions map[string]*configv1.ProfileDefinition
 	serviceCollections map[string]*configv1.Collection
 	globalSettings     *configv1.GlobalSettings
-	tokens             map[string]*configv1.UserToken
+	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
 }
 
@@ -36,14 +43,9 @@ func NewStore() *Store {
 		users:              make(map[string]*configv1.User),
 		profileDefinitions: make(map[string]*configv1.ProfileDefinition),
 		serviceCollections: make(map[string]*configv1.Collection),
-		tokens:             make(map[string]*configv1.UserToken),
+		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
 	}
-}
-
-// Helper to generate token key.
-func tokenKey(userID, serviceID string) string {
-	return userID + "|" + serviceID
 }
 
 // SaveToken saves a user token.
@@ -55,7 +57,10 @@ func tokenKey(userID, serviceID string) string {
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	key := tokenKey(token.GetUserId(), token.GetServiceId())
+	key := tokenKey{
+		userID:    token.GetUserId(),
+		serviceID: token.GetServiceId(),
+	}
 	s.tokens[key] = proto.Clone(token).(*configv1.UserToken)
 	return nil
 }
@@ -71,7 +76,10 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	key := tokenKey(userID, serviceID)
+	key := tokenKey{
+		userID:    userID,
+		serviceID: serviceID,
+	}
 	if token, ok := s.tokens[key]; ok {
 		return proto.Clone(token).(*configv1.UserToken), nil
 	}
@@ -88,7 +96,10 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	key := tokenKey(userID, serviceID)
+	key := tokenKey{
+		userID:    userID,
+		serviceID: serviceID,
+	}
 	delete(s.tokens, key)
 	return nil
 }
@@ -127,19 +138,14 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 
 	// 3. Merge Profiles into Global Settings
 	if len(s.profileDefinitions) > 0 {
-		profiles := make([]*configv1.ProfileDefinition, 0, len(s.profileDefinitions))
+		// ⚡ Bolt Optimization: Append directly to gs.ProfileDefinitions using accessors
+		// This avoids creating a temporary object and the overhead of proto.Merge.
+		// Randomized Selection from Top 5 High-Impact Targets
+		current := gs.GetProfileDefinitions()
 		for _, p := range s.profileDefinitions {
-			profiles = append(profiles, proto.Clone(p).(*configv1.ProfileDefinition))
+			current = append(current, proto.Clone(p).(*configv1.ProfileDefinition))
 		}
-
-		// Create a temporary GlobalSettings object containing just the profiles
-		profilesGS := configv1.GlobalSettings_builder{
-			ProfileDefinitions: profiles,
-		}.Build()
-
-		// Merge it into the main GlobalSettings object
-		// proto.Merge appends repeated fields, which matches the original logic
-		proto.Merge(gs, profilesGS)
+		gs.SetProfileDefinitions(current)
 	}
 
 	// 4. Build final ServerConfig
