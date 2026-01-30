@@ -182,7 +182,15 @@ func redactJSONFast(input []byte) []byte {
 						if extra < 128 {
 							extra = 128
 						}
-						out = make([]byte, 0, len(input)+extra)
+
+						// Check for integer overflow before allocation
+						const maxInt = int(^uint(0) >> 1)
+						capacity := len(input)
+						if maxInt-capacity >= extra {
+							capacity += extra
+						}
+
+						out = make([]byte, 0, capacity)
 					}
 
 					// Determine value end

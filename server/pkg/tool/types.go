@@ -991,7 +991,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 			}
 		}
 	case t.cachedInputTemplate != nil:
-		renderedBody, err := t.cachedInputTemplate.Render(inputs)
+		renderedBody, err := t.cachedInputTemplate.RenderSafe(inputs)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to render input template: %w", err)
 		}
@@ -1218,7 +1218,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 			arguments = stdjson.RawMessage(respData)
 		}
 	case t.cachedInputTemplate != nil:
-		rendered, err := t.cachedInputTemplate.Render(inputs)
+		rendered, err := t.cachedInputTemplate.RenderSafe(inputs)
 		if err != nil {
 			return nil, fmt.Errorf("failed to render input template: %w", err)
 		}
@@ -1447,7 +1447,7 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				}
 			}
 		case t.cachedInputTemplate != nil:
-			renderedBody, err := t.cachedInputTemplate.Render(inputs)
+			renderedBody, err := t.cachedInputTemplate.RenderSafe(inputs)
 			if err != nil {
 				return nil, fmt.Errorf("failed to render input template: %w", err)
 			}
