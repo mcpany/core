@@ -141,6 +141,39 @@ func TestCommandInjection_Advanced(t *testing.T) {
 			})
 		}
 	})
+
+	// Case 9: Command Wrapper Injection Prevention (e.g. timeout)
+	t.Run("timeout_injection_prevention", func(t *testing.T) {
+		cmd := "timeout"
+		// timeout 5s sh -c {{input}}
+		// We use createTestCommandToolWithArgs for this custom argument structure
+		tool := createTestCommandToolWithArgs(cmd, "5s", "sh", "-c", "{{input}}")
+		req := &ExecutionRequest{
+			ToolName: "test",
+			// Try to inject: "echo safe; touch /tmp/vulnerable"
+			ToolInputs: []byte(`{"input": "echo safe; touch /tmp/vulnerable"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected")
+	})
+}
+
+func createTestCommandToolWithArgs(command string, args ...string) Tool {
+	toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: &command,
+	}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: args,
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{Name: proto.String("input")}.Build(),
+			}.Build(),
+		},
+	}.Build()
+	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {
