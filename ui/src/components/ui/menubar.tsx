@@ -11,30 +11,55 @@ import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * MenubarMenu component provided by radix-ui.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 function MenubarMenu({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Menu>) {
   return <MenubarPrimitive.Menu {...props} />
 }
 
+/**
+ * MenubarGroup component provided by radix-ui.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 function MenubarGroup({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Group>) {
   return <MenubarPrimitive.Group {...props} />
 }
 
+/**
+ * MenubarPortal component provided by radix-ui.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 function MenubarPortal({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
   return <MenubarPrimitive.Portal {...props} />
 }
 
+/**
+ * MenubarRadioGroup component provided by radix-ui.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 function MenubarRadioGroup({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {
   return <MenubarPrimitive.RadioGroup {...props} />
 }
 
+/**
+ * MenubarSub component provided by radix-ui.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 function MenubarSub({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Sub>) {

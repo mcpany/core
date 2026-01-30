@@ -43,6 +43,10 @@ type SidebarContext = {
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
 
+/**
+ * Hook to access the sidebar context.
+ * @returns The sidebar context including state, open, and toggle functions.
+ */
 function useSidebar() {
   const context = React.useContext(SidebarContext)
   if (!context) {

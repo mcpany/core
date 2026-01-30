@@ -12,7 +12,7 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Elevator Pitch
+## 1. Project Identity
 
 **What is this?**
 MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
@@ -23,49 +23,7 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 **The Solution:**
 Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Architecture
-
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
-
-**High-Level Summary:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration.
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration]
-        Registry -->|Policy| Auth[Authentication & Policy]
-    end
-
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
-```
-
-### Key Features
-*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
-*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
-*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
-*   **Network Topology**: Visual graph of clients, services, and tools.
-*   **Observability**: Real-time metrics and audit logging.
-*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
-
-### Key Documentation
-*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
-*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
-*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
-*   **[Examples](server/docs/examples.md)**: Hands-on examples.
-
-## 3. Getting Started
+## 2. Quick Start
 
 Get up and running with a weather service example in minutes.
 
@@ -106,7 +64,7 @@ Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `ht
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## 3. Developer Workflow
 
 For contributors and developers extending the core platform.
 
@@ -152,26 +110,6 @@ The project is organized as follows:
 - **`server/docs/`**: Detailed documentation and guides.
 - **`ui/`**: The web-based management dashboard (Next.js/React).
 
-### UI Development
-
-To work on the frontend dashboard:
-
-1.  **Navigate to the UI directory:**
-    ```bash
-    cd ui
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-    The UI will be available at http://localhost:9002.
-
-For more details, see the [UI README](ui/README.md).
-
 ### Code Standards
 
 We strive for high code quality. Please ensure the following before submitting a PR:
@@ -205,6 +143,48 @@ We strive for high code quality. Please ensure the following before submitting a
   ```bash
   make lint
   ```
+
+## 4. Architecture
+
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+
+**High-Level Summary:**
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration.
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration]
+        Registry -->|Policy| Auth[Authentication & Policy]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
+### Key Features
+*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
+*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
+*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
+*   **Network Topology**: Visual graph of clients, services, and tools.
+*   **Observability**: Real-time metrics and audit logging.
+*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
+
+### Key Documentation
+*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
+*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
+*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
+*   **[Examples](server/docs/examples.md)**: Hands-on examples.
 
 ## 5. Configuration
 
