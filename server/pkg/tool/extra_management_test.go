@@ -205,6 +205,25 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Coverage: OutputSchema
+	var inputSchema2 *structpb.Struct
+	inputSchema2, _ = structpb.NewStruct(map[string]interface{}{"type": "object"})
+	mt.toolDef = routerv1.Tool_builder{
+		Name:      proto.String("mock-tool"),
+		ServiceId: proto.String("s1"),
+		InputSchema: inputSchema2,
+		OutputSchema: &structpb.Struct{Fields: map[string]*structpb.Value{
+			"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
+		}},
+	}.Build()
+
+	// Clear before re-adding since duplicate names are now blocked
+	m.ClearToolsForService("s1")
+
+	// Reuse existing err variable
+	err = m.AddTool(mt)
+	assert.NoError(t, err)
+
+	// Coverage: OutputSchema
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{"type": "object"})
 	mt.toolDef = routerv1.Tool_builder{
 		Name:      proto.String("mock-tool"),
@@ -214,9 +233,6 @@ func TestManager_AddTool_WithMCPServer_Coverage(t *testing.T) {
 			"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}},
 		}},
 	}.Build()
-
-	err = m.AddTool(mt)
-	assert.NoError(t, err)
 
 	// Use reflection to get the handler and call it!
 	srvVal := reflect.ValueOf(mcpServer).Elem()

@@ -73,6 +73,9 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 
 	// 3. Test CallPolicy (Legacy)
 	t.Run("LegacyCallPolicy_Deny", func(t *testing.T) {
+		// Clear previous tool registration
+		tm.ClearToolsForService(serviceID)
+
 		mockTool := &MockTool{
 			ToolFunc: func() *v1.Tool { return protoTool },
 		}
@@ -97,7 +100,9 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 
 	// 4. Test Tool Management (Get, List, Clear)
 	t.Run("ToolManagement", func(t *testing.T) {
-		// Add duplicate check? AddTool overwrites?
+		// Clear previous tool registration
+		tm.ClearToolsForService(serviceID)
+
 		mockTool := &MockTool{
 			ToolFunc: func() *v1.Tool { return protoTool },
 		}
