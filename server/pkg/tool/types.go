@@ -2690,7 +2690,7 @@ func isVersionSuffix(s string) bool {
 
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
-	quoteLevel := analyzeQuoteContext(template, placeholder)
+	quoteLevel, isFString := analyzeQuoteContext(template, placeholder)
 
 	// Sentinel Security Update:
 	// On Windows cmd.exe, single quotes are NOT strong quotes.
@@ -2700,6 +2700,40 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
 	if isWindowsCmd && quoteLevel == 2 {
 		quoteLevel = 0
+	}
+
+	// Identify interpreters that support string interpolation
+	isPython := strings.HasPrefix(base, "python")
+	isRuby := strings.HasPrefix(base, "ruby") || strings.HasPrefix(base, "jruby")
+	isPerl := strings.HasPrefix(base, "perl")
+
+	// Check for Python f-string injection
+	// Python f-strings (prefixed with f or F) allow code execution via {expression}
+	if isPython && isFString {
+		if strings.Contains(val, "{") || strings.Contains(val, "}") {
+			return fmt.Errorf("python f-string injection detected: value contains '{' or '}' inside f-string")
+		}
+	}
+
+	// Check for Ruby interpolation injection
+	// Ruby double-quoted strings allow #{expression}
+	if isRuby && quoteLevel == 1 {
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("ruby interpolation injection detected: value contains '#{' inside double-quoted string")
+		}
+	}
+
+	// Check for Perl/PHP interpolation injection
+	// Perl/PHP double-quoted strings allow $var
+	// Existing check for '$' in Double Quoted context already covers this (idx := strings.IndexAny(val, "\"$`\\%"))
+	// but we explicitly document it here.
+	if (isPerl) && quoteLevel == 1 {
+		// Double quotes in Perl interpolate variables ($) and arrays (@)
+		// $ is already blocked by general checks.
+		if strings.Contains(val, "@") {
+			// Perl arrays @var are interpolated in double quotes
+			return fmt.Errorf("perl array interpolation injection detected: value contains '@' inside double-quoted string")
+		}
 	}
 
 	if quoteLevel == 2 { // Single Quoted
@@ -2740,19 +2774,40 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return nil
 }
 
-func analyzeQuoteContext(template, placeholder string) int {
+func analyzeQuoteContext(template, placeholder string) (int, bool) {
 	if template == "" || placeholder == "" {
-		return 0
+		return 0, false
 	}
 
 	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
 	minLevel := 2
+	isFString := false
 
 	inSingle := false
 	inDouble := false
+	currentFString := false
 	escaped := false
 
 	foundAny := false
+
+	checkFString := func(idx int) bool {
+		if idx <= 0 {
+			return false
+		}
+		c1 := rune(template[idx-1])
+		if c1 == 'f' || c1 == 'F' {
+			return true
+		}
+		if c1 == 'r' || c1 == 'R' {
+			if idx > 1 {
+				c2 := rune(template[idx-2])
+				if c2 == 'f' || c2 == 'F' {
+					return true
+				}
+			}
+		}
+		return false
+	}
 
 	for i := 0; i < len(template); i++ {
 		// Check if we match placeholder at current position
@@ -2761,8 +2816,14 @@ func analyzeQuoteContext(template, placeholder string) int {
 			currentLevel := 0
 			if inSingle {
 				currentLevel = 2
+				if currentFString {
+					isFString = true
+				}
 			} else if inDouble {
 				currentLevel = 1
+				if currentFString {
+					isFString = true
+				}
 			}
 
 			if currentLevel < minLevel {
@@ -2788,14 +2849,24 @@ func analyzeQuoteContext(template, placeholder string) int {
 
 		if char == '\'' && !inDouble {
 			inSingle = !inSingle
+			if inSingle {
+				currentFString = checkFString(i)
+			} else {
+				currentFString = false
+			}
 		} else if char == '"' && !inSingle {
 			inDouble = !inDouble
+			if inDouble {
+				currentFString = checkFString(i)
+			} else {
+				currentFString = false
+			}
 		}
 	}
 
 	if !foundAny {
-		return 0 // Should not happen if called correctly, fallback to strict
+		return 0, false // Should not happen if called correctly, fallback to strict
 	}
 
-	return minLevel
+	return minLevel, isFString
 }
