@@ -458,7 +458,7 @@ else
 	export PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
-	$(GOLANGCI_LINT_BIN) run --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
+	$(GOLANGCI_LINT_BIN) run --timeout 10m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
 	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
