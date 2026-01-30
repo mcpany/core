@@ -3,23 +3,36 @@ package auth
 import (
 	"context"
 	"net/http"
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/storage/memory"
+	"github.com/mcpany/core/server/pkg/storage/sqlite"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
-func TestManager_checkBasicAuthWithUsers_StorageFallback(t *testing.T) {
+func TestManager_checkBasicAuthWithUsers_StorageFallback_SQLite(t *testing.T) {
+	// Create temp DB
+	f, err := os.CreateTemp("", "test-auth-db-*.db")
+	require.NoError(t, err)
+	dbPath := f.Name()
+	f.Close()
+	defer os.Remove(dbPath)
+
+	db, err := sqlite.NewDB(dbPath)
+	require.NoError(t, err)
+	defer db.Close()
+
+	store := sqlite.NewStore(db)
+
 	am := NewManager()
-	store := memory.NewStore()
 	am.SetStorage(store)
 
 	ctx := context.Background()
-	username := "storage-user"
+	username := "storage-user-sqlite"
 	password := "password123"
 	hash, _ := passhash.Password(password)
 
@@ -46,12 +59,7 @@ func TestManager_checkBasicAuthWithUsers_StorageFallback(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	req.SetBasicAuth(username, password)
 
-	// Test Authenticate (which calls checkBasicAuthWithUsers)
-	// We use "Authenticate" via the manager to simulate full flow,
-	// assuming no specific authenticator is registered for a service, fallback triggers.
-	// But Authenticate requires serviceID or relies on Fallback.
-	// Let's call checkBasicAuthWithUsers directly (it's private, but we are in auth package).
-
+	// Test checkBasicAuthWithUsers
 	newCtx, err := am.checkBasicAuthWithUsers(ctx, req)
 	require.NoError(t, err)
 
