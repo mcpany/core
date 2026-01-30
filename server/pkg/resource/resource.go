@@ -14,58 +14,107 @@ import (
 // ErrResourceNotFound is returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
-// Resource defines the interface for a resource that can be managed by the
-// Manager. Each implementation of a resource is responsible for
-// providing its metadata and handling read and subscribe operations.
+// Resource defines the interface for a data source or content provider within the MCP Any system.
+//
+// Implementations of this interface expose data (e.g., database records, files, API responses)
+// as standard MCP resources, which can be read by clients or subscribed to for real-time updates.
 type Resource interface {
-	// Resource returns the MCP representation of the resource, which includes its
-	// metadata.
+	// Resource returns the metadata describing this resource.
+	//
+	// This includes the URI, name, MIME type, and description, formatted for the MCP protocol.
+	//
+	// Returns:
+	//   - *mcp.Resource: The MCP resource definition.
 	Resource() *mcp.Resource
-	// Service returns the ID of the service that provides this resource.
+
+	// Service returns the identifier of the upstream service that owns this resource.
 	//
-	// Returns the result.
+	// This is used for access control, billing, and resource lifecycle management (e.g.,
+	// clearing resources when a service is reloaded).
+	//
+	// Returns:
+	//   - string: The unique service ID.
 	Service() string
-	// Read retrieves the content of the resource.
+
+	// Read fetches the current content of the resource.
 	//
-	// ctx is the context for the request.
+	// It retrieves the data from the underlying source (e.g., executing a SQL query, reading a file)
+	// and returns it in a format suitable for the MCP client (text or binary blob).
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Parameters:
+	//   - ctx: The context for the read operation, including timeout and cancellation.
+	//
+	// Returns:
+	//   - *mcp.ReadResourceResult: The content of the resource.
+	//   - error: An error if the read operation fails (e.g., connection error, not found).
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
-	// Subscribe establishes a subscription to the resource, allowing for
-	// receiving updates.
+
+	// Subscribe attempts to establish a subscription for real-time updates on this resource.
+	//
+	// If supported, the implementation should start monitoring the underlying source and
+	// notify the system when changes occur.
+	//
+	// Parameters:
+	//   - ctx: The context for the subscription request.
+	//
+	// Returns:
+	//   - error: An error if subscription is not supported or fails to be established.
 	Subscribe(ctx context.Context) error
 }
 
-// ManagerInterface defines the interface for managing a collection of
-// resources. It provides methods for adding, removing, retrieving, and listing
-// resources, as well as for subscribing to changes.
+// ManagerInterface defines the contract for a component that manages the lifecycle and registry of resources.
+//
+// It acts as the central repository for all active resources, handling registration, lookup,
+// and notification of changes to the resource list.
 type ManagerInterface interface {
-	// GetResource retrieves a resource by its URI.
+	// GetResource looks up a registered resource by its unique URI.
 	//
-	// uri is the uri.
+	// Parameters:
+	//   - uri: The URI of the resource to find.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Resource: The resource instance, if found.
+	//   - bool: True if the resource exists, false otherwise.
 	GetResource(uri string) (Resource, bool)
-	// AddResource adds a new resource to the manager.
+
+	// AddResource registers a new resource with the manager.
 	//
-	// resource is the resource.
+	// If a resource with the same URI already exists, it is updated.
+	// This triggers any registered "list changed" callbacks.
+	//
+	// Parameters:
+	//   - resource: The resource instance to add.
 	AddResource(resource Resource)
-	// RemoveResource removes a resource from the manager by its URI.
+
+	// RemoveResource unregisters a resource identified by its URI.
 	//
-	// uri is the uri.
+	// If the resource exists, it is removed and "list changed" callbacks are triggered.
+	//
+	// Parameters:
+	//   - uri: The URI of the resource to remove.
 	RemoveResource(uri string)
-	// ListResources returns a slice of all resources currently in the manager.
+
+	// ListResources returns a snapshot of all currently registered resources.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Resource: A slice containing all resources.
 	ListResources() []Resource
-	// OnListChanged registers a callback function to be called when the list of
-	// resources changes.
-	OnListChanged(func())
-	// ClearResourcesForService removes all resources associated with a given service ID.
+
+	// OnListChanged registers a callback function that is invoked whenever the list of resources changes.
 	//
-	// serviceID is the serviceID.
+	// This is typically used to notify MCP clients that the available resources have been updated.
+	//
+	// Parameters:
+	//   - f: The function to execute when the resource list changes.
+	OnListChanged(f func())
+
+	// ClearResourcesForService removes all resources belonging to a specific upstream service.
+	//
+	// This is commonly used during configuration reloads or service shutdowns to clean up
+	// associated resources.
+	//
+	// Parameters:
+	//   - serviceID: The ID of the service whose resources should be removed.
 	ClearResourcesForService(serviceID string)
 }
 

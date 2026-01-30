@@ -58,24 +58,51 @@ var (
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
-// Tool is the fundamental interface for any executable tool in the system.
-// Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+// Tool defines the standard interface for all executable tools within the MCP Any system.
+//
+// Implementations of this interface abstraction over various upstream protocols (e.g., gRPC, HTTP, CLI),
+// providing a unified way to describe, execute, and manage tools regardless of their underlying implementation.
 type Tool interface {
-	// Tool returns the protobuf definition of the tool.
+	// Tool returns the internal Protobuf definition of the tool.
 	//
-	// Returns the result.
+	// This definition contains metadata such as the tool's name, description, input schema,
+	// and upstream configuration details.
+	//
+	// Returns:
+	//   - *v1.Tool: The Protobuf tool definition.
 	Tool() *v1.Tool
-	// MCPTool returns the MCP tool definition.
+
+	// MCPTool returns the public Model Context Protocol (MCP) definition of the tool.
 	//
-	// Returns the result.
+	// This representation is what is exposed to MCP clients (AI agents) and includes
+	// the tool's name, description, and input schema in the format required by the protocol.
+	//
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
-	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
-	// GetCacheConfig returns the cache configuration for the tool.
+
+	// Execute runs the tool with the provided context and request parameters.
 	//
-	// Returns the result.
+	// It handles the translation of the abstract execution request into the specific
+	// protocol commands required by the upstream service (e.g., making an HTTP request,
+	// spawning a subprocess).
+	//
+	// Parameters:
+	//   - ctx: The context for the execution, including timeout and cancellation signals.
+	//   - req: The ExecutionRequest containing the tool name and input arguments.
+	//
+	// Returns:
+	//   - any: The result of the execution. The type depends on the tool implementation (usually map[string]any or string).
+	//   - error: An error if the execution fails.
+	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
+	// GetCacheConfig returns the caching strategy configuration for this tool.
+	//
+	// This configuration dictates how the results of this tool execution should be cached
+	// to improve performance and reduce upstream load.
+	//
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if caching is disabled.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -101,22 +128,29 @@ type ServiceInfo struct {
 	HealthStatus string
 }
 
-// ExecutionRequest represents a request to execute a specific tool, including
-// its name and input arguments as a raw JSON message.
+// ExecutionRequest encapsulates all necessary information to execute a tool.
+//
+// It carries the identifier of the tool to run, the input arguments (in both raw JSON and map formats),
+// and context-specific flags like dry-run mode.
 type ExecutionRequest struct {
-	// ToolName is the name of the tool to be executed.
+	// ToolName specifies the unique name of the tool to invoke.
 	ToolName string `json:"name"`
-	// ToolInputs is the raw JSON message of the tool inputs. It is used by
-	// tools that need to unmarshal the inputs into a specific struct.
+
+	// ToolInputs contains the raw JSON representation of the arguments.
+	// This is useful for tools that require deferred unmarshaling or precise JSON handling.
 	ToolInputs stdjson.RawMessage `json:"toolInputs"`
-	// Arguments is a map of the tool inputs. It is used by tools that need to
-	// access the inputs as a map.
+
+	// Arguments provides a structured map representation of the inputs.
+	// This is populated for convenience when the inputs are already parsed.
 	Arguments map[string]interface{} `json:"arguments"`
-	// DryRun indicates whether the tool should be executed in dry-run mode.
-	// In dry-run mode, the tool should validate inputs and return a preview
-	// of the execution without performing any side effects.
+
+	// DryRun indicates whether the tool should be executed in simulation mode.
+	// If true, the tool should validate inputs and return a preview of the operation
+	// without performing any side effects (e.g., database writes).
 	DryRun bool `json:"dryRun"`
-	// Tool is the resolved tool instance. Populated internally to avoid re-lookup.
+
+	// Tool holds a reference to the resolved Tool instance.
+	// This is populated internally by the router or manager to avoid redundant lookups.
 	Tool Tool `json:"-"`
 }
 
