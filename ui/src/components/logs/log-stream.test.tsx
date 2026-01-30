@@ -7,6 +7,16 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
+// Mock react-virtuoso
+vi.mock("react-virtuoso", () => ({
+  Virtuoso: ({ data, itemContent }: any) => (
+    <div data-testid="virtuoso-mock">
+      {data.map((item: any, index: number) => itemContent(index, item))}
+    </div>
+  ),
+  VirtuosoHandle: {},
+}));
+
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
     useSearchParams: () => ({
@@ -94,11 +104,11 @@ describe("LogStream", () => {
     expect(screen.getByText("First Log")).toBeInTheDocument();
 
     // Find the Pause button.
-    const pauseButton = screen.getByText(/Pause/i, { selector: 'button' });
+    const pauseButton = screen.getAllByText(/Pause/i)[0];
     fireEvent.click(pauseButton);
 
     // Verify button text changes to Resume
-    expect(screen.getByText(/Resume/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Resume/i)[0]).toBeInTheDocument();
 
     // Send another log message while paused
     const log2 = {
@@ -122,7 +132,7 @@ describe("LogStream", () => {
     expect(screen.queryByText("Second Log")).not.toBeInTheDocument();
 
     // Click Resume
-    const resumeButton = screen.getByText(/Resume/i, { selector: 'button' });
+    const resumeButton = screen.getAllByText(/Resume/i)[0];
     fireEvent.click(resumeButton);
 
     // Send third log
