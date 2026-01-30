@@ -90,37 +90,17 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-
-		// Check for SDK error
-		if err != nil {
-			if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (SDK error): %v. Retrying...", i+1, maxRetries, err)
-				time.Sleep(2 * time.Second) // Wait before retrying
-				continue
-			}
-			require.NoError(t, err, "unrecoverable error calling getCatFact tool")
+		if err == nil {
+			break // Success
 		}
 
-		// Check for MCP protocol error (isError: true)
-		if res.IsError {
-			var errorMsg string
-			if len(res.Content) > 0 {
-				if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
-					errorMsg = textContent.Text
-				}
-			}
-
-			if strings.Contains(errorMsg, "503 Service Temporarily Unavailable") || strings.Contains(errorMsg, "context deadline exceeded") || strings.Contains(errorMsg, "connection reset by peer") {
-				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (MCP error): %s. Retrying...", i+1, maxRetries, errorMsg)
-				time.Sleep(2 * time.Second) // Wait before retrying
-				continue
-			}
-			// If it's a non-transient error, we stop retrying and let the assertions fail
-			break
+		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
+			t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
+			time.Sleep(2 * time.Second) // Wait before retrying
+			continue
 		}
 
-		// Success
-		break
+		require.NoError(t, err, "unrecoverable error calling getCatFact tool")
 	}
 
 	if err != nil {

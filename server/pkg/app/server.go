@@ -2129,7 +2129,7 @@ func (a *Application) runServerMode(
 	}
 
 	// Wait for servers to be ready
-	timeout := time.NewTimer(30 * time.Second) // Reasonable timeout for binding ports, increased for slow CI
+	timeout := time.NewTimer(10 * time.Second) // Reasonable timeout for binding ports
 	defer timeout.Stop()
 
 	for i := 0; i < expectedReady; i++ {
