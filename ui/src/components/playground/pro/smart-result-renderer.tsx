@@ -92,9 +92,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const hasSmartView = tableData !== null;
 
     const renderRaw = () => (
-        <div className="max-h-[400px] overflow-auto">
-            <JsonView data={result} defaultExpandDepth={2} className="h-full" />
-        </div>
+        <JsonView data={result} defaultExpandDepth={2} className="h-full max-h-[400px]" />
     );
 
     const renderSmart = () => {
