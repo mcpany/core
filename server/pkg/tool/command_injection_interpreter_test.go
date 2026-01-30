@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package tool
 
 import (
@@ -38,7 +41,7 @@ func TestInterpreterInjection(t *testing.T) {
 		input := "#{system('echo injected')}"
 
 		req := &ExecutionRequest{
-			ToolName: "ruby_tool",
+			ToolName:   "ruby_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": "%s"}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -78,7 +81,7 @@ func TestInterpreterInjection(t *testing.T) {
 		input := `{__import__("os").system("echo injected")}`
 
 		req := &ExecutionRequest{
-			ToolName: "python_tool",
+			ToolName:   "python_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -117,7 +120,7 @@ func TestInterpreterInjection(t *testing.T) {
 		input := `{__import__("os").system("echo injected")}`
 
 		req := &ExecutionRequest{
-			ToolName: "python_tool",
+			ToolName:   "python_tool",
 			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
 			Arguments: map[string]interface{}{
 				"msg": input,
@@ -130,81 +133,81 @@ func TestInterpreterInjection(t *testing.T) {
 		assert.Contains(t, err.Error(), "python f-string injection detected")
 	})
 
-    // 4. Valid JSON input (Should be allowed)
-    t.Run("Python_Valid_JSON", func(t *testing.T) {
-        toolDef := &pb.Tool{
-            Name: proto.String("python_json"),
-        }
+	// 4. Valid JSON input (Should be allowed)
+	t.Run("Python_Valid_JSON", func(t *testing.T) {
+		toolDef := &pb.Tool{
+			Name: proto.String("python_json"),
+		}
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: proto.String("python3"),
 		}).Build()
 
-        callDef := &configv1.CommandLineCallDefinition{
-            Args: []string{"process.py", "'{{msg}}'"},
-            Parameters: []*configv1.CommandLineParameterMapping{
-                {
-                    Schema: &configv1.ParameterSchema{
-                        Name: proto.String("msg"),
-                    },
-                },
-            },
-        }
+		callDef := &configv1.CommandLineCallDefinition{
+			Args: []string{"process.py", "'{{msg}}'"},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{
+						Name: proto.String("msg"),
+					},
+				},
+			},
+		}
 
-        tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
 
-        input := `{"foo": "bar"}` // Contains ", {, }
+		input := `{"foo": "bar"}` // Contains ", {, }
 
-        req := &ExecutionRequest{
-            ToolName: "python_json",
-            ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
-            Arguments: map[string]interface{}{
-                "msg": input,
-            },
-        }
+		req := &ExecutionRequest{
+			ToolName:   "python_json",
+			ToolInputs: []byte(fmt.Sprintf(`{"msg": %q}`, input)),
+			Arguments: map[string]interface{}{
+				"msg": input,
+			},
+		}
 
-        _, err := tool.Execute(context.Background(), req)
+		_, err := tool.Execute(context.Background(), req)
 
-        if err != nil {
-             assert.NotContains(t, err.Error(), "injection detected", "Valid JSON should not be flagged as injection")
-        }
-    })
+		if err != nil {
+			assert.NotContains(t, err.Error(), "injection detected", "Valid JSON should not be flagged as injection")
+		}
+	})
 
-    // 5. PHP Valid Email (Should be allowed)
-    t.Run("PHP_Valid_Email", func(t *testing.T) {
-        toolDef := &pb.Tool{
-            Name: proto.String("php_tool"),
-        }
+	// 5. PHP Valid Email (Should be allowed)
+	t.Run("PHP_Valid_Email", func(t *testing.T) {
+		toolDef := &pb.Tool{
+			Name: proto.String("php_tool"),
+		}
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: proto.String("php"),
 		}).Build()
 
-        callDef := &configv1.CommandLineCallDefinition{
-            Args: []string{"-r", "echo \"{{email}}\""},
-            Parameters: []*configv1.CommandLineParameterMapping{
-                {
-                    Schema: &configv1.ParameterSchema{
-                        Name: proto.String("email"),
-                    },
-                },
-            },
-        }
+		callDef := &configv1.CommandLineCallDefinition{
+			Args: []string{"-r", "echo \"{{email}}\""},
+			Parameters: []*configv1.CommandLineParameterMapping{
+				{
+					Schema: &configv1.ParameterSchema{
+						Name: proto.String("email"),
+					},
+				},
+			},
+		}
 
-        tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
+		tool := NewLocalCommandTool(toolDef, serviceConfig, callDef, nil, "test_call")
 
-        input := `test@example.com` // Contains @
+		input := `test@example.com` // Contains @
 
-        req := &ExecutionRequest{
-            ToolName: "php_tool",
-            ToolInputs: []byte(fmt.Sprintf(`{"email": %q}`, input)),
-            Arguments: map[string]interface{}{
-                "email": input,
-            },
-        }
+		req := &ExecutionRequest{
+			ToolName:   "php_tool",
+			ToolInputs: []byte(fmt.Sprintf(`{"email": %q}`, input)),
+			Arguments: map[string]interface{}{
+				"email": input,
+			},
+		}
 
-        _, err := tool.Execute(context.Background(), req)
+		_, err := tool.Execute(context.Background(), req)
 
-        if err != nil {
-             assert.NotContains(t, err.Error(), "injection detected", "Valid email should not be flagged as injection in PHP")
-        }
-    })
+		if err != nil {
+			assert.NotContains(t, err.Error(), "injection detected", "Valid email should not be flagged as injection in PHP")
+		}
+	})
 }
