@@ -2641,6 +2641,9 @@ func isShellCommand(cmd string) bool {
 		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
+		// Debuggers and dynamic analysis tools that can execute code
+		"gdb", "lldb", "pdb", "jdb", "ruby-debug", "rdebug",
+		"valgrind", "strace",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump",
 	}
