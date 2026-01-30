@@ -94,6 +94,11 @@ test.describe('Tool Detail Performance Optimization', () => {
             await route.fulfill({ status: 404 });
         });
 
+        // Mock tool usage for missing service (empty or error) to prevent unmocked request
+        await page.route(`**/api/v1/dashboard/tool-usage*`, async (route) => {
+             await route.fulfill({ status: 200, body: '[]' });
+        });
+
         await page.goto(`/service/${serviceId}/tool/${toolName}`);
 
         // Expect some error UI
