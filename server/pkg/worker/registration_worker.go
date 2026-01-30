@@ -31,8 +31,12 @@ type ServiceRegistrationWorker struct {
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
-// bus is the event bus used for receiving requests and publishing results.
-// serviceRegistry is the registry that will handle the actual registration logic.
+// Parameters:
+//   - bus: The event bus used for receiving requests and publishing results.
+//   - serviceRegistry: The registry that will handle the actual registration logic.
+//
+// Returns:
+//   - *ServiceRegistrationWorker: A new service registration worker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -42,6 +46,9 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 }
 
 // SetRetryDelay sets the retry delay for failed registrations.
+//
+// Parameters:
+//   - d: The duration to wait before retrying.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -50,7 +57,8 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // registration requests on the event bus and will continue to process them
 // until the provided context is canceled.
 //
-// ctx is the context that controls the lifecycle of the worker.
+// Parameters:
+//   - ctx: The context that controls the lifecycle of the worker.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")

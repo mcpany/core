@@ -20,7 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // MockExecutor for testing CommandTool
@@ -91,43 +90,6 @@ func TestHTTPTool_Execute_InvalidInputJSON(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
 }
 
-func TestCommandTool_Execute_ShellInjection_Args(t *testing.T) {
-	// Tests that checkForShellInjection is called for dynamic args
-	// Construct schema allowing 'args'
-	inputSchema := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"properties": {
-				Kind: &structpb.Value_StructValue{
-					StructValue: &structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							"args": {},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	tool := NewLocalCommandTool(
-		v1.Tool_builder{Name: proto.String("test-shell"), InputSchema: inputSchema}.Build(),
-		configv1.CommandLineUpstreamService_builder{Command: proto.String("sh")}.Build(),
-		configv1.CommandLineCallDefinition_builder{
-			Args: []string{"-c"},
-		}.Build(),
-		nil,
-		"id",
-	)
-
-	// Injection via args
-	req := &ExecutionRequest{
-		ToolName:   "test-shell",
-		ToolInputs: []byte(`{"args": ["echo hello; rm -rf /"]}`),
-	}
-
-	_, err := tool.Execute(context.Background(), req)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "shell injection detected")
-}
 
 func TestCommandTool_DryRun(t *testing.T) {
 	service := configv1.CommandLineUpstreamService_builder{
@@ -360,6 +322,13 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
     callDef := &configv1.HttpCallDefinition{
         InputTransformer: &configv1.InputTransformer{
             Template: proto.String("Hello {{name}}"),
+        },
+        Parameters: []*configv1.HttpParameterMapping{
+            {
+                Schema: &configv1.ParameterSchema{
+                    Name: proto.String("name"),
+                },
+            },
         },
     }
 

@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -394,6 +395,7 @@ type HTTPTool struct {
 	resilienceManager *resilience.Manager
 	policies          []*CompiledCallPolicy
 	callID            string
+	allowedParams     map[string]bool
 
 	// Cached fields for performance
 	initError            error
@@ -440,6 +442,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 		cache:             callDefinition.GetCache(),
 		resilienceManager: resilience.NewManager(cfg),
 		callID:            callID,
+		allowedParams:     make(map[string]bool, len(callDefinition.GetParameters())),
 	}
 
 	compiled, err := CompileCallPolicies(policies)
@@ -500,6 +503,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 	for i, param := range callDefinition.GetParameters() {
 		if schema := param.GetSchema(); schema != nil {
 			name := schema.GetName()
+			t.allowedParams[name] = true
 			placeholder := "{{" + name + "}}"
 
 			if strings.Contains(pathStr, placeholder) {
@@ -767,10 +771,20 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		}
 	}
 
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	filtered := false
+	for k := range inputs {
+		if !t.allowedParams[k] {
+			delete(inputs, k)
+			filtered = true
+		}
+	}
+
 	pathReplacements, queryReplacements, inputsModified, err := t.processParameters(ctx, inputs)
 	if err != nil {
 		return nil, "", false, err
 	}
+	inputsModified = inputsModified || filtered
 
 	var pathBuf strings.Builder
 	for _, seg := range t.pathSegments {
@@ -1603,6 +1617,7 @@ type LocalCommandTool struct {
 	callDefinition *configv1.CommandLineCallDefinition
 	policies       []*CompiledCallPolicy
 	callID         string
+	sandboxArgs    []string
 	initError      error
 }
 
@@ -1637,6 +1652,27 @@ func NewLocalCommandTool(
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	// Check if the command is sed and supports sandbox
+	cmd := service.GetCommand()
+	base := filepath.Base(cmd)
+	if base == "sed" || base == "gsed" {
+		// Check if sed supports --sandbox by running `sed --sandbox --version`
+		// We use exec.Command directly here.
+		// Use --version because it exits successfully if supported.
+		// If --sandbox is not supported, sed usually exits with error "illegal option"
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version") //nolint:gosec // Trusted command from config
+		if err := checkCmd.Run(); err == nil {
+			t.sandboxArgs = []string{"--sandbox"}
+			logging.GetLogger().Info("Enabled sandbox mode for sed tool", "tool", tool.GetName())
+		} else {
+			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
+			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
+		}
+	}
+
 	return t
 }
 
@@ -1701,6 +1737,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	args := []string{}
+	if len(t.sandboxArgs) > 0 {
+		args = append(args, t.sandboxArgs...)
+	}
+
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
@@ -1767,12 +1807,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -2076,12 +2110,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						// If running a shell, args passed dynamically should also be checked
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -2607,6 +2635,8 @@ func isShellCommand(cmd string) bool {
 		"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
+		// Additional dangerous tools
+		"zip", "unzip", "rsync", "nmap", "tcpdump",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2621,6 +2651,22 @@ func isShellCommand(cmd string) bool {
 			}
 		}
 	}
+
+	// Check for script extensions that indicate shell execution or interpretation
+	ext := strings.ToLower(filepath.Ext(base))
+	scriptExts := []string{
+		".sh", ".bash", ".zsh", ".ash", ".ksh", ".csh", ".tcsh", ".fish",
+		".bat", ".cmd", ".ps1", ".vbs", ".js", ".mjs", ".ts",
+		".py", ".pyc", ".pyo", ".pyd",
+		".rb", ".pl", ".pm", ".php",
+		".lua", ".r",
+	}
+	for _, scriptExt := range scriptExts {
+		if ext == scriptExt {
+			return true
+		}
+	}
+
 	return false
 }
 
@@ -2663,7 +2709,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
+	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables

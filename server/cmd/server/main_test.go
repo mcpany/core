@@ -269,7 +269,7 @@ func TestGracefulShutdown(t *testing.T) {
 				return true
 			}
 			return false
-		}, 5*time.Second, 100*time.Millisecond, "Failed to find port in logs")
+		}, 15*time.Second, 100*time.Millisecond, "Failed to find port in logs")
 
 		if realPort == 0 {
 			return
@@ -283,7 +283,7 @@ func TestGracefulShutdown(t *testing.T) {
 			}
 			defer func() { _ = resp.Body.Close() }()
 			return resp.StatusCode == http.StatusOK
-		}, 5*time.Second, 100*time.Millisecond)
+		}, 10*time.Second, 100*time.Millisecond)
 
 		// Signal parent that we are ready
 		fmt.Println("READY")

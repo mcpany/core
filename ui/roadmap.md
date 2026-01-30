@@ -55,7 +55,7 @@
 - [x] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
 - [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
 - [x] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
-- [ ] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
+- [x] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
 - [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
 - [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
 - [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.

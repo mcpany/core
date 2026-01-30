@@ -19,12 +19,15 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Key } from "lucide-react";
+import { SecretPicker } from "@/components/secrets/secret-picker";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceDiagnostics } from "@/components/services/editor/service-diagnostics";
 import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { SourceEditor } from "@/components/services/editor/source-editor";
+import yaml from "js-yaml";
 
 interface ServiceEditorProps {
     service: UpstreamServiceConfig;
@@ -41,10 +44,48 @@ interface ServiceEditorProps {
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
     const [validating, setValidating] = useState(false);
+    const [yamlContent, setYamlContent] = useState("");
+    const [yamlError, setYamlError] = useState<string | null>(null);
     const { toast } = useToast();
 
     const updateService = (updates: Partial<UpstreamServiceConfig>) => {
         onChange({ ...service, ...updates });
+    };
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+        if (value === "source") {
+            try {
+                // Clone and strip runtime fields
+                const cleanService = { ...service };
+                delete cleanService.connectionPool;
+                delete cleanService.lastError;
+                delete cleanService.toolCount;
+
+                const yamlStr = yaml.dump(cleanService);
+                setYamlContent(yamlStr);
+                setYamlError(null);
+            } catch (e) {
+                console.error("Failed to dump YAML", e);
+                setYamlError("Failed to generate YAML from current configuration.");
+            }
+        }
+    };
+
+    const handleYamlChange = (value: string | undefined) => {
+        if (value === undefined) return;
+        setYamlContent(value);
+        try {
+            const parsed = yaml.load(value) as UpstreamServiceConfig;
+            if (typeof parsed !== 'object' || parsed === null) {
+                throw new Error("Invalid YAML: Must be an object");
+            }
+            setYamlError(null);
+            // Update parent state
+            onChange(parsed);
+        } catch (e: any) {
+            setYamlError(e.message || "Invalid YAML");
+        }
     };
 
     const handleValidate = async () => {
@@ -107,7 +148,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
     return (
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                     <div className="border-b px-4">
                         <TabsList className="bg-transparent">
                             <TabsTrigger value="general">General</TabsTrigger>
@@ -117,10 +158,33 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                             <TabsTrigger value="advanced">Advanced</TabsTrigger>
                             <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
                             {service.id && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
+                            <TabsTrigger value="source">Source</TabsTrigger>
                         </TabsList>
                     </div>
 
                     <div className="p-4 space-y-6">
+                        <TabsContent value="source" className="space-y-4 mt-0">
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-medium">Configuration Source</h3>
+                                    {yamlError ? (
+                                        <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 px-3 py-1 rounded">
+                                            <AlertCircle className="h-4 w-4" />
+                                            {yamlError}
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 text-green-500 text-sm bg-green-500/10 px-3 py-1 rounded">
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            Valid YAML
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    View and edit the raw YAML configuration for this service. Changes are synced automatically.
+                                </p>
+                                <SourceEditor value={yamlContent} onChange={handleYamlChange} />
+                            </div>
+                        </TabsContent>
                         <TabsContent value="general" className="space-y-4 mt-0">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -388,13 +452,25 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                             </div>
                                              <div className="space-y-2">
                                                 <Label htmlFor="api-key-value">Value</Label>
-                                                <Input
-                                                    id="api-key-value"
-                                                    type="password"
-                                                    value={service.upstreamAuth.apiKey.value}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: e.target.value } } })}
-                                                    placeholder="secret-key-123"
-                                                />
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        id="api-key-value"
+                                                        type="password"
+                                                        value={service.upstreamAuth.apiKey.value}
+                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: e.target.value } } })}
+                                                        placeholder="secret-key-123"
+                                                    />
+                                                    <SecretPicker
+                                                        onSelect={(key) => {
+                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: `\${${key}}` } } });
+                                                        }}
+                                                    >
+                                                        <Button variant="outline" size="icon" title="Insert Secret Reference">
+                                                            <Key className="h-4 w-4" />
+                                                        </Button>
+                                                    </SecretPicker>
+                                                </div>
+                                                <p className="text-[10px] text-muted-foreground">Use <code>{"${SECRET_NAME}"}</code> to reference a stored secret.</p>
                                             </div>
                                              <div className="space-y-2">
                                                 <Label htmlFor="api-key-location">Location</Label>
@@ -419,13 +495,25 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <div className="space-y-4 border-l-2 border-primary/20 pl-4">
                                              <div className="space-y-2">
                                                 <Label htmlFor="bearer-token">Token</Label>
-                                                <Input
-                                                    id="bearer-token"
-                                                    type="password"
-                                                    value={service.upstreamAuth.bearerToken.token}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: e.target.value } } })}
-                                                    placeholder="ey..."
-                                                />
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        id="bearer-token"
+                                                        type="password"
+                                                        value={service.upstreamAuth.bearerToken.token}
+                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: e.target.value } } })}
+                                                        placeholder="ey..."
+                                                    />
+                                                    <SecretPicker
+                                                        onSelect={(key) => {
+                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: `\${${key}}` } } });
+                                                        }}
+                                                    >
+                                                        <Button variant="outline" size="icon" title="Insert Secret Reference">
+                                                            <Key className="h-4 w-4" />
+                                                        </Button>
+                                                    </SecretPicker>
+                                                </div>
+                                                <p className="text-[10px] text-muted-foreground">Use <code>{"${SECRET_NAME}"}</code> to reference a stored secret.</p>
                                             </div>
                                         </div>
                                     )}
