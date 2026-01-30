@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { request, APIRequestContext } from '@playwright/test';
+import { request, APIRequestContext, expect } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -49,10 +49,9 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     ];
 
     for (const svc of services) {
-        try {
-            await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to seed service ${svc.name}: ${e}`);
+        const response = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+        if (!response.ok()) {
+            throw new Error(`Failed to seed service ${svc.name}: ${response.status()} ${await response.text()}`);
         }
     }
 };
@@ -76,13 +75,11 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
             }
         ]
     };
-    try {
-        const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
-        if (!res.ok()) {
-            console.log(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
-        }
-    } catch (e) {
-        console.log(`Failed to seed collection ${name}: ${e}`);
+
+    const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
+    if (!res.ok()) {
+        console.warn(`Failed to seed collection ${name}: ${res.status()} ${await res.text()}`);
+        // Don't throw for collections as they might already exist or conflict less critically
     }
 };
 
@@ -94,7 +91,7 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
     } catch (e) {
-        console.log(`Failed to seed traffic: ${e}`);
+        console.warn(`Failed to seed traffic: ${e}`);
     }
 };
 
@@ -105,7 +102,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/User Service', { headers: HEADERS });
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
     } catch (e) {
-        console.log(`Failed to cleanup services: ${e}`);
+        console.warn(`Failed to cleanup services: ${e}`);
     }
 };
 
@@ -114,7 +111,7 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
-        console.log(`Failed to cleanup collection ${name}: ${e}`);
+        console.warn(`Failed to cleanup collection ${name}: ${e}`);
     }
 };
 
@@ -130,11 +127,16 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         },
         roles: ["admin"]
     };
-    try {
-        // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to seed user: ${e}`);
+
+    // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
+    const response = await context.post('/api/v1/users', { data: { user }, headers: HEADERS });
+
+    if (!response.ok()) {
+        const text = await response.text();
+        // If user already exists (409), that's fine.
+        if (response.status() !== 409) {
+             throw new Error(`Failed to seed user ${username}: ${response.status()} ${text}`);
+        }
     }
 };
 
@@ -143,6 +145,6 @@ export const cleanupUser = async (requestContext?: APIRequestContext, username: 
     try {
         await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
     } catch (e) {
-        console.log(`Failed to cleanup user: ${e}`);
+        console.warn(`Failed to cleanup user: ${e}`);
     }
 };

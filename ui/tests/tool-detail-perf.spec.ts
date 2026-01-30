@@ -16,17 +16,25 @@ test.describe('Tool Detail Performance Optimization', () => {
         });
 
         // Mock Service Details (REST)
+        // Ensure we match the snake_case format that the server would return
+        // and that the client expects to map to camelCase.
         await page.route(`**/api/v1/services/${serviceId}`, async (route) => {
              await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
                 json: {
                     service: {
+                        id: serviceId,
                         name: serviceId,
+                        version: "1.0.0",
                         http_service: {
+                            address: "http://localhost:8080",
                             tools: [
                                 {
                                     name: toolName,
                                     description: 'A test tool',
-                                    inputSchema: { type: 'object', properties: {} }
+                                    input_schema: { type: 'object', properties: {} }, // snake_case for safety
+                                    inputSchema: { type: 'object', properties: {} }   // camelCase just in case
                                 }
                             ]
                         }
@@ -35,16 +43,23 @@ test.describe('Tool Detail Performance Optimization', () => {
             });
         });
 
-        // Mock Service Status (Metrics)
-        await page.route(`**/api/v1/services/${serviceId}/status`, async (route) => {
+        // Mock Tool Usage (Metrics)
+        // The URL matching must be precise. The client appends ?serviceId=...
+        // We use a glob that covers query params.
+        await page.route(`**/api/v1/dashboard/tool-usage*`, async (route) => {
             // Add a small delay to simulate network latency
              await new Promise(resolve => setTimeout(resolve, 100));
             await route.fulfill({
-                json: {
-                    metrics: {
-                        [`tool_usage:${toolName}`]: 42
-                    }
-                }
+                status: 200,
+                contentType: 'application/json',
+                json: [{
+                    name: toolName,
+                    serviceId: serviceId,
+                    totalCalls: 42,
+                    successRate: 95.0,
+                    avgLatency: 150.0,
+                    errorCount: 2
+                }]
             });
         });
 
@@ -57,7 +72,10 @@ test.describe('Tool Detail Performance Optimization', () => {
         await expect(page.getByText('A test tool')).toBeVisible();
 
         // Verify Metrics
-        await expect(page.getByText('42')).toBeVisible();
+        await expect(page.getByText('42', { exact: true })).toBeVisible();
+        await expect(page.getByText('95.0%')).toBeVisible();
+        await expect(page.getByText('150ms')).toBeVisible();
+        await expect(page.getByText('2', { exact: true })).toBeVisible();
     });
 
     test('should handle missing service gracefully', async ({ page }) => {
@@ -69,7 +87,7 @@ test.describe('Tool Detail Performance Optimization', () => {
         });
 
         await page.route(`**/api/v1/services/${serviceId}`, async (route) => {
-            await route.fulfill({ status: 404, body: 'Not Found' });
+            await route.fulfill({ status: 404, body: '{"error": "Not Found"}' });
         });
 
          await page.route(`**/api/v1/services/${serviceId}/status`, async (route) => {
@@ -78,6 +96,7 @@ test.describe('Tool Detail Performance Optimization', () => {
 
         await page.goto(`/service/${serviceId}/tool/${toolName}`);
 
-        await expect(page.getByRole('alert').filter({ hasText: /not found|404|error|failed/i })).toBeVisible();
+        // Expect some error UI
+        await expect(page.getByText(/service not found/i)).toBeVisible();
     });
 });
