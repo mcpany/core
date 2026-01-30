@@ -17,11 +17,11 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 		return nil, nil
 	}
 
-	f, err := os.Open(path)
+	f, err := os.Open(path) //nolint:gosec // Intended file inclusion
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	stat, err := f.Stat()
 	if err != nil {
@@ -51,7 +51,7 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 	// Use a reasonable chunk size
 	const chunkSize = 1024 * 16
 	buf := make([]byte, chunkSize)
-	var cursor int64 = filesize
+	var cursor = filesize
 
 	var collected []byte
 
