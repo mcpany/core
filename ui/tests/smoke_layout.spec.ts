@@ -4,8 +4,12 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedCollection, cleanupCollection } from './e2e/test-data';
 
-test('layout smoke test', async ({ page }) => {
+test('layout smoke test', async ({ page, request }) => {
+  // Seed the system stack
+  await seedCollection('mcpany-system', request);
+
   await page.goto('/');
 
   // Check for Sidebar
@@ -27,13 +31,20 @@ test('layout smoke test', async ({ page }) => {
 
   // Navigate to Stack Detail
   await Promise.all([
-    page.waitForURL(/\/stacks\/system/),
+    page.waitForURL(/\/stacks\/mcpany-system/),
     page.click('text=mcpany-system'),
   ]);
-  await expect(page.locator('h2')).toContainText('system');
-  await expect(page.locator('h2')).toContainText('Stack');
+  // Wait for heading to be visible to ensure hydration
+  await expect(page.locator('h2').first()).toBeVisible();
+
+  // More robust check for stack name in heading
+  await expect(page.getByText('mcpany-system', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Stack', { exact: true }).first()).toBeVisible();
 
   // Check Tabs
   await expect(page.locator('button[role="tab"]', { hasText: 'Overview & Status' })).toBeVisible();
   await expect(page.locator('button[role="tab"]', { hasText: 'Editor' })).toBeVisible();
+
+  // Cleanup
+  await cleanupCollection('mcpany-system', request);
 });
