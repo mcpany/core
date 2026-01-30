@@ -226,6 +226,13 @@ MCP Any uses a combination of configuration files and environment variables.
 | `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow resources from private networks. | `false` |
 | `MCPANY_ALLOW_UNSAFE_CONFIG` | Allow usage of potentially unsafe configuration options. | `false` |
 
+### Required Secrets
+
+For production deployments, ensure the following secrets are set:
+
+*   **`MCPANY_ADMIN_INIT_PASSWORD`**: Sets the initial password for the admin user.
+*   **`MCPANY_API_KEY`** (Recommended): Sets a global API key to secure the server endpoint.
+
 ### Documentation
 
 For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).

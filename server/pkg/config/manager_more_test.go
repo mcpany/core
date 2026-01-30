@@ -17,18 +17,14 @@ func TestUpstreamServiceManager_ApplyAuthentication_Error(t *testing.T) {
 	req := httptest.NewRequest("GET", "http://example.com", nil)
 
 	// Auth with non-existent env var
-	auth := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				Value: &configv1.SecretValue{
-					Value: &configv1.SecretValue_EnvironmentVariable{
-						EnvironmentVariable: "NON_EXISTENT_VAR_FOR_TESTING",
-					},
-				},
-				ParamName: proto.String("X-API-Key"),
-			},
-		},
-	}
+	auth := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			Value: configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("NON_EXISTENT_VAR_FOR_TESTING"),
+			}.Build(),
+			ParamName: proto.String("X-API-Key"),
+		}.Build(),
+	}.Build()
 
 	err := mgr.applyAuthentication(req, auth)
 	assert.Error(t, err)

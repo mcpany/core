@@ -23,44 +23,67 @@ import (
 )
 
 // ServiceRegistryInterface defines the interface for a service registry.
-// It provides a method for registering new upstream services.
+// It provides methods for registering, unregistering, and inspecting upstream services.
 type ServiceRegistryInterface interface { //nolint:revive
-	// RegisterService registers a new upstream service based on the provided
-	// configuration. It returns the generated service key, a list of any tools
-	// discovered during registration, and an error if the registration fails.
+	// RegisterService registers a new upstream service based on the provided configuration.
+	// It initializes the upstream connection, performs capabilities discovery, and registers tools/resources.
+	//
+	// Parameters:
+	//   - ctx: The context for the registration process.
+	//   - serviceConfig: The configuration for the service to be registered.
+	//
+	// Returns:
+	//   - string: The unique service key generated for the registered service.
+	//   - []*config.ToolDefinition: A list of tools discovered during registration.
+	//   - []*config.ResourceDefinition: A list of resources discovered during registration.
+	//   - error: An error if the registration fails (e.g., config error, connection failure).
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
-	// UnregisterService removes a service from the registry.
+
+	// UnregisterService removes a service from the registry and shuts down its upstream connection.
 	//
-	// ctx is the context for the request.
-	// serviceName is the serviceName.
+	// Parameters:
+	//   - ctx: The context for the unregistration process.
+	//   - serviceName: The name of the service to remove.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the service was not found or if shutdown failed.
 	UnregisterService(ctx context.Context, serviceName string) error
+
 	// GetAllServices returns a list of all registered services.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - []*config.UpstreamServiceConfig: A slice of configuration objects for all registered services.
+	//   - error: An error if the retrieval fails (unlikely in current implementation).
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
+
 	// GetServiceInfo retrieves the metadata for a service by its ID.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The unique identifier of the service.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *tool.ServiceInfo: The service metadata info if found.
+	//   - bool: True if the service exists, false otherwise.
 	GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool)
+
 	// GetServiceConfig returns the configuration for a given service key.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The unique identifier of the service.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *config.UpstreamServiceConfig: The service configuration if found.
+	//   - bool: True if the service exists, false otherwise.
 	GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool)
+
 	// GetServiceError returns the registration error for a service, if any.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: The unique identifier of the service.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - string: The error message associated with the service, or empty string.
+	//   - bool: True if an error exists, false otherwise.
 	GetServiceError(serviceID string) (string, bool)
 }
 

@@ -31,11 +31,22 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 		return nil, fmt.Errorf("failed to open postgres connection: %w", err)
 	}
 
+	store, err := NewPostgresVectorStoreWithDB(db)
+	if err != nil {
+		_ = db.Close()
+		return nil, err
+	}
+
+	return store, nil
+}
+
+// NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
+// It ensures the schema exists.
+func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelPing()
 	if err := db.PingContext(ctxPing); err != nil {
-		_ = db.Close()
 		return nil, fmt.Errorf("failed to ping postgres: %w", err)
 	}
 
@@ -43,7 +54,6 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	ctxExt, cancelExt := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelExt()
 	if _, err := db.ExecContext(ctxExt, "CREATE EXTENSION IF NOT EXISTS vector"); err != nil {
-		_ = db.Close()
 		return nil, fmt.Errorf("failed to create vector extension: %w", err)
 	}
 
@@ -65,7 +75,6 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	ctxSchema, cancelSchema := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelSchema()
 	if _, err := db.ExecContext(ctxSchema, schema); err != nil {
-		_ = db.Close()
 		return nil, fmt.Errorf("failed to create semantic_cache_entries table: %w", err)
 	}
 

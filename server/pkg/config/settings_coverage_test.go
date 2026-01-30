@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func ptr[T any](v T) *T {
@@ -22,14 +23,13 @@ func ptr[T any](v T) *T {
 func TestSettings_Getters(t *testing.T) {
 	s := &Settings{
 		proto: func() *configv1.GlobalSettings {
-			gs := &configv1.GlobalSettings{}
-			gs.SetDbDsn("postgres://user:pass@127.0.0.1:5432/db")
-			gs.SetDbDriver("postgres")
-
-			dlp := &configv1.DLPConfig{}
-			dlp.SetEnabled(true)
-			gs.SetDlp(dlp)
-			return gs
+			return configv1.GlobalSettings_builder{
+				DbDsn:    proto.String("postgres://user:pass@127.0.0.1:5432/db"),
+				DbDriver: proto.String("postgres"),
+				Dlp: configv1.DLPConfig_builder{
+					Enabled: proto.Bool(true),
+				}.Build(),
+			}.Build()
 		}(),
 	}
 
@@ -48,7 +48,7 @@ func TestSettings_Load_DbSettings(t *testing.T) {
 	viper.Set("db-driver", "sqlite3")
 
 	settings := &Settings{
-		proto: &configv1.GlobalSettings{},
+		proto: configv1.GlobalSettings_builder{}.Build(),
 	}
 	err := settings.Load(cmd, fs)
 	require.NoError(t, err)
@@ -150,18 +150,18 @@ upstream_services: {
 
 	middlewares := []*configv1.Middleware{
 		func() *configv1.Middleware {
-			m := &configv1.Middleware{}
-			m.SetName("test-middleware")
-			return m
+			return configv1.Middleware_builder{
+				Name: proto.String("test-middleware"),
+			}.Build()
 		}(),
 	}
 
 	settings := &Settings{
 		dbPath: "/path/to/db.sqlite",
 		proto: func() *configv1.GlobalSettings {
-			gs := &configv1.GlobalSettings{}
-			gs.SetMiddlewares(middlewares)
-			return gs
+			return configv1.GlobalSettings_builder{
+				Middlewares: middlewares,
+			}.Build()
 		}(),
 	}
 

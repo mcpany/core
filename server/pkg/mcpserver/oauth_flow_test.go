@@ -49,40 +49,37 @@ func TestOAuthFlow_Complete(t *testing.T) {
 	// 3. Create a Credential with OAuth Config
 	credID := uuid.New().String()
 
-	// Create Authentication using builders or structs.
-	// Using standard struct pointers since builders caused issues.
-	oauthConfig := &configv1.OAuth2Auth{
-		ClientId: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "client-id"},
-		},
-		ClientSecret: &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "client-secret"},
-		},
+	// Create Authentication using builders.
+	oauthConfig := configv1.OAuth2Auth_builder{
+		ClientId: configv1.SecretValue_builder{
+			PlainText: proto.String("client-id"),
+		}.Build(),
+		ClientSecret: configv1.SecretValue_builder{
+			PlainText: proto.String("client-secret"),
+		}.Build(),
 		AuthorizationUrl: proto.String(mockOAuth.URL + "/auth"),
 		TokenUrl:         proto.String(mockOAuth.URL + "/token"),
 		Scopes:           proto.String("read write"),
-	}
+	}.Build()
 
-	authConfig := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_Oauth2{
-			Oauth2: oauthConfig,
-		},
-	}
+	authConfig := configv1.Authentication_builder{
+		Oauth2: oauthConfig,
+	}.Build()
 
-	cred := &configv1.Credential{
+	cred := configv1.Credential_builder{
 		Id:             proto.String(credID),
 		Name:           proto.String("test-oauth-cred"),
 		Authentication: authConfig,
-	}
+	}.Build()
 
 	err = memStore.SaveCredential(ctx, cred)
 	require.NoError(t, err)
 
 	// 4. Initiate OAuth Flow via RegistrationServer
-	initReq := &v1.InitiateOAuth2FlowRequest{
+	initReq := v1.InitiateOAuth2FlowRequest_builder{
 		CredentialId: credID,
 		RedirectUrl:  "http://127.0.0.1:3000/callback",
-	}
+	}.Build()
 
 	initResp, err := regServer.InitiateOAuth2Flow(ctx, initReq)
 	require.NoError(t, err)
