@@ -2727,6 +2727,11 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	if idx := strings.IndexAny(val, charsToCheck); idx != -1 {
 		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
 	}
+
+	// If the command is NOT a known shell/interpreter, we can allow spaces.
+	// But if checkForShellInjection is called, it means isShellCommand returned true.
+	// We removed sed from isShellCommand, so this function shouldn't be called for sed!
+	// Re-verify call site.
 	return nil
 }
 

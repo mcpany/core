@@ -84,6 +84,14 @@ var healthCheckClient = &http.Client{
 	},
 }
 
+// uploadFile handles the HTTP POST request for uploading files.
+// It limits the request body size, reads the file from the form data,
+// and responds with the file name and size.
+// Note: The content is currently discarded after reading to avoid disk usage.
+//
+// Parameters:
+//   - w: The HTTP response writer.
+//   - r: The HTTP request.
 func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -931,6 +939,12 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 	return config.LoadServices(ctx, store, "server")
 }
 
+// updateGlobalSettings applies the dynamic settings from the configuration to
+// the application's managers and middleware. This includes updating API keys,
+// alert configurations, IP allowlists, CORS policies, and other global controls.
+//
+// Parameters:
+//   - cfg: The new server configuration to apply.
 func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	if a.SettingsManager != nil {
@@ -967,7 +981,13 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
-// reconcileServices reconciles the service registry with the new configuration.
+// reconcileServices synchronizes the active services with the new configuration.
+// It identifies new, removed, and updated services and performs the necessary
+// registration or unregistration actions.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - cfg: The new server configuration containing the desired state.
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
@@ -1110,8 +1130,17 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 	// For this task, updating AuthManager is sufficient for USER LOGIN.
 }
 
-// readConfigFiles reads the raw content of the configuration files.
-// It handles directory walking similar to FileStore but only returns raw content.
+// readConfigFiles reads the raw content of the configuration files from the
+// provided paths. It supports both single files and directory walking,
+// filtering for supported configuration file extensions (.yaml, .json, etc.).
+//
+// Parameters:
+//   - fs: The filesystem interface to read from.
+//   - paths: A list of file or directory paths to read.
+//
+// Returns:
+//   - map[string]string: A map where keys are file paths and values are file contents.
+//   - error: An error if reading fails.
 func (a *Application) readConfigFiles(fs afero.Fs, paths []string) (map[string]string, error) {
 	result := make(map[string]string)
 	for _, path := range paths {
@@ -1157,7 +1186,16 @@ func (a *Application) readConfigFiles(fs afero.Fs, paths []string) (map[string]s
 	return result, nil
 }
 
-// generateConfigDiff generates a unified diff between the old and new configuration files.
+// generateConfigDiff creates a unified diff between the last known good configuration
+// and the new (failed) configuration. This helps in diagnosing configuration errors
+// by highlighting what changed.
+//
+// Parameters:
+//   - oldConfig: The last successfully loaded configuration (map of path -> content).
+//   - newConfig: The new configuration that failed to load (map of path -> content).
+//
+// Returns:
+//   - string: A formatted unified diff string.
 func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string) string {
 	var diffs []string
 	// Check for changed or new files
@@ -1255,7 +1293,16 @@ func runStdioMode(ctx context.Context, mcpSrv *mcpserver.Server) error {
 	return mcpSrv.Server().Run(ctx, &mcp.StdioTransport{})
 }
 
-// configHealthCheck checks the status of the configuration.
+// configHealthCheck evaluates the current health of the configuration subsystem.
+// It checks if the last reload was successful and reports any errors or
+// configuration diffs if the system is in a degraded state.
+//
+// Parameters:
+//   - ctx: The context for the check (unused).
+//
+// Returns:
+//   - health.CheckResult: A struct containing the status (ok/degraded), latency,
+//     and any error messages or diffs.
 func (a *Application) configHealthCheck(_ context.Context) health.CheckResult {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()
@@ -2179,7 +2226,16 @@ func (a *Application) runServerMode(
 	return startupErr
 }
 
-// createAuthMiddleware creates the authentication middleware.
+// createAuthMiddleware constructs a middleware function for handling authentication.
+// It supports global API keys, user basic auth, and falls back to private-IP
+// restrictions if no authentication is configured (Sentinel Security).
+//
+// Parameters:
+//   - forcePrivateIPOnly: If true, denies all non-local traffic regardless of auth.
+//   - trustProxy: If true, trusts X-Forwarded-* headers for IP determination.
+//
+// Returns:
+//   - func(http.Handler) http.Handler: The authentication middleware.
 func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy bool) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -2263,15 +2319,18 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 	}
 }
 
-// startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startGrpcServer initializes and starts the gRPC server in a separate goroutine.
+// It manages the server's lifecycle, including graceful shutdown and error reporting.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener for the server.
-// register is a function that registers the gRPC services with the server.
+// Parameters:
+//   - ctx: The context for managing the server's lifecycle.
+//   - wg: A WaitGroup to signal when the server has shut down.
+//   - errChan: A channel for reporting startup errors.
+//   - readyChan: A channel to signal when the server is ready to accept connections.
+//   - name: A descriptive name for the server (used in logs).
+//   - lis: The network listener to serve on.
+//   - shutdownTimeout: The duration to wait for graceful shutdown before forcing stop.
+//   - server: The gRPC server instance.
 func startGrpcServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -2345,15 +2404,19 @@ func wrapBindError(err error, serverType, address, flag string) error {
 	return fmt.Errorf("%s server failed to listen: %w", serverType, err)
 }
 
-// startHTTPServer starts an HTTP server in a new goroutine. It handles graceful
-// shutdown when the context is canceled.
+// startHTTPServer initializes and starts the HTTP server in a separate goroutine.
+// It manages the server's lifecycle, including graceful shutdown and error reporting.
 //
-// ctx is the context for managing the server's lifecycle.
-// wg is a WaitGroup to signal when the server has shut down.
-// errChan is a channel for reporting errors during startup.
-// name is a descriptive name for the server, used in logging.
-// lis is the net.Listener on which the server will listen.
-// handler is the HTTP handler for processing requests.
+// Parameters:
+//   - ctx: The context for managing the server's lifecycle.
+//   - wg: A WaitGroup to signal when the server has shut down.
+//   - errChan: A channel for reporting startup errors.
+//   - readyChan: A channel to signal when the server is ready to accept connections.
+//   - name: A descriptive name for the server (used in logs).
+//   - lis: The network listener to serve on.
+//   - handler: The HTTP handler to serve.
+//   - shutdownTimeout: The duration to wait for graceful shutdown.
+//   - connState: A callback function for tracking connection state changes.
 func startHTTPServer(
 	ctx context.Context,
 	wg *sync.WaitGroup,

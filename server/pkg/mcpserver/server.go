@@ -28,9 +28,13 @@ import (
 )
 
 var (
-	metricToolsListTotal   = []string{"tools", "list", "total"}
-	metricToolsCallTotal   = []string{"tools", "call", "total"}
-	metricToolsCallErrors  = []string{"tools", "call", "errors"}
+	// metricToolsListTotal tracks the total number of tool list requests.
+	metricToolsListTotal = []string{"tools", "list", "total"}
+	// metricToolsCallTotal tracks the total number of tool call requests.
+	metricToolsCallTotal = []string{"tools", "call", "total"}
+	// metricToolsCallErrors tracks the number of failed tool call requests.
+	metricToolsCallErrors = []string{"tools", "call", "errors"}
+	// metricToolsCallLatency tracks the latency of tool call requests.
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
 
@@ -42,7 +46,9 @@ var fastJSON = jsoniter.Config{
 	ValidateJsonRawMessage: true,
 }.Froze()
 
-// AddReceivingMiddlewareHook is a hook for adding receiving middleware.
+// AddReceivingMiddlewareHook is a test hook used to inspect the middleware chain.
+// It is called with the name of the middleware being added.
+// This allows tests to verify that specific middleware components are correctly registered.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application. It orchestrates the handling of
@@ -859,8 +865,9 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 	}, nil
 }
 
-// LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
-// its JSON content only when logged.
+// LazyRedact is a byte slice wrapper that implements slog.LogValuer.
+// It defers the redaction of sensitive JSON data until the log entry is actually written,
+// preventing unnecessary processing if the log level is not enabled.
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
