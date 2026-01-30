@@ -7,6 +7,7 @@ package e2e
 
 import (
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -29,7 +30,11 @@ type Config struct {
 }
 
 func TestCLI(t *testing.T) {
-	cmd := exec.Command("go", "run", "../../cmd/server/main.go", "config", "generate")
+	// Use the compiled binary instead of `go run` to avoid compilation overhead and timeouts in CI
+	// Path relative to server/tests/e2e/cli_test.go
+	binaryPath, _ := filepath.Abs("../../../build/bin/server")
+
+	cmd := exec.Command(binaryPath, "config", "generate")
 
 	input := "http\nmy-service\nhttp://example.com\nget-user\nGet a user\nHTTP_METHOD_GET\n/users/{id}\n"
 	cmd.Stdin = strings.NewReader(input)
