@@ -5,6 +5,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"bytes"
+	"math"
 )
 
 // WalkJSONStrings visits every string value in the JSON input.
@@ -89,11 +90,7 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 				if out == nil {
 					// Allocate buffer
 					// Heuristic: start with input size + small buffer
-					extra := len(input) / 10
-					if extra < 128 {
-						extra = 128
-					}
-					out = make([]byte, 0, len(input)+extra)
+					out = make([]byte, 0, calculateCapacity(len(input)))
 				}
 				out = append(out, input[lastWrite:quotePos]...)
 				out = append(out, replacement...)
@@ -154,11 +151,7 @@ func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, boo
 				if out == nil {
 					// Allocate buffer
 					// Heuristic: start with input size + small buffer
-					extra := len(input) / 10
-					if extra < 128 {
-						extra = 128
-					}
-					out = make([]byte, 0, len(input)+extra)
+					out = make([]byte, 0, calculateCapacity(len(input)))
 				}
 				out = append(out, input[lastWrite:quotePos]...)
 				out = append(out, replacement...)
@@ -189,4 +182,21 @@ func skipWhitespace(input []byte, start int) int {
 		break
 	}
 	return i
+}
+
+// calculateCapacity calculates a safe initial capacity for the output buffer.
+// It uses int64 to avoid overflow during calculation and checks against MaxInt.
+func calculateCapacity(inputLen int) int {
+	// Heuristic: input size + 10% or at least 128 bytes
+	extra := int64(inputLen) / 10
+	if extra < 128 {
+		extra = 128
+	}
+	targetCap := int64(inputLen) + extra
+
+	// Check for overflow against int limit
+	if targetCap > int64(math.MaxInt) {
+		return math.MaxInt
+	}
+	return int(targetCap)
 }
