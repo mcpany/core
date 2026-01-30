@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -52,10 +53,47 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
 
+  // Argument builder state
+  const [argMode, setArgMode] = useState<"builder" | "json">("builder");
+  const [parsedArgs, setParsedArgs] = useState<any>({});
+  const [jsonError, setJsonError] = useState<string | null>(null);
+
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [metricsLoading, setMetricsLoading] = useState(false);
+
+  // Initialize/Reset args when tool changes or dialog opens
+  useEffect(() => {
+      if (open) {
+          setInput("{}");
+          setParsedArgs({});
+          setJsonError(null);
+      }
+  }, [open, tool?.name]);
+
+  // Handle switching between Builder and JSON modes
+  useEffect(() => {
+      if (argMode === "builder") {
+          try {
+              const p = JSON.parse(input);
+              setParsedArgs(p);
+              setJsonError(null);
+          } catch (e) {
+              setJsonError("Cannot switch to Builder: Invalid JSON in text editor.");
+          }
+      }
+  }, [argMode]);
+
+  const handleBuilderChange = (val: any) => {
+      setParsedArgs(val);
+      setInput(JSON.stringify(val, null, 2));
+  };
+
+  const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInput(e.target.value);
+      setJsonError(null);
+  };
 
   // Computed stats from audit logs (recent 50)
   const recentStats = useMemo(() => {
@@ -172,14 +210,37 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="args">Arguments</Label>
+                        <Tabs value={argMode} onValueChange={(v: any) => setArgMode(v)} className="w-[150px]">
+                            <TabsList className="grid w-full grid-cols-2 h-7">
+                                <TabsTrigger value="builder" className="text-xs">Builder</TabsTrigger>
+                                <TabsTrigger value="json" className="text-xs">JSON</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+
+                    {argMode === "json" || jsonError ? (
+                         <div className="space-y-2">
+                            <Textarea
+                                id="args"
+                                value={input}
+                                onChange={handleJsonChange}
+                                className={cn("font-mono text-sm", jsonError ? "border-red-500 focus-visible:ring-red-500" : "")}
+                                rows={8}
+                            />
+                            {jsonError && <p className="text-xs text-red-500 font-medium">{jsonError}</p>}
+                         </div>
+                    ) : (
+                        <ScrollArea className="h-[250px] w-full rounded-md border p-4 bg-muted/10">
+                             <SchemaForm
+                                 key={tool.name}
+                                 schema={tool.inputSchema as any}
+                                 value={parsedArgs}
+                                 onChange={handleBuilderChange}
+                             />
+                        </ScrollArea>
+                    )}
                 </div>
 
                 {output && (
