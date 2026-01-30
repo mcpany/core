@@ -59,7 +59,7 @@ server/examples/demo/stdio/my-tool-bin
 *.test
 package-lock.json
 # proto/**/*.ts
-proto/google
+# proto/google
 client_info.json
 oauth_env.sh
 AUDIT_REPORT.md
