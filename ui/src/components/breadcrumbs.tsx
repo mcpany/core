@@ -42,7 +42,10 @@ interface BreadcrumbsProps {
 /**
  * Breadcrumbs navigation component.
  *
- * @param className - The className.
+ * @param props - The component props.
+ * @param props.items - The list of breadcrumb items to display.
+ * @param props.className - Optional CSS class names.
+ * @returns {JSX.Element} The rendered breadcrumbs navigation.
  */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     const [history, setHistory] = useState<BreadcrumbItem[]>([]);

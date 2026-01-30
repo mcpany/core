@@ -33,10 +33,10 @@ func TestSedSandbox_Prevention(t *testing.T) {
 
 	tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
-	// Payload: 1e date (Execute 'date')
+	// Payload: 1e/bin/date (Execute '/bin/date') - avoiding spaces to pass strict input validation
 	req := &ExecutionRequest{
 		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "1e date"}`),
+		ToolInputs: []byte(`{"script": "1e/bin/date"}`),
 	}
 
 	result, err := tool.Execute(context.Background(), req)
@@ -72,10 +72,10 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		t.Logf("Success: sed failed or blocked with stderr: %s", stderr)
 	}
 
-	// Payload: w /tmp/pwned (Write file)
+	// Payload: w/tmp/pwned (Write file) - avoiding spaces
 	req = &ExecutionRequest{
 		ToolName: "sed-tool",
-		ToolInputs: []byte(`{"script": "w /tmp/pwned"}`),
+		ToolInputs: []byte(`{"script": "w/tmp/pwned"}`),
 	}
 
 	result, err = tool.Execute(context.Background(), req)
@@ -86,7 +86,7 @@ func TestSedSandbox_Prevention(t *testing.T) {
 	returnCode, _ = resMap["return_code"].(int)
 
 	if returnCode == 0 {
-		t.Errorf("FAIL: sed executed 'w /tmp/pwned' successfully. Sandbox failed.")
+		t.Errorf("FAIL: sed executed 'w/tmp/pwned' successfully. Sandbox failed.")
 	}
 }
 
