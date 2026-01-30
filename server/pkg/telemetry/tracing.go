@@ -32,7 +32,7 @@ const (
 // InitTelemetry initializes OpenTelemetry tracing and metrics.
 // It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected.
 // It returns a shutdown function that should be called when the application exits.
-func InitTelemetry(ctx context.Context, serviceName string, version string, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {
+func InitTelemetry(ctx context.Context, serviceName string, version string, cfg *config_v1.TelemetryConfig, writer io.Writer, extraExporters ...trace.SpanExporter) (func(context.Context) error, error) {
 	// If writer is nil, discard output
 	if writer == nil {
 		writer = io.Discard
@@ -57,7 +57,7 @@ func InitTelemetry(ctx context.Context, serviceName string, version string, cfg 
 	}
 
 	// Initialize Tracer
-	shutdownTracer, err := initTracer(ctx, res, cfg, writer)
+	shutdownTracer, err := initTracer(ctx, res, cfg, writer, extraExporters...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init tracer: %w", err)
 	}
@@ -79,7 +79,7 @@ func InitTelemetry(ctx context.Context, serviceName string, version string, cfg 
 	}, nil
 }
 
-func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {
+func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.TelemetryConfig, writer io.Writer, extraExporters ...trace.SpanExporter) (func(context.Context) error, error) {
 	exporterType := cfg.GetTracesExporter()
 	// If OTLP endpoint is set, default to otlp if type not specified
 	if cfg.GetOtlpEndpoint() != "" && (exporterType == "" || exporterType == exporterOTLP) {
@@ -110,13 +110,28 @@ func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.Tele
 			return nil, fmt.Errorf("failed to create stdout trace exporter: %w", err)
 		}
 	default:
+		// No default exporter
+	}
+
+	var exporters []trace.SpanExporter
+	if exporter != nil {
+		exporters = append(exporters, exporter)
+	}
+	exporters = append(exporters, extraExporters...)
+
+	if len(exporters) == 0 {
 		return func(context.Context) error { return nil }, nil
 	}
 
-	tp := trace.NewTracerProvider(
-		trace.WithBatcher(exporter),
+	opts := []trace.TracerProviderOption{
 		trace.WithResource(res),
-	)
+	}
+
+	for _, e := range exporters {
+		opts = append(opts, trace.WithBatcher(e))
+	}
+
+	tp := trace.NewTracerProvider(opts...)
 
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
