@@ -80,6 +80,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 
 			// Check if user already exists to avoid unique constraint violations
 			// and ensure idempotent seeding.
+			// This check helps avoid race conditions where cleanup might be slow or tests run in parallel.
 			existingUser, err := store.GetUser(r.Context(), user.GetId())
 			if err != nil {
 				logging.GetLogger().Error("failed to check user existence", "error", err)
