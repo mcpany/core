@@ -1772,6 +1772,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
+					// Sentinel Security Update: Enforce egress policy for network tools
+					if isNetworkCommand(t.service.GetCommand()) {
+						if err := checkForUnsafeURL(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -1811,6 +1817,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
 							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
+						}
+						// Sentinel Security Update: Enforce egress policy for network tools
+						if isNetworkCommand(t.service.GetCommand()) {
+							if err := checkForUnsafeURL(argStr); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2081,6 +2093,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
+					// Sentinel Security Update: Enforce egress policy for network tools
+					if isNetworkCommand(t.service.GetCommand()) {
+						if err := checkForUnsafeURL(val); err != nil {
+							return nil, fmt.Errorf("parameter %q: %w", k, err)
+						}
+					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
@@ -2116,6 +2134,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 						}
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
+						}
+						// Sentinel Security Update: Enforce egress policy for network tools
+						if isNetworkCommand(t.service.GetCommand()) {
+							if err := checkForUnsafeURL(argStr); err != nil {
+								return nil, fmt.Errorf("args parameter: %w", err)
+							}
 						}
 						args = append(args, argStr)
 					} else {
@@ -2725,8 +2749,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// % and ^ are Windows CMD metacharacters
 	// We also block quotes and backslashes to prevent argument splitting and interpretation abuse
 	// We also block control characters that could act as separators or cause confusion (\r, \t, \v, \f)
-	// Sentinel Security Update: Added space (' ') to block list to prevent argument injection in shell commands
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+	// Sentinel Security Update: Removed space (' ') from block list to restore usability (e.g., git commit messages).
+	// We still block shell metacharacters to prevent command injection.
+	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
 	charsToCheck := dangerousChars
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
@@ -2798,4 +2823,21 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	return minLevel
+}
+
+func isNetworkCommand(cmd string) bool {
+	base := strings.ToLower(filepath.Base(cmd))
+	return base == "curl" || base == "wget"
+}
+
+func checkForUnsafeURL(val string) error {
+	// Simple heuristic: if it looks like an HTTP/HTTPS URL, validate it.
+	// We check for case-insensitive http:// or https:// prefix.
+	v := strings.ToLower(val)
+	if strings.HasPrefix(v, "http://") || strings.HasPrefix(v, "https://") {
+		if err := validation.IsSafeURL(val); err != nil {
+			return fmt.Errorf("unsafe url: %w", err)
+		}
+	}
+	return nil
 }
