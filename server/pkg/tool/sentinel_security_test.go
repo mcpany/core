@@ -23,20 +23,21 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "awk '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
-	toolProto := &v1.Tool{}
-	toolProto.SetName("awk_wrapper")
+	toolProto := v1.Tool_builder{
+		Name: proto.String("awk_wrapper"),
+	}.Build()
 
 	tool := NewLocalCommandTool(
 		toolProto,
@@ -78,20 +79,21 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "perl -e '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
-	toolProto := &v1.Tool{}
-	toolProto.SetName("perl_wrapper")
+	toolProto := v1.Tool_builder{
+		Name: proto.String("perl_wrapper"),
+	}.Build()
 
 	tool := NewLocalCommandTool(
 		toolProto,
@@ -134,20 +136,21 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "awk '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
-	toolProto := &v1.Tool{}
-	toolProto.SetName("awk_wrapper_evasion")
+	toolProto := v1.Tool_builder{
+		Name: proto.String("awk_wrapper_evasion"),
+	}.Build()
 
 	tool := NewLocalCommandTool(
 		toolProto,
