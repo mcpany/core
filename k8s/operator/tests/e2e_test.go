@@ -120,6 +120,8 @@ nodes:
 	// 6. Install Helm Chart
 	t.Log("Installing Helm chart...")
 	// Helm upgrade --install
+	// ⚡ Bolt: Increase Helm timeout to 15m to avoid context deadline exceeded errors in CI.
+	// Randomized Selection from Top 5 High-Impact Targets
 	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
@@ -138,7 +140,7 @@ nodes:
 		"--set", "apiKey=test-token",
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--wait",
-		"--timeout", "10m",
+		"--timeout", "15m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
