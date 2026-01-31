@@ -12,8 +12,30 @@ test.describe('MCP Any UI E2E', () => {
     console.log('DEBUG: RUNNING MODIFIED FILE');
   });
 
-  test.beforeEach(async ({ page }) => {
-      // Real Data Policy: Mocks removed. Tests rely on seeded data or default state.
+  test.beforeEach(async ({ page, request }) => {
+      // Seed dashboard metrics for the test
+      const now = new Date();
+      const trafficPoints = [];
+      // Generate 10 minutes of data
+      for (let i = 9; i >= 0; i--) {
+          const t = new Date(now.getTime() - i * 60000);
+          const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+          trafficPoints.push({
+              time: timeStr,
+              requests: 100,
+              errors: 0,
+              latency: 50
+          });
+      }
+      const seedRes = await request.post('/api/v1/debug/seed_traffic', {
+          data: trafficPoints,
+          headers: { 'Content-Type': 'application/json' }
+      });
+      // If seeding fails (e.g. against a real env without debug endpoint), we continue.
+      // The test assertions should handle empty state or existing data if possible.
+      if (!seedRes.ok()) {
+          console.warn('Failed to seed traffic data, skipping seeding.');
+      }
   });
 
   test('Dashboard loads and shows metrics', async ({ page }) => {
