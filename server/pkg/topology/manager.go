@@ -395,6 +395,20 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
+		// Get current traffic stats
+		now := time.Now()
+		minuteKey := now.Truncate(time.Minute).Unix()
+		var currentStats *MinuteStats
+		if stats, ok := m.trafficHistory[minuteKey]; ok {
+			currentStats = stats
+		}
+
+		// Calculate elapsed seconds in current minute for QPS
+		elapsedSeconds := float64(now.Second())
+		if elapsedSeconds < 1 {
+			elapsedSeconds = 1
+		}
+
 		// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets.
 		// Optimized nested loop to O(N+M) using a map.
 		tools := m.toolManager.ListTools()
@@ -413,6 +427,32 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			}.Build()
 			if svc.GetDisable() {
 				svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_INACTIVE)
+			}
+
+			// Inject Metrics
+			if currentStats != nil && currentStats.ServiceStats != nil {
+				if sStats, ok := currentStats.ServiceStats[svc.GetName()]; ok {
+					qps := float64(sStats.Requests) / elapsedSeconds
+					errorRate := 0.0
+					if sStats.Requests > 0 {
+						errorRate = float64(sStats.Errors) / float64(sStats.Requests)
+					}
+					latency := 0.0
+					if sStats.Requests > 0 {
+						latency = float64(sStats.Latency) / float64(sStats.Requests)
+					}
+
+					svcNode.Metrics = topologyv1.NodeMetrics_builder{
+						Qps:       qps,
+						ErrorRate: errorRate,
+						LatencyMs: latency,
+					}.Build()
+
+					// Dynamic Status
+					if errorRate > 0.05 {
+						svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_ERROR
+					}
+				}
 			}
 
 			// Add Tools

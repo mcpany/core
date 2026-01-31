@@ -511,3 +511,54 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	assert.Equal(t, int64(3), seedSession.ErrorCount)
 	assert.Equal(t, 1700*time.Millisecond, seedSession.TotalLatency)
 }
+
+func TestManager_GetGraph_Metrics(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	svcConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+	}.Build()
+	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svcConfig}, nil)
+
+	// Simulate high traffic with errors
+	now := time.Now()
+	minuteKey := now.Truncate(time.Minute).Unix()
+
+	m.mu.Lock()
+	m.trafficHistory[minuteKey] = &MinuteStats{
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"test-service": {
+				Requests: 100,
+				Errors:   10,   // 10% error rate
+				Latency:  5000, // 50ms average (5000ms total / 100 reqs)
+			},
+		},
+	}
+	m.mu.Unlock()
+
+	graph := m.GetGraph(context.Background())
+
+	var svcNode *topologyv1.Node
+	for _, child := range graph.Core.Children {
+		if child.Id == "svc-test-service" {
+			svcNode = child
+			break
+		}
+	}
+	require.NotNil(t, svcNode)
+
+	// Verify Metrics
+	require.NotNil(t, svcNode.Metrics)
+	// QPS depends on how many seconds passed in current minute.
+	// We can't easily assert exact QPS without mocking time, but it should be > 0.
+	assert.True(t, svcNode.Metrics.Qps > 0)
+	assert.Equal(t, 0.1, svcNode.Metrics.ErrorRate)
+	assert.Equal(t, 50.0, svcNode.Metrics.LatencyMs)
+
+	// Verify Status Upgrade to ERROR (since error rate > 5%)
+	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.Status)
+}

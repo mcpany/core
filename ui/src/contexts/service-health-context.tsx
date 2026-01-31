@@ -70,6 +70,14 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 headers['If-None-Match'] = lastEtag.current;
             }
 
+            // Inject Auth Token if available
+            if (typeof window !== 'undefined') {
+                const token = localStorage.getItem('mcp_auth_token');
+                if (token) {
+                    headers['Authorization'] = `Basic ${token}`;
+                }
+            }
+
             const res = await fetch(url, { headers });
 
             if (res.status === 304 && lastGraph.current) {
