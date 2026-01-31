@@ -43,9 +43,11 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer instance to use.
 //
-// Returns the result.
+// Returns:
+//   - Option: A functional option that configures the middleware.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -54,10 +56,14 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// It initializes the middleware with the provided tool manager and applies any optional configurations.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The manager for accessing tools and service info.
+//   - opts: ...Option. Variadic list of functional options.
+//
+// Returns:
+//   - *RateLimitMiddleware: A pointer to the initialized middleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -80,14 +86,19 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
+// Execute enforces rate limits for the incoming tool execution request.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// It checks if the request is allowed based on service and tool-level rate limits.
+// If allowed, it delegates to the next handler in the chain.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next middleware or handler in the chain.
+//
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the rate limit is exceeded or if the underlying execution fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {
