@@ -5,46 +5,160 @@ package worker_test
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"testing"
 	"time"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/worker"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 )
 
-// MockToolManager is a simple mock for tool.ManagerInterface
-type MockToolManager struct{}
+func TestUpstreamWorker_Success(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-func (m *MockToolManager) AddTool(_ tool.Tool) error { return nil }
-func (m *MockToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
-func (m *MockToolManager) ListTools() []tool.Tool { return nil }
-func (m *MockToolManager) ListMCPTools() []*mcp.Tool { return nil }
-func (m *MockToolManager) ClearToolsForService(_ string) {}
-func (m *MockToolManager) ExecuteTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
-	return nil, nil
-}
-func (m *MockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-func (m *MockToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-func (m *MockToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-func (m *MockToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
-func (m *MockToolManager) ListServices() []*tool.ServiceInfo { return nil }
-func (m *MockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-func (m *MockToolManager) IsServiceAllowed(serviceID, profileID string) bool { return true }
-func (m *MockToolManager) ToolMatchesProfile(tool tool.Tool, profileID string) bool { return true }
-
-func TestUpstreamWorker_Stop(t *testing.T) {
-	// Setup bus
+	// 1. Setup Bus
 	b, err := bus.NewProvider(nil)
 	require.NoError(t, err)
 
-	// Setup worker
-	toolManager := &MockToolManager{}
-	w := worker.NewUpstreamWorker(b, toolManager)
+	// 2. Setup Mock Tool Manager
+	mockTM := tool.NewMockManagerInterface(ctrl)
+
+	// 3. Create Worker
+	w := worker.NewUpstreamWorker(b, mockTM)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	w.Start(ctx)
+
+	// 4. Subscribe to Result Topic to verify output
+	resultBus, err := bus.GetBus[*bus.ToolExecutionResult](b, bus.ToolExecutionResultTopic)
+	require.NoError(t, err)
+
+	resultCh := make(chan *bus.ToolExecutionResult, 1)
+	unsubscribe := resultBus.Subscribe(ctx, "test-correlation-id", func(res *bus.ToolExecutionResult) {
+		select {
+		case resultCh <- res:
+		default:
+		}
+	})
+	defer unsubscribe()
+
+	// 5. Expectation
+	toolName := "test-tool"
+	toolInputs := []byte(`{"arg":"value"}`)
+	executionResult := map[string]string{"output": "success"}
+
+	mockTM.EXPECT().ExecuteTool(gomock.Any(), gomock.AssignableToTypeOf(&tool.ExecutionRequest{})).DoAndReturn(
+		func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			assert.Equal(t, toolName, req.ToolName)
+			assert.Equal(t, json.RawMessage(toolInputs), req.ToolInputs)
+			return executionResult, nil
+		},
+	).Times(1)
+
+	// 6. Publish Request
+	requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](b, bus.ToolExecutionRequestTopic)
+	require.NoError(t, err)
+
+	req := &bus.ToolExecutionRequest{
+		ToolName:   toolName,
+		ToolInputs: toolInputs,
+	}
+	req.SetCorrelationID("test-correlation-id")
+	req.Context = ctx
+
+	err = requestBus.Publish(ctx, "request", req)
+	require.NoError(t, err)
+
+	// 7. Verify Result
+	select {
+	case res := <-resultCh:
+		assert.Equal(t, "test-correlation-id", res.CorrelationID())
+		assert.NoError(t, res.Error)
+
+		var actualResult map[string]string
+		err := json.Unmarshal(res.Result, &actualResult)
+		require.NoError(t, err)
+		assert.Equal(t, "success", actualResult["output"])
+	case <-time.After(1 * time.Second):
+		t.Fatal("timeout waiting for result")
+	}
+
+	cancel() // Signal worker to stop
+	w.Stop() // Wait for worker to stop
+}
+
+func TestUpstreamWorker_ExecutionError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	b, err := bus.NewProvider(nil)
+	require.NoError(t, err)
+
+	mockTM := tool.NewMockManagerInterface(ctrl)
+	w := worker.NewUpstreamWorker(b, mockTM)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	w.Start(ctx)
+
+	resultBus, err := bus.GetBus[*bus.ToolExecutionResult](b, bus.ToolExecutionResultTopic)
+	require.NoError(t, err)
+
+	resultCh := make(chan *bus.ToolExecutionResult, 1)
+	unsubscribe := resultBus.Subscribe(ctx, "error-correlation-id", func(res *bus.ToolExecutionResult) {
+		select {
+		case resultCh <- res:
+		default:
+		}
+	})
+	defer unsubscribe()
+
+	expectedErr := errors.New("execution failed")
+	mockTM.EXPECT().ExecuteTool(gomock.Any(), gomock.Any()).Return(nil, expectedErr).Times(1)
+
+	requestBus, err := bus.GetBus[*bus.ToolExecutionRequest](b, bus.ToolExecutionRequestTopic)
+	require.NoError(t, err)
+
+	req := &bus.ToolExecutionRequest{
+		ToolName:   "fail-tool",
+		ToolInputs: []byte("{}"),
+	}
+	req.SetCorrelationID("error-correlation-id")
+	req.Context = ctx
+
+	err = requestBus.Publish(ctx, "request", req)
+	require.NoError(t, err)
+
+	select {
+	case res := <-resultCh:
+		assert.Equal(t, "error-correlation-id", res.CorrelationID())
+		assert.Error(t, res.Error)
+		assert.Equal(t, expectedErr.Error(), res.Error.Error())
+		assert.Empty(t, res.Result)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timeout waiting for result")
+	}
+
+	cancel()
+	w.Stop()
+}
+
+func TestUpstreamWorker_Lifecycle(t *testing.T) {
+	b, err := bus.NewProvider(nil)
+	require.NoError(t, err)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockTMGo := tool.NewMockManagerInterface(ctrl)
+
+	w := worker.NewUpstreamWorker(b, mockTMGo)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	w.Start(ctx)
@@ -52,14 +166,6 @@ func TestUpstreamWorker_Stop(t *testing.T) {
 	// Ensure it started (async)
 	time.Sleep(10 * time.Millisecond)
 
-	// Test Stop (graceful shutdown)
-	cancel()
-	w.Stop()
-
-	// If we reached here, it didn't deadlock
-	assert.True(t, true)
-}
-
-func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, true
+	cancel() // Cancel context to stop subscriber
+	w.Stop() // Wait for wg
 }
