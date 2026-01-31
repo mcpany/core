@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { stackManager } from "@/lib/stack-manager";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import jsyaml from "js-yaml";
 
 interface CreateStackDialogProps {
@@ -50,12 +50,14 @@ export function CreateStackDialog({
 
     setIsLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let config: any;
       try {
         config = jsyaml.load(content);
-      } catch (e) {
+      } catch {
         try {
           config = JSON.parse(content);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e2) {
           throw new Error("Invalid format: Must be valid YAML or JSON");
         }
@@ -67,9 +69,10 @@ export function CreateStackDialog({
       onOpenChange(false);
       setName("");
       setContent("");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      toast.error(e.message || "Failed to create stack");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((e as any).message || "Failed to create stack");
     } finally {
       setIsLoading(false);
     }

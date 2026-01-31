@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from "react";
 import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import jsyaml from "js-yaml";
@@ -47,8 +47,10 @@ export function StackEditor({ stackId }: StackEditorProps) {
         try {
             const stack = await stackManager.getStack(stackId);
             // Transform services array to map for YAML Editor
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const servicesMap: Record<string, any> = {};
             if (stack?.services) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 stack.services.forEach((s: any) => {
                     servicesMap[s.name] = s;
                 });
@@ -98,14 +100,17 @@ export function StackEditor({ stackId }: StackEditorProps) {
 
         setIsSaving(true);
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const configObj = jsyaml.load(content) as any;
 
             // Transform services map to array for StackManager
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let servicesArray: any[] = [];
             if (configObj.services) {
                 if (Array.isArray(configObj.services)) {
                      servicesArray = configObj.services;
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     Object.entries(configObj.services).forEach(([key, val]: [string, any]) => {
                         servicesArray.push({ ...val, name: key });
                     });
