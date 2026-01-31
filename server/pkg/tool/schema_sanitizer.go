@@ -14,7 +14,7 @@ import (
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
 // This function does NOT modify the input schema.
 // ⚡ BOLT: Optimized to single-pass traversal for deep copy, sanitization, and structpb conversion.
-// Randomized Selection from Top 5 High-Impact Targets
+// Randomized Selection from Top 5 High-Impact Targets.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil
