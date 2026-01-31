@@ -182,7 +182,16 @@ func redactJSONFast(input []byte) []byte {
 						if extra < 128 {
 							extra = 128
 						}
-						out = make([]byte, 0, len(input)+extra)
+						// Safe allocation to prevent integer overflow for CodeQL
+						// Convert to int64 to perform addition, then check against max int
+						newCap := int64(len(input)) + int64(extra)
+						maxInt := int64(int(^uint(0) >> 1))
+						if newCap > maxInt {
+							// If overflow would occur, just cap at input length or maxInt, though panic likely on OOM anyway
+							out = make([]byte, 0, len(input))
+						} else {
+							out = make([]byte, 0, int(newCap))
+						}
 					}
 
 					// Determine value end
