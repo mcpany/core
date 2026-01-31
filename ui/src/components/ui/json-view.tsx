@@ -9,9 +9,14 @@ import { useState, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+// ⚡ BOLT: Optimized imports to reduce bundle size.
+// Randomized Selection from Top 5 High-Impact Targets
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from "@/lib/utils";
+
+SyntaxHighlighter.registerLanguage('json', json);
 import { useToast } from "@/hooks/use-toast";
 
 interface JsonViewProps {
