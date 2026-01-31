@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
+import { RefreshCcw, Activity, PlayCircle, StopCircle, Box } from "lucide-react";
 import { use } from "react";
 import { apiClient } from "@/lib/client";
 import { stackManager } from "@/lib/stack-manager";
@@ -24,6 +24,7 @@ import { stackManager } from "@/lib/stack-manager";
  * @returns The rendered component.
  */
 function StackStatus({ stackId }: { stackId: string }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [services, setServices] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -33,6 +34,7 @@ function StackStatus({ stackId }: { stackId: string }) {
             const stack = await stackManager.getStack(stackId);
             const svcList = stack?.services || [];
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
                 // Default values if status fetch fails
                 let status = "Unknown";
@@ -44,7 +46,7 @@ function StackStatus({ stackId }: { stackId: string }) {
                     if (statusData.metrics) {
                          metrics = { ...metrics, ...statusData.metrics };
                     }
-                } catch (e) {
+                } catch {
                     // ignore error, keep defaults
                     // If service is disabled in config, status might be "Disabled" conceptually
                     if (svc.disable) status = "Disabled";
