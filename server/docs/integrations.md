@@ -48,7 +48,7 @@ This generic JSON configuration can be adapted for most clients that support it 
   "mcpServers": {
     "mcpany": {
       "command": "./build/bin/server",
-      "args": ["--config-paths", "/path/to/your/mcpany-config.yaml"]
+      "args": ["--config-path", "/path/to/your/mcpany-config.yaml"]
     }
   }
 }
@@ -66,7 +66,7 @@ gemini mcp add mcpany "./build/bin/server"
 
 # Add with command-line arguments (like a config file)
 # Note the use of '--' to separate the command from its arguments.
-gemini mcp add mcpany -- "./build/bin/server" --config-paths "/path/to/your/mcpany-config.yaml"
+gemini mcp add mcpany -- "./build/bin/server" --config-path "/path/to/your/mcpany-config.yaml"
 ```
 
 #### Claude CLI
@@ -134,10 +134,10 @@ For production or staging environments, you can deploy `mcpany` to a Kubernetes 
 ### Deployment
 
 1. **Install the Helm Chart:**
-   Navigate to the `helm` directory in this repository and install the chart.
+   Navigate to the `k8s/helm` directory in this repository and install the chart.
 
    ```bash
-   cd helm/
+   cd k8s/helm/
    helm install mcpany . -f values.yaml
    ```
 
