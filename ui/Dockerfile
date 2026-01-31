@@ -16,9 +16,9 @@ FROM base AS builder
 WORKDIR /workspace
 COPY --from=deps /workspace/ui/node_modules ./ui/node_modules
 COPY ui/ ./ui/
-# Copy proto files into the UI directory so they are available as 'localProto'
-# This ensures Next.js/Webpack can resolve them within the project root.
-COPY proto/ ./ui/proto/
+# Copy proto files to sibling directory to match local development structure (../proto)
+# This aligns with tsconfig.json paths and next.config.ts resolution.
+COPY proto/ ./proto/
 
 WORKDIR /workspace/ui
 
