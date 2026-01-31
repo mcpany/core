@@ -44,10 +44,19 @@ const (
 	iconSkipped = "⏭️ "
 )
 
-// loadEnv loads environment variables from a .env file.
-// It checks for the --env-file flag and loads the specified file.
-// If no flag is provided, it attempts to load .env from the current directory.
-// If the default .env exists but fails to parse, an error is returned.
+// loadEnv loads environment variables from a .env file into the process environment.
+//
+// It checks for the --env-file flag and loads the specified file. If no flag is provided,
+// it attempts to load .env from the current directory.
+//
+// Parameters:
+//   - cmd: *cobra.Command. The command instance to check for the --env-file flag.
+//
+// Returns:
+//   - error: An error if the specified env file cannot be loaded or if the default .env exists but is invalid.
+//
+// Side Effects:
+//   - Modifies the process environment variables.
 func loadEnv(cmd *cobra.Command) error {
 	envFile, _ := cmd.Flags().GetString("env-file")
 	if envFile != "" {
