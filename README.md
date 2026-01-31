@@ -12,7 +12,7 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Project Identity
+## Project Identity
 
 **What is this?**
 MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
@@ -23,7 +23,7 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 **The Solution:**
 Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Quick Start
+## Quick Start
 
 Follow these steps to get up and running immediately.
 
@@ -62,7 +62,7 @@ Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `ht
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 3. Developer Workflow
+## Developer Workflow
 
 Use these commands to maintain code quality and build the project.
 
@@ -90,7 +90,7 @@ Regenerate Protocol Buffers and other auto-generated files.
 make gen
 ```
 
-## 4. Architecture
+## Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
 
@@ -159,13 +159,7 @@ For production deployments, ensure the following secrets are set:
 *   **`MCPANY_ADMIN_INIT_PASSWORD`**: Sets the initial password for the admin user.
 *   **`MCPANY_API_KEY`** (Recommended): Sets a global API key to secure the server endpoint.
 
-### Documentation
-
-For more comprehensive documentation, including detailed architecture and contribution guidelines, please refer to the [Developer Guide](server/docs/developer_guide.md).
-
----
-
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 

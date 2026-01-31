@@ -12,9 +12,12 @@ export interface DiagnosticResult {
 }
 
 /**
- * analyzeConnectionError.
+ * Analyzes a connection error string and returns a structured diagnostic result.
+ * Categorizes the error into network, auth, configuration, or protocol issues
+ * and provides a user-friendly title, description, and actionable suggestion.
  *
- * @param error - The error.
+ * @param error - The raw error message string to analyze.
+ * @returns A DiagnosticResult object containing the analysis.
  */
 export function analyzeConnectionError(error: string): DiagnosticResult {
   const err = error.toLowerCase();
