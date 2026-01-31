@@ -5,7 +5,9 @@
 
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { apiClient } from "@/lib/client";
+import { User as ProtoUser } from "@proto/config/v1/user";
 
 /**
  * Defines the role of a user in the system.
@@ -15,17 +17,15 @@ export type UserRole = 'admin' | 'editor' | 'viewer';
 /**
  * Represents a user of the application.
  */
-export interface User {
-  /** Unique user ID. */
-  id: string;
-  /** Display name. */
-  name: string;
-  /** Email address. */
-  email: string;
-  /** URL to avatar image. */
-  avatar?: string;
-  /** The user's role. */
+export interface User extends ProtoUser {
+  /** The user's primary role (derived). */
   role: UserRole;
+  /** URL to avatar image (optional). */
+  avatar?: string;
+  /** Display name (derived). */
+  name: string;
+  /** Email address (derived). */
+  email: string;
 }
 
 /**
@@ -36,10 +36,14 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
-  login: (role: UserRole) => void;
+  /** Updates the current user preferences. */
+  updatePreferences: (prefs: any) => Promise<void>;
+  /** Refreshes the user data. */
+  refresh: () => Promise<void>;
   /** Logs out the current user. */
   logout: () => void;
+  /** Legacy login method (redirects). */
+  login: (role: any) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -55,39 +59,95 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+  const fetchUser = useCallback(async () => {
+    setLoading(true);
+    try {
+        // Fetch real user from backend
+        const protoUser = await apiClient.getCurrentUser() as ProtoUser;
+
+        // Derive role from roles list
+        let role: UserRole = 'viewer';
+        if (protoUser.roles?.includes('admin')) {
+            role = 'admin';
+        } else if (protoUser.roles?.includes('editor')) {
+            role = 'editor';
+        }
+
+        // Add avatar if missing (using Gravatar or default based on ID)
+        // For now, keep the simple placeholder logic
+        const avatar = `/avatars/${role === 'admin' ? 'admin' : 'user'}.png`;
+
+        // Derive name and email
+        let name = protoUser.id;
+        let email = "";
+
+        if (protoUser.authentication?.basicAuth?.username) {
+            name = protoUser.authentication.basicAuth.username;
+        } else if (protoUser.authentication?.oidc?.email) {
+            email = protoUser.authentication.oidc.email;
+            name = email.split('@')[0];
+        }
+
+        if (!email && name.includes('@')) {
+            email = name;
+        }
+
+        setUser({
+            ...protoUser,
+            role,
+            avatar,
+            name,
+            email,
+            // Ensure preferencesJson is set
+            preferencesJson: protoUser.preferencesJson || ""
+        });
+    } catch (e) {
+        console.error("Failed to fetch user:", e);
+        setUser(null);
+    } finally {
+        setLoading(false);
+    }
   }, []);
 
-  const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  const updatePreferences = async (prefs: any) => {
+      if (!user) return;
+      try {
+          const json = JSON.stringify(prefs);
+          const updated = { ...user, preferencesJson: json };
+
+          // Optimistic update
+          setUser(updated);
+
+          // Persist to backend
+          // We need to map UI User back to Proto User structure if needed,
+          // but apiClient.updateUser handles 'any' currently.
+          await apiClient.updateUser(updated);
+      } catch (e) {
+          console.error("Failed to update preferences:", e);
+          // Revert on error?
+          fetchUser();
+      }
+  };
+
+  const login = (role: any) => {
+      // In real auth, this would redirect to /auth/login or initiate OIDC
+      window.location.href = '/api/v1/auth/login';
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('mcp_user_role');
+    // Clear token if any
+    localStorage.removeItem('mcp_auth_token');
+    // Refresh to clear state/redirect
+    window.location.reload();
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout }}>
+    <UserContext.Provider value={{ user, loading, updatePreferences, refresh: fetchUser, login, logout }}>
       {children}
     </UserContext.Provider>
   );

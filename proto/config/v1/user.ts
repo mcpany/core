@@ -22,10 +22,12 @@ export interface User {
   profileIds: string[];
   /** The list of roles assigned to the user. */
   roles: string[];
+  /** JSON string containing user preferences (e.g., dashboard layout). */
+  preferencesJson: string;
 }
 
 function createBaseUser(): User {
-  return { id: "", authentication: undefined, profileIds: [], roles: [] };
+  return { id: "", authentication: undefined, profileIds: [], roles: [], preferencesJson: "" };
 }
 
 export const User: MessageFns<User> = {
@@ -41,6 +43,9 @@ export const User: MessageFns<User> = {
     }
     for (const v of message.roles) {
       writer.uint32(34).string(v!);
+    }
+    if (message.preferencesJson !== "") {
+      writer.uint32(42).string(message.preferencesJson);
     }
     return writer;
   },
@@ -84,6 +89,14 @@ export const User: MessageFns<User> = {
           message.roles.push(reader.string());
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.preferencesJson = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -101,6 +114,7 @@ export const User: MessageFns<User> = {
         ? object.profile_ids.map((e: any) => globalThis.String(e))
         : [],
       roles: globalThis.Array.isArray(object?.roles) ? object.roles.map((e: any) => globalThis.String(e)) : [],
+      preferencesJson: isSet(object.preferences_json) ? globalThis.String(object.preferences_json) : "",
     };
   },
 
@@ -118,6 +132,9 @@ export const User: MessageFns<User> = {
     if (message.roles?.length) {
       obj.roles = message.roles;
     }
+    if (message.preferencesJson !== "") {
+      obj.preferences_json = message.preferencesJson;
+    }
     return obj;
   },
 
@@ -132,6 +149,7 @@ export const User: MessageFns<User> = {
       : undefined;
     message.profileIds = object.profileIds?.map((e) => e) || [];
     message.roles = object.roles?.map((e) => e) || [];
+    message.preferencesJson = object.preferencesJson ?? "";
     return message;
   },
 };
