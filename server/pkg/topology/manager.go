@@ -442,15 +442,15 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 						latency = float64(sStats.Latency) / float64(sStats.Requests)
 					}
 
-					svcNode.Metrics = topologyv1.NodeMetrics_builder{
+					svcNode.SetMetrics(topologyv1.NodeMetrics_builder{
 						Qps:       qps,
 						ErrorRate: errorRate,
 						LatencyMs: latency,
-					}.Build()
+					}.Build())
 
 					// Dynamic Status
 					if errorRate > 0.05 {
-						svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_ERROR
+						svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_ERROR)
 					}
 				}
 			}
