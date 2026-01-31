@@ -10,7 +10,7 @@ import { stackManager, Stack } from "@/lib/stack-manager";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Layers, Cuboid, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { Layers, Cuboid, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
