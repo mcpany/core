@@ -126,6 +126,28 @@ func (mr *MockManagerInterfaceMockRecorder) ClearToolsForService(serviceID any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearToolsForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearToolsForService), serviceID)
 }
 
+// CountToolsForService mocks base method.
+//
+// serviceID is the serviceID.
+//
+// Returns the count.
+func (m *MockManagerInterface) CountToolsForService(serviceID string) int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountToolsForService", serviceID)
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// CountToolsForService indicates an expected call of CountToolsForService.
+//
+// serviceID is the serviceID.
+//
+// Returns the result.
+func (mr *MockManagerInterfaceMockRecorder) CountToolsForService(serviceID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountToolsForService", reflect.TypeOf((*MockManagerInterface)(nil).CountToolsForService), serviceID)
+}
+
 // ExecuteTool mocks base method.
 //
 // ctx is the context for the request.
