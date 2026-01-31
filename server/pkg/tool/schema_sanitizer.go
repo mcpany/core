@@ -39,12 +39,12 @@ func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 		}
 	}
 
-	// 2. Recursively sanitize properties
-	if props, ok := schemaMap["properties"].(map[string]interface{}); ok {
-		for k, v := range props {
-			if vMap, ok := v.(map[string]interface{}); ok {
+	// Helper to sanitize a map of schemas (e.g. properties, definitions)
+	sanitizeMap := func(key string) {
+		if props, ok := schemaMap[key].(map[string]interface{}); ok {
+			for k, v := range props {
 				// Recursively sanitize
-				sanitizedV, err := sanitizeJSONSchemaInPlace(vMap)
+				sanitizedV, err := sanitizeJSONSchemaInPlace(v)
 				if err == nil && sanitizedV != nil {
 					props[k] = sanitizedV.AsMap()
 				}
@@ -52,15 +52,59 @@ func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 		}
 	}
 
-	// 3. Recursively sanitize items (for arrays)
-	if items, ok := schemaMap["items"].(map[string]interface{}); ok {
-		sanitizedItems, err := sanitizeJSONSchemaInPlace(items)
-		if err == nil && sanitizedItems != nil {
-			schemaMap["items"] = sanitizedItems.AsMap()
+	// Helper to sanitize an array of schemas (e.g. oneOf, allOf)
+	sanitizeArray := func(key string) {
+		if items, ok := schemaMap[key].([]interface{}); ok {
+			for i, v := range items {
+				sanitizedV, err := sanitizeJSONSchemaInPlace(v)
+				if err == nil && sanitizedV != nil {
+					items[i] = sanitizedV.AsMap()
+				}
+			}
 		}
 	}
 
-	// 4. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
+	// Helper to sanitize a single schema value (e.g. additionalProperties)
+	sanitizeSingle := func(key string) {
+		if val, ok := schemaMap[key]; ok {
+			// We need to check if it's a map because additionalProperties can be boolean
+			if _, isMap := val.(map[string]interface{}); isMap {
+				sanitizedV, err := sanitizeJSONSchemaInPlace(val)
+				if err == nil && sanitizedV != nil {
+					schemaMap[key] = sanitizedV.AsMap()
+				}
+			}
+		}
+	}
+
+	// 2. Recursively sanitize properties
+	sanitizeMap("properties")
+
+	// 3. Recursively sanitize definitions
+	sanitizeMap("definitions")
+	sanitizeMap("$defs")
+
+	// 4. Recursively sanitize oneOf, anyOf, allOf
+	sanitizeArray("oneOf")
+	sanitizeArray("anyOf")
+	sanitizeArray("allOf")
+
+	// 5. Recursively sanitize items (can be map or array)
+	if items, ok := schemaMap["items"]; ok {
+		if _, isArray := items.([]interface{}); isArray {
+			sanitizeArray("items")
+		} else if _, isMap := items.(map[string]interface{}); isMap {
+			sanitizedItems, err := sanitizeJSONSchemaInPlace(items)
+			if err == nil && sanitizedItems != nil {
+				schemaMap["items"] = sanitizedItems.AsMap()
+			}
+		}
+	}
+
+	// 6. Recursively sanitize additionalProperties
+	sanitizeSingle("additionalProperties")
+
+	// 7. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
 	// The issue #10606 says: "input_schema does not support oneOf, allOf, or anyOf at the top level"
 	// If we detect this at the top level, what can we do?
 	// We could try to merge them if possible, or just pick the first one?
