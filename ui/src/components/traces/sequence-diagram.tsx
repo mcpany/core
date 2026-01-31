@@ -384,9 +384,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
             <div className="space-y-2">
                 <span className="text-xs font-medium text-muted-foreground">Payload</span>
-                <div className="max-h-[300px] overflow-auto rounded-md border">
-                    <JsonView data={selectedInteraction?.payload} />
-                </div>
+                <JsonView data={selectedInteraction?.payload} maxHeight={300} />
             </div>
           </div>
         </DialogContent>
