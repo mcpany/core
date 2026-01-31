@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Activity, PlayCircle, StopCircle, Trash2, Box, Rocket, AlertTriangle } from "lucide-react";
+import { RefreshCcw, RefreshCw, Activity, PlayCircle, StopCircle, Trash2, Box, Rocket, AlertTriangle } from "lucide-react";
 import { use } from "react";
 import { apiClient } from "@/lib/client";
 import { toast } from "sonner";
