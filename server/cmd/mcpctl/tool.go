@@ -14,6 +14,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// newToolCmd creates the 'tool' subcommand.
+// This command provides utilities for managing and inspecting tools, such as
+// calculating integrity hashes for security validation.
+//
+// Returns:
+//   - *cobra.Command: The tool subcommand.
 func newToolCmd() *cobra.Command {
 	toolCmd := &cobra.Command{
 		Use:   "tool",
