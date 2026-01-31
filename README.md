@@ -100,6 +100,7 @@ Ensure code quality and style compliance (Go & TypeScript).
 ```bash
 make lint
 ```
+This runs `golangci-lint` for the server and `npm run lint` for the UI.
 
 **Build Artifacts**
 Compile the server binary and frontend assets.

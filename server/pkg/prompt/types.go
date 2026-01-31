@@ -64,8 +64,8 @@ type TemplatedPrompt struct {
 // NewTemplatedPrompt creates a new TemplatedPrompt instance.
 //
 // Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
+//   - definition: *configv1.PromptDefinition. The prompt definition from configuration.
+//   - serviceID: string. The ID of the service providing the prompt.
 //
 // Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
@@ -185,8 +185,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // NewPromptFromConfig creates a new Prompt from a configuration definition.
 //
 // Parameters:
-//   - definition: The prompt definition from configuration.
-//   - serviceID: The ID of the service providing the prompt.
+//   - definition: *configv1.PromptDefinition. The prompt definition from configuration.
+//   - serviceID: string. The ID of the service providing the prompt.
 //
 // Returns:
 //   - Prompt: The created Prompt instance.

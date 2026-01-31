@@ -29,12 +29,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Engine defines the interface for configuration unmarshaling from different
-// file formats. Implementations of this interface are responsible for parsing a
-// byte slice and populating a protobuf message.
+// Engine defines the interface for configuration unmarshaling from different file formats.
+//
+// Implementations of this interface are responsible for parsing a byte slice and populating
+// a protobuf message.
 type Engine interface {
-	// Unmarshal parses the given byte slice and populates the provided
-	// proto.Message.
+	// Unmarshal parses the given byte slice and populates the provided proto.Message.
+	//
+	// Parameters:
+	//   - b: []byte. The raw configuration data.
+	//   - v: proto.Message. The target protobuf message to populate.
+	//
+	// Returns:
+	//   - error: An error if unmarshaling fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -43,7 +50,14 @@ type Engine interface {
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
-	// It accepts originalBytes optionally to provide line numbers in error messages.
+	//
+	// Parameters:
+	//   - m: map[string]interface{}. The raw map data.
+	//   - v: proto.Message. The target protobuf message.
+	//   - originalBytes: []byte. Optional original bytes for error reporting (e.g. line numbers).
+	//
+	// Returns:
+	//   - error: An error if unmarshaling fails.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
@@ -51,18 +65,23 @@ type StructuredEngine interface {
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
+	//
+	// Parameters:
+	//   - skip: bool. True to skip validation.
 	SetSkipValidation(skip bool)
 }
 
 // NewEngine returns a configuration engine capable of unmarshaling the format
-// indicated by the file extension of the given path. It supports `.json`,
-// `.yaml`, `.yml`, and `.textproto` file formats.
+// indicated by the file extension of the given path.
+//
+// It supports `.json`, `.yaml`, `.yml`, and `.textproto` file formats.
 //
 // Parameters:
-//   - path: The file path used to determine the configuration format.
+//   - path: string. The file path used to determine the configuration format.
 //
-// Returns an `Engine` implementation for the corresponding file format, or an
-// error if the format is not supported.
+// Returns:
+//   - Engine: An `Engine` implementation for the corresponding file format.
+//   - error: An error if the format is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -83,15 +102,25 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Parameters:
+//   - skip: bool. Whether to skip validation.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
-// Unmarshal parses a YAML byte slice into a `proto.Message`. It achieves this
-// by first unmarshaling the YAML into a generic map, then marshaling that map
+// Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// It achieves this by first unmarshaling the YAML into a generic map, then marshaling that map
 // to JSON, and finally unmarshaling the JSON into the target protobuf message.
-// This two-step process is a common pattern for converting YAML to a protobuf
-// message.
+// This two-step process is a common pattern for converting YAML to a protobuf message.
+//
+// Parameters:
+//   - b: []byte. The YAML data.
+//   - v: proto.Message. The target message.
+//
+// Returns:
+//   - error: An error if unmarshaling fails.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -111,6 +140,14 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Parameters:
+//   - yamlMap: map[string]interface{}. The raw map data.
+//   - v: proto.Message. The target protobuf message.
+//   - originalBytes: []byte. Optional original bytes for error reporting.
+//
+// Returns:
+//   - error: An error if unmarshaling fails.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -216,10 +253,12 @@ type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
-// b is the b.
-// v is the v.
+// Parameters:
+//   - b: []byte. The textproto data.
+//   - v: proto.Message. The target protobuf message.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if unmarshaling fails.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -229,10 +268,12 @@ type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
-// b is the b.
-// v is the v.
+// Parameters:
+//   - b: []byte. The JSON data.
+//   - v: proto.Message. The target protobuf message.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if unmarshaling fails.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -266,20 +307,24 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // Store defines the interface for loading MCP-X server configurations.
+//
 // Implementations of this interface provide a way to retrieve the complete
 // server configuration from a source, such as a file or a remote service.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - *configv1.McpAnyServerConfig: The loaded configuration.
+	//   - error: An error if the operation fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if configuration sources are configured.
 	HasConfigSources() bool
 }
 
@@ -289,30 +334,42 @@ type ServiceStore interface {
 	// SaveService saves or updates a service configuration.
 	//
 	// Parameters:
-	//   - service: The service configuration to save.
+	//   - ctx: context.Context. The context for the operation.
+	//   - service: *configv1.UpstreamServiceConfig. The service configuration to save.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
 	//
 	// Parameters:
-	//   - name: The name of the service to retrieve.
+	//   - ctx: context.Context. The context for the operation.
+	//   - name: string. The name of the service to retrieve.
 	//
-	// Returns the service configuration, or an error if not found or the operation fails.
+	// Returns:
+	//   - *configv1.UpstreamServiceConfig: The service configuration.
+	//   - error: An error if not found or the operation fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
 	//
-	// Returns a slice of service configurations, or an error if the operation fails.
+	// Parameters:
+	//   - ctx: context.Context. The context for the operation.
+	//
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
+	//   - error: An error if the operation fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
 	//
 	// Parameters:
-	//   - name: The name of the service to delete.
+	//   - ctx: context.Context. The context for the operation.
+	//   - name: string. The name of the service to delete.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -1098,19 +1155,23 @@ type MultiStore struct {
 
 // NewMultiStore creates a new MultiStore with the given stores.
 //
-// stores is the stores.
+// Parameters:
+//   - stores: ...Store. A variadic list of stores to combine.
 //
-// Returns the result.
+// Returns:
+//   - *MultiStore: A new MultiStore instance.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if the operation fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1231,7 +1292,8 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if any store has configuration sources.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {
