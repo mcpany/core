@@ -5,10 +5,11 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/components/user-context";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -64,11 +65,31 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * @returns The rendered component.
  */
 export function DashboardGrid() {
+    const { user, updatePreferences, loading: userLoading } = useUser();
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const hasLoadedRef = useRef(false);
 
     useEffect(() => {
         setIsMounted(true);
+        if (userLoading) return;
+        if (hasLoadedRef.current) return;
+
+        // Priority 1: User Preferences from Backend
+        if (user?.preferencesJson) {
+            try {
+                const parsed = JSON.parse(user.preferencesJson);
+                if (parsed.dashboardLayout) {
+                    setWidgets(parsed.dashboardLayout);
+                    hasLoadedRef.current = true;
+                    return;
+                }
+            } catch (e) {
+                console.error("Failed to parse user preferences", e);
+            }
+        }
+
+        // Priority 2: Local Storage (Legacy/Fallback)
         const saved = localStorage.getItem("dashboard-layout");
         if (saved) {
             try {
@@ -94,8 +115,6 @@ export function DashboardGrid() {
                     // Filter out any invalid types
                     const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
 
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
                     if (validMigrated.length === 0) {
                         setWidgets(DEFAULT_LAYOUT);
                     } else {
@@ -112,39 +131,43 @@ export function DashboardGrid() {
         } else {
             setWidgets(DEFAULT_LAYOUT);
         }
-    }, []);
+        hasLoadedRef.current = true;
+    }, [user, userLoading]);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
     };
 
-    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
-    // Randomized Selection from Top 5 High-Impact Targets
+    // ⚡ BOLT: Debounce updates
     const isFirstRun = useRef(true);
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || userLoading || !hasLoadedRef.current) return;
 
-        // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
-        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
-        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
-        // But for initial load, widgets is [].
-
-        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
         if (isFirstRun.current) {
             isFirstRun.current = false;
-            // If widgets are empty on first run, it's likely the initial state.
-            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
-            // But `isMounted` gate likely delays this enough.
             return;
         }
 
         const timer = setTimeout(() => {
+            // Persist to Local Storage (Backup/Guest)
             localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+
+            // Persist to Backend (User Profile)
+            if (user) {
+                let currentPrefs = {};
+                try {
+                    currentPrefs = user.preferencesJson ? JSON.parse(user.preferencesJson) : {};
+                } catch {}
+
+                updatePreferences({
+                    ...currentPrefs,
+                    dashboardLayout: widgets
+                });
+            }
+        }, 1000); // 1s debounce
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted]);
+    }, [widgets, isMounted, user, updatePreferences, userLoading]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;

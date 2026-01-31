@@ -266,3 +266,32 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 	}
 	return nil
 }
+
+func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Try to get from AuthManager first (fast, in-memory, covers config users)
+		if u, found := a.AuthManager.GetUser(id); found {
+			writeJSON(w, http.StatusOK, util.SanitizeUser(u))
+			return
+		}
+
+		// Fallback to store (should be covered by AuthManager usually, but just in case)
+		user, err := store.GetUser(r.Context(), id)
+		if err != nil {
+			logging.GetLogger().Error("failed to get user me", "id", id, "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if user == nil {
+			http.NotFound(w, r)
+			return
+		}
+		writeJSON(w, http.StatusOK, util.SanitizeUser(user))
+	}
+}
