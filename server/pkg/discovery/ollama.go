@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -27,7 +28,9 @@ type Provider interface {
 // OllamaProvider discovers local Ollama instances.
 // OllamaProvider is a provider that discovers local Ollama instances.
 type OllamaProvider struct {
-	Endpoint string // e.g., "http://localhost:11434"
+	Endpoint   string // e.g., "http://localhost:11434"
+	client     *http.Client
+	clientOnce sync.Once
 }
 
 // Name returns the name of the provider.
@@ -37,16 +40,20 @@ func (p *OllamaProvider) Name() string {
 
 // Discover attempts to find local Ollama instances and return them as tools.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
-	client := &http.Client{
-		Timeout: 2 * time.Second,
-	}
+	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
+	// Randomized Selection from Top 5 High-Impact Targets
+	p.clientOnce.Do(func() {
+		p.client = &http.Client{
+			Timeout: 2 * time.Second,
+		}
+	})
 
 	req, err := http.NewRequestWithContext(ctx, "GET", p.Endpoint+"/api/tags", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := client.Do(req)
+	resp, err := p.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("ollama not found at %s: %w", p.Endpoint, err)
 	}
