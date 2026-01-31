@@ -20,6 +20,11 @@ interface CreateStackDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Dialog for creating a new stack.
+ * @param props - Component props.
+ * @returns The rendered dialog.
+ */
 export function CreateStackDialog({ open, onOpenChange }: CreateStackDialogProps) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
