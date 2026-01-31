@@ -18,6 +18,12 @@ const API_BASE = '/api/v1/skills';
  * It handles listing, getting, creating, updating, and deleting skills.
  */
 export const SkillService = {
+  /**
+   * Lists all available skills.
+   *
+   * @returns A promise that resolves to an array of skills.
+   * @throws Error if the request fails.
+   */
   async list(): Promise<Skill[]> {
     const res = await fetch(API_BASE);
     if (!res.ok) throw new Error('Failed to list skills');
@@ -29,6 +35,13 @@ export const SkillService = {
     return data.skills || [];
   },
 
+  /**
+   * Retrieves a specific skill by name.
+   *
+   * @param name - The name of the skill to retrieve.
+   * @returns A promise that resolves to the skill object.
+   * @throws Error if the request fails.
+   */
   async get(name: string): Promise<Skill> {
     const res = await fetch(`${API_BASE}/${name}`);
     if (!res.ok) throw new Error(`Failed to get skill ${name}`);
@@ -40,6 +53,13 @@ export const SkillService = {
     return data.skill;
   },
 
+  /**
+   * Creates a new skill.
+   *
+   * @param skill - The skill object to create.
+   * @returns A promise that resolves to the created skill.
+   * @throws Error if the request fails.
+   */
   async create(skill: Skill): Promise<Skill> {
     const res = await fetch(API_BASE, {
       method: 'POST',
@@ -54,6 +74,14 @@ export const SkillService = {
     return data.skill;
   },
 
+  /**
+   * Updates an existing skill.
+   *
+   * @param originalName - The original name of the skill (in case the name is being updated).
+   * @param skill - The updated skill object.
+   * @returns A promise that resolves to the updated skill.
+   * @throws Error if the request fails.
+   */
   async update(originalName: string, skill: Skill): Promise<Skill> {
     const res = await fetch(`${API_BASE}/${originalName}`, {
       method: 'PUT',
@@ -68,6 +96,13 @@ export const SkillService = {
     return data.skill;
   },
 
+  /**
+   * Deletes a skill.
+   *
+   * @param name - The name of the skill to delete.
+   * @returns A promise that resolves when the operation is complete.
+   * @throws Error if the request fails.
+   */
   async delete(name: string): Promise<void> {
     const res = await fetch(`${API_BASE}/${name}`, {
       method: 'DELETE',
@@ -75,6 +110,15 @@ export const SkillService = {
     if (!res.ok) throw new Error(`Failed to delete skill ${name}`);
   },
 
+  /**
+   * Uploads an asset for a skill.
+   *
+   * @param skillName - The name of the skill.
+   * @param path - The target path for the asset.
+   * @param file - The file to upload.
+   * @returns A promise that resolves when the upload is complete.
+   * @throws Error if the request fails.
+   */
   async uploadAsset(skillName: string, path: string, file: File): Promise<void> {
     const formData = new FormData();
     formData.append('file', file);

@@ -14,13 +14,13 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 ## 2. Architecture
 
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
 
 **High-Level Overview:**
 1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration.
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
 
 ```mermaid
 graph TD
@@ -40,11 +40,10 @@ graph TD
     end
 ```
 
-### Key Features
-*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
-*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
-*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
-*   **Observability**: Real-time metrics and audit logging.
+### Key Design Patterns
+*   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
+*   **Configuration as Code**: All services are defined in declarative YAML/JSON.
+*   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
 
 ## 3. Getting Started
 
@@ -53,62 +52,68 @@ Follow these steps to get up and running immediately.
 ### Prerequisites
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+*   `make` (for build automation)
 
-### Build from Source
+### Installation
 
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/mcpany/core.git
+    cd core
+    ```
+
+2.  **Prepare dependencies:**
+    ```bash
+    make prepare
+    ```
+
+3.  **Build the server:**
+    ```bash
+    make build
+    ```
+    This will create the `server` binary in `build/bin/`.
+
+4.  **Run with an example configuration:**
+    ```bash
+    ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+    ```
+
+### Hello World
+Once the server is running, you can verify it using `curl` or an MCP client.
 ```bash
-# 1. Clone the repository
-git clone https://github.com/mcpany/core.git
-cd core
-
-# 2. Install dependencies and build
-make prepare
-make build
-
-# 3. Run the server (using the example weather config)
-./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
+# Check health
+curl http://localhost:50050/health
 ```
 
-### Docker (Alternative)
-
-```bash
-docker run -d --rm --name mcpany-server \
-  -p 50050:50050 \
-  ghcr.io/mcpany/server:dev-latest \
-  run --config-path https://raw.githubusercontent.com/mcpany/core/main/server/examples/popular_services/wttr.in/config.yaml
-```
-
-### Connect your Client
-Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `http://localhost:50050`.
-
+To connect an AI client (like Claude Desktop or Gemini CLI):
 ```bash
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
 ## 4. Development
 
-Use these commands to maintain code quality and build the project.
+We follow a strict development workflow to ensure quality.
 
-**Run Tests**
-Execute all unit, integration, and end-to-end tests.
+### Testing
+Run all unit, integration, and end-to-end tests to ensure code correctness.
 ```bash
 make test
 ```
 
-**Lint Code**
-Ensure code quality and style compliance (Go & TypeScript).
+### Linting
+Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript).
 ```bash
 make lint
 ```
 
-**Build Artifacts**
-Compile the server binary and frontend assets.
+### Building
+Compile all artifacts (Server binary and UI assets).
 ```bash
 make build
 ```
 
-**Generate Code**
-Regenerate Protocol Buffers and other auto-generated files.
+### Code Generation
+Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
 ```bash
 make gen
 ```
@@ -132,11 +137,16 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
 
 ### Required Secrets
-Sensitive information (like upstream API keys) should be injected via environment variables or a secret manager, referenced in your configuration files using `${ENV_VAR_NAME}` syntax.
+Sensitive information (like upstream API keys) should **never** be hardcoded in configuration files. Instead, use environment variables referencing them.
 
-## Documentation
-*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
-*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
+Example Config:
+```yaml
+upstreamAuth:
+  apiKey:
+    value: "${OPENAI_API_KEY}" # References env var
+```
+
+Ensure `OPENAI_API_KEY` is set in the server's environment.
 
 ## License
 This project is licensed under the terms of the [Apache 2.0 License](LICENSE).
