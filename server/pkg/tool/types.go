@@ -1653,23 +1653,23 @@ func NewLocalCommandTool(
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
-	// Check if the command is sed and supports sandbox
+	// Check if the command is sed or awk and supports sandbox
 	cmd := service.GetCommand()
 	base := filepath.Base(cmd)
-	if base == "sed" || base == "gsed" {
-		// Check if sed supports --sandbox by running `sed --sandbox --version`
+	if base == "sed" || base == "gsed" || base == "awk" || base == "gawk" {
+		// Check if tool supports --sandbox by running `tool --sandbox --version`
 		// We use exec.Command directly here.
 		// Use --version because it exits successfully if supported.
-		// If --sandbox is not supported, sed usually exits with error "illegal option"
+		// If --sandbox is not supported, the tool usually exits with error "illegal option"
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 		defer cancel()
 		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version") //nolint:gosec // Trusted command from config
 		if err := checkCmd.Run(); err == nil {
 			t.sandboxArgs = []string{"--sandbox"}
-			logging.GetLogger().Info("Enabled sandbox mode for sed tool", "tool", tool.GetName())
+			logging.GetLogger().Info("Enabled sandbox mode for tool", "tool", tool.GetName(), "command", base)
 		} else {
-			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
-			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
+			t.initError = fmt.Errorf("tool %q (command: %s) detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), base, err)
+			logging.GetLogger().Error("Failed to enable sandbox for tool", "tool", tool.GetName(), "command", base, "error", err)
 		}
 	}
 
