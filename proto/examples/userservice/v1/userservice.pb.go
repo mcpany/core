@@ -7,14 +7,13 @@
 // 	protoc        v6.33.1
 // source: proto/examples/userservice/v1/userservice.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	_ "github.com/mcpany/core/proto/mcp_options/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -28,10 +27,10 @@ const (
 
 // --- Messages ---
 type EchoRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Message string                 `protobuf:"bytes,1,opt,name=message"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *EchoRequest) Reset() {
@@ -61,13 +60,13 @@ func (x *EchoRequest) ProtoReflect() protoreflect.Message {
 
 func (x *EchoRequest) GetMessage() string {
 	if x != nil {
-		return x.Message
+		return x.xxx_hidden_Message
 	}
 	return ""
 }
 
 func (x *EchoRequest) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = v
 }
 
 type EchoRequest_builder struct {
@@ -80,15 +79,15 @@ func (b0 EchoRequest_builder) Build() *EchoRequest {
 	m0 := &EchoRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Message = b.Message
+	x.xxx_hidden_Message = b.Message
 	return m0
 }
 
 type EchoResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	EchoedMessage string                 `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage" json:"echoed_message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_EchoedMessage string                 `protobuf:"bytes,1,opt,name=echoed_message,json=echoedMessage"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *EchoResponse) Reset() {
@@ -118,13 +117,13 @@ func (x *EchoResponse) ProtoReflect() protoreflect.Message {
 
 func (x *EchoResponse) GetEchoedMessage() string {
 	if x != nil {
-		return x.EchoedMessage
+		return x.xxx_hidden_EchoedMessage
 	}
 	return ""
 }
 
 func (x *EchoResponse) SetEchoedMessage(v string) {
-	x.EchoedMessage = v
+	x.xxx_hidden_EchoedMessage = v
 }
 
 type EchoResponse_builder struct {
@@ -137,15 +136,15 @@ func (b0 EchoResponse_builder) Build() *EchoResponse {
 	m0 := &EchoResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.EchoedMessage = b.EchoedMessage
+	x.xxx_hidden_EchoedMessage = b.EchoedMessage
 	return m0
 }
 
 type GetDetailsRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId" json:"item_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ItemId string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *GetDetailsRequest) Reset() {
@@ -175,13 +174,13 @@ func (x *GetDetailsRequest) ProtoReflect() protoreflect.Message {
 
 func (x *GetDetailsRequest) GetItemId() string {
 	if x != nil {
-		return x.ItemId
+		return x.xxx_hidden_ItemId
 	}
 	return ""
 }
 
 func (x *GetDetailsRequest) SetItemId(v string) {
-	x.ItemId = v
+	x.xxx_hidden_ItemId = v
 }
 
 type GetDetailsRequest_builder struct {
@@ -194,17 +193,17 @@ func (b0 GetDetailsRequest_builder) Build() *GetDetailsRequest {
 	m0 := &GetDetailsRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ItemId = b.ItemId
+	x.xxx_hidden_ItemId = b.ItemId
 	return m0
 }
 
 type GetDetailsResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId" json:"item_id,omitempty"`
-	Detail        string                 `protobuf:"bytes,2,opt,name=detail" json:"detail,omitempty"`
-	Attributes    map[string]string      `protobuf:"bytes,3,rep,name=attributes" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ItemId     string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId"`
+	xxx_hidden_Detail     string                 `protobuf:"bytes,2,opt,name=detail"`
+	xxx_hidden_Attributes map[string]string      `protobuf:"bytes,3,rep,name=attributes" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *GetDetailsResponse) Reset() {
@@ -234,35 +233,35 @@ func (x *GetDetailsResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetDetailsResponse) GetItemId() string {
 	if x != nil {
-		return x.ItemId
+		return x.xxx_hidden_ItemId
 	}
 	return ""
 }
 
 func (x *GetDetailsResponse) GetDetail() string {
 	if x != nil {
-		return x.Detail
+		return x.xxx_hidden_Detail
 	}
 	return ""
 }
 
 func (x *GetDetailsResponse) GetAttributes() map[string]string {
 	if x != nil {
-		return x.Attributes
+		return x.xxx_hidden_Attributes
 	}
 	return nil
 }
 
 func (x *GetDetailsResponse) SetItemId(v string) {
-	x.ItemId = v
+	x.xxx_hidden_ItemId = v
 }
 
 func (x *GetDetailsResponse) SetDetail(v string) {
-	x.Detail = v
+	x.xxx_hidden_Detail = v
 }
 
 func (x *GetDetailsResponse) SetAttributes(v map[string]string) {
-	x.Attributes = v
+	x.xxx_hidden_Attributes = v
 }
 
 type GetDetailsResponse_builder struct {
@@ -277,9 +276,9 @@ func (b0 GetDetailsResponse_builder) Build() *GetDetailsResponse {
 	m0 := &GetDetailsResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ItemId = b.ItemId
-	x.Detail = b.Detail
-	x.Attributes = b.Attributes
+	x.xxx_hidden_ItemId = b.ItemId
+	x.xxx_hidden_Detail = b.Detail
+	x.xxx_hidden_Attributes = b.Attributes
 	return m0
 }
 
@@ -287,7 +286,7 @@ var File_proto_examples_userservice_v1_userservice_proto protoreflect.FileDescri
 
 const file_proto_examples_userservice_v1_userservice_proto_rawDesc = "" +
 	"\n" +
-	"/proto/examples/userservice/v1/userservice.proto\x12\x17examples.userservice.v1\x1a&proto/mcp_options/v1/mcp_options.proto\"H\n" +
+	"/proto/examples/userservice/v1/userservice.proto\x12\x17examples.userservice.v1\x1a&proto/mcp_options/v1/mcp_options.proto\x1a!google/protobuf/go_features.proto\"H\n" +
 	"\vEchoRequest\x129\n" +
 	"\amessage\x18\x01 \x01(\tB\x1f\x82\x87\xa1\xfc\b\x19The message to be echoed.R\amessage\"P\n" +
 	"\fEchoResponse\x12@\n" +
@@ -307,7 +306,7 @@ const file_proto_examples_userservice_v1_userservice_proto_rawDesc = "" +
 	"\vEchoService\x12\x9b\x01\n" +
 	"\x04Echo\x12$.examples.userservice.v1.EchoRequest\x1a%.examples.userservice.v1.EchoResponse\"Fʆ\xa1\xfc\b\bEchoTool҆\xa1\xfc\b2Echoes back the input message. Useful for testing.\x12\xa8\x01\n" +
 	"\n" +
-	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B;Z4github.com/mcpany/core/proto/examples/userservice/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
+	"GetDetails\x12*.examples.userservice.v1.GetDetailsRequest\x1a+.examples.userservice.v1.GetDetailsResponse\"Aʆ\xa1\xfc\b\x11ItemDetailFetcher҆\xa1\xfc\b$Fetches details for a given item ID.B@Z4github.com/mcpany/core/proto/examples/userservice/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_examples_userservice_v1_userservice_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_examples_userservice_v1_userservice_proto_goTypes = []any{

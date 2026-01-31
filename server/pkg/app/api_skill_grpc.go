@@ -11,6 +11,7 @@ import (
 	"github.com/mcpany/core/server/pkg/skill"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 // SkillServiceServer implements the SkillService gRPC interface.
@@ -48,9 +49,9 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 		pbSkills[i] = toProtoSkill(sk)
 	}
 
-	return &pb.ListSkillsResponse{
+	return pb.ListSkillsResponse_builder{
 		Skills: pbSkills,
-	}, nil
+	}.Build(), nil
 }
 
 // GetSkill retrieves a specific skill by name.
@@ -61,20 +62,20 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest) (*pb.GetSkillResponse, error) {
-	if req.Name == "" {
+	if req.GetName() == "" {
 		return nil, status.Error(codes.InvalidArgument, "skill name is required")
 	}
 
-	sk, err := s.manager.GetSkill(req.Name)
+	sk, err := s.manager.GetSkill(req.GetName())
 	if err != nil {
 		// convert fs errors to status codes?
 		// For simplicity, just return Internal or NotFound if we check error type
 		return nil, status.Errorf(codes.NotFound, "skill not found: %v", err)
 	}
 
-	return &pb.GetSkillResponse{
+	return pb.GetSkillResponse_builder{
 		Skill: toProtoSkill(sk),
-	}, nil
+	}.Build(), nil
 }
 
 // CreateSkill creates a new skill.
@@ -85,18 +86,18 @@ func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillRequest) (*pb.CreateSkillResponse, error) {
-	if req.Skill == nil {
+	if req.GetSkill() == nil {
 		return nil, status.Error(codes.InvalidArgument, "skill is required")
 	}
 
-	sk := fromProtoSkill(req.Skill)
+	sk := fromProtoSkill(req.GetSkill())
 	if err := s.manager.CreateSkill(sk); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create skill: %v", err)
 	}
 
-	return &pb.CreateSkillResponse{
+	return pb.CreateSkillResponse_builder{
 		Skill: toProtoSkill(sk),
-	}, nil
+	}.Build(), nil
 }
 
 // UpdateSkill updates an existing skill.
@@ -107,23 +108,23 @@ func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillR
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillRequest) (*pb.UpdateSkillResponse, error) {
-	if req.Name == "" {
+	if req.GetName() == "" {
 		return nil, status.Error(codes.InvalidArgument, "skill name is required")
 	}
-	if req.Skill == nil {
+	if req.GetSkill() == nil {
 		return nil, status.Error(codes.InvalidArgument, "skill content is required")
 	}
 
-	sk := fromProtoSkill(req.Skill)
+	sk := fromProtoSkill(req.GetSkill())
 	// Ensure name matches param? Rest convention matches path.
 	// Manager UpdateSkill takes oldName and newSkill.
-	if err := s.manager.UpdateSkill(req.Name, sk); err != nil {
+	if err := s.manager.UpdateSkill(req.GetName(), sk); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update skill: %v", err)
 	}
 
-	return &pb.UpdateSkillResponse{
+	return pb.UpdateSkillResponse_builder{
 		Skill: toProtoSkill(sk),
-	}, nil
+	}.Build(), nil
 }
 
 // DeleteSkill deletes a skill.
@@ -134,11 +135,11 @@ func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillR
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *SkillServiceServer) DeleteSkill(_ context.Context, req *pb.DeleteSkillRequest) (*pb.DeleteSkillResponse, error) {
-	if req.Name == "" {
+	if req.GetName() == "" {
 		return nil, status.Error(codes.InvalidArgument, "skill name is required")
 	}
 
-	if err := s.manager.DeleteSkill(req.Name); err != nil {
+	if err := s.manager.DeleteSkill(req.GetName()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete skill: %v", err)
 	}
 
@@ -147,20 +148,16 @@ func (s *SkillServiceServer) DeleteSkill(_ context.Context, req *pb.DeleteSkillR
 
 // Helper functions
 
-func strPtr(s string) *string {
-	return &s
-}
-
 func toProtoSkill(sk *skill.Skill) *config_v1.Skill {
-	return &config_v1.Skill{
-		Name:         strPtr(sk.Name),
-		Description:  strPtr(sk.Description),
-		License:      strPtr(sk.License),
-		Instructions: strPtr(sk.Instructions),
+	return config_v1.Skill_builder{
+		Name:         proto.String(sk.Name),
+		Description:  proto.String(sk.Description),
+		License:      proto.String(sk.License),
+		Instructions: proto.String(sk.Instructions),
 		AllowedTools: sk.AllowedTools,
 		Assets:       sk.Assets,
 		Metadata:     sk.Metadata,
-	}
+	}.Build()
 }
 
 func fromProtoSkill(pbSkill *config_v1.Skill) *skill.Skill {

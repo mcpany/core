@@ -16,10 +16,10 @@ func TestManager_AddTool_EnforcesNamespacing(t *testing.T) {
 	tm := NewManager(nil)
 
 	// Case 1: Tool with ServiceID
-	t1Proto := &v1.Tool{
+	t1Proto := v1.Tool_builder{
 		Name:      proto.String("shortname"),
 		ServiceId: proto.String("myservice"),
-	}
+	}.Build()
 	t1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
 			return t1Proto

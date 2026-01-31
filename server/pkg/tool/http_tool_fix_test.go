@@ -25,15 +25,15 @@ func TestNewHTTPTool_SpaceInURL(t *testing.T) {
 	urlWithSpace := "http://example.com/api?q=hello world"
 	fqn := fmt.Sprintf("%s %s", method, urlWithSpace)
 
-	toolProto := &pb.Tool{
+	toolProto := pb.Tool_builder{
 		Name:                proto.String("test-tool"),
 		UnderlyingMethodFqn: proto.String(fqn),
-	}
+	}.Build()
 
-	callDef := &configv1.HttpCallDefinition{
+	callDef := configv1.HttpCallDefinition_builder{
 		Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
 		EndpointPath: proto.String(urlWithSpace),
-	}
+	}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
@@ -56,11 +56,11 @@ func TestNewHTTPTool_SpaceInURL(t *testing.T) {
 func TestNewHTTPTool_InvalidFormat(t *testing.T) {
 	// Test the case where FQN is indeed invalid (no space)
 	fqn := "INVALID_FQN"
-	toolProto := &pb.Tool{
+	toolProto := pb.Tool_builder{
 		Name:                proto.String("test-tool"),
 		UnderlyingMethodFqn: proto.String(fqn),
-	}
-	callDef := &configv1.HttpCallDefinition{}
+	}.Build()
+	callDef := configv1.HttpCallDefinition_builder{}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")
@@ -78,18 +78,18 @@ func TestHTTPTool_PrepareBody_Template(t *testing.T) {
 	// Test prepareBody with template
 	urlStr := "http://example.com/api"
 	fqn := "POST " + urlStr
-	toolProto := &pb.Tool{
+	toolProto := pb.Tool_builder{
 		Name:                proto.String("test-tool"),
 		UnderlyingMethodFqn: proto.String(fqn),
-	}
+	}.Build()
 
-	callDef := &configv1.HttpCallDefinition{
+	callDef := configv1.HttpCallDefinition_builder{
 		Method:       configv1.HttpCallDefinition_HTTP_METHOD_POST.Enum(),
 		EndpointPath: proto.String(urlStr),
-		InputTransformer: &configv1.InputTransformer{
+		InputTransformer: configv1.InputTransformer_builder{
 			Template: proto.String(`{"key": "{{arg}}"}`),
-		},
-	}
+		}.Build(),
+	}.Build()
 
 	pm := pool.NewManager()
 	httpTool := NewHTTPTool(toolProto, pm, "service-id", nil, callDef, nil, nil, "call-id")

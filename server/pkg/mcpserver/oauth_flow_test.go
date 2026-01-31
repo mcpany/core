@@ -83,14 +83,14 @@ func TestOAuthFlow_Complete(t *testing.T) {
 
 	initResp, err := regServer.InitiateOAuth2Flow(ctx, initReq)
 	require.NoError(t, err)
-	require.NotEmpty(t, initResp.AuthorizationUrl)
-	require.NotEmpty(t, initResp.State)
-	assert.Contains(t, initResp.AuthorizationUrl, mockOAuth.URL+"/auth")
+	require.NotEmpty(t, initResp.GetAuthorizationUrl())
+	require.NotEmpty(t, initResp.GetState())
+	assert.Contains(t, initResp.GetAuthorizationUrl(), mockOAuth.URL+"/auth")
 
 	// Parse URL to check state
-	u, err := url.Parse(initResp.AuthorizationUrl)
+	u, err := url.Parse(initResp.GetAuthorizationUrl())
 	require.NoError(t, err)
-	assert.Equal(t, initResp.State, u.Query().Get("state"))
+	assert.Equal(t, initResp.GetState(), u.Query().Get("state"))
 
 	// 5. Simulate Callback (skip actual HTTP redirection)
 	// We manually call AuthManager.HandleOAuthCallback with a mock code
@@ -101,6 +101,6 @@ func TestOAuthFlow_Complete(t *testing.T) {
 	// 6. Verify Token was saved to Credential
 	updatedCred, err := memStore.GetCredential(ctx, credID)
 	require.NoError(t, err)
-	require.NotNil(t, updatedCred.Token)
-	assert.Equal(t, "Bearer", updatedCred.Token.GetTokenType())
+	require.NotNil(t, updatedCred.GetToken())
+	assert.Equal(t, "Bearer", updatedCred.GetToken().GetTokenType())
 }

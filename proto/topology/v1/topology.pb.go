@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/topology/v1/topology.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -139,11 +138,11 @@ func (x NodeStatus) Number() protoreflect.EnumNumber {
 
 // Graph represents the full network topology.
 type Graph struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Clients       []*Node                `protobuf:"bytes,1,rep,name=clients" json:"clients,omitempty"`
-	Core          *Node                  `protobuf:"bytes,2,opt,name=core" json:"core,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Clients *[]*Node               `protobuf:"bytes,1,rep,name=clients"`
+	xxx_hidden_Core    *Node                  `protobuf:"bytes,2,opt,name=core"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Graph) Reset() {
@@ -173,35 +172,37 @@ func (x *Graph) ProtoReflect() protoreflect.Message {
 
 func (x *Graph) GetClients() []*Node {
 	if x != nil {
-		return x.Clients
+		if x.xxx_hidden_Clients != nil {
+			return *x.xxx_hidden_Clients
+		}
 	}
 	return nil
 }
 
 func (x *Graph) GetCore() *Node {
 	if x != nil {
-		return x.Core
+		return x.xxx_hidden_Core
 	}
 	return nil
 }
 
 func (x *Graph) SetClients(v []*Node) {
-	x.Clients = v
+	x.xxx_hidden_Clients = &v
 }
 
 func (x *Graph) SetCore(v *Node) {
-	x.Core = v
+	x.xxx_hidden_Core = v
 }
 
 func (x *Graph) HasCore() bool {
 	if x == nil {
 		return false
 	}
-	return x.Core != nil
+	return x.xxx_hidden_Core != nil
 }
 
 func (x *Graph) ClearCore() {
-	x.Core = nil
+	x.xxx_hidden_Core = nil
 }
 
 type Graph_builder struct {
@@ -215,23 +216,23 @@ func (b0 Graph_builder) Build() *Graph {
 	m0 := &Graph{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Clients = b.Clients
-	x.Core = b.Core
+	x.xxx_hidden_Clients = &b.Clients
+	x.xxx_hidden_Core = b.Core
 	return m0
 }
 
 // Node represents a node in the topology graph.
 type Node struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Label         string                 `protobuf:"bytes,2,opt,name=label" json:"label,omitempty"`
-	Type          NodeType               `protobuf:"varint,3,opt,name=type,enum=topology.v1.NodeType" json:"type,omitempty"`
-	Status        NodeStatus             `protobuf:"varint,4,opt,name=status,enum=topology.v1.NodeStatus" json:"status,omitempty"`
-	Metadata      map[string]string      `protobuf:"bytes,5,rep,name=metadata" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Children      []*Node                `protobuf:"bytes,6,rep,name=children" json:"children,omitempty"`
-	Metrics       *NodeMetrics           `protobuf:"bytes,7,opt,name=metrics" json:"metrics,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id       string                 `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Label    string                 `protobuf:"bytes,2,opt,name=label"`
+	xxx_hidden_Type     NodeType               `protobuf:"varint,3,opt,name=type,enum=topology.v1.NodeType"`
+	xxx_hidden_Status   NodeStatus             `protobuf:"varint,4,opt,name=status,enum=topology.v1.NodeStatus"`
+	xxx_hidden_Metadata map[string]string      `protobuf:"bytes,5,rep,name=metadata" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Children *[]*Node               `protobuf:"bytes,6,rep,name=children"`
+	xxx_hidden_Metrics  *NodeMetrics           `protobuf:"bytes,7,opt,name=metrics"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Node) Reset() {
@@ -261,90 +262,92 @@ func (x *Node) ProtoReflect() protoreflect.Message {
 
 func (x *Node) GetId() string {
 	if x != nil {
-		return x.Id
+		return x.xxx_hidden_Id
 	}
 	return ""
 }
 
 func (x *Node) GetLabel() string {
 	if x != nil {
-		return x.Label
+		return x.xxx_hidden_Label
 	}
 	return ""
 }
 
 func (x *Node) GetType() NodeType {
 	if x != nil {
-		return x.Type
+		return x.xxx_hidden_Type
 	}
 	return NodeType_NODE_TYPE_UNSPECIFIED
 }
 
 func (x *Node) GetStatus() NodeStatus {
 	if x != nil {
-		return x.Status
+		return x.xxx_hidden_Status
 	}
 	return NodeStatus_NODE_STATUS_UNSPECIFIED
 }
 
 func (x *Node) GetMetadata() map[string]string {
 	if x != nil {
-		return x.Metadata
+		return x.xxx_hidden_Metadata
 	}
 	return nil
 }
 
 func (x *Node) GetChildren() []*Node {
 	if x != nil {
-		return x.Children
+		if x.xxx_hidden_Children != nil {
+			return *x.xxx_hidden_Children
+		}
 	}
 	return nil
 }
 
 func (x *Node) GetMetrics() *NodeMetrics {
 	if x != nil {
-		return x.Metrics
+		return x.xxx_hidden_Metrics
 	}
 	return nil
 }
 
 func (x *Node) SetId(v string) {
-	x.Id = v
+	x.xxx_hidden_Id = v
 }
 
 func (x *Node) SetLabel(v string) {
-	x.Label = v
+	x.xxx_hidden_Label = v
 }
 
 func (x *Node) SetType(v NodeType) {
-	x.Type = v
+	x.xxx_hidden_Type = v
 }
 
 func (x *Node) SetStatus(v NodeStatus) {
-	x.Status = v
+	x.xxx_hidden_Status = v
 }
 
 func (x *Node) SetMetadata(v map[string]string) {
-	x.Metadata = v
+	x.xxx_hidden_Metadata = v
 }
 
 func (x *Node) SetChildren(v []*Node) {
-	x.Children = v
+	x.xxx_hidden_Children = &v
 }
 
 func (x *Node) SetMetrics(v *NodeMetrics) {
-	x.Metrics = v
+	x.xxx_hidden_Metrics = v
 }
 
 func (x *Node) HasMetrics() bool {
 	if x == nil {
 		return false
 	}
-	return x.Metrics != nil
+	return x.xxx_hidden_Metrics != nil
 }
 
 func (x *Node) ClearMetrics() {
-	x.Metrics = nil
+	x.xxx_hidden_Metrics = nil
 }
 
 type Node_builder struct {
@@ -363,23 +366,23 @@ func (b0 Node_builder) Build() *Node {
 	m0 := &Node{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Label = b.Label
-	x.Type = b.Type
-	x.Status = b.Status
-	x.Metadata = b.Metadata
-	x.Children = b.Children
-	x.Metrics = b.Metrics
+	x.xxx_hidden_Id = b.Id
+	x.xxx_hidden_Label = b.Label
+	x.xxx_hidden_Type = b.Type
+	x.xxx_hidden_Status = b.Status
+	x.xxx_hidden_Metadata = b.Metadata
+	x.xxx_hidden_Children = &b.Children
+	x.xxx_hidden_Metrics = b.Metrics
 	return m0
 }
 
 type NodeMetrics struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Qps           float64                `protobuf:"fixed64,1,opt,name=qps" json:"qps,omitempty"`
-	LatencyMs     float64                `protobuf:"fixed64,2,opt,name=latency_ms,json=latencyMs" json:"latency_ms,omitempty"`
-	ErrorRate     float64                `protobuf:"fixed64,3,opt,name=error_rate,json=errorRate" json:"error_rate,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Qps       float64                `protobuf:"fixed64,1,opt,name=qps"`
+	xxx_hidden_LatencyMs float64                `protobuf:"fixed64,2,opt,name=latency_ms,json=latencyMs"`
+	xxx_hidden_ErrorRate float64                `protobuf:"fixed64,3,opt,name=error_rate,json=errorRate"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *NodeMetrics) Reset() {
@@ -409,35 +412,35 @@ func (x *NodeMetrics) ProtoReflect() protoreflect.Message {
 
 func (x *NodeMetrics) GetQps() float64 {
 	if x != nil {
-		return x.Qps
+		return x.xxx_hidden_Qps
 	}
 	return 0
 }
 
 func (x *NodeMetrics) GetLatencyMs() float64 {
 	if x != nil {
-		return x.LatencyMs
+		return x.xxx_hidden_LatencyMs
 	}
 	return 0
 }
 
 func (x *NodeMetrics) GetErrorRate() float64 {
 	if x != nil {
-		return x.ErrorRate
+		return x.xxx_hidden_ErrorRate
 	}
 	return 0
 }
 
 func (x *NodeMetrics) SetQps(v float64) {
-	x.Qps = v
+	x.xxx_hidden_Qps = v
 }
 
 func (x *NodeMetrics) SetLatencyMs(v float64) {
-	x.LatencyMs = v
+	x.xxx_hidden_LatencyMs = v
 }
 
 func (x *NodeMetrics) SetErrorRate(v float64) {
-	x.ErrorRate = v
+	x.xxx_hidden_ErrorRate = v
 }
 
 type NodeMetrics_builder struct {
@@ -452,9 +455,9 @@ func (b0 NodeMetrics_builder) Build() *NodeMetrics {
 	m0 := &NodeMetrics{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Qps = b.Qps
-	x.LatencyMs = b.LatencyMs
-	x.ErrorRate = b.ErrorRate
+	x.xxx_hidden_Qps = b.Qps
+	x.xxx_hidden_LatencyMs = b.LatencyMs
+	x.xxx_hidden_ErrorRate = b.ErrorRate
 	return m0
 }
 
@@ -462,7 +465,7 @@ var File_proto_topology_v1_topology_proto protoreflect.FileDescriptor
 
 const file_proto_topology_v1_topology_proto_rawDesc = "" +
 	"\n" +
-	" proto/topology/v1/topology.proto\x12\vtopology.v1\"[\n" +
+	" proto/topology/v1/topology.proto\x12\vtopology.v1\x1a!google/protobuf/go_features.proto\"[\n" +
 	"\x05Graph\x12+\n" +
 	"\aclients\x18\x01 \x03(\v2\x11.topology.v1.NodeR\aclients\x12%\n" +
 	"\x04core\x18\x02 \x01(\v2\x11.topology.v1.NodeR\x04core\"\xe5\x02\n" +
@@ -499,7 +502,7 @@ const file_proto_topology_v1_topology_proto_rawDesc = "" +
 	"\x17NODE_STATUS_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12NODE_STATUS_ACTIVE\x10\x01\x12\x18\n" +
 	"\x14NODE_STATUS_INACTIVE\x10\x02\x12\x15\n" +
-	"\x11NODE_STATUS_ERROR\x10\x03B/Z(github.com/mcpany/core/proto/topology/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
+	"\x11NODE_STATUS_ERROR\x10\x03B4Z(github.com/mcpany/core/proto/topology/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_topology_v1_topology_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_proto_topology_v1_topology_proto_msgTypes = make([]protoimpl.MessageInfo, 4)

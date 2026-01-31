@@ -78,29 +78,29 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		CommandLineService: configv1.CommandLineUpstreamService_builder{
 			Command: proto.String("echo"),
 			Tools: []*configv1.ToolDefinition{
-				{
+				configv1.ToolDefinition_builder{
 					Name:        proto.String("get_weather"),
 					Description: proto.String("Get current weather"),
 					CallId:      proto.String("get_weather"),
-				},
+				}.Build(),
 			},
 			Calls: map[string]*configv1.CommandLineCallDefinition{
-				"get_weather": {
+				"get_weather": configv1.CommandLineCallDefinition_builder{
 					Args: []string{"{\"weather\": \"sunny\"}"},
-				},
+				}.Build(),
 			},
 			Resources: []*configv1.ResourceDefinition{
-				{
+				configv1.ResourceDefinition_builder{
 					Uri:      proto.String("system://logs"),
 					Name:     proto.String("System Logs"),
 					MimeType: proto.String("text/plain"),
-				},
+				}.Build(),
 			},
 			Prompts: []*configv1.PromptDefinition{
-				{
+				configv1.PromptDefinition_builder{
 					Name:        proto.String("summarize_text"),
 					Description: proto.String("Summarize text"),
-				},
+				}.Build(),
 			},
 		}.Build(),
 	}.Build()

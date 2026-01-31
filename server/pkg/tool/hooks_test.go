@@ -167,32 +167,35 @@ func TestPolicyHook_ExecutePre(t *testing.T) {
 func TestWebhookHook(t *testing.T) {
 	t.Parallel()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var req configv1.WebhookRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		var reqMap map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&reqMap); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		resp := &configv1.WebhookResponse{Allowed: true}
+		resp := configv1.WebhookResponse_builder{Allowed: true}.Build()
 
-		switch req.Kind {
+		kindValue := int32(reqMap["kind"].(float64))
+		toolName := reqMap["tool_name"].(string)
+
+		switch configv1.WebhookKind(kindValue) {
 		case configv1.WebhookKind_WEBHOOK_KIND_PRE_CALL:
-			switch req.ToolName {
+			switch toolName {
 			case "deny-me":
-				resp.Allowed = false
-				resp.Status = &configv1.WebhookStatus{Message: "denied by policy"}
+				resp.SetAllowed(false)
+				resp.SetStatus(configv1.WebhookStatus_builder{Message: "denied by policy"}.Build())
 			case "modify-me":
 				// Modify inputs
 				newInputs := map[string]any{"modified": "yes"}
 				s, _ := structpb.NewStruct(newInputs)
-				resp.ReplacementObject = s
+				resp.SetReplacementObject(s)
 			}
 		case configv1.WebhookKind_WEBHOOK_KIND_POST_CALL:
-			if req.ToolName == "modify-result" {
+			if toolName == "modify-result" {
 				// hooks.go unwraps "value" if original result was likely a primitive
 				newResult := map[string]any{"value": "modified result"}
 				s, _ := structpb.NewStruct(newResult)
-				resp.ReplacementObject = s
+				resp.SetReplacementObject(s)
 			}
 		}
 
@@ -204,17 +207,18 @@ func TestWebhookHook(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 
 		respMap := map[string]any{
-			"allowed": resp.Allowed,
+			"allowed": resp.GetAllowed(),
 		}
-		if resp.Status != nil {
+		if resp.HasStatus() {
 			respMap["status"] = map[string]any{
-				"code":    resp.Status.Code,
-				"message": resp.Status.Message,
+				"code":    resp.GetStatus().GetCode(),
+				"message": resp.GetStatus().GetMessage(),
 			}
 		}
-		if resp.ReplacementObject != nil {
-			// structpb.Struct to map
-			respMap["replacement_object"] = resp.ReplacementObject
+		if resp.HasReplacementObject() {
+			// Convert structpb.Struct to map for JSON encoding
+			replacementMap := resp.GetReplacementObject().AsMap()
+			respMap["replacement_object"] = replacementMap
 		}
 
 		_ = json.NewEncoder(w).Encode(respMap)
@@ -245,7 +249,7 @@ func TestWebhookHook(t *testing.T) {
 		action, newReq, err := hook.ExecutePre(context.Background(), req)
 		require.NoError(t, err)
 		assert.Equal(t, ActionAllow, action)
-		assert.NotNil(t, newReq)
+		require.NotNil(t, newReq)
 		assert.Contains(t, string(newReq.ToolInputs), "modified")
 	})
 

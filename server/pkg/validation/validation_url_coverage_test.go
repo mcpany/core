@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/samber/lo"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestIsPrivateIP_Coverage(t *testing.T) {
@@ -153,8 +153,8 @@ func TestValidateHTTPServiceDefinition_Coverage(t *testing.T) {
     // Test invalid characters in path to trigger url.Parse error
     methodGet := configv1.HttpCallDefinition_HTTP_METHOD_GET
     def := configv1.HttpCallDefinition_builder{
-        EndpointPath: lo.ToPtr("/path\x7fcontrol"),
-        Method:       &methodGet,
+        EndpointPath: proto.String("/path\x7fcontrol"),
+        Method:       methodGet.Enum(),
     }.Build()
 
     err := ValidateHTTPServiceDefinition(def)
@@ -164,7 +164,7 @@ func TestValidateHTTPServiceDefinition_Coverage(t *testing.T) {
 
     // Maybe a path that is not empty but effectively invalid for URL?
     // /%gh
-    def.EndpointPath = lo.ToPtr("/%gh") // Invalid escape
+    def.SetEndpointPath("/%gh") // Invalid escape
     err = ValidateHTTPServiceDefinition(def)
     if err == nil {
         t.Log("url.Parse did not fail for invalid escape")

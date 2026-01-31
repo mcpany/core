@@ -104,13 +104,13 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 			config.StripSecretsFromService(safeCfg)
 			services = append(services, safeCfg)
 
-			state := &pb.ServiceState{
+			state := pb.ServiceState_builder{
 				Config: safeCfg,
 				Status: proto.String("OK"),
-			}
+			}.Build()
 			if errMsg, ok := s.serviceRegistry.GetServiceError(cfg.GetId()); ok {
-				state.Status = proto.String("ERROR")
-				state.Error = proto.String(errMsg)
+				state.SetStatus("ERROR")
+				state.SetError(errMsg)
 			}
 			serviceStates = append(serviceStates, state)
 		}
@@ -122,18 +122,18 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 				safeCfg := proto.Clone(info.Config).(*configv1.UpstreamServiceConfig)
 				config.StripSecretsFromService(safeCfg)
 				services = append(services, safeCfg)
-				serviceStates = append(serviceStates, &pb.ServiceState{
+				serviceStates = append(serviceStates, pb.ServiceState_builder{
 					Config: safeCfg,
 					Status: proto.String("OK"),
-				})
+				}.Build())
 			}
 		}
 	}
 
-	return &pb.ListServicesResponse{
+	return pb.ListServicesResponse_builder{
 		Services:      services,
 		ServiceStates: serviceStates,
-	}, nil
+	}.Build(), nil
 }
 
 // GetService returns a specific service by ID.
@@ -152,18 +152,18 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 		safeCfg := proto.Clone(cfg).(*configv1.UpstreamServiceConfig)
 		config.StripSecretsFromService(safeCfg)
 
-		state := &pb.ServiceState{
+		state := pb.ServiceState_builder{
 			Config: safeCfg,
 			Status: proto.String("OK"),
-		}
+		}.Build()
 		if errMsg, ok := s.serviceRegistry.GetServiceError(cfg.GetId()); ok {
-			state.Status = proto.String("ERROR")
-			state.Error = proto.String(errMsg)
+			state.SetStatus("ERROR")
+			state.SetError(errMsg)
 		}
-		return &pb.GetServiceResponse{
+		return pb.GetServiceResponse_builder{
 			Service:      safeCfg,
 			ServiceState: state,
-		}, nil
+		}.Build(), nil
 	}
 
 	info, ok := s.toolManager.GetServiceInfo(req.GetServiceId())
@@ -176,13 +176,13 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 	safeCfg := proto.Clone(info.Config).(*configv1.UpstreamServiceConfig)
 	config.StripSecretsFromService(safeCfg)
 
-	return &pb.GetServiceResponse{
+	return pb.GetServiceResponse_builder{
 		Service: safeCfg,
-		ServiceState: &pb.ServiceState{
+		ServiceState: pb.ServiceState_builder{
 			Config: safeCfg,
 			Status: proto.String("OK"),
-		},
-	}, nil
+		}.Build(),
+	}.Build(), nil
 }
 
 // ListTools returns all registered tools.
@@ -198,7 +198,7 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 	for _, t := range tools {
 		responseTools = append(responseTools, t.Tool())
 	}
-	return &pb.ListToolsResponse{Tools: responseTools}, nil
+	return pb.ListToolsResponse_builder{Tools: responseTools}.Build(), nil
 }
 
 // GetTool returns a specific tool by name.
@@ -213,7 +213,7 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 	if !ok {
 		return nil, status.Error(codes.NotFound, "tool not found")
 	}
-	return &pb.GetToolResponse{Tool: t.Tool()}, nil
+	return pb.GetToolResponse_builder{Tool: t.Tool()}.Build(), nil
 }
 
 // CreateUser creates a new user.
@@ -224,28 +224,28 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	if req.User == nil {
+	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
 	}
 	// Hash password if needed
-	if req.User.Authentication != nil {
-		if basic := req.User.Authentication.GetBasicAuth(); basic != nil {
+	if req.GetUser().HasAuthentication() {
+		if basic := req.GetUser().GetAuthentication().GetBasicAuth(); basic != nil {
 			if basic.GetPasswordHash() != "" && !strings.HasPrefix(basic.GetPasswordHash(), "$2") {
 				hashed, err := passhash.Password(basic.GetPasswordHash())
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
 				}
-				basic.PasswordHash = proto.String(hashed)
+				basic.SetPasswordHash(hashed)
 			}
 		}
 	}
-	if err := s.storage.CreateUser(ctx, req.User); err != nil {
+	if err := s.storage.CreateUser(ctx, req.GetUser()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
 
-	safeUser := proto.Clone(req.User).(*configv1.User)
-	config.StripSecretsFromAuth(safeUser.Authentication)
-	return &pb.CreateUserResponse{User: safeUser}, nil
+	safeUser := proto.Clone(req.GetUser()).(*configv1.User)
+	config.StripSecretsFromAuth(safeUser.GetAuthentication())
+	return pb.CreateUserResponse_builder{User: safeUser}.Build(), nil
 }
 
 // GetUser retrieves a user by ID.
@@ -265,8 +265,8 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 	}
 
 	safeUser := proto.Clone(user).(*configv1.User)
-	config.StripSecretsFromAuth(safeUser.Authentication)
-	return &pb.GetUserResponse{User: safeUser}, nil
+	config.StripSecretsFromAuth(safeUser.GetAuthentication())
+	return pb.GetUserResponse_builder{User: safeUser}.Build(), nil
 }
 
 // ListUsers lists all users.
@@ -285,11 +285,11 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 	safeUsers := make([]*configv1.User, 0, len(users))
 	for _, u := range users {
 		safeUser := proto.Clone(u).(*configv1.User)
-		config.StripSecretsFromAuth(safeUser.Authentication)
+		config.StripSecretsFromAuth(safeUser.GetAuthentication())
 		safeUsers = append(safeUsers, safeUser)
 	}
 
-	return &pb.ListUsersResponse{Users: safeUsers}, nil
+	return pb.ListUsersResponse_builder{Users: safeUsers}.Build(), nil
 }
 
 // UpdateUser updates an existing user.
@@ -300,28 +300,28 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
-	if req.User == nil {
+	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
 	}
 	// Hash password if needed
-	if req.User.Authentication != nil {
-		if basic := req.User.Authentication.GetBasicAuth(); basic != nil {
+	if req.GetUser().HasAuthentication() {
+		if basic := req.GetUser().GetAuthentication().GetBasicAuth(); basic != nil {
 			if basic.GetPasswordHash() != "" && !strings.HasPrefix(basic.GetPasswordHash(), "$2") {
 				hashed, err := passhash.Password(basic.GetPasswordHash())
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
 				}
-				basic.PasswordHash = proto.String(hashed)
+				basic.SetPasswordHash(hashed)
 			}
 		}
 	}
-	if err := s.storage.UpdateUser(ctx, req.User); err != nil {
+	if err := s.storage.UpdateUser(ctx, req.GetUser()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
 
-	safeUser := proto.Clone(req.User).(*configv1.User)
-	config.StripSecretsFromAuth(safeUser.Authentication)
-	return &pb.UpdateUserResponse{User: safeUser}, nil
+	safeUser := proto.Clone(req.GetUser()).(*configv1.User)
+	config.StripSecretsFromAuth(safeUser.GetAuthentication())
+	return pb.UpdateUserResponse_builder{User: safeUser}.Build(), nil
 }
 
 // DeleteUser deletes a user by ID.
@@ -349,16 +349,16 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 
 	for _, st := range statuses {
 		//nolint:gosec // Discovered count fits in int32
-		pbStatuses = append(pbStatuses, &pb.DiscoveryProviderStatus{
+		pbStatuses = append(pbStatuses, pb.DiscoveryProviderStatus_builder{
 			Name:            proto.String(st.Name),
 			Status:          proto.String(st.Status),
 			LastError:       proto.String(st.LastError),
 			LastRunAt:       proto.String(st.LastRunAt.Format("2006-01-02T15:04:05Z07:00")),
 			DiscoveredCount: proto.Int32(int32(st.DiscoveredCount)),
-		})
+		}.Build())
 	}
 
-	return &pb.GetDiscoveryStatusResponse{Providers: pbStatuses}, nil
+	return pb.GetDiscoveryStatusResponse_builder{Providers: pbStatuses}.Build(), nil
 }
 
 // ListAuditLogs returns audit logs matching the filter.
@@ -412,7 +412,7 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 				resultStr = fmt.Sprintf("%v", e.Result)
 			}
 		}
-		pbEntries = append(pbEntries, &pb.AuditLogEntry{
+		pbEntries = append(pbEntries, pb.AuditLogEntry_builder{
 			Timestamp:  proto.String(e.Timestamp.Format(time.RFC3339)),
 			ToolName:   proto.String(e.ToolName),
 			UserId:     proto.String(e.UserID),
@@ -422,7 +422,7 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 			Error:      proto.String(e.Error),
 			Duration:   proto.String(e.Duration),
 			DurationMs: proto.Int64(e.DurationMs),
-		})
+		}.Build())
 	}
-	return &pb.ListAuditLogsResponse{Entries: pbEntries}, nil
+	return pb.ListAuditLogsResponse_builder{Entries: pbEntries}.Build(), nil
 }

@@ -28,11 +28,11 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 	redisBus.SetPassword(password)
 	redisBus.SetDb(dbIdx)
 
-	config := &configv1.RateLimitConfig{
+	config := configv1.RateLimitConfig_builder{
 		RequestsPerSecond: rps,
 		Burst:             burst,
 		Redis:             redisBus,
-	}
+	}.Build()
 
 	limiter := NewRedisLimiterWithClient(db, "service", "", "partition", config)
 
@@ -40,6 +40,6 @@ func TestRedisLimiter_GetConfigHash(t *testing.T) {
 	assert.Equal(t, expectedHash, limiter.GetConfigHash())
 
 	// Test with no redis config
-	limiterNoRedis := NewRedisLimiterWithClient(db, "service", "", "partition", &configv1.RateLimitConfig{})
+	limiterNoRedis := NewRedisLimiterWithClient(db, "service", "", "partition", configv1.RateLimitConfig_builder{}.Build())
 	assert.Equal(t, "", limiterNoRedis.GetConfigHash())
 }

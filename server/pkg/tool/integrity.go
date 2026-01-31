@@ -15,7 +15,7 @@ import (
 
 // VerifyIntegrity checks if the tool definition matches its expected hash.
 func VerifyIntegrity(t *v1.Tool) error {
-	if t.Integrity == nil {
+	if !t.HasIntegrity() {
 		return nil // No integrity check required
 	}
 
@@ -45,7 +45,7 @@ func VerifyConfigIntegrity(_ *configv1.ToolDefinition) error {
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
-	toolCopy.Integrity = nil
+	toolCopy.SetIntegrity(nil)
 
 	// Marshal to Binary for hashing - deterministic
 	marshaler := proto.MarshalOptions{

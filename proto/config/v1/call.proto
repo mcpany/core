@@ -8,10 +8,12 @@ package mcpany.config.v1;
 import "google/protobuf/struct.proto";
 import "google/protobuf/duration.proto";
 
+import "google/protobuf/go_features.proto";
 import "proto/config/v1/auth.proto";
 import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
+option features.(pb.go).api_level = API_OPAQUE;
 
 // HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
 message HttpCallDefinition {

@@ -23,14 +23,14 @@ import (
 
 func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
 	if callDef == nil {
-		callDef = &configv1.CommandLineCallDefinition{}
+		callDef = configv1.CommandLineCallDefinition_builder{}.Build()
 	}
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String(command),
 	}).Build()
 
 	properties := make(map[string]*structpb.Value)
-	for _, param := range callDef.Parameters {
+	for _, param := range callDef.GetParameters() {
 		properties[param.GetSchema().GetName()] = structpb.NewStructValue(&structpb.Struct{})
 	}
 
@@ -43,7 +43,7 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 	}
 
 	return tool.NewCommandTool(
-		&v1.Tool{InputSchema: inputSchema},
+		v1.Tool_builder{InputSchema: inputSchema}.Build(),
 		service,
 		callDef,
 		nil,
@@ -53,14 +53,14 @@ func newCommandTool(command string, callDef *configv1.CommandLineCallDefinition)
 
 func newJSONCommandTool(command string, callDef *configv1.CommandLineCallDefinition) tool.Tool {
 	if callDef == nil {
-		callDef = &configv1.CommandLineCallDefinition{}
+		callDef = configv1.CommandLineCallDefinition_builder{}.Build()
 	}
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command:               proto.String(command),
 		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
 	}).Build()
 	return tool.NewCommandTool(
-		&v1.Tool{},
+		v1.Tool_builder{}.Build(),
 		service,
 		callDef,
 		nil,
@@ -73,11 +73,13 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("successful execution", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"echo", "hello world"}}
 		inputs, err := json.Marshal(inputData)
@@ -109,20 +111,20 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("execution with environment variables", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{
-					Schema: &configv1.ParameterSchema{
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{
 						Name: proto.String("MY_VAR"),
-					},
-				},
-				{
-					Schema: &configv1.ParameterSchema{
+					}.Build(),
+				}.Build(),
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{
 						Name: proto.String("args"),
-					},
-				},
+					}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{
 			"args":   []string{"printenv", "MY_VAR"},
@@ -149,11 +151,13 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("non-zero exit code", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("/usr/bin/env", callDef)
 		inputData := map[string]interface{}{"args": []string{"false"}}
 		inputs, err := json.Marshal(inputData)
@@ -177,11 +181,13 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("malformed tool inputs", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 		inputs := json.RawMessage(`{"args": "not-an-array"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -224,12 +230,14 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("argument substitution", func(t *testing.T) {
 		t.Parallel()
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Args: []string{"{{text}}"},
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("text")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("text")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 		inputData := map[string]interface{}{"text": "hello"}
 		inputs, err := json.Marshal(inputData)
@@ -248,8 +256,8 @@ func TestCommandTool_Execute(t *testing.T) {
 
 func TestCommandTool_GetCacheConfig(t *testing.T) {
 	t.Parallel()
-	cacheConfig := &configv1.CacheConfig{}
-	callDef := &configv1.CommandLineCallDefinition{}
+	cacheConfig := configv1.CacheConfig_builder{}.Build()
+	callDef := configv1.CommandLineCallDefinition_builder{}.Build()
 	callDef.SetCache(cacheConfig)
 	cmdTool := newCommandTool("echo", callDef)
 	assert.Equal(t, cacheConfig, cmdTool.GetCacheConfig())
@@ -257,11 +265,12 @@ func TestCommandTool_GetCacheConfig(t *testing.T) {
 
 func TestCommandTool_Tool(t *testing.T) {
 	t.Parallel()
-	toolProto := &v1.Tool{}
-	toolProto.SetName("test-tool")
+	toolProto := v1.Tool_builder{
+		Name: proto.String("test-tool"),
+	}.Build()
 	service := (&configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("echo"),
 	}).Build()
-	cmdTool := tool.NewCommandTool(toolProto, service, &configv1.CommandLineCallDefinition{}, nil, "call-id")
+	cmdTool := tool.NewCommandTool(toolProto, service, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
 	assert.Equal(t, toolProto, cmdTool.Tool())
 }

@@ -114,16 +114,16 @@ func TestHandleTopology(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		// Setup mock data
-		s1 := &configv1.UpstreamServiceConfig{}
+		s1 := configv1.UpstreamServiceConfig_builder{}.Build()
 		s1.SetName("service-1")
-		s2 := &configv1.UpstreamServiceConfig{}
+		s2 := configv1.UpstreamServiceConfig_builder{}.Build()
 		s2.SetName("service-2")
 		s2.SetDisable(true)
 		services := []*configv1.UpstreamServiceConfig{s1, s2}
 		mockRegistry.On("GetAllServices").Return(services, nil).Once()
 
 		tools := []tool.Tool{
-			&TestMockTool{toolDef: &mcp_router_v1.Tool{Name: proto.String("tool-1"), ServiceId: proto.String("service-1")}},
+			&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool-1"), ServiceId: proto.String("service-1")}.Build()},
 		}
 		mockTM.On("ListTools").Return(tools).Once()
 
@@ -145,22 +145,22 @@ func TestHandleTopology(t *testing.T) {
 			_ = json.Unmarshal(w.Body.Bytes(), &raw)
 			assert.NotNil(t, raw["core"])
 		} else {
-			assert.Equal(t, "mcp-core", graph.Core.Id)
+			assert.Equal(t, "mcp-core", graph.GetCore().GetId())
 			// Check children
 			// We expect: Middleware, Webhooks, Service-1, Service-2
 			// Service-1 should have tool-1
 			foundSvc1 := false
 			foundSvc2 := false
-			for _, child := range graph.Core.Children {
-				if child.Id == "svc-service-1" {
+			for _, child := range graph.GetCore().GetChildren() {
+				if child.GetId() == "svc-service-1" {
 					foundSvc1 = true
-					assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ACTIVE, child.Status)
-					assert.NotEmpty(t, child.Children)
-					assert.Equal(t, "tool-tool-1", child.Children[0].Id)
+					assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ACTIVE, child.GetStatus())
+					assert.NotEmpty(t, child.GetChildren())
+					assert.Equal(t, "tool-tool-1", child.GetChildren()[0].GetId())
 				}
-				if child.Id == "svc-service-2" {
+				if child.GetId() == "svc-service-2" {
 					foundSvc2 = true
-					assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_INACTIVE, child.Status)
+					assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_INACTIVE, child.GetStatus())
 				}
 			}
 			assert.True(t, foundSvc1, "Service 1 not found in topology")

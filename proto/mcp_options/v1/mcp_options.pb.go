@@ -7,14 +7,13 @@
 // 	protoc        v6.33.1
 // source: proto/mcp_options/v1/mcp_options.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	descriptorpb "google.golang.org/protobuf/types/descriptorpb"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -165,7 +164,7 @@ var File_proto_mcp_options_v1_mcp_options_proto protoreflect.FileDescriptor
 
 const file_proto_mcp_options_v1_mcp_options_proto_rawDesc = "" +
 	"\n" +
-	"&proto/mcp_options/v1/mcp_options.proto\x12\x15mcpany.mcp_options.v1\x1a google/protobuf/descriptor.proto:?\n" +
+	"&proto/mcp_options/v1/mcp_options.proto\x12\x15mcpany.mcp_options.v1\x1a google/protobuf/descriptor.proto\x1a!google/protobuf/go_features.proto:?\n" +
 	"\ttool_name\x12\x1e.google.protobuf.MethodOptions\x18\xe9\x90ď\x01 \x01(\tR\btoolName:M\n" +
 	"\x10tool_description\x12\x1e.google.protobuf.MethodOptions\x18\xea\x90ď\x01 \x01(\tR\x0ftoolDescription:C\n" +
 	"\vprompt_name\x12\x1e.google.protobuf.MethodOptions\x18\xeb\x90ď\x01 \x01(\tR\n" +
@@ -178,7 +177,7 @@ const file_proto_mcp_options_v1_mcp_options_proto_rawDesc = "" +
 	"\x16mcp_tool_readonly_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf1\x90ď\x01 \x01(\bR\x13mcpToolReadonlyHint:]\n" +
 	"\x19mcp_tool_destructive_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf2\x90ď\x01 \x01(\bR\x16mcpToolDestructiveHint:[\n" +
 	"\x18mcp_tool_idempotent_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf3\x90ď\x01 \x01(\bR\x15mcpToolIdempotentHint:Y\n" +
-	"\x17mcp_tool_openworld_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf4\x90ď\x01 \x01(\bR\x14mcpToolOpenworldHintB-Z+github.com/mcpany/core/proto/mcp_options/v1b\beditionsp\xe8\a"
+	"\x17mcp_tool_openworld_hint\x12\x1e.google.protobuf.MethodOptions\x18\xf4\x90ď\x01 \x01(\bR\x14mcpToolOpenworldHintB5Z+github.com/mcpany/core/proto/mcp_options/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_mcp_options_v1_mcp_options_proto_goTypes = []any{
 	(*descriptorpb.MethodOptions)(nil),  // 0: google.protobuf.MethodOptions

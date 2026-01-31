@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/prompt.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -70,23 +69,18 @@ func (x PromptMessage_Role) Number() protoreflect.EnumNumber {
 
 // PromptDefinition defines a prompt that can be used to interact with a language model.
 type PromptDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the prompt, which will be used to invoke it.
-	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// A human-readable title for the prompt.
-	Title *string `protobuf:"bytes,2,opt,name=title" json:"title,omitempty"`
-	// A human-readable description of what the prompt does.
-	Description *string `protobuf:"bytes,3,opt,name=description" json:"description,omitempty"`
-	// The arguments for the prompt.
-	InputSchema *structpb.Struct `protobuf:"bytes,4,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The messages that make up the prompt.
-	Messages []*PromptMessage `protobuf:"bytes,5,rep,name=messages" json:"messages,omitempty"`
-	// If true, this prompt is disabled.
-	Disable *bool `protobuf:"varint,6,opt,name=disable" json:"disable,omitempty"`
-	// A list of profiles this prompt belongs to.
-	Profiles      []*Profile `protobuf:"bytes,7,rep,name=profiles" json:"profiles,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Description *string                `protobuf:"bytes,3,opt,name=description"`
+	xxx_hidden_InputSchema *structpb.Struct       `protobuf:"bytes,4,opt,name=input_schema"`
+	xxx_hidden_Messages    *[]*PromptMessage      `protobuf:"bytes,5,rep,name=messages"`
+	xxx_hidden_Disable     bool                   `protobuf:"varint,6,opt,name=disable"`
+	xxx_hidden_Profiles    *[]*Profile            `protobuf:"bytes,7,rep,name=profiles"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *PromptDefinition) Reset() {
@@ -115,135 +109,156 @@ func (x *PromptDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *PromptDefinition) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *PromptDefinition) GetTitle() string {
-	if x != nil && x.Title != nil {
-		return *x.Title
+	if x != nil {
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *PromptDefinition) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *PromptDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *PromptDefinition) GetMessages() []*PromptMessage {
 	if x != nil {
-		return x.Messages
+		if x.xxx_hidden_Messages != nil {
+			return *x.xxx_hidden_Messages
+		}
 	}
 	return nil
 }
 
 func (x *PromptDefinition) GetDisable() bool {
-	if x != nil && x.Disable != nil {
-		return *x.Disable
+	if x != nil {
+		return x.xxx_hidden_Disable
 	}
 	return false
 }
 
 func (x *PromptDefinition) GetProfiles() []*Profile {
 	if x != nil {
-		return x.Profiles
+		if x.xxx_hidden_Profiles != nil {
+			return *x.xxx_hidden_Profiles
+		}
 	}
 	return nil
 }
 
 func (x *PromptDefinition) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *PromptDefinition) SetTitle(v string) {
-	x.Title = &v
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
 func (x *PromptDefinition) SetDescription(v string) {
-	x.Description = &v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
 func (x *PromptDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *PromptDefinition) SetMessages(v []*PromptMessage) {
-	x.Messages = v
+	x.xxx_hidden_Messages = &v
 }
 
 func (x *PromptDefinition) SetDisable(v bool) {
-	x.Disable = &v
+	x.xxx_hidden_Disable = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
 }
 
 func (x *PromptDefinition) SetProfiles(v []*Profile) {
-	x.Profiles = v
+	x.xxx_hidden_Profiles = &v
 }
 
 func (x *PromptDefinition) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *PromptDefinition) HasTitle() bool {
 	if x == nil {
 		return false
 	}
-	return x.Title != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *PromptDefinition) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return x.Description != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *PromptDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *PromptDefinition) HasDisable() bool {
 	if x == nil {
 		return false
 	}
-	return x.Disable != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *PromptDefinition) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
 }
 
 func (x *PromptDefinition) ClearTitle() {
-	x.Title = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
 }
 
 func (x *PromptDefinition) ClearDescription() {
-	x.Description = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Description = nil
 }
 
 func (x *PromptDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *PromptDefinition) ClearDisable() {
-	x.Disable = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Disable = false
 }
 
 type PromptDefinition_builder struct {
@@ -269,31 +284,37 @@ func (b0 PromptDefinition_builder) Build() *PromptDefinition {
 	m0 := &PromptDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Title = b.Title
-	x.Description = b.Description
-	x.InputSchema = b.InputSchema
-	x.Messages = b.Messages
-	x.Disable = b.Disable
-	x.Profiles = b.Profiles
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_Description = b.Description
+	}
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_Messages = &b.Messages
+	if b.Disable != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
+		x.xxx_hidden_Disable = *b.Disable
+	}
+	x.xxx_hidden_Profiles = &b.Profiles
 	return m0
 }
 
 // PromptMessage defines a message in a prompt.
 type PromptMessage struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	Role  *PromptMessage_Role    `protobuf:"varint,1,opt,name=role,enum=mcpany.config.v1.PromptMessage_Role" json:"role,omitempty"`
-	// The content of the message.
-	//
-	// Types that are valid to be assigned to Content:
-	//
-	//	*PromptMessage_Text
-	//	*PromptMessage_Image
-	//	*PromptMessage_Audio
-	//	*PromptMessage_Resource
-	Content       isPromptMessage_Content `protobuf_oneof:"content"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_Role        PromptMessage_Role      `protobuf:"varint,1,opt,name=role,enum=mcpany.config.v1.PromptMessage_Role"`
+	xxx_hidden_Content     isPromptMessage_Content `protobuf_oneof:"content"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *PromptMessage) Reset() {
@@ -322,22 +343,17 @@ func (x *PromptMessage) ProtoReflect() protoreflect.Message {
 }
 
 func (x *PromptMessage) GetRole() PromptMessage_Role {
-	if x != nil && x.Role != nil {
-		return *x.Role
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
+			return x.xxx_hidden_Role
+		}
 	}
 	return PromptMessage_USER
 }
 
-func (x *PromptMessage) GetContent() isPromptMessage_Content {
-	if x != nil {
-		return x.Content
-	}
-	return nil
-}
-
 func (x *PromptMessage) GetText() *TextContent {
 	if x != nil {
-		if x, ok := x.Content.(*PromptMessage_Text); ok {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Text); ok {
 			return x.Text
 		}
 	}
@@ -346,7 +362,7 @@ func (x *PromptMessage) GetText() *TextContent {
 
 func (x *PromptMessage) GetImage() *ImageContent {
 	if x != nil {
-		if x, ok := x.Content.(*PromptMessage_Image); ok {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Image); ok {
 			return x.Image
 		}
 	}
@@ -355,7 +371,7 @@ func (x *PromptMessage) GetImage() *ImageContent {
 
 func (x *PromptMessage) GetAudio() *AudioContent {
 	if x != nil {
-		if x, ok := x.Content.(*PromptMessage_Audio); ok {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Audio); ok {
 			return x.Audio
 		}
 	}
@@ -364,7 +380,7 @@ func (x *PromptMessage) GetAudio() *AudioContent {
 
 func (x *PromptMessage) GetResource() *ResourceContent {
 	if x != nil {
-		if x, ok := x.Content.(*PromptMessage_Resource); ok {
+		if x, ok := x.xxx_hidden_Content.(*promptMessage_Resource); ok {
 			return x.Resource
 		}
 	}
@@ -372,60 +388,61 @@ func (x *PromptMessage) GetResource() *ResourceContent {
 }
 
 func (x *PromptMessage) SetRole(v PromptMessage_Role) {
-	x.Role = &v
+	x.xxx_hidden_Role = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *PromptMessage) SetText(v *TextContent) {
 	if v == nil {
-		x.Content = nil
+		x.xxx_hidden_Content = nil
 		return
 	}
-	x.Content = &PromptMessage_Text{v}
+	x.xxx_hidden_Content = &promptMessage_Text{v}
 }
 
 func (x *PromptMessage) SetImage(v *ImageContent) {
 	if v == nil {
-		x.Content = nil
+		x.xxx_hidden_Content = nil
 		return
 	}
-	x.Content = &PromptMessage_Image{v}
+	x.xxx_hidden_Content = &promptMessage_Image{v}
 }
 
 func (x *PromptMessage) SetAudio(v *AudioContent) {
 	if v == nil {
-		x.Content = nil
+		x.xxx_hidden_Content = nil
 		return
 	}
-	x.Content = &PromptMessage_Audio{v}
+	x.xxx_hidden_Content = &promptMessage_Audio{v}
 }
 
 func (x *PromptMessage) SetResource(v *ResourceContent) {
 	if v == nil {
-		x.Content = nil
+		x.xxx_hidden_Content = nil
 		return
 	}
-	x.Content = &PromptMessage_Resource{v}
+	x.xxx_hidden_Content = &promptMessage_Resource{v}
 }
 
 func (x *PromptMessage) HasRole() bool {
 	if x == nil {
 		return false
 	}
-	return x.Role != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *PromptMessage) HasContent() bool {
 	if x == nil {
 		return false
 	}
-	return x.Content != nil
+	return x.xxx_hidden_Content != nil
 }
 
 func (x *PromptMessage) HasText() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.Content.(*PromptMessage_Text)
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Text)
 	return ok
 }
 
@@ -433,7 +450,7 @@ func (x *PromptMessage) HasImage() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.Content.(*PromptMessage_Image)
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Image)
 	return ok
 }
 
@@ -441,7 +458,7 @@ func (x *PromptMessage) HasAudio() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.Content.(*PromptMessage_Audio)
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Audio)
 	return ok
 }
 
@@ -449,39 +466,40 @@ func (x *PromptMessage) HasResource() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.Content.(*PromptMessage_Resource)
+	_, ok := x.xxx_hidden_Content.(*promptMessage_Resource)
 	return ok
 }
 
 func (x *PromptMessage) ClearRole() {
-	x.Role = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Role = PromptMessage_USER
 }
 
 func (x *PromptMessage) ClearContent() {
-	x.Content = nil
+	x.xxx_hidden_Content = nil
 }
 
 func (x *PromptMessage) ClearText() {
-	if _, ok := x.Content.(*PromptMessage_Text); ok {
-		x.Content = nil
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Text); ok {
+		x.xxx_hidden_Content = nil
 	}
 }
 
 func (x *PromptMessage) ClearImage() {
-	if _, ok := x.Content.(*PromptMessage_Image); ok {
-		x.Content = nil
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Image); ok {
+		x.xxx_hidden_Content = nil
 	}
 }
 
 func (x *PromptMessage) ClearAudio() {
-	if _, ok := x.Content.(*PromptMessage_Audio); ok {
-		x.Content = nil
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Audio); ok {
+		x.xxx_hidden_Content = nil
 	}
 }
 
 func (x *PromptMessage) ClearResource() {
-	if _, ok := x.Content.(*PromptMessage_Resource); ok {
-		x.Content = nil
+	if _, ok := x.xxx_hidden_Content.(*promptMessage_Resource); ok {
+		x.xxx_hidden_Content = nil
 	}
 }
 
@@ -495,14 +513,14 @@ func (x *PromptMessage) WhichContent() case_PromptMessage_Content {
 	if x == nil {
 		return PromptMessage_Content_not_set_case
 	}
-	switch x.Content.(type) {
-	case *PromptMessage_Text:
+	switch x.xxx_hidden_Content.(type) {
+	case *promptMessage_Text:
 		return PromptMessage_Text_case
-	case *PromptMessage_Image:
+	case *promptMessage_Image:
 		return PromptMessage_Image_case
-	case *PromptMessage_Audio:
+	case *promptMessage_Audio:
 		return PromptMessage_Audio_case
-	case *PromptMessage_Resource:
+	case *promptMessage_Resource:
 		return PromptMessage_Resource_case
 	default:
 		return PromptMessage_Content_not_set_case
@@ -515,30 +533,33 @@ type PromptMessage_builder struct {
 	Role *PromptMessage_Role
 	// The content of the message.
 
-	// Fields of oneof Content:
+	// Fields of oneof xxx_hidden_Content:
 	Text     *TextContent
 	Image    *ImageContent
 	Audio    *AudioContent
 	Resource *ResourceContent
-	// -- end of Content
+	// -- end of xxx_hidden_Content
 }
 
 func (b0 PromptMessage_builder) Build() *PromptMessage {
 	m0 := &PromptMessage{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Role = b.Role
+	if b.Role != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Role = *b.Role
+	}
 	if b.Text != nil {
-		x.Content = &PromptMessage_Text{b.Text}
+		x.xxx_hidden_Content = &promptMessage_Text{b.Text}
 	}
 	if b.Image != nil {
-		x.Content = &PromptMessage_Image{b.Image}
+		x.xxx_hidden_Content = &promptMessage_Image{b.Image}
 	}
 	if b.Audio != nil {
-		x.Content = &PromptMessage_Audio{b.Audio}
+		x.xxx_hidden_Content = &promptMessage_Audio{b.Audio}
 	}
 	if b.Resource != nil {
-		x.Content = &PromptMessage_Resource{b.Resource}
+		x.xxx_hidden_Content = &promptMessage_Resource{b.Resource}
 	}
 	return m0
 }
@@ -557,39 +578,39 @@ type isPromptMessage_Content interface {
 	isPromptMessage_Content()
 }
 
-type PromptMessage_Text struct {
+type promptMessage_Text struct {
 	Text *TextContent `protobuf:"bytes,2,opt,name=text,oneof"`
 }
 
-type PromptMessage_Image struct {
+type promptMessage_Image struct {
 	Image *ImageContent `protobuf:"bytes,3,opt,name=image,oneof"`
 }
 
-type PromptMessage_Audio struct {
+type promptMessage_Audio struct {
 	Audio *AudioContent `protobuf:"bytes,4,opt,name=audio,oneof"`
 }
 
-type PromptMessage_Resource struct {
+type promptMessage_Resource struct {
 	Resource *ResourceContent `protobuf:"bytes,5,opt,name=resource,oneof"`
 }
 
-func (*PromptMessage_Text) isPromptMessage_Content() {}
+func (*promptMessage_Text) isPromptMessage_Content() {}
 
-func (*PromptMessage_Image) isPromptMessage_Content() {}
+func (*promptMessage_Image) isPromptMessage_Content() {}
 
-func (*PromptMessage_Audio) isPromptMessage_Content() {}
+func (*promptMessage_Audio) isPromptMessage_Content() {}
 
-func (*PromptMessage_Resource) isPromptMessage_Content() {}
+func (*promptMessage_Resource) isPromptMessage_Content() {}
 
 // TextContent defines a text content block.
 type TextContent struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The text content.
-	Text *string `protobuf:"bytes,1,opt,name=text" json:"text,omitempty"`
-	// Optional annotations for the content.
-	Annotations   *ResourceAnnotation `protobuf:"bytes,2,opt,name=annotations" json:"annotations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Text        *string                `protobuf:"bytes,1,opt,name=text"`
+	xxx_hidden_Annotations *ResourceAnnotation    `protobuf:"bytes,2,opt,name=annotations"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *TextContent) Reset() {
@@ -618,47 +639,52 @@ func (x *TextContent) ProtoReflect() protoreflect.Message {
 }
 
 func (x *TextContent) GetText() string {
-	if x != nil && x.Text != nil {
-		return *x.Text
+	if x != nil {
+		if x.xxx_hidden_Text != nil {
+			return *x.xxx_hidden_Text
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextContent) GetAnnotations() *ResourceAnnotation {
 	if x != nil {
-		return x.Annotations
+		return x.xxx_hidden_Annotations
 	}
 	return nil
 }
 
 func (x *TextContent) SetText(v string) {
-	x.Text = &v
+	x.xxx_hidden_Text = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *TextContent) SetAnnotations(v *ResourceAnnotation) {
-	x.Annotations = v
+	x.xxx_hidden_Annotations = v
 }
 
 func (x *TextContent) HasText() bool {
 	if x == nil {
 		return false
 	}
-	return x.Text != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *TextContent) HasAnnotations() bool {
 	if x == nil {
 		return false
 	}
-	return x.Annotations != nil
+	return x.xxx_hidden_Annotations != nil
 }
 
 func (x *TextContent) ClearText() {
-	x.Text = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Text = nil
 }
 
 func (x *TextContent) ClearAnnotations() {
-	x.Annotations = nil
+	x.xxx_hidden_Annotations = nil
 }
 
 type TextContent_builder struct {
@@ -674,22 +700,24 @@ func (b0 TextContent_builder) Build() *TextContent {
 	m0 := &TextContent{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Text = b.Text
-	x.Annotations = b.Annotations
+	if b.Text != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Text = b.Text
+	}
+	x.xxx_hidden_Annotations = b.Annotations
 	return m0
 }
 
 // ImageContent defines an image content block.
 type ImageContent struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The base64-encoded image data.
-	Data *string `protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`
-	// The MIME type of the image.
-	MimeType *string `protobuf:"bytes,2,opt,name=mime_type,json=mimeType" json:"mime_type,omitempty"`
-	// Optional annotations for the content.
-	Annotations   *ResourceAnnotation `protobuf:"bytes,3,opt,name=annotations" json:"annotations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,1,opt,name=data"`
+	xxx_hidden_MimeType    *string                `protobuf:"bytes,2,opt,name=mime_type,json=mimeType"`
+	xxx_hidden_Annotations *ResourceAnnotation    `protobuf:"bytes,3,opt,name=annotations"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ImageContent) Reset() {
@@ -718,69 +746,79 @@ func (x *ImageContent) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ImageContent) GetData() string {
-	if x != nil && x.Data != nil {
-		return *x.Data
+	if x != nil {
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ImageContent) GetMimeType() string {
-	if x != nil && x.MimeType != nil {
-		return *x.MimeType
+	if x != nil {
+		if x.xxx_hidden_MimeType != nil {
+			return *x.xxx_hidden_MimeType
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ImageContent) GetAnnotations() *ResourceAnnotation {
 	if x != nil {
-		return x.Annotations
+		return x.xxx_hidden_Annotations
 	}
 	return nil
 }
 
 func (x *ImageContent) SetData(v string) {
-	x.Data = &v
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *ImageContent) SetMimeType(v string) {
-	x.MimeType = &v
+	x.xxx_hidden_MimeType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *ImageContent) SetAnnotations(v *ResourceAnnotation) {
-	x.Annotations = v
+	x.xxx_hidden_Annotations = v
 }
 
 func (x *ImageContent) HasData() bool {
 	if x == nil {
 		return false
 	}
-	return x.Data != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *ImageContent) HasMimeType() bool {
 	if x == nil {
 		return false
 	}
-	return x.MimeType != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *ImageContent) HasAnnotations() bool {
 	if x == nil {
 		return false
 	}
-	return x.Annotations != nil
+	return x.xxx_hidden_Annotations != nil
 }
 
 func (x *ImageContent) ClearData() {
-	x.Data = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Data = nil
 }
 
 func (x *ImageContent) ClearMimeType() {
-	x.MimeType = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_MimeType = nil
 }
 
 func (x *ImageContent) ClearAnnotations() {
-	x.Annotations = nil
+	x.xxx_hidden_Annotations = nil
 }
 
 type ImageContent_builder struct {
@@ -798,23 +836,28 @@ func (b0 ImageContent_builder) Build() *ImageContent {
 	m0 := &ImageContent{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Data = b.Data
-	x.MimeType = b.MimeType
-	x.Annotations = b.Annotations
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.MimeType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_MimeType = b.MimeType
+	}
+	x.xxx_hidden_Annotations = b.Annotations
 	return m0
 }
 
 // AudioContent defines an audio content block.
 type AudioContent struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The base64-encoded audio data.
-	Data *string `protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`
-	// The MIME type of the audio.
-	MimeType *string `protobuf:"bytes,2,opt,name=mime_type,json=mimeType" json:"mime_type,omitempty"`
-	// Optional annotations for the content.
-	Annotations   *ResourceAnnotation `protobuf:"bytes,3,opt,name=annotations" json:"annotations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,1,opt,name=data"`
+	xxx_hidden_MimeType    *string                `protobuf:"bytes,2,opt,name=mime_type,json=mimeType"`
+	xxx_hidden_Annotations *ResourceAnnotation    `protobuf:"bytes,3,opt,name=annotations"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *AudioContent) Reset() {
@@ -843,69 +886,79 @@ func (x *AudioContent) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AudioContent) GetData() string {
-	if x != nil && x.Data != nil {
-		return *x.Data
+	if x != nil {
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AudioContent) GetMimeType() string {
-	if x != nil && x.MimeType != nil {
-		return *x.MimeType
+	if x != nil {
+		if x.xxx_hidden_MimeType != nil {
+			return *x.xxx_hidden_MimeType
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AudioContent) GetAnnotations() *ResourceAnnotation {
 	if x != nil {
-		return x.Annotations
+		return x.xxx_hidden_Annotations
 	}
 	return nil
 }
 
 func (x *AudioContent) SetData(v string) {
-	x.Data = &v
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
 func (x *AudioContent) SetMimeType(v string) {
-	x.MimeType = &v
+	x.xxx_hidden_MimeType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *AudioContent) SetAnnotations(v *ResourceAnnotation) {
-	x.Annotations = v
+	x.xxx_hidden_Annotations = v
 }
 
 func (x *AudioContent) HasData() bool {
 	if x == nil {
 		return false
 	}
-	return x.Data != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *AudioContent) HasMimeType() bool {
 	if x == nil {
 		return false
 	}
-	return x.MimeType != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *AudioContent) HasAnnotations() bool {
 	if x == nil {
 		return false
 	}
-	return x.Annotations != nil
+	return x.xxx_hidden_Annotations != nil
 }
 
 func (x *AudioContent) ClearData() {
-	x.Data = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Data = nil
 }
 
 func (x *AudioContent) ClearMimeType() {
-	x.MimeType = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_MimeType = nil
 }
 
 func (x *AudioContent) ClearAnnotations() {
-	x.Annotations = nil
+	x.xxx_hidden_Annotations = nil
 }
 
 type AudioContent_builder struct {
@@ -923,21 +976,25 @@ func (b0 AudioContent_builder) Build() *AudioContent {
 	m0 := &AudioContent{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Data = b.Data
-	x.MimeType = b.MimeType
-	x.Annotations = b.Annotations
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.MimeType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_MimeType = b.MimeType
+	}
+	x.xxx_hidden_Annotations = b.Annotations
 	return m0
 }
 
 // ResourceContent defines a resource content block.
 type ResourceContent struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The resource.
-	Resource *ResourceDefinition `protobuf:"bytes,1,opt,name=resource" json:"resource,omitempty"`
-	// Optional annotations for the content.
-	Annotations   *ResourceAnnotation `protobuf:"bytes,2,opt,name=annotations" json:"annotations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Resource    *ResourceDefinition    `protobuf:"bytes,1,opt,name=resource"`
+	xxx_hidden_Annotations *ResourceAnnotation    `protobuf:"bytes,2,opt,name=annotations"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ResourceContent) Reset() {
@@ -967,46 +1024,46 @@ func (x *ResourceContent) ProtoReflect() protoreflect.Message {
 
 func (x *ResourceContent) GetResource() *ResourceDefinition {
 	if x != nil {
-		return x.Resource
+		return x.xxx_hidden_Resource
 	}
 	return nil
 }
 
 func (x *ResourceContent) GetAnnotations() *ResourceAnnotation {
 	if x != nil {
-		return x.Annotations
+		return x.xxx_hidden_Annotations
 	}
 	return nil
 }
 
 func (x *ResourceContent) SetResource(v *ResourceDefinition) {
-	x.Resource = v
+	x.xxx_hidden_Resource = v
 }
 
 func (x *ResourceContent) SetAnnotations(v *ResourceAnnotation) {
-	x.Annotations = v
+	x.xxx_hidden_Annotations = v
 }
 
 func (x *ResourceContent) HasResource() bool {
 	if x == nil {
 		return false
 	}
-	return x.Resource != nil
+	return x.xxx_hidden_Resource != nil
 }
 
 func (x *ResourceContent) HasAnnotations() bool {
 	if x == nil {
 		return false
 	}
-	return x.Annotations != nil
+	return x.xxx_hidden_Annotations != nil
 }
 
 func (x *ResourceContent) ClearResource() {
-	x.Resource = nil
+	x.xxx_hidden_Resource = nil
 }
 
 func (x *ResourceContent) ClearAnnotations() {
-	x.Annotations = nil
+	x.xxx_hidden_Annotations = nil
 }
 
 type ResourceContent_builder struct {
@@ -1022,8 +1079,8 @@ func (b0 ResourceContent_builder) Build() *ResourceContent {
 	m0 := &ResourceContent{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Resource = b.Resource
-	x.Annotations = b.Annotations
+	x.xxx_hidden_Resource = b.Resource
+	x.xxx_hidden_Annotations = b.Annotations
 	return m0
 }
 
@@ -1031,7 +1088,7 @@ var File_proto_config_v1_prompt_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_prompt_proto_rawDesc = "" +
 	"\n" +
-	"\x1cproto/config/v1/prompt.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1eproto/config/v1/resource.proto\"\xa9\x02\n" +
+	"\x1cproto/config/v1/prompt.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1dproto/config/v1/profile.proto\x1a\x1eproto/config/v1/resource.proto\"\xa9\x02\n" +
 	"\x10PromptDefinition\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
@@ -1063,7 +1120,7 @@ const file_proto_config_v1_prompt_proto_rawDesc = "" +
 	"\vannotations\x18\x03 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotations\"\x9b\x01\n" +
 	"\x0fResourceContent\x12@\n" +
 	"\bresource\x18\x01 \x01(\v2$.mcpany.config.v1.ResourceDefinitionR\bresource\x12F\n" +
-	"\vannotations\x18\x02 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotationsB5B\vPromptProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\vannotations\x18\x02 \x01(\v2$.mcpany.config.v1.ResourceAnnotationR\vannotationsB=B\vPromptProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_prompt_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_config_v1_prompt_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
@@ -1109,10 +1166,10 @@ func file_proto_config_v1_prompt_proto_init() {
 	file_proto_config_v1_profile_proto_init()
 	file_proto_config_v1_resource_proto_init()
 	file_proto_config_v1_prompt_proto_msgTypes[1].OneofWrappers = []any{
-		(*PromptMessage_Text)(nil),
-		(*PromptMessage_Image)(nil),
-		(*PromptMessage_Audio)(nil),
-		(*PromptMessage_Resource)(nil),
+		(*promptMessage_Text)(nil),
+		(*promptMessage_Image)(nil),
+		(*promptMessage_Audio)(nil),
+		(*promptMessage_Resource)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

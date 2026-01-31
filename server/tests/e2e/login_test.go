@@ -110,20 +110,20 @@ global_settings:
 
 	// Try to get first
 	getResp, err := adminClient.GetUser(ctx, pb_admin.GetUserRequest_builder{UserId: proto.String(username)}.Build())
-	if err == nil && getResp.User.GetId() == username {
+	if err == nil && getResp.GetUser().GetId() == username {
 		// User exists, just ensure password/roles if needed?
 		// For now we assume if exists it's fine, or we can update it.
 		// Let's update it to ensure password matches what we expect for login.
 		updateResp, err := adminClient.UpdateUser(ctx, pb_admin.UpdateUserRequest_builder{User: user}.Build())
 		require.NoError(t, err, "Failed to update existing user")
-		require.Equal(t, username, updateResp.User.GetId())
+		require.Equal(t, username, updateResp.GetUser().GetId())
 	} else {
 		// Create
 		createResp, err := adminClient.CreateUser(ctx, pb_admin.CreateUserRequest_builder{User: user}.Build())
 		require.NoError(t, err, "Failed to create user")
-		require.Equal(t, username, createResp.User.GetId())
+		require.Equal(t, username, createResp.GetUser().GetId())
 		// Ensure password was hashed (not equal to plaintext)
-		assert.NotEqual(t, password, createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash())
+		assert.NotEqual(t, password, createResp.GetUser().GetAuthentication().GetBasicAuth().GetPasswordHash())
 	}
 
 	// 2. Attempt Login via REST API

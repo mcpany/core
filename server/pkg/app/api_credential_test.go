@@ -143,11 +143,15 @@ func TestAuthTestEndpoint(t *testing.T) {
 
 	// 1. Test with Inline Auth
 	t.Run("test with inline user token", func(t *testing.T) {
-		reqData := TestAuthRequest{
-			TargetURL: upstream.URL,
-			UserToken: configv1.UserToken_builder{
-				AccessToken: proto.String("my-token"),
-			}.Build(),
+		userToken := configv1.UserToken_builder{
+			AccessToken: proto.String("my-token"),
+		}.Build()
+		tokenBody, _ := protojson.Marshal(userToken)
+		var tokenJSON json.RawMessage = tokenBody
+
+		reqData := map[string]any{
+			"target_url": upstream.URL,
+			"user_token": tokenJSON,
 		}
 		body, _ := json.Marshal(reqData)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
@@ -199,11 +203,15 @@ func TestAuthTestEndpoint(t *testing.T) {
 
 	// 3. Test Failure
 	t.Run("test auth failure", func(t *testing.T) {
-		reqData := TestAuthRequest{
-			TargetURL: upstream.URL,
-			UserToken: configv1.UserToken_builder{
-				AccessToken: proto.String("wrong-token"),
-			}.Build(),
+		userToken := configv1.UserToken_builder{
+			AccessToken: proto.String("wrong-token"),
+		}.Build()
+		tokenBody, _ := protojson.Marshal(userToken)
+		var tokenJSON json.RawMessage = tokenBody
+
+		reqData := map[string]any{
+			"target_url": upstream.URL,
+			"user_token": tokenJSON,
 		}
 		body, _ := json.Marshal(reqData)
 		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
@@ -298,9 +306,16 @@ func TestCredentialHandlers(t *testing.T) {
 		app.listCredentialsHandler(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var creds []*configv1.Credential
-		err := json.Unmarshal(w.Body.Bytes(), &creds)
+		var raw []json.RawMessage
+		err := json.Unmarshal(w.Body.Bytes(), &raw)
 		require.NoError(t, err)
+
+		creds := make([]*configv1.Credential, len(raw))
+		for i, r := range raw {
+			creds[i] = &configv1.Credential{}
+			err = protojson.Unmarshal(r, creds[i])
+			require.NoError(t, err)
+		}
 		assert.Len(t, creds, 1)
 		assert.Equal(t, "test-cred", creds[0].GetId())
 	})
@@ -319,7 +334,7 @@ func TestCredentialHandlers(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
 
 		var c configv1.Credential
-		err := json.Unmarshal(w.Body.Bytes(), &c)
+		err := protojson.Unmarshal(w.Body.Bytes(), &c)
 		require.NoError(t, err)
 		assert.Equal(t, "test-cred", c.GetId())
 	})
@@ -343,7 +358,7 @@ func TestCredentialHandlers(t *testing.T) {
 			Id:   proto.String("test-cred"),
 			Name: proto.String("Updated Name"),
 		}.Build()
-		body, _ := json.Marshal(updatedCred)
+		body, _ := protojson.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)
@@ -358,7 +373,7 @@ func TestCredentialHandlers(t *testing.T) {
 			Id:   proto.String("other-id"),
 			Name: proto.String("Updated Name"),
 		}.Build()
-		body, _ := json.Marshal(updatedCred)
+		body, _ := protojson.Marshal(updatedCred)
 		req := httptest.NewRequest(http.MethodPut, "/credentials/test-cred", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 		app.updateCredentialHandler(w, req)

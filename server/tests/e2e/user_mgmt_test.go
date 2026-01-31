@@ -155,20 +155,20 @@ global_settings:
 
 	createResp, err := adminClient.CreateUser(ctx, pb_admin.CreateUserRequest_builder{User: user1}.Build())
 	require.NoError(t, err)
-	require.Equal(t, userID, createResp.User.GetId())
-	require.Empty(t, createResp.User.GetAuthentication().GetApiKey().GetVerificationValue())
+	require.Equal(t, userID, createResp.GetUser().GetId())
+	require.Empty(t, createResp.GetUser().GetAuthentication().GetApiKey().GetVerificationValue())
 
 	// Get user
 	getResp, err := adminClient.GetUser(ctx, pb_admin.GetUserRequest_builder{UserId: proto.String(userID)}.Build())
 	require.NoError(t, err)
-	require.Equal(t, userID, getResp.User.GetId())
+	require.Equal(t, userID, getResp.GetUser().GetId())
 
 	// List users
 	listResp, err := adminClient.ListUsers(ctx, pb_admin.ListUsersRequest_builder{}.Build())
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, len(listResp.Users), 1)
+	require.GreaterOrEqual(t, len(listResp.GetUsers()), 1)
 	var foundUser *configv1.User
-	for _, u := range listResp.Users {
+	for _, u := range listResp.GetUsers() {
 		if u.GetId() == userID {
 			foundUser = u
 			break
@@ -181,7 +181,7 @@ global_settings:
 	user1.SetRoles([]string{"admin"})
 	updateResp, err := adminClient.UpdateUser(ctx, pb_admin.UpdateUserRequest_builder{User: user1}.Build())
 	require.NoError(t, err)
-	require.Equal(t, []string{"admin"}, updateResp.User.Roles)
+	require.Equal(t, []string{"admin"}, updateResp.GetUser().GetRoles())
 
 	// Delete user
 	_, err = adminClient.DeleteUser(ctx, pb_admin.DeleteUserRequest_builder{UserId: proto.String(userID)}.Build())

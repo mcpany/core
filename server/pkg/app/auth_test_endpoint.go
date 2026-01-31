@@ -135,16 +135,16 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 	}
 
 	// Apply Credential
-	if cred != nil && cred.Authentication != nil {
-		auth := cred.Authentication
+	if cred != nil && cred.GetAuthentication() != nil {
+		auth := cred.GetAuthentication()
 		if apiKey := auth.GetApiKey(); apiKey != nil {
 			// Handle API Key
 			val := ""
 			if sv := apiKey.GetValue(); sv != nil {
-				if v, ok := sv.GetValue().(*configv1.SecretValue_PlainText); ok {
-					val = v.PlainText
-				} else if v, ok := sv.GetValue().(*configv1.SecretValue_EnvironmentVariable); ok {
-					val = "env:" + v.EnvironmentVariable
+				if sv.WhichValue() == configv1.SecretValue_PlainText_case {
+					val = sv.GetPlainText()
+				} else if sv.WhichValue() == configv1.SecretValue_EnvironmentVariable_case {
+					val = "env:" + sv.GetEnvironmentVariable()
 				}
 			}
 
@@ -165,8 +165,8 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 			// Handle Bearer Token
 			val := ""
 			if t := token.GetToken(); t != nil {
-				if v, ok := t.GetValue().(*configv1.SecretValue_PlainText); ok {
-					val = v.PlainText
+				if t.WhichValue() == configv1.SecretValue_PlainText_case {
+					val = t.GetPlainText()
 				}
 			}
 			if val != "" {

@@ -21,10 +21,10 @@ func TestToolManager_ExecuteTool_FuzzyMatch(t *testing.T) {
 
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				ServiceId: proto.String(serviceID),
 				Name:      proto.String("get_weather"),
-			}
+			}.Build()
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return "sunny", nil
@@ -51,10 +51,10 @@ func TestToolManager_ExecuteTool_FuzzyMatch_NamespaceMissing(t *testing.T) {
 
 	mockTool := &MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				ServiceId: proto.String(serviceID),
 				Name:      proto.String("get_forecast"),
-			}
+			}.Build()
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) {
 			return "sunny", nil
@@ -82,10 +82,10 @@ func TestToolManager_ExecuteTool_FuzzyMatch_MultipleMatches(t *testing.T) {
 	// Add tool 1: weather.get_info
 	mockTool1 := &MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				ServiceId: proto.String("weather"),
 				Name:      proto.String("get_info"),
-			}
+			}.Build()
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) { return nil, nil },
 	}
@@ -94,10 +94,10 @@ func TestToolManager_ExecuteTool_FuzzyMatch_MultipleMatches(t *testing.T) {
 	// Add tool 2: stocks.get_info
 	mockTool2 := &MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				ServiceId: proto.String("stocks"),
 				Name:      proto.String("get_info"),
-			}
+			}.Build()
 		},
 		ExecuteFunc: func(_ context.Context, _ *ExecutionRequest) (any, error) { return nil, nil },
 	}

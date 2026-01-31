@@ -7,9 +7,10 @@ package testutil
 import (
 	"context"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
+	"google.golang.org/protobuf/proto"
 )
 
 // MockTool is a mock implementation of the tool.Tool interface for testing.
@@ -21,8 +22,9 @@ type MockTool struct {
 //
 // Returns the result.
 func (m *MockTool) Tool() *v1.Tool {
-	name := "mock-tool"
-	return &v1.Tool{Name: &name}
+	return v1.Tool_builder{
+		Name: proto.String("mock-tool"),
+	}.Build()
 }
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.

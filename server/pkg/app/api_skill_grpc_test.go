@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 func setupTestManager(t *testing.T) (*skill.Manager, string) {
@@ -31,9 +32,6 @@ func setupTestManager(t *testing.T) (*skill.Manager, string) {
 	return manager, tmpDir
 }
 
-func strPtrTest(s string) *string {
-	return &s
-}
 
 func TestSkillServiceServer_CreateSkill(t *testing.T) {
 	manager, _ := setupTestManager(t)
@@ -43,24 +41,24 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Create valid skill", func(t *testing.T) {
-		req := &pb.CreateSkillRequest{
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("test-skill"),
-				Description:  strPtrTest("A test skill"),
-				Instructions: strPtrTest("Do the test"),
-			},
-		}
+		req := pb.CreateSkillRequest_builder{
+			Skill: config_v1.Skill_builder{
+				Name:         proto.String("test-skill"),
+				Description:  proto.String("A test skill"),
+				Instructions: proto.String("Do the test"),
+			}.Build(),
+		}.Build()
 
 		resp, err := server.CreateSkill(ctx, req)
 		require.NoError(t, err)
-		assert.Equal(t, "test-skill", resp.Skill.GetName())
-		assert.Equal(t, "A test skill", resp.Skill.GetDescription())
+		assert.Equal(t, "test-skill", resp.GetSkill().GetName())
+		assert.Equal(t, "A test skill", resp.GetSkill().GetDescription())
 	})
 
 	t.Run("Create skill missing input", func(t *testing.T) {
-		req := &pb.CreateSkillRequest{
+		req := pb.CreateSkillRequest_builder{
 			Skill: nil,
-		}
+		}.Build()
 		_, err := server.CreateSkill(ctx, req)
 		assert.Error(t, err)
 		st, ok := status.FromError(err)
@@ -69,13 +67,13 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 	})
 
 	t.Run("Create skill with invalid name", func(t *testing.T) {
-		req := &pb.CreateSkillRequest{
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("Invalid Name"), // Uppercase and space not allowed
-				Description:  strPtrTest("Invalid"),
-				Instructions: strPtrTest("Invalid"),
-			},
-		}
+		req := pb.CreateSkillRequest_builder{
+			Skill: config_v1.Skill_builder{
+				Name:         proto.String("Invalid Name"), // Uppercase and space not allowed
+				Description:  proto.String("Invalid"),
+				Instructions: proto.String("Invalid"),
+			}.Build(),
+		}.Build()
 		_, err := server.CreateSkill(ctx, req)
 		assert.Error(t, err)
 		st, ok := status.FromError(err)
@@ -84,13 +82,13 @@ func TestSkillServiceServer_CreateSkill(t *testing.T) {
 	})
 
 	t.Run("Create duplicate skill", func(t *testing.T) {
-		req := &pb.CreateSkillRequest{
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("duplicate-skill"),
-				Description:  strPtrTest("First"),
-				Instructions: strPtrTest("First"),
-			},
-		}
+		req := pb.CreateSkillRequest_builder{
+			Skill: config_v1.Skill_builder{
+				Name:         proto.String("duplicate-skill"),
+				Description:  proto.String("First"),
+				Instructions: proto.String("First"),
+			}.Build(),
+		}.Build()
 		_, err := server.CreateSkill(ctx, req)
 		require.NoError(t, err)
 
@@ -118,14 +116,14 @@ func TestSkillServiceServer_GetSkill(t *testing.T) {
 	require.NoError(t, manager.CreateSkill(testSkill))
 
 	t.Run("Get existing skill", func(t *testing.T) {
-		req := &pb.GetSkillRequest{Name: "get-test"}
+		req := pb.GetSkillRequest_builder{Name: "get-test"}.Build()
 		resp, err := server.GetSkill(ctx, req)
 		require.NoError(t, err)
-		assert.Equal(t, "get-test", resp.Skill.GetName())
+		assert.Equal(t, "get-test", resp.GetSkill().GetName())
 	})
 
 	t.Run("Get non-existent skill", func(t *testing.T) {
-		req := &pb.GetSkillRequest{Name: "non-existent"}
+		req := pb.GetSkillRequest_builder{Name: "non-existent"}.Build()
 		_, err := server.GetSkill(ctx, req)
 		assert.Error(t, err)
 		st, ok := status.FromError(err)
@@ -134,7 +132,7 @@ func TestSkillServiceServer_GetSkill(t *testing.T) {
 	})
 
 	t.Run("Get skill with empty name", func(t *testing.T) {
-		req := &pb.GetSkillRequest{Name: ""}
+		req := pb.GetSkillRequest_builder{Name: ""}.Build()
 		_, err := server.GetSkill(ctx, req)
 		assert.Error(t, err)
 		st, ok := status.FromError(err)
@@ -156,10 +154,10 @@ func TestSkillServiceServer_ListSkills(t *testing.T) {
 
 	resp, err := server.ListSkills(ctx, &pb.ListSkillsRequest{})
 	require.NoError(t, err)
-	assert.Len(t, resp.Skills, 2)
+	assert.Len(t, resp.GetSkills(), 2)
 
 	names := make(map[string]bool)
-	for _, s := range resp.Skills {
+	for _, s := range resp.GetSkills() {
 		names[s.GetName()] = true
 	}
 	assert.True(t, names["skill-1"])
@@ -178,17 +176,17 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	}))
 
 	t.Run("Update existing skill", func(t *testing.T) {
-		req := &pb.UpdateSkillRequest{
+		req := pb.UpdateSkillRequest_builder{
 			Name: "update-me",
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("update-me"),
-				Description:  strPtrTest("New Desc"),
-				Instructions: strPtrTest("New Inst"),
-			},
-		}
+			Skill: config_v1.Skill_builder{
+				Name:         proto.String("update-me"),
+				Description:  proto.String("New Desc"),
+				Instructions: proto.String("New Inst"),
+			}.Build(),
+		}.Build()
 		resp, err := server.UpdateSkill(ctx, req)
 		require.NoError(t, err)
-		assert.Equal(t, "New Desc", resp.Skill.GetDescription())
+		assert.Equal(t, "New Desc", resp.GetSkill().GetDescription())
 
 		// Verify persistence
 		sk, err := manager.GetSkill("update-me")
@@ -197,17 +195,17 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	})
 
 	t.Run("Rename skill", func(t *testing.T) {
-		req := &pb.UpdateSkillRequest{
+		req := pb.UpdateSkillRequest_builder{
 			Name: "update-me",
-			Skill: &config_v1.Skill{
-				Name:         strPtrTest("renamed-skill"),
-				Description:  strPtrTest("Renamed"),
-				Instructions: strPtrTest("Renamed Inst"),
-			},
-		}
+			Skill: config_v1.Skill_builder{
+				Name:         proto.String("renamed-skill"),
+				Description:  proto.String("Renamed"),
+				Instructions: proto.String("Renamed Inst"),
+			}.Build(),
+		}.Build()
 		resp, err := server.UpdateSkill(ctx, req)
 		require.NoError(t, err)
-		assert.Equal(t, "renamed-skill", resp.Skill.GetName())
+		assert.Equal(t, "renamed-skill", resp.GetSkill().GetName())
 
 		// Verify old name gone
 		_, err = manager.GetSkill("update-me")
@@ -220,13 +218,13 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	})
 
 	t.Run("Update non-existent skill", func(t *testing.T) {
-		req := &pb.UpdateSkillRequest{
+		req := pb.UpdateSkillRequest_builder{
 			Name: "missing",
-			Skill: &config_v1.Skill{
-				Name: strPtrTest("missing"),
-				Instructions: strPtrTest("Foo"),
-			},
-		}
+			Skill: config_v1.Skill_builder{
+				Name: proto.String("missing"),
+				Instructions: proto.String("Foo"),
+			}.Build(),
+		}.Build()
 		_, err := server.UpdateSkill(ctx, req)
 		assert.Error(t, err)
 		st, ok := status.FromError(err)
@@ -235,11 +233,11 @@ func TestSkillServiceServer_UpdateSkill(t *testing.T) {
 	})
 
 	t.Run("Update with invalid inputs", func(t *testing.T) {
-		_, err := server.UpdateSkill(ctx, &pb.UpdateSkillRequest{Name: "", Skill: &config_v1.Skill{}})
+		_, err := server.UpdateSkill(ctx, pb.UpdateSkillRequest_builder{Name: "", Skill: config_v1.Skill_builder{}.Build()}.Build())
 		assert.Error(t, err)
 		assert.Equal(t, codes.InvalidArgument, status.Code(err))
 
-		_, err = server.UpdateSkill(ctx, &pb.UpdateSkillRequest{Name: "foo", Skill: nil})
+		_, err = server.UpdateSkill(ctx, pb.UpdateSkillRequest_builder{Name: "foo", Skill: nil}.Build())
 		assert.Error(t, err)
 		assert.Equal(t, codes.InvalidArgument, status.Code(err))
 	})
@@ -256,7 +254,7 @@ func TestSkillServiceServer_DeleteSkill(t *testing.T) {
 	}))
 
 	t.Run("Delete existing skill", func(t *testing.T) {
-		req := &pb.DeleteSkillRequest{Name: "delete-me"}
+		req := pb.DeleteSkillRequest_builder{Name: "delete-me"}.Build()
 		_, err := server.DeleteSkill(ctx, req)
 		require.NoError(t, err)
 
@@ -270,7 +268,7 @@ func TestSkillServiceServer_DeleteSkill(t *testing.T) {
 	})
 
 	t.Run("Delete non-existent skill", func(t *testing.T) {
-		req := &pb.DeleteSkillRequest{Name: "ghost"}
+		req := pb.DeleteSkillRequest_builder{Name: "ghost"}.Build()
 		_, err := server.DeleteSkill(ctx, req)
 		assert.Error(t, err)
 		st, ok := status.FromError(err)
@@ -279,7 +277,7 @@ func TestSkillServiceServer_DeleteSkill(t *testing.T) {
 	})
 
 	t.Run("Delete with empty name", func(t *testing.T) {
-		req := &pb.DeleteSkillRequest{Name: ""}
+		req := pb.DeleteSkillRequest_builder{Name: ""}.Build()
 		_, err := server.DeleteSkill(ctx, req)
 		assert.Error(t, err)
 		assert.Equal(t, codes.InvalidArgument, status.Code(err))

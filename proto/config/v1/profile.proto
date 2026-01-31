@@ -5,12 +5,14 @@ edition = "2023";
 
 option features.field_presence = IMPLICIT;
 
+import "google/protobuf/go_features.proto";
 import "proto/config/v1/auth.proto";
 import "proto/bus/bus.proto"; // For RedisBus in RateLimitConfig
 
 package mcpany.config.v1;
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
+option features.(pb.go).api_level = API_OPAQUE;
 
 message Profile {
   // The name of the profile (e.g., "dev", "prod").

@@ -8,6 +8,9 @@ package mcpany.mcp_router.v1;
 option go_package = "github.com/mcpany/core/proto/mcp_router/v1";
 
 import "google/protobuf/struct.proto"; // For generic JSON-like data
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
 
 // Represents an MCP Tool exposed by the aggregator
 message Tool {

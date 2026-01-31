@@ -16,7 +16,6 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
 
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
@@ -164,7 +163,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "id mismatch", http.StatusBadRequest)
 				return
 			}
-			user.Id = proto.String(id)
+			user.SetId(id)
 
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
@@ -217,10 +216,10 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 			}
 			if existingUser != nil && existingUser.GetAuthentication() != nil && existingUser.GetAuthentication().GetBasicAuth() != nil {
 				existingHash := existingUser.GetAuthentication().GetBasicAuth().GetPasswordHash()
-				basicAuth.PasswordHash = proto.String(existingHash)
+				basicAuth.SetPasswordHash(existingHash)
 			} else {
 				// If no existing user or auth, clear the REDACTED value to avoid saving it
-				basicAuth.PasswordHash = proto.String("")
+				basicAuth.SetPasswordHash("")
 			}
 			return nil
 		}
@@ -240,7 +239,7 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 			if err != nil {
 				return err
 			}
-			basicAuth.PasswordHash = proto.String(hash)
+			basicAuth.SetPasswordHash(hash)
 		}
 	}
 	return nil

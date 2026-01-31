@@ -115,9 +115,9 @@ func TestStripSecretsFromProfile_Coverage(t *testing.T) {
 
 	profile := configv1.ProfileDefinition_builder{
 		Secrets: map[string]*configv1.SecretValue{
-			"key1": {
-				Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
-			},
+			"key1": configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}.Build(),
 		},
 	}.Build()
 	StripSecretsFromProfile(profile)

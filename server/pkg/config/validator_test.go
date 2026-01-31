@@ -834,7 +834,7 @@ func TestValidateUpstreamAuthentication(t *testing.T) {
 		// We need to use builder or setters if we can't mutate directly easily,
 		// but since we built it, we can mutate if we have the pointer.
 		// Wait, Build() returns *Authentication? Yes.
-		mtls.GetMtls().ClientCertPath = strPtr("/etc/cert.pem")
+		mtls.GetMtls().SetClientCertPath("/etc/cert.pem")
 		err = validateAuthentication(ctx, mtls, AuthValidationContextOutgoing)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "not a secure path")

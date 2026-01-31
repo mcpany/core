@@ -5,12 +5,14 @@ edition = "2023";
 
 package mcpany.config.v1;
 
+import "google/protobuf/go_features.proto";
 import "google/protobuf/timestamp.proto";
 import "proto/config/v1/call.proto";
 import "proto/config/v1/profile.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ResourceProto";
+option features.(pb.go).api_level = API_OPAQUE;
 
 message ResourceAnnotation {
     // An array indicating the intended audience(s) for this

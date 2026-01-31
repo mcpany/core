@@ -48,13 +48,13 @@ func TestHandleListServices_ToolCountInjection(t *testing.T) {
 
 	// Add tools to ToolManager using TestMockTool (defined in api_test.go)
 	app.ToolManager.AddTool(&TestMockTool{
-		toolDef: &mcp_router_v1.Tool{Name: proto.String("tool1"), ServiceId: proto.String("svc1")},
+		toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool1"), ServiceId: proto.String("svc1")}.Build(),
 	})
 	app.ToolManager.AddTool(&TestMockTool{
-		toolDef: &mcp_router_v1.Tool{Name: proto.String("tool2"), ServiceId: proto.String("svc1")},
+		toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool2"), ServiceId: proto.String("svc1")}.Build(),
 	})
 	app.ToolManager.AddTool(&TestMockTool{
-		toolDef: &mcp_router_v1.Tool{Name: proto.String("tool3"), ServiceId: proto.String("svc2")},
+		toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool3"), ServiceId: proto.String("svc2")}.Build(),
 	})
 
 	handler := app.handleServices(store)
