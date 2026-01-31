@@ -11,15 +11,32 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DiffEditor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
+import dynamic from "next/dynamic";
+
+// ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
+// Randomized Selection from Top 5 High-Impact Targets
+const SyntaxHighlighter = dynamic(
+    () => import("react-syntax-highlighter").then((mod) => mod.Prism),
+    {
+        ssr: false,
+        loading: () => <div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />,
+    }
+);
+
+const DiffEditor = dynamic(
+    () => import("@monaco-editor/react").then((mod) => mod.DiffEditor),
+    {
+        ssr: false,
+        loading: () => <div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />,
+    }
+);
 
 /**
  * MessageType type definition.
