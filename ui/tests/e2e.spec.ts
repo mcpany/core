@@ -5,6 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import { randomUUID } from 'crypto';
 import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
@@ -14,7 +15,7 @@ test.describe('MCP Any UI E2E Tests', () => {
   let username: string;
 
   test.beforeEach(async ({ request, page }) => {
-      username = `e2e-admin-${Math.random().toString(36).substring(7)}`;
+      username = `e2e-admin-${randomUUID()}`;
       await seedServices(request);
       await seedTraffic(request);
       await seedUser(request, username);
