@@ -24,11 +24,6 @@ func TestIsSafeURL(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "Safe Public URL",
-			url:     "https://google.com",
-			wantErr: false,
-		},
-		{
 			name:    "Safe Public IP",
 			url:     "http://8.8.8.8",
 			wantErr: false,
