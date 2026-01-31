@@ -2,6 +2,10 @@
 
 **One server, Infinite possibilities.**
 
+[![Build Status](https://github.com/mcpany/core/actions/workflows/ci.yaml/badge.svg)](https://github.com/mcpany/core/actions)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
+
 ## 1. Elevator Pitch
 
 **What is this project and why does it exist?**
@@ -89,25 +93,25 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 
 Use these commands to maintain code quality and build the project.
 
-**Run Tests**
-Execute all unit, integration, and end-to-end tests.
+### Running Tests
+Execute all unit, integration, and end-to-end tests to ensure system stability.
 ```bash
 make test
 ```
 
-**Lint Code**
-Ensure code quality and style compliance (Go & TypeScript).
+### Linting Code
+Ensure code quality and adherence to style guides (GoDoc, JSDoc).
 ```bash
 make lint
 ```
 
-**Build Artifacts**
+### Building Artifacts
 Compile the server binary and frontend assets.
 ```bash
 make build
 ```
 
-**Generate Code**
+### Generating Code
 Regenerate Protocol Buffers and other auto-generated files.
 ```bash
 make gen
@@ -130,6 +134,8 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_GRPC_PORT` | Port for the gRPC registration server | Disabled |
 | `MCPANY_STDIO` | Enable stdio mode for JSON-RPC communication | `false` |
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
+| `MCPANY_PROFILES` | Comma-separated list of active profiles | `default` |
+| `MCPANY_DB_PATH` | Path to the SQLite database file | `data/mcpany.db` |
 
 ### Required Secrets
 Sensitive information (like upstream API keys) should be injected via environment variables or a secret manager, referenced in your configuration files using `${ENV_VAR_NAME}` syntax.

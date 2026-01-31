@@ -1,7 +1,10 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package config provides configuration management for the application.
+// Package config handles the configuration loading and management for the MCP Any server.
+//
+// It integrates with Viper and Cobra to support configuration via configuration files,
+// environment variables (prefixed with MCPANY_), and command-line flags.
 package config
 
 import (

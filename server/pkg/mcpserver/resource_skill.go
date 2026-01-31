@@ -29,9 +29,11 @@ var _ resource.Resource = &SkillResource{}
 
 // NewSkillResource creates a new resource for the main SKILL.md.
 //
-// s is the s.
+// Parameters:
+//   - s: *skill.Skill. The skill to wrap as a resource.
 //
-// Returns the result.
+// Returns:
+//   - *SkillResource: The created resource.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -40,10 +42,12 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 
 // NewSkillAssetResource creates a new resource for a skill asset.
 //
-// s is the s.
-// assetPath is the assetPath.
+// Parameters:
+//   - s: *skill.Skill. The skill containing the asset.
+//   - assetPath: string. The relative path to the asset within the skill directory.
 //
-// Returns the result.
+// Returns:
+//   - *SkillResource: The created resource.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -53,7 +57,8 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 
 // URI returns the URI of the resource.
 //
-// Returns the result.
+// Returns:
+//   - string: The URI of the resource (e.g., "skills://my-skill/SKILL.md").
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -63,7 +68,8 @@ func (r *SkillResource) URI() string {
 
 // Name returns the name of the resource.
 //
-// Returns the result.
+// Returns:
+//   - string: The human-readable name of the resource.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -73,14 +79,16 @@ func (r *SkillResource) Name() string {
 
 // Service returns the service associated with the resource.
 //
-// Returns the result.
+// Returns:
+//   - string: The service identifier ("skills").
 func (r *SkillResource) Service() string {
 	return "skills"
 }
 
 // Resource returns the underlying MCP resource definition.
 //
-// Returns the result.
+// Returns:
+//   - *mcp.Resource: The MCP resource definition.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {

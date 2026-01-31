@@ -1,7 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package mcpserver implements the MCP server functionality.
+// Package mcpserver implements the core Model Context Protocol (MCP) server.
+//
+// It provides the main Server struct which orchestrates tool execution, prompt handling,
+// resource management, and request routing. It also includes the RegistrationServer
+// for managing upstream services via gRPC.
 package mcpserver
 
 import (

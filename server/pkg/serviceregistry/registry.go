@@ -1,7 +1,11 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-// Package serviceregistry provides service registry functionality.
+// Package serviceregistry implements the central registry for upstream services.
+//
+// It manages the lifecycle of services (registration, unregistration, health checks),
+// orchestrates capability discovery (tools, resources, prompts), and handles
+// authentication configuration.
 package serviceregistry
 
 import (
