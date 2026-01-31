@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { List, LayoutList, Layers } from "lucide-react";
+import { List, LayoutList, Layers, PlayCircle, PauseCircle, Star } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { SmartToolSearch } from "@/components/tools/smart-tool-search";
@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -41,17 +42,24 @@ export default function ToolsPage() {
   const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const { isPinned, togglePin, isLoaded } = usePinnedTools();
+  const { isPinned, togglePin, isLoaded, bulkSetPinned } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
+  const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
     setIsCompact(savedCompact);
   }, []);
+
+  useEffect(() => {
+    // Clear selection when filters change
+    setSelectedTools(new Set());
+  }, [searchQuery, selectedService, showPinnedOnly, groupBy]);
 
   useEffect(() => {
     fetchTools();
@@ -114,6 +122,58 @@ export default function ToolsPage() {
       setInspectorOpen(true);
   };
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+        // filteredTools contains all visible items regardless of grouping
+        setSelectedTools(new Set(filteredTools.map(t => t.name)));
+    } else {
+        setSelectedTools(new Set());
+    }
+  };
+
+  const handleSelectOne = (name: string, checked: boolean) => {
+      setSelectedTools(prev => {
+          const next = new Set(prev);
+          if (checked) next.add(name);
+          else next.delete(name);
+          return next;
+      });
+  };
+
+  const handleBulkToggle = async (enabled: boolean) => {
+      const names = Array.from(selectedTools);
+      // Optimistic update
+      setTools(prev => prev.map(t => names.includes(t.name) ? { ...t, disable: !enabled } : t));
+
+      try {
+          await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
+          toast({
+              title: enabled ? "Tools Enabled" : "Tools Disabled",
+              description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
+          });
+          setSelectedTools(new Set());
+      } catch (e) {
+          console.error("Failed bulk toggle", e);
+          fetchTools(); // Revert
+          toast({
+             variant: "destructive",
+             title: "Error",
+             description: "Failed to update some tools."
+          });
+      }
+  };
+
+  const handleBulkPin = (pinned: boolean) => {
+      const names = Array.from(selectedTools);
+      bulkSetPinned(names, pinned);
+      toast({
+          title: pinned ? "Tools Pinned" : "Tools Unpinned",
+          description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`
+      });
+      setSelectedTools(new Set());
+  };
+
+
   const filteredTools = tools
     .filter((t) => !showPinnedOnly || isPinned(t.name))
     .filter((t) => selectedService === "all" || t.serviceId === selectedService)
@@ -161,6 +221,23 @@ export default function ToolsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
         <div className="flex items-center space-x-4">
+            {selectedTools.size > 0 && (
+                 <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300 mr-4">
+                     <span className="text-sm text-muted-foreground mr-2">{selectedTools.size} selected</span>
+                     <Button size="sm" variant="outline" onClick={() => handleBulkToggle(true)}>
+                         <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
+                     </Button>
+                     <Button size="sm" variant="outline" onClick={() => handleBulkToggle(false)}>
+                         <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
+                     </Button>
+                     <Button size="sm" variant="outline" onClick={() => handleBulkPin(true)}>
+                         <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" /> Pin
+                     </Button>
+                     <Button size="sm" variant="outline" onClick={() => handleBulkPin(false)}>
+                         <Star className="mr-2 h-4 w-4 text-muted-foreground" /> Unpin
+                     </Button>
+                 </div>
+             )}
             <SmartToolSearch
                 tools={tools}
                 searchQuery={searchQuery}
@@ -232,6 +309,9 @@ export default function ToolsPage() {
               toggleTool={toggleTool}
               openInspector={openInspector}
               usageStats={toolUsage}
+              selected={selectedTools}
+              onSelect={handleSelectOne}
+              onSelectAll={handleSelectAll}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -254,6 +334,17 @@ export default function ToolsPage() {
                       toggleTool={toggleTool}
                       openInspector={openInspector}
                       usageStats={toolUsage}
+                      selected={selectedTools}
+                      onSelect={handleSelectOne}
+                      // When grouped, select all usually means select all in this group?
+                      // But for simplicity, we pass global handlers or group specific?
+                      // Global handleSelectAll selects ALL visible tools.
+                      // Group-specific select all is trickier.
+                      // For now, let's just pass `onSelect` and NOT pass `onSelectAll` inside groups to avoid confusion,
+                      // OR we implement onSelectGroup.
+                      // Let's allow individual selection inside groups.
+                      // The global header is gone in Accordion view effectively because tables are per group.
+                      // So we'll pass individual handlers.
                     />
                   </AccordionContent>
                 </AccordionItem>

@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Wrench, Play, Star, Info } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
@@ -24,6 +25,9 @@ interface ToolTableProps {
   toggleTool: (name: string, currentStatus: boolean) => void;
   openInspector: (tool: ToolDefinition) => void;
   usageStats?: Record<string, ToolAnalytics>;
+  selected?: Set<string>;
+  onSelect?: (name: string, checked: boolean) => void;
+  onSelectAll?: (checked: boolean) => void;
 }
 
 // ⚡ Bolt Optimization: Extracted ToolTable from page.tsx to prevent unnecessary re-renders
@@ -42,12 +46,28 @@ export const ToolTable = memo(function ToolTable({
   togglePin,
   toggleTool,
   openInspector,
-  usageStats
+  usageStats,
+  selected,
+  onSelect,
+  onSelectAll
 }: ToolTableProps) {
+  const allSelected = tools.length > 0 && selected?.size === tools.length;
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
+          {onSelect && (
+            <TableHead className="w-[30px]">
+              {onSelectAll && (
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={(checked) => onSelectAll(!!checked)}
+                  aria-label="Select all"
+                />
+              )}
+            </TableHead>
+          )}
           <TableHead className="w-[30px]"></TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Description</TableHead>
@@ -62,6 +82,15 @@ export const ToolTable = memo(function ToolTable({
       <TableBody>
         {tools.map((tool) => (
           <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
+            {onSelect && (
+              <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                <Checkbox
+                  checked={selected?.has(tool.name)}
+                  onCheckedChange={(checked) => onSelect(tool.name, !!checked)}
+                  aria-label={`Select ${tool.name}`}
+                />
+              </TableCell>
+            )}
             <TableCell className={isCompact ? "py-0 px-2" : ""}>
                 <Button
                   variant="ghost"
