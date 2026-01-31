@@ -11,15 +11,17 @@ const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 
 test.describe('MCP Any UI E2E Tests', () => {
+  let username: string;
 
   test.beforeEach(async ({ request, page }) => {
+      username = `e2e-admin-${Math.random().toString(36).substring(7)}`;
       await seedServices(request);
       await seedTraffic(request);
-      await seedUser(request, "e2e-admin");
+      await seedUser(request, username);
 
       // Login before each test
       await page.goto('/login');
-      await page.fill('input[name="username"]', 'e2e-admin');
+      await page.fill('input[name="username"]', username);
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]');
       await expect(page).toHaveURL('/');
@@ -27,7 +29,9 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
-      await cleanupUser(request, "e2e-admin");
+      if (username) {
+          await cleanupUser(request, username);
+      }
   });
 
   test('Dashboard loads correctly', async ({ page }) => {
