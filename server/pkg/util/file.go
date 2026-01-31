@@ -8,6 +8,7 @@
 package util
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -36,4 +37,28 @@ func WriteFile(path string, content []byte) error {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 	return os.WriteFile(path, content, 0644)
+}
+
+// ReadLastNLines reads the last n lines from a file.
+func ReadLastNLines(path string, n int) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+		if len(lines) > n {
+			lines = lines[1:]
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return lines, nil
 }
