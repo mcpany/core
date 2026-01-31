@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
@@ -20,6 +21,12 @@ import (
 
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Authorization: Only admins can list or create users
+		if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
 		switch r.Method {
 		case http.MethodGet:
 			users, err := store.ListUsers(r.Context())
@@ -114,6 +121,21 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 		id := strings.TrimPrefix(r.URL.Path, "/users/")
 		if id == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
+			return
+		}
+
+		// Authorization: Users can only access their own profile, unless they are admin
+		currentUserID, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			// This might happen if auth middleware is disabled or bypassed.
+			// Fail secure.
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
+		if currentUserID != id && !isAdmin {
+			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
 

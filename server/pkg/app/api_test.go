@@ -1277,6 +1277,10 @@ func TestHandleUsers(t *testing.T) {
 		userBytes, _ := protojson.Marshal(user)
 		body, _ := json.Marshal(map[string]json.RawMessage{"user": json.RawMessage(userBytes)})
 		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+		// Inject admin role
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.Equal(t, http.StatusCreated, w.Code)
@@ -1293,6 +1297,10 @@ func TestCreateUser_PasswordHashing(t *testing.T) {
 
 	payload := `{"user": {"id": "test-user-hash", "authentication": {"basic_auth": {"username": "test", "password_hash": "plain-password"}}}}`
 	req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(payload))
+	// Inject admin role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 	handler(w, req)
 
@@ -1314,13 +1322,17 @@ func TestHandleUsers_Security_Redaction(t *testing.T) {
 	apiKeyAuth := &configv1.APIKeyAuth{}
 	apiKeyAuth.SetVerificationValue("super-secret-key")
 
-	auth := &configv1.Authentication{}
-	auth.SetApiKey(apiKeyAuth)
-	user.SetAuthentication(auth)
+	authConfig := &configv1.Authentication{}
+	authConfig.SetApiKey(apiKeyAuth)
+	user.SetAuthentication(authConfig)
 	store.CreateUser(context.Background(), user)
 
 	t.Run("ListUsers_ShouldNotLeakSecrets", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users", nil)
+		// Inject admin role
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.NotContains(t, w.Body.String(), "super-secret-key")
