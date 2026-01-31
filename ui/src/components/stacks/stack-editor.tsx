@@ -12,7 +12,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import jsyaml from "js-yaml";
-import { apiClient } from "@/lib/client";
+import { stackManager } from "@/lib/stack-manager";
 
 // New Components
 import { ServicePalette } from "@/components/stacks/service-palette";
@@ -45,21 +45,17 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const loadConfig = async () => {
         setIsLoading(true);
         try {
-            const collection = await apiClient.getCollection(stackId);
-            console.log("DEBUG: collection:", JSON.stringify(collection));
+            const stack = await stackManager.getStack(stackId);
             // Transform services array to map for YAML Editor
             const servicesMap: Record<string, any> = {};
-            if (collection.services && Array.isArray(collection.services)) {
-                collection.services.forEach((s: any) => {
+            if (stack?.services) {
+                stack.services.forEach((s: any) => {
                     servicesMap[s.name] = s;
                 });
-            } else if (collection.services) {
-                // Already a map?
-                Object.assign(servicesMap, collection.services);
             }
 
             const configObj = {
-                ...collection,
+                name: stackId,
                 services: servicesMap
             };
 
@@ -104,7 +100,7 @@ export function StackEditor({ stackId }: StackEditorProps) {
         try {
             const configObj = jsyaml.load(content) as any;
 
-            // Transform services map to array for Backend
+            // Transform services map to array for StackManager
             let servicesArray: any[] = [];
             if (configObj.services) {
                 if (Array.isArray(configObj.services)) {
@@ -116,13 +112,7 @@ export function StackEditor({ stackId }: StackEditorProps) {
                 }
             }
 
-            const collection = {
-                ...configObj,
-                name: stackId, // Ensure ID matches
-                services: servicesArray
-            };
-
-            await apiClient.saveCollection(collection);
+            await stackManager.saveStack(stackId, servicesArray);
             toast.success("Configuration saved successfully");
         } catch (error) {
             console.error(error);
@@ -150,14 +140,6 @@ export function StackEditor({ stackId }: StackEditorProps) {
 
         if (match) {
             // Found services block.
-            // We want to insert AFTER the services block, but before the next root key if possible.
-            // Or just at the end of the services block.
-            // Since we can't easily parse partial YAML AST, we'll try to insert at the end of the file,
-            // assuming services is usually the main or last block.
-            // OR we can find the end of the services block by indentation.
-
-            // For now, simpler: Append to the end of the file, ensuring a newline.
-            // Users can move it if needed. The visualizer will still work.
             if (!newContent.endsWith("\n")) newContent += "\n";
             newContent += snippet;
         } else {

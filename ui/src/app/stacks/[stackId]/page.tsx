@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
 import { use } from "react";
 import { apiClient } from "@/lib/client";
+import { stackManager } from "@/lib/stack-manager";
 
 // Placeholder for StackStatus if we want a separate component
 /**
@@ -29,8 +30,8 @@ function StackStatus({ stackId }: { stackId: string }) {
     const fetchStatus = async () => {
         setIsLoading(true);
         try {
-            const collection = await apiClient.getCollection(stackId);
-            const svcList = collection.services || [];
+            const stack = await stackManager.getStack(stackId);
+            const svcList = stack?.services || [];
 
             const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
                 // Default values if status fetch fails
@@ -45,6 +46,8 @@ function StackStatus({ stackId }: { stackId: string }) {
                     }
                 } catch (e) {
                     // ignore error, keep defaults
+                    // If service is disabled in config, status might be "Disabled" conceptually
+                    if (svc.disable) status = "Disabled";
                 }
 
                 return {
@@ -95,7 +98,7 @@ function StackStatus({ stackId }: { stackId: string }) {
                     <CardContent>
                         <div className="text-2xl font-bold text-muted-foreground">
                              {/* Placeholder logic for errors */}
-                             0
+                             {services.filter(s => s.status === "Error" || s.status === "Offline").length}
                         </div>
                     </CardContent>
                  </Card>
@@ -138,11 +141,11 @@ function StackStatus({ stackId }: { stackId: string }) {
                                 <div className="text-muted-foreground font-mono text-xs">{svc.cpu} / {svc.mem}</div>
                                 <div className="flex justify-end gap-2">
                                     {(svc.status === "Running" || svc.status === "Active") ? (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" title="Stop">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" title="Stop" onClick={() => apiClient.setServiceStatus(svc.name, true)}>
                                             <StopCircle className="h-4 w-4" />
                                         </Button>
                                     ) : (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500" title="Start">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500" title="Start" onClick={() => apiClient.setServiceStatus(svc.name, false)}>
                                             <PlayCircle className="h-4 w-4" />
                                         </Button>
                                     )}
@@ -167,7 +170,7 @@ function StackStatus({ stackId }: { stackId: string }) {
  */
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
     const resolvedParams = use(params);
-    const [activeTab, setActiveTab] = useState("editor");
+    const [activeTab, setActiveTab] = useState("status");
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
