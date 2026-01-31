@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 export interface Stack {
@@ -94,7 +96,7 @@ export const stackManager = {
    * @param name Stack Name
    * @param config The stack configuration (list of services or ServiceCollection)
    */
-  saveStack: async (name: string, config: UpstreamServiceConfig[] | ServiceCollectionLike) => {
+  saveStack: async (name: string, config: UpstreamServiceConfig[] | ServiceCollectionLike | any) => {
     let newServices: UpstreamServiceConfig[] = [];
     if (Array.isArray(config)) {
       newServices = config;
