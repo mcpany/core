@@ -142,9 +142,12 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 }
 
 /**
- * ServiceDetail.
+ * ServiceDetail displays comprehensive information about a registered upstream service.
+ * It includes configuration details, available tools/resources/prompts, metrics, and safety settings.
  *
- * @param { serviceId - The { serviceId.
+ * @param props - The component props.
+ * @param props.serviceId - The unique identifier of the service to display.
+ * @returns The rendered service detail page content.
  */
 export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);
