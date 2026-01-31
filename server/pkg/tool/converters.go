@@ -157,10 +157,10 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 	}
 
 	if toolDef.GetIntegrity() != nil {
-		builder.Integrity = &pb.ToolIntegrity{
+		builder.Integrity = pb.ToolIntegrity_builder{
 			Hash:      proto.String(toolDef.GetIntegrity().GetHash()),
 			Algorithm: proto.String(toolDef.GetIntegrity().GetAlgorithm()),
-		}
+		}.Build()
 	}
 
 	return builder.Build(), nil

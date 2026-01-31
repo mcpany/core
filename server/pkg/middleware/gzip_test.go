@@ -8,18 +8,22 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
 func TestGzipCompressionMiddleware(t *testing.T) {
+	// Helper to generate large string (> 1400 bytes)
+	largePayload := strings.Repeat("Hello, World! ", 150) // ~2100 bytes
+
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("Hello, World! Repeated data for compression efficiency. Hello, World! Repeated data for compression efficiency."))
+		w.Write([]byte(largePayload))
 	})
 
 	gzipHandler := GzipCompressionMiddleware(handler)
 
-	t.Run("Accept-Encoding: gzip", func(t *testing.T) {
+	t.Run("Accept-Encoding: gzip (Large Payload)", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/", nil)
 		req.Header.Set("Accept-Encoding", "gzip")
 		rec := httptest.NewRecorder()
@@ -42,9 +46,36 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 			t.Fatalf("Failed to read gzip body: %v", err)
 		}
 
-		expected := "Hello, World! Repeated data for compression efficiency. Hello, World! Repeated data for compression efficiency."
-		if string(body) != expected {
-			t.Errorf("Expected body %q, got %q", expected, string(body))
+		if string(body) != largePayload {
+			t.Errorf("Expected body length %d, got %d", len(largePayload), len(body))
+		}
+	})
+
+	t.Run("Accept-Encoding: gzip (Small Payload)", func(t *testing.T) {
+		smallPayload := "Small payload < 1400 bytes"
+		smallHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/plain")
+			w.Write([]byte(smallPayload))
+		})
+		gzipSmallHandler := GzipCompressionMiddleware(smallHandler)
+
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Accept-Encoding", "gzip")
+		rec := httptest.NewRecorder()
+
+		gzipSmallHandler.ServeHTTP(rec, req)
+
+		if rec.Header().Get("Content-Encoding") == "gzip" {
+			t.Error("Expected no Content-Encoding: gzip for small payload")
+		}
+
+		if rec.Body.String() != smallPayload {
+			t.Errorf("Expected body %q, got %q", smallPayload, rec.Body.String())
+		}
+
+		// Check Content-Length is set automatically by our buffering logic
+		if rec.Header().Get("Content-Length") == "" {
+			t.Error("Expected Content-Length to be set for small buffered response")
 		}
 	})
 
@@ -59,7 +90,7 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 			t.Error("Expected no Content-Encoding: gzip")
 		}
 
-		if rec.Body.String() != "Hello, World! Repeated data for compression efficiency. Hello, World! Repeated data for compression efficiency." {
+		if rec.Body.String() != largePayload {
 			t.Errorf("Unexpected body content")
 		}
 	})
@@ -79,6 +110,23 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 
 		if rec.Header().Get("Content-Encoding") == "gzip" {
 			t.Error("Expected no Content-Encoding: gzip for image/png")
+		}
+	})
+
+	t.Run("Empty Response", func(t *testing.T) {
+		emptyHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNoContent)
+		})
+		gzipEmptyHandler := GzipCompressionMiddleware(emptyHandler)
+
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Accept-Encoding", "gzip")
+		rec := httptest.NewRecorder()
+
+		gzipEmptyHandler.ServeHTTP(rec, req)
+
+		if rec.Header().Get("Content-Encoding") == "gzip" {
+			t.Error("Expected no Content-Encoding for empty response")
 		}
 	})
 }

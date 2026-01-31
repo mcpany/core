@@ -191,15 +191,21 @@ func TestAuthManager(t *testing.T) {
 
 	t.Run("set_and_get_users", func(t *testing.T) {
 		users := []*configv1.User{
-			{Id: proto.String("user1"), Roles: []string{"admin"}},
-			{Id: proto.String("user2"), Roles: []string{"user"}},
+			configv1.User_builder{
+				Id:    proto.String("user1"),
+				Roles: []string{"admin"},
+			}.Build(),
+			configv1.User_builder{
+				Id:    proto.String("user2"),
+				Roles: []string{"user"},
+			}.Build(),
 		}
 		authManager.SetUsers(users)
 
 		u1, ok := authManager.GetUser("user1")
 		assert.True(t, ok)
 		assert.Equal(t, "user1", u1.GetId())
-		assert.Equal(t, []string{"admin"}, u1.Roles)
+		assert.Equal(t, []string{"admin"}, u1.GetRoles())
 
 		u2, ok := authManager.GetUser("user2")
 		assert.True(t, ok)
@@ -324,22 +330,22 @@ func TestAPIKeyAuthenticator_Query(t *testing.T) {
 		assert.Error(t, err)
 	})
 
-	t.Run("authentication_with_configured_username", func(t *testing.T) {
-		password := "secret123"
-		hashed, _ := passhash.Password(password)
-		configWithUser := &configv1.BasicAuth{
-			Username:     proto.String("admin"),
-			PasswordHash: proto.String(hashed),
-		}
-		authWithUser := NewBasicAuthenticator(configWithUser)
-		require.NotNil(t, authWithUser)
+		t.Run("authentication_with_configured_username", func(t *testing.T) {
+			password := "secret123"
+			hashed, _ := passhash.Password(password)
+			configWithUser := configv1.BasicAuth_builder{
+				Username:     proto.String("admin"),
+				PasswordHash: proto.String(hashed),
+			}.Build()
+			authWithUser := NewBasicAuthenticator(configWithUser)
+			require.NotNil(t, authWithUser)
 
-		t.Run("correct_username", func(t *testing.T) {
-			req := httptest.NewRequest("GET", "/", nil)
-			req.SetBasicAuth("admin", password)
-			_, err := authWithUser.Authenticate(context.Background(), req)
-			assert.NoError(t, err)
-		})
+			t.Run("correct_username", func(t *testing.T) {
+				req := httptest.NewRequest("GET", "/", nil)
+				req.SetBasicAuth("admin", password)
+				_, err := authWithUser.Authenticate(context.Background(), req)
+				assert.NoError(t, err)
+			})
 
 		t.Run("wrong_username", func(t *testing.T) {
 			req := httptest.NewRequest("GET", "/", nil)
@@ -357,15 +363,13 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("api_key_valid", func(t *testing.T) {
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					ParamName:         proto.String("X-API-Key"),
-					VerificationValue: proto.String("secret"),
-					In:                configv1.APIKeyAuth_HEADER.Enum(),
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName:         proto.String("X-API-Key"),
+				VerificationValue: proto.String("secret"),
+				In:                configv1.APIKeyAuth_HEADER.Enum(),
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		req.Header.Set("X-API-Key", "secret")
 		err := ValidateAuthentication(context.Background(), config, req)
@@ -373,15 +377,13 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("api_key_invalid", func(t *testing.T) {
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					ParamName:         proto.String("X-API-Key"),
-					VerificationValue: proto.String("secret"),
-					In:                configv1.APIKeyAuth_HEADER.Enum(),
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName:         proto.String("X-API-Key"),
+				VerificationValue: proto.String("secret"),
+				In:                configv1.APIKeyAuth_HEADER.Enum(),
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		req.Header.Set("X-API-Key", "wrong")
 		err := ValidateAuthentication(context.Background(), config, req)
@@ -389,13 +391,11 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("api_key_bad_config", func(t *testing.T) {
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					// Missing params
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				// Missing params
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
@@ -417,14 +417,12 @@ func TestValidateAuthentication(t *testing.T) {
 		}))
 		defer server.Close()
 
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oauth2{
-				Oauth2: &configv1.OAuth2Auth{
-					IssuerUrl: proto.String(server.URL),
-					Audience:  proto.String("test-audience"),
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			Oauth2: configv1.OAuth2Auth_builder{
+				IssuerUrl: proto.String(server.URL),
+				Audience:  proto.String("test-audience"),
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
@@ -446,14 +444,12 @@ func TestValidateAuthentication(t *testing.T) {
 		}))
 		defer server.Close()
 
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oidc{
-				Oidc: &configv1.OIDCAuth{
-					Issuer:   proto.String(server.URL),
-					Audience: []string{"test-audience"},
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			Oidc: configv1.OIDCAuth_builder{
+				Issuer:   proto.String(server.URL),
+				Audience: []string{"test-audience"},
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		// Should fail unauthorized because no token, but prove it tried to authenticate using OIDC config
 		err := ValidateAuthentication(context.Background(), config, req)
@@ -462,13 +458,11 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("oidc_method_missing_issuer", func(t *testing.T) {
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oidc{
-				Oidc: &configv1.OIDCAuth{
-					// Missing issuer
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			Oidc: configv1.OIDCAuth_builder{
+				// Missing issuer
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
@@ -476,13 +470,11 @@ func TestValidateAuthentication(t *testing.T) {
 	})
 
 	t.Run("oauth2_method_missing_issuer", func(t *testing.T) {
-		config := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_Oauth2{
-				Oauth2: &configv1.OAuth2Auth{
-					// Missing issuer
-				},
-			},
-		}
+		config := configv1.Authentication_builder{
+			Oauth2: configv1.OAuth2Auth_builder{
+				// Missing issuer
+			}.Build(),
+		}.Build()
 		req := httptest.NewRequest("GET", "/", nil)
 		err := ValidateAuthentication(context.Background(), config, req)
 		assert.Error(t, err)
@@ -500,9 +492,9 @@ func TestValidateAuthentication(t *testing.T) {
 func TestBasicAuthenticator(t *testing.T) {
 	password := "secret123"
 	hashed, _ := passhash.Password(password)
-	config := &configv1.BasicAuth{
+	config := configv1.BasicAuth_builder{
 		PasswordHash: proto.String(hashed),
-	}
+	}.Build()
 
 	authenticator := NewBasicAuthenticator(config)
 	require.NotNil(t, authenticator)
@@ -529,10 +521,10 @@ func TestBasicAuthenticator(t *testing.T) {
 }
 
 func TestTrustedHeaderAuthenticator(t *testing.T) {
-	config := &configv1.TrustedHeaderAuth{
+	config := configv1.TrustedHeaderAuth_builder{
 		HeaderName:  proto.String("X-Trusted-User"),
 		HeaderValue: proto.String("verified"),
-	}
+	}.Build()
 	authenticator := NewTrustedHeaderAuthenticator(config)
 	require.NotNil(t, authenticator)
 

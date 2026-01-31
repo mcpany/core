@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
@@ -70,9 +70,9 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 
 		// Mock Tool for Service ID
 		serviceID := "test_service"
-		mockProtoTool := &v1.Tool{
+		mockProtoTool := v1.Tool_builder{
 			ServiceId: &serviceID,
-		}
+		}.Build()
 		mockTool := &tool.MockTool{
 			ToolFunc: func() *v1.Tool {
 				return mockProtoTool
@@ -188,7 +188,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		}
 
 		serviceID := "test_service_token"
-		mockProtoTool := &v1.Tool{ServiceId: &serviceID}
+		mockProtoTool := v1.Tool_builder{ServiceId: &serviceID}.Build()
 		mockTool := &tool.MockTool{ToolFunc: func() *v1.Tool { return mockProtoTool }}
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 
@@ -264,7 +264,7 @@ func TestToolMetricsMiddleware_Execute(t *testing.T) {
 		}
 
 		serviceID := "test_service"
-		mockProtoTool := &v1.Tool{ServiceId: &serviceID}
+		mockProtoTool := v1.Tool_builder{ServiceId: &serviceID}.Build()
 		mockTool := &tool.MockTool{ToolFunc: func() *v1.Tool { return mockProtoTool }}
 		ctx := tool.NewContextWithTool(context.Background(), mockTool)
 

@@ -19,24 +19,20 @@ func TestResolveSecret_ValidationRegex(t *testing.T) {
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	t.Run("PlainText with valid regex", func(t *testing.T) {
-		secret := &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{
-				PlainText: "valid-key-123",
-			},
+		secret := configv1.SecretValue_builder{
+			PlainText:       proto.String("valid-key-123"),
 			ValidationRegex: proto.String("^[a-z]+-[a-z]+-[0-9]+$"),
-		}
+		}.Build()
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "valid-key-123", resolved)
 	})
 
 	t.Run("PlainText with invalid regex", func(t *testing.T) {
-		secret := &configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{
-				PlainText: "invalid-key",
-			},
+		secret := configv1.SecretValue_builder{
+			PlainText:       proto.String("invalid-key"),
 			ValidationRegex: proto.String("^[0-9]+$"), // Expects only numbers
-		}
+		}.Build()
 		_, err := util.ResolveSecret(context.Background(), secret)
 
 		// This should fail, but currently passes (bug)
@@ -52,14 +48,12 @@ func TestResolveSecret_ValidationRegex(t *testing.T) {
 		}))
 		defer server.Close()
 
-		secret := &configv1.SecretValue{
-			Value: &configv1.SecretValue_RemoteContent{
-				RemoteContent: &configv1.RemoteContent{
-					HttpUrl: proto.String(server.URL),
-				},
-			},
+		secret := configv1.SecretValue_builder{
+			RemoteContent: configv1.RemoteContent_builder{
+				HttpUrl: proto.String(server.URL),
+			}.Build(),
 			ValidationRegex: proto.String("^sk-[a-z]+$"), // Expects sk- prefix
-		}
+		}.Build()
 
 		_, err := util.ResolveSecret(context.Background(), secret)
 

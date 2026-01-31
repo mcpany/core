@@ -21,9 +21,9 @@ func TestCallPolicyMiddleware_FailClosed(t *testing.T) {
 	mockToolManager := &callPolicyMockToolManager{}
 	cpMiddleware := middleware.NewCallPolicyMiddleware(mockToolManager)
 
-	toolProto := &v1.Tool{
+	toolProto := v1.Tool_builder{
 		ServiceId: proto.String("missing-service"),
-	}
+	}.Build()
 	mockTool := &callPolicyMockTool{toolProto: toolProto}
 
 	// Tool exists

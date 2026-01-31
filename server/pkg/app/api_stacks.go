@@ -17,7 +17,6 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 )
 
@@ -127,22 +126,22 @@ func (a *Application) saveStackConfig(w http.ResponseWriter, r *http.Request, st
 	}
 
 	// Ensure ID matches path?
-	if collection.Name == nil || *collection.Name == "" {
-		collection.Name = proto.String(stackID)
-	} else if *collection.Name != stackID {
+	if collection.GetName() == "" {
+		collection.SetName(stackID)
+	} else if collection.GetName() != stackID {
 		// Allow name change? No, ID in path should be authoritative for the update target.
 		// But "Name" is the primary key in Store usually?
 		// store.SaveServiceCollection uses Name as ID usually? or we have ID field?
 		// Collection proto has `optional string name`.
 		// existing logic uses Name.
-		if *collection.Name != stackID {
+		if collection.GetName() != stackID {
 			http.Error(w, "Stack name in config must match URL path", http.StatusBadRequest)
 			return
 		}
 	}
 
 	// Validate services inside
-	for _, svc := range collection.Services {
+	for _, svc := range collection.GetServices() {
 		if err := config.ValidateOrError(r.Context(), svc); err != nil {
 			http.Error(w, "Invalid service in stack: "+err.Error(), http.StatusBadRequest)
 			return

@@ -33,9 +33,11 @@ type DebugEntry struct {
 // Debugger monitors and records traffic for inspection.
 type Debugger struct {
 	ring        *ring.Ring
-	mu          sync.Mutex
+	mu          sync.RWMutex
 	limit       int
 	maxBodySize int64
+	ingress     chan DebugEntry
+	done        chan struct{}
 }
 
 // NewDebugger creates a new Debugger middleware.
@@ -44,11 +46,32 @@ type Debugger struct {
 //
 // Returns the result.
 func NewDebugger(size int) *Debugger {
-	return &Debugger{
+	d := &Debugger{
 		ring:        ring.New(size),
 		limit:       size,
 		maxBodySize: 10 * 1024, // 10KB default limit for body capture
+		ingress:     make(chan DebugEntry, size*2),
+		done:        make(chan struct{}),
 	}
+	go d.process()
+	return d
+}
+
+// process runs in the background to handle log entries.
+func (d *Debugger) process() {
+	for entry := range d.ingress {
+		d.mu.Lock()
+		d.ring.Value = entry
+		d.ring = d.ring.Next()
+		d.mu.Unlock()
+	}
+	close(d.done)
+}
+
+// Close stops the background processor.
+func (d *Debugger) Close() {
+	close(d.ingress)
+	<-d.done
 }
 
 type bodyLogWriter struct {
@@ -175,10 +198,13 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			ResponseBody:    respBody,
 		}
 
-		d.mu.Lock()
-		d.ring.Value = entry
-		d.ring = d.ring.Next()
-		d.mu.Unlock()
+		// ⚡ BOLT: Move ring buffer updates to background worker to avoid blocking request
+		// Randomized Selection from Top 5 High-Impact Targets
+		select {
+		case d.ingress <- entry:
+		default:
+			// Buffer full, drop entry to preserve system stability
+		}
 	})
 }
 
@@ -197,8 +223,8 @@ func isTextContent(contentType string) bool {
 //
 // Returns the result.
 func (d *Debugger) Entries() []DebugEntry {
-	d.mu.Lock()
-	defer d.mu.Unlock()
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 
 	entries := make([]DebugEntry, 0, d.limit)
 	d.ring.Do(func(p interface{}) {

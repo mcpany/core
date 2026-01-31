@@ -31,10 +31,14 @@ func TestHandleUsers_List(t *testing.T) {
 	handler := app.handleUsers(store)
 
 	// Create a user first
-	user := &configv1.User{Id: proto.String("user1")}
+	user := configv1.User_builder{Id: proto.String("user1")}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	req := httptest.NewRequest(http.MethodGet, "/users", nil)
+	// Inject admin role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 	handler(w, req)
 
@@ -59,11 +63,15 @@ func TestHandleUserDetail(t *testing.T) {
 	handler := app.handleUserDetail(store)
 
 	// Create a user
-	user := &configv1.User{Id: proto.String("user1")}
+	user := configv1.User_builder{Id: proto.String("user1")}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	t.Run("Get User", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/user1", nil)
+		// Inject auth context (user accessing self)
+		ctx := auth.ContextWithUser(req.Context(), "user1")
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 
@@ -76,22 +84,25 @@ func TestHandleUserDetail(t *testing.T) {
 
 	t.Run("Get Non-Existent User", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users/unknown", nil)
+		// Inject admin role to bypass "own user" check and hit 404
+		ctx := auth.ContextWithUser(req.Context(), "admin")
+		ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.Equal(t, http.StatusNotFound, w.Code)
 	})
 
 	t.Run("Update User", func(t *testing.T) {
-		updatedUser := &configv1.User{
-			Id:       proto.String("user1"),
-			Authentication: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_BasicAuth{
-					BasicAuth: &configv1.BasicAuth{
-						PasswordHash: proto.String("newpass"),
-					},
-				},
-			},
-		}
+		updatedUser := configv1.User_builder{
+			Id: proto.String("user1"),
+			Authentication: configv1.Authentication_builder{
+				BasicAuth: configv1.BasicAuth_builder{
+					PasswordHash: proto.String("newpass"),
+				}.Build(),
+			}.Build(),
+		}.Build()
 		// Wrap in { user: ... }
 		opts := protojson.MarshalOptions{UseProtoNames: true}
 		userBytes, _ := opts.Marshal(updatedUser)
@@ -101,6 +112,10 @@ func TestHandleUserDetail(t *testing.T) {
 		body, _ := json.Marshal(bodyMap)
 
 		req := httptest.NewRequest(http.MethodPut, "/users/user1", bytes.NewReader(body))
+		// Inject auth context (user accessing self)
+		ctx := auth.ContextWithUser(req.Context(), "user1")
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 
@@ -116,6 +131,10 @@ func TestHandleUserDetail(t *testing.T) {
 
 	t.Run("Delete User", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodDelete, "/users/user1", nil)
+		// Inject auth context (user deleting self)
+		ctx := auth.ContextWithUser(req.Context(), "user1")
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.Equal(t, http.StatusNoContent, w.Code)
@@ -135,29 +154,25 @@ func TestHashUserPassword_Redaction(t *testing.T) {
 	store := memory.NewStore()
 
 	// 1. Create a user with a real hash
-	user := &configv1.User{
+	user := configv1.User_builder{
 		Id: proto.String("user-redact"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					PasswordHash: proto.String("real-hash"),
-				},
-			},
-		},
-	}
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				PasswordHash: proto.String("real-hash"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
 	// 2. Simulate an update where password_hash is "[REDACTED]"
-	updatedUser := &configv1.User{
+	updatedUser := configv1.User_builder{
 		Id: proto.String("user-redact"),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					PasswordHash: proto.String("REDACTED"),
-				},
-			},
-		},
-	}
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				PasswordHash: proto.String("REDACTED"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	// 3. Call hashUserPassword
 	err := hashUserPassword(context.Background(), updatedUser, store)

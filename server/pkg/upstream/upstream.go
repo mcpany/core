@@ -20,11 +20,9 @@ import (
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
-	// Parameters:
-	//   - ctx: The context for the request.
+	// ctx is the context for the request.
 	//
-	// Returns:
-	//   - error: An error if the operation fails.
+	// Returns an error if the operation fails.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
@@ -57,11 +55,6 @@ type Upstream interface {
 // runtime health status.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
-	//
-	// Parameters:
-	//   - ctx: The context for the health check.
-	//
-	// Returns:
-	//   - error: An error if the service is unhealthy.
+	// Returns nil if healthy, or an error if unhealthy.
 	CheckHealth(ctx context.Context) error
 }

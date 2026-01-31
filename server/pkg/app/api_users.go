@@ -11,16 +11,22 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
 
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Authorization: Only admins can list or create users
+		if !auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
 		switch r.Method {
 		case http.MethodGet:
 			users, err := store.ListUsers(r.Context())
@@ -118,6 +124,21 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			return
 		}
 
+		// Authorization: Users can only access their own profile, unless they are admin
+		currentUserID, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			// This might happen if auth middleware is disabled or bypassed.
+			// Fail secure.
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		isAdmin := auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin")
+		if currentUserID != id && !isAdmin {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
 		switch r.Method {
 		case http.MethodGet:
 			user, err := store.GetUser(r.Context(), id)
@@ -164,7 +185,7 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 				http.Error(w, "id mismatch", http.StatusBadRequest)
 				return
 			}
-			user.Id = proto.String(id)
+			user.SetId(id)
 
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
@@ -217,10 +238,10 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 			}
 			if existingUser != nil && existingUser.GetAuthentication() != nil && existingUser.GetAuthentication().GetBasicAuth() != nil {
 				existingHash := existingUser.GetAuthentication().GetBasicAuth().GetPasswordHash()
-				basicAuth.PasswordHash = proto.String(existingHash)
+				basicAuth.SetPasswordHash(existingHash)
 			} else {
 				// If no existing user or auth, clear the REDACTED value to avoid saving it
-				basicAuth.PasswordHash = proto.String("")
+				basicAuth.SetPasswordHash("")
 			}
 			return nil
 		}
@@ -240,7 +261,7 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 			if err != nil {
 				return err
 			}
-			basicAuth.PasswordHash = proto.String(hash)
+			basicAuth.SetPasswordHash(hash)
 		}
 	}
 	return nil

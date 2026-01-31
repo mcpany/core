@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { SchemaForm } from "./schema-form";
+import { SecretValue } from "@proto/config/v1/auth";
 
 interface InstantiateDialogProps {
     open: boolean;
@@ -38,7 +39,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
     // Command & Env state
     const [command, setCommand] = useState("");
-    const [envVars, setEnvVars] = useState<Record<string, { plainText?: string; secretId?: string }>>({});
+    const [envVars, setEnvVars] = useState<Record<string, SecretValue>>({});
 
     // Schema state
     const [parsedSchema, setParsedSchema] = useState<any>(null);
@@ -59,7 +60,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                 setCommand(templateConfig.commandLineService.command || "");
 
                 // Initialize env vars
-                const newEnv: Record<string, { plainText?: string; secretId?: string }> = {};
+                const newEnv: Record<string, SecretValue> = {};
                 const initialSchemaValues: Record<string, string> = {};
 
                 if (templateConfig.commandLineService.env) {
@@ -68,11 +69,14 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                         let val = "";
                         if (sv && typeof sv === 'object' && sv.plainText) {
                             val = sv.plainText;
-                            newEnv[k] = { plainText: val };
+                            newEnv[k] = { plainText: val, validationRegex: "" };
                         } else if (typeof v === 'string') {
                              // Fallback if the input config was just a record of strings
                              val = v;
-                             newEnv[k] = { plainText: val };
+                             newEnv[k] = { plainText: val, validationRegex: "" };
+                        } else {
+                             // Default empty
+                             newEnv[k] = { plainText: "", validationRegex: "" };
                         }
                         initialSchemaValues[k] = val;
                     });
@@ -104,7 +108,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                     // Sync defaults to envVars immediately
                     const envWithDefaults = { ...newEnv };
                     Object.entries(valuesWithDefaults).forEach(([k, v]) => {
-                        envWithDefaults[k] = { plainText: v };
+                        envWithDefaults[k] = { plainText: v, validationRegex: "" };
                     });
                     setEnvVars(envWithDefaults);
                     checkSchemaValidity(valuesWithDefaults, schema);
@@ -134,11 +138,11 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
     const handleSchemaChange = (newValues: Record<string, string>) => {
         setSchemaValues(newValues);
         // Sync to envVars for compatibility with handleInstantiate logic
-        const newEnv: Record<string, { plainText?: string }> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
+        const newEnv: Record<string, SecretValue> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
 
         // Update with new values
         Object.entries(newValues).forEach(([k, v]) => {
-            newEnv[k] = { plainText: v };
+            newEnv[k] = { plainText: v, validationRegex: "" };
         });
 
         setEnvVars(newEnv);
@@ -158,15 +162,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
                 newConfig.commandLineService.command = command;
 
                 // Map EnvVars back to API format
-                const apiEnv: Record<string, any> = {};
-                Object.entries(envVars).forEach(([k, v]) => {
-                    if (v.plainText) {
-                        apiEnv[k] = { plainText: v.plainText };
-                    } else if (v.secretId) {
-                        // Secret handling placeholder
-                    }
-                });
-                newConfig.commandLineService.env = apiEnv;
+                newConfig.commandLineService.env = envVars;
             }
 
             if (authId !== 'none') {

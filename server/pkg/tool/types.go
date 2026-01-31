@@ -20,6 +20,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -64,29 +65,18 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns:
-	//   - *v1.Tool: The protobuf tool definition.
+	// Returns the result.
 	Tool() *v1.Tool
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns:
-	//   - *mcp.Tool: The MCP tool definition.
+	// Returns the result.
 	MCPTool() *mcp.Tool
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
-	//
-	// Parameters:
-	//   - ctx: The context for the execution.
-	//   - req: The execution request.
-	//
-	// Returns:
-	//   - any: The execution result.
-	//   - error: An error if the execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns:
-	//   - *configv1.CacheConfig: The cache configuration.
+	// Returns the result.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -138,20 +128,21 @@ type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
 	// Parameters:
-	//   - toolName: The name of the tool.
+	//   - toolName: The name of the tool to retrieve.
 	//
 	// Returns:
-	//   - Tool: The tool instance.
-	//   - bool: True if found.
+	//   - Tool: The tool instance if found.
+	//   - bool: True if the tool exists, false otherwise.
 	GetTool(toolName string) (Tool, bool)
+
 	// GetServiceInfo retrieves metadata for a service.
 	//
 	// Parameters:
-	//   - serviceID: The unique service identifier.
+	//   - serviceID: The unique identifier of the service.
 	//
 	// Returns:
-	//   - *ServiceInfo: The service metadata.
-	//   - bool: True if found.
+	//   - *ServiceInfo: The service metadata info if found.
+	//   - bool: True if the service exists, false otherwise.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -162,26 +153,26 @@ type contextKey string
 
 const toolContextKey = contextKey("tool")
 
-// NewContextWithTool creates a new context with the given tool.
+// NewContextWithTool creates a new context with the given tool embedded.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - t: The tool instance.
+//   - ctx: The context to extend.
+//   - t: The tool instance to embed in the context.
 //
 // Returns:
-//   - context.Context: The new context.
+//   - context.Context: A new context containing the tool.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
-// GetFromContext retrieves a tool from the context.
+// GetFromContext retrieves a tool from the context if present.
 //
 // Parameters:
-//   - ctx: The context for the request.
+//   - ctx: The context to search.
 //
 // Returns:
-//   - Tool: The tool instance.
-//   - bool: True if found.
+//   - Tool: The tool instance from the context.
+//   - bool: True if a tool was found, false otherwise.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -193,10 +184,10 @@ type Callable interface {
 	//
 	// Parameters:
 	//   - ctx: The context for the request.
-	//   - req: The execution request.
+	//   - req: The execution request details.
 	//
 	// Returns:
-	//   - any: The execution result.
+	//   - any: The result of the execution.
 	//   - error: An error if the operation fails.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
@@ -224,20 +215,24 @@ const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
-// ctx is the context for the request.
-// cc is the cc.
+// Parameters:
+//   - ctx: The context to extend.
+//   - cc: The CacheControl instance to embed.
 //
-// Returns the result.
+// Returns:
+//   - context.Context: A new context containing the CacheControl.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
 // GetCacheControl retrieves the CacheControl from the context.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context to search.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - *CacheControl: The CacheControl instance if found.
+//   - bool: True if CacheControl exists, false otherwise.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -272,20 +267,18 @@ type GRPCTool struct {
 	resilienceManager *resilience.Manager
 }
 
-// NewGRPCTool creates a new GRPCTool.
+// NewGRPCTool creates a new GRPCTool instance.
 //
 // Parameters:
-//
-//	tool: The protobuf definition of the tool.
-//	poolManager: The connection pool manager.
-//	serviceID: The identifier for the service.
-//	method: The gRPC method descriptor.
-//	callDefinition: The configuration for the gRPC call.
-//	resilienceConfig: The resilience configuration.
+//   - tool: The protobuf definition of the tool.
+//   - poolManager: The connection pool manager for gRPC connections.
+//   - serviceID: The identifier for the service.
+//   - method: The gRPC method descriptor.
+//   - callDefinition: The configuration for the gRPC call.
+//   - resilienceConfig: The resilience configuration (retries, timeouts, etc.).
 //
 // Returns:
-//
-//	*GRPCTool: The created GRPCTool.
+//   - *GRPCTool: The initialized GRPCTool.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -300,14 +293,18 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 
 // Tool returns the protobuf definition of the gRPC tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP-compliant tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -321,7 +318,8 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the gRPC tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -430,22 +428,20 @@ type HTTPTool struct {
 	cachedOutputTemplate *transformer.TextTemplate
 }
 
-// NewHTTPTool creates a new HTTPTool.
+// NewHTTPTool creates a new HTTPTool instance.
 //
 // Parameters:
-//
-//	tool: The protobuf definition of the tool.
-//	poolManager: The connection pool manager.
-//	serviceID: The identifier for the service.
-//	authenticator: The authenticator for upstream requests.
-//	callDefinition: The configuration for the HTTP call.
-//	cfg: The resilience configuration.
-//	policies: The security policies for the call.
-//	callID: The unique identifier for the call.
+//   - tool: The protobuf definition of the tool.
+//   - poolManager: The connection pool manager for HTTP connections.
+//   - serviceID: The identifier for the service.
+//   - authenticator: The authenticator for upstream requests.
+//   - callDefinition: The configuration for the HTTP call.
+//   - cfg: The resilience configuration.
+//   - policies: The security policies for the call.
+//   - callID: The unique identifier for the call.
 //
 // Returns:
-//
-//	*HTTPTool: The created HTTPTool.
+//   - *HTTPTool: The initialized HTTPTool.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -541,14 +537,18 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 // Tool returns the protobuf definition of the HTTP tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP-compliant tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -562,7 +562,8 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the HTTP tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1122,17 +1123,15 @@ type MCPTool struct {
 	initError            error
 }
 
-// NewMCPTool creates a new MCPTool.
+// NewMCPTool creates a new MCPTool instance.
 //
 // Parameters:
-//
-//	tool: The protobuf definition of the tool.
-//	client: The MCP client for downstream communication.
-//	callDefinition: The configuration for the MCP call.
+//   - tool: The protobuf definition of the tool.
+//   - client: The MCP client for downstream communication.
+//   - callDefinition: The configuration for the MCP call.
 //
 // Returns:
-//
-//	*MCPTool: The created MCPTool.
+//   - *MCPTool: The initialized MCPTool.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1169,14 +1168,18 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 
 // Tool returns the protobuf definition of the MCP tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP-compliant tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1190,7 +1193,8 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the MCP tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1334,21 +1338,19 @@ type OpenAPITool struct {
 	initError            error
 }
 
-// NewOpenAPITool creates a new OpenAPITool.
+// NewOpenAPITool creates a new OpenAPITool instance.
 //
 // Parameters:
-//
-//	tool: The protobuf definition of the tool.
-//	client: The HTTP client for requests.
-//	parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
-//	method: The HTTP method.
-//	url: The URL template.
-//	authenticator: The authenticator for requests.
-//	callDefinition: The configuration for the OpenAPI call.
+//   - tool: The protobuf definition of the tool.
+//   - client: The HTTP client for requests.
+//   - parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
+//   - method: The HTTP method (GET, POST, etc.).
+//   - url: The URL template.
+//   - authenticator: The authenticator for upstream requests.
+//   - callDefinition: The configuration for the OpenAPI call.
 //
 // Returns:
-//
-//	*OpenAPITool: The created OpenAPITool.
+//   - *OpenAPITool: The initialized OpenAPITool.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1389,14 +1391,18 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 
 // Tool returns the protobuf definition of the OpenAPI tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP-compliant tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1410,7 +1416,8 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1593,19 +1600,17 @@ type CommandTool struct {
 	initError       error
 }
 
-// NewCommandTool creates a new CommandTool.
+// NewCommandTool creates a new CommandTool instance.
 //
 // Parameters:
-//
-//	tool: The protobuf definition of the tool.
-//	service: The configuration of the command-line service.
-//	callDefinition: The configuration for the command-line call.
-//	policies: The security policies.
-//	callID: The unique identifier for the call.
+//   - tool: The protobuf definition of the tool.
+//   - service: The configuration of the command-line service.
+//   - callDefinition: The configuration for the command-line call.
+//   - policies: The security policies.
+//   - callID: The unique identifier for the call.
 //
 // Returns:
-//
-//	Tool: The created CommandTool.
+//   - Tool: The created CommandTool.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1642,19 +1647,17 @@ type LocalCommandTool struct {
 	initError      error
 }
 
-// NewLocalCommandTool creates a new LocalCommandTool.
+// NewLocalCommandTool creates a new LocalCommandTool instance.
 //
 // Parameters:
-//
-//	tool: The protobuf definition of the tool.
-//	service: The configuration of the command-line service.
-//	callDefinition: The configuration for the command-line call.
-//	policies: The security policies.
-//	callID: The unique identifier for the call.
+//   - tool: The protobuf definition of the tool.
+//   - service: The configuration of the command-line service.
+//   - callDefinition: The configuration for the command-line call.
+//   - policies: The security policies.
+//   - callID: The unique identifier for the call.
 //
 // Returns:
-//
-//	Tool: The created LocalCommandTool.
+//   - Tool: The created LocalCommandTool.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1699,14 +1702,18 @@ func NewLocalCommandTool(
 
 // Tool returns the protobuf definition of the command-line tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP-compliant tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1720,7 +1727,8 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -1776,15 +1784,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForLocalFileAccess(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
@@ -1818,16 +1818,14 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
+						// If running a shell, validate that inputs are safe for shell execution
+						if isShellCommand(t.service.GetCommand()) {
+							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
 					} else {
@@ -1889,13 +1887,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
@@ -2006,14 +1999,18 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 // Tool returns the protobuf definition of the command-line tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP-compliant tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2027,7 +2024,8 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration, if any.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2630,7 +2628,7 @@ func isShellCommand(cmd string) bool {
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
-		"lua", "awk", "gawk", "nawk", "sed",
+		"lua", "awk", "gawk", "nawk",
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
@@ -2657,7 +2655,7 @@ func isShellCommand(cmd string) bool {
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
-		"zip", "unzip", "rsync", "nmap", "tcpdump",
+		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2707,11 +2705,57 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
+	base := strings.ToLower(filepath.Base(command))
+	isWindowsCmd := base == "cmd.exe" || base == "cmd"
+	if isWindowsCmd && quoteLevel == 2 {
+		quoteLevel = 0
+	}
+
+	// Sentinel Security Update: Interpreter Injection Protection
+	if isInterpreter(command) {
+		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+			return err
+		}
+	}
+
+	if quoteLevel == 3 { // Backticked
+		return checkBacktickInjection(val, command)
+	}
+
 	if quoteLevel == 2 { // Single Quoted
-		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
+
+		// Sentinel Security Update:
+		// Even if single-quoted, if the shell command invokes an interpreter (like awk, perl, ruby, python),
+		// the content inside the quotes might be interpreted as code.
+		// Since we cannot know if the inner command is an interpreter, we explicitly block common RCE patterns.
+
+		// Block backticks (used by Perl, Ruby, PHP for execution)
+		if strings.Contains(val, "`") {
+			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
+		}
+
+		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
+		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
+		// We normalize by removing whitespace to detect "system (" or "system\t(".
+		var b strings.Builder
+		b.Grow(len(val))
+		for _, r := range val {
+			if !unicode.IsSpace(r) {
+				b.WriteRune(r)
+			}
+		}
+		cleanVal := strings.ToLower(b.String())
+
+		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+		for _, call := range dangerousCalls {
+			if strings.Contains(cleanVal, call) {
+				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
+			}
+		}
+
 		return nil
 	}
 
@@ -2725,6 +2769,75 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
+	return checkUnquotedInjection(val, command)
+}
+
+func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Python: Check for f-string prefix in template
+	if strings.HasPrefix(base, "python") {
+		// Scan template to find the prefix of the quote containing the placeholder
+		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+		hasFString := false
+		for i := 0; i < len(template)-1; i++ {
+			if template[i+1] == '\'' || template[i+1] == '"' {
+				prefix := strings.ToLower(getPrefix(template, i+1))
+				if prefix == "f" || prefix == "fr" || prefix == "rf" {
+					hasFString = true
+					break
+				}
+			}
+		}
+		if hasFString {
+			if strings.ContainsAny(val, "{}") {
+				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+			}
+		}
+	}
+
+	// Ruby: #{...} works in double quotes
+	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+		}
+	}
+
+	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
+	isPerl := strings.HasPrefix(base, "perl")
+	isPhp := strings.HasPrefix(base, "php")
+
+	if isNode && quoteLevel == 3 { // Backtick
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+		}
+	}
+	if (isPerl || isPhp) && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+		}
+	}
+	return nil
+}
+
+func checkBacktickInjection(val, command string) error {
+	// Backticks in Shell are command substitution (Level 0 danger).
+	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
+	// we must enforce strict checks.
+	if !isInterpreter(command) {
+		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+		if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
+		}
+	}
+	// For interpreters (like JS), we already handled specific injections above.
+	// We should still prevent breaking out of backticks.
+	if strings.Contains(val, "`") {
+		return fmt.Errorf("backtick injection detected")
+	}
+	return nil
+}
+
+func checkUnquotedInjection(val, command string) error {
 	// Unquoted (or unknown quoting): strict check
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
@@ -2745,16 +2858,45 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return nil
 }
 
+func isInterpreter(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	for _, interp := range interpreters {
+		if base == interp || strings.HasPrefix(base, interp) {
+			return true
+		}
+	}
+	return false
+}
+
+func isWordChar(c byte) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
+}
+
+func getPrefix(s string, idx int) string {
+	// idx is index of quote char
+	start := idx - 1
+	for start >= 0 {
+		c := s[start]
+		if !isWordChar(c) {
+			break
+		}
+		start--
+	}
+	return s[start+1 : idx]
+}
+
 func analyzeQuoteContext(template, placeholder string) int {
 	if template == "" || placeholder == "" {
 		return 0
 	}
 
-	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
-	minLevel := 2
+	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
+	minLevel := 3
 
 	inSingle := false
 	inDouble := false
+	inBacktick := false
 	escaped := false
 
 	foundAny := false
@@ -2764,10 +2906,13 @@ func analyzeQuoteContext(template, placeholder string) int {
 		if strings.HasPrefix(template[i:], placeholder) {
 			foundAny = true
 			currentLevel := 0
-			if inSingle {
+			switch {
+			case inSingle:
 				currentLevel = 2
-			} else if inDouble {
+			case inDouble:
 				currentLevel = 1
+			case inBacktick:
+				currentLevel = 3
 			}
 
 			if currentLevel < minLevel {
@@ -2791,10 +2936,19 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
-		if char == '\'' && !inDouble {
-			inSingle = !inSingle
-		} else if char == '"' && !inSingle {
-			inDouble = !inDouble
+		switch char {
+		case '\'':
+			if !inDouble && !inBacktick {
+				inSingle = !inSingle
+			}
+		case '"':
+			if !inSingle && !inBacktick {
+				inDouble = !inDouble
+			}
+		case '`':
+			if !inSingle && !inDouble {
+				inBacktick = !inBacktick
+			}
 		}
 	}
 
@@ -2803,4 +2957,39 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	return minLevel
+}
+
+func validateSafePathAndInjection(val string, isDocker bool) error {
+	if err := checkForPathTraversal(val); err != nil {
+		return err
+	}
+	// Also check decoded value just in case the input was already encoded
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForPathTraversal(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
+	if !isDocker {
+		if err := checkForLocalFileAccess(val); err != nil {
+			return err
+		}
+		// Also check decoded value for local file access (e.g. %66ile://)
+		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+			if err := checkForLocalFileAccess(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
+		}
+	}
+
+	if err := checkForArgumentInjection(val); err != nil {
+		return err
+	}
+	// Also check decoded value for argument injection (e.g. %2drf)
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForArgumentInjection(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+	return nil
 }

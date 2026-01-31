@@ -14,7 +14,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
@@ -24,6 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestLoginFlow(t *testing.T) {
@@ -97,35 +97,33 @@ global_settings:
 	// 1. Create User with Basic Auth (Get-or-Create to avoid flakes)
 	username := "e2e-login-user"
 	password := "password123"
-	user := &configv1.User{
+	user := configv1.User_builder{
 		Id: proto.String(username),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					Username:     proto.String(username),
-					PasswordHash: proto.String(password), // Will be hashed by server
-				},
-			},
-		},
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String(username),
+				PasswordHash: proto.String(password), // Will be hashed by server
+			}.Build(),
+		}.Build(),
 		Roles: []string{"viewer"},
-	}
+	}.Build()
 
 	// Try to get first
-	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(username)})
-	if err == nil && getResp.User.GetId() == username {
+	getResp, err := adminClient.GetUser(ctx, pb_admin.GetUserRequest_builder{UserId: proto.String(username)}.Build())
+	if err == nil && getResp.GetUser().GetId() == username {
 		// User exists, just ensure password/roles if needed?
 		// For now we assume if exists it's fine, or we can update it.
 		// Let's update it to ensure password matches what we expect for login.
-		updateResp, err := adminClient.UpdateUser(ctx, &pb_admin.UpdateUserRequest{User: user})
+		updateResp, err := adminClient.UpdateUser(ctx, pb_admin.UpdateUserRequest_builder{User: user}.Build())
 		require.NoError(t, err, "Failed to update existing user")
-		require.Equal(t, username, updateResp.User.GetId())
+		require.Equal(t, username, updateResp.GetUser().GetId())
 	} else {
 		// Create
-		createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user})
+		createResp, err := adminClient.CreateUser(ctx, pb_admin.CreateUserRequest_builder{User: user}.Build())
 		require.NoError(t, err, "Failed to create user")
-		require.Equal(t, username, createResp.User.GetId())
+		require.Equal(t, username, createResp.GetUser().GetId())
 		// Ensure password was hashed (not equal to plaintext)
-		assert.NotEqual(t, password, createResp.User.GetAuthentication().GetBasicAuth().GetPasswordHash())
+		assert.NotEqual(t, password, createResp.GetUser().GetAuthentication().GetBasicAuth().GetPasswordHash())
 	}
 
 	// 2. Attempt Login via REST API
@@ -159,12 +157,13 @@ global_settings:
 	require.NoError(t, err)
 	assert.Equal(t, fmt.Sprintf("%s:%s", username, password), string(decoded))
 
-	// 3. Use Token to Access Protected Endpoint (e.g. List Users)
+	// 3. Use Token to Access Protected Endpoint (e.g. Get Own User)
 	// We need a trusted client, but wait, AuthManager handles auth.
 	// If we use the token, it should work.
+	// Note: Listing users (/api/v1/users) is restricted to admin, so we fetch our own profile.
 
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("http://127.0.0.1:%d/api/v1/users", jsonrpcPort), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("http://127.0.0.1:%d/api/v1/users/%s", jsonrpcPort, username), nil)
 	require.NoError(t, err)
 
 	// Add Basic Auth header manually using the token

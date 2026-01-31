@@ -605,7 +605,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -710,7 +710,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -1491,7 +1491,7 @@ func TestRunStdioMode(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 
@@ -1835,7 +1835,7 @@ upstream_services:
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -1900,7 +1900,7 @@ upstream_services:
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -2252,6 +2252,8 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	// Set the API key
 	viper.Set("api-key", "test-api-key")
 	defer viper.Set("api-key", "")
+	viper.Set("db-path", ":memory:")
+	defer viper.Set("db-path", "")
 
 	// Get the address from the listener
 	l, err := net.Listen("tcp", "127.0.0.1:0")
@@ -2378,7 +2380,7 @@ upstream_services:
 		mockStore := new(MockStore)
 		mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 		mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-		mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+		mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 		mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 		mockStore.On("Close").Return(nil)
 		app.Storage = mockStore
@@ -2423,7 +2425,7 @@ upstream_services: []
 		mockStore := new(MockStore)
 		mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 		mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-		mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+		mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 		mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 		mockStore.On("Close").Return(nil)
 		app.Storage = mockStore
@@ -2451,7 +2453,7 @@ func TestConfigHealthCheck(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -2514,29 +2516,29 @@ func TestRunServerMode_Auth(t *testing.T) {
 	mcpSrv, err := mcpserver.NewServer(ctx, app.ToolManager, app.PromptManager, app.ResourceManager, authManager, serviceRegistry, busProvider, true)
 	require.NoError(t, err)
 
-	users := []*configv1.User{
-		{
-			Id: proto.String("user_with_auth"),
-			Authentication: &configv1.Authentication{
-				AuthMethod: &configv1.Authentication_ApiKey{
-					ApiKey: &configv1.APIKeyAuth{
-						VerificationValue: ptr("user-secret"),
-						In:                ptr(configv1.APIKeyAuth_HEADER),
-						ParamName:         ptr("X-API-Key"),
-					},
-				},
-			},
-			ProfileIds: []string{"profileA"},
-		},
-		{
-			Id: proto.String("user_no_auth"),
-			ProfileIds: []string{"profileB"},
-		},
-		{
-			Id:         proto.String("user_blocked"),
-			ProfileIds: []string{},
-		},
-	}
+	userWithAuth := configv1.User_builder{
+		Id: proto.String("user_with_auth"),
+		Authentication: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				VerificationValue: ptr("user-secret"),
+				In:                ptr(configv1.APIKeyAuth_HEADER),
+				ParamName:         ptr("X-API-Key"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+	userWithAuth.SetProfileIds([]string{"profileA"})
+
+	userNoAuth := configv1.User_builder{
+		Id: proto.String("user_no_auth"),
+	}.Build()
+	userNoAuth.SetProfileIds([]string{"profileB"})
+
+	userBlocked := configv1.User_builder{
+		Id: proto.String("user_blocked"),
+	}.Build()
+	userBlocked.SetProfileIds([]string{})
+
+	users := []*configv1.User{userWithAuth, userNoAuth, userBlocked}
 	authManager.SetUsers(users)
 
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
@@ -2627,7 +2629,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	origMiddlewares := config.GlobalSettings().Middlewares()
 	defer config.GlobalSettings().SetMiddlewares(origMiddlewares)
-	mw := &configv1.Middleware{}
+	mw := configv1.Middleware_builder{}.Build()
 	mw.SetName("auth")
 	mw.SetPriority(1)
 	mw.SetDisabled(true)
@@ -2785,7 +2787,7 @@ func TestMultiUserHandler_EdgeCases(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -2835,7 +2837,7 @@ func TestMultiUserHandler_UserAuth(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -2879,7 +2881,7 @@ func TestReloadConfig_DynamicUpdates(t *testing.T) {
 	mockStore := new(MockStore)
 	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
-	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
 	mockStore.On("Close").Return(nil)
 	app.Storage = mockStore
@@ -3029,11 +3031,11 @@ func TestMiddlewareRegistry(t *testing.T) {
 	})
 
 	t.Run("GetMCPMiddlewares sorts by priority", func(t *testing.T) {
-		mw1 := &configv1.Middleware{}
+		mw1 := configv1.Middleware_builder{}.Build()
 		mw1.SetName("test_middleware")
 		mw1.SetPriority(100)
 
-		mw2 := &configv1.Middleware{}
+		mw2 := configv1.Middleware_builder{}.Build()
 		mw2.SetName("logging")
 		mw2.SetPriority(10)
 
@@ -3130,12 +3132,13 @@ func TestFilesystemHealthCheck(t *testing.T) {
 	os.Mkdir(existingDir, 0755)
 
 	app := NewApplication()
-	fsSvc := &configv1.FilesystemUpstreamService{}
-	fsSvc.SetRootPaths(map[string]string{"/data": existingDir})
-
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("svc-1")
-	svc.SetFilesystemService(fsSvc)
+	fsSvc := configv1.FilesystemUpstreamService_builder{
+		RootPaths: map[string]string{"/data": existingDir},
+	}.Build()
+	svc := configv1.UpstreamServiceConfig_builder{
+		Name:              proto.String("svc-1"),
+		FilesystemService: fsSvc,
+	}.Build()
 
 	services := []*configv1.UpstreamServiceConfig{svc}
 
@@ -3235,8 +3238,12 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 func TestTemplateManager_Persistence(t *testing.T) {
 	tmpDir := t.TempDir()
 	tm := NewTemplateManager(tmpDir)
+	// Clear seeded templates for clean state testing
+	for _, tpl := range tm.ListTemplates() {
+		tm.DeleteTemplate(tpl.GetId())
+	}
 
-	tpl1 := &configv1.UpstreamServiceConfig{}
+	tpl1 := configv1.UpstreamServiceConfig_builder{}.Build()
 	tpl1.SetName("svc1")
 	tpl1.SetId("id1")
 	tm.SaveTemplate(tpl1)
@@ -3256,7 +3263,8 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 	os.WriteFile(path, []byte("{invalid json"), 0600)
 
 	tm := NewTemplateManager(tmpDir)
-	assert.Empty(t, tm.ListTemplates())
+	// Should fallback to seeded templates
+	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
 }
 
 func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
@@ -3290,12 +3298,12 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	require.NoError(t, err)
 
 	// Setup a user to access
-	users := []*configv1.User{
-		{
-			Id:         proto.String("user_no_auth"),
-			ProfileIds: []string{"profileB"},
-		},
-	}
+	userNoAuth := configv1.User_builder{
+		Id: proto.String("user_no_auth"),
+	}.Build()
+	userNoAuth.SetProfileIds([]string{"profileB"})
+
+	users := []*configv1.User{userNoAuth}
 	authManager.SetUsers(users)
 
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)

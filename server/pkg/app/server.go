@@ -674,7 +674,8 @@ func (a *Application) Run(opts RunOptions) error {
 		}()
 	}
 	// Get configured middlewares
-	middlewares := config.GlobalSettings().Middlewares()
+	// We clone them to avoid modifying the singleton's underlying slice if we append/modify.
+	middlewares := append([]*config_v1.Middleware(nil), config.GlobalSettings().Middlewares()...)
 	if len(middlewares) == 0 {
 		// Default chain if none configured
 		middlewares = []*config_v1.Middleware{
@@ -1478,15 +1479,10 @@ func (a *Application) runServerMode(
 				break
 			}
 		}
-	} else {
-		// Fallback to singleton if nil (should not happen in normal Run)
-		for _, m := range config.GlobalSettings().Middlewares() {
-			if m.GetName() == authMiddlewareName && m.GetDisabled() {
-				authDisabled = true
-				break
-			}
-		}
 	}
+	// Note: We don't fall back to config.GlobalSettings() singleton here because it
+	// might be modified by other tests in the same package, leading to flaky tests.
+	// If globalSettings is nil, authDisabled remains false (enabled).
 
 	// Trust Proxy Config
 	trustProxy := os.Getenv("MCPANY_TRUST_PROXY") == util.TrueStr
@@ -1643,6 +1639,11 @@ func (a *Application) runServerMode(
 
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
+					// Inject API Key into context if needed
+					ctx = auth.ContextWithAPIKey(ctx, requestKey)
+					// Global API Key grants Admin privileges (Root Access)
+					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+					ctx = auth.ContextWithUser(ctx, "system-admin")
 				} else {
 					// Global auth configured but failed
 					http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
@@ -2056,12 +2057,19 @@ func (a *Application) runServerMode(
 	}
 
 	// Register Root Handler with gRPC-Web support
-	// Register Root Handler with gRPC-Web support
 	mux.Handle("/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc != nil && wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
 		}
+
+		// UI Routing for root path
+		if r.URL.Path == "/" && uiPath != "" {
+			http.ServeFile(w, r, filepath.Join(uiPath, "index.html"))
+			return
+		}
+
+		// Fallback to JSON-RPC handler (for API calls at root or SSE)
 		httpHandler.ServeHTTP(w, r)
 	})))
 
@@ -2192,7 +2200,6 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
-
 			apiKey := a.SettingsManager.GetAPIKey()
 			authenticated := false
 
@@ -2213,6 +2220,10 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					authenticated = true
 					// Inject API Key into context if needed
 					ctx = auth.ContextWithAPIKey(ctx, requestKey)
+					// Global API Key grants Admin privileges (Root Access)
+					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+					// Also inject a placeholder user ID so that handlers expecting a user context don't fail
+					ctx = auth.ContextWithUser(ctx, "system-admin")
 				}
 			}
 
@@ -2221,7 +2232,7 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				username, _, ok := r.BasicAuth()
 				if ok && a.AuthManager != nil {
 					if user, found := a.AuthManager.GetUser(username); found {
-						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
+						if err := auth.ValidateAuthentication(ctx, user.GetAuthentication(), r); err == nil {
 							authenticated = true
 							ctx = auth.ContextWithUser(ctx, username)
 							if len(user.GetRoles()) > 0 {
@@ -2244,21 +2255,28 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 			// Sentinel Security: If no API key is configured (and no user auth succeeded), enforce localhost-only access.
 			// This prevents accidental exposure of the server to the public internet (RCE risk).
-			host, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				// Fallback if RemoteAddr is weird, assume host is the string itself
-				host = r.RemoteAddr
+			if apiKey == "" {
+				host, _, err := net.SplitHostPort(r.RemoteAddr)
+				if err != nil {
+					// Fallback if RemoteAddr is weird, assume host is the string itself
+					host = r.RemoteAddr
+				}
+
+				// Check if the request is from a loopback address
+				ipAddr := net.ParseIP(host)
+				if !util.IsPrivateIP(ipAddr) {
+					logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
+					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
+					return
+				}
+
+				// Grant Admin privileges (Root Access) for local development/testing convenience
+				// when running in insecure mode (private network, no API key).
+				ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+				ctx = auth.ContextWithUser(ctx, "system-admin")
 			}
 
-			// Check if the request is from a loopback address
-			ipAddr := net.ParseIP(host)
-			if !util.IsPrivateIP(ipAddr) {
-				logging.GetLogger().Warn("Blocked public internet request because no API Key is configured", "remote_addr", r.RemoteAddr)
-				http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
-				return
-			}
-
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }

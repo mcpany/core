@@ -52,7 +52,10 @@ func setupHTTPTool(t *testing.T, handler http.Handler, callDef *configv1.HttpCal
 	poolManager.Register("s", p)
 
 	method := "GET " + server.URL
-	toolDef := &v1.Tool{UnderlyingMethodFqn: &method, Name: proto.String("test-http")}
+	toolDef := v1.Tool_builder{
+		UnderlyingMethodFqn: proto.String(method),
+		Name:                proto.String("test-http"),
+	}.Build()
 	return NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, ""), server
 }
 
@@ -253,15 +256,15 @@ func TestHTTPTool_OutputTransformer(t *testing.T) {
 	})
 
 	// Test output transformer template
-	callDef := &configv1.HttpCallDefinition{
-		OutputTransformer: &configv1.OutputTransformer{
+	callDef := configv1.HttpCallDefinition_builder{
+		OutputTransformer: configv1.OutputTransformer_builder{
 			Template: proto.String("Foo is {{foo}}"),
-			Format: configv1.OutputTransformer_JSON.Enum(),
+			Format:   configv1.OutputTransformer_JSON.Enum(),
 			ExtractionRules: map[string]string{
 				"foo": "{.foo}",
 			},
-		},
-	}
+		}.Build(),
+	}.Build()
 	tool, server := setupHTTPTool(t, handler, callDef)
 	defer server.Close()
 
@@ -281,11 +284,11 @@ func TestHTTPTool_OutputTransformer_Raw(t *testing.T) {
 		w.Write([]byte(`raw data`))
 	})
 
-	callDef := &configv1.HttpCallDefinition{
-		OutputTransformer: &configv1.OutputTransformer{
+	callDef := configv1.HttpCallDefinition_builder{
+		OutputTransformer: configv1.OutputTransformer_builder{
 			Format: configv1.OutputTransformer_RAW_BYTES.Enum(),
-		},
-	}
+		}.Build(),
+	}.Build()
 	tool, server := setupHTTPTool(t, handler, callDef)
 	defer server.Close()
 
@@ -319,20 +322,23 @@ func TestHTTPTool_InputTransformer_Template(t *testing.T) {
 
 	method := "POST " + server.URL
 
-    callDef := &configv1.HttpCallDefinition{
-        InputTransformer: &configv1.InputTransformer{
+    callDef := configv1.HttpCallDefinition_builder{
+        InputTransformer: configv1.InputTransformer_builder{
             Template: proto.String("Hello {{name}}"),
-        },
+        }.Build(),
         Parameters: []*configv1.HttpParameterMapping{
-            {
-                Schema: &configv1.ParameterSchema{
+            configv1.HttpParameterMapping_builder{
+                Schema: configv1.ParameterSchema_builder{
                     Name: proto.String("name"),
-                },
-            },
+                }.Build(),
+            }.Build(),
         },
-    }
+    }.Build()
 
-	toolDef := &v1.Tool{UnderlyingMethodFqn: &method, Name: proto.String("test-post")}
+	toolDef := v1.Tool_builder{
+		UnderlyingMethodFqn: proto.String(method),
+		Name:                proto.String("test-post"),
+	}.Build()
     tool := NewHTTPTool(toolDef, poolManager, "s", nil, callDef, nil, nil, "")
 
     req := &ExecutionRequest{

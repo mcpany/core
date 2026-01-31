@@ -14,12 +14,12 @@ import (
 	"strings"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -551,14 +551,14 @@ func TestHTTPTool_Execute_InputTransformation_Webhook(t *testing.T) {
 	})
 
 	method := configv1.HttpCallDefinition_HTTP_METHOD_POST
-	callDef := &configv1.HttpCallDefinition{
+	callDef := configv1.HttpCallDefinition_builder{
 		Method: &method,
-		InputTransformer: &configv1.InputTransformer{
-			Webhook: &configv1.WebhookConfig{
+		InputTransformer: configv1.InputTransformer_builder{
+			Webhook: configv1.WebhookConfig_builder{
 				Url: webhookServer.URL,
-			},
-		},
-	}
+			}.Build(),
+		}.Build(),
+	}.Build()
 
 	httpTool, server := setupHTTPToolTest(t, handler, callDef)
 	defer server.Close()

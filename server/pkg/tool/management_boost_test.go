@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
@@ -25,10 +26,10 @@ func TestManager_ListMCPTools(t *testing.T) {
         Config: svcConfig,
     })
 
-    toolDef := &v1.Tool{
+    toolDef := mcp_router_v1.Tool_builder{
         Name: proto.String("tool1"),
         ServiceId: proto.String("svc1"),
-    }
+    }.Build()
     tool := &MockTool{
         ToolFunc: func() *v1.Tool { return toolDef },
         MCPToolFunc: func() *mcp.Tool { return &mcp.Tool{Name: "svc1.tool1"} },
@@ -37,10 +38,10 @@ func TestManager_ListMCPTools(t *testing.T) {
     assert.NoError(t, err)
 
     // Add another tool
-    toolDef2 := &v1.Tool{
+    toolDef2 := mcp_router_v1.Tool_builder{
         Name: proto.String("tool2"),
         ServiceId: proto.String("svc1"),
-    }
+    }.Build()
     tool2 := &MockTool{
         ToolFunc: func() *v1.Tool { return toolDef2 },
         MCPToolFunc: func() *mcp.Tool { return &mcp.Tool{Name: "svc1.tool2"} },
@@ -59,11 +60,11 @@ func TestManager_ProfileMatching(t *testing.T) {
 	svcConfig := configv1.UpstreamServiceConfig_builder{Id: proto.String("svc1")}.Build()
 	m.AddServiceInfo("svc1", &ServiceInfo{Name: "svc1", Config: svcConfig})
 
-	toolDef := &v1.Tool{
+	toolDef := v1.Tool_builder{
 		Name:      proto.String("tool1"),
 		ServiceId: proto.String("svc1"),
 		Tags:      []string{"tag1"},
-	}
+	}.Build()
 	tool := &MockTool{ToolFunc: func() *v1.Tool { return toolDef }}
     err := m.AddTool(tool)
     assert.NoError(t, err)
@@ -89,11 +90,11 @@ func TestManager_ProfileMatching(t *testing.T) {
 	assert.False(t, m.ToolMatchesProfile(tool, "p2"))
 
     // Test mismatched tag
-	toolDef2 := &v1.Tool{
+	toolDef2 := v1.Tool_builder{
 		Name:      proto.String("tool2"),
 		ServiceId: proto.String("svc1"),
 		Tags:      []string{"tag2"},
-	}
+	}.Build()
 	tool2 := &MockTool{ToolFunc: func() *v1.Tool { return toolDef2 }}
     // Don't add to manager, just check logic if possible?
     // ToolMatchesProfile calls GetServiceInfo via manager.

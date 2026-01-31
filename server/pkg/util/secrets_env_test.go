@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestResolveSecret_EnvVar_Empty(t *testing.T) {
@@ -19,11 +20,9 @@ func TestResolveSecret_EnvVar_Empty(t *testing.T) {
 	os.Setenv(key, "")
 	defer os.Unsetenv(key)
 
-	secret := &configv1.SecretValue{
-		Value: &configv1.SecretValue_EnvironmentVariable{
-			EnvironmentVariable: key,
-		},
-	}
+	secret := configv1.SecretValue_builder{
+		EnvironmentVariable: proto.String(key),
+	}.Build()
 
 	// We expect ResolveSecret to respect that the variable IS set (albeit empty).
 	// Currently, it likely returns an error claiming "is not set".

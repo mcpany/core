@@ -33,10 +33,10 @@ func TestResilienceMiddleware_Execute_CircuitBreaker(t *testing.T) {
 	// Mock tool (Manual mock because generated one seems problematic or not used here)
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				Name:      proto.String(toolName),
 				ServiceId: proto.String(serviceID),
-			}
+			}.Build()
 		},
 	}
 
@@ -119,10 +119,10 @@ func TestResilienceMiddleware_Execute_Retry(t *testing.T) {
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				Name:      proto.String(toolName),
 				ServiceId: proto.String(serviceID),
-			}
+			}.Build()
 		},
 	}
 
@@ -178,10 +178,10 @@ func TestResilienceMiddleware_NoConfig(t *testing.T) {
 
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *v1.Tool {
-			return &v1.Tool{
+			return v1.Tool_builder{
 				Name:      proto.String(toolName),
 				ServiceId: proto.String(serviceID),
-			}
+			}.Build()
 		},
 	}
 

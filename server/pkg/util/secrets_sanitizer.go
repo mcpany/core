@@ -233,9 +233,6 @@ func stripSecretsFromHook(h *configv1.CallHook) {
 }
 
 func stripSecretsFromCacheConfig(c *configv1.CacheConfig) {
-	if c == nil || c.SemanticConfig == nil {
-		return
-	}
 	// Deprecated ApiKey
 	scrubSecretValue(c.GetSemanticConfig().GetApiKey())
 
@@ -348,8 +345,8 @@ func hydrateSecretsInHTTPService(s *configv1.HttpUpstreamService, secrets map[st
 		if call == nil {
 			continue
 		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
+		for _, param := range call.GetParameters() {
+			hydrateSecretValue(param.GetSecret(), secrets)
 		}
 	}
 }
@@ -362,8 +359,8 @@ func hydrateSecretsInWebsocketService(s *configv1.WebsocketUpstreamService, secr
 		if call == nil {
 			continue
 		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
+		for _, param := range call.GetParameters() {
+			hydrateSecretValue(param.GetSecret(), secrets)
 		}
 	}
 }
@@ -376,8 +373,8 @@ func hydrateSecretsInWebrtcService(s *configv1.WebrtcUpstreamService, secrets ma
 		if call == nil {
 			continue
 		}
-		for _, param := range call.Parameters {
-			hydrateSecretValue(param.Secret, secrets)
+		for _, param := range call.GetParameters() {
+			hydrateSecretValue(param.GetSecret(), secrets)
 		}
 	}
 }

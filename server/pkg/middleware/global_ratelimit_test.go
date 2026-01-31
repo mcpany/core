@@ -16,13 +16,13 @@ import (
 
 func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 	// Setup config: 10 RPS, Burst 10
-	cfg := &configv1.RateLimitConfig{
+	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 10,
 		Burst:             10,
 		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
 		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP,
-	}
+	}.Build()
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 
@@ -44,13 +44,13 @@ func TestGlobalRateLimitMiddleware_Allow(t *testing.T) {
 
 func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 	// Setup config: 1 RPS, Burst 1
-	cfg := &configv1.RateLimitConfig{
+	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 1,
 		Burst:             1,
 		Storage:           configv1.RateLimitConfig_STORAGE_MEMORY,
 		KeyBy:             configv1.RateLimitConfig_KEY_BY_IP,
-	}
+	}.Build()
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 
@@ -73,11 +73,11 @@ func TestGlobalRateLimitMiddleware_Block(t *testing.T) {
 }
 
 func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
-	cfg := &configv1.RateLimitConfig{
+	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         false,
 		RequestsPerSecond: 1,
 		Burst:             1,
-	}
+	}.Build()
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 
@@ -96,12 +96,12 @@ func TestGlobalRateLimitMiddleware_Disabled(t *testing.T) {
 }
 
 func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
-	cfg := &configv1.RateLimitConfig{
+	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 1,
 		Burst:             1,
 		KeyBy:             configv1.RateLimitConfig_KEY_BY_USER_ID,
-	}
+	}.Build()
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -127,12 +127,12 @@ func TestGlobalRateLimitMiddleware_KeyByUserID(t *testing.T) {
 }
 
 func TestGlobalRateLimitMiddleware_KeyByGlobal(t *testing.T) {
-	cfg := &configv1.RateLimitConfig{
+	cfg := configv1.RateLimitConfig_builder{
 		IsEnabled:         true,
 		RequestsPerSecond: 1,
 		Burst:             1,
 		KeyBy:             configv1.RateLimitConfig_KEY_BY_GLOBAL,
-	}
+	}.Build()
 
 	mw := NewGlobalRateLimitMiddleware(cfg)
 	next := func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

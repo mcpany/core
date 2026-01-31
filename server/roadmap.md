@@ -143,10 +143,7 @@ These features represent the next logical steps for the product, focusing on Ent
 
 ### Critical Areas (Refactoring Needed)
 
-3.  **Webhook "Prototype" Status (`server/cmd/webhooks`)**
-    - **Issue**: The code appears experimental and lacks the robustness of the main server (error handling, config validation).
-    - **Risk**: If used in production, it could become a single point of failure.
-    - **Recommendation**: Graduate this to `server/pkg/sidecar/webhooks` with full test coverage.
+*None at this time.*
 
 ### Warning Areas
 

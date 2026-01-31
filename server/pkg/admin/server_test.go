@@ -87,56 +87,55 @@ func TestServer_UserManagement(t *testing.T) {
 	s := NewServer(nil, tm, sr, store, nil, nil)
 	ctx := context.Background()
 
-	// Test CreateUser
-	basicAuth := &configv1.BasicAuth{}
-	basicAuth.SetPasswordHash("plaintext")
-
-	auth := &configv1.Authentication{}
-	auth.SetBasicAuth(basicAuth)
-
-	user := &configv1.User{}
-	user.SetId("user1")
-	user.SetAuthentication(auth)
-	createResp, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: user})
+	user := configv1.User_builder{
+		Id: proto.String("user1"),
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String("user1"),
+				PasswordHash: proto.String("plaintext"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+	createResp, err := s.CreateUser(ctx, pb.CreateUserRequest_builder{User: user}.Build())
 	require.NoError(t, err)
-	assert.Equal(t, "user1", createResp.User.GetId())
-	assert.NotEqual(t, "plaintext", createResp.User.Authentication.GetBasicAuth().GetPasswordHash())
-	assert.Contains(t, createResp.User.Authentication.GetBasicAuth().GetPasswordHash(), "$2")
+	assert.Equal(t, "user1", createResp.GetUser().GetId())
+	assert.NotEqual(t, "plaintext", createResp.GetUser().GetAuthentication().GetBasicAuth().GetPasswordHash())
+	assert.Contains(t, createResp.GetUser().GetAuthentication().GetBasicAuth().GetPasswordHash(), "$2")
 
 	// Test CreateUser validation
-	_, err = s.CreateUser(ctx, &pb.CreateUserRequest{User: nil})
+	_, err = s.CreateUser(ctx, pb.CreateUserRequest_builder{User: nil}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.InvalidArgument, status.Code(err))
 
 	// Test GetUser
-	getResp, err := s.GetUser(ctx, &pb.GetUserRequest{UserId: proto.String("user1")})
+	getResp, err := s.GetUser(ctx, pb.GetUserRequest_builder{UserId: proto.String("user1")}.Build())
 	require.NoError(t, err)
-	assert.Equal(t, "user1", getResp.User.GetId())
+	assert.Equal(t, "user1", getResp.GetUser().GetId())
 
-	_, err = s.GetUser(ctx, &pb.GetUserRequest{UserId: proto.String("nonexistent")})
+	_, err = s.GetUser(ctx, pb.GetUserRequest_builder{UserId: proto.String("nonexistent")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.NotFound, status.Code(err))
 
 	// Test ListUsers
 	listResp, err := s.ListUsers(ctx, &pb.ListUsersRequest{})
 	require.NoError(t, err)
-	assert.Len(t, listResp.Users, 1)
+	assert.Len(t, listResp.GetUsers(), 1)
 
 	// Test UpdateUser
-	user.Roles = []string{"admin"}
-	updateResp, err := s.UpdateUser(ctx, &pb.UpdateUserRequest{User: user})
+	user.SetRoles([]string{"admin"})
+	updateResp, err := s.UpdateUser(ctx, pb.UpdateUserRequest_builder{User: user}.Build())
 	require.NoError(t, err)
-	assert.Equal(t, []string{"admin"}, updateResp.User.Roles)
+	assert.Equal(t, []string{"admin"}, updateResp.GetUser().GetRoles())
 
-	_, err = s.UpdateUser(ctx, &pb.UpdateUserRequest{User: nil})
+	_, err = s.UpdateUser(ctx, pb.UpdateUserRequest_builder{User: nil}.Build())
 	assert.Error(t, err)
 
 	// Test DeleteUser
-	deleteResp, err := s.DeleteUser(ctx, &pb.DeleteUserRequest{UserId: proto.String("user1")})
+	deleteResp, err := s.DeleteUser(ctx, pb.DeleteUserRequest_builder{UserId: proto.String("user1")}.Build())
 	require.NoError(t, err)
 	assert.NotNil(t, deleteResp)
 
-	_, err = s.GetUser(ctx, &pb.GetUserRequest{UserId: proto.String("user1")})
+	_, err = s.GetUser(ctx, pb.GetUserRequest_builder{UserId: proto.String("user1")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.NotFound, status.Code(err))
 }
@@ -167,35 +166,35 @@ func TestServer_ServiceManagement(t *testing.T) {
 	// Test ListServices
 	listResp, err := s.ListServices(ctx, &pb.ListServicesRequest{})
 	require.NoError(t, err)
-	assert.Len(t, listResp.Services, 2)
-	assert.Len(t, listResp.ServiceStates, 2)
+	assert.Len(t, listResp.GetServices(), 2)
+	assert.Len(t, listResp.GetServiceStates(), 2)
 
 	// Check svc1 (Healthy)
-	svc1State := listResp.ServiceStates[0]
-	assert.Equal(t, "svc1", svc1State.Config.GetName())
+	svc1State := listResp.GetServiceStates()[0]
+	assert.Equal(t, "svc1", svc1State.GetConfig().GetName())
 	assert.Equal(t, "OK", svc1State.GetStatus())
 
 	// Check svc_error (Error)
-	svcErrorState := listResp.ServiceStates[1]
-	assert.Equal(t, "svc_error", svcErrorState.Config.GetName())
+	svcErrorState := listResp.GetServiceStates()[1]
+	assert.Equal(t, "svc_error", svcErrorState.GetConfig().GetName())
 	assert.Equal(t, "ERROR", svcErrorState.GetStatus())
 	assert.Equal(t, "failed to start", svcErrorState.GetError())
 
 	// Test GetService (Healthy)
-	getResp, err := s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc1")})
+	getResp, err := s.GetService(ctx, pb.GetServiceRequest_builder{ServiceId: proto.String("svc1")}.Build())
 	require.NoError(t, err)
-	assert.Equal(t, "svc1", getResp.Service.GetName())
-	assert.Equal(t, "OK", getResp.ServiceState.GetStatus())
+	assert.Equal(t, "svc1", getResp.GetService().GetName())
+	assert.Equal(t, "OK", getResp.GetServiceState().GetStatus())
 
 	// Test GetService (Error)
-	getResp, err = s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc_error")})
+	getResp, err = s.GetService(ctx, pb.GetServiceRequest_builder{ServiceId: proto.String("svc_error")}.Build())
 	require.NoError(t, err)
-	assert.Equal(t, "svc_error", getResp.Service.GetName())
-	assert.Equal(t, "ERROR", getResp.ServiceState.GetStatus())
-	assert.Equal(t, "failed to start", getResp.ServiceState.GetError())
+	assert.Equal(t, "svc_error", getResp.GetService().GetName())
+	assert.Equal(t, "ERROR", getResp.GetServiceState().GetStatus())
+	assert.Equal(t, "failed to start", getResp.GetServiceState().GetError())
 
 	// Test GetService Not Found
-	_, err = s.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("unknown")})
+	_, err = s.GetService(ctx, pb.GetServiceRequest_builder{ServiceId: proto.String("unknown")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.NotFound, status.Code(err))
 }
@@ -213,7 +212,7 @@ func TestServer_ToolManagement(t *testing.T) {
 	// Mock Tool
 	mockTool := &tool.MockTool{
 		ToolFunc: func() *mcprouterv1.Tool {
-			return &mcprouterv1.Tool{Name: proto.String("tool1")}
+			return mcprouterv1.Tool_builder{Name: proto.String("tool1")}.Build()
 		},
 	}
 
@@ -221,18 +220,18 @@ func TestServer_ToolManagement(t *testing.T) {
 	tm.EXPECT().ListTools().Return([]tool.Tool{mockTool})
 	listResp, err := s.ListTools(ctx, &pb.ListToolsRequest{})
 	require.NoError(t, err)
-	assert.Len(t, listResp.Tools, 1)
-	assert.Equal(t, "tool1", listResp.Tools[0].GetName())
+	assert.Len(t, listResp.GetTools(), 1)
+	assert.Equal(t, "tool1", listResp.GetTools()[0].GetName())
 
 	// Test GetTool
 	tm.EXPECT().GetTool("tool1").Return(mockTool, true)
-	getResp, err := s.GetTool(ctx, &pb.GetToolRequest{ToolName: proto.String("tool1")})
+	getResp, err := s.GetTool(ctx, pb.GetToolRequest_builder{ToolName: proto.String("tool1")}.Build())
 	require.NoError(t, err)
-	assert.Equal(t, "tool1", getResp.Tool.GetName())
+	assert.Equal(t, "tool1", getResp.GetTool().GetName())
 
 	// Test GetTool Not Found
 	tm.EXPECT().GetTool("unknown").Return(nil, false)
-	_, err = s.GetTool(ctx, &pb.GetToolRequest{ToolName: proto.String("unknown")})
+	_, err = s.GetTool(ctx, pb.GetToolRequest_builder{ToolName: proto.String("unknown")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.NotFound, status.Code(err))
 }
@@ -243,14 +242,14 @@ func TestServer_ClearCache(t *testing.T) {
 
 	// Test with nil cache
 	s := NewServer(nil, nil, nil, nil, nil, nil)
-	_, err := s.ClearCache(context.Background(), &pb.ClearCacheRequest{})
+	_, err := s.ClearCache(context.Background(), pb.ClearCacheRequest_builder{}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.FailedPrecondition, status.Code(err))
 
 	// Test ClearCache with valid cache
 	realMiddleware := middleware.NewCachingMiddleware(tool.NewMockManagerInterface(ctrl))
 	sValid := NewServer(realMiddleware, nil, nil, nil, nil, nil)
-	resp, err := sValid.ClearCache(context.Background(), &pb.ClearCacheRequest{})
+	resp, err := sValid.ClearCache(context.Background(), pb.ClearCacheRequest_builder{}.Build())
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -317,14 +316,14 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 
 	// CreateUser Error
 	ms.createUserErr = errInternal
-	_, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: u1})
+	_, err := s.CreateUser(ctx, pb.CreateUserRequest_builder{User: u1}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	ms.createUserErr = nil
 
 	// GetUser Error
 	ms.getUserErr = errInternal
-	_, err = s.GetUser(ctx, &pb.GetUserRequest{UserId: proto.String("user1")})
+	_, err = s.GetUser(ctx, pb.GetUserRequest_builder{UserId: proto.String("user1")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	ms.getUserErr = nil
@@ -338,14 +337,14 @@ func TestServer_UserManagement_Errors(t *testing.T) {
 
 	// UpdateUser Error
 	ms.updateUserErr = errInternal
-	_, err = s.UpdateUser(ctx, &pb.UpdateUserRequest{User: u1})
+	_, err = s.UpdateUser(ctx, pb.UpdateUserRequest_builder{User: u1}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	ms.updateUserErr = nil
 
 	// DeleteUser Error
 	ms.deleteUserErr = errInternal
-	_, err = s.DeleteUser(ctx, &pb.DeleteUserRequest{UserId: proto.String("user1")})
+	_, err = s.DeleteUser(ctx, pb.DeleteUserRequest_builder{UserId: proto.String("user1")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	ms.deleteUserErr = nil
@@ -373,13 +372,13 @@ func TestServer_UserManagement_PasswordHashing(t *testing.T) {
 	user.SetAuthentication(auth)
 
 	// CreateUser - Password hashing failure
-	_, err := s.CreateUser(ctx, &pb.CreateUserRequest{User: user})
+	_, err := s.CreateUser(ctx, pb.CreateUserRequest_builder{User: user}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	assert.Contains(t, err.Error(), "failed to hash password")
 
 	// UpdateUser - Password hashing failure
-	_, err = s.UpdateUser(ctx, &pb.UpdateUserRequest{User: user})
+	_, err = s.UpdateUser(ctx, pb.UpdateUserRequest_builder{User: user}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 	assert.Contains(t, err.Error(), "failed to hash password")
@@ -401,7 +400,7 @@ func TestServer_ServiceManagement_Errors(t *testing.T) {
 
 	// GetService: Service found but config nil (via ToolManager)
 	tm.EXPECT().GetServiceInfo("svc_no_config").Return(&tool.ServiceInfo{Config: nil}, true)
-	_, err := sFallback.GetService(ctx, &pb.GetServiceRequest{ServiceId: proto.String("svc_no_config")})
+	_, err := sFallback.GetService(ctx, pb.GetServiceRequest_builder{ServiceId: proto.String("svc_no_config")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.Internal, status.Code(err))
 }
@@ -434,18 +433,18 @@ func TestServer_GetDiscoveryStatus(t *testing.T) {
 	s := NewServer(nil, tm, sr, store, dm, nil)
 
 	// Test GetDiscoveryStatus
-	resp, err := s.GetDiscoveryStatus(ctx, &pb.GetDiscoveryStatusRequest{})
+	resp, err := s.GetDiscoveryStatus(ctx, pb.GetDiscoveryStatusRequest_builder{}.Build())
 	require.NoError(t, err)
-	require.Len(t, resp.Providers, 1)
-	assert.Equal(t, "test-provider", resp.Providers[0].GetName())
-	assert.Equal(t, "OK", resp.Providers[0].GetStatus())
-	assert.Equal(t, int32(1), resp.Providers[0].GetDiscoveredCount())
+	require.Len(t, resp.GetProviders(), 1)
+	assert.Equal(t, "test-provider", resp.GetProviders()[0].GetName())
+	assert.Equal(t, "OK", resp.GetProviders()[0].GetStatus())
+	assert.Equal(t, int32(1), resp.GetProviders()[0].GetDiscoveredCount())
 
 	// Test with nil manager
 	sNil := NewServer(nil, tm, sr, store, nil, nil)
-	respNil, err := sNil.GetDiscoveryStatus(ctx, &pb.GetDiscoveryStatusRequest{})
+	respNil, err := sNil.GetDiscoveryStatus(ctx, pb.GetDiscoveryStatusRequest_builder{}.Build())
 	require.NoError(t, err)
-	assert.Empty(t, respNil.Providers)
+	assert.Empty(t, respNil.GetProviders())
 }
 
 // MockAuditStore is a manual mock for audit.Store
@@ -509,14 +508,14 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	ctx := context.Background()
 
 	// Test ListAuditLogs - Success
-	resp, err := s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{
+	resp, err := s.ListAuditLogs(ctx, pb.ListAuditLogsRequest_builder{
 		StartTime: proto.String(now.Add(-1 * time.Hour).Format(time.RFC3339)),
-		EndTime: proto.String(now.Add(1 * time.Hour).Format(time.RFC3339)),
-	})
+		EndTime:   proto.String(now.Add(1 * time.Hour).Format(time.RFC3339)),
+	}.Build())
 	require.NoError(t, err)
-	require.Len(t, resp.Entries, 1)
-	assert.Equal(t, "test-tool", resp.Entries[0].GetToolName())
-	assert.Equal(t, "user1", resp.Entries[0].GetUserId())
+	require.Len(t, resp.GetEntries(), 1)
+	assert.Equal(t, "test-tool", resp.GetEntries()[0].GetToolName())
+	assert.Equal(t, "user1", resp.GetEntries()[0].GetUserId())
 
 	// Test ListAuditLogs - Audit disabled (middleware nil)
 	sNil := NewServer(nil, tm, sr, store, nil, nil)
@@ -531,11 +530,11 @@ func TestServer_ListAuditLogs(t *testing.T) {
 	assert.Equal(t, codes.Internal, status.Code(err))
 
 	// Test ListAuditLogs - Invalid Time Format
-	_, err = s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{StartTime: proto.String("invalid")})
+	_, err = s.ListAuditLogs(ctx, pb.ListAuditLogsRequest_builder{StartTime: proto.String("invalid")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.InvalidArgument, status.Code(err))
 
-	_, err = s.ListAuditLogs(ctx, &pb.ListAuditLogsRequest{EndTime: proto.String("invalid")})
+	_, err = s.ListAuditLogs(ctx, pb.ListAuditLogsRequest_builder{EndTime: proto.String("invalid")}.Build())
 	assert.Error(t, err)
 	assert.Equal(t, codes.InvalidArgument, status.Code(err))
 }
@@ -566,7 +565,7 @@ func TestServer_ListServices_Fallback(t *testing.T) {
 
 	resp, err := s.ListServices(ctx, &pb.ListServicesRequest{})
 	require.NoError(t, err)
-	assert.Len(t, resp.Services, 1)
-	assert.Equal(t, "svc_fallback", resp.Services[0].GetName())
-	assert.Equal(t, "OK", resp.ServiceStates[0].GetStatus())
+	assert.Len(t, resp.GetServices(), 1)
+	assert.Equal(t, "svc_fallback", resp.GetServices()[0].GetName())
+	assert.Equal(t, "OK", resp.GetServiceStates()[0].GetStatus())
 }

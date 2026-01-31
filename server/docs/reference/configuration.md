@@ -91,6 +91,26 @@ Contains server-wide operational parameters.
 | `api_key`            | `string`     | The API key for securing the MCP server.                                      |
 | `audit`              | `AuditConfig`| Audit logging configuration.                                                  |
 | `db_path`            | `string`     | The path to the SQLite database file.                                         |
+| `db_dsn`             | `string`     | The database connection string (DSN).                                         |
+| `db_driver`          | `string`     | The database driver (sqlite, postgres).                                       |
+| `github_api_url`     | `string`     | GitHub API URL for self-updates (optional).                                   |
+| `use_sudo_for_docker`| `bool`       | Whether to use sudo for Docker commands.                                      |
+| `dlp`                | `DLPConfig`  | DLP configuration.                                                            |
+| `gc_settings`        | `GCSettings` | Garbage Collection configuration.                                             |
+| `oidc`               | `OIDCConfig` | OIDC Configuration.                                                           |
+| `rate_limit`         | `RateLimitConfig` | Rate limiting configuration for the server.                              |
+| `telemetry`          | `TelemetryConfig` | Telemetry configuration.                                                 |
+| `profiles`           | `repeated string` | The profiles to enable.                                                  |
+| `allowed_ips`        | `repeated string` | The allowed IPs to access the server.                                    |
+| `profile_definitions`| `repeated ProfileDefinition` | The definitions of profiles.                                  |
+| `middlewares`        | `repeated Middleware` | The list of middlewares to enable and their configuration.             |
+| `allowed_file_paths` | `repeated string` | Allowed file paths for validation.                                       |
+| `allowed_origins`    | `repeated string` | Allowed origins for CORS.                                                |
+| `context_optimizer`  | `ContextOptimizerConfig` | Context Optimizer configuration.                                    |
+| `debugger`           | `DebuggerConfig` | Debugger configuration.                                                     |
+| `read_only`          | `bool`       | If true, the configuration is read-only.                                      |
+| `auto_discover_local`| `bool`       | Whether to auto-discover local services (e.g. Ollama).                        |
+| `alerts`             | `AlertConfig`| Alert configuration.                                                          |
 
 ### `AuditConfig`
 
@@ -102,6 +122,11 @@ Configuration for audit logging of tool executions.
 | `output_path`   | `string` | The file path to write audit logs to.                                |
 | `log_arguments` | `bool`   | Whether to log input arguments (caution: might contain secrets).     |
 | `log_results`   | `bool`   | Whether to log output results (caution: might contain sensitive data).|
+| `storage_type`  | `StorageType` | The storage type to use (FILE, SQLITE, POSTGRES, WEBHOOK, SPLUNK, DATADOG). |
+| `webhook_url`   | `string` | The webhook URL for STORAGE_TYPE_WEBHOOK.                            |
+| `webhook_headers`| `map<string, string>` | Additional headers to send with the webhook.           |
+| `splunk`        | `SplunkConfig` | Splunk configuration.                                          |
+| `datadog`       | `DatadogConfig` | Datadog configuration.                                        |
 
 #### Use Case and Example
 

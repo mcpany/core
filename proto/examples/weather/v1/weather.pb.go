@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/examples/weather/v1/weather.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -26,10 +25,10 @@ const (
 )
 
 type GetWeatherRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Location      string                 `protobuf:"bytes,1,opt,name=location" json:"location,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Location string                 `protobuf:"bytes,1,opt,name=location"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *GetWeatherRequest) Reset() {
@@ -59,13 +58,13 @@ func (x *GetWeatherRequest) ProtoReflect() protoreflect.Message {
 
 func (x *GetWeatherRequest) GetLocation() string {
 	if x != nil {
-		return x.Location
+		return x.xxx_hidden_Location
 	}
 	return ""
 }
 
 func (x *GetWeatherRequest) SetLocation(v string) {
-	x.Location = v
+	x.xxx_hidden_Location = v
 }
 
 type GetWeatherRequest_builder struct {
@@ -78,15 +77,15 @@ func (b0 GetWeatherRequest_builder) Build() *GetWeatherRequest {
 	m0 := &GetWeatherRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Location = b.Location
+	x.xxx_hidden_Location = b.Location
 	return m0
 }
 
 type GetWeatherResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Weather       string                 `protobuf:"bytes,1,opt,name=weather" json:"weather,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Weather string                 `protobuf:"bytes,1,opt,name=weather"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GetWeatherResponse) Reset() {
@@ -116,13 +115,13 @@ func (x *GetWeatherResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetWeatherResponse) GetWeather() string {
 	if x != nil {
-		return x.Weather
+		return x.xxx_hidden_Weather
 	}
 	return ""
 }
 
 func (x *GetWeatherResponse) SetWeather(v string) {
-	x.Weather = v
+	x.xxx_hidden_Weather = v
 }
 
 type GetWeatherResponse_builder struct {
@@ -135,7 +134,7 @@ func (b0 GetWeatherResponse_builder) Build() *GetWeatherResponse {
 	m0 := &GetWeatherResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Weather = b.Weather
+	x.xxx_hidden_Weather = b.Weather
 	return m0
 }
 
@@ -143,14 +142,14 @@ var File_proto_examples_weather_v1_weather_proto protoreflect.FileDescriptor
 
 const file_proto_examples_weather_v1_weather_proto_rawDesc = "" +
 	"\n" +
-	"'proto/examples/weather/v1/weather.proto\x12\x13examples.weather.v1\"/\n" +
+	"'proto/examples/weather/v1/weather.proto\x12\x13examples.weather.v1\x1a!google/protobuf/go_features.proto\"/\n" +
 	"\x11GetWeatherRequest\x12\x1a\n" +
 	"\blocation\x18\x01 \x01(\tR\blocation\".\n" +
 	"\x12GetWeatherResponse\x12\x18\n" +
 	"\aweather\x18\x01 \x01(\tR\aweather2o\n" +
 	"\x0eWeatherService\x12]\n" +
 	"\n" +
-	"GetWeather\x12&.examples.weather.v1.GetWeatherRequest\x1a'.examples.weather.v1.GetWeatherResponseB7Z0github.com/mcpany/core/proto/examples/weather/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
+	"GetWeather\x12&.examples.weather.v1.GetWeatherRequest\x1a'.examples.weather.v1.GetWeatherResponseB<Z0github.com/mcpany/core/proto/examples/weather/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_examples_weather_v1_weather_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_examples_weather_v1_weather_proto_goTypes = []any{

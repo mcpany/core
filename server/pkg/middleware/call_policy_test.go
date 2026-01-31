@@ -77,9 +77,9 @@ func TestCallPolicyMiddleware(t *testing.T) {
 		cpMiddleware := middleware.NewCallPolicyMiddleware(mockToolManager)
 
 		// Use builder for Tool as it seems to work in other tests or standard struct
-		toolProto := &v1.Tool{
+		toolProto := v1.Tool_builder{
 			ServiceId: proto.String("service"),
-		}
+		}.Build()
 		mockTool := &callPolicyMockTool{toolProto: toolProto}
 
 		compiledPolicies, _ := tool.CompileCallPolicies(policies)

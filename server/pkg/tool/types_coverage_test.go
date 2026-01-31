@@ -11,10 +11,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,10 +39,10 @@ func TestHTTPTool_Execute_Success(t *testing.T) {
 	p, _ := pool.New(factory, 1, 1, 1, 0, false)
 	pm.Register("http-service", p)
 
-	toolDef := &pb.Tool{
+	toolDef := pb.Tool_builder{
 		Name:                proto.String("test-http"),
 		UnderlyingMethodFqn: proto.String(fmt.Sprintf("GET %s/api", s.URL)),
-	}
+	}.Build()
 
 	ht := NewHTTPTool(
 		toolDef,
@@ -87,25 +87,25 @@ func TestHTTPTool_Execute_Post_WithBody(t *testing.T) {
 	p, _ := pool.New(factory, 1, 1, 1, 0, false)
 	pm.Register("http-service", p)
 
-	toolDef := &pb.Tool{
+	toolDef := pb.Tool_builder{
 		Name:                proto.String("test-post"),
 		UnderlyingMethodFqn: proto.String(fmt.Sprintf("POST %s/resource", s.URL)),
-	}
+	}.Build()
 
 	ht := NewHTTPTool(
 		toolDef,
 		pm,
 		"http-service",
 		nil,
-		&configv1.HttpCallDefinition{
+		configv1.HttpCallDefinition_builder{
 			Parameters: []*configv1.HttpParameterMapping{
-				{
-					Schema: &configv1.ParameterSchema{
+				configv1.HttpParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{
 						Name: proto.String("foo"),
-					},
-				},
+					}.Build(),
+				}.Build(),
 			},
-		},
+		}.Build(),
 		nil,
 		nil,
 		"",
@@ -148,7 +148,7 @@ func TestHTTPTool_Execute_Auth(t *testing.T) {
 	}
 
 	ht := NewHTTPTool(
-		&pb.Tool{Name: proto.String("auth-tool"), UnderlyingMethodFqn: proto.String("GET " + s.URL)},
+		pb.Tool_builder{Name: proto.String("auth-tool"), UnderlyingMethodFqn: proto.String("GET " + s.URL)}.Build(),
 		pm,
 		"s",
 		mockAuth,
@@ -245,9 +245,9 @@ func TestMCPTool_Execute(t *testing.T) {
 	}
 
 	mt := NewMCPTool(
-		&pb.Tool{Name: proto.String("remote-tool")},
+		pb.Tool_builder{Name: proto.String("remote-tool")}.Build(),
 		mockClient,
-		&configv1.MCPCallDefinition{},
+		configv1.MCPCallDefinition_builder{}.Build(),
 	)
 
 	req := &ExecutionRequest{
@@ -268,7 +268,7 @@ func TestMCPTool_Execute_Errors(t *testing.T) {
 			return nil, fmt.Errorf("remote error")
 		},
 	}
-	mt := NewMCPTool(&pb.Tool{Name: proto.String("err")}, mockClient, &configv1.MCPCallDefinition{})
+	mt := NewMCPTool(pb.Tool_builder{Name: proto.String("err")}.Build(), mockClient, configv1.MCPCallDefinition_builder{}.Build())
 	req := &ExecutionRequest{ToolName: "err", ToolInputs: json.RawMessage(`{}`)}
 	_, err := mt.Execute(context.Background(), req)
 	assert.Error(t, err)
@@ -290,8 +290,8 @@ func TestOpenAPITool_Execute_Success(t *testing.T) {
 
 	client := &client.HTTPClientWrapper{Client: s.Client()}
 
-	toolDef := &pb.Tool{Name: proto.String("openapi-tool")}
-	callDef := &configv1.OpenAPICallDefinition{}
+	toolDef := pb.Tool_builder{Name: proto.String("openapi-tool")}.Build()
+	callDef := configv1.OpenAPICallDefinition_builder{}.Build()
 
 	ot := NewOpenAPITool(
 		toolDef,
@@ -327,13 +327,13 @@ func TestOpenAPITool_Execute_QueryParam(t *testing.T) {
 
 	client := &client.HTTPClientWrapper{Client: s.Client()}
 	ot := NewOpenAPITool(
-		&pb.Tool{Name: proto.String("search")},
+		pb.Tool_builder{Name: proto.String("search")}.Build(),
 		client,
 		map[string]string{"q": "query"},
 		"GET",
 		s.URL+"/search",
 		nil,
-		&configv1.OpenAPICallDefinition{},
+		configv1.OpenAPICallDefinition_builder{}.Build(),
 	)
 
 	req := &ExecutionRequest{

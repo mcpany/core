@@ -16,6 +16,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -642,7 +643,7 @@ var File_proto_api_v1_skill_service_proto protoreflect.FileDescriptor
 
 const file_proto_api_v1_skill_service_proto_rawDesc = "" +
 	"\n" +
-	" proto/api/v1/skill_service.proto\x12\rmcpany.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bproto/config/v1/skill.proto\"\x13\n" +
+	" proto/api/v1/skill_service.proto\x12\rmcpany.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bproto/config/v1/skill.proto\x1a!google/protobuf/go_features.proto\"\x13\n" +
 	"\x11ListSkillsRequest\"E\n" +
 	"\x12ListSkillsResponse\x12/\n" +
 	"\x06skills\x18\x01 \x03(\v2\x17.mcpany.config.v1.SkillR\x06skills\"%\n" +

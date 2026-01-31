@@ -24,18 +24,16 @@ func TestRBACContextPopulation(t *testing.T) {
 	hash, err := passhash.Password(password)
 	assert.NoError(t, err)
 
-	user := &configv1.User{
-		Id:    proto.String("admin-user"),
-		Roles: []string{"admin"},
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_BasicAuth{
-				BasicAuth: &configv1.BasicAuth{
-					Username:     proto.String("admin-user"),
-					PasswordHash: proto.String(hash),
-				},
-			},
-		},
-	}
+	user := configv1.User_builder{
+		Id: proto.String("admin-user"),
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String("admin-user"),
+				PasswordHash: proto.String(hash),
+			}.Build(),
+		}.Build(),
+	}.Build()
+	user.SetRoles([]string{"admin"})
 	app.AuthManager.SetUsers([]*configv1.User{user})
 
 	// Create a middleware

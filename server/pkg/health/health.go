@@ -140,6 +140,9 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 			metrics.SetGauge(healthStatusGauge, status, serviceName)
 			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
 
+			// Record history
+			AddHealthStatus(serviceName, string(state.Status))
+
 			globalAlertConfigMu.RLock()
 			alertConfig := globalAlertConfig
 			globalAlertConfigMu.RUnlock()

@@ -11,7 +11,7 @@ import (
 )
 
 func TestSuggestFix_Aliases(t *testing.T) {
-	root := &configv1.UpstreamServiceConfig{}
+	root := configv1.UpstreamServiceConfig_builder{}.Build()
 
 	tests := []struct {
 		input    string
@@ -37,7 +37,7 @@ func TestSuggestFix_Aliases(t *testing.T) {
 
 func TestSuggestFix_Fuzzy(t *testing.T) {
 	// HttpUpstreamService has 'address'
-	root := &configv1.HttpUpstreamService{}
+	root := configv1.HttpUpstreamService_builder{}.Build()
 
 	tests := []struct {
 		input    string

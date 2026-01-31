@@ -7,6 +7,9 @@ package mcpany.api.v1;
 
 import "google/api/annotations.proto";
 import "proto/config/v1/skill.proto";
+import "google/protobuf/go_features.proto";
+
+// option features.(pb.go).api_level = API_OPAQUE;
 
 option go_package = "github.com/mcpany/core/proto/api/v1";
 option java_outer_classname = "SkillServiceProto";

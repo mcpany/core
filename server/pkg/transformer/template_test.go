@@ -87,3 +87,93 @@ func TestTextTemplate_EmptyTemplate(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "", rendered)
 }
+
+func TestTextTemplate_JSONEscaping(t *testing.T) {
+	t.Parallel()
+	// JSON template
+	templateString := `{"key": "{{val}}"}`
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	// Malicious input
+	params := map[string]any{
+		"val": `", "injected": true, "ignore": "`,
+	}
+
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect escaping: " -> \"
+	expected := `{"key": "\", \"injected\": true, \"ignore\": \""}`
+	assert.Equal(t, expected, rendered)
+}
+
+func TestTextTemplate_JSONComplexTypes(t *testing.T) {
+	t.Parallel()
+	// JSON template expecting a value (not string)
+	templateString := `{"config": {{config}}}`
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	params := map[string]any{
+		"config": map[string]any{"a": 1},
+	}
+
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect JSON marshaling
+	expected := `{"config": {"a":1}}`
+	assert.Equal(t, expected, rendered)
+}
+
+func TestTextTemplate_NonJSON(t *testing.T) {
+	t.Parallel()
+	// Text template (no JSON escaping)
+	templateString := `Value: {{val}}`
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	params := map[string]any{
+		"val": `foo"bar`,
+	}
+
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect NO escaping
+	expected := `Value: foo"bar`
+	assert.Equal(t, expected, rendered)
+}
+
+func TestTextTemplate_FalsePositives(t *testing.T) {
+	t.Parallel()
+
+	// Case 1: Template starts with {{ (which starts with {)
+	// Should NOT be detected as JSON.
+	templateString := `{{val}}`
+	tpl, err := NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	params := map[string]any{
+		"val": `foo"bar`,
+	}
+
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect NO escaping
+	assert.Equal(t, `foo"bar`, rendered)
+
+	// Case 2: Template starts with [INFO] (starts with [)
+	// Should NOT be detected as JSON.
+	templateString = `[INFO] {{val}}`
+	tpl, err = NewTemplate(templateString, "{{", "}}")
+	require.NoError(t, err)
+
+	rendered, err = tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect NO escaping
+	assert.Equal(t, `[INFO] foo"bar`, rendered)
+}

@@ -18,35 +18,29 @@ type MCPSession struct {
 
 // NewMCPSession creates a new MCPSession.
 //
-// Parameters:
-//   - session (*mcp.ServerSession): The underlying server session.
+// session is the session.
 //
-// Returns:
-//   - *MCPSession: The wrapped session.
+// Returns the result.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
 
 // NewMCPSampler is a deprecated alias for NewMCPSession.
 //
-// Parameters:
-//   - session (*mcp.ServerSession): The underlying server session.
+// session is the session.
 //
-// Returns:
-//   - *MCPSession: The wrapped session.
+// Returns the result.
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
 
 // CreateMessage requests a message creation from the client (sampling).
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - params (*mcp.CreateMessageParams): The sampling parameters.
+// ctx is the context for the request.
+// params is the params.
 //
-// Returns:
-//   - *mcp.CreateMessageResult: The result from the client.
-//   - error: An error if the operation fails.
+// Returns the result.
+// Returns an error if the operation fails.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -56,12 +50,10 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 
 // ListRoots requests the list of roots from the client.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the request.
+// ctx is the context for the request.
 //
-// Returns:
-//   - *mcp.ListRootsResult: The list of roots.
-//   - error: An error if the operation fails.
+// Returns the result.
+// Returns an error if the operation fails.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")

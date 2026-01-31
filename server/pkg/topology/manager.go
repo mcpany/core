@@ -395,7 +395,29 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
+		// Get current traffic stats
+		now := time.Now()
+		minuteKey := now.Truncate(time.Minute).Unix()
+		var currentStats *MinuteStats
+		if stats, ok := m.trafficHistory[minuteKey]; ok {
+			currentStats = stats
+		}
+
+		// Calculate elapsed seconds in current minute for QPS
+		elapsedSeconds := float64(now.Second())
+		if elapsedSeconds < 1 {
+			elapsedSeconds = 1
+		}
+
+		// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets.
+		// Optimized nested loop to O(N+M) using a map.
 		tools := m.toolManager.ListTools()
+		toolsByService := make(map[string][]tool.Tool)
+		for _, t := range tools {
+			svcID := t.Tool().GetServiceId()
+			toolsByService[svcID] = append(toolsByService[svcID], t)
+		}
+
 		for _, svc := range services {
 			svcNode := topologyv1.Node_builder{
 				Id:     "svc-" + svc.GetName(),
@@ -404,12 +426,38 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 				Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 			}.Build()
 			if svc.GetDisable() {
-				svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_INACTIVE
+				svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_INACTIVE)
+			}
+
+			// Inject Metrics
+			if currentStats != nil && currentStats.ServiceStats != nil {
+				if sStats, ok := currentStats.ServiceStats[svc.GetName()]; ok {
+					qps := float64(sStats.Requests) / elapsedSeconds
+					errorRate := 0.0
+					if sStats.Requests > 0 {
+						errorRate = float64(sStats.Errors) / float64(sStats.Requests)
+					}
+					latency := 0.0
+					if sStats.Requests > 0 {
+						latency = float64(sStats.Latency) / float64(sStats.Requests)
+					}
+
+					svcNode.SetMetrics(topologyv1.NodeMetrics_builder{
+						Qps:       qps,
+						ErrorRate: errorRate,
+						LatencyMs: latency,
+					}.Build())
+
+					// Dynamic Status
+					if errorRate > 0.05 {
+						svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_ERROR)
+					}
+				}
 			}
 
 			// Add Tools
-			for _, t := range tools {
-				if t.Tool().GetServiceId() == svc.GetName() {
+			if svcTools, ok := toolsByService[svc.GetName()]; ok {
+				for _, t := range svcTools {
 					toolNode := topologyv1.Node_builder{
 						Id:     "tool-" + t.Tool().GetName(),
 						Label:  t.Tool().GetName(),
@@ -424,13 +472,13 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 						Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 					}.Build()
-					toolNode.Children = append(toolNode.Children, apiNode)
+					toolNode.SetChildren(append(toolNode.GetChildren(), apiNode))
 
-					svcNode.Children = append(svcNode.Children, toolNode)
+					svcNode.SetChildren(append(svcNode.GetChildren(), toolNode))
 				}
 			}
 
-			coreNode.Children = append(coreNode.Children, svcNode)
+			coreNode.SetChildren(append(coreNode.GetChildren(), svcNode))
 		}
 	}
 
@@ -446,7 +494,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			topologyv1.Node_builder{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
-	coreNode.Children = append(coreNode.Children, middlewareNode)
+	coreNode.SetChildren(append(coreNode.GetChildren(), middlewareNode))
 
 	// Add Webhooks Node
 	// This would ideally come from the WebhookManager
@@ -460,7 +508,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			topologyv1.Node_builder{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
-	coreNode.Children = append(coreNode.Children, webhookNode)
+	coreNode.SetChildren(append(coreNode.GetChildren(), webhookNode))
 
 	// Build Clients list from active sessions
 	clients := make([]*topologyv1.Node, 0, len(m.sessions))

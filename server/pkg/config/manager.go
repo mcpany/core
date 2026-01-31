@@ -24,6 +24,9 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
+// MergeStrategyReplace indicates that the new configuration list should replace the existing one.
+const MergeStrategyReplace = "replace"
+
 // UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 // It handles loading, validating, and merging service configurations from various sources,
 // including local files and remote URLs (e.g., GitHub).
@@ -83,6 +86,20 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 //	A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
 //	An error if any critical failure occurs during loading or merging.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
+	// Respect merge strategy
+	if strategy := config.GetMergeStrategy(); strategy != nil {
+		if strategy.GetUpstreamServiceList() == MergeStrategyReplace {
+			m.log.Info("Merge strategy is 'replace', clearing existing services")
+			m.services = make(map[string]*configv1.UpstreamServiceConfig)
+			m.servicePriorities = make(map[string]int32)
+		}
+		if strategy.GetProfileList() == MergeStrategyReplace {
+			m.log.Info("Merge strategy is 'replace', clearing existing profile overrides")
+			m.profileServiceOverrides = make(map[string]*configv1.ProfileServiceConfig)
+			m.profileSecrets = make(map[string]*configv1.SecretValue)
+		}
+	}
+
 	// Initialize Profile Manager and resolve overrides
 	pm := profile.NewManager(config.GetGlobalSettings().GetProfileDefinitions())
 	for _, profileName := range m.enabledProfiles {
@@ -335,8 +352,8 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	}
 
 	if activeConfig != nil {
-		if activeConfig.Enabled != nil {
-			isOverrideDisabled = !*activeConfig.Enabled
+		if activeConfig.HasEnabled() {
+			isOverrideDisabled = !activeConfig.GetEnabled()
 		}
 	}
 

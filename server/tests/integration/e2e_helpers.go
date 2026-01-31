@@ -219,6 +219,12 @@ var (
 func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
+		// Allow overriding via environment variable
+		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
+			projectRoot = envRoot
+			return
+		}
+
 		// Find the project root by looking for the go.mod file
 		var dir string
 		dir, err = os.Getwd()

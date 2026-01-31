@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestStripSecretsFromService_Coverage(t *testing.T) {
@@ -17,36 +18,39 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 		{
 			name: "GrpcService",
 			svc: func() *configv1.UpstreamServiceConfig {
-				grpcSvc := &configv1.GrpcUpstreamService{}
-				grpcSvc.SetAddress("127.0.0.1:50051")
+				grpcSvc := configv1.GrpcUpstreamService_builder{
+					Address: proto.String("127.0.0.1:50051"),
+				}.Build()
 
-				cfg := &configv1.UpstreamServiceConfig{}
-				cfg.SetGrpcService(grpcSvc)
-				return cfg
+				return configv1.UpstreamServiceConfig_builder{
+					GrpcService: grpcSvc,
+				}.Build()
 			}(),
 		},
 		{
 			name: "OpenapiService",
 			svc: func() *configv1.UpstreamServiceConfig {
-				openapiSvc := &configv1.OpenapiUpstreamService{}
-				openapiSvc.SetSpecUrl("http://example.com/spec.json")
+				openapiSvc := configv1.OpenapiUpstreamService_builder{
+					SpecUrl: proto.String("http://example.com/spec.json"),
+				}.Build()
 
-				cfg := &configv1.UpstreamServiceConfig{}
-				cfg.SetOpenapiService(openapiSvc)
-				return cfg
+				return configv1.UpstreamServiceConfig_builder{
+					OpenapiService: openapiSvc,
+				}.Build()
 			}(),
 		},
 		{
 			name: "McpService",
 			svc: func() *configv1.UpstreamServiceConfig {
-				mcpSvc := &configv1.McpUpstreamService{}
-				mcpSvc.SetCalls(map[string]*configv1.MCPCallDefinition{
-					"call1": {},
-				})
+				mcpSvc := configv1.McpUpstreamService_builder{
+					Calls: map[string]*configv1.MCPCallDefinition{
+						"call1": configv1.MCPCallDefinition_builder{}.Build(),
+					},
+				}.Build()
 
-				cfg := &configv1.UpstreamServiceConfig{}
-				cfg.SetMcpService(mcpSvc)
-				return cfg
+				return configv1.UpstreamServiceConfig_builder{
+					McpService: mcpSvc,
+				}.Build()
 			}(),
 		},
 	}
@@ -59,43 +63,51 @@ func TestStripSecretsFromService_Coverage(t *testing.T) {
 }
 
 func TestStripSecretsFromService_McpConnection(t *testing.T) {
-    // Stdio
-    stdio := &configv1.UpstreamServiceConfig{}
+	// Stdio
+	stdio := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		conn := &configv1.McpStdioConnection{}
-		conn.SetEnv(map[string]*configv1.SecretValue{
-			"KEY": {
-				Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+		conn := configv1.McpStdioConnection_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					PlainText: proto.String("secret"),
+				}.Build(),
 			},
-		})
+		}.Build()
 
-		mcpSvc := &configv1.McpUpstreamService{}
-		mcpSvc.SetStdioConnection(conn)
-		stdio.SetMcpService(mcpSvc)
+		mcpSvc := configv1.McpUpstreamService_builder{
+			StdioConnection: conn,
+		}.Build()
+		stdio.SetMcpService(mcpSvc) // Setters are still fine/required if we are modifying existing object or if we want to mix.
+		// But better to rebuild if we want fully pure opaque usage, but here we just need initial state.
+		// Wait, `stdio` is created empty.
+		// The test logic seems to construct incrementally.
+		// I will respect the structure but use builders for creation.
 	}
-    StripSecretsFromService(stdio)
-    if stdio.GetMcpService().GetStdioConnection().GetEnv()["KEY"].GetPlainText() != "" {
-        t.Error("Failed to strip McpService Stdio Env secret")
-    }
+	StripSecretsFromService(stdio)
+	if stdio.GetMcpService().GetStdioConnection().GetEnv()["KEY"].GetPlainText() != "" {
+		t.Error("Failed to strip McpService Stdio Env secret")
+	}
 
-    // Bundle
-    bundle := &configv1.UpstreamServiceConfig{}
+	// Bundle
+	bundle := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		conn := &configv1.McpBundleConnection{}
-		conn.SetEnv(map[string]*configv1.SecretValue{
-			"KEY": {
-				Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
+		conn := configv1.McpBundleConnection_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					PlainText: proto.String("secret"),
+				}.Build(),
 			},
-		})
+		}.Build()
 
-		mcpSvc := &configv1.McpUpstreamService{}
-		mcpSvc.SetBundleConnection(conn)
+		mcpSvc := configv1.McpUpstreamService_builder{
+			BundleConnection: conn,
+		}.Build()
 		bundle.SetMcpService(mcpSvc)
 	}
-    StripSecretsFromService(bundle)
-    if bundle.GetMcpService().GetBundleConnection().GetEnv()["KEY"].GetPlainText() != "" {
-        t.Error("Failed to strip McpService Bundle Env secret")
-    }
+	StripSecretsFromService(bundle)
+	if bundle.GetMcpService().GetBundleConnection().GetEnv()["KEY"].GetPlainText() != "" {
+		t.Error("Failed to strip McpService Bundle Env secret")
+	}
 }
 
 func TestStripSecretsFromProfile_Coverage(t *testing.T) {
@@ -103,9 +115,9 @@ func TestStripSecretsFromProfile_Coverage(t *testing.T) {
 
 	profile := configv1.ProfileDefinition_builder{
 		Secrets: map[string]*configv1.SecretValue{
-			"key1": {
-				Value: &configv1.SecretValue_PlainText{PlainText: "secret"},
-			},
+			"key1": configv1.SecretValue_builder{
+				PlainText: proto.String("secret"),
+			}.Build(),
 		},
 	}.Build()
 	StripSecretsFromProfile(profile)
@@ -120,210 +132,227 @@ func TestStripSecretsFromCollection_Coverage(t *testing.T) {
 
 func TestHydrateSecrets_Coverage(t *testing.T) {
 	HydrateSecretsInService(nil, nil)
-	HydrateSecretsInService(&configv1.UpstreamServiceConfig{}, nil)
+	HydrateSecretsInService(configv1.UpstreamServiceConfig_builder{}.Build(), nil)
 
-    secrets := map[string]*configv1.SecretValue{
-        "API_KEY": {
-            Value: &configv1.SecretValue_PlainText{PlainText: "12345"},
-        },
-    }
+	secrets := map[string]*configv1.SecretValue{
+		"API_KEY": configv1.SecretValue_builder{
+			PlainText: proto.String("12345"),
+		}.Build(),
+	}
 
-    // Test McpService Stdio
-    mcpSvc := &configv1.UpstreamServiceConfig{}
+	// Test McpService Stdio
+	mcpSvc := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		conn := &configv1.McpStdioConnection{}
-		conn.SetEnv(map[string]*configv1.SecretValue{
-			"KEY": {
-				Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "API_KEY"},
+		conn := configv1.McpStdioConnection_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("API_KEY"),
+				}.Build(),
 			},
-		})
+		}.Build()
 
-		svc := &configv1.McpUpstreamService{}
-		svc.SetStdioConnection(conn)
+		svc := configv1.McpUpstreamService_builder{
+			StdioConnection: conn,
+		}.Build()
 		mcpSvc.SetMcpService(svc)
 	}
-    HydrateSecretsInService(mcpSvc, secrets)
-    if mcpSvc.GetMcpService().GetStdioConnection().GetEnv()["KEY"].GetPlainText() != "12345" {
-        t.Error("Failed to hydrate McpService Stdio Env")
-    }
+	HydrateSecretsInService(mcpSvc, secrets)
+	if mcpSvc.GetMcpService().GetStdioConnection().GetEnv()["KEY"].GetPlainText() != "12345" {
+		t.Error("Failed to hydrate McpService Stdio Env")
+	}
 
-    // Test McpService Bundle
-    mcpBundleSvc := &configv1.UpstreamServiceConfig{}
+	// Test McpService Bundle
+	mcpBundleSvc := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		conn := &configv1.McpBundleConnection{}
-		conn.SetEnv(map[string]*configv1.SecretValue{
-			"KEY": {
-				Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "API_KEY"},
+		conn := configv1.McpBundleConnection_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("API_KEY"),
+				}.Build(),
 			},
-		})
+		}.Build()
 
-		svc := &configv1.McpUpstreamService{}
-		svc.SetBundleConnection(conn)
+		svc := configv1.McpUpstreamService_builder{
+			BundleConnection: conn,
+		}.Build()
 		mcpBundleSvc.SetMcpService(svc)
 	}
-    HydrateSecretsInService(mcpBundleSvc, secrets)
-    if mcpBundleSvc.GetMcpService().GetBundleConnection().GetEnv()["KEY"].GetPlainText() != "12345" {
-        t.Error("Failed to hydrate McpService Bundle Env")
-    }
+	HydrateSecretsInService(mcpBundleSvc, secrets)
+	if mcpBundleSvc.GetMcpService().GetBundleConnection().GetEnv()["KEY"].GetPlainText() != "12345" {
+		t.Error("Failed to hydrate McpService Bundle Env")
+	}
 
-    // Test CommandLineService
-    cmdSvc := &configv1.UpstreamServiceConfig{}
+	// Test CommandLineService
+	cmdSvc := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		svc := &configv1.CommandLineUpstreamService{}
-		svc.SetEnv(map[string]*configv1.SecretValue{
-			"KEY": {
-				Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "API_KEY"},
+		svc := configv1.CommandLineUpstreamService_builder{
+			Env: map[string]*configv1.SecretValue{
+				"KEY": configv1.SecretValue_builder{
+					EnvironmentVariable: proto.String("API_KEY"),
+				}.Build(),
 			},
-		})
-
-		containerEnv := &configv1.ContainerEnvironment{}
-		containerEnv.SetEnv(map[string]*configv1.SecretValue{
-			"KEY_CONTAINER": {
-				Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "API_KEY"},
-			},
-		})
-		svc.SetContainerEnvironment(containerEnv)
+			ContainerEnvironment: configv1.ContainerEnvironment_builder{
+				Env: map[string]*configv1.SecretValue{
+					"KEY_CONTAINER": configv1.SecretValue_builder{
+						EnvironmentVariable: proto.String("API_KEY"),
+					}.Build(),
+				},
+			}.Build(),
+		}.Build()
 
 		cmdSvc.SetCommandLineService(svc)
 	}
-    HydrateSecretsInService(cmdSvc, secrets)
-     if cmdSvc.GetCommandLineService().GetEnv()["KEY"].GetPlainText() != "12345" {
-        t.Error("Failed to hydrate CommandLineService Env")
-    }
-     if cmdSvc.GetCommandLineService().GetContainerEnvironment().GetEnv()["KEY_CONTAINER"].GetPlainText() != "12345" {
-        t.Error("Failed to hydrate CommandLineService Container Env")
-    }
+	HydrateSecretsInService(cmdSvc, secrets)
+	if cmdSvc.GetCommandLineService().GetEnv()["KEY"].GetPlainText() != "12345" {
+		t.Error("Failed to hydrate CommandLineService Env")
+	}
+	if cmdSvc.GetCommandLineService().GetContainerEnvironment().GetEnv()["KEY_CONTAINER"].GetPlainText() != "12345" {
+		t.Error("Failed to hydrate CommandLineService Container Env")
+	}
 
-    // Test WebsocketService
-    wsSvc := &configv1.UpstreamServiceConfig{}
+	// Test WebsocketService
+	wsSvc := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		svc := &configv1.WebsocketUpstreamService{}
+		paramMapping := configv1.WebsocketParameterMapping_builder{
+			Secret: configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("API_KEY"),
+			}.Build(),
+		}.Build()
 
-		paramMapping := &configv1.WebsocketParameterMapping{}
-		secretVal := &configv1.SecretValue{}
-		secretVal.SetEnvironmentVariable("API_KEY")
-		paramMapping.SetSecret(secretVal)
+		callDef := configv1.WebsocketCallDefinition_builder{
+			Parameters: []*configv1.WebsocketParameterMapping{paramMapping},
+		}.Build()
 
-		callDef := &configv1.WebsocketCallDefinition{}
-		callDef.SetParameters([]*configv1.WebsocketParameterMapping{paramMapping})
-
-		svc.SetCalls(map[string]*configv1.WebsocketCallDefinition{
-			"call1": callDef,
-			"callNil": nil,
-		})
+		svc := configv1.WebsocketUpstreamService_builder{
+			Calls: map[string]*configv1.WebsocketCallDefinition{
+				"call1":   callDef,
+				"callNil": nil,
+			},
+		}.Build()
 
 		wsSvc.SetWebsocketService(svc)
 	}
-    HydrateSecretsInService(wsSvc, secrets)
-    if wsSvc.GetWebsocketService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText() != "12345" {
-        t.Error("Failed to hydrate WebsocketService secret")
-    }
+	HydrateSecretsInService(wsSvc, secrets)
+	if wsSvc.GetWebsocketService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText() != "12345" {
+		t.Error("Failed to hydrate WebsocketService secret")
+	}
 
-    // Test WebrtcService
-    webrtcSvc := &configv1.UpstreamServiceConfig{}
+	// Test WebrtcService
+	webrtcSvc := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		svc := &configv1.WebrtcUpstreamService{}
+		paramMapping := configv1.WebrtcParameterMapping_builder{
+			Secret: configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("API_KEY"),
+			}.Build(),
+		}.Build()
 
-		paramMapping := &configv1.WebrtcParameterMapping{}
-		secretVal := &configv1.SecretValue{}
-		secretVal.SetEnvironmentVariable("API_KEY")
-		paramMapping.SetSecret(secretVal)
+		callDef := configv1.WebrtcCallDefinition_builder{
+			Parameters: []*configv1.WebrtcParameterMapping{paramMapping},
+		}.Build()
 
-		callDef := &configv1.WebrtcCallDefinition{}
-		callDef.SetParameters([]*configv1.WebrtcParameterMapping{paramMapping})
-
-		svc.SetCalls(map[string]*configv1.WebrtcCallDefinition{
-			"call1": callDef,
-			"callNil": nil,
-		})
+		svc := configv1.WebrtcUpstreamService_builder{
+			Calls: map[string]*configv1.WebrtcCallDefinition{
+				"call1":   callDef,
+				"callNil": nil,
+			},
+		}.Build()
 
 		webrtcSvc.SetWebrtcService(svc)
 	}
-    HydrateSecretsInService(webrtcSvc, secrets)
-    if webrtcSvc.GetWebrtcService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText() != "12345" {
-        t.Error("Failed to hydrate WebrtcService secret")
-    }
+	HydrateSecretsInService(webrtcSvc, secrets)
+	if webrtcSvc.GetWebrtcService().GetCalls()["call1"].GetParameters()[0].GetSecret().GetPlainText() != "12345" {
+		t.Error("Failed to hydrate WebrtcService secret")
+	}
 
-    // Test HTTP Service with nil call
-    httpSvc := &configv1.UpstreamServiceConfig{}
+	// Test HTTP Service with nil call
+	httpSvc := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		svc := &configv1.HttpUpstreamService{}
-		svc.SetCalls(map[string]*configv1.HttpCallDefinition{
-			"callNil": nil,
-		})
+		svc := configv1.HttpUpstreamService_builder{
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"callNil": nil,
+			},
+		}.Build()
 		httpSvc.SetHttpService(svc)
 	}
-    HydrateSecretsInService(httpSvc, secrets)
+	HydrateSecretsInService(httpSvc, secrets)
 }
 
 func TestStripSecretsFromService_Filesystem_Vector_More(t *testing.T) {
-     // Test Filesystem S3
-    fsS3 := &configv1.UpstreamServiceConfig{}
+	// Test Filesystem S3
+	fsS3 := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		s3 := &configv1.S3Fs{}
-		s3.SetSecretAccessKey("secret")
-		s3.SetSessionToken("token")
+		s3 := configv1.S3Fs_builder{
+			SecretAccessKey: proto.String("secret"),
+			SessionToken:    proto.String("token"),
+		}.Build()
 
-		svc := &configv1.FilesystemUpstreamService{}
-		svc.SetS3(s3)
+		svc := configv1.FilesystemUpstreamService_builder{
+			S3: s3,
+		}.Build()
 		fsS3.SetFilesystemService(svc)
 	}
-    StripSecretsFromService(fsS3)
-    if fsS3.GetFilesystemService().GetS3().GetSecretAccessKey() != "" {
-        t.Error("Failed to strip S3 secret")
-    }
-     if fsS3.GetFilesystemService().GetS3().GetSessionToken() != "" {
-        t.Error("Failed to strip S3 token")
-    }
+	StripSecretsFromService(fsS3)
+	if fsS3.GetFilesystemService().GetS3().GetSecretAccessKey() != "" {
+		t.Error("Failed to strip S3 secret")
+	}
+	if fsS3.GetFilesystemService().GetS3().GetSessionToken() != "" {
+		t.Error("Failed to strip S3 token")
+	}
 
-     // Test Filesystem SFTP
-    fsSftp := &configv1.UpstreamServiceConfig{}
+	// Test Filesystem SFTP
+	fsSftp := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		sftp := &configv1.SftpFs{}
-		sftp.SetPassword("password")
+		sftp := configv1.SftpFs_builder{
+			Password: proto.String("password"),
+		}.Build()
 
-		svc := &configv1.FilesystemUpstreamService{}
-		svc.SetSftp(sftp)
+		svc := configv1.FilesystemUpstreamService_builder{
+			Sftp: sftp,
+		}.Build()
 		fsSftp.SetFilesystemService(svc)
 	}
-    StripSecretsFromService(fsSftp)
-    if fsSftp.GetFilesystemService().GetSftp().GetPassword() != "" {
-        t.Error("Failed to strip SFTP password")
-    }
+	StripSecretsFromService(fsSftp)
+	if fsSftp.GetFilesystemService().GetSftp().GetPassword() != "" {
+		t.Error("Failed to strip SFTP password")
+	}
 
-    // Test Vector Pinecone
-    vecPine := &configv1.UpstreamServiceConfig{}
+	// Test Vector Pinecone
+	vecPine := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		pinecone := &configv1.PineconeVectorDB{}
-		pinecone.SetApiKey("secret")
+		pinecone := configv1.PineconeVectorDB_builder{
+			ApiKey: proto.String("secret"),
+		}.Build()
 
-		svc := &configv1.VectorUpstreamService{}
-		svc.SetPinecone(pinecone)
+		svc := configv1.VectorUpstreamService_builder{
+			Pinecone: pinecone,
+		}.Build()
 		vecPine.SetVectorService(svc)
 	}
 
-    StripSecretsFromService(vecPine)
-    if vecPine.GetVectorService().GetPinecone().GetApiKey() != "" {
-        t.Error("Failed to strip Pinecone API key")
-    }
+	StripSecretsFromService(vecPine)
+	if vecPine.GetVectorService().GetPinecone().GetApiKey() != "" {
+		t.Error("Failed to strip Pinecone API key")
+	}
 
-    // Test Vector Milvus
-    vecMilvus := &configv1.UpstreamServiceConfig{}
+	// Test Vector Milvus
+	vecMilvus := configv1.UpstreamServiceConfig_builder{}.Build()
 	{
-		milvus := &configv1.MilvusVectorDB{}
-		milvus.SetApiKey("secret")
-		milvus.SetPassword("pass")
+		milvus := configv1.MilvusVectorDB_builder{
+			ApiKey:   proto.String("secret"),
+			Password: proto.String("pass"),
+		}.Build()
 
-		svc := &configv1.VectorUpstreamService{}
-		svc.SetMilvus(milvus)
+		svc := configv1.VectorUpstreamService_builder{
+			Milvus: milvus,
+		}.Build()
 		vecMilvus.SetVectorService(svc)
 	}
 
-    StripSecretsFromService(vecMilvus)
-    if vecMilvus.GetVectorService().GetMilvus().GetApiKey() != "" {
-        t.Error("Failed to strip Milvus API key")
-    }
-    if vecMilvus.GetVectorService().GetMilvus().GetPassword() != "" {
-        t.Error("Failed to strip Milvus password")
-    }
+	StripSecretsFromService(vecMilvus)
+	if vecMilvus.GetVectorService().GetMilvus().GetApiKey() != "" {
+		t.Error("Failed to strip Milvus API key")
+	}
+	if vecMilvus.GetVectorService().GetMilvus().GetPassword() != "" {
+		t.Error("Failed to strip Milvus password")
+	}
 }

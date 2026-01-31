@@ -53,7 +53,7 @@ func TestErrorPropagation_HealthCheckFailure(t *testing.T) {
 	tm := newThreadSafeToolManager()
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	serviceConfig.SetName("unhealthy-service")
 
 	// Register service
@@ -87,18 +87,18 @@ func TestToolCountPropagation(t *testing.T) {
 	tm := newThreadSafeToolManager()
 	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
 
-	serviceConfig := &configv1.UpstreamServiceConfig{}
+	serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
 	serviceConfig.SetName("tool-service")
 	serviceID, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
 	require.NoError(t, err)
 
 	// Add 3 tools for this service
-	tm.AddTool(&mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("t1"), ServiceId: proto.String(serviceID)}})
-	tm.AddTool(&mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("t2"), ServiceId: proto.String(serviceID)}})
-	tm.AddTool(&mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("t3"), ServiceId: proto.String(serviceID)}})
+	tm.AddTool(&mockTool{tool: mcp_routerv1.Tool_builder{Name: proto.String("t1"), ServiceId: proto.String(serviceID)}.Build()})
+	tm.AddTool(&mockTool{tool: mcp_routerv1.Tool_builder{Name: proto.String("t2"), ServiceId: proto.String(serviceID)}.Build()})
+	tm.AddTool(&mockTool{tool: mcp_routerv1.Tool_builder{Name: proto.String("t3"), ServiceId: proto.String(serviceID)}.Build()})
 
 	// Add tool for another service
-	tm.AddTool(&mockTool{tool: &mcp_routerv1.Tool{Name: proto.String("other"), ServiceId: proto.String("other")}})
+	tm.AddTool(&mockTool{tool: mcp_routerv1.Tool_builder{Name: proto.String("other"), ServiceId: proto.String("other")}.Build()})
 
 	// Verify GetAllServices returns correct ToolCount
 	services, err := registry.GetAllServices()

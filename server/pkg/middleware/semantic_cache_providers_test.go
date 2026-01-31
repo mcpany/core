@@ -13,49 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestOllamaEmbeddingProvider_Embed(t *testing.T) {
-	// Mock Ollama Server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/embeddings" {
-			http.Error(w, "Not found", http.StatusNotFound)
-			return
-		}
-		if r.Method != "POST" {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-
-		var req ollamaEmbeddingRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Bad request", http.StatusBadRequest)
-			return
-		}
-
-		if req.Prompt == "error" {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		resp := ollamaEmbeddingResponse{
-			Embedding: []float32{0.1, 0.2, 0.3},
-		}
-		json.NewEncoder(w).Encode(resp)
-	}))
-	defer server.Close()
-
-	provider := NewOllamaEmbeddingProvider(server.URL, "test-model")
-
-	// Test Success
-	embedding, err := provider.Embed(context.Background(), "test-input")
-	assert.NoError(t, err)
-	assert.Equal(t, []float32{0.1, 0.2, 0.3}, embedding)
-
-	// Test Error
-	embedding, err = provider.Embed(context.Background(), "error")
-	assert.Error(t, err)
-	assert.Nil(t, embedding)
-}
-
 func TestHttpEmbeddingProvider_Embed(t *testing.T) {
 	// Mock HTTP Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

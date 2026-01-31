@@ -266,7 +266,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
 
         <TabsContent value="schema" className="flex-1 overflow-hidden mt-0">
             <div className="h-full flex flex-col gap-2">
-                <JsonView data={tool.inputSchema} className="h-full overflow-auto" />
+                <JsonView data={tool.inputSchema} className="h-full overflow-auto" maxHeight={0} />
             </div>
         </TabsContent>
       </Tabs>

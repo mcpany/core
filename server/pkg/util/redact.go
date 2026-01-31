@@ -108,10 +108,11 @@ func init() {
 }
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
+//
 // If the input is not valid JSON object or array, it returns the input as is.
 //
 // Parameters:
-//   - input: The JSON input to redact.
+//   - input: []byte. The JSON input to redact.
 //
 // Returns:
 //   - []byte: The redacted JSON output.
@@ -133,13 +134,14 @@ func RedactJSON(input []byte) []byte {
 }
 
 // RedactMap recursively redacts sensitive keys in a map.
+//
 // Optimization: This function performs a copy-on-write.
 // If no sensitive keys are found, it returns the original map (zero allocation).
 // If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
 // Note: This aligns with RedactJSON behavior which returns original slice if clean.
 //
 // Parameters:
-//   - m: The map to redact.
+//   - m: map[string]interface{}. The map to redact.
 //
 // Returns:
 //   - map[string]interface{}: The potentially redacted map.
@@ -252,7 +254,7 @@ var sensitiveKeys = []string{
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
 // Parameters:
-//   - key: The key name to check.
+//   - key: string. The key name to check.
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
@@ -484,10 +486,11 @@ var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
 var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 
 // RedactDSN redacts the password from a DSN string.
+//
 // Supported formats: postgres://user:password@host...
 //
 // Parameters:
-//   - dsn: The DSN string to redact.
+//   - dsn: string. The DSN string to redact.
 //
 // Returns:
 //   - string: The redacted DSN string.
@@ -595,8 +598,8 @@ type redactInterval struct {
 // RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
 //
 // Parameters:
-//   - text: The text to redact.
-//   - secrets: A list of secret values to redact from the text.
+//   - text: string. The text to redact.
+//   - secrets: []string. A list of secret values to redact from the text.
 //
 // Returns:
 //   - string: The redacted text.

@@ -13,6 +13,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 // ptrIntegration is a helper to get a pointer to a value.
@@ -31,13 +32,10 @@ func TestToolManager_ExecuteTool_WithHooks(t *testing.T) {
 	toolName := "my-tool"
 	serviceID := "service-1"
 
-	// Create local copies for pointers
-	tn := toolName
-	sid := serviceID
-	protoTool := &v1.Tool{
-		Name:      &tn,
-		ServiceId: &sid,
-	}
+	protoTool := v1.Tool_builder{
+		Name:      proto.String(toolName),
+		ServiceId: proto.String(serviceID),
+	}.Build()
 
 	// ToolID is conventionally serviceID.toolName (sanitized)
 	toolID := serviceID + "." + toolName

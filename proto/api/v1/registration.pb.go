@@ -16,6 +16,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -1186,7 +1187,7 @@ var File_proto_api_v1_registration_proto protoreflect.FileDescriptor
 
 const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\n" +
-	"\x1fproto/api/v1/registration.proto\x12\rmcpany.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\"Y\n" +
+	"\x1fproto/api/v1/registration.proto\x12\rmcpany.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1eproto/config/v1/resource.proto\x1a\x1aproto/config/v1/tool.proto\x1a!google/protobuf/go_features.proto\"Y\n" +
 	"\x16RegisterServiceRequest\x12?\n" +
 	"\x06config\x18\x01 \x01(\v2'.mcpany.config.v1.UpstreamServiceConfigR\x06config\"\xfa\x01\n" +
 	"\x17RegisterServiceResponse\x12\x18\n" +

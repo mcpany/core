@@ -47,26 +47,26 @@ func TestManager_IsToolAllowed(t *testing.T) {
 
 	// Helpers
 	toolWithTags := func(tags ...string) *v1.Tool {
-		return &v1.Tool{
+		return v1.Tool_builder{
 			Tags: tags,
-		}
+		}.Build()
 	}
 
 	toolWithProps := func(readonly bool) *v1.Tool {
-		return &v1.Tool{
-			Annotations: &v1.ToolAnnotations{
+		return v1.Tool_builder{
+			Annotations: v1.ToolAnnotations_builder{
 				ReadOnlyHint: proto.Bool(readonly),
-			},
-		}
+			}.Build(),
+		}.Build()
 	}
 
 	toolWithBoth := func(readonly bool, tags ...string) *v1.Tool {
-		return &v1.Tool{
+		return v1.Tool_builder{
 			Tags: tags,
-			Annotations: &v1.ToolAnnotations{
+			Annotations: v1.ToolAnnotations_builder{
 				ReadOnlyHint: proto.Bool(readonly),
-			},
-		}
+			}.Build(),
+		}.Build()
 	}
 
 	tests := []struct {
@@ -149,25 +149,25 @@ func TestMatchesProperties_Extended(t *testing.T) {
 	}{
 		{
 			name: "Destructive true match",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				DestructiveHint: proto.Bool(true),
-			},
+			}.Build(),
 			props:    map[string]string{"destructive": "true"},
 			expected: true,
 		},
 		{
 			name: "Destructive false match",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				DestructiveHint: proto.Bool(false),
-			},
+			}.Build(),
 			props:    map[string]string{"destructive": "false"},
 			expected: true,
 		},
 		{
 			name: "Destructive mismatch",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				DestructiveHint: proto.Bool(true),
-			},
+			}.Build(),
 			props:    map[string]string{"destructive": "false"},
 			expected: false,
 		},
@@ -203,41 +203,41 @@ func TestMatchesProperties_Extended(t *testing.T) {
 		},
 		{
 			name: "Idempotent true match",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				IdempotentHint: proto.Bool(true),
-			},
+			}.Build(),
 			props:    map[string]string{"idempotent": "true"},
 			expected: true,
 		},
 		{
 			name: "OpenWorld true match",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				OpenWorldHint: proto.Bool(true),
-			},
+			}.Build(),
 			props:    map[string]string{"open_world": "true"},
 			expected: true,
 		},
 		{
 			name:        "Invalid property key",
-			annotations: &v1.ToolAnnotations{},
+			annotations: v1.ToolAnnotations_builder{}.Build(),
 			props:       map[string]string{"unknown_key": "true"},
 			expected:    false,
 		},
 		{
 			name: "Multiple properties all match",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				ReadOnlyHint:    proto.Bool(true),
 				DestructiveHint: proto.Bool(false),
-			},
+			}.Build(),
 			props:    map[string]string{"read_only": "true", "destructive": "false"},
 			expected: true,
 		},
 		{
 			name: "Multiple properties one mismatch",
-			annotations: &v1.ToolAnnotations{
+			annotations: v1.ToolAnnotations_builder{
 				ReadOnlyHint:    proto.Bool(true),
 				DestructiveHint: proto.Bool(true),
-			},
+			}.Build(),
 			props:    map[string]string{"read_only": "true", "destructive": "false"},
 			expected: false,
 		},

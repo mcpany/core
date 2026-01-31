@@ -5,11 +5,13 @@ edition = "2023";
 
 package mcpany.config.v1;
 
+import "google/protobuf/go_features.proto";
 import "google/protobuf/struct.proto";
 import "proto/config/v1/profile.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ToolProto";
+option features.(pb.go).api_level = API_OPAQUE;
 
 // ToolDefinition describes a single capability or "tool" offered by a service.
 message ToolDefinition {

@@ -89,6 +89,41 @@ var IsSecurePath = func(path string) error {
 	return nil
 }
 
+// IsSecureRelativePath checks if a given file path is secure, relative, and does not contain any
+// path traversal sequences. It strictly disallows absolute paths and drive letters.
+var IsSecureRelativePath = func(path string) error {
+	// 1. Basic security check (no ..)
+	if err := IsSecurePath(path); err != nil {
+		return err
+	}
+
+	// 2. Check for absolute path
+	if filepath.IsAbs(path) {
+		return fmt.Errorf("absolute paths are not allowed: %s", path)
+	}
+
+	// 3. Check for drive letter (Windows)
+	if filepath.VolumeName(path) != "" {
+		return fmt.Errorf("paths with volume names are not allowed: %s", path)
+	}
+
+	// 4. Check for leading separator (to prevent being treated as absolute or root-relative on some systems)
+	// On Windows, \foo is not Abs, but is rooted. We want to disallow it.
+	if strings.HasPrefix(path, string(os.PathSeparator)) {
+		return fmt.Errorf("paths starting with separator are not allowed: %s", path)
+	}
+
+	// 5. Check for alternate separator if different (e.g. / on Windows, \ on Linux)
+	// We want to be strict.
+	if os.PathSeparator == '\\' && strings.HasPrefix(path, "/") {
+		return fmt.Errorf("paths starting with '/' are not allowed")
+	}
+	// Note: We don't check for '\\' on Linux as it is a valid filename character,
+	// although unusual. Blocking it might break valid filenames.
+
+	return nil
+}
+
 var (
 	allowedPaths []string
 )

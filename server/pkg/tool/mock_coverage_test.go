@@ -19,7 +19,7 @@ func TestMockToolCoverage(t *testing.T) {
 	// Tool()
 	assert.NotNil(t, mt.Tool())
 
-	mt.ToolFunc = func() *v1.Tool { return &v1.Tool{Name: proto.String("mock")} }
+	mt.ToolFunc = func() *v1.Tool { return v1.Tool_builder{Name: proto.String("mock")}.Build() }
 	assert.Equal(t, "mock", mt.Tool().GetName())
 
 	// MCPTool()

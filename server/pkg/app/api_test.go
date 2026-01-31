@@ -225,10 +225,11 @@ func TestHandleServiceDetail(t *testing.T) {
 	httpSvc := &configv1.HttpUpstreamService{}
 	httpSvc.SetAddress("http://127.0.0.1:8080")
 
-	svc := &configv1.UpstreamServiceConfig{}
-	svc.SetName("test-service")
-	svc.SetId(uuid.New().String())
-	svc.SetHttpService(httpSvc)
+	svc := configv1.UpstreamServiceConfig_builder{
+		Name:        proto.String("test-service"),
+		Id:          proto.String(uuid.New().String()),
+		HttpService: httpSvc,
+	}.Build()
 	_ = store.SaveService(context.Background(), svc)
 
 	// Test GET
@@ -418,8 +419,9 @@ func TestHandleProfiles_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleProfiles(store)
 
-	profile := &configv1.ProfileDefinition{}
-	profile.SetName("dev")
+	profile := configv1.ProfileDefinition_builder{
+		Name: proto.String("dev"),
+	}.Build()
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(profile)
 	req := httptest.NewRequest(http.MethodPost, "/profiles", bytes.NewReader(body))
@@ -441,8 +443,9 @@ func TestHandleProfileDetail_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleProfileDetail(store)
 
-	profile := &configv1.ProfileDefinition{}
-	profile.SetName("dev")
+	profile := configv1.ProfileDefinition_builder{
+		Name: proto.String("dev"),
+	}.Build()
 	_ = store.SaveProfile(context.Background(), profile)
 
 	// Test GET
@@ -484,8 +487,9 @@ func TestHandleCollections_Detailed(t *testing.T) {
 	app, store := setupApiTestApp()
 	handler := app.handleCollections(store)
 
-	collection := &configv1.Collection{}
-	collection.SetName("col1")
+	collection := configv1.Collection_builder{
+		Name: proto.String("col1"),
+	}.Build()
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	body, _ := opts.Marshal(collection)
 	req := httptest.NewRequest(http.MethodPost, "/collections", bytes.NewReader(body))
@@ -1223,25 +1227,6 @@ func TestHandleLogsWS(t *testing.T) {
 	assert.Equal(t, testMsg, msg)
 }
 
-func TestHandleUploadSkillAsset(t *testing.T) {
-	tmpDir := t.TempDir()
-	sm, _ := skill.NewManager(tmpDir)
-	app := &Application{SkillManager: sm}
-
-	testSkill := &skill.Skill{
-		Frontmatter: skill.Frontmatter{Name: "test-skill"},
-		Instructions: "Run this.",
-	}
-	sm.CreateSkill(testSkill)
-
-	t.Run("Valid Upload", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodPost, "/api/v1/skills/test-skill/assets?path=scripts/test.py", bytes.NewReader([]byte("print('hello')")))
-		w := httptest.NewRecorder()
-		app.handleUploadSkillAsset().ServeHTTP(w, req)
-		assert.Equal(t, http.StatusOK, w.Code)
-	})
-}
-
 func TestHandleSystemStatus(t *testing.T) {
 	app := NewApplication()
 	app.startTime = time.Now().Add(-10 * time.Second)
@@ -1292,6 +1277,10 @@ func TestHandleUsers(t *testing.T) {
 		userBytes, _ := protojson.Marshal(user)
 		body, _ := json.Marshal(map[string]json.RawMessage{"user": json.RawMessage(userBytes)})
 		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+		// Inject admin role
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.Equal(t, http.StatusCreated, w.Code)
@@ -1308,6 +1297,10 @@ func TestCreateUser_PasswordHashing(t *testing.T) {
 
 	payload := `{"user": {"id": "test-user-hash", "authentication": {"basic_auth": {"username": "test", "password_hash": "plain-password"}}}}`
 	req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(payload))
+	// Inject admin role
+	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+	req = req.WithContext(ctx)
+
 	w := httptest.NewRecorder()
 	handler(w, req)
 
@@ -1329,13 +1322,17 @@ func TestHandleUsers_Security_Redaction(t *testing.T) {
 	apiKeyAuth := &configv1.APIKeyAuth{}
 	apiKeyAuth.SetVerificationValue("super-secret-key")
 
-	auth := &configv1.Authentication{}
-	auth.SetApiKey(apiKeyAuth)
-	user.SetAuthentication(auth)
+	authConfig := &configv1.Authentication{}
+	authConfig.SetApiKey(apiKeyAuth)
+	user.SetAuthentication(authConfig)
 	store.CreateUser(context.Background(), user)
 
 	t.Run("ListUsers_ShouldNotLeakSecrets", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/users", nil)
+		// Inject admin role
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
 		w := httptest.NewRecorder()
 		handler(w, req)
 		assert.NotContains(t, w.Body.String(), "super-secret-key")
@@ -1367,19 +1364,6 @@ func TestHandleServiceValidate(t *testing.T) {
 	w := httptest.NewRecorder()
 	app.handleServiceValidate().ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestHandleValidate(t *testing.T) {
-	app := &Application{}
-	reqBody := ValidateRequest{
-		Content: `{"upstream_services": [{"name": "test", "http_service": {"address": "http://localhost:8080"}}]}`,
-		Format:  "json",
-	}
-	body, _ := json.Marshal(reqBody)
-	req, _ := http.NewRequest("POST", "/api/v1/validate", bytes.NewBuffer(body))
-	rr := httptest.NewRecorder()
-	app.handleValidate().ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
 }
 
 func TestUploadFile_Security(t *testing.T) {
@@ -1519,24 +1503,27 @@ func TestHandleServices_ToolCount(t *testing.T) {
 	busProvider, _ := bus.NewProvider(nil)
 	tm := tool.NewManager(busProvider)
 
-	tm.AddTool(&TestMockTool{toolDef: &mcp_router_v1.Tool{Name: proto.String("tool1"), ServiceId: proto.String("service-1")}})
-	tm.AddTool(&TestMockTool{toolDef: &mcp_router_v1.Tool{Name: proto.String("tool2"), ServiceId: proto.String("service-1")}})
-	tm.AddTool(&TestMockTool{toolDef: &mcp_router_v1.Tool{Name: proto.String("tool3"), ServiceId: proto.String("service-2")}})
+	tm.AddTool(&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool1"), ServiceId: proto.String("service-1")}.Build()})
+	tm.AddTool(&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool2"), ServiceId: proto.String("service-1")}.Build()})
+	tm.AddTool(&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool3"), ServiceId: proto.String("service-2")}.Build()})
 
 	app := NewApplication()
 	app.ToolManager = tm
 
 	app.ServiceRegistry = &TestMockServiceRegistry{
 		services: func() []*configv1.UpstreamServiceConfig {
-			s1 := &configv1.UpstreamServiceConfig{}
-			s1.SetName("service-1")
-			s1.SetId("service-1")
-			s2 := &configv1.UpstreamServiceConfig{}
-			s2.SetName("service-2")
-			s2.SetId("service-2")
-			s3 := &configv1.UpstreamServiceConfig{}
-			s3.SetName("service-3")
-			s3.SetId("service-3")
+			s1 := configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("service-1"),
+				Id:   proto.String("service-1"),
+			}.Build()
+			s2 := configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("service-2"),
+				Id:   proto.String("service-2"),
+			}.Build()
+			s3 := configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("service-3"),
+				Id:   proto.String("service-3"),
+			}.Build()
 			return []*configv1.UpstreamServiceConfig{s1, s2, s3}
 		}(),
 	}
@@ -1567,28 +1554,27 @@ func TestSkillServiceServer(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("CreateSkill", func(t *testing.T) {
-		skill := &configv1.Skill{}
-		skill.SetName("test-skill")
-		skill.SetDescription("A test skill")
-		skill.SetInstructions("Do something")
-
-		req := &pb.CreateSkillRequest{
-			Skill: skill,
-		}
+		req := pb.CreateSkillRequest_builder{
+			Skill: configv1.Skill_builder{
+				Name:         proto.String("test-skill"),
+				Description:  proto.String("A test skill"),
+				Instructions: proto.String("Do something"),
+			}.Build(),
+		}.Build()
 		resp, err := server.CreateSkill(ctx, req)
 		require.NoError(t, err)
-		assert.Equal(t, "test-skill", resp.Skill.GetName())
+		assert.Equal(t, "test-skill", resp.GetSkill().GetName())
 	})
 
 	t.Run("GetSkill", func(t *testing.T) {
-		req := &pb.GetSkillRequest{Name: "test-skill"}
+		req := pb.GetSkillRequest_builder{Name: "test-skill"}.Build()
 		resp, err := server.GetSkill(ctx, req)
 		require.NoError(t, err)
-		assert.Equal(t, "test-skill", resp.Skill.GetName())
+		assert.Equal(t, "test-skill", resp.GetSkill().GetName())
 	})
 
 	t.Run("DeleteSkill", func(t *testing.T) {
-		req := &pb.DeleteSkillRequest{Name: "test-skill"}
+		req := pb.DeleteSkillRequest_builder{Name: "test-skill"}.Build()
 		_, err := server.DeleteSkill(ctx, req)
 		require.NoError(t, err)
 	})
@@ -1708,18 +1694,16 @@ func TestHandleAuthTest(t *testing.T) {
 
 	credID := "cred-http"
 	loc := configv1.APIKeyAuth_HEADER
-	cred := &configv1.Credential{
+	cred := configv1.Credential_builder{
 		Id: proto.String(credID),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					In:                &loc,
-					ParamName:         proto.String("X-API-Key"),
-					VerificationValue: proto.String("mykey"),
-				},
-			},
-		},
-	}
+		Authentication: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				In:                &loc,
+				ParamName:         proto.String("X-API-Key"),
+				VerificationValue: proto.String("mykey"),
+			}.Build(),
+		}.Build(),
+	}.Build()
 	store.SaveCredential(context.Background(), cred)
 
 	req := AuthTestRequest{

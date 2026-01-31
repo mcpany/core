@@ -7,8 +7,11 @@ package mcpany.config.v1;
 
 import "google/protobuf/duration.proto";
 
+import "google/protobuf/go_features.proto";
+
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "HealthCheckProto";
+option features.(pb.go).api_level = API_OPAQUE;
 
 // Defines a health check for an HTTP-based service.
 message HttpHealthCheck {

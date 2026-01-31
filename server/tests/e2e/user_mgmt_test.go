@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/gogo/protobuf/proto"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
@@ -23,6 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestUserManagement(t *testing.T) {
@@ -140,35 +140,35 @@ global_settings:
 
 	// Create initial user
 	userID := fmt.Sprintf("e2e-test-user-%d", time.Now().UnixNano())
-	user1 := &configv1.User{
+	user1 := configv1.User_builder{
 		Id: proto.String(userID),
-		Authentication: &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: &configv1.APIKeyAuth{
-					VerificationValue: proto.String("secret-key"),
-				},
-			},
-		},
+		Authentication: configv1.Authentication_builder{
+			ApiKey: configv1.APIKeyAuth_builder{
+				ParamName:         proto.String("X-API-Key"),
+				VerificationValue: proto.String("secret-key"),
+			}.Build(),
+
+		}.Build(),
 		ProfileIds: []string{"profile-1"},
 		Roles:      []string{"viewer"},
-	}
+	}.Build()
 
-	createResp, err := adminClient.CreateUser(ctx, &pb_admin.CreateUserRequest{User: user1})
+	createResp, err := adminClient.CreateUser(ctx, pb_admin.CreateUserRequest_builder{User: user1}.Build())
 	require.NoError(t, err)
-	require.Equal(t, userID, createResp.User.GetId())
-	require.Empty(t, createResp.User.GetAuthentication().GetApiKey().GetVerificationValue())
+	require.Equal(t, userID, createResp.GetUser().GetId())
+	require.Empty(t, createResp.GetUser().GetAuthentication().GetApiKey().GetVerificationValue())
 
 	// Get user
-	getResp, err := adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(userID)})
+	getResp, err := adminClient.GetUser(ctx, pb_admin.GetUserRequest_builder{UserId: proto.String(userID)}.Build())
 	require.NoError(t, err)
-	require.Equal(t, userID, getResp.User.GetId())
+	require.Equal(t, userID, getResp.GetUser().GetId())
 
 	// List users
-	listResp, err := adminClient.ListUsers(ctx, &pb_admin.ListUsersRequest{})
+	listResp, err := adminClient.ListUsers(ctx, pb_admin.ListUsersRequest_builder{}.Build())
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, len(listResp.Users), 1)
+	require.GreaterOrEqual(t, len(listResp.GetUsers()), 1)
 	var foundUser *configv1.User
-	for _, u := range listResp.Users {
+	for _, u := range listResp.GetUsers() {
 		if u.GetId() == userID {
 			foundUser = u
 			break
@@ -178,17 +178,17 @@ global_settings:
 	require.Equal(t, userID, foundUser.GetId())
 
 	// Update user
-	user1.Roles = []string{"admin"}
-	updateResp, err := adminClient.UpdateUser(ctx, &pb_admin.UpdateUserRequest{User: user1})
+	user1.SetRoles([]string{"admin"})
+	updateResp, err := adminClient.UpdateUser(ctx, pb_admin.UpdateUserRequest_builder{User: user1}.Build())
 	require.NoError(t, err)
-	require.Equal(t, []string{"admin"}, updateResp.User.Roles)
+	require.Equal(t, []string{"admin"}, updateResp.GetUser().GetRoles())
 
 	// Delete user
-	_, err = adminClient.DeleteUser(ctx, &pb_admin.DeleteUserRequest{UserId: proto.String(userID)})
+	_, err = adminClient.DeleteUser(ctx, pb_admin.DeleteUserRequest_builder{UserId: proto.String(userID)}.Build())
 	require.NoError(t, err)
 
 	// Verify deletion
-	_, err = adminClient.GetUser(ctx, &pb_admin.GetUserRequest{UserId: proto.String(userID)})
+	_, err = adminClient.GetUser(ctx, pb_admin.GetUserRequest_builder{UserId: proto.String(userID)}.Build())
 	require.Error(t, err)
 
 	// Test OIDC Configuration (External Authenticator Hook)

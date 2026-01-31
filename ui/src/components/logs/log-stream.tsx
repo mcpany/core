@@ -22,12 +22,15 @@ import {
 
 import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic";
+// ⚡ Bolt Optimization: Lazy load Virtuoso to avoid SSR issues.
+// react-virtuoso uses window/DOM which can cause hydration mismatches or server-side crashes.
+// By loading it client-side only (ssr: false), we ensure stability in the K8s container.
+const Virtuoso = dynamic(() => import("react-virtuoso").then((m) => m.Virtuoso), { ssr: false });
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
@@ -64,7 +67,7 @@ export interface LogEntry {
   message: string
   source?: string
   metadata?: Record<string, unknown>
-  // Optimization: Pre-computed lowercase string for search performance
+  // Optimization: Pre-computed lowercase string search performance
   searchStr?: string
   // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
   formattedTime?: string
@@ -281,7 +284,6 @@ export function LogStream() {
     return new RegExp(`(${escaped})`, 'gi');
   }, [deferredSearchQuery]);
 
-  const scrollRef = React.useRef<HTMLDivElement>(null)
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
   const logBufferRef = React.useRef<LogEntry[]>([])
@@ -370,24 +372,6 @@ export function LogStream() {
       clearInterval(flushInterval)
     }
   }, []) // Empty dependency array -> run once
-
-  // Auto-scroll
-  // Optimization: Cache the viewport element to avoid frequent DOM queries (querySelector).
-  const viewportRef = React.useRef<HTMLElement | null>(null)
-
-  React.useEffect(() => {
-    if (!isPaused && scrollRef.current) {
-      // Lazy init or validate viewport ref
-      if (!viewportRef.current || !viewportRef.current.isConnected) {
-        viewportRef.current = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
-      }
-
-      const scrollContainer = viewportRef.current
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight
-      }
-    }
-  }, [logs, isPaused])
 
   // Optimization: Extract unique sources from logs efficiently
   const uniqueSources = React.useMemo(() => {
@@ -539,18 +523,24 @@ export function LogStream() {
              </div>
         </CardHeader>
         <CardContent className="flex-1 p-0 overflow-hidden bg-black/90 font-mono text-sm relative">
-             <ScrollArea className="h-full w-full p-4" ref={scrollRef}>
-                <div className="space-y-1" data-testid="log-rows-container">
-                    {filteredLogs.length === 0 && (
-                        <div className="text-muted-foreground text-center py-10 italic">
-                            {isConnected ? "No logs found matching your criteria..." : "Waiting for connection..."}
-                        </div>
-                    )}
-                    {filteredLogs.map((log) => (
-                      <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
-                    ))}
+             {/* ⚡ BOLT: Implemented virtualization for log stream using react-virtuoso.
+                 Randomized Selection from Top 5 High-Impact Targets */}
+             <Virtuoso
+                style={{ height: '100%' }}
+                data={filteredLogs}
+                followOutput={isPaused ? false : 'auto'}
+                className="p-4 scroll-smooth"
+                itemContent={(index, log) => (
+                  <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
+                )}
+             />
+             {filteredLogs.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="text-muted-foreground text-center italic">
+                        {isConnected ? "No logs found matching your criteria..." : "Waiting for connection..."}
+                    </div>
                 </div>
-             </ScrollArea>
+             )}
         </CardContent>
       </Card>
     </div>

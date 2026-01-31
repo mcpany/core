@@ -38,11 +38,11 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		toolProto := &v1.Tool{}
 		toolProto.SetName("testTool")
 
-		callDef := &configv1.OpenAPICallDefinition{
-			InputTransformer: &configv1.InputTransformer{
+		callDef := configv1.OpenAPICallDefinition_builder{
+			InputTransformer: configv1.InputTransformer_builder{
 				Template: proto.String(`{"name": "{{name}}"}`),
-			},
-		}
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef)
 
@@ -67,16 +67,15 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		toolProto := &v1.Tool{}
 		toolProto.SetName("testTool")
 
-		format := configv1.OutputTransformer_JSON
-		callDef := &configv1.OpenAPICallDefinition{
-			OutputTransformer: &configv1.OutputTransformer{
-				Format:   &format,
+		callDef := configv1.OpenAPICallDefinition_builder{
+			OutputTransformer: configv1.OutputTransformer_builder{
+				Format:   configv1.OutputTransformer_JSON.Enum(),
 				Template: proto.String(`Result: {{data}}`),
 				ExtractionRules: map[string]string{
 					"data": "{.data}",
 				},
-			},
-		}
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
 
@@ -105,12 +104,11 @@ func TestOpenAPITool_ExtraCoverage(t *testing.T) {
 		toolProto := &v1.Tool{}
 		toolProto.SetName("testTool")
 
-		format := configv1.OutputTransformer_RAW_BYTES
-		callDef := &configv1.OpenAPICallDefinition{
-			OutputTransformer: &configv1.OutputTransformer{
-				Format: &format,
-			},
-		}
+		callDef := configv1.OpenAPICallDefinition_builder{
+			OutputTransformer: configv1.OutputTransformer_builder{
+				Format: configv1.OutputTransformer_RAW_BYTES.Enum(),
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
 
