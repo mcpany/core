@@ -139,6 +139,14 @@ func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, boo
 		// It is a key if it is followed by a colon (ignoring whitespace)
 		isKey := false
 		j := skipWhitespace(input, endQuote)
+
+		// ⚡ Bolt Fix: Handle edge case where a comment might exist between key and colon.
+		// Although we target standard JSON, regression tests cover non-standard JSON (comments).
+		// If we hit a slash instead of a colon, we fallback to the comment-aware skipper for just this check.
+		if j < n && input[j] == '/' {
+			j = skipWhitespaceAndComments(input, endQuote)
+		}
+
 		if j < n && input[j] == ':' {
 			isKey = true
 		}
