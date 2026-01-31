@@ -12,8 +12,34 @@ import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle, Clock } fr
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
-import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
+import { useServiceHealth } from "@/contexts/service-health-context";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Node, NodeStatus } from "@/types/topology";
+
+export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
+
+export interface ServiceHealth {
+  id: string;
+  name: string;
+  status: ServiceStatus;
+  latency: string;
+  uptime: string;
+  message?: string;
+}
+
+export interface HealthHistoryPoint {
+  timestamp: number;
+  status: ServiceStatus;
+}
+
+const mapNodeStatusToServiceStatus = (status: NodeStatus): ServiceStatus => {
+  switch (status) {
+    case 'NODE_STATUS_ACTIVE': return 'healthy';
+    case 'NODE_STATUS_ERROR': return 'unhealthy';
+    case 'NODE_STATUS_INACTIVE': return 'inactive';
+    default: return 'unknown';
+  }
+};
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -88,7 +114,7 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 
   return (
     <div className="flex items-center gap-[2px] h-3 ml-4">
-      {history.map((point, i) => {
+      {history.map((point) => {
         let colorClass = "bg-muted";
         switch (point.status) {
           case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;
@@ -179,16 +205,49 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
  * @returns The rendered component.
  */
 export function ServiceHealthWidget() {
-  const { services, history, isLoading } = useServiceHealthHistory();
+  const { latestTopology, getServiceHistory } = useServiceHealth();
 
-  const sortedServices = useMemo(() => {
-    return Array.isArray(services) ? [...services].sort((a, b) => {
+  const services = useMemo(() => {
+    if (!latestTopology || !latestTopology.core) return [];
+
+    const result: ServiceHealth[] = [];
+
+    // Helper to extract service nodes recursively
+    const extractServiceNodes = (nodes: Node[] | undefined) => {
+        if (!nodes) return;
+        nodes.forEach(node => {
+            if (node.type === 'NODE_TYPE_SERVICE') {
+                const status = mapNodeStatusToServiceStatus(node.status);
+                let latency = "--";
+                if (node.metrics && node.metrics.latencyMs) {
+                    latency = `${node.metrics.latencyMs.toFixed(0)}ms`;
+                }
+
+                result.push({
+                    id: node.id,
+                    name: node.label,
+                    status: status,
+                    latency: latency,
+                    uptime: "--", // Placeholder as topology doesn't have start time yet
+                    message: node.metadata?.["error"] // Access injected error message
+                });
+            }
+            if (node.children) {
+                extractServiceNodes(node.children);
+            }
+        });
+    };
+
+    extractServiceNodes(latestTopology.core.children);
+    // Also check core children (which are usually services)
+
+    return result.sort((a, b) => {
          const score = (s: string) => s === 'unhealthy' ? 0 : s === 'degraded' ? 1 : s === 'healthy' ? 2 : 3;
          return score(a.status) - score(b.status);
-    }) : [];
-  }, [services]);
+    });
+  }, [latestTopology]);
 
-  if (isLoading) {
+  if (!latestTopology) {
     return (
         <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
              <CardHeader>
@@ -203,7 +262,7 @@ export function ServiceHealthWidget() {
     )
   }
 
-  if (sortedServices.length === 0) {
+  if (services.length === 0) {
       return (
           <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
              <CardHeader>
@@ -228,7 +287,7 @@ export function ServiceHealthWidget() {
             <div>
                 <CardTitle>System Health</CardTitle>
                 <CardDescription>
-                Live health checks for {sortedServices.length} connected services.
+                Live health checks for {services.length} connected services.
                 </CardDescription>
             </div>
              <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded">
@@ -239,11 +298,14 @@ export function ServiceHealthWidget() {
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {sortedServices.map((service) => (
+          {services.map((service) => (
             <ServiceHealthItem
                 key={service.id}
                 service={service}
-                history={history[service.id]}
+                history={getServiceHistory(service.id).map(p => ({
+                    timestamp: p.timestamp,
+                    status: mapNodeStatusToServiceStatus(p.status)
+                }))}
             />
           ))}
         </div>

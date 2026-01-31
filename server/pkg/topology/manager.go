@@ -429,6 +429,21 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 				svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_INACTIVE)
 			}
 
+			// Inject Error Message
+			if lastErr := svc.GetLastError(); lastErr != "" {
+				meta := svcNode.GetMetadata()
+				if meta == nil {
+					meta = make(map[string]string)
+				}
+				meta["error"] = lastErr
+				svcNode.SetMetadata(meta)
+
+				// Ensure status reflects error
+				if !svc.GetDisable() {
+					svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_ERROR)
+				}
+			}
+
 			// Inject Metrics
 			if currentStats != nil && currentStats.ServiceStats != nil {
 				if sStats, ok := currentStats.ServiceStats[svc.GetName()]; ok {
