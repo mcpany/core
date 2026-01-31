@@ -17,7 +17,7 @@ import (
 // EnsureDir checks if a directory exists and creates it if not.
 func EnsureDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return os.MkdirAll(dir, 0755)
+		return os.MkdirAll(dir, 0750)
 	}
 	return nil
 }
@@ -36,16 +36,19 @@ func WriteFile(path string, content []byte) error {
 	if err := EnsureDir(filepath.Dir(path)); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
-	return os.WriteFile(path, content, 0644)
+	return os.WriteFile(path, content, 0600)
 }
 
 // ReadLastNLines reads the last n lines from a file.
 func ReadLastNLines(path string, n int) ([]string, error) {
+	//nolint:gosec
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
