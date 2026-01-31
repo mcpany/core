@@ -134,6 +134,17 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 ### Required Secrets
 Sensitive information (like upstream API keys) should be injected via environment variables or a secret manager, referenced in your configuration files using `${ENV_VAR_NAME}` syntax.
 
+**Example:**
+1. Export the secret:
+   ```bash
+   export WEATHER_API_KEY=your_secret_key
+   ```
+2. Reference it in your configuration:
+   ```yaml
+   env:
+     API_KEY: ${WEATHER_API_KEY}
+   ```
+
 ## Documentation
 *   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
 *   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.

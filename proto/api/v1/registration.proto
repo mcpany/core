@@ -18,69 +18,102 @@ option go_package = "github.com/mcpany/core/proto/api/v1";
 option java_outer_classname = "RegistrationProto";
 option features.field_presence = IMPLICIT;
 
+// RegisterServiceRequest represents a request to register a new upstream service.
 message RegisterServiceRequest {
+    // The configuration for the upstream service to be registered.
     mcpany.config.v1.UpstreamServiceConfig config = 1;
 }
 
+// RegisterServiceResponse represents the response after registering a service.
 message RegisterServiceResponse {
-    string message = 1;             // e.g., "Service registered successfully"
+    // A message indicating the result of the registration (e.g., "Service registered successfully").
+    string message = 1;
+    // A list of tools that were automatically discovered during registration.
     repeated mcpany.config.v1.ToolDefinition discovered_tools = 2;
-    string service_key = 3;         // The generated key for the service
+    // The unique key generated for the registered service.
+    string service_key = 3;
+    // A list of resources that were automatically discovered during registration.
     repeated mcpany.config.v1.ResourceDefinition discovered_resources = 4;
 }
 
+// ValidateServiceRequest represents a request to validate a service configuration without registering it.
 message ValidateServiceRequest {
+    // The configuration for the upstream service to be validated.
     mcpany.config.v1.UpstreamServiceConfig config = 1;
 }
 
+// ValidateServiceResponse represents the result of a service validation request.
 message ValidateServiceResponse {
+    // Indicates whether the service configuration is valid.
     bool valid = 1;
+    // A message providing details about the validation result, such as error messages if invalid.
     string message = 2;
+    // A list of tools that would be discovered if the service were registered.
     repeated mcpany.config.v1.ToolDefinition discovered_tools = 3;
+    // A list of resources that would be discovered if the service were registered.
     repeated mcpany.config.v1.ResourceDefinition discovered_resources = 4;
 }
 
+// RegistrationService manages the lifecycle of upstream services.
+// It allows registering, validating, and managing services that MCP Any proxies to.
 service RegistrationService {
+    // RegisterService registers a new upstream service with the MCP Any server.
+    // It validates the configuration and initializes the service.
     rpc RegisterService(RegisterServiceRequest) returns (RegisterServiceResponse) {
         option (google.api.http) = {
             post: "/v1/services/register"
             body: "*"
         };
     }
+
+    // ValidateService validates an upstream service configuration without registering it.
+    // This is useful for dry-run checks and UI validation.
     rpc ValidateService(ValidateServiceRequest) returns (ValidateServiceResponse) {
         option (google.api.http) = {
             post: "/v1/services/validate"
             body: "*"
         };
     }
+
+    // UnregisterService removes an existing upstream service.
     rpc UnregisterService(UnregisterServiceRequest) returns (UnregisterServiceResponse) {
         option (google.api.http) = {
             post: "/v1/services/unregister"
             body: "*"
         };
     }
+
+    // InitiateOAuth2Flow starts an OAuth2 authentication flow for a service.
     rpc InitiateOAuth2Flow(InitiateOAuth2FlowRequest) returns (InitiateOAuth2FlowResponse) {
         option (google.api.http) = {
             post: "/v1/services/oauth2/initiate"
             body: "*"
         };
     }
+
+    // RegisterTools manually registers tools for a specific service.
     rpc RegisterTools(RegisterToolsRequest) returns (RegisterToolsResponse) {
         option (google.api.http) = {
             post: "/v1/services/tools/register"
             body: "*"
         };
     }
+
+    // GetServiceStatus retrieves the runtime status and metrics of a registered service.
     rpc GetServiceStatus(GetServiceStatusRequest) returns (GetServiceStatusResponse) {
         option (google.api.http) = {
             get: "/v1/services/{service_name}/status"
         };
     }
+
+    // ListServices returns a list of all registered upstream services.
     rpc ListServices(ListServicesRequest) returns (ListServicesResponse) {
         option (google.api.http) = {
             get: "/v1/services"
         };
     }
+
+    // GetService retrieves the configuration of a specific service.
     rpc GetService(GetServiceRequest) returns (GetServiceResponse) {
         option (google.api.http) = {
             get: "/v1/services/{service_name}"
@@ -88,58 +121,91 @@ service RegistrationService {
     }
 }
 
+// ListServicesRequest represents a request to list all registered services.
 message ListServicesRequest {}
 
+// ListServicesResponse contains the list of registered services.
 message ListServicesResponse {
+    // The list of registered upstream service configurations.
     repeated mcpany.config.v1.UpstreamServiceConfig services = 1;
 }
 
+// InitiateOAuth2FlowRequest represents a request to start an OAuth2 flow.
 message InitiateOAuth2FlowRequest {
-  string service_id = 1;
-  string namespace = 2;
-  string credential_id = 3;
-  string redirect_url = 4;
-}
-
-message InitiateOAuth2FlowResponse {
-  string authorization_url = 1;
-  string state = 2;
-}
-
-message UnregisterServiceRequest {
-  string service_name = 1;          // User-defined unique ID for the service to deregister
-  string namespace = 2;               // Optional namespace for the service
-}
-
-message UnregisterServiceResponse {
-  string message = 1;             // e.g., "Service unregistered successfully"
-}
-
-message RegisterToolsRequest {
-    string service_name = 1;
+    // The ID of the service for which to initiate OAuth2.
+    string service_id = 1;
+    // The namespace of the service.
     string namespace = 2;
+    // The ID of the credential to associate with the OAuth2 flow.
+    string credential_id = 3;
+    // The URL to redirect to after the OAuth2 flow completes.
+    string redirect_url = 4;
+}
+
+// InitiateOAuth2FlowResponse contains the URL to start the OAuth2 flow.
+message InitiateOAuth2FlowResponse {
+    // The authorization URL to redirect the user to.
+    string authorization_url = 1;
+    // The state parameter used for CSRF protection.
+    string state = 2;
+}
+
+// UnregisterServiceRequest represents a request to remove a service.
+message UnregisterServiceRequest {
+    // The unique user-defined ID of the service to unregister.
+    string service_name = 1;
+    // The optional namespace of the service.
+    string namespace = 2;
+}
+
+// UnregisterServiceResponse represents the response after unregistering a service.
+message UnregisterServiceResponse {
+    // A message indicating the result of the unregistration (e.g., "Service unregistered successfully").
+    string message = 1;
+}
+
+// RegisterToolsRequest represents a request to manually register tools for a service.
+message RegisterToolsRequest {
+    // The name of the service to register tools for.
+    string service_name = 1;
+    // The namespace of the service.
+    string namespace = 2;
+    // The list of tool definitions to register.
     repeated mcpany.config.v1.ToolDefinition tools = 3;
 }
 
+// RegisterToolsResponse represents the response after registering tools.
 message RegisterToolsResponse {
+    // A message indicating the result of the registration.
     string message = 1;
+    // The number of tools successfully registered.
     int32 tools_registered = 2;
 }
 
+// GetServiceRequest represents a request to retrieve a specific service.
 message GetServiceRequest {
+    // The name of the service to retrieve.
     string service_name = 1;
 }
 
+// GetServiceResponse contains the requested service configuration.
 message GetServiceResponse {
+    // The configuration of the requested upstream service.
     mcpany.config.v1.UpstreamServiceConfig service = 1;
 }
 
+// GetServiceStatusRequest represents a request to retrieve the status of a service.
 message GetServiceStatusRequest {
+    // The name of the service to retrieve status for.
     string service_name = 1;
+    // The namespace of the service.
     string namespace = 2;
 }
 
+// GetServiceStatusResponse contains the status and metrics of a service.
 message GetServiceStatusResponse {
+    // The list of tools currently active for the service.
     repeated mcpany.config.v1.ToolDefinition tools = 1;
+    // A map of metrics for the service (e.g., request count, latency).
     map<string, int64> metrics = 2;
 }
