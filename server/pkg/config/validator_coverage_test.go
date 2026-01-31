@@ -416,78 +416,78 @@ func TestValidateCollection_Coverage(t *testing.T) {
 	}
 
 	// 2. Invalid URL
-	coll.Name = proto.String("valid-name")
-	coll.HttpUrl = proto.String("not-a-url")
+	coll.SetName("valid-name")
+	coll.SetHttpUrl("not-a-url")
 	if err := validateCollection(ctx, coll); err == nil {
 		t.Error("Expected error for invalid URL")
 	}
 
 	// 3. Invalid Scheme
-	coll.HttpUrl = proto.String("ftp://example.com")
+	coll.SetHttpUrl("ftp://example.com")
 	if err := validateCollection(ctx, coll); err == nil {
 		t.Error("Expected error for invalid scheme")
 	}
 
 	// 4. Valid with Auth (ApiKey)
-	coll.HttpUrl = proto.String("http://example.com/collection.json")
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetHttpUrl("http://example.com/collection.json")
+	coll.SetAuthentication(configv1.Authentication_builder{
 		ApiKey: configv1.APIKeyAuth_builder{
 			ParamName: proto.String("x-api-key"),
 			Value: configv1.SecretValue_builder{
 				PlainText: proto.String("secret"),
 			}.Build(),
 		}.Build(),
-	}.Build()
+	}.Build())
 
 	if err := validateCollection(ctx, coll); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
 	// Invalid API Key
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		ApiKey: configv1.APIKeyAuth_builder{
 			ParamName: proto.String(""), // Empty ParamName
 			Value: configv1.SecretValue_builder{
 				PlainText: proto.String("secret"),
 			}.Build(),
 		}.Build(),
-	}.Build()
+	}.Build())
 	assert.Error(t, validateCollection(ctx, coll))
 
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		ApiKey: configv1.APIKeyAuth_builder{
 			ParamName: proto.String("header"),
 		}.Build(),
-	}.Build()
+	}.Build())
 	assert.Error(t, validateCollection(ctx, coll))
 
 	// 5. Valid with Bearer
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		BearerToken: configv1.BearerTokenAuth_builder{
 			Token: configv1.SecretValue_builder{
 				PlainText: proto.String("token"),
 			}.Build(),
 		}.Build(),
-	}.Build()
+	}.Build())
 
 	if err := validateCollection(ctx, coll); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
 	// 7. Valid with mTLS (failing due to missing files, but covering code path)
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		Mtls: configv1.MTLSAuth_builder{
 			ClientCertPath: proto.String("/tmp/nonexistent_cert.pem"),
 			ClientKeyPath:  proto.String("/tmp/nonexistent_key.pem"),
 		}.Build(),
-	}.Build()
+	}.Build())
 	// Should fail file check
 	if err := validateCollection(ctx, coll); err == nil {
 		t.Error("Expected error for missing mTLS files")
 	}
 
 	// 8. Valid with OAuth2
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		Oauth2: configv1.OAuth2Auth_builder{
 			TokenUrl: proto.String("https://example.com/token"),
 			ClientId: configv1.SecretValue_builder{
@@ -497,23 +497,23 @@ func TestValidateCollection_Coverage(t *testing.T) {
 				PlainText: proto.String("secret"),
 			}.Build(),
 		}.Build(),
-	}.Build()
+	}.Build())
 	if err := validateCollection(ctx, coll); err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
 	// Invalid OAuth2
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		Oauth2: configv1.OAuth2Auth_builder{
 			TokenUrl: proto.String(""), // Empty URL
 		}.Build(),
-	}.Build()
+	}.Build())
 	assert.Error(t, validateCollection(ctx, coll))
 
-	coll.Authentication = configv1.Authentication_builder{
+	coll.SetAuthentication(configv1.Authentication_builder{
 		Oauth2: configv1.OAuth2Auth_builder{
 			TokenUrl: proto.String("not-url"), // Invalid URL
 		}.Build(),
-	}.Build()
+	}.Build())
 	assert.Error(t, validateCollection(ctx, coll))
 }

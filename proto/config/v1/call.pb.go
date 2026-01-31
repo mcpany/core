@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/call.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
@@ -186,27 +185,20 @@ func (x OutputTransformer_OutputFormat) Number() protoreflect.EnumNumber {
 
 // HttpCallDefinition describes how to map an MCP call to a specific HTTP request.
 type HttpCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// The path of the HTTP endpoint (e.g., "/users/{userId}").
-	EndpointPath *string `protobuf:"bytes,3,opt,name=endpoint_path" json:"endpoint_path,omitempty"`
-	// The HTTP method to use for the request.
-	Method *HttpCallDefinition_HttpMethod `protobuf:"varint,4,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod" json:"method,omitempty"`
-	// Defines the parameters for the HTTP request.
-	Parameters []*HttpParameterMapping `protobuf:"bytes,5,rep,name=parameters" json:"parameters,omitempty"`
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,6,opt,name=input_transformer" json:"input_transformer,omitempty"`
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,7,opt,name=output_transformer" json:"output_transformer,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,8,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,9,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,10,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
+	xxx_hidden_Id                *string                       `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_EndpointPath      *string                       `protobuf:"bytes,3,opt,name=endpoint_path"`
+	xxx_hidden_Method            HttpCallDefinition_HttpMethod `protobuf:"varint,4,opt,name=method,enum=mcpany.config.v1.HttpCallDefinition_HttpMethod"`
+	xxx_hidden_Parameters        *[]*HttpParameterMapping      `protobuf:"bytes,5,rep,name=parameters"`
+	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,6,opt,name=input_transformer"`
+	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,7,opt,name=output_transformer"`
+	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,8,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct              `protobuf:"bytes,9,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct              `protobuf:"bytes,10,opt,name=output_schema"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *HttpCallDefinition) Reset() {
@@ -235,190 +227,206 @@ func (x *HttpCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *HttpCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpCallDefinition) GetEndpointPath() string {
-	if x != nil && x.EndpointPath != nil {
-		return *x.EndpointPath
+	if x != nil {
+		if x.xxx_hidden_EndpointPath != nil {
+			return *x.xxx_hidden_EndpointPath
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpCallDefinition) GetMethod() HttpCallDefinition_HttpMethod {
-	if x != nil && x.Method != nil {
-		return *x.Method
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 2) {
+			return x.xxx_hidden_Method
+		}
 	}
 	return HttpCallDefinition_HTTP_METHOD_UNSPECIFIED
 }
 
 func (x *HttpCallDefinition) GetParameters() []*HttpParameterMapping {
 	if x != nil {
-		return x.Parameters
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
+		}
 	}
 	return nil
 }
 
 func (x *HttpCallDefinition) GetInputTransformer() *InputTransformer {
 	if x != nil {
-		return x.InputTransformer
+		return x.xxx_hidden_InputTransformer
 	}
 	return nil
 }
 
 func (x *HttpCallDefinition) GetOutputTransformer() *OutputTransformer {
 	if x != nil {
-		return x.OutputTransformer
+		return x.xxx_hidden_OutputTransformer
 	}
 	return nil
 }
 
 func (x *HttpCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *HttpCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *HttpCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *HttpCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
 }
 
 func (x *HttpCallDefinition) SetEndpointPath(v string) {
-	x.EndpointPath = &v
+	x.xxx_hidden_EndpointPath = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
 func (x *HttpCallDefinition) SetMethod(v HttpCallDefinition_HttpMethod) {
-	x.Method = &v
+	x.xxx_hidden_Method = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
 }
 
 func (x *HttpCallDefinition) SetParameters(v []*HttpParameterMapping) {
-	x.Parameters = v
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *HttpCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.InputTransformer = v
+	x.xxx_hidden_InputTransformer = v
 }
 
 func (x *HttpCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.OutputTransformer = v
+	x.xxx_hidden_OutputTransformer = v
 }
 
 func (x *HttpCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *HttpCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *HttpCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *HttpCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *HttpCallDefinition) HasEndpointPath() bool {
 	if x == nil {
 		return false
 	}
-	return x.EndpointPath != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *HttpCallDefinition) HasMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.Method != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *HttpCallDefinition) HasInputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputTransformer != nil
+	return x.xxx_hidden_InputTransformer != nil
 }
 
 func (x *HttpCallDefinition) HasOutputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputTransformer != nil
+	return x.xxx_hidden_OutputTransformer != nil
 }
 
 func (x *HttpCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *HttpCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *HttpCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *HttpCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *HttpCallDefinition) ClearEndpointPath() {
-	x.EndpointPath = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_EndpointPath = nil
 }
 
 func (x *HttpCallDefinition) ClearMethod() {
-	x.Method = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Method = HttpCallDefinition_HTTP_METHOD_UNSPECIFIED
 }
 
 func (x *HttpCallDefinition) ClearInputTransformer() {
-	x.InputTransformer = nil
+	x.xxx_hidden_InputTransformer = nil
 }
 
 func (x *HttpCallDefinition) ClearOutputTransformer() {
-	x.OutputTransformer = nil
+	x.xxx_hidden_OutputTransformer = nil
 }
 
 func (x *HttpCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *HttpCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *HttpCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type HttpCallDefinition_builder struct {
@@ -448,37 +456,41 @@ func (b0 HttpCallDefinition_builder) Build() *HttpCallDefinition {
 	m0 := &HttpCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.EndpointPath = b.EndpointPath
-	x.Method = b.Method
-	x.Parameters = b.Parameters
-	x.InputTransformer = b.InputTransformer
-	x.OutputTransformer = b.OutputTransformer
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.EndpointPath != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
+		x.xxx_hidden_EndpointPath = b.EndpointPath
+	}
+	if b.Method != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
+		x.xxx_hidden_Method = *b.Method
+	}
+	x.xxx_hidden_Parameters = &b.Parameters
+	x.xxx_hidden_InputTransformer = b.InputTransformer
+	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // WebsocketCallDefinition describes how to map an MCP call to a specific websocket message.
 type WebsocketCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// Defines the parameters for the websocket message.
-	Parameters []*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameters" json:"parameters,omitempty"`
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,4,opt,name=input_transformer" json:"input_transformer,omitempty"`
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer" json:"output_transformer,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,7,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,8,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                        protoimpl.MessageState        `protogen:"opaque.v1"`
+	xxx_hidden_Id                *string                       `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Parameters        *[]*WebsocketParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
+	xxx_hidden_InputTransformer  *InputTransformer             `protobuf:"bytes,4,opt,name=input_transformer"`
+	xxx_hidden_OutputTransformer *OutputTransformer            `protobuf:"bytes,5,opt,name=output_transformer"`
+	xxx_hidden_Cache             *CacheConfig                  `protobuf:"bytes,6,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct              `protobuf:"bytes,7,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct              `protobuf:"bytes,8,opt,name=output_schema"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *WebsocketCallDefinition) Reset() {
@@ -507,146 +519,153 @@ func (x *WebsocketCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *WebsocketCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebsocketCallDefinition) GetParameters() []*WebsocketParameterMapping {
 	if x != nil {
-		return x.Parameters
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
+		}
 	}
 	return nil
 }
 
 func (x *WebsocketCallDefinition) GetInputTransformer() *InputTransformer {
 	if x != nil {
-		return x.InputTransformer
+		return x.xxx_hidden_InputTransformer
 	}
 	return nil
 }
 
 func (x *WebsocketCallDefinition) GetOutputTransformer() *OutputTransformer {
 	if x != nil {
-		return x.OutputTransformer
+		return x.xxx_hidden_OutputTransformer
 	}
 	return nil
 }
 
 func (x *WebsocketCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *WebsocketCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *WebsocketCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *WebsocketCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *WebsocketCallDefinition) SetParameters(v []*WebsocketParameterMapping) {
-	x.Parameters = v
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *WebsocketCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.InputTransformer = v
+	x.xxx_hidden_InputTransformer = v
 }
 
 func (x *WebsocketCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.OutputTransformer = v
+	x.xxx_hidden_OutputTransformer = v
 }
 
 func (x *WebsocketCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *WebsocketCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *WebsocketCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *WebsocketCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *WebsocketCallDefinition) HasInputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputTransformer != nil
+	return x.xxx_hidden_InputTransformer != nil
 }
 
 func (x *WebsocketCallDefinition) HasOutputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputTransformer != nil
+	return x.xxx_hidden_OutputTransformer != nil
 }
 
 func (x *WebsocketCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *WebsocketCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *WebsocketCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *WebsocketCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *WebsocketCallDefinition) ClearInputTransformer() {
-	x.InputTransformer = nil
+	x.xxx_hidden_InputTransformer = nil
 }
 
 func (x *WebsocketCallDefinition) ClearOutputTransformer() {
-	x.OutputTransformer = nil
+	x.xxx_hidden_OutputTransformer = nil
 }
 
 func (x *WebsocketCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *WebsocketCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *WebsocketCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type WebsocketCallDefinition_builder struct {
@@ -672,35 +691,33 @@ func (b0 WebsocketCallDefinition_builder) Build() *WebsocketCallDefinition {
 	m0 := &WebsocketCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Parameters = b.Parameters
-	x.InputTransformer = b.InputTransformer
-	x.OutputTransformer = b.OutputTransformer
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Parameters = &b.Parameters
+	x.xxx_hidden_InputTransformer = b.InputTransformer
+	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // WebrtcCallDefinition describes how to map an MCP call to a specific webrtc message.
 type WebrtcCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// Defines the parameters for the webrtc message.
-	Parameters []*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameters" json:"parameters,omitempty"`
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,4,opt,name=input_transformer" json:"input_transformer,omitempty"`
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,5,opt,name=output_transformer" json:"output_transformer,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,6,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,7,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,8,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                        protoimpl.MessageState     `protogen:"opaque.v1"`
+	xxx_hidden_Id                *string                    `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Parameters        *[]*WebrtcParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
+	xxx_hidden_InputTransformer  *InputTransformer          `protobuf:"bytes,4,opt,name=input_transformer"`
+	xxx_hidden_OutputTransformer *OutputTransformer         `protobuf:"bytes,5,opt,name=output_transformer"`
+	xxx_hidden_Cache             *CacheConfig               `protobuf:"bytes,6,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct           `protobuf:"bytes,7,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct           `protobuf:"bytes,8,opt,name=output_schema"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *WebrtcCallDefinition) Reset() {
@@ -729,146 +746,153 @@ func (x *WebrtcCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *WebrtcCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebrtcCallDefinition) GetParameters() []*WebrtcParameterMapping {
 	if x != nil {
-		return x.Parameters
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
+		}
 	}
 	return nil
 }
 
 func (x *WebrtcCallDefinition) GetInputTransformer() *InputTransformer {
 	if x != nil {
-		return x.InputTransformer
+		return x.xxx_hidden_InputTransformer
 	}
 	return nil
 }
 
 func (x *WebrtcCallDefinition) GetOutputTransformer() *OutputTransformer {
 	if x != nil {
-		return x.OutputTransformer
+		return x.xxx_hidden_OutputTransformer
 	}
 	return nil
 }
 
 func (x *WebrtcCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *WebrtcCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *WebrtcCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *WebrtcCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *WebrtcCallDefinition) SetParameters(v []*WebrtcParameterMapping) {
-	x.Parameters = v
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *WebrtcCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.InputTransformer = v
+	x.xxx_hidden_InputTransformer = v
 }
 
 func (x *WebrtcCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.OutputTransformer = v
+	x.xxx_hidden_OutputTransformer = v
 }
 
 func (x *WebrtcCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *WebrtcCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *WebrtcCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *WebrtcCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *WebrtcCallDefinition) HasInputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputTransformer != nil
+	return x.xxx_hidden_InputTransformer != nil
 }
 
 func (x *WebrtcCallDefinition) HasOutputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputTransformer != nil
+	return x.xxx_hidden_OutputTransformer != nil
 }
 
 func (x *WebrtcCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *WebrtcCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *WebrtcCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *WebrtcCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *WebrtcCallDefinition) ClearInputTransformer() {
-	x.InputTransformer = nil
+	x.xxx_hidden_InputTransformer = nil
 }
 
 func (x *WebrtcCallDefinition) ClearOutputTransformer() {
-	x.OutputTransformer = nil
+	x.xxx_hidden_OutputTransformer = nil
 }
 
 func (x *WebrtcCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *WebrtcCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *WebrtcCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type WebrtcCallDefinition_builder struct {
@@ -894,33 +918,32 @@ func (b0 WebrtcCallDefinition_builder) Build() *WebrtcCallDefinition {
 	m0 := &WebrtcCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Parameters = b.Parameters
-	x.InputTransformer = b.InputTransformer
-	x.OutputTransformer = b.OutputTransformer
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Parameters = &b.Parameters
+	x.xxx_hidden_InputTransformer = b.InputTransformer
+	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // CommandLineCallDefinition describes how to map an MCP call to a stdio command.
 type CommandLineCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// Defines the parameters for the stdio command.
-	Parameters []*CommandLineParameterMapping `protobuf:"bytes,3,rep,name=parameters" json:"parameters,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,4,opt,name=cache" json:"cache,omitempty"`
-	// The arguments to pass to the command.
-	Args []string `protobuf:"bytes,5,rep,name=args" json:"args,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState          `protogen:"opaque.v1"`
+	xxx_hidden_Id           *string                         `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Parameters   *[]*CommandLineParameterMapping `protobuf:"bytes,3,rep,name=parameters"`
+	xxx_hidden_Cache        *CacheConfig                    `protobuf:"bytes,4,opt,name=cache"`
+	xxx_hidden_Args         []string                        `protobuf:"bytes,5,rep,name=args"`
+	xxx_hidden_InputSchema  *structpb.Struct                `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema *structpb.Struct                `protobuf:"bytes,7,opt,name=output_schema"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *CommandLineCallDefinition) Reset() {
@@ -949,113 +972,120 @@ func (x *CommandLineCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CommandLineCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CommandLineCallDefinition) GetParameters() []*CommandLineParameterMapping {
 	if x != nil {
-		return x.Parameters
+		if x.xxx_hidden_Parameters != nil {
+			return *x.xxx_hidden_Parameters
+		}
 	}
 	return nil
 }
 
 func (x *CommandLineCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *CommandLineCallDefinition) GetArgs() []string {
 	if x != nil {
-		return x.Args
+		return x.xxx_hidden_Args
 	}
 	return nil
 }
 
 func (x *CommandLineCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *CommandLineCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *CommandLineCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *CommandLineCallDefinition) SetParameters(v []*CommandLineParameterMapping) {
-	x.Parameters = v
+	x.xxx_hidden_Parameters = &v
 }
 
 func (x *CommandLineCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *CommandLineCallDefinition) SetArgs(v []string) {
-	x.Args = v
+	x.xxx_hidden_Args = v
 }
 
 func (x *CommandLineCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *CommandLineCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *CommandLineCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *CommandLineCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *CommandLineCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *CommandLineCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *CommandLineCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *CommandLineCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *CommandLineCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *CommandLineCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type CommandLineCallDefinition_builder struct {
@@ -1079,31 +1109,27 @@ func (b0 CommandLineCallDefinition_builder) Build() *CommandLineCallDefinition {
 	m0 := &CommandLineCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Parameters = b.Parameters
-	x.Cache = b.Cache
-	x.Args = b.Args
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_Parameters = &b.Parameters
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_Args = b.Args
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // InputTransformer defines how to render a template from input parameters.
 type InputTransformer struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// A text template to be rendered.
-	// This is used for generating the request body for POST/PUT requests.
-	// The template engine is compatible with Jinja2.
-	// A text template to be rendered.
-	// This is used for generating the request body for POST/PUT requests.
-	// The template engine is compatible with Jinja2.
-	//
-	// Deprecated: Marked as deprecated in proto/config/v1/call.proto.
-	Template *string `protobuf:"bytes,1,opt,name=template" json:"template,omitempty"`
-	// A webhook to call to transform the input.
-	Webhook       *WebhookConfig `protobuf:"bytes,2,opt,name=webhook" json:"webhook,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Template    *string                `protobuf:"bytes,1,opt,name=template"`
+	xxx_hidden_Webhook     *WebhookConfig         `protobuf:"bytes,2,opt,name=webhook"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *InputTransformer) Reset() {
@@ -1133,26 +1159,30 @@ func (x *InputTransformer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) GetTemplate() string {
-	if x != nil && x.Template != nil {
-		return *x.Template
+	if x != nil {
+		if x.xxx_hidden_Template != nil {
+			return *x.xxx_hidden_Template
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *InputTransformer) GetWebhook() *WebhookConfig {
 	if x != nil {
-		return x.Webhook
+		return x.xxx_hidden_Webhook
 	}
 	return nil
 }
 
 // Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) SetTemplate(v string) {
-	x.Template = &v
+	x.xxx_hidden_Template = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *InputTransformer) SetWebhook(v *WebhookConfig) {
-	x.Webhook = v
+	x.xxx_hidden_Webhook = v
 }
 
 // Deprecated: Marked as deprecated in proto/config/v1/call.proto.
@@ -1160,23 +1190,24 @@ func (x *InputTransformer) HasTemplate() bool {
 	if x == nil {
 		return false
 	}
-	return x.Template != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *InputTransformer) HasWebhook() bool {
 	if x == nil {
 		return false
 	}
-	return x.Webhook != nil
+	return x.xxx_hidden_Webhook != nil
 }
 
 // Deprecated: Marked as deprecated in proto/config/v1/call.proto.
 func (x *InputTransformer) ClearTemplate() {
-	x.Template = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Template = nil
 }
 
 func (x *InputTransformer) ClearWebhook() {
-	x.Webhook = nil
+	x.xxx_hidden_Webhook = nil
 }
 
 type InputTransformer_builder struct {
@@ -1199,30 +1230,25 @@ func (b0 InputTransformer_builder) Build() *InputTransformer {
 	m0 := &InputTransformer{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Template = b.Template
-	x.Webhook = b.Webhook
+	if b.Template != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Template = b.Template
+	}
+	x.xxx_hidden_Webhook = b.Webhook
 	return m0
 }
 
 // OutputTransformer defines how to parse an output text into structured data.
 type OutputTransformer struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The format of the upstream service's output.
-	Format *OutputTransformer_OutputFormat `protobuf:"varint,1,opt,name=format,enum=mcpany.config.v1.OutputTransformer_OutputFormat" json:"format,omitempty"`
-	// A map of field names to the extraction expressions.
-	// The interpretation of the expression depends on the 'format':
-	// - JSON: JSONPath expressions.
-	// - XML: XPath expressions.
-	// - TEXT: Regular expressions (first capture group is used).
-	ExtractionRules map[string]string `protobuf:"bytes,2,rep,name=extraction_rules" json:"extraction_rules,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// An optional template to render the extracted data into a final string.
-	// If this is not provided, the raw extracted data will be returned.
-	Template *string `protobuf:"bytes,3,opt,name=template" json:"template,omitempty"`
-	// The JQ query to transform the output.
-	// Only used when format is JQ.
-	JqQuery       *string `protobuf:"bytes,4,opt,name=jq_query" json:"jq_query,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                      protoimpl.MessageState         `protogen:"opaque.v1"`
+	xxx_hidden_Format          OutputTransformer_OutputFormat `protobuf:"varint,1,opt,name=format,enum=mcpany.config.v1.OutputTransformer_OutputFormat"`
+	xxx_hidden_ExtractionRules map[string]string              `protobuf:"bytes,2,rep,name=extraction_rules" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_Template        *string                        `protobuf:"bytes,3,opt,name=template"`
+	xxx_hidden_JqQuery         *string                        `protobuf:"bytes,4,opt,name=jq_query"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *OutputTransformer) Reset() {
@@ -1251,80 +1277,94 @@ func (x *OutputTransformer) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OutputTransformer) GetFormat() OutputTransformer_OutputFormat {
-	if x != nil && x.Format != nil {
-		return *x.Format
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
+			return x.xxx_hidden_Format
+		}
 	}
 	return OutputTransformer_JSON
 }
 
 func (x *OutputTransformer) GetExtractionRules() map[string]string {
 	if x != nil {
-		return x.ExtractionRules
+		return x.xxx_hidden_ExtractionRules
 	}
 	return nil
 }
 
 func (x *OutputTransformer) GetTemplate() string {
-	if x != nil && x.Template != nil {
-		return *x.Template
+	if x != nil {
+		if x.xxx_hidden_Template != nil {
+			return *x.xxx_hidden_Template
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *OutputTransformer) GetJqQuery() string {
-	if x != nil && x.JqQuery != nil {
-		return *x.JqQuery
+	if x != nil {
+		if x.xxx_hidden_JqQuery != nil {
+			return *x.xxx_hidden_JqQuery
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *OutputTransformer) SetFormat(v OutputTransformer_OutputFormat) {
-	x.Format = &v
+	x.xxx_hidden_Format = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *OutputTransformer) SetExtractionRules(v map[string]string) {
-	x.ExtractionRules = v
+	x.xxx_hidden_ExtractionRules = v
 }
 
 func (x *OutputTransformer) SetTemplate(v string) {
-	x.Template = &v
+	x.xxx_hidden_Template = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *OutputTransformer) SetJqQuery(v string) {
-	x.JqQuery = &v
+	x.xxx_hidden_JqQuery = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
 }
 
 func (x *OutputTransformer) HasFormat() bool {
 	if x == nil {
 		return false
 	}
-	return x.Format != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *OutputTransformer) HasTemplate() bool {
 	if x == nil {
 		return false
 	}
-	return x.Template != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *OutputTransformer) HasJqQuery() bool {
 	if x == nil {
 		return false
 	}
-	return x.JqQuery != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *OutputTransformer) ClearFormat() {
-	x.Format = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Format = OutputTransformer_JSON
 }
 
 func (x *OutputTransformer) ClearTemplate() {
-	x.Template = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Template = nil
 }
 
 func (x *OutputTransformer) ClearJqQuery() {
-	x.JqQuery = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_JqQuery = nil
 }
 
 type OutputTransformer_builder struct {
@@ -1350,32 +1390,35 @@ func (b0 OutputTransformer_builder) Build() *OutputTransformer {
 	m0 := &OutputTransformer{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Format = b.Format
-	x.ExtractionRules = b.ExtractionRules
-	x.Template = b.Template
-	x.JqQuery = b.JqQuery
+	if b.Format != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Format = *b.Format
+	}
+	x.xxx_hidden_ExtractionRules = b.ExtractionRules
+	if b.Template != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Template = b.Template
+	}
+	if b.JqQuery != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_JqQuery = b.JqQuery
+	}
 	return m0
 }
 
 // GrpcCallDefinition describes how to map an MCP call to a specific gRPC method.
 type GrpcCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// The fully-qualified gRPC service name.
-	Service *string `protobuf:"bytes,3,opt,name=service" json:"service,omitempty"`
-	// The name of the gRPC method to call.
-	Method *string `protobuf:"bytes,4,opt,name=method" json:"method,omitempty"`
-	// Note: For gRPC, parameter mapping is typically done by matching field names
-	// between the MCP input schema and the gRPC request message.
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id           *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Service      *string                `protobuf:"bytes,3,opt,name=service"`
+	xxx_hidden_Method       *string                `protobuf:"bytes,4,opt,name=method"`
+	xxx_hidden_Cache        *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_InputSchema  *structpb.Struct       `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema *structpb.Struct       `protobuf:"bytes,7,opt,name=output_schema"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *GrpcCallDefinition) Reset() {
@@ -1404,135 +1447,150 @@ func (x *GrpcCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GrpcCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcCallDefinition) GetService() string {
-	if x != nil && x.Service != nil {
-		return *x.Service
+	if x != nil {
+		if x.xxx_hidden_Service != nil {
+			return *x.xxx_hidden_Service
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcCallDefinition) GetMethod() string {
-	if x != nil && x.Method != nil {
-		return *x.Method
+	if x != nil {
+		if x.xxx_hidden_Method != nil {
+			return *x.xxx_hidden_Method
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *GrpcCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *GrpcCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *GrpcCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *GrpcCallDefinition) SetService(v string) {
-	x.Service = &v
+	x.xxx_hidden_Service = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *GrpcCallDefinition) SetMethod(v string) {
-	x.Method = &v
+	x.xxx_hidden_Method = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *GrpcCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *GrpcCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *GrpcCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *GrpcCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *GrpcCallDefinition) HasService() bool {
 	if x == nil {
 		return false
 	}
-	return x.Service != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *GrpcCallDefinition) HasMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.Method != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *GrpcCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *GrpcCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *GrpcCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *GrpcCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *GrpcCallDefinition) ClearService() {
-	x.Service = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Service = nil
 }
 
 func (x *GrpcCallDefinition) ClearMethod() {
-	x.Method = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Method = nil
 }
 
 func (x *GrpcCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *GrpcCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *GrpcCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type GrpcCallDefinition_builder struct {
@@ -1558,33 +1616,38 @@ func (b0 GrpcCallDefinition_builder) Build() *GrpcCallDefinition {
 	m0 := &GrpcCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Service = b.Service
-	x.Method = b.Method
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Service != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_Service = b.Service
+	}
+	if b.Method != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		x.xxx_hidden_Method = b.Method
+	}
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // OpenAPICallDefinition describes a call derived from an OpenAPI specification.
 // This is often used for discovery rather than manual configuration.
 type OpenAPICallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,3,opt,name=input_transformer" json:"input_transformer,omitempty"`
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer" json:"output_transformer,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id                *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,3,opt,name=input_transformer"`
+	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,4,opt,name=output_transformer"`
+	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct       `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct       `protobuf:"bytes,7,opt,name=output_schema"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *OpenAPICallDefinition) Reset() {
@@ -1613,135 +1676,140 @@ func (x *OpenAPICallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OpenAPICallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *OpenAPICallDefinition) GetInputTransformer() *InputTransformer {
 	if x != nil {
-		return x.InputTransformer
+		return x.xxx_hidden_InputTransformer
 	}
 	return nil
 }
 
 func (x *OpenAPICallDefinition) GetOutputTransformer() *OutputTransformer {
 	if x != nil {
-		return x.OutputTransformer
+		return x.xxx_hidden_OutputTransformer
 	}
 	return nil
 }
 
 func (x *OpenAPICallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *OpenAPICallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *OpenAPICallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *OpenAPICallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *OpenAPICallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.InputTransformer = v
+	x.xxx_hidden_InputTransformer = v
 }
 
 func (x *OpenAPICallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.OutputTransformer = v
+	x.xxx_hidden_OutputTransformer = v
 }
 
 func (x *OpenAPICallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *OpenAPICallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *OpenAPICallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *OpenAPICallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *OpenAPICallDefinition) HasInputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputTransformer != nil
+	return x.xxx_hidden_InputTransformer != nil
 }
 
 func (x *OpenAPICallDefinition) HasOutputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputTransformer != nil
+	return x.xxx_hidden_OutputTransformer != nil
 }
 
 func (x *OpenAPICallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *OpenAPICallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *OpenAPICallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *OpenAPICallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *OpenAPICallDefinition) ClearInputTransformer() {
-	x.InputTransformer = nil
+	x.xxx_hidden_InputTransformer = nil
 }
 
 func (x *OpenAPICallDefinition) ClearOutputTransformer() {
-	x.OutputTransformer = nil
+	x.xxx_hidden_OutputTransformer = nil
 }
 
 func (x *OpenAPICallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *OpenAPICallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *OpenAPICallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type OpenAPICallDefinition_builder struct {
@@ -1765,32 +1833,31 @@ func (b0 OpenAPICallDefinition_builder) Build() *OpenAPICallDefinition {
 	m0 := &OpenAPICallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.InputTransformer = b.InputTransformer
-	x.OutputTransformer = b.OutputTransformer
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_InputTransformer = b.InputTransformer
+	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // MCPCallDefinition describes how to map an MCP call to a specific MCP tool.
 type MCPCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// An optional input transformer to generate the request body.
-	InputTransformer *InputTransformer `protobuf:"bytes,3,opt,name=input_transformer" json:"input_transformer,omitempty"`
-	// An optional output transformer to parse the response body.
-	OutputTransformer *OutputTransformer `protobuf:"bytes,4,opt,name=output_transformer" json:"output_transformer,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,6,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,7,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id                *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_InputTransformer  *InputTransformer      `protobuf:"bytes,3,opt,name=input_transformer"`
+	xxx_hidden_OutputTransformer *OutputTransformer     `protobuf:"bytes,4,opt,name=output_transformer"`
+	xxx_hidden_Cache             *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_InputSchema       *structpb.Struct       `protobuf:"bytes,6,opt,name=input_schema"`
+	xxx_hidden_OutputSchema      *structpb.Struct       `protobuf:"bytes,7,opt,name=output_schema"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *MCPCallDefinition) Reset() {
@@ -1819,135 +1886,140 @@ func (x *MCPCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MCPCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *MCPCallDefinition) GetInputTransformer() *InputTransformer {
 	if x != nil {
-		return x.InputTransformer
+		return x.xxx_hidden_InputTransformer
 	}
 	return nil
 }
 
 func (x *MCPCallDefinition) GetOutputTransformer() *OutputTransformer {
 	if x != nil {
-		return x.OutputTransformer
+		return x.xxx_hidden_OutputTransformer
 	}
 	return nil
 }
 
 func (x *MCPCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *MCPCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *MCPCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *MCPCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *MCPCallDefinition) SetInputTransformer(v *InputTransformer) {
-	x.InputTransformer = v
+	x.xxx_hidden_InputTransformer = v
 }
 
 func (x *MCPCallDefinition) SetOutputTransformer(v *OutputTransformer) {
-	x.OutputTransformer = v
+	x.xxx_hidden_OutputTransformer = v
 }
 
 func (x *MCPCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *MCPCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *MCPCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *MCPCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *MCPCallDefinition) HasInputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputTransformer != nil
+	return x.xxx_hidden_InputTransformer != nil
 }
 
 func (x *MCPCallDefinition) HasOutputTransformer() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputTransformer != nil
+	return x.xxx_hidden_OutputTransformer != nil
 }
 
 func (x *MCPCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *MCPCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *MCPCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *MCPCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *MCPCallDefinition) ClearInputTransformer() {
-	x.InputTransformer = nil
+	x.xxx_hidden_InputTransformer = nil
 }
 
 func (x *MCPCallDefinition) ClearOutputTransformer() {
-	x.OutputTransformer = nil
+	x.xxx_hidden_OutputTransformer = nil
 }
 
 func (x *MCPCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *MCPCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *MCPCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type MCPCallDefinition_builder struct {
@@ -1971,36 +2043,33 @@ func (b0 MCPCallDefinition_builder) Build() *MCPCallDefinition {
 	m0 := &MCPCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.InputTransformer = b.InputTransformer
-	x.OutputTransformer = b.OutputTransformer
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	x.xxx_hidden_InputTransformer = b.InputTransformer
+	x.xxx_hidden_OutputTransformer = b.OutputTransformer
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // GraphQLCallDefinition describes a call derived from a GraphQL introspection query.
 type GraphQLCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// The GraphQL query to execute.
-	Query *string `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
-	// The GraphQL operation name.
-	OperationName *string `protobuf:"bytes,3,opt,name=operation_name" json:"operation_name,omitempty"`
-	// A map of variables for the GraphQL query.
-	Variables *structpb.Struct `protobuf:"bytes,4,opt,name=variables" json:"variables,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,5,opt,name=cache" json:"cache,omitempty"`
-	// The selection set for the GraphQL query.
-	SelectionSet *string `protobuf:"bytes,6,opt,name=selection_set" json:"selection_set,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,7,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,8,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id            *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Query         *string                `protobuf:"bytes,2,opt,name=query"`
+	xxx_hidden_OperationName *string                `protobuf:"bytes,3,opt,name=operation_name"`
+	xxx_hidden_Variables     *structpb.Struct       `protobuf:"bytes,4,opt,name=variables"`
+	xxx_hidden_Cache         *CacheConfig           `protobuf:"bytes,5,opt,name=cache"`
+	xxx_hidden_SelectionSet  *string                `protobuf:"bytes,6,opt,name=selection_set"`
+	xxx_hidden_InputSchema   *structpb.Struct       `protobuf:"bytes,7,opt,name=input_schema"`
+	xxx_hidden_OutputSchema  *structpb.Struct       `protobuf:"bytes,8,opt,name=output_schema"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *GraphQLCallDefinition) Reset() {
@@ -2029,179 +2098,199 @@ func (x *GraphQLCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GraphQLCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GraphQLCallDefinition) GetQuery() string {
-	if x != nil && x.Query != nil {
-		return *x.Query
+	if x != nil {
+		if x.xxx_hidden_Query != nil {
+			return *x.xxx_hidden_Query
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GraphQLCallDefinition) GetOperationName() string {
-	if x != nil && x.OperationName != nil {
-		return *x.OperationName
+	if x != nil {
+		if x.xxx_hidden_OperationName != nil {
+			return *x.xxx_hidden_OperationName
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GraphQLCallDefinition) GetVariables() *structpb.Struct {
 	if x != nil {
-		return x.Variables
+		return x.xxx_hidden_Variables
 	}
 	return nil
 }
 
 func (x *GraphQLCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *GraphQLCallDefinition) GetSelectionSet() string {
-	if x != nil && x.SelectionSet != nil {
-		return *x.SelectionSet
+	if x != nil {
+		if x.xxx_hidden_SelectionSet != nil {
+			return *x.xxx_hidden_SelectionSet
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GraphQLCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *GraphQLCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *GraphQLCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *GraphQLCallDefinition) SetQuery(v string) {
-	x.Query = &v
+	x.xxx_hidden_Query = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *GraphQLCallDefinition) SetOperationName(v string) {
-	x.OperationName = &v
+	x.xxx_hidden_OperationName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *GraphQLCallDefinition) SetVariables(v *structpb.Struct) {
-	x.Variables = v
+	x.xxx_hidden_Variables = v
 }
 
 func (x *GraphQLCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *GraphQLCallDefinition) SetSelectionSet(v string) {
-	x.SelectionSet = &v
+	x.xxx_hidden_SelectionSet = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
 }
 
 func (x *GraphQLCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *GraphQLCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *GraphQLCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *GraphQLCallDefinition) HasQuery() bool {
 	if x == nil {
 		return false
 	}
-	return x.Query != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *GraphQLCallDefinition) HasOperationName() bool {
 	if x == nil {
 		return false
 	}
-	return x.OperationName != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *GraphQLCallDefinition) HasVariables() bool {
 	if x == nil {
 		return false
 	}
-	return x.Variables != nil
+	return x.xxx_hidden_Variables != nil
 }
 
 func (x *GraphQLCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *GraphQLCallDefinition) HasSelectionSet() bool {
 	if x == nil {
 		return false
 	}
-	return x.SelectionSet != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *GraphQLCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *GraphQLCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *GraphQLCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *GraphQLCallDefinition) ClearQuery() {
-	x.Query = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Query = nil
 }
 
 func (x *GraphQLCallDefinition) ClearOperationName() {
-	x.OperationName = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_OperationName = nil
 }
 
 func (x *GraphQLCallDefinition) ClearVariables() {
-	x.Variables = nil
+	x.xxx_hidden_Variables = nil
 }
 
 func (x *GraphQLCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *GraphQLCallDefinition) ClearSelectionSet() {
-	x.SelectionSet = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_SelectionSet = nil
 }
 
 func (x *GraphQLCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *GraphQLCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type GraphQLCallDefinition_builder struct {
@@ -2229,36 +2318,42 @@ func (b0 GraphQLCallDefinition_builder) Build() *GraphQLCallDefinition {
 	m0 := &GraphQLCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Query = b.Query
-	x.OperationName = b.OperationName
-	x.Variables = b.Variables
-	x.Cache = b.Cache
-	x.SelectionSet = b.SelectionSet
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Query != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		x.xxx_hidden_Query = b.Query
+	}
+	if b.OperationName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		x.xxx_hidden_OperationName = b.OperationName
+	}
+	x.xxx_hidden_Variables = b.Variables
+	x.xxx_hidden_Cache = b.Cache
+	if b.SelectionSet != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		x.xxx_hidden_SelectionSet = b.SelectionSet
+	}
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // SqlCallDefinition describes how to map an MCP call to a SQL query.
 type SqlCallDefinition struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique identifier for the call.
-	Id *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	// The SQL query to execute. Use placeholders like $1, $2 or ? based on the driver.
-	Query *string `protobuf:"bytes,2,opt,name=query" json:"query,omitempty"`
-	// The order of input properties to map to query parameters.
-	// For example, if the query uses $1 and $2, and this list is ["userId", "active"],
-	// then input.userId will be passed as $1 and input.active as $2.
-	ParameterOrder []string `protobuf:"bytes,3,rep,name=parameter_order" json:"parameter_order,omitempty"`
-	// Caching configuration to improve performance and reduce load on the upstream.
-	Cache *CacheConfig `protobuf:"bytes,4,opt,name=cache" json:"cache,omitempty"`
-	// The schema for the input parameters required by the call.
-	InputSchema *structpb.Struct `protobuf:"bytes,5,opt,name=input_schema" json:"input_schema,omitempty"`
-	// The schema for the output of the call.
-	OutputSchema  *structpb.Struct `protobuf:"bytes,6,opt,name=output_schema" json:"output_schema,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Query          *string                `protobuf:"bytes,2,opt,name=query"`
+	xxx_hidden_ParameterOrder []string               `protobuf:"bytes,3,rep,name=parameter_order"`
+	xxx_hidden_Cache          *CacheConfig           `protobuf:"bytes,4,opt,name=cache"`
+	xxx_hidden_InputSchema    *structpb.Struct       `protobuf:"bytes,5,opt,name=input_schema"`
+	xxx_hidden_OutputSchema   *structpb.Struct       `protobuf:"bytes,6,opt,name=output_schema"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *SqlCallDefinition) Reset() {
@@ -2287,124 +2382,134 @@ func (x *SqlCallDefinition) ProtoReflect() protoreflect.Message {
 }
 
 func (x *SqlCallDefinition) GetId() string {
-	if x != nil && x.Id != nil {
-		return *x.Id
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SqlCallDefinition) GetQuery() string {
-	if x != nil && x.Query != nil {
-		return *x.Query
+	if x != nil {
+		if x.xxx_hidden_Query != nil {
+			return *x.xxx_hidden_Query
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SqlCallDefinition) GetParameterOrder() []string {
 	if x != nil {
-		return x.ParameterOrder
+		return x.xxx_hidden_ParameterOrder
 	}
 	return nil
 }
 
 func (x *SqlCallDefinition) GetCache() *CacheConfig {
 	if x != nil {
-		return x.Cache
+		return x.xxx_hidden_Cache
 	}
 	return nil
 }
 
 func (x *SqlCallDefinition) GetInputSchema() *structpb.Struct {
 	if x != nil {
-		return x.InputSchema
+		return x.xxx_hidden_InputSchema
 	}
 	return nil
 }
 
 func (x *SqlCallDefinition) GetOutputSchema() *structpb.Struct {
 	if x != nil {
-		return x.OutputSchema
+		return x.xxx_hidden_OutputSchema
 	}
 	return nil
 }
 
 func (x *SqlCallDefinition) SetId(v string) {
-	x.Id = &v
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *SqlCallDefinition) SetQuery(v string) {
-	x.Query = &v
+	x.xxx_hidden_Query = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *SqlCallDefinition) SetParameterOrder(v []string) {
-	x.ParameterOrder = v
+	x.xxx_hidden_ParameterOrder = v
 }
 
 func (x *SqlCallDefinition) SetCache(v *CacheConfig) {
-	x.Cache = v
+	x.xxx_hidden_Cache = v
 }
 
 func (x *SqlCallDefinition) SetInputSchema(v *structpb.Struct) {
-	x.InputSchema = v
+	x.xxx_hidden_InputSchema = v
 }
 
 func (x *SqlCallDefinition) SetOutputSchema(v *structpb.Struct) {
-	x.OutputSchema = v
+	x.xxx_hidden_OutputSchema = v
 }
 
 func (x *SqlCallDefinition) HasId() bool {
 	if x == nil {
 		return false
 	}
-	return x.Id != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *SqlCallDefinition) HasQuery() bool {
 	if x == nil {
 		return false
 	}
-	return x.Query != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *SqlCallDefinition) HasCache() bool {
 	if x == nil {
 		return false
 	}
-	return x.Cache != nil
+	return x.xxx_hidden_Cache != nil
 }
 
 func (x *SqlCallDefinition) HasInputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.InputSchema != nil
+	return x.xxx_hidden_InputSchema != nil
 }
 
 func (x *SqlCallDefinition) HasOutputSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.OutputSchema != nil
+	return x.xxx_hidden_OutputSchema != nil
 }
 
 func (x *SqlCallDefinition) ClearId() {
-	x.Id = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
 }
 
 func (x *SqlCallDefinition) ClearQuery() {
-	x.Query = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Query = nil
 }
 
 func (x *SqlCallDefinition) ClearCache() {
-	x.Cache = nil
+	x.xxx_hidden_Cache = nil
 }
 
 func (x *SqlCallDefinition) ClearInputSchema() {
-	x.InputSchema = nil
+	x.xxx_hidden_InputSchema = nil
 }
 
 func (x *SqlCallDefinition) ClearOutputSchema() {
-	x.OutputSchema = nil
+	x.xxx_hidden_OutputSchema = nil
 }
 
 type SqlCallDefinition_builder struct {
@@ -2430,30 +2535,33 @@ func (b0 SqlCallDefinition_builder) Build() *SqlCallDefinition {
 	m0 := &SqlCallDefinition{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Id = b.Id
-	x.Query = b.Query
-	x.ParameterOrder = b.ParameterOrder
-	x.Cache = b.Cache
-	x.InputSchema = b.InputSchema
-	x.OutputSchema = b.OutputSchema
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Query != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_Query = b.Query
+	}
+	x.xxx_hidden_ParameterOrder = b.ParameterOrder
+	x.xxx_hidden_Cache = b.Cache
+	x.xxx_hidden_InputSchema = b.InputSchema
+	x.xxx_hidden_OutputSchema = b.OutputSchema
 	return m0
 }
 
 // ParameterSchema defines the schema for a single parameter, following Google's JSON schema.
 type ParameterSchema struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the input parameter from the MCP call.
-	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// A description of the parameter.
-	Description *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	// The data type of the parameter.
-	Type *ParameterType `protobuf:"varint,3,opt,name=type,enum=mcpany.config.v1.ParameterType" json:"type,omitempty"`
-	// Whether the parameter is required.
-	IsRequired *bool `protobuf:"varint,4,opt,name=is_required" json:"is_required,omitempty"`
-	// The default value of the parameter.
-	DefaultValue  *structpb.Value `protobuf:"bytes,5,opt,name=default_value" json:"default_value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_Type         ParameterType          `protobuf:"varint,3,opt,name=type,enum=mcpany.config.v1.ParameterType"`
+	xxx_hidden_IsRequired   bool                   `protobuf:"varint,4,opt,name=is_required"`
+	xxx_hidden_DefaultValue *structpb.Value        `protobuf:"bytes,5,opt,name=default_value"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *ParameterSchema) Reset() {
@@ -2482,113 +2590,129 @@ func (x *ParameterSchema) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ParameterSchema) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ParameterSchema) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ParameterSchema) GetType() ParameterType {
-	if x != nil && x.Type != nil {
-		return *x.Type
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 2) {
+			return x.xxx_hidden_Type
+		}
 	}
 	return ParameterType_STRING
 }
 
 func (x *ParameterSchema) GetIsRequired() bool {
-	if x != nil && x.IsRequired != nil {
-		return *x.IsRequired
+	if x != nil {
+		return x.xxx_hidden_IsRequired
 	}
 	return false
 }
 
 func (x *ParameterSchema) GetDefaultValue() *structpb.Value {
 	if x != nil {
-		return x.DefaultValue
+		return x.xxx_hidden_DefaultValue
 	}
 	return nil
 }
 
 func (x *ParameterSchema) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *ParameterSchema) SetDescription(v string) {
-	x.Description = &v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *ParameterSchema) SetType(v ParameterType) {
-	x.Type = &v
+	x.xxx_hidden_Type = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
 func (x *ParameterSchema) SetIsRequired(v bool) {
-	x.IsRequired = &v
+	x.xxx_hidden_IsRequired = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
 }
 
 func (x *ParameterSchema) SetDefaultValue(v *structpb.Value) {
-	x.DefaultValue = v
+	x.xxx_hidden_DefaultValue = v
 }
 
 func (x *ParameterSchema) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *ParameterSchema) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return x.Description != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *ParameterSchema) HasType() bool {
 	if x == nil {
 		return false
 	}
-	return x.Type != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *ParameterSchema) HasIsRequired() bool {
 	if x == nil {
 		return false
 	}
-	return x.IsRequired != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *ParameterSchema) HasDefaultValue() bool {
 	if x == nil {
 		return false
 	}
-	return x.DefaultValue != nil
+	return x.xxx_hidden_DefaultValue != nil
 }
 
 func (x *ParameterSchema) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
 }
 
 func (x *ParameterSchema) ClearDescription() {
-	x.Description = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Description = nil
 }
 
 func (x *ParameterSchema) ClearType() {
-	x.Type = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Type = ParameterType_STRING
 }
 
 func (x *ParameterSchema) ClearIsRequired() {
-	x.IsRequired = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_IsRequired = false
 }
 
 func (x *ParameterSchema) ClearDefaultValue() {
-	x.DefaultValue = nil
+	x.xxx_hidden_DefaultValue = nil
 }
 
 type ParameterSchema_builder struct {
@@ -2610,25 +2734,36 @@ func (b0 ParameterSchema_builder) Build() *ParameterSchema {
 	m0 := &ParameterSchema{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Description = b.Description
-	x.Type = b.Type
-	x.IsRequired = b.IsRequired
-	x.DefaultValue = b.DefaultValue
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.Type != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_Type = *b.Type
+	}
+	if b.IsRequired != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_IsRequired = *b.IsRequired
+	}
+	x.xxx_hidden_DefaultValue = b.DefaultValue
 	return m0
 }
 
 // HttpParameterMapping defines how to place an input parameter into an HTTP request.
 type HttpParameterMapping struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The schema for the parameter.
-	Schema *ParameterSchema `protobuf:"bytes,1,opt,name=schema" json:"schema,omitempty"`
-	// A secret value to use for the parameter.
-	Secret *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
-	// Whether to disable automatic URL escaping for this parameter.
-	DisableEscape *bool `protobuf:"varint,3,opt,name=disable_escape" json:"disable_escape,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema        *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret        *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	xxx_hidden_DisableEscape bool                   `protobuf:"varint,3,opt,name=disable_escape"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *HttpParameterMapping) Reset() {
@@ -2658,68 +2793,70 @@ func (x *HttpParameterMapping) ProtoReflect() protoreflect.Message {
 
 func (x *HttpParameterMapping) GetSchema() *ParameterSchema {
 	if x != nil {
-		return x.Schema
+		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
 func (x *HttpParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.Secret
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
 
 func (x *HttpParameterMapping) GetDisableEscape() bool {
-	if x != nil && x.DisableEscape != nil {
-		return *x.DisableEscape
+	if x != nil {
+		return x.xxx_hidden_DisableEscape
 	}
 	return false
 }
 
 func (x *HttpParameterMapping) SetSchema(v *ParameterSchema) {
-	x.Schema = v
+	x.xxx_hidden_Schema = v
 }
 
 func (x *HttpParameterMapping) SetSecret(v *SecretValue) {
-	x.Secret = v
+	x.xxx_hidden_Secret = v
 }
 
 func (x *HttpParameterMapping) SetDisableEscape(v bool) {
-	x.DisableEscape = &v
+	x.xxx_hidden_DisableEscape = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *HttpParameterMapping) HasSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.Schema != nil
+	return x.xxx_hidden_Schema != nil
 }
 
 func (x *HttpParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.Secret != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *HttpParameterMapping) HasDisableEscape() bool {
 	if x == nil {
 		return false
 	}
-	return x.DisableEscape != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *HttpParameterMapping) ClearSchema() {
-	x.Schema = nil
+	x.xxx_hidden_Schema = nil
 }
 
 func (x *HttpParameterMapping) ClearSecret() {
-	x.Secret = nil
+	x.xxx_hidden_Secret = nil
 }
 
 func (x *HttpParameterMapping) ClearDisableEscape() {
-	x.DisableEscape = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_DisableEscape = false
 }
 
 type HttpParameterMapping_builder struct {
@@ -2737,21 +2874,22 @@ func (b0 HttpParameterMapping_builder) Build() *HttpParameterMapping {
 	m0 := &HttpParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Schema = b.Schema
-	x.Secret = b.Secret
-	x.DisableEscape = b.DisableEscape
+	x.xxx_hidden_Schema = b.Schema
+	x.xxx_hidden_Secret = b.Secret
+	if b.DisableEscape != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_DisableEscape = *b.DisableEscape
+	}
 	return m0
 }
 
 // WebsocketParameterMapping defines how to place an input parameter into a websocket message.
 type WebsocketParameterMapping struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The schema for the parameter.
-	Schema *ParameterSchema `protobuf:"bytes,1,opt,name=schema" json:"schema,omitempty"`
-	// A secret value to use for the parameter.
-	Secret        *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *WebsocketParameterMapping) Reset() {
@@ -2781,46 +2919,46 @@ func (x *WebsocketParameterMapping) ProtoReflect() protoreflect.Message {
 
 func (x *WebsocketParameterMapping) GetSchema() *ParameterSchema {
 	if x != nil {
-		return x.Schema
+		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
 func (x *WebsocketParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.Secret
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
 
 func (x *WebsocketParameterMapping) SetSchema(v *ParameterSchema) {
-	x.Schema = v
+	x.xxx_hidden_Schema = v
 }
 
 func (x *WebsocketParameterMapping) SetSecret(v *SecretValue) {
-	x.Secret = v
+	x.xxx_hidden_Secret = v
 }
 
 func (x *WebsocketParameterMapping) HasSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.Schema != nil
+	return x.xxx_hidden_Schema != nil
 }
 
 func (x *WebsocketParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.Secret != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *WebsocketParameterMapping) ClearSchema() {
-	x.Schema = nil
+	x.xxx_hidden_Schema = nil
 }
 
 func (x *WebsocketParameterMapping) ClearSecret() {
-	x.Secret = nil
+	x.xxx_hidden_Secret = nil
 }
 
 type WebsocketParameterMapping_builder struct {
@@ -2836,20 +2974,18 @@ func (b0 WebsocketParameterMapping_builder) Build() *WebsocketParameterMapping {
 	m0 := &WebsocketParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Schema = b.Schema
-	x.Secret = b.Secret
+	x.xxx_hidden_Schema = b.Schema
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
 // WebrtcParameterMapping defines how to place an input parameter into a webrtc message.
 type WebrtcParameterMapping struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The schema for the parameter.
-	Schema *ParameterSchema `protobuf:"bytes,1,opt,name=schema" json:"schema,omitempty"`
-	// A secret value to use for the parameter.
-	Secret        *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *WebrtcParameterMapping) Reset() {
@@ -2879,46 +3015,46 @@ func (x *WebrtcParameterMapping) ProtoReflect() protoreflect.Message {
 
 func (x *WebrtcParameterMapping) GetSchema() *ParameterSchema {
 	if x != nil {
-		return x.Schema
+		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
 func (x *WebrtcParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.Secret
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
 
 func (x *WebrtcParameterMapping) SetSchema(v *ParameterSchema) {
-	x.Schema = v
+	x.xxx_hidden_Schema = v
 }
 
 func (x *WebrtcParameterMapping) SetSecret(v *SecretValue) {
-	x.Secret = v
+	x.xxx_hidden_Secret = v
 }
 
 func (x *WebrtcParameterMapping) HasSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.Schema != nil
+	return x.xxx_hidden_Schema != nil
 }
 
 func (x *WebrtcParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.Secret != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *WebrtcParameterMapping) ClearSchema() {
-	x.Schema = nil
+	x.xxx_hidden_Schema = nil
 }
 
 func (x *WebrtcParameterMapping) ClearSecret() {
-	x.Secret = nil
+	x.xxx_hidden_Secret = nil
 }
 
 type WebrtcParameterMapping_builder struct {
@@ -2934,20 +3070,18 @@ func (b0 WebrtcParameterMapping_builder) Build() *WebrtcParameterMapping {
 	m0 := &WebrtcParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Schema = b.Schema
-	x.Secret = b.Secret
+	x.xxx_hidden_Schema = b.Schema
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
 // CommandLineParameterMapping defines how to pass an input parameter to a stdio process.
 type CommandLineParameterMapping struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The schema for the parameter.
-	Schema *ParameterSchema `protobuf:"bytes,1,opt,name=schema" json:"schema,omitempty"`
-	// A secret value to use for the parameter.
-	Secret        *SecretValue `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Schema *ParameterSchema       `protobuf:"bytes,1,opt,name=schema"`
+	xxx_hidden_Secret *SecretValue           `protobuf:"bytes,2,opt,name=secret"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CommandLineParameterMapping) Reset() {
@@ -2977,46 +3111,46 @@ func (x *CommandLineParameterMapping) ProtoReflect() protoreflect.Message {
 
 func (x *CommandLineParameterMapping) GetSchema() *ParameterSchema {
 	if x != nil {
-		return x.Schema
+		return x.xxx_hidden_Schema
 	}
 	return nil
 }
 
 func (x *CommandLineParameterMapping) GetSecret() *SecretValue {
 	if x != nil {
-		return x.Secret
+		return x.xxx_hidden_Secret
 	}
 	return nil
 }
 
 func (x *CommandLineParameterMapping) SetSchema(v *ParameterSchema) {
-	x.Schema = v
+	x.xxx_hidden_Schema = v
 }
 
 func (x *CommandLineParameterMapping) SetSecret(v *SecretValue) {
-	x.Secret = v
+	x.xxx_hidden_Secret = v
 }
 
 func (x *CommandLineParameterMapping) HasSchema() bool {
 	if x == nil {
 		return false
 	}
-	return x.Schema != nil
+	return x.xxx_hidden_Schema != nil
 }
 
 func (x *CommandLineParameterMapping) HasSecret() bool {
 	if x == nil {
 		return false
 	}
-	return x.Secret != nil
+	return x.xxx_hidden_Secret != nil
 }
 
 func (x *CommandLineParameterMapping) ClearSchema() {
-	x.Schema = nil
+	x.xxx_hidden_Schema = nil
 }
 
 func (x *CommandLineParameterMapping) ClearSecret() {
-	x.Secret = nil
+	x.xxx_hidden_Secret = nil
 }
 
 type CommandLineParameterMapping_builder struct {
@@ -3032,20 +3166,22 @@ func (b0 CommandLineParameterMapping_builder) Build() *CommandLineParameterMappi
 	m0 := &CommandLineParameterMapping{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Schema = b.Schema
-	x.Secret = b.Secret
+	x.xxx_hidden_Schema = b.Schema
+	x.xxx_hidden_Secret = b.Secret
 	return m0
 }
 
 // CacheConfig is a dummy message for now.
 type CacheConfig struct {
-	state          protoimpl.MessageState `protogen:"hybrid.v1"`
-	IsEnabled      *bool                  `protobuf:"varint,1,opt,name=is_enabled" json:"is_enabled,omitempty"`
-	Ttl            *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl" json:"ttl,omitempty"`
-	Strategy       *string                `protobuf:"bytes,3,opt,name=strategy" json:"strategy,omitempty"`
-	SemanticConfig *SemanticCacheConfig   `protobuf:"bytes,4,opt,name=semantic_config" json:"semantic_config,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_IsEnabled      bool                   `protobuf:"varint,1,opt,name=is_enabled"`
+	xxx_hidden_Ttl            *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl"`
+	xxx_hidden_Strategy       *string                `protobuf:"bytes,3,opt,name=strategy"`
+	xxx_hidden_SemanticConfig *SemanticCacheConfig   `protobuf:"bytes,4,opt,name=semantic_config"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *CacheConfig) Reset() {
@@ -3074,91 +3210,98 @@ func (x *CacheConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CacheConfig) GetIsEnabled() bool {
-	if x != nil && x.IsEnabled != nil {
-		return *x.IsEnabled
+	if x != nil {
+		return x.xxx_hidden_IsEnabled
 	}
 	return false
 }
 
 func (x *CacheConfig) GetTtl() *durationpb.Duration {
 	if x != nil {
-		return x.Ttl
+		return x.xxx_hidden_Ttl
 	}
 	return nil
 }
 
 func (x *CacheConfig) GetStrategy() string {
-	if x != nil && x.Strategy != nil {
-		return *x.Strategy
+	if x != nil {
+		if x.xxx_hidden_Strategy != nil {
+			return *x.xxx_hidden_Strategy
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CacheConfig) GetSemanticConfig() *SemanticCacheConfig {
 	if x != nil {
-		return x.SemanticConfig
+		return x.xxx_hidden_SemanticConfig
 	}
 	return nil
 }
 
 func (x *CacheConfig) SetIsEnabled(v bool) {
-	x.IsEnabled = &v
+	x.xxx_hidden_IsEnabled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *CacheConfig) SetTtl(v *durationpb.Duration) {
-	x.Ttl = v
+	x.xxx_hidden_Ttl = v
 }
 
 func (x *CacheConfig) SetStrategy(v string) {
-	x.Strategy = &v
+	x.xxx_hidden_Strategy = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *CacheConfig) SetSemanticConfig(v *SemanticCacheConfig) {
-	x.SemanticConfig = v
+	x.xxx_hidden_SemanticConfig = v
 }
 
 func (x *CacheConfig) HasIsEnabled() bool {
 	if x == nil {
 		return false
 	}
-	return x.IsEnabled != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *CacheConfig) HasTtl() bool {
 	if x == nil {
 		return false
 	}
-	return x.Ttl != nil
+	return x.xxx_hidden_Ttl != nil
 }
 
 func (x *CacheConfig) HasStrategy() bool {
 	if x == nil {
 		return false
 	}
-	return x.Strategy != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *CacheConfig) HasSemanticConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.SemanticConfig != nil
+	return x.xxx_hidden_SemanticConfig != nil
 }
 
 func (x *CacheConfig) ClearIsEnabled() {
-	x.IsEnabled = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_IsEnabled = false
 }
 
 func (x *CacheConfig) ClearTtl() {
-	x.Ttl = nil
+	x.xxx_hidden_Ttl = nil
 }
 
 func (x *CacheConfig) ClearStrategy() {
-	x.Strategy = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Strategy = nil
 }
 
 func (x *CacheConfig) ClearSemanticConfig() {
-	x.SemanticConfig = nil
+	x.xxx_hidden_SemanticConfig = nil
 }
 
 type CacheConfig_builder struct {
@@ -3174,37 +3317,31 @@ func (b0 CacheConfig_builder) Build() *CacheConfig {
 	m0 := &CacheConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.IsEnabled = b.IsEnabled
-	x.Ttl = b.Ttl
-	x.Strategy = b.Strategy
-	x.SemanticConfig = b.SemanticConfig
+	if b.IsEnabled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_IsEnabled = *b.IsEnabled
+	}
+	x.xxx_hidden_Ttl = b.Ttl
+	if b.Strategy != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Strategy = b.Strategy
+	}
+	x.xxx_hidden_SemanticConfig = b.SemanticConfig
 	return m0
 }
 
 type SemanticCacheConfig struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Provider for embeddings (e.g., "openai", "vertexai", "ollama", "http")
-	// Deprecated: Use provider_config instead.
-	Provider *string `protobuf:"bytes,1,opt,name=provider" json:"provider,omitempty"`
-	// Model name (e.g., "text-embedding-3-small")
-	// Deprecated: Use provider_config instead.
-	Model *string `protobuf:"bytes,2,opt,name=model" json:"model,omitempty"`
-	// API Key (can be a reference to environment variable or secret)
-	// Deprecated: Use provider_config instead.
-	ApiKey *SecretValue `protobuf:"bytes,3,opt,name=api_key" json:"api_key,omitempty"`
-	// Similarity threshold (0.0 to 1.0). Higher means stricter matching.
-	SimilarityThreshold *float32 `protobuf:"fixed32,4,opt,name=similarity_threshold" json:"similarity_threshold,omitempty"`
-	// Types that are valid to be assigned to ProviderConfig:
-	//
-	//	*SemanticCacheConfig_Openai
-	//	*SemanticCacheConfig_Ollama
-	//	*SemanticCacheConfig_Http
-	ProviderConfig isSemanticCacheConfig_ProviderConfig `protobuf_oneof:"provider_config"`
-	// Path to SQLite database file for persistent storage.
-	// If empty, the cache will be in-memory only.
-	PersistencePath *string `protobuf:"bytes,8,opt,name=persistence_path" json:"persistence_path,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                          protoimpl.MessageState               `protogen:"opaque.v1"`
+	xxx_hidden_Provider            *string                              `protobuf:"bytes,1,opt,name=provider"`
+	xxx_hidden_Model               *string                              `protobuf:"bytes,2,opt,name=model"`
+	xxx_hidden_ApiKey              *SecretValue                         `protobuf:"bytes,3,opt,name=api_key"`
+	xxx_hidden_SimilarityThreshold float32                              `protobuf:"fixed32,4,opt,name=similarity_threshold"`
+	xxx_hidden_ProviderConfig      isSemanticCacheConfig_ProviderConfig `protobuf_oneof:"provider_config"`
+	xxx_hidden_PersistencePath     *string                              `protobuf:"bytes,8,opt,name=persistence_path"`
+	XXX_raceDetectHookData         protoimpl.RaceDetectHookData
+	XXX_presence                   [1]uint32
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *SemanticCacheConfig) Reset() {
@@ -3233,43 +3370,42 @@ func (x *SemanticCacheConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *SemanticCacheConfig) GetProvider() string {
-	if x != nil && x.Provider != nil {
-		return *x.Provider
+	if x != nil {
+		if x.xxx_hidden_Provider != nil {
+			return *x.xxx_hidden_Provider
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SemanticCacheConfig) GetModel() string {
-	if x != nil && x.Model != nil {
-		return *x.Model
+	if x != nil {
+		if x.xxx_hidden_Model != nil {
+			return *x.xxx_hidden_Model
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SemanticCacheConfig) GetApiKey() *SecretValue {
 	if x != nil {
-		return x.ApiKey
+		return x.xxx_hidden_ApiKey
 	}
 	return nil
 }
 
 func (x *SemanticCacheConfig) GetSimilarityThreshold() float32 {
-	if x != nil && x.SimilarityThreshold != nil {
-		return *x.SimilarityThreshold
+	if x != nil {
+		return x.xxx_hidden_SimilarityThreshold
 	}
 	return 0
 }
 
-func (x *SemanticCacheConfig) GetProviderConfig() isSemanticCacheConfig_ProviderConfig {
-	if x != nil {
-		return x.ProviderConfig
-	}
-	return nil
-}
-
 func (x *SemanticCacheConfig) GetOpenai() *OpenAIEmbeddingProviderConfig {
 	if x != nil {
-		if x, ok := x.ProviderConfig.(*SemanticCacheConfig_Openai); ok {
+		if x, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Openai); ok {
 			return x.Openai
 		}
 	}
@@ -3278,7 +3414,7 @@ func (x *SemanticCacheConfig) GetOpenai() *OpenAIEmbeddingProviderConfig {
 
 func (x *SemanticCacheConfig) GetOllama() *OllamaEmbeddingProviderConfig {
 	if x != nil {
-		if x, ok := x.ProviderConfig.(*SemanticCacheConfig_Ollama); ok {
+		if x, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Ollama); ok {
 			return x.Ollama
 		}
 	}
@@ -3287,7 +3423,7 @@ func (x *SemanticCacheConfig) GetOllama() *OllamaEmbeddingProviderConfig {
 
 func (x *SemanticCacheConfig) GetHttp() *HttpEmbeddingProviderConfig {
 	if x != nil {
-		if x, ok := x.ProviderConfig.(*SemanticCacheConfig_Http); ok {
+		if x, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Http); ok {
 			return x.Http
 		}
 	}
@@ -3295,96 +3431,103 @@ func (x *SemanticCacheConfig) GetHttp() *HttpEmbeddingProviderConfig {
 }
 
 func (x *SemanticCacheConfig) GetPersistencePath() string {
-	if x != nil && x.PersistencePath != nil {
-		return *x.PersistencePath
+	if x != nil {
+		if x.xxx_hidden_PersistencePath != nil {
+			return *x.xxx_hidden_PersistencePath
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *SemanticCacheConfig) SetProvider(v string) {
-	x.Provider = &v
+	x.xxx_hidden_Provider = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *SemanticCacheConfig) SetModel(v string) {
-	x.Model = &v
+	x.xxx_hidden_Model = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *SemanticCacheConfig) SetApiKey(v *SecretValue) {
-	x.ApiKey = v
+	x.xxx_hidden_ApiKey = v
 }
 
 func (x *SemanticCacheConfig) SetSimilarityThreshold(v float32) {
-	x.SimilarityThreshold = &v
+	x.xxx_hidden_SimilarityThreshold = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
 }
 
 func (x *SemanticCacheConfig) SetOpenai(v *OpenAIEmbeddingProviderConfig) {
 	if v == nil {
-		x.ProviderConfig = nil
+		x.xxx_hidden_ProviderConfig = nil
 		return
 	}
-	x.ProviderConfig = &SemanticCacheConfig_Openai{v}
+	x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Openai{v}
 }
 
 func (x *SemanticCacheConfig) SetOllama(v *OllamaEmbeddingProviderConfig) {
 	if v == nil {
-		x.ProviderConfig = nil
+		x.xxx_hidden_ProviderConfig = nil
 		return
 	}
-	x.ProviderConfig = &SemanticCacheConfig_Ollama{v}
+	x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Ollama{v}
 }
 
 func (x *SemanticCacheConfig) SetHttp(v *HttpEmbeddingProviderConfig) {
 	if v == nil {
-		x.ProviderConfig = nil
+		x.xxx_hidden_ProviderConfig = nil
 		return
 	}
-	x.ProviderConfig = &SemanticCacheConfig_Http{v}
+	x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Http{v}
 }
 
 func (x *SemanticCacheConfig) SetPersistencePath(v string) {
-	x.PersistencePath = &v
+	x.xxx_hidden_PersistencePath = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *SemanticCacheConfig) HasProvider() bool {
 	if x == nil {
 		return false
 	}
-	return x.Provider != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *SemanticCacheConfig) HasModel() bool {
 	if x == nil {
 		return false
 	}
-	return x.Model != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *SemanticCacheConfig) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return x.ApiKey != nil
+	return x.xxx_hidden_ApiKey != nil
 }
 
 func (x *SemanticCacheConfig) HasSimilarityThreshold() bool {
 	if x == nil {
 		return false
 	}
-	return x.SimilarityThreshold != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *SemanticCacheConfig) HasProviderConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.ProviderConfig != nil
+	return x.xxx_hidden_ProviderConfig != nil
 }
 
 func (x *SemanticCacheConfig) HasOpenai() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.ProviderConfig.(*SemanticCacheConfig_Openai)
+	_, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Openai)
 	return ok
 }
 
@@ -3392,7 +3535,7 @@ func (x *SemanticCacheConfig) HasOllama() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.ProviderConfig.(*SemanticCacheConfig_Ollama)
+	_, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Ollama)
 	return ok
 }
 
@@ -3400,7 +3543,7 @@ func (x *SemanticCacheConfig) HasHttp() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.ProviderConfig.(*SemanticCacheConfig_Http)
+	_, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Http)
 	return ok
 }
 
@@ -3408,49 +3551,53 @@ func (x *SemanticCacheConfig) HasPersistencePath() bool {
 	if x == nil {
 		return false
 	}
-	return x.PersistencePath != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *SemanticCacheConfig) ClearProvider() {
-	x.Provider = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Provider = nil
 }
 
 func (x *SemanticCacheConfig) ClearModel() {
-	x.Model = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Model = nil
 }
 
 func (x *SemanticCacheConfig) ClearApiKey() {
-	x.ApiKey = nil
+	x.xxx_hidden_ApiKey = nil
 }
 
 func (x *SemanticCacheConfig) ClearSimilarityThreshold() {
-	x.SimilarityThreshold = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_SimilarityThreshold = 0
 }
 
 func (x *SemanticCacheConfig) ClearProviderConfig() {
-	x.ProviderConfig = nil
+	x.xxx_hidden_ProviderConfig = nil
 }
 
 func (x *SemanticCacheConfig) ClearOpenai() {
-	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Openai); ok {
-		x.ProviderConfig = nil
+	if _, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Openai); ok {
+		x.xxx_hidden_ProviderConfig = nil
 	}
 }
 
 func (x *SemanticCacheConfig) ClearOllama() {
-	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Ollama); ok {
-		x.ProviderConfig = nil
+	if _, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Ollama); ok {
+		x.xxx_hidden_ProviderConfig = nil
 	}
 }
 
 func (x *SemanticCacheConfig) ClearHttp() {
-	if _, ok := x.ProviderConfig.(*SemanticCacheConfig_Http); ok {
-		x.ProviderConfig = nil
+	if _, ok := x.xxx_hidden_ProviderConfig.(*semanticCacheConfig_Http); ok {
+		x.xxx_hidden_ProviderConfig = nil
 	}
 }
 
 func (x *SemanticCacheConfig) ClearPersistencePath() {
-	x.PersistencePath = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_PersistencePath = nil
 }
 
 const SemanticCacheConfig_ProviderConfig_not_set_case case_SemanticCacheConfig_ProviderConfig = 0
@@ -3462,12 +3609,12 @@ func (x *SemanticCacheConfig) WhichProviderConfig() case_SemanticCacheConfig_Pro
 	if x == nil {
 		return SemanticCacheConfig_ProviderConfig_not_set_case
 	}
-	switch x.ProviderConfig.(type) {
-	case *SemanticCacheConfig_Openai:
+	switch x.xxx_hidden_ProviderConfig.(type) {
+	case *semanticCacheConfig_Openai:
 		return SemanticCacheConfig_Openai_case
-	case *SemanticCacheConfig_Ollama:
+	case *semanticCacheConfig_Ollama:
 		return SemanticCacheConfig_Ollama_case
-	case *SemanticCacheConfig_Http:
+	case *semanticCacheConfig_Http:
 		return SemanticCacheConfig_Http_case
 	default:
 		return SemanticCacheConfig_ProviderConfig_not_set_case
@@ -3488,11 +3635,11 @@ type SemanticCacheConfig_builder struct {
 	ApiKey *SecretValue
 	// Similarity threshold (0.0 to 1.0). Higher means stricter matching.
 	SimilarityThreshold *float32
-	// Fields of oneof ProviderConfig:
+	// Fields of oneof xxx_hidden_ProviderConfig:
 	Openai *OpenAIEmbeddingProviderConfig
 	Ollama *OllamaEmbeddingProviderConfig
 	Http   *HttpEmbeddingProviderConfig
-	// -- end of ProviderConfig
+	// -- end of xxx_hidden_ProviderConfig
 	// Path to SQLite database file for persistent storage.
 	// If empty, the cache will be in-memory only.
 	PersistencePath *string
@@ -3502,20 +3649,32 @@ func (b0 SemanticCacheConfig_builder) Build() *SemanticCacheConfig {
 	m0 := &SemanticCacheConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Provider = b.Provider
-	x.Model = b.Model
-	x.ApiKey = b.ApiKey
-	x.SimilarityThreshold = b.SimilarityThreshold
+	if b.Provider != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Provider = b.Provider
+	}
+	if b.Model != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_Model = b.Model
+	}
+	x.xxx_hidden_ApiKey = b.ApiKey
+	if b.SimilarityThreshold != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		x.xxx_hidden_SimilarityThreshold = *b.SimilarityThreshold
+	}
 	if b.Openai != nil {
-		x.ProviderConfig = &SemanticCacheConfig_Openai{b.Openai}
+		x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Openai{b.Openai}
 	}
 	if b.Ollama != nil {
-		x.ProviderConfig = &SemanticCacheConfig_Ollama{b.Ollama}
+		x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Ollama{b.Ollama}
 	}
 	if b.Http != nil {
-		x.ProviderConfig = &SemanticCacheConfig_Http{b.Http}
+		x.xxx_hidden_ProviderConfig = &semanticCacheConfig_Http{b.Http}
 	}
-	x.PersistencePath = b.PersistencePath
+	if b.PersistencePath != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_PersistencePath = b.PersistencePath
+	}
 	return m0
 }
 
@@ -3533,30 +3692,32 @@ type isSemanticCacheConfig_ProviderConfig interface {
 	isSemanticCacheConfig_ProviderConfig()
 }
 
-type SemanticCacheConfig_Openai struct {
+type semanticCacheConfig_Openai struct {
 	Openai *OpenAIEmbeddingProviderConfig `protobuf:"bytes,5,opt,name=openai,oneof"`
 }
 
-type SemanticCacheConfig_Ollama struct {
+type semanticCacheConfig_Ollama struct {
 	Ollama *OllamaEmbeddingProviderConfig `protobuf:"bytes,6,opt,name=ollama,oneof"`
 }
 
-type SemanticCacheConfig_Http struct {
+type semanticCacheConfig_Http struct {
 	Http *HttpEmbeddingProviderConfig `protobuf:"bytes,7,opt,name=http,oneof"`
 }
 
-func (*SemanticCacheConfig_Openai) isSemanticCacheConfig_ProviderConfig() {}
+func (*semanticCacheConfig_Openai) isSemanticCacheConfig_ProviderConfig() {}
 
-func (*SemanticCacheConfig_Ollama) isSemanticCacheConfig_ProviderConfig() {}
+func (*semanticCacheConfig_Ollama) isSemanticCacheConfig_ProviderConfig() {}
 
-func (*SemanticCacheConfig_Http) isSemanticCacheConfig_ProviderConfig() {}
+func (*semanticCacheConfig_Http) isSemanticCacheConfig_ProviderConfig() {}
 
 type OpenAIEmbeddingProviderConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Model         *string                `protobuf:"bytes,1,opt,name=model" json:"model,omitempty"`
-	ApiKey        *SecretValue           `protobuf:"bytes,2,opt,name=api_key" json:"api_key,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Model       *string                `protobuf:"bytes,1,opt,name=model"`
+	xxx_hidden_ApiKey      *SecretValue           `protobuf:"bytes,2,opt,name=api_key"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *OpenAIEmbeddingProviderConfig) Reset() {
@@ -3585,47 +3746,52 @@ func (x *OpenAIEmbeddingProviderConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OpenAIEmbeddingProviderConfig) GetModel() string {
-	if x != nil && x.Model != nil {
-		return *x.Model
+	if x != nil {
+		if x.xxx_hidden_Model != nil {
+			return *x.xxx_hidden_Model
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *OpenAIEmbeddingProviderConfig) GetApiKey() *SecretValue {
 	if x != nil {
-		return x.ApiKey
+		return x.xxx_hidden_ApiKey
 	}
 	return nil
 }
 
 func (x *OpenAIEmbeddingProviderConfig) SetModel(v string) {
-	x.Model = &v
+	x.xxx_hidden_Model = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *OpenAIEmbeddingProviderConfig) SetApiKey(v *SecretValue) {
-	x.ApiKey = v
+	x.xxx_hidden_ApiKey = v
 }
 
 func (x *OpenAIEmbeddingProviderConfig) HasModel() bool {
 	if x == nil {
 		return false
 	}
-	return x.Model != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *OpenAIEmbeddingProviderConfig) HasApiKey() bool {
 	if x == nil {
 		return false
 	}
-	return x.ApiKey != nil
+	return x.xxx_hidden_ApiKey != nil
 }
 
 func (x *OpenAIEmbeddingProviderConfig) ClearModel() {
-	x.Model = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Model = nil
 }
 
 func (x *OpenAIEmbeddingProviderConfig) ClearApiKey() {
-	x.ApiKey = nil
+	x.xxx_hidden_ApiKey = nil
 }
 
 type OpenAIEmbeddingProviderConfig_builder struct {
@@ -3639,17 +3805,22 @@ func (b0 OpenAIEmbeddingProviderConfig_builder) Build() *OpenAIEmbeddingProvider
 	m0 := &OpenAIEmbeddingProviderConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Model = b.Model
-	x.ApiKey = b.ApiKey
+	if b.Model != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Model = b.Model
+	}
+	x.xxx_hidden_ApiKey = b.ApiKey
 	return m0
 }
 
 type OllamaEmbeddingProviderConfig struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Model         *string                `protobuf:"bytes,1,opt,name=model" json:"model,omitempty"`
-	BaseUrl       *string                `protobuf:"bytes,2,opt,name=base_url" json:"base_url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Model       *string                `protobuf:"bytes,1,opt,name=model"`
+	xxx_hidden_BaseUrl     *string                `protobuf:"bytes,2,opt,name=base_url"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *OllamaEmbeddingProviderConfig) Reset() {
@@ -3678,47 +3849,57 @@ func (x *OllamaEmbeddingProviderConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *OllamaEmbeddingProviderConfig) GetModel() string {
-	if x != nil && x.Model != nil {
-		return *x.Model
+	if x != nil {
+		if x.xxx_hidden_Model != nil {
+			return *x.xxx_hidden_Model
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *OllamaEmbeddingProviderConfig) GetBaseUrl() string {
-	if x != nil && x.BaseUrl != nil {
-		return *x.BaseUrl
+	if x != nil {
+		if x.xxx_hidden_BaseUrl != nil {
+			return *x.xxx_hidden_BaseUrl
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *OllamaEmbeddingProviderConfig) SetModel(v string) {
-	x.Model = &v
+	x.xxx_hidden_Model = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
 func (x *OllamaEmbeddingProviderConfig) SetBaseUrl(v string) {
-	x.BaseUrl = &v
+	x.xxx_hidden_BaseUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
 func (x *OllamaEmbeddingProviderConfig) HasModel() bool {
 	if x == nil {
 		return false
 	}
-	return x.Model != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *OllamaEmbeddingProviderConfig) HasBaseUrl() bool {
 	if x == nil {
 		return false
 	}
-	return x.BaseUrl != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *OllamaEmbeddingProviderConfig) ClearModel() {
-	x.Model = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Model = nil
 }
 
 func (x *OllamaEmbeddingProviderConfig) ClearBaseUrl() {
-	x.BaseUrl = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_BaseUrl = nil
 }
 
 type OllamaEmbeddingProviderConfig_builder struct {
@@ -3732,19 +3913,27 @@ func (b0 OllamaEmbeddingProviderConfig_builder) Build() *OllamaEmbeddingProvider
 	m0 := &OllamaEmbeddingProviderConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Model = b.Model
-	x.BaseUrl = b.BaseUrl
+	if b.Model != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Model = b.Model
+	}
+	if b.BaseUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_BaseUrl = b.BaseUrl
+	}
 	return m0
 }
 
 type HttpEmbeddingProviderConfig struct {
-	state            protoimpl.MessageState `protogen:"hybrid.v1"`
-	Url              *string                `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
-	Headers          map[string]string      `protobuf:"bytes,2,rep,name=headers" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	BodyTemplate     *string                `protobuf:"bytes,3,opt,name=body_template" json:"body_template,omitempty"`
-	ResponseJsonPath *string                `protobuf:"bytes,4,opt,name=response_json_path" json:"response_json_path,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Url              *string                `protobuf:"bytes,1,opt,name=url"`
+	xxx_hidden_Headers          map[string]string      `protobuf:"bytes,2,rep,name=headers" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_BodyTemplate     *string                `protobuf:"bytes,3,opt,name=body_template"`
+	xxx_hidden_ResponseJsonPath *string                `protobuf:"bytes,4,opt,name=response_json_path"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *HttpEmbeddingProviderConfig) Reset() {
@@ -3773,80 +3962,95 @@ func (x *HttpEmbeddingProviderConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *HttpEmbeddingProviderConfig) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
+	if x != nil {
+		if x.xxx_hidden_Url != nil {
+			return *x.xxx_hidden_Url
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpEmbeddingProviderConfig) GetHeaders() map[string]string {
 	if x != nil {
-		return x.Headers
+		return x.xxx_hidden_Headers
 	}
 	return nil
 }
 
 func (x *HttpEmbeddingProviderConfig) GetBodyTemplate() string {
-	if x != nil && x.BodyTemplate != nil {
-		return *x.BodyTemplate
+	if x != nil {
+		if x.xxx_hidden_BodyTemplate != nil {
+			return *x.xxx_hidden_BodyTemplate
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpEmbeddingProviderConfig) GetResponseJsonPath() string {
-	if x != nil && x.ResponseJsonPath != nil {
-		return *x.ResponseJsonPath
+	if x != nil {
+		if x.xxx_hidden_ResponseJsonPath != nil {
+			return *x.xxx_hidden_ResponseJsonPath
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpEmbeddingProviderConfig) SetUrl(v string) {
-	x.Url = &v
+	x.xxx_hidden_Url = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
 func (x *HttpEmbeddingProviderConfig) SetHeaders(v map[string]string) {
-	x.Headers = v
+	x.xxx_hidden_Headers = v
 }
 
 func (x *HttpEmbeddingProviderConfig) SetBodyTemplate(v string) {
-	x.BodyTemplate = &v
+	x.xxx_hidden_BodyTemplate = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
 func (x *HttpEmbeddingProviderConfig) SetResponseJsonPath(v string) {
-	x.ResponseJsonPath = &v
+	x.xxx_hidden_ResponseJsonPath = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
 }
 
 func (x *HttpEmbeddingProviderConfig) HasUrl() bool {
 	if x == nil {
 		return false
 	}
-	return x.Url != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *HttpEmbeddingProviderConfig) HasBodyTemplate() bool {
 	if x == nil {
 		return false
 	}
-	return x.BodyTemplate != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *HttpEmbeddingProviderConfig) HasResponseJsonPath() bool {
 	if x == nil {
 		return false
 	}
-	return x.ResponseJsonPath != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *HttpEmbeddingProviderConfig) ClearUrl() {
-	x.Url = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Url = nil
 }
 
 func (x *HttpEmbeddingProviderConfig) ClearBodyTemplate() {
-	x.BodyTemplate = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_BodyTemplate = nil
 }
 
 func (x *HttpEmbeddingProviderConfig) ClearResponseJsonPath() {
-	x.ResponseJsonPath = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_ResponseJsonPath = nil
 }
 
 type HttpEmbeddingProviderConfig_builder struct {
@@ -3862,10 +4066,19 @@ func (b0 HttpEmbeddingProviderConfig_builder) Build() *HttpEmbeddingProviderConf
 	m0 := &HttpEmbeddingProviderConfig{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Url = b.Url
-	x.Headers = b.Headers
-	x.BodyTemplate = b.BodyTemplate
-	x.ResponseJsonPath = b.ResponseJsonPath
+	if b.Url != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Url = b.Url
+	}
+	x.xxx_hidden_Headers = b.Headers
+	if b.BodyTemplate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_BodyTemplate = b.BodyTemplate
+	}
+	if b.ResponseJsonPath != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_ResponseJsonPath = b.ResponseJsonPath
+	}
 	return m0
 }
 
@@ -3873,7 +4086,7 @@ var File_proto_config_v1_call_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/webhook.proto\"\xce\x05\n" +
+	"\x1aproto/config/v1/call.proto\x12\x10mcpany.config.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1egoogle/protobuf/duration.proto\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\x1a\x1dproto/config/v1/webhook.proto\"\xce\x05\n" +
 	"\x12HttpCallDefinition\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
 	"\rendpoint_path\x18\x03 \x01(\tR\rendpoint_path\x12G\n" +
@@ -4037,7 +4250,7 @@ const file_proto_config_v1_call_proto_rawDesc = "" +
 	"\aBOOLEAN\x10\x03\x12\t\n" +
 	"\x05ARRAY\x10\x04\x12\n" +
 	"\n" +
-	"\x06OBJECT\x10\x05B(Z&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x06OBJECT\x10\x05B0Z&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_call_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_proto_config_v1_call_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
@@ -4154,9 +4367,9 @@ func file_proto_config_v1_call_proto_init() {
 	file_proto_config_v1_auth_proto_init()
 	file_proto_config_v1_webhook_proto_init()
 	file_proto_config_v1_call_proto_msgTypes[17].OneofWrappers = []any{
-		(*SemanticCacheConfig_Openai)(nil),
-		(*SemanticCacheConfig_Ollama)(nil),
-		(*SemanticCacheConfig_Http)(nil),
+		(*semanticCacheConfig_Openai)(nil),
+		(*semanticCacheConfig_Ollama)(nil),
+		(*semanticCacheConfig_Http)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

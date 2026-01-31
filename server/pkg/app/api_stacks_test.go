@@ -15,6 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleStackConfig_Get(t *testing.T) {
@@ -23,16 +24,17 @@ func TestHandleStackConfig_Get(t *testing.T) {
 
 	// Setup: Create a stack (collection)
 	stackID := "test-stack"
-	httpSvc := &configv1.HttpUpstreamService{}
-	httpSvc.SetAddress("http://example.com")
-
-	svc1 := &configv1.UpstreamServiceConfig{}
-	svc1.SetName("svc1")
-	svc1.SetHttpService(httpSvc)
-
-	collection := &configv1.Collection{}
-	collection.SetName(stackID)
-	collection.SetServices([]*configv1.UpstreamServiceConfig{svc1})
+	collection := configv1.Collection_builder{
+		Name: proto.String(stackID),
+		Services: []*configv1.UpstreamServiceConfig{
+			configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("svc1"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("http://example.com"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
 	require.NoError(t, store.SaveServiceCollection(context.Background(), collection))
 
 	// Test GET
@@ -74,9 +76,9 @@ services:
 	require.NoError(t, err)
 	require.NotNil(t, collection)
 	assert.Equal(t, stackID, collection.GetName())
-	require.Len(t, collection.Services, 1)
-	assert.Equal(t, "svc2", collection.Services[0].GetName())
-	assert.Equal(t, "http://example.org", collection.Services[0].GetHttpService().GetAddress())
+	require.Len(t, collection.GetServices(), 1)
+	assert.Equal(t, "svc2", collection.GetServices()[0].GetName())
+	assert.Equal(t, "http://example.org", collection.GetServices()[0].GetHttpService().GetAddress())
 }
 
 func TestHandleStackConfig_Post_Invalid(t *testing.T) {

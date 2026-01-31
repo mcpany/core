@@ -185,7 +185,7 @@ func TestStripSecretsFromVector_Coverage(t *testing.T) {
 
 func TestHydrateSecrets_Coverage(t *testing.T) {
 	secrets := map[string]*configv1.SecretValue{
-		"MY_SECRET": {Value: &configv1.SecretValue_PlainText{PlainText: "resolved"}},
+		"MY_SECRET": configv1.SecretValue_builder{PlainText: proto.String("resolved")}.Build(),
 	}
 
 	// 1. Env Var hydration

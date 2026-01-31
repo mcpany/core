@@ -54,7 +54,7 @@ func TestMockTool(t *testing.T) {
 		mt := &MockTool{}
 		def := mt.Tool()
 		require.NotNil(t, def)
-		assert.Equal(t, "mock-tool", *def.Name)
+		assert.Equal(t, "mock-tool", def.GetName())
 	})
 
 	t.Run("ExecuteFunc set", func(t *testing.T) {

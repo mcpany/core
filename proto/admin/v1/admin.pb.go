@@ -7,8 +7,6 @@
 // 	protoc        v6.33.1
 // source: proto/admin/v1/admin.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
@@ -17,6 +15,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -29,7 +28,7 @@ const (
 )
 
 type ClearCacheRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -72,7 +71,7 @@ func (b0 ClearCacheRequest_builder) Build() *ClearCacheRequest {
 }
 
 type ClearCacheResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -115,7 +114,7 @@ func (b0 ClearCacheResponse_builder) Build() *ClearCacheResponse {
 }
 
 type ListServicesRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -158,12 +157,11 @@ func (b0 ListServicesRequest_builder) Build() *ListServicesRequest {
 }
 
 type ListServicesResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
-	Services      []*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services" json:"services,omitempty"`
-	ServiceStates []*ServiceState             `protobuf:"bytes,2,rep,name=service_states,json=serviceStates" json:"service_states,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState       `protogen:"opaque.v1"`
+	xxx_hidden_Services      *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
+	xxx_hidden_ServiceStates *[]*ServiceState             `protobuf:"bytes,2,rep,name=service_states,json=serviceStates"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ListServicesResponse) Reset() {
@@ -194,25 +192,29 @@ func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *ListServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Services
+		if x.xxx_hidden_Services != nil {
+			return *x.xxx_hidden_Services
+		}
 	}
 	return nil
 }
 
 func (x *ListServicesResponse) GetServiceStates() []*ServiceState {
 	if x != nil {
-		return x.ServiceStates
+		if x.xxx_hidden_ServiceStates != nil {
+			return *x.xxx_hidden_ServiceStates
+		}
 	}
 	return nil
 }
 
 // Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *ListServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
-	x.Services = v
+	x.xxx_hidden_Services = &v
 }
 
 func (x *ListServicesResponse) SetServiceStates(v []*ServiceState) {
-	x.ServiceStates = v
+	x.xxx_hidden_ServiceStates = &v
 }
 
 type ListServicesResponse_builder struct {
@@ -227,18 +229,20 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 	m0 := &ListServicesResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Services = b.Services
-	x.ServiceStates = b.ServiceStates
+	x.xxx_hidden_Services = &b.Services
+	x.xxx_hidden_ServiceStates = &b.ServiceStates
 	return m0
 }
 
 type ServiceState struct {
-	state         protoimpl.MessageState    `protogen:"hybrid.v1"`
-	Config        *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config" json:"config,omitempty"`
-	Status        *string                   `protobuf:"bytes,2,opt,name=status" json:"status,omitempty"` // "OK", "ERROR", "CONNECTING"
-	Error         *string                   `protobuf:"bytes,3,opt,name=error" json:"error,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Config      *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
+	xxx_hidden_Status      *string                   `protobuf:"bytes,2,opt,name=status"`
+	xxx_hidden_Error       *string                   `protobuf:"bytes,3,opt,name=error"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ServiceState) Reset() {
@@ -268,68 +272,78 @@ func (x *ServiceState) ProtoReflect() protoreflect.Message {
 
 func (x *ServiceState) GetConfig() *v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Config
+		return x.xxx_hidden_Config
 	}
 	return nil
 }
 
 func (x *ServiceState) GetStatus() string {
-	if x != nil && x.Status != nil {
-		return *x.Status
+	if x != nil {
+		if x.xxx_hidden_Status != nil {
+			return *x.xxx_hidden_Status
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ServiceState) GetError() string {
-	if x != nil && x.Error != nil {
-		return *x.Error
+	if x != nil {
+		if x.xxx_hidden_Error != nil {
+			return *x.xxx_hidden_Error
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ServiceState) SetConfig(v *v1.UpstreamServiceConfig) {
-	x.Config = v
+	x.xxx_hidden_Config = v
 }
 
 func (x *ServiceState) SetStatus(v string) {
-	x.Status = &v
+	x.xxx_hidden_Status = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
 func (x *ServiceState) SetError(v string) {
-	x.Error = &v
+	x.xxx_hidden_Error = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
 func (x *ServiceState) HasConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.Config != nil
+	return x.xxx_hidden_Config != nil
 }
 
 func (x *ServiceState) HasStatus() bool {
 	if x == nil {
 		return false
 	}
-	return x.Status != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *ServiceState) HasError() bool {
 	if x == nil {
 		return false
 	}
-	return x.Error != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *ServiceState) ClearConfig() {
-	x.Config = nil
+	x.xxx_hidden_Config = nil
 }
 
 func (x *ServiceState) ClearStatus() {
-	x.Status = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Status = nil
 }
 
 func (x *ServiceState) ClearError() {
-	x.Error = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Error = nil
 }
 
 type ServiceState_builder struct {
@@ -344,17 +358,25 @@ func (b0 ServiceState_builder) Build() *ServiceState {
 	m0 := &ServiceState{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Config = b.Config
-	x.Status = b.Status
-	x.Error = b.Error
+	x.xxx_hidden_Config = b.Config
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Status = b.Status
+	}
+	if b.Error != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Error = b.Error
+	}
 	return m0
 }
 
 type GetServiceRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ServiceId     *string                `protobuf:"bytes,1,opt,name=service_id,json=serviceId" json:"service_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceId   *string                `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetServiceRequest) Reset() {
@@ -383,25 +405,30 @@ func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GetServiceRequest) GetServiceId() string {
-	if x != nil && x.ServiceId != nil {
-		return *x.ServiceId
+	if x != nil {
+		if x.xxx_hidden_ServiceId != nil {
+			return *x.xxx_hidden_ServiceId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GetServiceRequest) SetServiceId(v string) {
-	x.ServiceId = &v
+	x.xxx_hidden_ServiceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
 func (x *GetServiceRequest) HasServiceId() bool {
 	if x == nil {
 		return false
 	}
-	return x.ServiceId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *GetServiceRequest) ClearServiceId() {
-	x.ServiceId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServiceId = nil
 }
 
 type GetServiceRequest_builder struct {
@@ -414,17 +441,19 @@ func (b0 GetServiceRequest_builder) Build() *GetServiceRequest {
 	m0 := &GetServiceRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServiceId = b.ServiceId
+	if b.ServiceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ServiceId = b.ServiceId
+	}
 	return m0
 }
 
 type GetServiceResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
-	Service       *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service" json:"service,omitempty"`
-	ServiceState  *ServiceState             `protobuf:"bytes,2,opt,name=service_state,json=serviceState" json:"service_state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Service      *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service"`
+	xxx_hidden_ServiceState *ServiceState             `protobuf:"bytes,2,opt,name=service_state,json=serviceState"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *GetServiceResponse) Reset() {
@@ -455,25 +484,25 @@ func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) GetService() *v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Service
+		return x.xxx_hidden_Service
 	}
 	return nil
 }
 
 func (x *GetServiceResponse) GetServiceState() *ServiceState {
 	if x != nil {
-		return x.ServiceState
+		return x.xxx_hidden_ServiceState
 	}
 	return nil
 }
 
 // Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) SetService(v *v1.UpstreamServiceConfig) {
-	x.Service = v
+	x.xxx_hidden_Service = v
 }
 
 func (x *GetServiceResponse) SetServiceState(v *ServiceState) {
-	x.ServiceState = v
+	x.xxx_hidden_ServiceState = v
 }
 
 // Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
@@ -481,23 +510,23 @@ func (x *GetServiceResponse) HasService() bool {
 	if x == nil {
 		return false
 	}
-	return x.Service != nil
+	return x.xxx_hidden_Service != nil
 }
 
 func (x *GetServiceResponse) HasServiceState() bool {
 	if x == nil {
 		return false
 	}
-	return x.ServiceState != nil
+	return x.xxx_hidden_ServiceState != nil
 }
 
 // Deprecated: Marked as deprecated in proto/admin/v1/admin.proto.
 func (x *GetServiceResponse) ClearService() {
-	x.Service = nil
+	x.xxx_hidden_Service = nil
 }
 
 func (x *GetServiceResponse) ClearServiceState() {
-	x.ServiceState = nil
+	x.xxx_hidden_ServiceState = nil
 }
 
 type GetServiceResponse_builder struct {
@@ -512,13 +541,13 @@ func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
 	m0 := &GetServiceResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Service = b.Service
-	x.ServiceState = b.ServiceState
+	x.xxx_hidden_Service = b.Service
+	x.xxx_hidden_ServiceState = b.ServiceState
 	return m0
 }
 
 type ListToolsRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -561,10 +590,10 @@ func (b0 ListToolsRequest_builder) Build() *ListToolsRequest {
 }
 
 type ListToolsResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Tools         []*v11.Tool            `protobuf:"bytes,1,rep,name=tools" json:"tools,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Tools *[]*v11.Tool           `protobuf:"bytes,1,rep,name=tools"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ListToolsResponse) Reset() {
@@ -594,13 +623,15 @@ func (x *ListToolsResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ListToolsResponse) GetTools() []*v11.Tool {
 	if x != nil {
-		return x.Tools
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
+		}
 	}
 	return nil
 }
 
 func (x *ListToolsResponse) SetTools(v []*v11.Tool) {
-	x.Tools = v
+	x.xxx_hidden_Tools = &v
 }
 
 type ListToolsResponse_builder struct {
@@ -613,15 +644,17 @@ func (b0 ListToolsResponse_builder) Build() *ListToolsResponse {
 	m0 := &ListToolsResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Tools = b.Tools
+	x.xxx_hidden_Tools = &b.Tools
 	return m0
 }
 
 type GetToolRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	ToolName      *string                `protobuf:"bytes,1,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ToolName    *string                `protobuf:"bytes,1,opt,name=tool_name,json=toolName"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetToolRequest) Reset() {
@@ -650,25 +683,30 @@ func (x *GetToolRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GetToolRequest) GetToolName() string {
-	if x != nil && x.ToolName != nil {
-		return *x.ToolName
+	if x != nil {
+		if x.xxx_hidden_ToolName != nil {
+			return *x.xxx_hidden_ToolName
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GetToolRequest) SetToolName(v string) {
-	x.ToolName = &v
+	x.xxx_hidden_ToolName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
 func (x *GetToolRequest) HasToolName() bool {
 	if x == nil {
 		return false
 	}
-	return x.ToolName != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *GetToolRequest) ClearToolName() {
-	x.ToolName = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ToolName = nil
 }
 
 type GetToolRequest_builder struct {
@@ -681,15 +719,18 @@ func (b0 GetToolRequest_builder) Build() *GetToolRequest {
 	m0 := &GetToolRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ToolName = b.ToolName
+	if b.ToolName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_ToolName = b.ToolName
+	}
 	return m0
 }
 
 type GetToolResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Tool          *v11.Tool              `protobuf:"bytes,1,opt,name=tool" json:"tool,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Tool *v11.Tool              `protobuf:"bytes,1,opt,name=tool"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetToolResponse) Reset() {
@@ -719,24 +760,24 @@ func (x *GetToolResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetToolResponse) GetTool() *v11.Tool {
 	if x != nil {
-		return x.Tool
+		return x.xxx_hidden_Tool
 	}
 	return nil
 }
 
 func (x *GetToolResponse) SetTool(v *v11.Tool) {
-	x.Tool = v
+	x.xxx_hidden_Tool = v
 }
 
 func (x *GetToolResponse) HasTool() bool {
 	if x == nil {
 		return false
 	}
-	return x.Tool != nil
+	return x.xxx_hidden_Tool != nil
 }
 
 func (x *GetToolResponse) ClearTool() {
-	x.Tool = nil
+	x.xxx_hidden_Tool = nil
 }
 
 type GetToolResponse_builder struct {
@@ -749,15 +790,15 @@ func (b0 GetToolResponse_builder) Build() *GetToolResponse {
 	m0 := &GetToolResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Tool = b.Tool
+	x.xxx_hidden_Tool = b.Tool
 	return m0
 }
 
 type CreateUserRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CreateUserRequest) Reset() {
@@ -787,24 +828,24 @@ func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
 
 func (x *CreateUserRequest) GetUser() *v1.User {
 	if x != nil {
-		return x.User
+		return x.xxx_hidden_User
 	}
 	return nil
 }
 
 func (x *CreateUserRequest) SetUser(v *v1.User) {
-	x.User = v
+	x.xxx_hidden_User = v
 }
 
 func (x *CreateUserRequest) HasUser() bool {
 	if x == nil {
 		return false
 	}
-	return x.User != nil
+	return x.xxx_hidden_User != nil
 }
 
 func (x *CreateUserRequest) ClearUser() {
-	x.User = nil
+	x.xxx_hidden_User = nil
 }
 
 type CreateUserRequest_builder struct {
@@ -817,15 +858,15 @@ func (b0 CreateUserRequest_builder) Build() *CreateUserRequest {
 	m0 := &CreateUserRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.User = b.User
+	x.xxx_hidden_User = b.User
 	return m0
 }
 
 type CreateUserResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CreateUserResponse) Reset() {
@@ -855,24 +896,24 @@ func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
 
 func (x *CreateUserResponse) GetUser() *v1.User {
 	if x != nil {
-		return x.User
+		return x.xxx_hidden_User
 	}
 	return nil
 }
 
 func (x *CreateUserResponse) SetUser(v *v1.User) {
-	x.User = v
+	x.xxx_hidden_User = v
 }
 
 func (x *CreateUserResponse) HasUser() bool {
 	if x == nil {
 		return false
 	}
-	return x.User != nil
+	return x.xxx_hidden_User != nil
 }
 
 func (x *CreateUserResponse) ClearUser() {
-	x.User = nil
+	x.xxx_hidden_User = nil
 }
 
 type CreateUserResponse_builder struct {
@@ -885,15 +926,17 @@ func (b0 CreateUserResponse_builder) Build() *CreateUserResponse {
 	m0 := &CreateUserResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.User = b.User
+	x.xxx_hidden_User = b.User
 	return m0
 }
 
 type GetUserRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	UserId        *string                `protobuf:"bytes,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_UserId      *string                `protobuf:"bytes,1,opt,name=user_id,json=userId"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetUserRequest) Reset() {
@@ -922,25 +965,30 @@ func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GetUserRequest) GetUserId() string {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		if x.xxx_hidden_UserId != nil {
+			return *x.xxx_hidden_UserId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GetUserRequest) SetUserId(v string) {
-	x.UserId = &v
+	x.xxx_hidden_UserId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
 func (x *GetUserRequest) HasUserId() bool {
 	if x == nil {
 		return false
 	}
-	return x.UserId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *GetUserRequest) ClearUserId() {
-	x.UserId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_UserId = nil
 }
 
 type GetUserRequest_builder struct {
@@ -953,15 +1001,18 @@ func (b0 GetUserRequest_builder) Build() *GetUserRequest {
 	m0 := &GetUserRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.UserId = b.UserId
+	if b.UserId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_UserId = b.UserId
+	}
 	return m0
 }
 
 type GetUserResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetUserResponse) Reset() {
@@ -991,24 +1042,24 @@ func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetUserResponse) GetUser() *v1.User {
 	if x != nil {
-		return x.User
+		return x.xxx_hidden_User
 	}
 	return nil
 }
 
 func (x *GetUserResponse) SetUser(v *v1.User) {
-	x.User = v
+	x.xxx_hidden_User = v
 }
 
 func (x *GetUserResponse) HasUser() bool {
 	if x == nil {
 		return false
 	}
-	return x.User != nil
+	return x.xxx_hidden_User != nil
 }
 
 func (x *GetUserResponse) ClearUser() {
-	x.User = nil
+	x.xxx_hidden_User = nil
 }
 
 type GetUserResponse_builder struct {
@@ -1021,12 +1072,12 @@ func (b0 GetUserResponse_builder) Build() *GetUserResponse {
 	m0 := &GetUserResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.User = b.User
+	x.xxx_hidden_User = b.User
 	return m0
 }
 
 type ListUsersRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1069,10 +1120,10 @@ func (b0 ListUsersRequest_builder) Build() *ListUsersRequest {
 }
 
 type ListUsersResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Users         []*v1.User             `protobuf:"bytes,1,rep,name=users" json:"users,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Users *[]*v1.User            `protobuf:"bytes,1,rep,name=users"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ListUsersResponse) Reset() {
@@ -1102,13 +1153,15 @@ func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ListUsersResponse) GetUsers() []*v1.User {
 	if x != nil {
-		return x.Users
+		if x.xxx_hidden_Users != nil {
+			return *x.xxx_hidden_Users
+		}
 	}
 	return nil
 }
 
 func (x *ListUsersResponse) SetUsers(v []*v1.User) {
-	x.Users = v
+	x.xxx_hidden_Users = &v
 }
 
 type ListUsersResponse_builder struct {
@@ -1121,15 +1174,15 @@ func (b0 ListUsersResponse_builder) Build() *ListUsersResponse {
 	m0 := &ListUsersResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Users = b.Users
+	x.xxx_hidden_Users = &b.Users
 	return m0
 }
 
 type UpdateUserRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"` // Field mask to specify which fields to update (optional for now, full replace).
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UpdateUserRequest) Reset() {
@@ -1159,24 +1212,24 @@ func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
 
 func (x *UpdateUserRequest) GetUser() *v1.User {
 	if x != nil {
-		return x.User
+		return x.xxx_hidden_User
 	}
 	return nil
 }
 
 func (x *UpdateUserRequest) SetUser(v *v1.User) {
-	x.User = v
+	x.xxx_hidden_User = v
 }
 
 func (x *UpdateUserRequest) HasUser() bool {
 	if x == nil {
 		return false
 	}
-	return x.User != nil
+	return x.xxx_hidden_User != nil
 }
 
 func (x *UpdateUserRequest) ClearUser() {
-	x.User = nil
+	x.xxx_hidden_User = nil
 }
 
 type UpdateUserRequest_builder struct {
@@ -1189,15 +1242,15 @@ func (b0 UpdateUserRequest_builder) Build() *UpdateUserRequest {
 	m0 := &UpdateUserRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.User = b.User
+	x.xxx_hidden_User = b.User
 	return m0
 }
 
 type UpdateUserResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user" json:"user,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_User *v1.User               `protobuf:"bytes,1,opt,name=user"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UpdateUserResponse) Reset() {
@@ -1227,24 +1280,24 @@ func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
 
 func (x *UpdateUserResponse) GetUser() *v1.User {
 	if x != nil {
-		return x.User
+		return x.xxx_hidden_User
 	}
 	return nil
 }
 
 func (x *UpdateUserResponse) SetUser(v *v1.User) {
-	x.User = v
+	x.xxx_hidden_User = v
 }
 
 func (x *UpdateUserResponse) HasUser() bool {
 	if x == nil {
 		return false
 	}
-	return x.User != nil
+	return x.xxx_hidden_User != nil
 }
 
 func (x *UpdateUserResponse) ClearUser() {
-	x.User = nil
+	x.xxx_hidden_User = nil
 }
 
 type UpdateUserResponse_builder struct {
@@ -1257,15 +1310,17 @@ func (b0 UpdateUserResponse_builder) Build() *UpdateUserResponse {
 	m0 := &UpdateUserResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.User = b.User
+	x.xxx_hidden_User = b.User
 	return m0
 }
 
 type DeleteUserRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	UserId        *string                `protobuf:"bytes,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_UserId      *string                `protobuf:"bytes,1,opt,name=user_id,json=userId"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *DeleteUserRequest) Reset() {
@@ -1294,25 +1349,30 @@ func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DeleteUserRequest) GetUserId() string {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		if x.xxx_hidden_UserId != nil {
+			return *x.xxx_hidden_UserId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *DeleteUserRequest) SetUserId(v string) {
-	x.UserId = &v
+	x.xxx_hidden_UserId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
 func (x *DeleteUserRequest) HasUserId() bool {
 	if x == nil {
 		return false
 	}
-	return x.UserId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *DeleteUserRequest) ClearUserId() {
-	x.UserId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_UserId = nil
 }
 
 type DeleteUserRequest_builder struct {
@@ -1325,12 +1385,15 @@ func (b0 DeleteUserRequest_builder) Build() *DeleteUserRequest {
 	m0 := &DeleteUserRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.UserId = b.UserId
+	if b.UserId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_UserId = b.UserId
+	}
 	return m0
 }
 
 type DeleteUserResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1373,7 +1436,7 @@ func (b0 DeleteUserResponse_builder) Build() *DeleteUserResponse {
 }
 
 type GetDiscoveryStatusRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1416,10 +1479,10 @@ func (b0 GetDiscoveryStatusRequest_builder) Build() *GetDiscoveryStatusRequest {
 }
 
 type GetDiscoveryStatusResponse struct {
-	state         protoimpl.MessageState     `protogen:"hybrid.v1"`
-	Providers     []*DiscoveryProviderStatus `protobuf:"bytes,1,rep,name=providers" json:"providers,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_Providers *[]*DiscoveryProviderStatus `protobuf:"bytes,1,rep,name=providers"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *GetDiscoveryStatusResponse) Reset() {
@@ -1449,13 +1512,15 @@ func (x *GetDiscoveryStatusResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetDiscoveryStatusResponse) GetProviders() []*DiscoveryProviderStatus {
 	if x != nil {
-		return x.Providers
+		if x.xxx_hidden_Providers != nil {
+			return *x.xxx_hidden_Providers
+		}
 	}
 	return nil
 }
 
 func (x *GetDiscoveryStatusResponse) SetProviders(v []*DiscoveryProviderStatus) {
-	x.Providers = v
+	x.xxx_hidden_Providers = &v
 }
 
 type GetDiscoveryStatusResponse_builder struct {
@@ -1468,19 +1533,21 @@ func (b0 GetDiscoveryStatusResponse_builder) Build() *GetDiscoveryStatusResponse
 	m0 := &GetDiscoveryStatusResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Providers = b.Providers
+	x.xxx_hidden_Providers = &b.Providers
 	return m0
 }
 
 type DiscoveryProviderStatus struct {
-	state           protoimpl.MessageState `protogen:"hybrid.v1"`
-	Name            *string                `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Status          *string                `protobuf:"bytes,2,opt,name=status" json:"status,omitempty"` // "OK", "ERROR"
-	LastError       *string                `protobuf:"bytes,3,opt,name=last_error,json=lastError" json:"last_error,omitempty"`
-	LastRunAt       *string                `protobuf:"bytes,4,opt,name=last_run_at,json=lastRunAt" json:"last_run_at,omitempty"` // ISO 8601
-	DiscoveredCount *int32                 `protobuf:"varint,5,opt,name=discovered_count,json=discoveredCount" json:"discovered_count,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name            *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Status          *string                `protobuf:"bytes,2,opt,name=status"`
+	xxx_hidden_LastError       *string                `protobuf:"bytes,3,opt,name=last_error,json=lastError"`
+	xxx_hidden_LastRunAt       *string                `protobuf:"bytes,4,opt,name=last_run_at,json=lastRunAt"`
+	xxx_hidden_DiscoveredCount int32                  `protobuf:"varint,5,opt,name=discovered_count,json=discoveredCount"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *DiscoveryProviderStatus) Reset() {
@@ -1509,113 +1576,135 @@ func (x *DiscoveryProviderStatus) ProtoReflect() protoreflect.Message {
 }
 
 func (x *DiscoveryProviderStatus) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *DiscoveryProviderStatus) GetStatus() string {
-	if x != nil && x.Status != nil {
-		return *x.Status
+	if x != nil {
+		if x.xxx_hidden_Status != nil {
+			return *x.xxx_hidden_Status
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *DiscoveryProviderStatus) GetLastError() string {
-	if x != nil && x.LastError != nil {
-		return *x.LastError
+	if x != nil {
+		if x.xxx_hidden_LastError != nil {
+			return *x.xxx_hidden_LastError
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *DiscoveryProviderStatus) GetLastRunAt() string {
-	if x != nil && x.LastRunAt != nil {
-		return *x.LastRunAt
+	if x != nil {
+		if x.xxx_hidden_LastRunAt != nil {
+			return *x.xxx_hidden_LastRunAt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *DiscoveryProviderStatus) GetDiscoveredCount() int32 {
-	if x != nil && x.DiscoveredCount != nil {
-		return *x.DiscoveredCount
+	if x != nil {
+		return x.xxx_hidden_DiscoveredCount
 	}
 	return 0
 }
 
 func (x *DiscoveryProviderStatus) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *DiscoveryProviderStatus) SetStatus(v string) {
-	x.Status = &v
+	x.xxx_hidden_Status = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *DiscoveryProviderStatus) SetLastError(v string) {
-	x.LastError = &v
+	x.xxx_hidden_LastError = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
 func (x *DiscoveryProviderStatus) SetLastRunAt(v string) {
-	x.LastRunAt = &v
+	x.xxx_hidden_LastRunAt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
 }
 
 func (x *DiscoveryProviderStatus) SetDiscoveredCount(v int32) {
-	x.DiscoveredCount = &v
+	x.xxx_hidden_DiscoveredCount = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *DiscoveryProviderStatus) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *DiscoveryProviderStatus) HasStatus() bool {
 	if x == nil {
 		return false
 	}
-	return x.Status != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *DiscoveryProviderStatus) HasLastError() bool {
 	if x == nil {
 		return false
 	}
-	return x.LastError != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *DiscoveryProviderStatus) HasLastRunAt() bool {
 	if x == nil {
 		return false
 	}
-	return x.LastRunAt != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *DiscoveryProviderStatus) HasDiscoveredCount() bool {
 	if x == nil {
 		return false
 	}
-	return x.DiscoveredCount != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *DiscoveryProviderStatus) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
 }
 
 func (x *DiscoveryProviderStatus) ClearStatus() {
-	x.Status = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Status = nil
 }
 
 func (x *DiscoveryProviderStatus) ClearLastError() {
-	x.LastError = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_LastError = nil
 }
 
 func (x *DiscoveryProviderStatus) ClearLastRunAt() {
-	x.LastRunAt = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_LastRunAt = nil
 }
 
 func (x *DiscoveryProviderStatus) ClearDiscoveredCount() {
-	x.DiscoveredCount = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_DiscoveredCount = 0
 }
 
 type DiscoveryProviderStatus_builder struct {
@@ -1632,25 +1721,42 @@ func (b0 DiscoveryProviderStatus_builder) Build() *DiscoveryProviderStatus {
 	m0 := &DiscoveryProviderStatus{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Status = b.Status
-	x.LastError = b.LastError
-	x.LastRunAt = b.LastRunAt
-	x.DiscoveredCount = b.DiscoveredCount
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Status = b.Status
+	}
+	if b.LastError != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_LastError = b.LastError
+	}
+	if b.LastRunAt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_LastRunAt = b.LastRunAt
+	}
+	if b.DiscoveredCount != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_DiscoveredCount = *b.DiscoveredCount
+	}
 	return m0
 }
 
 type ListAuditLogsRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	StartTime     *string                `protobuf:"bytes,1,opt,name=start_time,json=startTime" json:"start_time,omitempty"` // ISO 8601
-	EndTime       *string                `protobuf:"bytes,2,opt,name=end_time,json=endTime" json:"end_time,omitempty"`       // ISO 8601
-	ToolName      *string                `protobuf:"bytes,3,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
-	UserId        *string                `protobuf:"bytes,4,opt,name=user_id,json=userId" json:"user_id,omitempty"`
-	ProfileId     *string                `protobuf:"bytes,5,opt,name=profile_id,json=profileId" json:"profile_id,omitempty"`
-	Limit         *int32                 `protobuf:"varint,6,opt,name=limit" json:"limit,omitempty"`
-	Offset        *int32                 `protobuf:"varint,7,opt,name=offset" json:"offset,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_StartTime   *string                `protobuf:"bytes,1,opt,name=start_time,json=startTime"`
+	xxx_hidden_EndTime     *string                `protobuf:"bytes,2,opt,name=end_time,json=endTime"`
+	xxx_hidden_ToolName    *string                `protobuf:"bytes,3,opt,name=tool_name,json=toolName"`
+	xxx_hidden_UserId      *string                `protobuf:"bytes,4,opt,name=user_id,json=userId"`
+	xxx_hidden_ProfileId   *string                `protobuf:"bytes,5,opt,name=profile_id,json=profileId"`
+	xxx_hidden_Limit       int32                  `protobuf:"varint,6,opt,name=limit"`
+	xxx_hidden_Offset      int32                  `protobuf:"varint,7,opt,name=offset"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ListAuditLogsRequest) Reset() {
@@ -1679,157 +1785,186 @@ func (x *ListAuditLogsRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ListAuditLogsRequest) GetStartTime() string {
-	if x != nil && x.StartTime != nil {
-		return *x.StartTime
+	if x != nil {
+		if x.xxx_hidden_StartTime != nil {
+			return *x.xxx_hidden_StartTime
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ListAuditLogsRequest) GetEndTime() string {
-	if x != nil && x.EndTime != nil {
-		return *x.EndTime
+	if x != nil {
+		if x.xxx_hidden_EndTime != nil {
+			return *x.xxx_hidden_EndTime
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ListAuditLogsRequest) GetToolName() string {
-	if x != nil && x.ToolName != nil {
-		return *x.ToolName
+	if x != nil {
+		if x.xxx_hidden_ToolName != nil {
+			return *x.xxx_hidden_ToolName
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ListAuditLogsRequest) GetUserId() string {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		if x.xxx_hidden_UserId != nil {
+			return *x.xxx_hidden_UserId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ListAuditLogsRequest) GetProfileId() string {
-	if x != nil && x.ProfileId != nil {
-		return *x.ProfileId
+	if x != nil {
+		if x.xxx_hidden_ProfileId != nil {
+			return *x.xxx_hidden_ProfileId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *ListAuditLogsRequest) GetLimit() int32 {
-	if x != nil && x.Limit != nil {
-		return *x.Limit
+	if x != nil {
+		return x.xxx_hidden_Limit
 	}
 	return 0
 }
 
 func (x *ListAuditLogsRequest) GetOffset() int32 {
-	if x != nil && x.Offset != nil {
-		return *x.Offset
+	if x != nil {
+		return x.xxx_hidden_Offset
 	}
 	return 0
 }
 
 func (x *ListAuditLogsRequest) SetStartTime(v string) {
-	x.StartTime = &v
+	x.xxx_hidden_StartTime = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *ListAuditLogsRequest) SetEndTime(v string) {
-	x.EndTime = &v
+	x.xxx_hidden_EndTime = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
 func (x *ListAuditLogsRequest) SetToolName(v string) {
-	x.ToolName = &v
+	x.xxx_hidden_ToolName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
 func (x *ListAuditLogsRequest) SetUserId(v string) {
-	x.UserId = &v
+	x.xxx_hidden_UserId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
 }
 
 func (x *ListAuditLogsRequest) SetProfileId(v string) {
-	x.ProfileId = &v
+	x.xxx_hidden_ProfileId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
 }
 
 func (x *ListAuditLogsRequest) SetLimit(v int32) {
-	x.Limit = &v
+	x.xxx_hidden_Limit = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
 }
 
 func (x *ListAuditLogsRequest) SetOffset(v int32) {
-	x.Offset = &v
+	x.xxx_hidden_Offset = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
 }
 
 func (x *ListAuditLogsRequest) HasStartTime() bool {
 	if x == nil {
 		return false
 	}
-	return x.StartTime != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *ListAuditLogsRequest) HasEndTime() bool {
 	if x == nil {
 		return false
 	}
-	return x.EndTime != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *ListAuditLogsRequest) HasToolName() bool {
 	if x == nil {
 		return false
 	}
-	return x.ToolName != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *ListAuditLogsRequest) HasUserId() bool {
 	if x == nil {
 		return false
 	}
-	return x.UserId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *ListAuditLogsRequest) HasProfileId() bool {
 	if x == nil {
 		return false
 	}
-	return x.ProfileId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *ListAuditLogsRequest) HasLimit() bool {
 	if x == nil {
 		return false
 	}
-	return x.Limit != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *ListAuditLogsRequest) HasOffset() bool {
 	if x == nil {
 		return false
 	}
-	return x.Offset != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
 }
 
 func (x *ListAuditLogsRequest) ClearStartTime() {
-	x.StartTime = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_StartTime = nil
 }
 
 func (x *ListAuditLogsRequest) ClearEndTime() {
-	x.EndTime = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_EndTime = nil
 }
 
 func (x *ListAuditLogsRequest) ClearToolName() {
-	x.ToolName = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ToolName = nil
 }
 
 func (x *ListAuditLogsRequest) ClearUserId() {
-	x.UserId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_UserId = nil
 }
 
 func (x *ListAuditLogsRequest) ClearProfileId() {
-	x.ProfileId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_ProfileId = nil
 }
 
 func (x *ListAuditLogsRequest) ClearLimit() {
-	x.Limit = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Limit = 0
 }
 
 func (x *ListAuditLogsRequest) ClearOffset() {
-	x.Offset = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Offset = 0
 }
 
 type ListAuditLogsRequest_builder struct {
@@ -1848,21 +1983,42 @@ func (b0 ListAuditLogsRequest_builder) Build() *ListAuditLogsRequest {
 	m0 := &ListAuditLogsRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.StartTime = b.StartTime
-	x.EndTime = b.EndTime
-	x.ToolName = b.ToolName
-	x.UserId = b.UserId
-	x.ProfileId = b.ProfileId
-	x.Limit = b.Limit
-	x.Offset = b.Offset
+	if b.StartTime != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_StartTime = b.StartTime
+	}
+	if b.EndTime != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_EndTime = b.EndTime
+	}
+	if b.ToolName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_ToolName = b.ToolName
+	}
+	if b.UserId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_UserId = b.UserId
+	}
+	if b.ProfileId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
+		x.xxx_hidden_ProfileId = b.ProfileId
+	}
+	if b.Limit != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
+		x.xxx_hidden_Limit = *b.Limit
+	}
+	if b.Offset != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 7)
+		x.xxx_hidden_Offset = *b.Offset
+	}
 	return m0
 }
 
 type ListAuditLogsResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Entries       []*AuditLogEntry       `protobuf:"bytes,1,rep,name=entries" json:"entries,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Entries *[]*AuditLogEntry      `protobuf:"bytes,1,rep,name=entries"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ListAuditLogsResponse) Reset() {
@@ -1892,13 +2048,15 @@ func (x *ListAuditLogsResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ListAuditLogsResponse) GetEntries() []*AuditLogEntry {
 	if x != nil {
-		return x.Entries
+		if x.xxx_hidden_Entries != nil {
+			return *x.xxx_hidden_Entries
+		}
 	}
 	return nil
 }
 
 func (x *ListAuditLogsResponse) SetEntries(v []*AuditLogEntry) {
-	x.Entries = v
+	x.xxx_hidden_Entries = &v
 }
 
 type ListAuditLogsResponse_builder struct {
@@ -1911,23 +2069,25 @@ func (b0 ListAuditLogsResponse_builder) Build() *ListAuditLogsResponse {
 	m0 := &ListAuditLogsResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Entries = b.Entries
+	x.xxx_hidden_Entries = &b.Entries
 	return m0
 }
 
 type AuditLogEntry struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
-	Timestamp     *string                `protobuf:"bytes,1,opt,name=timestamp" json:"timestamp,omitempty"` // ISO 8601
-	ToolName      *string                `protobuf:"bytes,2,opt,name=tool_name,json=toolName" json:"tool_name,omitempty"`
-	UserId        *string                `protobuf:"bytes,3,opt,name=user_id,json=userId" json:"user_id,omitempty"`
-	ProfileId     *string                `protobuf:"bytes,4,opt,name=profile_id,json=profileId" json:"profile_id,omitempty"`
-	Arguments     *string                `protobuf:"bytes,5,opt,name=arguments" json:"arguments,omitempty"` // JSON string
-	Result        *string                `protobuf:"bytes,6,opt,name=result" json:"result,omitempty"`       // JSON string
-	Error         *string                `protobuf:"bytes,7,opt,name=error" json:"error,omitempty"`
-	Duration      *string                `protobuf:"bytes,8,opt,name=duration" json:"duration,omitempty"`
-	DurationMs    *int64                 `protobuf:"varint,9,opt,name=duration_ms,json=durationMs" json:"duration_ms,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Timestamp   *string                `protobuf:"bytes,1,opt,name=timestamp"`
+	xxx_hidden_ToolName    *string                `protobuf:"bytes,2,opt,name=tool_name,json=toolName"`
+	xxx_hidden_UserId      *string                `protobuf:"bytes,3,opt,name=user_id,json=userId"`
+	xxx_hidden_ProfileId   *string                `protobuf:"bytes,4,opt,name=profile_id,json=profileId"`
+	xxx_hidden_Arguments   *string                `protobuf:"bytes,5,opt,name=arguments"`
+	xxx_hidden_Result      *string                `protobuf:"bytes,6,opt,name=result"`
+	xxx_hidden_Error       *string                `protobuf:"bytes,7,opt,name=error"`
+	xxx_hidden_Duration    *string                `protobuf:"bytes,8,opt,name=duration"`
+	xxx_hidden_DurationMs  int64                  `protobuf:"varint,9,opt,name=duration_ms,json=durationMs"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *AuditLogEntry) Reset() {
@@ -1956,201 +2116,243 @@ func (x *AuditLogEntry) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AuditLogEntry) GetTimestamp() string {
-	if x != nil && x.Timestamp != nil {
-		return *x.Timestamp
+	if x != nil {
+		if x.xxx_hidden_Timestamp != nil {
+			return *x.xxx_hidden_Timestamp
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetToolName() string {
-	if x != nil && x.ToolName != nil {
-		return *x.ToolName
+	if x != nil {
+		if x.xxx_hidden_ToolName != nil {
+			return *x.xxx_hidden_ToolName
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetUserId() string {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		if x.xxx_hidden_UserId != nil {
+			return *x.xxx_hidden_UserId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetProfileId() string {
-	if x != nil && x.ProfileId != nil {
-		return *x.ProfileId
+	if x != nil {
+		if x.xxx_hidden_ProfileId != nil {
+			return *x.xxx_hidden_ProfileId
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetArguments() string {
-	if x != nil && x.Arguments != nil {
-		return *x.Arguments
+	if x != nil {
+		if x.xxx_hidden_Arguments != nil {
+			return *x.xxx_hidden_Arguments
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetResult() string {
-	if x != nil && x.Result != nil {
-		return *x.Result
+	if x != nil {
+		if x.xxx_hidden_Result != nil {
+			return *x.xxx_hidden_Result
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetError() string {
-	if x != nil && x.Error != nil {
-		return *x.Error
+	if x != nil {
+		if x.xxx_hidden_Error != nil {
+			return *x.xxx_hidden_Error
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetDuration() string {
-	if x != nil && x.Duration != nil {
-		return *x.Duration
+	if x != nil {
+		if x.xxx_hidden_Duration != nil {
+			return *x.xxx_hidden_Duration
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *AuditLogEntry) GetDurationMs() int64 {
-	if x != nil && x.DurationMs != nil {
-		return *x.DurationMs
+	if x != nil {
+		return x.xxx_hidden_DurationMs
 	}
 	return 0
 }
 
 func (x *AuditLogEntry) SetTimestamp(v string) {
-	x.Timestamp = &v
+	x.xxx_hidden_Timestamp = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
 }
 
 func (x *AuditLogEntry) SetToolName(v string) {
-	x.ToolName = &v
+	x.xxx_hidden_ToolName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
 }
 
 func (x *AuditLogEntry) SetUserId(v string) {
-	x.UserId = &v
+	x.xxx_hidden_UserId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
 }
 
 func (x *AuditLogEntry) SetProfileId(v string) {
-	x.ProfileId = &v
+	x.xxx_hidden_ProfileId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
 }
 
 func (x *AuditLogEntry) SetArguments(v string) {
-	x.Arguments = &v
+	x.xxx_hidden_Arguments = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
 }
 
 func (x *AuditLogEntry) SetResult(v string) {
-	x.Result = &v
+	x.xxx_hidden_Result = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
 }
 
 func (x *AuditLogEntry) SetError(v string) {
-	x.Error = &v
+	x.xxx_hidden_Error = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 9)
 }
 
 func (x *AuditLogEntry) SetDuration(v string) {
-	x.Duration = &v
+	x.xxx_hidden_Duration = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
 }
 
 func (x *AuditLogEntry) SetDurationMs(v int64) {
-	x.DurationMs = &v
+	x.xxx_hidden_DurationMs = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
 }
 
 func (x *AuditLogEntry) HasTimestamp() bool {
 	if x == nil {
 		return false
 	}
-	return x.Timestamp != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *AuditLogEntry) HasToolName() bool {
 	if x == nil {
 		return false
 	}
-	return x.ToolName != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *AuditLogEntry) HasUserId() bool {
 	if x == nil {
 		return false
 	}
-	return x.UserId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *AuditLogEntry) HasProfileId() bool {
 	if x == nil {
 		return false
 	}
-	return x.ProfileId != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *AuditLogEntry) HasArguments() bool {
 	if x == nil {
 		return false
 	}
-	return x.Arguments != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *AuditLogEntry) HasResult() bool {
 	if x == nil {
 		return false
 	}
-	return x.Result != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *AuditLogEntry) HasError() bool {
 	if x == nil {
 		return false
 	}
-	return x.Error != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
 }
 
 func (x *AuditLogEntry) HasDuration() bool {
 	if x == nil {
 		return false
 	}
-	return x.Duration != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
 }
 
 func (x *AuditLogEntry) HasDurationMs() bool {
 	if x == nil {
 		return false
 	}
-	return x.DurationMs != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
 }
 
 func (x *AuditLogEntry) ClearTimestamp() {
-	x.Timestamp = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Timestamp = nil
 }
 
 func (x *AuditLogEntry) ClearToolName() {
-	x.ToolName = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_ToolName = nil
 }
 
 func (x *AuditLogEntry) ClearUserId() {
-	x.UserId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_UserId = nil
 }
 
 func (x *AuditLogEntry) ClearProfileId() {
-	x.ProfileId = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_ProfileId = nil
 }
 
 func (x *AuditLogEntry) ClearArguments() {
-	x.Arguments = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Arguments = nil
 }
 
 func (x *AuditLogEntry) ClearResult() {
-	x.Result = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Result = nil
 }
 
 func (x *AuditLogEntry) ClearError() {
-	x.Error = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Error = nil
 }
 
 func (x *AuditLogEntry) ClearDuration() {
-	x.Duration = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_Duration = nil
 }
 
 func (x *AuditLogEntry) ClearDurationMs() {
-	x.DurationMs = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_DurationMs = 0
 }
 
 type AuditLogEntry_builder struct {
@@ -2171,15 +2373,42 @@ func (b0 AuditLogEntry_builder) Build() *AuditLogEntry {
 	m0 := &AuditLogEntry{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Timestamp = b.Timestamp
-	x.ToolName = b.ToolName
-	x.UserId = b.UserId
-	x.ProfileId = b.ProfileId
-	x.Arguments = b.Arguments
-	x.Result = b.Result
-	x.Error = b.Error
-	x.Duration = b.Duration
-	x.DurationMs = b.DurationMs
+	if b.Timestamp != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		x.xxx_hidden_Timestamp = b.Timestamp
+	}
+	if b.ToolName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
+		x.xxx_hidden_ToolName = b.ToolName
+	}
+	if b.UserId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
+		x.xxx_hidden_UserId = b.UserId
+	}
+	if b.ProfileId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
+		x.xxx_hidden_ProfileId = b.ProfileId
+	}
+	if b.Arguments != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
+		x.xxx_hidden_Arguments = b.Arguments
+	}
+	if b.Result != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
+		x.xxx_hidden_Result = b.Result
+	}
+	if b.Error != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 9)
+		x.xxx_hidden_Error = b.Error
+	}
+	if b.Duration != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
+		x.xxx_hidden_Duration = b.Duration
+	}
+	if b.DurationMs != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
+		x.xxx_hidden_DurationMs = *b.DurationMs
+	}
 	return m0
 }
 
@@ -2187,7 +2416,7 @@ var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\"\x13\n" +
+	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\x1a!google/protobuf/go_features.proto\"\x13\n" +
 	"\x11ClearCacheRequest\"\x14\n" +
 	"\x12ClearCacheResponse\"\x15\n" +
 	"\x13ListServicesRequest\"\xa5\x01\n" +
@@ -2280,8 +2509,8 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
 	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\x12z\n" +
-	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB3B\n" +
-	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1b\beditionsp\xe8\a"
+	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB;B\n" +
+	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_proto_admin_v1_admin_proto_goTypes = []any{

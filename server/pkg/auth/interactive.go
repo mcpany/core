@@ -205,7 +205,7 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 
 	if credentialID != "" {
 		// Update Credential
-		cred.Token = userToken
+		cred.SetToken(userToken)
 		if err := storage.SaveCredential(ctx, cred); err != nil {
 			return fmt.Errorf("failed to save credential: %w", err)
 		}

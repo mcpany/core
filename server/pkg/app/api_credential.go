@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"reflect"
+
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/util"
@@ -24,23 +26,37 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
+	// Use protojson for proto messages to ensure correct field mapping
+	marshaler := protojson.MarshalOptions{
+		EmitUnpopulated: false,
+	}
+
 	if pm, ok := data.(proto.Message); ok {
-		// Use protojson for proto messages to ensure correct field mapping
-		marshaler := protojson.MarshalOptions{
-			UseProtoNames: true, // Respect snake_case vs camelCase if needed, but standard is UseProtoNames=false -> camelCase
-			// If we want to match how standard JSON encoding would have behaved (roughly), we should check.
-			// However, our UI likely expects camelCase.
-			// protojson defaults to camelCase.
-			EmitUnpopulated: false,
-		}
 		b, err := marshaler.Marshal(pm)
 		if err != nil {
 			fmt.Printf("Failed to encode proto response: %v\n", err)
 			return
 		}
-		if _, err := w.Write(b); err != nil {
-			fmt.Printf("Failed to write response: %v\n", err)
+		_, _ = w.Write(b)
+		return
+	}
+
+	// Handle slices of proto messages
+	v := reflect.ValueOf(data)
+	if v.Kind() == reflect.Slice && v.Len() > 0 {
+		if _, ok := v.Index(0).Interface().(proto.Message); ok {
+			var parts []string
+			for i := 0; i < v.Len(); i++ {
+				m := v.Index(i).Interface().(proto.Message)
+				b, _ := marshaler.Marshal(m)
+				parts = append(parts, string(b))
+			}
+			_, _ = w.Write([]byte("[" + strings.Join(parts, ",") + "]"))
+			return
 		}
+	} else if v.Kind() == reflect.Slice && v.Len() == 0 {
+		// Empty slice
+		_, _ = w.Write([]byte("[]"))
 		return
 	}
 
@@ -152,7 +168,7 @@ func (a *Application) createCredentialHandler(w http.ResponseWriter, r *http.Req
 	if cred.GetId() == "" {
 		if cred.GetName() != "" {
 			slug, _ := util.SanitizeID([]string{cred.GetName()}, false, 50, 4)
-			cred.Id = proto.String(slug)
+			cred.SetId(slug)
 		} else {
 			writeError(w, fmt.Errorf("id or name is required"))
 			return
@@ -182,7 +198,12 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 
 	ctx := r.Context()
 	var cred configv1.Credential
-	if err := json.NewDecoder(r.Body).Decode(&cred); err != nil {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeError(w, fmt.Errorf("failed to read body: %w", err))
+		return
+	}
+	if err := protojson.Unmarshal(body, &cred); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
 		return
 	}
@@ -192,7 +213,7 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 		writeError(w, fmt.Errorf("id mismatch"))
 		return
 	}
-	cred.Id = proto.String(id)
+	cred.SetId(id)
 
 	if err := a.Storage.SaveCredential(ctx, &cred); err != nil {
 		writeError(w, err)
@@ -255,10 +276,33 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctx := r.Context()
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		writeError(w, fmt.Errorf("failed to read body: %v", err))
+		return
+	}
+
+	// Unmarshal common fields first
 	var req TestAuthRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.Unmarshal(body, &req); err != nil {
 		writeError(w, fmt.Errorf("invalid request body: %w", err))
 		return
+	}
+
+	// Re-unmarshal proto fields explicitly using protojson since standard json can't handle Opaque types
+	var helper struct {
+		Authentication json.RawMessage `json:"authentication"`
+		UserToken      json.RawMessage `json:"user_token"`
+	}
+	if err := json.Unmarshal(body, &helper); err == nil {
+		if len(helper.Authentication) > 0 && string(helper.Authentication) != "null" {
+			req.Authentication = &configv1.Authentication{}
+			_ = protojson.Unmarshal(helper.Authentication, req.Authentication)
+		}
+		if len(helper.UserToken) > 0 && string(helper.UserToken) != "null" {
+			req.UserToken = &configv1.UserToken{}
+			_ = protojson.Unmarshal(helper.UserToken, req.UserToken)
+		}
 	}
 
 	if req.TargetURL == "" {
@@ -280,8 +324,8 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 			writeError(w, fmt.Errorf("credential not found: %s", req.CredentialID))
 			return
 		}
-		authConfig = cred.Authentication
-		userToken = cred.Token // Note: Field is 'Token' in proto
+		authConfig = cred.GetAuthentication()
+		userToken = cred.GetToken() // Note: Field is 'Token' in proto
 	} else {
 		// Use inline
 		authConfig = req.Authentication

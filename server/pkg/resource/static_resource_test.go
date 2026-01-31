@@ -12,6 +12,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func strPtr(s string) *string { return &s }
@@ -31,13 +32,13 @@ func TestStaticResource(t *testing.T) {
 	}))
 	defer server.Close()
 
-	def := &configv1.ResourceDefinition{
-		Uri:         strPtr(server.URL + "/test.txt"),
-		Name:        strPtr("Test Resource"),
-		Description: strPtr("A test resource"),
-		MimeType:    strPtr("text/plain"),
-		Size:        int64Ptr(11),
-	}
+	def := configv1.ResourceDefinition_builder{
+		Uri:         proto.String(server.URL + "/test.txt"),
+		Name:        proto.String("Test Resource"),
+		Description: proto.String("A test resource"),
+		MimeType:    proto.String("text/plain"),
+		Size:        proto.Int64(11),
+	}.Build()
 
 	serviceID := "test-service"
 	r := NewStaticResource(def, serviceID)
@@ -63,9 +64,9 @@ func TestStaticResource(t *testing.T) {
 	})
 
 	t.Run("ReadError", func(t *testing.T) {
-		badDef := &configv1.ResourceDefinition{
-			Uri: strPtr(server.URL + "/404"),
-		}
+		badDef := configv1.ResourceDefinition_builder{
+			Uri: proto.String(server.URL + "/404"),
+		}.Build()
 		badR := NewStaticResource(badDef, serviceID)
 		_, err := badR.Read(context.Background())
 		assert.Error(t, err)
@@ -73,9 +74,9 @@ func TestStaticResource(t *testing.T) {
 	})
 
 	t.Run("ReadNetworkError", func(t *testing.T) {
-		badDef := &configv1.ResourceDefinition{
-			Uri: strPtr("http://127.0.0.1:0"), // Invalid port
-		}
+		badDef := configv1.ResourceDefinition_builder{
+			Uri: proto.String("http://127.0.0.1:0"), // Invalid port
+		}.Build()
 		badR := NewStaticResource(badDef, serviceID)
 		_, err := badR.Read(context.Background())
 		assert.Error(t, err)
@@ -90,10 +91,10 @@ func TestStaticResource(t *testing.T) {
 	t.Run("ReadSizeLimit", func(t *testing.T) {
 		// Server returns "hello world" (11 bytes).
 		// Set limit to 5.
-		limitDef := &configv1.ResourceDefinition{
-			Uri:  strPtr(server.URL + "/test.txt"),
-			Size: int64Ptr(5),
-		}
+		limitDef := configv1.ResourceDefinition_builder{
+			Uri:  proto.String(server.URL + "/test.txt"),
+			Size: proto.Int64(5),
+		}.Build()
 		limitR := NewStaticResource(limitDef, serviceID)
 		_, err := limitR.Read(context.Background())
 		assert.Error(t, err)
@@ -102,9 +103,9 @@ func TestStaticResource(t *testing.T) {
 
 	t.Run("ReadNewRequestError", func(t *testing.T) {
 		// NewRequestWithContext fails on bad URI characters, e.g. control chars.
-		badDef := &configv1.ResourceDefinition{
-			Uri: strPtr("http://example.com/\x00"),
-		}
+		badDef := configv1.ResourceDefinition_builder{
+			Uri: proto.String("http://example.com/\x00"),
+		}.Build()
 		badR := NewStaticResource(badDef, serviceID)
 		_, err := badR.Read(context.Background())
 		assert.Error(t, err)
@@ -119,10 +120,10 @@ func TestStaticResource(t *testing.T) {
 		}))
 		defer fallbackServer.Close()
 
-		fallbackDef := &configv1.ResourceDefinition{
-			Uri:  strPtr(fallbackServer.URL),
-			Name: strPtr("Test Resource"),
-		}
+		fallbackDef := configv1.ResourceDefinition_builder{
+			Uri:  proto.String(fallbackServer.URL),
+			Name: proto.String("Test Resource"),
+		}.Build()
 		fallbackR := NewStaticResource(fallbackDef, serviceID)
 		res, err := fallbackR.Read(context.Background())
 		require.NoError(t, err)
@@ -137,18 +138,14 @@ func TestStaticResource_InlineContent(t *testing.T) {
 		textContent := "Hello, Inline World!"
 		uri := "internal://hello"
 
-		def := &configv1.ResourceDefinition{
+		def := configv1.ResourceDefinition_builder{
 			Uri:      &uri,
-			Name:     strPtr("Inline Resource"),
-			MimeType: strPtr("text/plain"),
-			ResourceType: &configv1.ResourceDefinition_Static{
-				Static: &configv1.StaticResource{
-					ContentType: &configv1.StaticResource_TextContent{
-						TextContent: textContent,
-					},
-				},
-			},
-		}
+			Name:     proto.String("Inline Resource"),
+			MimeType: proto.String("text/plain"),
+			Static: configv1.StaticResource_builder{
+				TextContent: &textContent,
+			}.Build(),
+		}.Build()
 
 		r := NewStaticResource(def, "test-service")
 
@@ -165,18 +162,14 @@ func TestStaticResource_InlineContent(t *testing.T) {
 		binaryContent := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 		uri := "internal://binary"
 
-		def := &configv1.ResourceDefinition{
+		def := configv1.ResourceDefinition_builder{
 			Uri:      &uri,
-			Name:     strPtr("Binary Resource"),
-			MimeType: strPtr("application/octet-stream"),
-			ResourceType: &configv1.ResourceDefinition_Static{
-				Static: &configv1.StaticResource{
-					ContentType: &configv1.StaticResource_BinaryContent{
-						BinaryContent: binaryContent,
-					},
-				},
-			},
-		}
+			Name:     proto.String("Binary Resource"),
+			MimeType: proto.String("application/octet-stream"),
+			Static: configv1.StaticResource_builder{
+				BinaryContent: binaryContent,
+			}.Build(),
+		}.Build()
 
 		r := NewStaticResource(def, "test-service")
 

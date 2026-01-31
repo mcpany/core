@@ -98,7 +98,7 @@ func setupHTTPToolExtra(t *testing.T, handler http.Handler, callDefinition *conf
     poolManager.Register("s", p)
 
     method := "GET " + server.URL + urlSuffix
-    toolDef := &v1.Tool{UnderlyingMethodFqn: &method}
+    toolDef := v1.Tool_builder{UnderlyingMethodFqn: proto.String(method)}.Build()
     return NewHTTPTool(toolDef, poolManager, "s", nil, callDefinition, nil, nil, ""), server
 }
 
@@ -112,18 +112,18 @@ func TestHTTPTool_Execute_Secret(t *testing.T) {
         }
     })
 
-    secretVal := &configv1.SecretValue{
-        Value: &configv1.SecretValue_PlainText{PlainText: "mysecret"},
-    }
+    secretVal := configv1.SecretValue_builder{
+        PlainText: proto.String("mysecret"),
+    }.Build()
 
-    param := &configv1.HttpParameterMapping{
-        Schema: &configv1.ParameterSchema{Name: proto.String("key")},
+    param := configv1.HttpParameterMapping_builder{
+        Schema: configv1.ParameterSchema_builder{Name: proto.String("key")}.Build(),
         Secret: secretVal,
-    }
+    }.Build()
 
-    callDef := &configv1.HttpCallDefinition{
+    callDef := configv1.HttpCallDefinition_builder{
         Parameters: []*configv1.HttpParameterMapping{param},
-    }
+    }.Build()
 
     tool, server := setupHTTPToolExtra(t, handler, callDef, "?key={{key}}")
     defer server.Close()
@@ -137,16 +137,16 @@ func TestHTTPTool_Execute_MissingRequired(t *testing.T) {
         w.WriteHeader(http.StatusOK)
     })
 
-    param := &configv1.HttpParameterMapping{
-        Schema: &configv1.ParameterSchema{
+    param := configv1.HttpParameterMapping_builder{
+        Schema: configv1.ParameterSchema_builder{
             Name: proto.String("req"),
             IsRequired: proto.Bool(true),
-        },
-    }
+        }.Build(),
+    }.Build()
 
-    callDef := &configv1.HttpCallDefinition{
+    callDef := configv1.HttpCallDefinition_builder{
         Parameters: []*configv1.HttpParameterMapping{param},
-    }
+    }.Build()
 
     tool, server := setupHTTPToolExtra(t, handler, callDef, "?req={{req}}")
     defer server.Close()
@@ -159,13 +159,13 @@ func TestHTTPTool_Execute_MissingRequired(t *testing.T) {
 func TestHTTPTool_Execute_PathTraversal(t *testing.T) {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
-    param := &configv1.HttpParameterMapping{
-        Schema: &configv1.ParameterSchema{Name: proto.String("path")},
-    }
+    param := configv1.HttpParameterMapping_builder{
+        Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build(),
+    }.Build()
 
-    callDef := &configv1.HttpCallDefinition{
+    callDef := configv1.HttpCallDefinition_builder{
         Parameters: []*configv1.HttpParameterMapping{param},
-    }
+    }.Build()
 
     // URL with placeholder in path (not query)
 
@@ -180,18 +180,18 @@ func TestHTTPTool_Execute_PathTraversal(t *testing.T) {
 func TestHTTPTool_Execute_Secret_Error(t *testing.T) {
     handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 
-    secretVal := &configv1.SecretValue{
-        Value: &configv1.SecretValue_EnvironmentVariable{EnvironmentVariable: "MISSING_ENV_VAR_XYZ"},
-    }
+    secretVal := configv1.SecretValue_builder{
+        EnvironmentVariable: proto.String("MISSING_ENV_VAR_XYZ"),
+    }.Build()
 
-    param := &configv1.HttpParameterMapping{
-        Schema: &configv1.ParameterSchema{Name: proto.String("key")},
+    param := configv1.HttpParameterMapping_builder{
+        Schema: configv1.ParameterSchema_builder{Name: proto.String("key")}.Build(),
         Secret: secretVal,
-    }
+    }.Build()
 
-    callDef := &configv1.HttpCallDefinition{
+    callDef := configv1.HttpCallDefinition_builder{
         Parameters: []*configv1.HttpParameterMapping{param},
-    }
+    }.Build()
 
     tool, server := setupHTTPToolExtra(t, handler, callDef, "?key={{key}}")
     defer server.Close()

@@ -9,6 +9,9 @@ import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/user.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
 
 option go_package = "github.com/mcpany/core/proto/admin/v1";
 option java_outer_classname = "AdminProto";

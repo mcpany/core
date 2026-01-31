@@ -2223,7 +2223,7 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				username, _, ok := r.BasicAuth()
 				if ok && a.AuthManager != nil {
 					if user, found := a.AuthManager.GetUser(username); found {
-						if err := auth.ValidateAuthentication(ctx, user.Authentication, r); err == nil {
+						if err := auth.ValidateAuthentication(ctx, user.GetAuthentication(), r); err == nil {
 							authenticated = true
 							ctx = auth.ContextWithUser(ctx, username)
 							if len(user.GetRoles()) > 0 {

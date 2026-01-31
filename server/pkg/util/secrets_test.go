@@ -458,11 +458,14 @@ func TestResolveSecret_Vault(t *testing.T) {
 
 		secret := &configv1.SecretValue{}
 		// Use Vault type to trigger the context check
-		vaultSecret := &configv1.VaultSecret{}
-		vaultSecret.SetAddress("http://127.0.0.1:8200")
-		vaultSecret.SetToken(&configv1.SecretValue{
-			Value: &configv1.SecretValue_PlainText{PlainText: "token"},
-		})
+		vaultSecret := configv1.VaultSecret_builder{
+			Address: proto.String("http://127.0.0.1:8200"),
+			Token: configv1.SecretValue_builder{
+				PlainText: proto.String("token"),
+			}.Build(),
+			Path: proto.String("secret/foo"),
+			Key:  proto.String("bar"),
+		}.Build()
 		vaultSecret.SetPath("secret/foo")
 		vaultSecret.SetKey("bar")
 		secret.SetVault(vaultSecret)
@@ -489,11 +492,9 @@ func TestResolveSecret_Vault(t *testing.T) {
 func TestResolveSecretMap(t *testing.T) {
 	t.Run("Merge", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
-			"SECRET_VAR": {
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "secret_value",
-				},
-			},
+			"SECRET_VAR": configv1.SecretValue_builder{
+				PlainText: proto.String("secret_value"),
+			}.Build(),
 		}
 		plainMap := map[string]string{
 			"PLAIN_VAR":  "plain_value",
@@ -508,11 +509,9 @@ func TestResolveSecretMap(t *testing.T) {
 
 	t.Run("ResolveError", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
-			"SECRET_VAR": {
-				Value: &configv1.SecretValue_EnvironmentVariable{
-					EnvironmentVariable: "NON_EXISTENT_VAR",
-				},
-			},
+			"SECRET_VAR": configv1.SecretValue_builder{
+				EnvironmentVariable: proto.String("NON_EXISTENT_VAR"),
+			}.Build(),
 		}
 		plainMap := map[string]string{}
 
@@ -523,16 +522,12 @@ func TestResolveSecretMap(t *testing.T) {
 
 	t.Run("resolve secret map", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
-			"KEY1": {
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "test-value",
-				},
-			},
-			"KEY3": {
-				Value: &configv1.SecretValue_PlainText{
-					PlainText: "test-secret-override",
-				},
-			},
+			"KEY1": configv1.SecretValue_builder{
+				PlainText: proto.String("test-value"),
+			}.Build(),
+			"KEY3": configv1.SecretValue_builder{
+				PlainText: proto.String("test-secret-override"),
+			}.Build(),
 		}
 		plainMap := map[string]string{
 			"KEY2": "test-plain",

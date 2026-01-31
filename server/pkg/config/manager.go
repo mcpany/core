@@ -352,8 +352,8 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	}
 
 	if activeConfig != nil {
-		if activeConfig.Enabled != nil {
-			isOverrideDisabled = !*activeConfig.Enabled
+		if activeConfig.HasEnabled() {
+			isOverrideDisabled = !activeConfig.GetEnabled()
 		}
 	}
 

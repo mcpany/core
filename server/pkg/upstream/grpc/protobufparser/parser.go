@@ -139,9 +139,38 @@ func ParseProtoFromDefs(
 	}
 
 	// Use protocompile to generate the FileDescriptorSet
+	importPaths := []string{tempDir}
+	// Add project root and proto directories to import paths if they exist.
+	// We try to find the root by looking for go.mod starting from the current directory.
+	if cwd, err := os.Getwd(); err == nil {
+		dir := cwd
+		for {
+			// Look for common project root markers. We prefer the one containing our build environment.
+			if _, err := os.Stat(filepath.Join(dir, "build/env/bin/include")); err == nil {
+				importPaths = append(importPaths, dir)
+				importPaths = append(importPaths, filepath.Join(dir, "proto"))
+				importPaths = append(importPaths, filepath.Join(dir, "build/env/bin/include"))
+				break
+			}
+			// Fallback to go.mod but only if it also has a proto dir (to avoid being trapped in sub-modules like 'server')
+			if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+				if _, err := os.Stat(filepath.Join(dir, "proto")); err == nil {
+					importPaths = append(importPaths, dir)
+					importPaths = append(importPaths, filepath.Join(dir, "proto"))
+					break
+				}
+			}
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				break
+			}
+			dir = parent
+		}
+	}
+
 	compiler := protocompile.Compiler{
 		Resolver: &protocompile.SourceResolver{
-			ImportPaths: []string{tempDir},
+			ImportPaths: importPaths,
 		},
 	}
 
@@ -162,8 +191,24 @@ func ParseProtoFromDefs(
 	}
 
 	fds := &descriptorpb.FileDescriptorSet{}
-	for _, fd := range fileDescriptors {
+	seen := make(map[string]bool)
+	var collect func(fd protoreflect.FileDescriptor)
+	collect = func(fd protoreflect.FileDescriptor) {
+		if seen[fd.Path()] {
+			return
+		}
+		seen[fd.Path()] = true
 		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(fd))
+		imports := fd.Imports()
+		for i := 0; i < imports.Len(); i++ {
+			if imp := imports.Get(i).FileDescriptor; imp != nil {
+				collect(imp)
+			}
+		}
+	}
+
+	for _, fd := range fileDescriptors {
+		collect(fd)
 	}
 
 	return fds, nil

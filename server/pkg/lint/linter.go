@@ -125,7 +125,7 @@ func (l *Linter) checkPlainTextSecrets() []Result {
 		if sv == nil {
 			return
 		}
-		if _, ok := sv.Value.(*configv1.SecretValue_PlainText); ok {
+		if sv.WhichValue() == configv1.SecretValue_PlainText_case {
 			results = append(results, Result{
 				Severity:    Warning,
 				ServiceName: serviceName,

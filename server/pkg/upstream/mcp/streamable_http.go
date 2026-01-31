@@ -728,44 +728,44 @@ func (u *Upstream) registerTools(
 				// to avoid breaking the tool unless the user explicitly wants to partial-override.
 				// (Actually, a true override might want to replace schema too, which we do if provided).
 				if configTool.GetDescription() != "" {
-					pbTool.Description = proto.String(configTool.GetDescription())
+					pbTool.SetDescription(configTool.GetDescription())
 				}
 				if configTool.GetTitle() != "" {
-					pbTool.DisplayName = proto.String(configTool.GetTitle())
+					pbTool.SetDisplayName(configTool.GetTitle())
 				}
 				// If InputSchema is provided in config, use it.
 				if configTool.GetInputSchema() != nil {
 					// Override input schema
-					pbTool.InputSchema = configTool.GetInputSchema()
+					pbTool.SetInputSchema(configTool.GetInputSchema())
 				}
 			} else {
 				// Merge Strategy (Default)
 				if configTool.GetDescription() != "" {
-					pbTool.Description = proto.String(configTool.GetDescription())
+					pbTool.SetDescription(configTool.GetDescription())
 				}
 				if configTool.GetTitle() != "" {
-					pbTool.DisplayName = proto.String(configTool.GetTitle())
+					pbTool.SetDisplayName(configTool.GetTitle())
 				}
 				if configTool.GetInputSchema() != nil {
-					if pbTool.InputSchema == nil {
-						pbTool.InputSchema = configTool.GetInputSchema()
+					if !pbTool.HasInputSchema() {
+						pbTool.SetInputSchema(configTool.GetInputSchema())
 					} else {
-						mergeStructs(pbTool.InputSchema, configTool.GetInputSchema())
+						mergeStructs(pbTool.GetInputSchema(), configTool.GetInputSchema())
 					}
 				}
 			}
 
 			// Always apply tags from config
 			if len(configTool.GetTags()) > 0 {
-				pbTool.Tags = configTool.GetTags()
+				pbTool.SetTags(configTool.GetTags())
 			}
 
 			// Apply other annotations/hints
-			if pbTool.Annotations == nil {
-				pbTool.Annotations = v1.ToolAnnotations_builder{}.Build()
+			if !pbTool.HasAnnotations() {
+				pbTool.SetAnnotations(v1.ToolAnnotations_builder{}.Build())
 			}
 			if configTool.GetReadOnlyHint() { // Only override if true? Or if set? Proto bool is false by default.
-				pbTool.Annotations.ReadOnlyHint = proto.Bool(configTool.GetReadOnlyHint())
+				pbTool.GetAnnotations().SetReadOnlyHint(configTool.GetReadOnlyHint())
 			}
 			// Note: We might want headers/properties check for destructive/idempotent/open_world too
 

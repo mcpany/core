@@ -67,7 +67,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	t.Run("Service Unhealthy", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		toolDef := &v1.Tool{Name: proto.String("unhealthy-tool"), ServiceId: proto.String("unhealthy-svc")}
+		toolDef := v1.Tool_builder{Name: proto.String("unhealthy-tool"), ServiceId: proto.String("unhealthy-svc")}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		require.NoError(t, manager.AddTool(mTool))
@@ -89,7 +89,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	t.Run("PreHook Deny", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		toolDef := &v1.Tool{Name: proto.String("deny-tool"), ServiceId: proto.String("deny-svc")}
+		toolDef := v1.Tool_builder{Name: proto.String("deny-tool"), ServiceId: proto.String("deny-svc")}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		require.NoError(t, manager.AddTool(mTool))
@@ -109,7 +109,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	t.Run("PreHook Error", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		toolDef := &v1.Tool{Name: proto.String("pre-err-tool"), ServiceId: proto.String("pre-err-svc")}
+		toolDef := v1.Tool_builder{Name: proto.String("pre-err-tool"), ServiceId: proto.String("pre-err-svc")}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		require.NoError(t, manager.AddTool(mTool))
@@ -129,7 +129,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	t.Run("PostHook Error", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		toolDef := &v1.Tool{Name: proto.String("post-err-tool"), ServiceId: proto.String("post-err-svc")}
+		toolDef := v1.Tool_builder{Name: proto.String("post-err-tool"), ServiceId: proto.String("post-err-svc")}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		require.NoError(t, manager.AddTool(mTool))
@@ -149,7 +149,7 @@ func TestManager_ExecuteTool_Coverage(t *testing.T) {
 	t.Run("Tool Not Found Fuzzy", func(t *testing.T) {
 		manager := tool.NewManager(nil)
 
-		toolDef := &v1.Tool{Name: proto.String("my-awesome-tool"), ServiceId: proto.String("svc")}
+		toolDef := v1.Tool_builder{Name: proto.String("my-awesome-tool"), ServiceId: proto.String("svc")}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 		require.NoError(t, manager.AddTool(mTool))
 
@@ -177,7 +177,7 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 		manager.SetProfiles([]string{"secure"}, []*configv1.ProfileDefinition{profile})
 
 		// Add tool from blocked service
-		toolDef := &v1.Tool{Name: proto.String("blocked-tool"), ServiceId: proto.String("blocked-svc")}
+		toolDef := v1.Tool_builder{Name: proto.String("blocked-tool"), ServiceId: proto.String("blocked-svc")}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		err := manager.AddTool(mTool)
@@ -202,11 +202,11 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 		}.Build()
 		manager.SetProfiles([]string{"tagged"}, []*configv1.ProfileDefinition{profile})
 
-		toolDef := &v1.Tool{
+		toolDef := v1.Tool_builder{
 			Name:      proto.String("tagged-tool"),
 			ServiceId: proto.String("svc"),
 			Tags:      []string{"public"},
-		}
+		}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		err := manager.AddTool(mTool)
@@ -232,13 +232,13 @@ func TestManager_ProfileFiltering_Coverage(t *testing.T) {
 		}.Build()
 		manager.SetProfiles([]string{"readonly"}, []*configv1.ProfileDefinition{profile})
 
-		toolDef := &v1.Tool{
+		toolDef := v1.Tool_builder{
 			Name:      proto.String("ro-tool"),
 			ServiceId: proto.String("svc"),
-			Annotations: &v1.ToolAnnotations{
+			Annotations: v1.ToolAnnotations_builder{
 				ReadOnlyHint: proto.Bool(true),
-			},
-		}
+			}.Build(),
+		}.Build()
 		mTool := &mockTool{toolDef: toolDef}
 
 		err := manager.AddTool(mTool)

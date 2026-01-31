@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@radix-ui/react-navigation-menu": "^1.2.14",
-    "@radix-ui/react-toolbar": "^1.1.11"
-  }
-}

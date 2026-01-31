@@ -276,37 +276,37 @@ func TestManager_GetGraph(t *testing.T) {
 
 	graph := m.GetGraph(context.Background())
 
-	assert.Equal(t, "mcp-core", graph.Core.Id)
-	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_CORE, graph.Core.Type)
+	assert.Equal(t, "mcp-core", graph.GetCore().GetId())
+	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_CORE, graph.GetCore().GetType())
 
-	assert.True(t, len(graph.Core.Children) >= 3)
+	assert.True(t, len(graph.GetCore().GetChildren()) >= 3)
 
 	var svcNode *topologyv1.Node
-	for _, child := range graph.Core.Children {
-		if child.Id == "svc-test-service" {
+	for _, child := range graph.GetCore().GetChildren() {
+		if child.GetId() == "svc-test-service" {
 			svcNode = child
 			break
 		}
 	}
 	require.NotNil(t, svcNode)
-	assert.Equal(t, "test-service", svcNode.Label)
-	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_SERVICE, svcNode.Type)
+	assert.Equal(t, "test-service", svcNode.GetLabel())
+	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_SERVICE, svcNode.GetType())
 
-	require.Len(t, svcNode.Children, 1)
-	toolNode := svcNode.Children[0]
-	assert.Equal(t, "tool-test-tool", toolNode.Id)
-	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_TOOL, toolNode.Type)
+	require.Len(t, svcNode.GetChildren(), 1)
+	toolNode := svcNode.GetChildren()[0]
+	assert.Equal(t, "tool-test-tool", toolNode.GetId())
+	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_TOOL, toolNode.GetType())
 
-	require.Len(t, toolNode.Children, 1)
-	apiNode := toolNode.Children[0]
-	assert.Equal(t, "api-test-tool", apiNode.Id)
-	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_API_CALL, apiNode.Type)
+	require.Len(t, toolNode.GetChildren(), 1)
+	apiNode := toolNode.GetChildren()[0]
+	assert.Equal(t, "api-test-tool", apiNode.GetId())
+	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_API_CALL, apiNode.GetType())
 
-	require.Len(t, graph.Clients, 1)
-	clientNode := graph.Clients[0]
-	assert.Equal(t, "client-session-1", clientNode.Id)
-	assert.Equal(t, "client-1", clientNode.Label)
-	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_CLIENT, clientNode.Type)
+	require.Len(t, graph.GetClients(), 1)
+	clientNode := graph.GetClients()[0]
+	assert.Equal(t, "client-session-1", clientNode.GetId())
+	assert.Equal(t, "client-1", clientNode.GetLabel())
+	assert.Equal(t, topologyv1.NodeType_NODE_TYPE_CLIENT, clientNode.GetType())
 }
 
 func TestManager_Middleware(t *testing.T) {
@@ -422,14 +422,14 @@ func TestManager_GetGraph_InactiveService(t *testing.T) {
 	graph := m.GetGraph(context.Background())
 
 	var svcNode *topologyv1.Node
-	for _, child := range graph.Core.Children {
-		if child.Id == "svc-disabled-service" {
+	for _, child := range graph.GetCore().GetChildren() {
+		if child.GetId() == "svc-disabled-service" {
 			svcNode = child
 			break
 		}
 	}
 	require.NotNil(t, svcNode)
-	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_INACTIVE, svcNode.Status)
+	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_INACTIVE, svcNode.GetStatus())
 }
 
 func TestManager_GetGraph_OldSession(t *testing.T) {
@@ -456,7 +456,7 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 
 	graph := m.GetGraph(context.Background())
 
-	assert.Len(t, graph.Clients, 0)
+	assert.Len(t, graph.GetClients(), 0)
 }
 
 func TestManager_GetTrafficHistory(t *testing.T) {

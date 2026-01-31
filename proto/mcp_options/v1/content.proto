@@ -7,6 +7,10 @@ option features.field_presence = IMPLICIT;
 
 package mcpany.mcp_options.v1;
 
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
 option go_package = "github.com/mcpany/core/proto/mcp_options/v1";
 
 message Content {

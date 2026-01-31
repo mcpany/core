@@ -7,13 +7,12 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/health_check.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	reflect "reflect"
 	unsafe "unsafe"
@@ -28,21 +27,17 @@ const (
 
 // Defines a health check for an HTTP-based service.
 type HttpHealthCheck struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The full URL to send the health check request to.
-	Url *string `protobuf:"bytes,1,opt,name=url" json:"url,omitempty"`
-	// The expected HTTP status code for a successful health check. Defaults to 200.
-	ExpectedCode *int32 `protobuf:"varint,2,opt,name=expected_code,json=expectedCode" json:"expected_code,omitempty"`
-	// Optional: A substring that must be present in the response body for the check to pass.
-	ExpectedResponseBodyContains *string `protobuf:"bytes,3,opt,name=expected_response_body_contains,json=expectedResponseBodyContains" json:"expected_response_body_contains,omitempty"`
-	// How often to perform the health check.
-	Interval *durationpb.Duration `protobuf:"bytes,4,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
-	Timeout *durationpb.Duration `protobuf:"bytes,5,opt,name=timeout" json:"timeout,omitempty"`
-	// The HTTP method to use for the health check. Defaults to "GET".
-	Method        *string `protobuf:"bytes,6,opt,name=method" json:"method,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Url                          *string                `protobuf:"bytes,1,opt,name=url"`
+	xxx_hidden_ExpectedCode                 int32                  `protobuf:"varint,2,opt,name=expected_code,json=expectedCode"`
+	xxx_hidden_ExpectedResponseBodyContains *string                `protobuf:"bytes,3,opt,name=expected_response_body_contains,json=expectedResponseBodyContains"`
+	xxx_hidden_Interval                     *durationpb.Duration   `protobuf:"bytes,4,opt,name=interval"`
+	xxx_hidden_Timeout                      *durationpb.Duration   `protobuf:"bytes,5,opt,name=timeout"`
+	xxx_hidden_Method                       *string                `protobuf:"bytes,6,opt,name=method"`
+	XXX_raceDetectHookData                  protoimpl.RaceDetectHookData
+	XXX_presence                            [1]uint32
+	unknownFields                           protoimpl.UnknownFields
+	sizeCache                               protoimpl.SizeCache
 }
 
 func (x *HttpHealthCheck) Reset() {
@@ -71,135 +66,152 @@ func (x *HttpHealthCheck) ProtoReflect() protoreflect.Message {
 }
 
 func (x *HttpHealthCheck) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
+	if x != nil {
+		if x.xxx_hidden_Url != nil {
+			return *x.xxx_hidden_Url
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpHealthCheck) GetExpectedCode() int32 {
-	if x != nil && x.ExpectedCode != nil {
-		return *x.ExpectedCode
+	if x != nil {
+		return x.xxx_hidden_ExpectedCode
 	}
 	return 0
 }
 
 func (x *HttpHealthCheck) GetExpectedResponseBodyContains() string {
-	if x != nil && x.ExpectedResponseBodyContains != nil {
-		return *x.ExpectedResponseBodyContains
+	if x != nil {
+		if x.xxx_hidden_ExpectedResponseBodyContains != nil {
+			return *x.xxx_hidden_ExpectedResponseBodyContains
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpHealthCheck) GetInterval() *durationpb.Duration {
 	if x != nil {
-		return x.Interval
+		return x.xxx_hidden_Interval
 	}
 	return nil
 }
 
 func (x *HttpHealthCheck) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.Timeout
+		return x.xxx_hidden_Timeout
 	}
 	return nil
 }
 
 func (x *HttpHealthCheck) GetMethod() string {
-	if x != nil && x.Method != nil {
-		return *x.Method
+	if x != nil {
+		if x.xxx_hidden_Method != nil {
+			return *x.xxx_hidden_Method
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *HttpHealthCheck) SetUrl(v string) {
-	x.Url = &v
+	x.xxx_hidden_Url = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *HttpHealthCheck) SetExpectedCode(v int32) {
-	x.ExpectedCode = &v
+	x.xxx_hidden_ExpectedCode = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *HttpHealthCheck) SetExpectedResponseBodyContains(v string) {
-	x.ExpectedResponseBodyContains = &v
+	x.xxx_hidden_ExpectedResponseBodyContains = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *HttpHealthCheck) SetInterval(v *durationpb.Duration) {
-	x.Interval = v
+	x.xxx_hidden_Interval = v
 }
 
 func (x *HttpHealthCheck) SetTimeout(v *durationpb.Duration) {
-	x.Timeout = v
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *HttpHealthCheck) SetMethod(v string) {
-	x.Method = &v
+	x.xxx_hidden_Method = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *HttpHealthCheck) HasUrl() bool {
 	if x == nil {
 		return false
 	}
-	return x.Url != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *HttpHealthCheck) HasExpectedCode() bool {
 	if x == nil {
 		return false
 	}
-	return x.ExpectedCode != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *HttpHealthCheck) HasExpectedResponseBodyContains() bool {
 	if x == nil {
 		return false
 	}
-	return x.ExpectedResponseBodyContains != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *HttpHealthCheck) HasInterval() bool {
 	if x == nil {
 		return false
 	}
-	return x.Interval != nil
+	return x.xxx_hidden_Interval != nil
 }
 
 func (x *HttpHealthCheck) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.Timeout != nil
+	return x.xxx_hidden_Timeout != nil
 }
 
 func (x *HttpHealthCheck) HasMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.Method != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
 }
 
 func (x *HttpHealthCheck) ClearUrl() {
-	x.Url = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Url = nil
 }
 
 func (x *HttpHealthCheck) ClearExpectedCode() {
-	x.ExpectedCode = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_ExpectedCode = 0
 }
 
 func (x *HttpHealthCheck) ClearExpectedResponseBodyContains() {
-	x.ExpectedResponseBodyContains = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ExpectedResponseBodyContains = nil
 }
 
 func (x *HttpHealthCheck) ClearInterval() {
-	x.Interval = nil
+	x.xxx_hidden_Interval = nil
 }
 
 func (x *HttpHealthCheck) ClearTimeout() {
-	x.Timeout = nil
+	x.xxx_hidden_Timeout = nil
 }
 
 func (x *HttpHealthCheck) ClearMethod() {
-	x.Method = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Method = nil
 }
 
 type HttpHealthCheck_builder struct {
@@ -223,30 +235,39 @@ func (b0 HttpHealthCheck_builder) Build() *HttpHealthCheck {
 	m0 := &HttpHealthCheck{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Url = b.Url
-	x.ExpectedCode = b.ExpectedCode
-	x.ExpectedResponseBodyContains = b.ExpectedResponseBodyContains
-	x.Interval = b.Interval
-	x.Timeout = b.Timeout
-	x.Method = b.Method
+	if b.Url != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Url = b.Url
+	}
+	if b.ExpectedCode != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_ExpectedCode = *b.ExpectedCode
+	}
+	if b.ExpectedResponseBodyContains != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		x.xxx_hidden_ExpectedResponseBodyContains = b.ExpectedResponseBodyContains
+	}
+	x.xxx_hidden_Interval = b.Interval
+	x.xxx_hidden_Timeout = b.Timeout
+	if b.Method != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_Method = b.Method
+	}
 	return m0
 }
 
 // Defines a health check for a websocket-based service.
 type WebsocketHealthCheck struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The message to send to the websocket service for the health check.
-	Message *string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	// A substring expected in the service's response for the check to pass.
-	ExpectedResponseContains *string `protobuf:"bytes,2,opt,name=expected_response_contains,json=expectedResponseContains" json:"expected_response_contains,omitempty"`
-	// How often to perform the health check.
-	Interval *durationpb.Duration `protobuf:"bytes,3,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
-	Timeout *durationpb.Duration `protobuf:"bytes,4,opt,name=timeout" json:"timeout,omitempty"`
-	// The URL to send the health check request to.
-	Url           *string `protobuf:"bytes,5,opt,name=url" json:"url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Message                  *string                `protobuf:"bytes,1,opt,name=message"`
+	xxx_hidden_ExpectedResponseContains *string                `protobuf:"bytes,2,opt,name=expected_response_contains,json=expectedResponseContains"`
+	xxx_hidden_Interval                 *durationpb.Duration   `protobuf:"bytes,3,opt,name=interval"`
+	xxx_hidden_Timeout                  *durationpb.Duration   `protobuf:"bytes,4,opt,name=timeout"`
+	xxx_hidden_Url                      *string                `protobuf:"bytes,5,opt,name=url"`
+	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
+	XXX_presence                        [1]uint32
+	unknownFields                       protoimpl.UnknownFields
+	sizeCache                           protoimpl.SizeCache
 }
 
 func (x *WebsocketHealthCheck) Reset() {
@@ -275,113 +296,128 @@ func (x *WebsocketHealthCheck) ProtoReflect() protoreflect.Message {
 }
 
 func (x *WebsocketHealthCheck) GetMessage() string {
-	if x != nil && x.Message != nil {
-		return *x.Message
+	if x != nil {
+		if x.xxx_hidden_Message != nil {
+			return *x.xxx_hidden_Message
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebsocketHealthCheck) GetExpectedResponseContains() string {
-	if x != nil && x.ExpectedResponseContains != nil {
-		return *x.ExpectedResponseContains
+	if x != nil {
+		if x.xxx_hidden_ExpectedResponseContains != nil {
+			return *x.xxx_hidden_ExpectedResponseContains
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebsocketHealthCheck) GetInterval() *durationpb.Duration {
 	if x != nil {
-		return x.Interval
+		return x.xxx_hidden_Interval
 	}
 	return nil
 }
 
 func (x *WebsocketHealthCheck) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.Timeout
+		return x.xxx_hidden_Timeout
 	}
 	return nil
 }
 
 func (x *WebsocketHealthCheck) GetUrl() string {
-	if x != nil && x.Url != nil {
-		return *x.Url
+	if x != nil {
+		if x.xxx_hidden_Url != nil {
+			return *x.xxx_hidden_Url
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *WebsocketHealthCheck) SetMessage(v string) {
-	x.Message = &v
+	x.xxx_hidden_Message = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *WebsocketHealthCheck) SetExpectedResponseContains(v string) {
-	x.ExpectedResponseContains = &v
+	x.xxx_hidden_ExpectedResponseContains = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *WebsocketHealthCheck) SetInterval(v *durationpb.Duration) {
-	x.Interval = v
+	x.xxx_hidden_Interval = v
 }
 
 func (x *WebsocketHealthCheck) SetTimeout(v *durationpb.Duration) {
-	x.Timeout = v
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *WebsocketHealthCheck) SetUrl(v string) {
-	x.Url = &v
+	x.xxx_hidden_Url = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *WebsocketHealthCheck) HasMessage() bool {
 	if x == nil {
 		return false
 	}
-	return x.Message != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *WebsocketHealthCheck) HasExpectedResponseContains() bool {
 	if x == nil {
 		return false
 	}
-	return x.ExpectedResponseContains != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *WebsocketHealthCheck) HasInterval() bool {
 	if x == nil {
 		return false
 	}
-	return x.Interval != nil
+	return x.xxx_hidden_Interval != nil
 }
 
 func (x *WebsocketHealthCheck) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.Timeout != nil
+	return x.xxx_hidden_Timeout != nil
 }
 
 func (x *WebsocketHealthCheck) HasUrl() bool {
 	if x == nil {
 		return false
 	}
-	return x.Url != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *WebsocketHealthCheck) ClearMessage() {
-	x.Message = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Message = nil
 }
 
 func (x *WebsocketHealthCheck) ClearExpectedResponseContains() {
-	x.ExpectedResponseContains = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_ExpectedResponseContains = nil
 }
 
 func (x *WebsocketHealthCheck) ClearInterval() {
-	x.Interval = nil
+	x.xxx_hidden_Interval = nil
 }
 
 func (x *WebsocketHealthCheck) ClearTimeout() {
-	x.Timeout = nil
+	x.xxx_hidden_Timeout = nil
 }
 
 func (x *WebsocketHealthCheck) ClearUrl() {
-	x.Url = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Url = nil
 }
 
 type WebsocketHealthCheck_builder struct {
@@ -403,33 +439,37 @@ func (b0 WebsocketHealthCheck_builder) Build() *WebsocketHealthCheck {
 	m0 := &WebsocketHealthCheck{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Message = b.Message
-	x.ExpectedResponseContains = b.ExpectedResponseContains
-	x.Interval = b.Interval
-	x.Timeout = b.Timeout
-	x.Url = b.Url
+	if b.Message != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Message = b.Message
+	}
+	if b.ExpectedResponseContains != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_ExpectedResponseContains = b.ExpectedResponseContains
+	}
+	x.xxx_hidden_Interval = b.Interval
+	x.xxx_hidden_Timeout = b.Timeout
+	if b.Url != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_Url = b.Url
+	}
 	return m0
 }
 
 // Defines a health check for a gRPC-based service.
 type GrpcHealthCheck struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The gRPC service name to check (e.g., "grpc.health.v1.Health").
-	Service *string `protobuf:"bytes,1,opt,name=service" json:"service,omitempty"`
-	// The gRPC method to call.
-	Method *string `protobuf:"bytes,2,opt,name=method" json:"method,omitempty"`
-	// A JSON string representing the request message.
-	Request *string `protobuf:"bytes,3,opt,name=request" json:"request,omitempty"`
-	// A JSON string representing the expected response message.
-	ExpectedResponse *string `protobuf:"bytes,4,opt,name=expected_response,json=expectedResponse" json:"expected_response,omitempty"`
-	// Set to true if connecting to the gRPC service without TLS.
-	Insecure *bool `protobuf:"varint,5,opt,name=insecure" json:"insecure,omitempty"`
-	// How often to perform the health check.
-	Interval *durationpb.Duration `protobuf:"bytes,6,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
-	Timeout       *durationpb.Duration `protobuf:"bytes,7,opt,name=timeout" json:"timeout,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Service          *string                `protobuf:"bytes,1,opt,name=service"`
+	xxx_hidden_Method           *string                `protobuf:"bytes,2,opt,name=method"`
+	xxx_hidden_Request          *string                `protobuf:"bytes,3,opt,name=request"`
+	xxx_hidden_ExpectedResponse *string                `protobuf:"bytes,4,opt,name=expected_response,json=expectedResponse"`
+	xxx_hidden_Insecure         bool                   `protobuf:"varint,5,opt,name=insecure"`
+	xxx_hidden_Interval         *durationpb.Duration   `protobuf:"bytes,6,opt,name=interval"`
+	xxx_hidden_Timeout          *durationpb.Duration   `protobuf:"bytes,7,opt,name=timeout"`
+	XXX_raceDetectHookData      protoimpl.RaceDetectHookData
+	XXX_presence                [1]uint32
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *GrpcHealthCheck) Reset() {
@@ -458,157 +498,179 @@ func (x *GrpcHealthCheck) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GrpcHealthCheck) GetService() string {
-	if x != nil && x.Service != nil {
-		return *x.Service
+	if x != nil {
+		if x.xxx_hidden_Service != nil {
+			return *x.xxx_hidden_Service
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcHealthCheck) GetMethod() string {
-	if x != nil && x.Method != nil {
-		return *x.Method
+	if x != nil {
+		if x.xxx_hidden_Method != nil {
+			return *x.xxx_hidden_Method
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcHealthCheck) GetRequest() string {
-	if x != nil && x.Request != nil {
-		return *x.Request
+	if x != nil {
+		if x.xxx_hidden_Request != nil {
+			return *x.xxx_hidden_Request
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcHealthCheck) GetExpectedResponse() string {
-	if x != nil && x.ExpectedResponse != nil {
-		return *x.ExpectedResponse
+	if x != nil {
+		if x.xxx_hidden_ExpectedResponse != nil {
+			return *x.xxx_hidden_ExpectedResponse
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *GrpcHealthCheck) GetInsecure() bool {
-	if x != nil && x.Insecure != nil {
-		return *x.Insecure
+	if x != nil {
+		return x.xxx_hidden_Insecure
 	}
 	return false
 }
 
 func (x *GrpcHealthCheck) GetInterval() *durationpb.Duration {
 	if x != nil {
-		return x.Interval
+		return x.xxx_hidden_Interval
 	}
 	return nil
 }
 
 func (x *GrpcHealthCheck) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.Timeout
+		return x.xxx_hidden_Timeout
 	}
 	return nil
 }
 
 func (x *GrpcHealthCheck) SetService(v string) {
-	x.Service = &v
+	x.xxx_hidden_Service = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *GrpcHealthCheck) SetMethod(v string) {
-	x.Method = &v
+	x.xxx_hidden_Method = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
 func (x *GrpcHealthCheck) SetRequest(v string) {
-	x.Request = &v
+	x.xxx_hidden_Request = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
 func (x *GrpcHealthCheck) SetExpectedResponse(v string) {
-	x.ExpectedResponse = &v
+	x.xxx_hidden_ExpectedResponse = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
 }
 
 func (x *GrpcHealthCheck) SetInsecure(v bool) {
-	x.Insecure = &v
+	x.xxx_hidden_Insecure = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
 }
 
 func (x *GrpcHealthCheck) SetInterval(v *durationpb.Duration) {
-	x.Interval = v
+	x.xxx_hidden_Interval = v
 }
 
 func (x *GrpcHealthCheck) SetTimeout(v *durationpb.Duration) {
-	x.Timeout = v
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *GrpcHealthCheck) HasService() bool {
 	if x == nil {
 		return false
 	}
-	return x.Service != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *GrpcHealthCheck) HasMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.Method != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *GrpcHealthCheck) HasRequest() bool {
 	if x == nil {
 		return false
 	}
-	return x.Request != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *GrpcHealthCheck) HasExpectedResponse() bool {
 	if x == nil {
 		return false
 	}
-	return x.ExpectedResponse != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *GrpcHealthCheck) HasInsecure() bool {
 	if x == nil {
 		return false
 	}
-	return x.Insecure != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *GrpcHealthCheck) HasInterval() bool {
 	if x == nil {
 		return false
 	}
-	return x.Interval != nil
+	return x.xxx_hidden_Interval != nil
 }
 
 func (x *GrpcHealthCheck) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.Timeout != nil
+	return x.xxx_hidden_Timeout != nil
 }
 
 func (x *GrpcHealthCheck) ClearService() {
-	x.Service = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Service = nil
 }
 
 func (x *GrpcHealthCheck) ClearMethod() {
-	x.Method = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Method = nil
 }
 
 func (x *GrpcHealthCheck) ClearRequest() {
-	x.Request = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Request = nil
 }
 
 func (x *GrpcHealthCheck) ClearExpectedResponse() {
-	x.ExpectedResponse = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_ExpectedResponse = nil
 }
 
 func (x *GrpcHealthCheck) ClearInsecure() {
-	x.Insecure = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Insecure = false
 }
 
 func (x *GrpcHealthCheck) ClearInterval() {
-	x.Interval = nil
+	x.xxx_hidden_Interval = nil
 }
 
 func (x *GrpcHealthCheck) ClearTimeout() {
-	x.Timeout = nil
+	x.xxx_hidden_Timeout = nil
 }
 
 type GrpcHealthCheck_builder struct {
@@ -634,31 +696,43 @@ func (b0 GrpcHealthCheck_builder) Build() *GrpcHealthCheck {
 	m0 := &GrpcHealthCheck{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Service = b.Service
-	x.Method = b.Method
-	x.Request = b.Request
-	x.ExpectedResponse = b.ExpectedResponse
-	x.Insecure = b.Insecure
-	x.Interval = b.Interval
-	x.Timeout = b.Timeout
+	if b.Service != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Service = b.Service
+	}
+	if b.Method != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Method = b.Method
+	}
+	if b.Request != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_Request = b.Request
+	}
+	if b.ExpectedResponse != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_ExpectedResponse = b.ExpectedResponse
+	}
+	if b.Insecure != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
+		x.xxx_hidden_Insecure = *b.Insecure
+	}
+	x.xxx_hidden_Interval = b.Interval
+	x.xxx_hidden_Timeout = b.Timeout
 	return m0
 }
 
 // Defines a health check for a command line-based service.
 type CommandLineHealthCheck struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The method or command to send to the command line service for the health check.
-	Method *string `protobuf:"bytes,1,opt,name=method" json:"method,omitempty"`
-	// The input/prompt to send to the service.
-	Prompt *string `protobuf:"bytes,2,opt,name=prompt" json:"prompt,omitempty"`
-	// A substring expected in the service's output for the check to pass.
-	ExpectedResponseContains *string `protobuf:"bytes,3,opt,name=expected_response_contains,json=expectedResponseContains" json:"expected_response_contains,omitempty"`
-	// How often to perform the health check.
-	Interval *durationpb.Duration `protobuf:"bytes,4,opt,name=interval" json:"interval,omitempty"`
-	// The timeout for each health check attempt.
-	Timeout       *durationpb.Duration `protobuf:"bytes,5,opt,name=timeout" json:"timeout,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Method                   *string                `protobuf:"bytes,1,opt,name=method"`
+	xxx_hidden_Prompt                   *string                `protobuf:"bytes,2,opt,name=prompt"`
+	xxx_hidden_ExpectedResponseContains *string                `protobuf:"bytes,3,opt,name=expected_response_contains,json=expectedResponseContains"`
+	xxx_hidden_Interval                 *durationpb.Duration   `protobuf:"bytes,4,opt,name=interval"`
+	xxx_hidden_Timeout                  *durationpb.Duration   `protobuf:"bytes,5,opt,name=timeout"`
+	XXX_raceDetectHookData              protoimpl.RaceDetectHookData
+	XXX_presence                        [1]uint32
+	unknownFields                       protoimpl.UnknownFields
+	sizeCache                           protoimpl.SizeCache
 }
 
 func (x *CommandLineHealthCheck) Reset() {
@@ -687,113 +761,128 @@ func (x *CommandLineHealthCheck) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CommandLineHealthCheck) GetMethod() string {
-	if x != nil && x.Method != nil {
-		return *x.Method
+	if x != nil {
+		if x.xxx_hidden_Method != nil {
+			return *x.xxx_hidden_Method
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CommandLineHealthCheck) GetPrompt() string {
-	if x != nil && x.Prompt != nil {
-		return *x.Prompt
+	if x != nil {
+		if x.xxx_hidden_Prompt != nil {
+			return *x.xxx_hidden_Prompt
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CommandLineHealthCheck) GetExpectedResponseContains() string {
-	if x != nil && x.ExpectedResponseContains != nil {
-		return *x.ExpectedResponseContains
+	if x != nil {
+		if x.xxx_hidden_ExpectedResponseContains != nil {
+			return *x.xxx_hidden_ExpectedResponseContains
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CommandLineHealthCheck) GetInterval() *durationpb.Duration {
 	if x != nil {
-		return x.Interval
+		return x.xxx_hidden_Interval
 	}
 	return nil
 }
 
 func (x *CommandLineHealthCheck) GetTimeout() *durationpb.Duration {
 	if x != nil {
-		return x.Timeout
+		return x.xxx_hidden_Timeout
 	}
 	return nil
 }
 
 func (x *CommandLineHealthCheck) SetMethod(v string) {
-	x.Method = &v
+	x.xxx_hidden_Method = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *CommandLineHealthCheck) SetPrompt(v string) {
-	x.Prompt = &v
+	x.xxx_hidden_Prompt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
 func (x *CommandLineHealthCheck) SetExpectedResponseContains(v string) {
-	x.ExpectedResponseContains = &v
+	x.xxx_hidden_ExpectedResponseContains = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
 func (x *CommandLineHealthCheck) SetInterval(v *durationpb.Duration) {
-	x.Interval = v
+	x.xxx_hidden_Interval = v
 }
 
 func (x *CommandLineHealthCheck) SetTimeout(v *durationpb.Duration) {
-	x.Timeout = v
+	x.xxx_hidden_Timeout = v
 }
 
 func (x *CommandLineHealthCheck) HasMethod() bool {
 	if x == nil {
 		return false
 	}
-	return x.Method != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *CommandLineHealthCheck) HasPrompt() bool {
 	if x == nil {
 		return false
 	}
-	return x.Prompt != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *CommandLineHealthCheck) HasExpectedResponseContains() bool {
 	if x == nil {
 		return false
 	}
-	return x.ExpectedResponseContains != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *CommandLineHealthCheck) HasInterval() bool {
 	if x == nil {
 		return false
 	}
-	return x.Interval != nil
+	return x.xxx_hidden_Interval != nil
 }
 
 func (x *CommandLineHealthCheck) HasTimeout() bool {
 	if x == nil {
 		return false
 	}
-	return x.Timeout != nil
+	return x.xxx_hidden_Timeout != nil
 }
 
 func (x *CommandLineHealthCheck) ClearMethod() {
-	x.Method = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Method = nil
 }
 
 func (x *CommandLineHealthCheck) ClearPrompt() {
-	x.Prompt = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Prompt = nil
 }
 
 func (x *CommandLineHealthCheck) ClearExpectedResponseContains() {
-	x.ExpectedResponseContains = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ExpectedResponseContains = nil
 }
 
 func (x *CommandLineHealthCheck) ClearInterval() {
-	x.Interval = nil
+	x.xxx_hidden_Interval = nil
 }
 
 func (x *CommandLineHealthCheck) ClearTimeout() {
-	x.Timeout = nil
+	x.xxx_hidden_Timeout = nil
 }
 
 type CommandLineHealthCheck_builder struct {
@@ -815,24 +904,29 @@ func (b0 CommandLineHealthCheck_builder) Build() *CommandLineHealthCheck {
 	m0 := &CommandLineHealthCheck{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Method = b.Method
-	x.Prompt = b.Prompt
-	x.ExpectedResponseContains = b.ExpectedResponseContains
-	x.Interval = b.Interval
-	x.Timeout = b.Timeout
+	if b.Method != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Method = b.Method
+	}
+	if b.Prompt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Prompt = b.Prompt
+	}
+	if b.ExpectedResponseContains != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_ExpectedResponseContains = b.ExpectedResponseContains
+	}
+	x.xxx_hidden_Interval = b.Interval
+	x.xxx_hidden_Timeout = b.Timeout
 	return m0
 }
 
 // Defines a health check for a WebRTC-based service.
 type WebRTCHealthCheck struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Types that are valid to be assigned to HealthCheckType:
-	//
-	//	*WebRTCHealthCheck_Http
-	//	*WebRTCHealthCheck_Websocket
-	HealthCheckType isWebRTCHealthCheck_HealthCheckType `protobuf_oneof:"health_check_type"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                      protoimpl.MessageState              `protogen:"opaque.v1"`
+	xxx_hidden_HealthCheckType isWebRTCHealthCheck_HealthCheckType `protobuf_oneof:"health_check_type"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *WebRTCHealthCheck) Reset() {
@@ -860,16 +954,9 @@ func (x *WebRTCHealthCheck) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *WebRTCHealthCheck) GetHealthCheckType() isWebRTCHealthCheck_HealthCheckType {
-	if x != nil {
-		return x.HealthCheckType
-	}
-	return nil
-}
-
 func (x *WebRTCHealthCheck) GetHttp() *HttpHealthCheck {
 	if x != nil {
-		if x, ok := x.HealthCheckType.(*WebRTCHealthCheck_Http); ok {
+		if x, ok := x.xxx_hidden_HealthCheckType.(*webRTCHealthCheck_Http); ok {
 			return x.Http
 		}
 	}
@@ -878,7 +965,7 @@ func (x *WebRTCHealthCheck) GetHttp() *HttpHealthCheck {
 
 func (x *WebRTCHealthCheck) GetWebsocket() *WebsocketHealthCheck {
 	if x != nil {
-		if x, ok := x.HealthCheckType.(*WebRTCHealthCheck_Websocket); ok {
+		if x, ok := x.xxx_hidden_HealthCheckType.(*webRTCHealthCheck_Websocket); ok {
 			return x.Websocket
 		}
 	}
@@ -887,32 +974,32 @@ func (x *WebRTCHealthCheck) GetWebsocket() *WebsocketHealthCheck {
 
 func (x *WebRTCHealthCheck) SetHttp(v *HttpHealthCheck) {
 	if v == nil {
-		x.HealthCheckType = nil
+		x.xxx_hidden_HealthCheckType = nil
 		return
 	}
-	x.HealthCheckType = &WebRTCHealthCheck_Http{v}
+	x.xxx_hidden_HealthCheckType = &webRTCHealthCheck_Http{v}
 }
 
 func (x *WebRTCHealthCheck) SetWebsocket(v *WebsocketHealthCheck) {
 	if v == nil {
-		x.HealthCheckType = nil
+		x.xxx_hidden_HealthCheckType = nil
 		return
 	}
-	x.HealthCheckType = &WebRTCHealthCheck_Websocket{v}
+	x.xxx_hidden_HealthCheckType = &webRTCHealthCheck_Websocket{v}
 }
 
 func (x *WebRTCHealthCheck) HasHealthCheckType() bool {
 	if x == nil {
 		return false
 	}
-	return x.HealthCheckType != nil
+	return x.xxx_hidden_HealthCheckType != nil
 }
 
 func (x *WebRTCHealthCheck) HasHttp() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.HealthCheckType.(*WebRTCHealthCheck_Http)
+	_, ok := x.xxx_hidden_HealthCheckType.(*webRTCHealthCheck_Http)
 	return ok
 }
 
@@ -920,23 +1007,23 @@ func (x *WebRTCHealthCheck) HasWebsocket() bool {
 	if x == nil {
 		return false
 	}
-	_, ok := x.HealthCheckType.(*WebRTCHealthCheck_Websocket)
+	_, ok := x.xxx_hidden_HealthCheckType.(*webRTCHealthCheck_Websocket)
 	return ok
 }
 
 func (x *WebRTCHealthCheck) ClearHealthCheckType() {
-	x.HealthCheckType = nil
+	x.xxx_hidden_HealthCheckType = nil
 }
 
 func (x *WebRTCHealthCheck) ClearHttp() {
-	if _, ok := x.HealthCheckType.(*WebRTCHealthCheck_Http); ok {
-		x.HealthCheckType = nil
+	if _, ok := x.xxx_hidden_HealthCheckType.(*webRTCHealthCheck_Http); ok {
+		x.xxx_hidden_HealthCheckType = nil
 	}
 }
 
 func (x *WebRTCHealthCheck) ClearWebsocket() {
-	if _, ok := x.HealthCheckType.(*WebRTCHealthCheck_Websocket); ok {
-		x.HealthCheckType = nil
+	if _, ok := x.xxx_hidden_HealthCheckType.(*webRTCHealthCheck_Websocket); ok {
+		x.xxx_hidden_HealthCheckType = nil
 	}
 }
 
@@ -948,10 +1035,10 @@ func (x *WebRTCHealthCheck) WhichHealthCheckType() case_WebRTCHealthCheck_Health
 	if x == nil {
 		return WebRTCHealthCheck_HealthCheckType_not_set_case
 	}
-	switch x.HealthCheckType.(type) {
-	case *WebRTCHealthCheck_Http:
+	switch x.xxx_hidden_HealthCheckType.(type) {
+	case *webRTCHealthCheck_Http:
 		return WebRTCHealthCheck_Http_case
-	case *WebRTCHealthCheck_Websocket:
+	case *webRTCHealthCheck_Websocket:
 		return WebRTCHealthCheck_Websocket_case
 	default:
 		return WebRTCHealthCheck_HealthCheckType_not_set_case
@@ -961,10 +1048,10 @@ func (x *WebRTCHealthCheck) WhichHealthCheckType() case_WebRTCHealthCheck_Health
 type WebRTCHealthCheck_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Fields of oneof HealthCheckType:
+	// Fields of oneof xxx_hidden_HealthCheckType:
 	Http      *HttpHealthCheck
 	Websocket *WebsocketHealthCheck
-	// -- end of HealthCheckType
+	// -- end of xxx_hidden_HealthCheckType
 }
 
 func (b0 WebRTCHealthCheck_builder) Build() *WebRTCHealthCheck {
@@ -972,10 +1059,10 @@ func (b0 WebRTCHealthCheck_builder) Build() *WebRTCHealthCheck {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Http != nil {
-		x.HealthCheckType = &WebRTCHealthCheck_Http{b.Http}
+		x.xxx_hidden_HealthCheckType = &webRTCHealthCheck_Http{b.Http}
 	}
 	if b.Websocket != nil {
-		x.HealthCheckType = &WebRTCHealthCheck_Websocket{b.Websocket}
+		x.xxx_hidden_HealthCheckType = &webRTCHealthCheck_Websocket{b.Websocket}
 	}
 	return m0
 }
@@ -994,23 +1081,23 @@ type isWebRTCHealthCheck_HealthCheckType interface {
 	isWebRTCHealthCheck_HealthCheckType()
 }
 
-type WebRTCHealthCheck_Http struct {
+type webRTCHealthCheck_Http struct {
 	Http *HttpHealthCheck `protobuf:"bytes,1,opt,name=http,oneof"`
 }
 
-type WebRTCHealthCheck_Websocket struct {
+type webRTCHealthCheck_Websocket struct {
 	Websocket *WebsocketHealthCheck `protobuf:"bytes,2,opt,name=websocket,oneof"`
 }
 
-func (*WebRTCHealthCheck_Http) isWebRTCHealthCheck_HealthCheckType() {}
+func (*webRTCHealthCheck_Http) isWebRTCHealthCheck_HealthCheckType() {}
 
-func (*WebRTCHealthCheck_Websocket) isWebRTCHealthCheck_HealthCheckType() {}
+func (*webRTCHealthCheck_Websocket) isWebRTCHealthCheck_HealthCheckType() {}
 
 var File_proto_config_v1_health_check_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_health_check_proto_rawDesc = "" +
 	"\n" +
-	"\"proto/config/v1/health_check.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\"\x93\x02\n" +
+	"\"proto/config/v1/health_check.proto\x12\x10mcpany.config.v1\x1a\x1egoogle/protobuf/duration.proto\x1a!google/protobuf/go_features.proto\"\x93\x02\n" +
 	"\x0fHttpHealthCheck\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12#\n" +
 	"\rexpected_code\x18\x02 \x01(\x05R\fexpectedCode\x12E\n" +
@@ -1041,7 +1128,7 @@ const file_proto_config_v1_health_check_proto_rawDesc = "" +
 	"\x11WebRTCHealthCheck\x127\n" +
 	"\x04http\x18\x01 \x01(\v2!.mcpany.config.v1.HttpHealthCheckH\x00R\x04http\x12F\n" +
 	"\twebsocket\x18\x02 \x01(\v2&.mcpany.config.v1.WebsocketHealthCheckH\x00R\twebsocketB\x13\n" +
-	"\x11health_check_typeB:B\x10HealthCheckProtoZ&github.com/mcpany/core/proto/config/v1b\beditionsp\xe8\a"
+	"\x11health_check_typeBBB\x10HealthCheckProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_config_v1_health_check_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_config_v1_health_check_proto_goTypes = []any{
@@ -1076,8 +1163,8 @@ func file_proto_config_v1_health_check_proto_init() {
 		return
 	}
 	file_proto_config_v1_health_check_proto_msgTypes[4].OneofWrappers = []any{
-		(*WebRTCHealthCheck_Http)(nil),
-		(*WebRTCHealthCheck_Websocket)(nil),
+		(*webRTCHealthCheck_Http)(nil),
+		(*webRTCHealthCheck_Websocket)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

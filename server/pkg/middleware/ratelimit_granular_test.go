@@ -60,7 +60,7 @@ type MockTool struct {
 }
 
 func (t *MockTool) Tool() *v1.Tool {
-	return &v1.Tool{Name: &t.name, ServiceId: &t.serviceID}
+	return v1.Tool_builder{Name: proto.String(t.name), ServiceId: proto.String(t.serviceID)}.Build()
 }
 func (t *MockTool) MCPTool() *mcp.Tool { return &mcp.Tool{Name: t.name} }
 func (t *MockTool) Execute(_ context.Context, _ *tool.ExecutionRequest) (any, error) {

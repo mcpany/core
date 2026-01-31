@@ -51,29 +51,29 @@ func TestManager_Profiles(t *testing.T) {
 	assert.Nil(t, allowed)
 
 	// Test ToolMatchesProfile
-	tool1 := &v1.Tool{
+	tool1 := v1.Tool_builder{
 		ServiceId: proto.String("s1"),
 		Tags: []string{"tag1"},
-	}
+	}.Build()
 	// Mock tool wrapper
 	mTool1 := &MockTool{ToolFunc: func() *v1.Tool { return tool1 }}
 
 	// p1 allows s1
 	assert.True(t, tm.ToolMatchesProfile(mTool1, "p1"))
 
-	tool2 := &v1.Tool{
+	tool2 := v1.Tool_builder{
 		ServiceId: proto.String("s3"),
 		Tags: []string{"allowed"},
-	}
+	}.Build()
 	mTool2 := &MockTool{ToolFunc: func() *v1.Tool { return tool2 }}
 
 	// p2 selects by tag "allowed"
 	assert.True(t, tm.ToolMatchesProfile(mTool2, "p2"))
 
-	tool3 := &v1.Tool{
+	tool3 := v1.Tool_builder{
 		ServiceId: proto.String("s3"),
 		Tags: []string{"forbidden"},
-	}
+	}.Build()
 	mTool3 := &MockTool{ToolFunc: func() *v1.Tool { return tool3 }}
 
 	// p2 does not select "forbidden"
@@ -91,19 +91,19 @@ func TestManager_Profiles(t *testing.T) {
     // Update profiles
     tm.SetProfiles([]string{"p1", "p2", "p3"}, []*configv1.ProfileDefinition{p1, p2, p3})
 
-    tool4 := &v1.Tool{
-        Annotations: &v1.ToolAnnotations{
+    tool4 := v1.Tool_builder{
+        Annotations: v1.ToolAnnotations_builder{
             ReadOnlyHint: proto.Bool(true),
-        },
-    }
+        }.Build(),
+    }.Build()
     mTool4 := &MockTool{ToolFunc: func() *v1.Tool { return tool4 }}
     assert.True(t, tm.ToolMatchesProfile(mTool4, "p3"))
 
-    tool5 := &v1.Tool{
-        Annotations: &v1.ToolAnnotations{
+    tool5 := v1.Tool_builder{
+        Annotations: v1.ToolAnnotations_builder{
             ReadOnlyHint: proto.Bool(false),
-        },
-    }
+        }.Build(),
+    }.Build()
     mTool5 := &MockTool{ToolFunc: func() *v1.Tool { return tool5 }}
     assert.False(t, tm.ToolMatchesProfile(mTool5, "p3"))
 }
@@ -121,12 +121,12 @@ func TestManager_IsToolAllowed_Indirect(t *testing.T) {
     tm.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{p1})
 
     // Tool allowed
-    t1 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("t1")}
+    t1 := v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("t1")}.Build()
     _ = &MockTool{ToolFunc: func() *v1.Tool { return t1 }}
 
     assert.True(t, tm.isToolAllowed(t1))
 
-    t2 := &v1.Tool{ServiceId: proto.String("s2"), Name: proto.String("t2")}
+    t2 := v1.Tool_builder{ServiceId: proto.String("s2"), Name: proto.String("t2")}.Build()
     assert.False(t, tm.isToolAllowed(t2))
 }
 
@@ -166,17 +166,17 @@ func TestManager_Profile_GranularToolDisabling(t *testing.T) {
 	tm.SetProfiles([]string{"p1"}, []*configv1.ProfileDefinition{p1})
 
 	// Enabled Service, Disabled Tool
-	t1 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("disabled_tool")}
+	t1 := v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("disabled_tool")}.Build()
 	mTool1 := &MockTool{ToolFunc: func() *v1.Tool { return t1 }}
 	assert.False(t, tm.ToolMatchesProfile(mTool1, "p1"), "Tool should be disabled by config")
 
 	// Enabled Service, Explicitly Enabled Tool
-	t2 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("enabled_tool")}
+	t2 := v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("enabled_tool")}.Build()
 	mTool2 := &MockTool{ToolFunc: func() *v1.Tool { return t2 }}
 	assert.True(t, tm.ToolMatchesProfile(mTool2, "p1"), "Tool should be enabled by config")
 
 	// Enabled Service, Unspecified Tool (Default allowed)
-	t3 := &v1.Tool{ServiceId: proto.String("s1"), Name: proto.String("other_tool")}
+	t3 := v1.Tool_builder{ServiceId: proto.String("s1"), Name: proto.String("other_tool")}.Build()
 	mTool3 := &MockTool{ToolFunc: func() *v1.Tool { return t3 }}
 	assert.True(t, tm.ToolMatchesProfile(mTool3, "p1"), "Tool should be allowed by default service enablement")
 }

@@ -73,7 +73,7 @@ func TestStripSecretsFromMcpService_StdioEnv(t *testing.T) {
 	}.Build()
 	stripSecretsFromMcpService(mcp2)
 	env2 := mcp2.GetBundleConnection().GetEnv()
-	assert.Nil(t, env2["SECRET"].Value)
+	assert.False(t, env2["SECRET"].HasValue())
 }
 
 func TestScrubSecretValue(t *testing.T) {
@@ -85,14 +85,14 @@ func TestScrubSecretValue(t *testing.T) {
 		PlainText: proto.String("secret"),
 	}.Build()
 	scrubSecretValue(sv)
-	assert.Nil(t, sv.Value)
+	assert.False(t, sv.HasValue())
 
 	// Env var
 	sv2 := configv1.SecretValue_builder{
 		EnvironmentVariable: proto.String("ENV"),
 	}.Build()
 	scrubSecretValue(sv2)
-	assert.NotNil(t, sv2.Value)
+	assert.True(t, sv2.HasValue())
 }
 
 func TestStripSecretsFromHook(t *testing.T) {
@@ -306,7 +306,7 @@ func TestHydrateSecretsInService_HttpService(t *testing.T) {
 				"call1": configv1.HttpCallDefinition_builder{
 					Parameters: []*configv1.HttpParameterMapping{
 						configv1.HttpParameterMapping_builder{
-							Schema: &configv1.ParameterSchema{Name: proto.String("apiKey")},
+							Schema: configv1.ParameterSchema_builder{Name: proto.String("apiKey")}.Build(),
 							Secret: configv1.SecretValue_builder{
 								EnvironmentVariable: proto.String("API_KEY_VAR"),
 							}.Build(),
@@ -342,7 +342,7 @@ func TestHydrateSecretsInService_WebsocketService(t *testing.T) {
 				"call1": configv1.WebsocketCallDefinition_builder{
 					Parameters: []*configv1.WebsocketParameterMapping{
 						configv1.WebsocketParameterMapping_builder{
-							Schema: &configv1.ParameterSchema{Name: proto.String("token")},
+							Schema: configv1.ParameterSchema_builder{Name: proto.String("token")}.Build(),
 							Secret: configv1.SecretValue_builder{
 								EnvironmentVariable: proto.String("WS_TOKEN"),
 							}.Build(),
@@ -378,7 +378,7 @@ func TestHydrateSecretsInService_WebrtcService(t *testing.T) {
 				"call1": configv1.WebrtcCallDefinition_builder{
 					Parameters: []*configv1.WebrtcParameterMapping{
 						configv1.WebrtcParameterMapping_builder{
-							Schema: &configv1.ParameterSchema{Name: proto.String("secret")},
+							Schema: configv1.ParameterSchema_builder{Name: proto.String("secret")}.Build(),
 							Secret: configv1.SecretValue_builder{
 								EnvironmentVariable: proto.String("RTC_SECRET"),
 							}.Build(),

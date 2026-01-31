@@ -50,13 +50,14 @@ func TestOpenAPITool_Execute(t *testing.T) {
 			doFunc: server.Client().Do,
 		}
 
-		toolProto := &v1.Tool{}
-		toolProto.SetName("getUser")
+		toolProto := v1.Tool_builder{
+			Name: proto.String("getUser"),
+		}.Build()
 		parameterDefs := map[string]string{
 			"userId": "path",
 			"q":      "query",
 		}
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, parameterDefs, "GET", server.URL+"/users/{{userId}}", nil, &configv1.OpenAPICallDefinition{})
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, parameterDefs, "GET", server.URL+"/users/{{userId}}", nil, configv1.OpenAPICallDefinition_builder{}.Build())
 
 		inputs := json.RawMessage(`{"userId": "123", "q": "test"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -78,8 +79,8 @@ func TestOpenAPITool_Execute(t *testing.T) {
 			doFunc: server.Client().Do,
 		}
 
-		toolProto := &v1.Tool{}
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, &configv1.OpenAPICallDefinition{})
+		toolProto := v1.Tool_builder{}.Build()
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, configv1.OpenAPICallDefinition_builder{}.Build())
 
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err := openAPITool.Execute(context.Background(), req)
@@ -97,23 +98,21 @@ func TestOpenAPITool_Execute(t *testing.T) {
 			doFunc: server.Client().Do,
 		}
 
-		toolProto := &v1.Tool{}
-		apiKeyAuth := &configv1.APIKeyAuth{
+		toolProto := v1.Tool_builder{}.Build()
+		apiKeyAuth := configv1.APIKeyAuth_builder{
 			ParamName: proto.String("X-API-Key"),
-			Value: &configv1.SecretValue{
-				Value: &configv1.SecretValue_PlainText{PlainText: "my-secret-key"},
-			},
-		}
+			Value: configv1.SecretValue_builder{
+				PlainText: proto.String("my-secret-key"),
+			}.Build(),
+		}.Build()
 
-		authn := &configv1.Authentication{
-			AuthMethod: &configv1.Authentication_ApiKey{
-				ApiKey: apiKeyAuth,
-			},
-		}
+		authn := configv1.Authentication_builder{
+			ApiKey: apiKeyAuth,
+		}.Build()
 		authenticator, err := auth.NewUpstreamAuthenticator(authn)
 		require.NoError(t, err)
 
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, authenticator, &configv1.OpenAPICallDefinition{})
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, authenticator, configv1.OpenAPICallDefinition_builder{}.Build())
 
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err = openAPITool.Execute(context.Background(), req)
@@ -135,17 +134,18 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 		}))
 		defer server.Close()
 
-		toolProto := &v1.Tool{}
-		toolProto.SetName("testTool")
+		toolProto := v1.Tool_builder{
+			Name: proto.String("testTool"),
+		}.Build()
 		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 
-		callDef := &configv1.OpenAPICallDefinition{
-			InputTransformer: &configv1.InputTransformer{
+		callDef := configv1.OpenAPICallDefinition_builder{
+			InputTransformer: configv1.InputTransformer_builder{
 				Template: proto.String(`{"name": "{{name}}"}`),
-			},
-		}
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef)
 
@@ -163,22 +163,23 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 		}))
 		defer server.Close()
 
-		toolProto := &v1.Tool{}
-		toolProto.SetName("testTool")
+		toolProto := v1.Tool_builder{
+			Name: proto.String("testTool"),
+		}.Build()
 		mockClient := &mockHTTPClient{
 			doFunc: server.Client().Do,
 		}
 
 		format := configv1.OutputTransformer_JSON
-		callDef := &configv1.OpenAPICallDefinition{
-			OutputTransformer: &configv1.OutputTransformer{
+		callDef := configv1.OpenAPICallDefinition_builder{
+			OutputTransformer: configv1.OutputTransformer_builder{
 				Format:   &format,
 				Template: proto.String(`Result: {{data}}`),
 				ExtractionRules: map[string]string{
 					"data": "{.data}",
 				},
-			},
-		}
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
 
@@ -217,19 +218,20 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 		}))
 		defer targetServer.Close()
 
-		toolProto := &v1.Tool{}
-		toolProto.SetName("testTool")
+		toolProto := v1.Tool_builder{
+			Name: proto.String("testTool"),
+		}.Build()
 		mockClient := &mockHTTPClient{
 			doFunc: targetServer.Client().Do,
 		}
 
-		callDef := &configv1.OpenAPICallDefinition{
-			InputTransformer: &configv1.InputTransformer{
-				Webhook: &configv1.WebhookConfig{
+		callDef := configv1.OpenAPICallDefinition_builder{
+			InputTransformer: configv1.InputTransformer_builder{
+				Webhook: configv1.WebhookConfig_builder{
 					Url: webhookServer.URL,
-				},
-			},
-		}
+				}.Build(),
+			}.Build(),
+		}.Build()
 
 		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef)
 

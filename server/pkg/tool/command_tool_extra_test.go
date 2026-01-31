@@ -20,11 +20,13 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 
 	// 1. Path traversal in parameters
 	t.Run("path traversal in parameters", func(t *testing.T) {
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("path")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("ls", callDef)
 		inputData := map[string]interface{}{"path": "../secret"}
 		inputs, _ := json.Marshal(inputData)
@@ -37,11 +39,13 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 
 	// 2. Absolute path in parameters (local execution)
 	t.Run("absolute path in parameters", func(t *testing.T) {
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("path")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("path")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("ls", callDef)
 		inputData := map[string]interface{}{"path": "/etc/passwd"}
 		inputs, _ := json.Marshal(inputData)
@@ -54,12 +58,14 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 
 	// 3. Argument injection in parameters
 	t.Run("argument injection in parameters", func(t *testing.T) {
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Args: []string{"{{arg}}"},
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("arg")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("arg")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 		inputData := map[string]interface{}{"arg": "-rf"}
 		inputs, _ := json.Marshal(inputData)
@@ -74,7 +80,7 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 	t.Run("args parameter not in schema", func(t *testing.T) {
 		// Define tool WITHOUT 'args' in schema
 		// newCommandTool creates schema based on params.
-		callDef := &configv1.CommandLineCallDefinition{}
+		callDef := configv1.CommandLineCallDefinition_builder{}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 
 		inputData := map[string]interface{}{"args": []string{"hello"}}
@@ -88,11 +94,13 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 
 	// 5. 'args' parameter invalid type (not array of strings)
 	t.Run("args parameter invalid type", func(t *testing.T) {
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("echo", callDef)
 		inputData := map[string]interface{}{"args": []interface{}{123}}
 		inputs, _ := json.Marshal(inputData)
@@ -105,11 +113,13 @@ func TestCommandTool_ExtraCoverage(t *testing.T) {
 
 	// 6. Path traversal in 'args'
 	t.Run("path traversal in args", func(t *testing.T) {
-		callDef := &configv1.CommandLineCallDefinition{
+		callDef := configv1.CommandLineCallDefinition_builder{
 			Parameters: []*configv1.CommandLineParameterMapping{
-				{Schema: &configv1.ParameterSchema{Name: proto.String("args")}},
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("args")}.Build(),
+				}.Build(),
 			},
-		}
+		}.Build()
 		cmdTool := newCommandTool("ls", callDef)
 		inputData := map[string]interface{}{"args": []string{"../secret"}}
 		inputs, _ := json.Marshal(inputData)

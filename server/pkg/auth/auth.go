@@ -472,16 +472,16 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 		return nil // No auth configured implies allowed
 	}
 
-	switch method := config.AuthMethod.(type) {
-	case *configv1.Authentication_ApiKey:
-		authenticator := NewAPIKeyAuthenticator(method.ApiKey)
+	switch config.WhichAuthMethod() {
+	case configv1.Authentication_ApiKey_case:
+		authenticator := NewAPIKeyAuthenticator(config.GetApiKey())
 		if authenticator == nil {
 			return fmt.Errorf("invalid API key configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.Authentication_Oauth2:
-		cfg := method.Oauth2
+	case configv1.Authentication_Oauth2_case:
+		cfg := config.GetOauth2()
 		if cfg.GetIssuerUrl() == "" {
 			return fmt.Errorf("invalid OAuth2 configuration: missing issuer_url")
 		}
@@ -512,22 +512,22 @@ func ValidateAuthentication(ctx context.Context, config *configv1.Authentication
 
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.Authentication_BasicAuth:
-		authenticator := NewBasicAuthenticator(method.BasicAuth)
+	case configv1.Authentication_BasicAuth_case:
+		authenticator := NewBasicAuthenticator(config.GetBasicAuth())
 		if authenticator == nil {
 			return fmt.Errorf("invalid Basic Auth configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.Authentication_TrustedHeader:
-		authenticator := NewTrustedHeaderAuthenticator(method.TrustedHeader)
+	case configv1.Authentication_TrustedHeader_case:
+		authenticator := NewTrustedHeaderAuthenticator(config.GetTrustedHeader())
 		if authenticator == nil {
 			return fmt.Errorf("invalid Trusted Header configuration")
 		}
 		_, err := authenticator.Authenticate(ctx, r)
 		return err
-	case *configv1.Authentication_Oidc:
-		cfg := method.Oidc
+	case configv1.Authentication_Oidc_case:
+		cfg := config.GetOidc()
 		if cfg.GetIssuer() == "" {
 			return fmt.Errorf("invalid OIDC configuration: missing issuer")
 		}

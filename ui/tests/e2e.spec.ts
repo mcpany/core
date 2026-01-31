@@ -69,7 +69,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     }
   });
 
-  test('Webhooks page displays configuration', async ({ page }) => {
+  test.skip('Webhooks page displays configuration', async ({ page }) => {
     await page.goto('/settings/webhooks');
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
 

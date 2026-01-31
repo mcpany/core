@@ -10,8 +10,8 @@ import (
 	"math"
 	"net/http"
 
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -68,11 +68,11 @@ func (r *StaticResource) Service() string {
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
-		switch ct := r.staticContent.ContentType.(type) {
-		case *configv1.StaticResource_TextContent:
-			blob = []byte(ct.TextContent)
-		case *configv1.StaticResource_BinaryContent:
-			blob = ct.BinaryContent
+		switch r.staticContent.WhichContentType() {
+		case configv1.StaticResource_TextContent_case:
+			blob = []byte(r.staticContent.GetTextContent())
+		case configv1.StaticResource_BinaryContent_case:
+			blob = r.staticContent.GetBinaryContent()
 		}
 
 		return &mcp.ReadResourceResult{
