@@ -115,7 +115,8 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
           setInput(JSON.stringify(formValue, null, 2));
       } else {
           try {
-              setFormValue(JSON.parse(input));
+              const parsed = JSON.parse(input);
+              setFormValue(parsed);
           } catch (e) {
               console.error("Invalid JSON", e);
           }
