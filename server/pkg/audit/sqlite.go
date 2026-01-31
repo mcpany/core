@@ -276,7 +276,7 @@ func (s *SQLiteAuditStore) flushBatch(batch []Entry) {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
-func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
+func (s *SQLiteAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
 		return nil
