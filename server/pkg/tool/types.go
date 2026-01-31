@@ -2700,6 +2700,15 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
+func checkForRecursiveInjection(val string) error {
+	// Block "{{" to prevent recursive substitution attacks where an input value
+	// becomes a placeholder for a subsequent substitution.
+	if strings.Contains(val, "{{") {
+		return fmt.Errorf("recursive injection attempt detected: value contains '{{'")
+	}
+	return nil
+}
+
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
@@ -2929,6 +2938,10 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
+	if err := checkForRecursiveInjection(val); err != nil {
+		return err
+	}
+
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
