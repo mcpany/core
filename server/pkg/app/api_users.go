@@ -98,6 +98,12 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 			}
 
 			if err := store.CreateUser(r.Context(), &user); err != nil {
+				// Check for unique constraint violation as a fallback for race conditions
+				errStr := strings.ToLower(err.Error())
+				if strings.Contains(errStr, "unique") || strings.Contains(errStr, "duplicate") || strings.Contains(errStr, "already exists") {
+					http.Error(w, "user already exists", http.StatusConflict)
+					return
+				}
 				logging.GetLogger().Error("failed to create user", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
