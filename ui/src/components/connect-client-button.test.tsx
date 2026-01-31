@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ConnectClientButton } from './connect-client-button';
 import React from 'react';
 import { vi } from 'vitest';
@@ -49,7 +49,7 @@ describe('ConnectClientButton', () => {
     expect(screen.getByText('Claude Desktop Configuration')).toBeInTheDocument();
   });
 
-  it('allows API key input', () => {
+  it('allows API key input', async () => {
     render(<ConnectClientButton />);
     fireEvent.click(screen.getByText('Connect'));
     const input = screen.getByPlaceholderText('Optional (if configured)');
@@ -64,6 +64,10 @@ describe('ConnectClientButton', () => {
     // Actually window.location.origin is "http://localhost" in JSDOM.
 
     // Simpler: search for the text in the document
-    expect(screen.getByText(/api_key=my-secret-key/)).toBeInTheDocument();
+    // ⚡ Bolt: Updated to await findByText because JsonView is now lazy loaded
+    // Increase timeout to allow for dynamic import resolution in test environment
+    await waitFor(() => {
+        expect(screen.getByText(/api_key=my-secret-key/)).toBeInTheDocument();
+    }, { timeout: 5000 });
   });
 });

@@ -6,14 +6,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { JsonView } from "@/components/ui/json-view";
-import { Link as LinkIcon, Check, Copy } from "lucide-react";
+import { Link as LinkIcon, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+// ⚡ BOLT: Lazy load JsonView to reduce initial bundle size by excluding react-syntax-highlighter from the main chunk.
+// Randomized Selection from Top 5 High-Impact Targets
+const JsonView = dynamic(() => import("@/components/ui/json-view").then((mod) => mod.JsonView), {
+  ssr: false,
+  loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-md" />
+});
 
 /**
  * ConnectClientButton component.
@@ -33,7 +40,6 @@ export function ConnectClientButton() {
     }
   }, []);
 
-  const sseUrl = `${origin}/sse`;
   const displayUrl = origin || "http://localhost:50050";
 
   // Construct URL with API Key if present (for URL-based auth clients)
@@ -47,12 +53,6 @@ export function ConnectClientButton() {
   };
 
   // Configurations
-  const cursorConfig = {
-      name: "MCP Any",
-      type: "sse",
-      url: authenticatedUrl
-  };
-
   const claudeConfig = {
       "mcpServers": {
           "mcp-any": {
