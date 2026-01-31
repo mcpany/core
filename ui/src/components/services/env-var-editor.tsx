@@ -42,10 +42,6 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
           if (secretMatch) {
                return { key, value: secretMatch[1], isSecretRef: true, secretId: secretMatch[1] };
           }
-          // Also check val.secretId if present (though SecretValue type mainly has plainText)
-          if ((val as any).secretId) {
-               return { key, value: (val as any).secretId, isSecretRef: true, secretId: (val as any).secretId };
-          }
           return { key, value: plainText, isSecretRef: false };
       });
   });

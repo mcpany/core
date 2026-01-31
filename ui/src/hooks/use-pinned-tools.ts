@@ -48,27 +48,5 @@ export function usePinnedTools() {
     return pinnedTools.includes(toolName);
   };
 
-  const bulkSetPinned = (toolNames: string[], pinned: boolean) => {
-    setPinnedTools((prev) => {
-      const currentSet = new Set(prev);
-      toolNames.forEach((name) => {
-        if (pinned) {
-          currentSet.add(name);
-        } else {
-          currentSet.delete(name);
-        }
-      });
-      const newPinned = Array.from(currentSet);
-
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newPinned));
-      } catch (error) {
-        console.error("Failed to save pinned tools to local storage", error);
-      }
-
-      return newPinned;
-    });
-  };
-
-  return { pinnedTools, togglePin, isPinned, isLoaded, bulkSetPinned };
+  return { pinnedTools, togglePin, isPinned, isLoaded };
 }

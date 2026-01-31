@@ -42,6 +42,37 @@ func TestShellInjection_Regression(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "python3.10 should be protected")
 	})
+
+	// Case 3: mawk (Protected)
+	// mawk was previously missing from the protection list.
+	t.Run("mawk_protected", func(t *testing.T) {
+		cmd := "mawk"
+		// We need to use Unquoted input that triggers the check.
+		// Custom tool definition for unquoted input
+		toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
+		service := configv1.CommandLineUpstreamService_builder{
+			Command: &cmd,
+		}.Build()
+		callDef := configv1.CommandLineCallDefinition_builder{
+			Args: []string{"{{input}}"}, // Unquoted!
+			Parameters: []*configv1.CommandLineParameterMapping{
+				configv1.CommandLineParameterMapping_builder{
+					Schema: configv1.ParameterSchema_builder{Name: proto.String("input")}.Build(),
+				}.Build(),
+			},
+		}.Build()
+		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
+
+		req := &ExecutionRequest{
+			ToolName: "test",
+			// input contains {, }, " which are in dangerousChars list
+			ToolInputs: []byte(`{"input": "BEGIN { print \"pwned\" }"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected", "mawk should be protected")
+	})
 }
 
 func createTestCommandTool(command string) Tool {

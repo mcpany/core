@@ -20,6 +20,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -2627,7 +2628,7 @@ func isShellCommand(cmd string) bool {
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
-		"lua", "awk", "gawk", "nawk",
+		"lua", "awk", "gawk", "nawk", "mawk", "sed",
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
@@ -2654,7 +2655,7 @@ func isShellCommand(cmd string) bool {
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
-		"zip", "unzip", "rsync", "nmap", "tcpdump",
+		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
@@ -2725,6 +2726,36 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
+
+		// Sentinel Security Update:
+		// Even if single-quoted, if the shell command invokes an interpreter (like awk, perl, ruby, python),
+		// the content inside the quotes might be interpreted as code.
+		// Since we cannot know if the inner command is an interpreter, we explicitly block common RCE patterns.
+
+		// Block backticks (used by Perl, Ruby, PHP for execution)
+		if strings.Contains(val, "`") {
+			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
+		}
+
+		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
+		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
+		// We normalize by removing whitespace to detect "system (" or "system\t(".
+		var b strings.Builder
+		b.Grow(len(val))
+		for _, r := range val {
+			if !unicode.IsSpace(r) {
+				b.WriteRune(r)
+			}
+		}
+		cleanVal := strings.ToLower(b.String())
+
+		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+		for _, call := range dangerousCalls {
+			if strings.Contains(cleanVal, call) {
+				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
+			}
+		}
+
 		return nil
 	}
 
