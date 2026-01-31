@@ -36,9 +36,11 @@ type Doctor struct {
 	httpClient *http.Client
 }
 
-// NewDoctor creates a new Doctor.
+// NewDoctor initializes a new Doctor instance for performing health checks.
+// It sets up the default checks and HTTP client.
 //
-// Returns the result.
+// Returns:
+//   - *Doctor: A new Doctor instance.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -46,19 +48,22 @@ func NewDoctor() *Doctor {
 	}
 }
 
-// AddCheck adds a named health check.
+// AddCheck registers a custom health check function with a given name.
 //
-// name is the name of the resource.
-// check is the check.
+// Parameters:
+//   - name: string. The unique name of the check (e.g., "database", "redis").
+//   - check: CheckFunc. The function to execute for the check.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.checks[name] = check
 }
 
-// Handler returns the http handler.
+// Handler returns an HTTP handler that executes all registered health checks.
+// It returns a JSON report containing the status of each check and the overall system health.
 //
-// Returns the result.
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

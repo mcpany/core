@@ -68,7 +68,11 @@ func (m *Manager) seedData() {
 	m.CreateRule(&AlertRule{ID: "rule-2", Name: "High Latency", Metric: "http_latency_p99", Operator: ">", Threshold: 1000, Duration: "1m", Severity: SeverityWarning, Enabled: true, LastUpdated: now})
 }
 
-// ListAlerts returns all alerts sorted by timestamp descending.
+// ListAlerts retrieves all active and resolved alerts from the manager.
+// It returns a slice of Alert pointers, sorted by timestamp in descending order.
+//
+// Returns:
+//   - []*Alert: A slice of all alerts.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -83,14 +87,28 @@ func (m *Manager) ListAlerts() []*Alert {
 	return list
 }
 
-// GetAlert returns an alert by ID, or nil if not found.
+// GetAlert retrieves a specific alert by its unique identifier.
+//
+// Parameters:
+//   - id: string. The unique identifier of the alert.
+//
+// Returns:
+//   - *Alert: The alert if found, or nil if not.
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.alerts[id]
 }
 
-// CreateAlert creates a new alert.
+// CreateAlert adds a new alert to the system.
+// If the alert ID is missing, a new unique ID is generated.
+// If the timestamp is zero, it defaults to the current time.
+//
+// Parameters:
+//   - alert: *Alert. The alert object to create.
+//
+// Returns:
+//   - *Alert: The created alert with populated fields (ID, Timestamp).
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -104,7 +122,15 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	return alert
 }
 
-// UpdateAlert updates an existing alert.
+// UpdateAlert updates the details of an existing alert.
+// Only fields that are allowed to be updated (e.g., Status) are modified.
+//
+// Parameters:
+//   - id: string. The ID of the alert to update.
+//   - alert: *Alert. The object containing the updated fields.
+//
+// Returns:
+//   - *Alert: The updated alert, or nil if the alert was not found.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -120,7 +146,11 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	return existing
 }
 
-// ListRules returns all rules.
+// ListRules retrieves all configured alert rules.
+// It returns a slice of AlertRule pointers, sorted by name.
+//
+// Returns:
+//   - []*AlertRule: A slice of all alert rules.
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -134,14 +164,27 @@ func (m *Manager) ListRules() []*AlertRule {
 	return list
 }
 
-// GetRule returns a rule by ID.
+// GetRule retrieves a specific alert rule by its unique identifier.
+//
+// Parameters:
+//   - id: string. The unique identifier of the rule.
+//
+// Returns:
+//   - *AlertRule: The alert rule if found, or nil if not.
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.rules[id]
 }
 
-// CreateRule creates a new rule.
+// CreateRule adds a new alert rule to the system.
+// A unique ID is generated if one is not provided, and the last updated timestamp is set.
+//
+// Parameters:
+//   - rule: *AlertRule. The rule object to create.
+//
+// Returns:
+//   - *AlertRule: The created alert rule.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -153,7 +196,15 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	return rule
 }
 
-// UpdateRule updates a rule.
+// UpdateRule updates the configuration of an existing alert rule.
+// It updates the definition and the last updated timestamp.
+//
+// Parameters:
+//   - id: string. The ID of the rule to update.
+//   - rule: *AlertRule. The new rule configuration.
+//
+// Returns:
+//   - *AlertRule: The updated alert rule, or nil if the rule was not found.
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -172,7 +223,13 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	return existing
 }
 
-// DeleteRule deletes a rule.
+// DeleteRule removes an alert rule from the system by its ID.
+//
+// Parameters:
+//   - id: string. The unique identifier of the rule to delete.
+//
+// Returns:
+//   - error: nil if successful (even if the rule didn't exist).
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

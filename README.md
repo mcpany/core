@@ -2,15 +2,17 @@
 
 **One server, Infinite possibilities.**
 
+---
+
 ## 1. Elevator Pitch
 
 **What is this project and why does it exist?**
 
-**MCP Any** is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
+**MCP Any** is a configuration-driven **Universal Adapter** that turns *any* API—whether REST, gRPC, GraphQL, or Command-line—into a Model Context Protocol (MCP) compliant server.
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+Traditional MCP adoption suffers from "binary fatigue": developers must write and maintain a separate server binary for every tool they want to expose to AI agents.
 
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**The Solution:** Stop writing boilerplate code. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint, defined purely through lightweight configuration files.
 
 ## 2. Architecture
 
@@ -89,29 +91,12 @@ gemini mcp add --transport http --trust mcpany http://localhost:50050
 
 Use these commands to maintain code quality and build the project.
 
-**Run Tests**
-Execute all unit, integration, and end-to-end tests.
-```bash
-make test
-```
-
-**Lint Code**
-Ensure code quality and style compliance (Go & TypeScript).
-```bash
-make lint
-```
-
-**Build Artifacts**
-Compile the server binary and frontend assets.
-```bash
-make build
-```
-
-**Generate Code**
-Regenerate Protocol Buffers and other auto-generated files.
-```bash
-make gen
-```
+| Command | Description |
+| :--- | :--- |
+| `make test` | Execute all unit, integration, and end-to-end tests. |
+| `make lint` | Ensure code quality and style compliance (Go & TypeScript). |
+| `make build` | Compile the server binary and frontend assets. |
+| `make gen` | Regenerate Protocol Buffers and other auto-generated files. |
 
 ## 5. Configuration
 
@@ -132,7 +117,15 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
 
 ### Required Secrets
-Sensitive information (like upstream API keys) should be injected via environment variables or a secret manager, referenced in your configuration files using `${ENV_VAR_NAME}` syntax.
+Sensitive information (like upstream API keys) should be injected via environment variables or a secret manager. Reference them in your configuration files using `${ENV_VAR_NAME}` syntax.
+
+Example:
+```yaml
+http_service:
+  url: "https://api.example.com"
+  headers:
+    Authorization: "Bearer ${EXAMPLE_API_KEY}"
+```
 
 ## Documentation
 *   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
