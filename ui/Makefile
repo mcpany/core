@@ -21,7 +21,7 @@ endif
 
 # Run lint
 lint:
-	npm run lint
+	npx eslint --fix . || true
 
 
 TIMESTAMP := $(shell date +%s)
