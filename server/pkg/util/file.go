@@ -4,7 +4,7 @@
  */
 
 // Package util provides utility functions.
-// nolint:revive
+//nolint:revive
 package util
 
 import (
