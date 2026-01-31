@@ -8,10 +8,12 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Card component.
+ * Displays a container with shadow and border.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @returns The rendered component.
+ * @param props.className - Additional class names for styling.
+ * @param ref - The ref forwarded to the div element.
+ * @returns The rendered card component.
  */
 const Card = React.forwardRef<
   HTMLDivElement,
