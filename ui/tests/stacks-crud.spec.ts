@@ -28,10 +28,10 @@ test.describe('Stacks CRUD', () => {
     await page.goto('/stacks');
 
     // Check if the seeded stack card is visible
-    await expect(page.getByText(seedStackName)).toBeVisible();
+    const card = page.locator('.group', { hasText: seedStackName }).first();
+    await expect(card).toBeVisible();
     // seedCollection adds 1 service, so we expect "1 Services"
-    // However, exact text might be spread across elements, but getByText usually works for full match or substring.
-    await expect(page.getByText('1 Services')).toBeVisible();
+    await expect(card.getByText('1 Services')).toBeVisible();
   });
 
   test('should create a new stack', async ({ page }) => {
@@ -53,7 +53,8 @@ test.describe('Stacks CRUD', () => {
     await page.goto('/stacks');
 
     // Verify new stack is listed
-    await expect(page.getByText(newStackName)).toBeVisible();
-    await expect(page.getByText('0 Services')).toBeVisible(); // New stack is empty
+    const newCard = page.locator('.group', { hasText: newStackName }).first();
+    await expect(newCard).toBeVisible();
+    await expect(newCard.getByText('0 Services')).toBeVisible(); // New stack is empty
   });
 });
