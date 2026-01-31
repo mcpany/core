@@ -36,6 +36,22 @@ make build
 ./build/bin/server run --config-path server/examples/popular_services/wttr.in/config.yaml
 ```
 
+### Run the UI (Dashboard)
+
+The MCP Any Dashboard provides visualization and management capabilities.
+
+```bash
+# 1. Navigate to the UI directory
+cd ui
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm run dev
+```
+Open [http://localhost:9002](http://localhost:9002) to view the dashboard.
+
 ### Docker (Alternative)
 
 ```bash

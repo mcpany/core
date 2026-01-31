@@ -91,10 +91,10 @@ func (s *Server) Server() *mcp.Server {
 //
 // Parameters:
 //   - ctx: context.Context. The application's root context.
-//   - toolManager: tool.ManagerInterface. Manages the lifecycle and access to tools.
-//   - promptManager: prompt.ManagerInterface. Manages the lifecycle and access to prompts.
-//   - resourceManager: resource.ManagerInterface. Manages the lifecycle and access to resources.
-//   - authManager: *auth.Manager. Handles authentication for incoming requests.
+//   - toolManager: tool.ManagerInterface. Manages the lifecycle and access to tools. Must not be nil.
+//   - promptManager: prompt.ManagerInterface. Manages the lifecycle and access to prompts. Must not be nil.
+//   - resourceManager: resource.ManagerInterface. Manages the lifecycle and access to resources. Must not be nil.
+//   - authManager: *auth.Manager. Handles authentication for incoming requests. Must not be nil.
 //   - serviceRegistry: *serviceregistry.ServiceRegistry. Keeps track of all registered upstream services.
 //   - bus: *bus.Provider. The event bus used for asynchronous communication between components.
 //   - debug: bool. Whether to enable debug mode.
@@ -573,12 +573,17 @@ func (s *Server) ListTools() []tool.Tool {
 // access control.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the execution.
-//   - req: *tool.ExecutionRequest. The execution request containing tool name and arguments.
+//   - ctx: context.Context. The context for the execution. Must not be nil.
+//   - req: *tool.ExecutionRequest. The execution request containing tool name and arguments. Must not be nil.
 //
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Throws/Errors:
+//   - Returns error if the tool name is empty or tool is not found.
+//   - Returns error if access is denied by policy.
+//   - Returns error if the tool execution itself fails.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.

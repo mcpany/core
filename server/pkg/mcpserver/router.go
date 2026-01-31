@@ -34,8 +34,8 @@ func NewRouter() *Router {
 // handler for the method already exists, it will be overwritten.
 //
 // Parameters:
-//   - method: The name of the MCP method (e.g., "tools/call").
-//   - handler: The function that will handle the method call.
+//   - method: The name of the MCP method (e.g., "tools/call"). Must be non-empty.
+//   - handler: The function that will handle the method call. Must not be nil.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }

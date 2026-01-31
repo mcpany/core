@@ -43,7 +43,7 @@ interface BreadcrumbsProps {
  * Breadcrumbs navigation component.
  *
  * @param props - The component props.
- * @param props.items - The list of breadcrumb items to display.
+ * @param props.items - The list of breadcrumb items to display. Must be a non-empty array for meaningful navigation.
  * @param props.className - Optional CSS class names.
  * @returns {JSX.Element} The rendered breadcrumbs navigation.
  */

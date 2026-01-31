@@ -33,24 +33,33 @@ type ServiceRegistryInterface interface { //nolint:revive
 	// with the respective managers.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the registration process.
-	//   - serviceConfig: *config.UpstreamServiceConfig. The configuration for the service to be registered.
+	//   - ctx: context.Context. The context for the registration process. Must not be nil.
+	//   - serviceConfig: *config.UpstreamServiceConfig. The configuration for the service to be registered. Must not be nil.
 	//
 	// Returns:
 	//   - string: The unique service key generated for the registered service.
 	//   - []*config.ToolDefinition: A list of tools discovered during registration.
 	//   - []*config.ResourceDefinition: A list of resources discovered during registration.
-	//   - error: An error if the registration fails (e.g., config error, connection failure).
+	//   - error: An error if the registration fails.
+	//
+	// Throws/Errors:
+	//   - Returns error if serviceConfig is nil.
+	//   - Returns error if upstream connection cannot be established.
+	//   - Returns error if service name is invalid or duplicate.
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 
 	// UnregisterService removes a service from the registry and shuts down its upstream connection.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the unregistration process.
-	//   - serviceName: string. The name of the service to remove.
+	//   - ctx: context.Context. The context for the unregistration process. Must not be nil.
+	//   - serviceName: string. The name of the service to remove. Must be non-empty.
 	//
 	// Returns:
 	//   - error: An error if the service was not found or if shutdown failed.
+	//
+	// Throws/Errors:
+	//   - Returns error if the service is not found.
+	//   - Returns error if the upstream shutdown fails.
 	UnregisterService(ctx context.Context, serviceName string) error
 
 	// GetAllServices returns a list of all registered services.
@@ -116,11 +125,11 @@ type ServiceRegistry struct {
 // upstream services.
 //
 // Parameters:
-//   - factory: factory.Factory. The factory used to create upstream service instances.
-//   - toolManager: tool.ManagerInterface. The manager for registering discovered tools.
-//   - promptManager: prompt.ManagerInterface. The manager for registering discovered prompts.
-//   - resourceManager: resource.ManagerInterface. The manager for registering discovered resources.
-//   - authManager: *auth.Manager. The manager for registering service-specific authenticators.
+//   - factory: factory.Factory. The factory used to create upstream service instances. Must not be nil.
+//   - toolManager: tool.ManagerInterface. The manager for registering discovered tools. Must not be nil.
+//   - promptManager: prompt.ManagerInterface. The manager for registering discovered prompts. Must not be nil.
+//   - resourceManager: resource.ManagerInterface. The manager for registering discovered resources. Must not be nil.
+//   - authManager: *auth.Manager. The manager for registering service-specific authenticators. Must not be nil.
 //
 // Returns:
 //   - *ServiceRegistry: A new instance of ServiceRegistry.
@@ -146,14 +155,19 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // If a service with the same name is already registered, the registration will fail.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the registration process.
-//   - serviceConfig: *config.UpstreamServiceConfig. The configuration for the service to be registered.
+//   - ctx: context.Context. The context for the registration process. Must not be nil.
+//   - serviceConfig: *config.UpstreamServiceConfig. The configuration for the service to be registered. Must not be nil.
 //
 // Returns:
 //   - string: The unique service key.
 //   - []*config.ToolDefinition: A slice of discovered tool definitions.
 //   - []*config.ResourceDefinition: A slice of discovered resource definitions.
 //   - error: An error if the registration fails.
+//
+// Throws/Errors:
+//   - Returns error if serviceConfig is nil.
+//   - Returns error if upstream connection cannot be established.
+//   - Returns error if service name is invalid or duplicate.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
