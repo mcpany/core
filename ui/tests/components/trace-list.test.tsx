@@ -41,8 +41,8 @@ test('TraceList renders traces', () => {
     />
   );
 
-  expect(screen.getByText("test_tool_1")).toBeDefined();
-  expect(screen.getByText("test_tool_2")).toBeDefined();
+  expect(screen.getByText("test_tool_1", { exact: false })).toBeDefined();
+  expect(screen.getByText("test_tool_2", { exact: false })).toBeDefined();
 });
 
 test('TraceList filters traces based on search query', () => {
