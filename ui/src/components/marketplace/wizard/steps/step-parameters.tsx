@@ -4,12 +4,13 @@
  */
 
 import React from 'react';
-import { useWizard } from '../wizard-context';
+import { useWizard, ParamValue } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 /**
  * StepParameters component.
@@ -19,24 +20,15 @@ export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();
     const { params, config } = state;
 
-    const handleParamChange = (key: string, value: string, newKey?: string) => {
-        const newParams = { ...params };
-        if (newKey !== undefined && newKey !== key) {
-             // Key change
-             delete newParams[key];
-             newParams[newKey] = value;
-        } else {
-            newParams[key] = value;
-        }
-        updateState({ params: newParams });
-
-        // Also update config env
-        // TODO: Sync `params` to `config.commandLineService.env` more robustly
-        // For now we just update basic env
+    const syncConfig = (newParams: Record<string, ParamValue>) => {
         if (config.commandLineService) {
             const env: any = {};
             Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
+                if (v.type === 'environmentVariable') {
+                    env[k] = { environmentVariable: v.value };
+                } else {
+                    env[k] = { plainText: v.value };
+                }
             });
             updateConfig({
                 commandLineService: {
@@ -47,28 +39,32 @@ export function StepParameters() {
         }
     };
 
-    const addParam = () => {
-        const newParams = { ...params, "": "" };
+    const handleParamChange = (key: string, updates: Partial<ParamValue>, newKey?: string) => {
+        const newParams = { ...params };
+        const currentParam = params[key];
+
+        if (newKey !== undefined && newKey !== key) {
+             // Key change
+             delete newParams[key];
+             newParams[newKey] = { ...currentParam, ...updates };
+        } else {
+            newParams[key] = { ...currentParam, ...updates };
+        }
         updateState({ params: newParams });
+        syncConfig(newParams);
+    };
+
+    const addParam = () => {
+        const newParams = { ...params, "": { type: 'plainText', value: '' } as ParamValue };
+        updateState({ params: newParams });
+        // Don't sync config yet as key is empty
     };
 
     const removeParam = (key: string) => {
         const newParams = { ...params };
         delete newParams[key];
         updateState({ params: newParams });
-         // Sync with config
-         if (config.commandLineService) {
-            const env: any = {};
-            Object.entries(newParams).forEach(([k, v]) => {
-                env[k] = { plainText: v };
-            });
-            updateConfig({
-                commandLineService: {
-                    ...config.commandLineService,
-                    env
-                }
-            });
-        }
+        syncConfig(newParams);
     };
 
     return (
@@ -82,26 +78,41 @@ export function StepParameters() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Key</TableHead>
+                            <TableHead className="w-[30%]">Key</TableHead>
+                            <TableHead className="w-[20%]">Type</TableHead>
                             <TableHead>Value</TableHead>
                             <TableHead className="w-[50px]"></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {Object.entries(params).map(([key, value], idx) => (
+                        {Object.entries(params).map(([key, param], idx) => (
                             <TableRow key={idx}>
                                 <TableCell>
                                     <Input
                                         value={key}
                                         placeholder="VAR_NAME"
-                                        onChange={e => handleParamChange(key, value, e.target.value)}
+                                        onChange={e => handleParamChange(key, {}, e.target.value)}
                                     />
                                 </TableCell>
                                 <TableCell>
+                                    <Select
+                                        value={param.type}
+                                        onValueChange={(val: 'plainText' | 'environmentVariable') => handleParamChange(key, { type: val })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="plainText">Plain Text</SelectItem>
+                                            <SelectItem value="environmentVariable">Host Env Var</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </TableCell>
+                                <TableCell>
                                     <Input
-                                        value={value}
-                                        placeholder="Value"
-                                        onChange={e => handleParamChange(key, e.target.value)}
+                                        value={param.value}
+                                        placeholder={param.type === 'environmentVariable' ? 'HOST_VAR_NAME' : 'Value'}
+                                        onChange={e => handleParamChange(key, { value: e.target.value })}
                                     />
                                 </TableCell>
                                 <TableCell>
@@ -113,7 +124,7 @@ export function StepParameters() {
                         ))}
                         {Object.keys(params).length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={3} className="text-center text-muted-foreground h-24">
+                                <TableCell colSpan={4} className="text-center text-muted-foreground h-24">
                                     No parameters configured.
                                 </TableCell>
                             </TableRow>

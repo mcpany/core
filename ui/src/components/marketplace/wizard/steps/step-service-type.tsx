@@ -37,7 +37,7 @@ const TEMPLATES = [
             }
         },
         params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
+            "POSTGRES_URL": { type: 'plainText', value: "postgresql://user:password@localhost:5432/dbname" }
         }
     },
     {
@@ -53,7 +53,7 @@ const TEMPLATES = [
             }
         },
         params: {
-            "ALLOWED_PATH": "/home/user"
+            "ALLOWED_PATH": { type: 'plainText', value: "/home/user" }
         }
     }
 ];
@@ -72,7 +72,7 @@ export function StepServiceType() {
         if (template) {
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: template.params as any
             });
             updateConfig({
                 ...template.config as any,
