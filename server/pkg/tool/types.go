@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -2831,12 +2832,120 @@ func isNetworkCommand(cmd string) bool {
 }
 
 func checkForUnsafeURL(val string) error {
-	// Simple heuristic: if it looks like an HTTP/HTTPS URL, validate it.
-	// We check for case-insensitive http:// or https:// prefix.
-	v := strings.ToLower(val)
-	if strings.HasPrefix(v, "http://") || strings.HasPrefix(v, "https://") {
+	// 1. Attempt to parse as a URL
+	u, err := url.Parse(val)
+	if err != nil {
+		// If we can't parse it, it's safer to block if we are enforcing network security.
+		// However, for command arguments, strict parsing might break non-URL flags.
+		// BUT, this function is called inside `isNetworkCommand`.
+		// If a user passes `--silent` to curl, url.Parse("--silent") parses with path="--silent".
+		// We need to differentiate flags from targets.
+		// Since we cannot easily distinguish, we take a defensive approach:
+		// If it looks like a URL (has a scheme), we validate it.
+		// If it doesn't have a scheme, it might be a local file or a flag.
+		// Curl allows file://, scp://, ftp:// etc.
+		// We want to strictly ALLOW only http/https and BLOCK others if they have a scheme.
+		return fmt.Errorf("invalid url argument: %w", err)
+	}
+
+	// 2. Check for unsafe schemes
+	// If scheme is empty, it might be a relative path or just a string.
+	// However, curl/wget can treat "example.com" as "http://example.com".
+	// If Scheme is present, it MUST be http or https.
+	if u.Scheme != "" {
+		scheme := strings.ToLower(u.Scheme)
+		if scheme != "http" && scheme != "https" {
+			return fmt.Errorf("unsupported scheme: %s (only http and https are allowed for egress)", scheme)
+		}
+		// 3. Validate IP/Host for http/https
 		if err := validation.IsSafeURL(val); err != nil {
 			return fmt.Errorf("unsafe url: %w", err)
+		}
+	} else {
+		// No scheme. Could be "example.com" (which curl treats as http) or a flag like "--silent".
+		// Or a local file path if used with -o (but here we are checking *all* arguments).
+		// If we are strictly hardening, we should probably only allow http(s):// prefix for targets.
+		// But that breaks "curl example.com".
+		// If we assume "example.com", IsSafeURL("http://example.com") works.
+		// What about "--silent"? IsSafeURL("http://--silent") -> host="--silent" -> DNS lookup fails.
+		// We shouldn't block flags.
+		// Heuristic: If it starts with "-", assume flag and skip.
+		if strings.HasPrefix(val, "-") {
+			return nil
+		}
+		// If it doesn't look like a flag, treat as potential URL (implicit http)
+		// We verify it by prepending http:// and checking safety.
+		// This also effectively blocks local file paths if they resolve to local/private IPs (unlikely for file paths, but safe default).
+		// Actually, standard file paths won't resolve.
+		// Wait, if it's a file path "output.txt", IsSafeURL("http://output.txt") will try to resolve "output.txt".
+		// If it fails DNS, IsSafeURL returns error.
+		// So this logic effectively forces arguments to be resolvable domains or IPs if they aren't flags.
+		// This might break "curl -o output.txt http://example.com". "output.txt" is an argument.
+		// "output.txt" -> IsSafeURL fails -> execution blocked.
+		// This is too strict. We can't easily distinguish the output filename from the target URL without parsing flags.
+
+		// RETREAT to "Block Bad Schemes" approach + "Validate HTTP/HTTPS targets".
+		// We cannot strictly enforce "everything is a safe URL" because of file arguments.
+		// But we MUST catch `file:///etc/passwd`.
+		// url.Parse("file:///etc/passwd") -> Scheme="file". We caught that above.
+
+		// What about "example.com"? Scheme is empty.
+		// If we ignore empty scheme, we allow "example.com".
+		// But we also allow "file.txt" (output).
+		// We miss the SSRF protection for "169.254.169.254" (no scheme).
+		// IsSafeURL("169.254.169.254") works (IP literal).
+
+		// Compromise:
+		// 1. If Scheme is present -> MUST be http/https AND Safe.
+		// 2. If Scheme is empty:
+		//    - If looks like IP -> Validate.
+		//    - Else -> Allow (assume filename or flag, or accepted domain risk if we can't distinguish).
+		//      (Risk: `curl 169.254.169.254` is caught. `curl metadata.local` is NOT caught if it has no scheme).
+
+		// Ideally we want to validate `metadata.local` too.
+		// But we can't distinguish it from `output.txt`.
+		// Unless we check if it looks like a domain (contains dot?). `output.txt` contains dot.
+		// We accept this limitation for now: Explicit schemes are strictly controlled. IP literals are strictly controlled.
+		// Implicit domains are the weak spot, but better than nothing.
+
+		// Refined Logic for Empty Scheme:
+		// Check if it looks like an IP address.
+		// Since we don't have util.IsIPAddress, we use net.ParseIP directly here or a heuristic.
+		// Note: net.ParseIP works on "1.2.3.4" and "::1".
+		// But it doesn't work if there's a port or path.
+		// If "val" is "1.2.3.4", net.ParseIP returns non-nil.
+		// If "val" is "1.2.3.4:80", it returns nil.
+		// Since the logic above (no scheme) usually means we are dealing with a host or ip or path.
+		// If it's an IP, we validate it.
+		// If it has a port, we try to split.
+
+		host := val
+		if strings.Contains(host, ":") {
+			// Could be IPv6 or host:port
+			h, _, err := net.SplitHostPort(host)
+			if err == nil {
+				host = h
+			} else {
+				// Maybe it's just IPv6 without brackets? net.SplitHostPort expects brackets for IPv6.
+				// If error, use original.
+			}
+		}
+
+		// If host is an IP, we must validate it.
+		if ip := net.ParseIP(host); ip != nil {
+			// Construct a URL to reuse IsSafeURL logic which handles loopback/private checks.
+			// Or just check IP directly if we had access to validateIP (private).
+			// IsSafeURL handles "http://" + ip_literal correctly.
+			// We need to handle IPv6 brackets for URL.
+			urlStr := "http://" + val
+			if strings.Contains(val, ":") && !strings.HasPrefix(val, "[") && net.ParseIP(val) != nil {
+				// Raw IPv6 address needs brackets for URL
+				urlStr = "http://[" + val + "]"
+			}
+
+			if err := validation.IsSafeURL(urlStr); err != nil {
+				return fmt.Errorf("unsafe ip address: %w", err)
+			}
 		}
 	}
 	return nil
