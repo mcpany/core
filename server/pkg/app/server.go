@@ -1643,6 +1643,7 @@ func (a *Application) runServerMode(
 					ctx = auth.ContextWithAPIKey(ctx, requestKey)
 					// Global API Key grants Admin privileges (Root Access)
 					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+					ctx = auth.ContextWithUser(ctx, "system-admin")
 				} else {
 					// Global auth configured but failed
 					http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
@@ -2221,6 +2222,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					ctx = auth.ContextWithAPIKey(ctx, requestKey)
 					// Global API Key grants Admin privileges (Root Access)
 					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+					// Also inject a placeholder user ID so that handlers expecting a user context don't fail
+					ctx = auth.ContextWithUser(ctx, "system-admin")
 				}
 			}
 
@@ -2266,9 +2269,14 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)
 					return
 				}
+
+				// Grant Admin privileges (Root Access) for local development/testing convenience
+				// when running in insecure mode (private network, no API key).
+				ctx = auth.ContextWithRoles(ctx, []string{"admin"})
+				ctx = auth.ContextWithUser(ctx, "system-admin")
 			}
 
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
