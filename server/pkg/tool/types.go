@@ -2655,7 +2655,7 @@ func isShellCommand(cmd string) bool {
 		"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
-		"zip", "unzip", "rsync", "nmap", "tcpdump",
+		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
