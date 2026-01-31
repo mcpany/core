@@ -17,7 +17,9 @@ import {
   Unplug,
   Monitor,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Clock,
+  Regex as RegexIcon
 } from "lucide-react"
 
 import { useSearchParams } from "next/navigation"
@@ -178,6 +180,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 
   return (
     <div
+      data-testid={`log-row-${log.id}`}
       className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
       // Optimization: content-visibility allows the browser to skip rendering work for off-screen rows.
       // This significantly improves performance when the log list grows large.
@@ -272,7 +275,9 @@ export function LogStream() {
   const initialLevel = searchParams.get("level") || "ALL"
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
   const [filterSource, setFilterSource] = React.useState<string>(initialSource)
+  const [filterTimeRange, setFilterTimeRange] = React.useState<string>("ALL")
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [isRegexMode, setIsRegexMode] = React.useState(false)
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
@@ -280,9 +285,16 @@ export function LogStream() {
   // Optimization: Pre-compile regex for highlighting to avoid repeated RegExp creation in render loop
   const highlightRegex = React.useMemo(() => {
     if (!deferredSearchQuery) return null;
-    const escaped = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`(${escaped})`, 'gi');
-  }, [deferredSearchQuery]);
+    try {
+      if (isRegexMode) {
+        return new RegExp(`(${deferredSearchQuery})`, 'gi');
+      }
+      const escaped = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`(${escaped})`, 'gi');
+    } catch {
+      return null;
+    }
+  }, [deferredSearchQuery, isRegexMode]);
 
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
@@ -388,28 +400,72 @@ export function LogStream() {
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
     // Optimization: Fast path for when no filters are active.
-    if (filterLevel === "ALL" && filterSource === "ALL" && !deferredSearchQuery) {
+    if (filterLevel === "ALL" && filterSource === "ALL" && filterTimeRange === "ALL" && !deferredSearchQuery) {
       return logs
     }
 
     const lowerSearchQuery = deferredSearchQuery.toLowerCase()
+
+    // Calculate time threshold
+    let timeThreshold = 0;
+    if (filterTimeRange !== "ALL") {
+      const now = Date.now();
+      const minutes = parseInt(filterTimeRange, 10);
+      if (!isNaN(minutes)) {
+        timeThreshold = now - (minutes * 60 * 1000);
+      }
+    }
+
+    // Optimization: Pre-compile regex outside the loop
+    let searchRegex: RegExp | null = null;
+    if (deferredSearchQuery && isRegexMode) {
+      try {
+        searchRegex = new RegExp(deferredSearchQuery, 'i');
+      } catch {
+        // Invalid regex will match nothing
+      }
+    }
+
     return logs.filter((log) => {
+      // Time check
+      if (timeThreshold > 0) {
+        const logTime = new Date(log.timestamp).getTime();
+        if (logTime < timeThreshold) return false;
+      }
+
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
       const matchesSource = filterSource === "ALL" || log.source === filterSource
 
-      // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
-      let matchesSearch: boolean | undefined
-      if (log.searchStr) {
-        matchesSearch = log.searchStr.includes(lowerSearchQuery)
-      } else {
-        matchesSearch =
-          log.message.toLowerCase().includes(lowerSearchQuery) ||
-          log.source?.toLowerCase().includes(lowerSearchQuery)
+      // Search check
+      let matchesSearch = true;
+      if (deferredSearchQuery) {
+        if (isRegexMode) {
+          if (searchRegex) {
+            matchesSearch =
+              searchRegex.test(log.message) ||
+              (log.source && searchRegex.test(log.source)) ||
+              searchRegex.test(log.level) ||
+              false;
+          } else {
+            matchesSearch = false;
+          }
+        } else {
+          // Optimization: Use pre-computed search string if available to skip repeated toLowerCase() calls
+          if (log.searchStr) {
+            matchesSearch = log.searchStr.includes(lowerSearchQuery)
+          } else {
+            matchesSearch =
+              log.message.toLowerCase().includes(lowerSearchQuery) ||
+              log.source?.toLowerCase().includes(lowerSearchQuery) ||
+              log.level.toLowerCase().includes(lowerSearchQuery) ||
+              false
+          }
+        }
       }
 
       return matchesLevel && matchesSource && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery])
+  }, [logs, filterLevel, filterSource, deferredSearchQuery, filterTimeRange, isRegexMode])
 
   const clearLogs = () => setLogs([])
 
@@ -483,17 +539,44 @@ export function LogStream() {
       <Card className="flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm">
         <CardHeader className="p-4 border-b bg-muted/20">
              <div className="flex flex-col md:flex-row gap-4 justify-between">
-                <div className="relative flex-1 max-w-sm w-full">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                    placeholder="Search logs..."
-                    className="pl-8 bg-background w-full"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                <div className="relative flex-1 max-w-sm w-full flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                      placeholder={isRegexMode ? "Search logs (Regex)..." : "Search logs..."}
+                      className="pl-8 bg-background w-full"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <Button
+                      variant={isRegexMode ? "secondary" : "outline"}
+                      size="icon"
+                      onClick={() => setIsRegexMode(!isRegexMode)}
+                      title="Toggle Regex Mode"
+                      className="shrink-0"
+                    >
+                      <RegexIcon className="h-4 w-4" />
+                    </Button>
                 </div>
                 <div className="flex items-center gap-2 justify-end">
-                    <Monitor className="h-4 w-4 text-muted-foreground" />
+                    <Clock className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                    <Select value={filterTimeRange} onValueChange={setFilterTimeRange}>
+                        <SelectTrigger className="w-[130px] bg-background">
+                            <SelectValue placeholder="Time Range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ALL">All Time</SelectItem>
+                            <SelectItem value="1">Last 1 Minute</SelectItem>
+                            <SelectItem value="5">Last 5 Minutes</SelectItem>
+                            <SelectItem value="15">Last 15 Minutes</SelectItem>
+                            <SelectItem value="60">Last 1 Hour</SelectItem>
+                            <SelectItem value="360">Last 6 Hours</SelectItem>
+                            <SelectItem value="1440">Last 24 Hours</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Monitor className="h-4 w-4 text-muted-foreground ml-2 hidden sm:block" />
                     <Select value={filterSource} onValueChange={setFilterSource}>
                         <SelectTrigger className="w-[140px] bg-background">
                             <SelectValue placeholder="Source" />
@@ -506,7 +589,7 @@ export function LogStream() {
                         </SelectContent>
                     </Select>
 
-                    <Filter className="h-4 w-4 text-muted-foreground ml-2" />
+                    <Filter className="h-4 w-4 text-muted-foreground ml-2 hidden sm:block" />
                     <Select value={filterLevel} onValueChange={setFilterLevel}>
                         <SelectTrigger className="w-[120px] bg-background">
                             <SelectValue placeholder="Level" />
