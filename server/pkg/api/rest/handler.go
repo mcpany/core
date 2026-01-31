@@ -15,7 +15,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ValidateConfigHandler handles requests to validate configuration.
+// ValidateConfigHandler handles HTTP POST requests to validate a configuration file.
+// It accepts a JSON body containing the raw configuration content (YAML or JSON)
+// and returns a validation result.
+//
+// Method: POST
+// Content-Type: application/json
+// Body: ValidateConfigRequest
+// Response: ValidateConfigResponse
+//
+// It performs:
+// 1. JSON Schema validation.
+// 2. Semantic validation (e.g., checking for logical inconsistencies).
+// Note: File system checks and secret validation are skipped for security reasons.
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -102,6 +114,12 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// respondWithJSONError writes a JSON error response to the ResponseWriter.
+//
+// Parameters:
+//   - w: The http.ResponseWriter.
+//   - code: The HTTP status code.
+//   - message: The error message string.
 func respondWithJSONError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
@@ -111,6 +129,12 @@ func respondWithJSONError(w http.ResponseWriter, code int, message string) {
 	})
 }
 
+// respondWithValidationErrors writes a validation failure response with a list of errors.
+// It returns a 200 OK status code as the request was successful, but the validation result is false.
+//
+// Parameters:
+//   - w: The http.ResponseWriter.
+//   - errors: A slice of validation error messages.
 func respondWithValidationErrors(w http.ResponseWriter, errors []string) {
 	w.Header().Set("Content-Type", "application/json")
 	// We return 200 OK because the *request* was successful, the *validation* result is false.

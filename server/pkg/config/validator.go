@@ -75,7 +75,8 @@ type ValidationError struct {
 
 // Error returns the formatted error message.
 //
-// Returns the result.
+// Returns:
+//   - string: The formatted error message.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
@@ -89,14 +90,16 @@ func (e *ValidationError) Error() string {
 // validation errors is returned.
 //
 // Parameters:
-//
-//	ctx: The context for the validation (used for secret resolution).
-//	config: The server configuration to be validated.
-//	binaryType: The type of binary (server, worker) which might affect validation rules.
+//   - ctx: The context for the validation (used for secret resolution and checking cancellation).
+//   - config: The server configuration to be validated.
+//   - binaryType: The type of binary (server, worker) which might affect validation rules.
 //
 // Returns:
+//   - []ValidationError: A slice of validation errors. Empty if valid.
 //
-//	[]ValidationError: A slice of ValidationErrors, which will be empty if the configuration is valid.
+// Side Effects:
+//   - Resolves secrets (environment variables/files) to check for existence,
+//     unless configured to skip.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -465,13 +468,11 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 // ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 //
 // Parameters:
-//
-//	ctx: The context for the validation.
-//	service: The upstream service configuration to validate.
+//   - ctx: The context for the validation.
+//   - service: The upstream service configuration to validate.
 //
 // Returns:
-//
-//	error: An error if validation fails.
+//   - error: An error if validation fails.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

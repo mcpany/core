@@ -222,7 +222,10 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
+     * Use this to retrieve the current configuration of services that the server is proxying.
+     *
      * @returns A promise that resolves to a list of services.
+     * @throws {Error} If the API request fails.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -251,8 +254,11 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
+     * Fetches detailed configuration and runtime status for a specific service.
+     *
      * @param id The ID of the service to retrieve.
      * @returns A promise that resolves to the service configuration.
+     * @throws {Error} If the service is not found or request fails.
      */
     getService: async (id: string) => {
          try {
@@ -292,9 +298,11 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
+     *
      * @param name The name of the service.
      * @param disable True to disable the service, false to enable it.
      * @returns A promise that resolves to the updated service status.
+     * @throws {Error} If the update fails.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -308,8 +316,10 @@ export const apiClient = {
 
     /**
      * Gets the status of a service.
+     *
      * @param name The name of the service.
      * @returns A promise that resolves to the service status.
+     * @throws {Error} If the request fails.
      */
     getServiceStatus: async (name: string) => {
         const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
@@ -319,8 +329,11 @@ export const apiClient = {
 
     /**
      * Restarts a service.
+     * This forces a re-initialization of the upstream connection.
+     *
      * @param name The name of the service to restart.
      * @returns A promise that resolves when the service is restarted.
+     * @throws {Error} If the restart fails.
      */
     restartService: async (name: string) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}/restart`, {
@@ -332,8 +345,10 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
+     *
      * @param config The configuration of the service to register.
      * @returns A promise that resolves to the registered service configuration.
+     * @throws {Error} If registration fails (e.g. invalid config or duplicate name).
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -395,8 +410,10 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
+     *
      * @param config The updated configuration of the service.
      * @returns A promise that resolves to the updated service configuration.
+     * @throws {Error} If update fails.
      */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
@@ -456,8 +473,11 @@ export const apiClient = {
 
     /**
      * Unregisters (deletes) an upstream service.
+     * This will stop the service connection and remove it from the registry.
+     *
      * @param id The ID of the service to unregister.
      * @returns A promise that resolves when the service is unregistered.
+     * @throws {Error} If unregistration fails.
      */
     unregisterService: async (id: string) => {
          const response = await fetchWithAuth(`/api/v1/services/${id}`, {
@@ -469,8 +489,11 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
+     * Performs static analysis and connection checks (if enabled) to ensure the config is valid.
+     *
      * @param config The service configuration to validate.
      * @returns A promise that resolves to the validation result.
+     * @throws {Error} If the validation request fails entirely.
      */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)

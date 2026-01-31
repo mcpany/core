@@ -17,12 +17,13 @@ import { ServicePropertyCard } from "./service-property-card";
 import { SchemaVisualizer } from "./schema-visualizer";
 
 /**
- * Displays details of a specific tool within a service.
+ * Displays detailed information about a specific tool within a service.
+ * Fetching: This component fetches tool details and service status (for metrics) from the backend.
  *
  * @param props - The component props.
  * @param props.serviceId - The ID of the service containing the tool.
  * @param props.toolName - The name of the tool to display.
- * @returns {JSX.Element | null} The rendered tool detail card, or null/error state.
+ * @returns The rendered tool detail card.
  */
 export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolName: string }) {
   const [tool, setTool] = useState<ToolDefinition | null>(null);

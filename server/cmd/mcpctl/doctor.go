@@ -18,7 +18,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// newDoctorCmd creates the doctor command.
+// newDoctorCmd creates the 'doctor' subcommand.
+// This command performs a comprehensive health check of the MCP Any installation, including:
+// 1. Loading and validating the local configuration.
+// 2. Checking connectivity to a running MCP Any server.
+// 3. Querying the server's internal health endpoint (/doctor) for upstream status.
+//
+// Returns:
+//   - *cobra.Command: The doctor subcommand.
 func newDoctorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "doctor",

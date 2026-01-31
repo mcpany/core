@@ -28,6 +28,11 @@ func main() {
 	}
 }
 
+// newRootCmd creates the root command for the mcpctl CLI.
+// It registers subcommands for validation, health checks (doctor), and tool management.
+//
+// Returns:
+//   - *cobra.Command: The configured root command.
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "mcpctl",

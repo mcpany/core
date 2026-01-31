@@ -12,10 +12,9 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Project Identity
+## 1. Elevator Pitch
 
-**What is this?**
-MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
+**MCP Any** is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
 
 **Why does it exist?**
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
@@ -23,7 +22,43 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 **The Solution:**
 Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-## 2. Quick Start
+## 2. Architecture
+
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+
+**High-Level Summary:**
+1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration.
+3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
+
+```mermaid
+graph TD
+    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
+
+    subgraph "MCP Any Core"
+        Server --> Registry[Service Registry]
+        Registry -->|Config| Config[Configuration]
+        Registry -->|Policy| Auth[Authentication & Policy]
+    end
+
+    subgraph "Upstream Services"
+        Registry -->|gRPC| ServiceA[gRPC Service]
+        Registry -->|HTTP| ServiceB[REST API]
+        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
+        Registry -->|CMD| ServiceD[Local Command]
+    end
+```
+
+### Key Features
+*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
+*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
+*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
+*   **Network Topology**: Visual graph of clients, services, and tools.
+*   **Observability**: Real-time metrics and audit logging.
+*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
+
+## 3. Getting Started
 
 Follow these steps to get up and running immediately.
 
@@ -62,7 +97,7 @@ Once running, connect your MCP client (like Gemini CLI or Claude Desktop) to `ht
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 3. Developer Workflow
+## 4. Development
 
 Use these commands to maintain code quality and build the project.
 
@@ -90,49 +125,7 @@ Regenerate Protocol Buffers and other auto-generated files.
 make gen
 ```
 
-## 4. Architecture
-
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
-
-**High-Level Summary:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration.
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
-
-```mermaid
-graph TD
-    User[User / AI Agent] -->|MCP Protocol| Server[MCP Any Server]
-
-    subgraph "MCP Any Core"
-        Server --> Registry[Service Registry]
-        Registry -->|Config| Config[Configuration]
-        Registry -->|Policy| Auth[Authentication & Policy]
-    end
-
-    subgraph "Upstream Services"
-        Registry -->|gRPC| ServiceA[gRPC Service]
-        Registry -->|HTTP| ServiceB[REST API]
-        Registry -->|OpenAPI| ServiceC[OpenAPI Spec]
-        Registry -->|CMD| ServiceD[Local Command]
-    end
-```
-
-### Key Features
-*   **Dynamic Config Reloading**: Hot-swap registry without restarts.
-*   **Broad Protocol Support**: gRPC, OpenAPI, HTTP, GraphQL, SQL, WebSocket, WebRTC.
-*   **Safety Policies**: Block dangerous operations (e.g., DELETE) and limit access.
-*   **Network Topology**: Visual graph of clients, services, and tools.
-*   **Observability**: Real-time metrics and audit logging.
-*   **Security**: Upstream authentication (API Keys, OAuth, mTLS) and multi-user profiles.
-
-## Key Documentation
-*   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
-*   **[Configuration Reference](server/docs/reference/configuration.md)**: Full syntax for defining services.
-*   **[Integrations](server/docs/integrations.md)**: How to use with Claude, Cursor, VS Code, etc.
-*   **[Examples](server/docs/examples.md)**: Hands-on examples.
-
-## Configuration
+## 5. Configuration
 
 MCP Any uses a combination of configuration files and environment variables.
 

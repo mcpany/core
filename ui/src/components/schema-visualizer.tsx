@@ -142,17 +142,14 @@ const SchemaNode = memo(({ name, schema, required, level = 0 }: SchemaNodeProps)
 });
 SchemaNode.displayName = "SchemaNode";
 
-/**
- * SchemaVisualizer.
- *
- * @param { schema - The { schema.
- */
 // Optimization: Memoize SchemaVisualizer to prevent re-renders when parent component updates unrelated state.
 /**
- * SchemaVisualizer component.
+ * Visualizes a JSON Schema as a nested table.
+ * It supports objects, arrays, and primitive types, with collapsible sections for nested structures.
+ *
  * @param props - The component props.
- * @param props.schema - The schema definition.
- * @returns The rendered component.
+ * @param props.schema - The JSON Schema object to visualize.
+ * @returns The rendered schema visualization table.
  */
 export const SchemaVisualizer = memo(function SchemaVisualizer({ schema }: { schema: any }) {
   if (!schema || Object.keys(schema).length === 0) {
