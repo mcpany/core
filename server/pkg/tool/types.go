@@ -1783,15 +1783,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := checkForPathTraversal(val); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
-					if !isDocker {
-						if err := checkForLocalFileAccess(val); err != nil {
-							return nil, fmt.Errorf("parameter %q: %w", k, err)
-						}
-					}
-					if err := checkForArgumentInjection(val); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
@@ -1825,15 +1817,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := checkForPathTraversal(argStr); err != nil {
-							return nil, fmt.Errorf("args parameter: %w", err)
-						}
-						if !isDocker {
-							if err := checkForLocalFileAccess(argStr); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
-						if err := checkForArgumentInjection(argStr); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
@@ -1902,13 +1886,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
 			}
 			env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 		}
@@ -2947,4 +2926,39 @@ func analyzeQuoteContext(template, placeholder string) int {
 	}
 
 	return minLevel
+}
+
+func validateSafePathAndInjection(val string, isDocker bool) error {
+	if err := checkForPathTraversal(val); err != nil {
+		return err
+	}
+	// Also check decoded value just in case the input was already encoded
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForPathTraversal(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+
+	if !isDocker {
+		if err := checkForLocalFileAccess(val); err != nil {
+			return err
+		}
+		// Also check decoded value for local file access (e.g. %66ile://)
+		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+			if err := checkForLocalFileAccess(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
+		}
+	}
+
+	if err := checkForArgumentInjection(val); err != nil {
+		return err
+	}
+	// Also check decoded value for argument injection (e.g. %2drf)
+	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+		if err := checkForArgumentInjection(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+	}
+	return nil
 }
