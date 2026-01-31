@@ -5,6 +5,7 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"bytes"
+	"math"
 )
 
 // WalkJSONStrings visits every string value in the JSON input.
@@ -89,11 +90,7 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 				if out == nil {
 					// Allocate buffer
 					// Heuristic: start with input size + small buffer
-					extra := len(input) / 10
-					if extra < 128 {
-						extra = 128
-					}
-					out = make([]byte, 0, len(input)+extra)
+					out = make([]byte, 0, calculateCapacity(len(input)))
 				}
 				out = append(out, input[lastWrite:quotePos]...)
 				out = append(out, replacement...)
@@ -109,4 +106,105 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 	}
 	out = append(out, input[lastWrite:]...)
 	return out
+}
+
+// WalkStandardJSONStrings visits every string value in the JSON input.
+// ⚡ Bolt: Optimized for standard JSON (no comments).
+// It assumes the input is standard JSON (no comments) and skips comment detection logic
+// for significantly improved performance on mixed payloads.
+// visitor is called for every string value (not keys).
+func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
+	var out []byte
+	i := 0
+	lastWrite := 0
+	n := len(input)
+
+	for i < n {
+		// Scan for the next quote which might start a string
+		nextQuote := bytes.IndexByte(input[i:], '"')
+		if nextQuote == -1 {
+			break
+		}
+		quotePos := i + nextQuote
+
+		// Optimization: Standard JSON has no comments, so we skip the expensive slash scan loop.
+
+		// Find end of string using the shared skipString helper
+		endQuote := skipString(input, quotePos)
+		if endQuote > n {
+			endQuote = n
+		}
+
+		// Check if this string is a key.
+		// It is a key if it is followed by a colon (ignoring whitespace)
+		isKey := false
+		j := skipWhitespace(input, endQuote)
+
+		// ⚡ Bolt Fix: Handle edge case where a comment might exist between key and colon.
+		// Although we target standard JSON, regression tests cover non-standard JSON (comments).
+		// If we hit a slash instead of a colon, we fallback to the comment-aware skipper for just this check.
+		if j < n && input[j] == '/' {
+			j = skipWhitespaceAndComments(input, endQuote)
+		}
+
+		if j < n && input[j] == ':' {
+			isKey = true
+		}
+
+		if !isKey {
+			// It is a value
+			raw := input[quotePos:endQuote]
+			replacement, modified := visitor(raw)
+			if modified {
+				if out == nil {
+					// Allocate buffer
+					// Heuristic: start with input size + small buffer
+					out = make([]byte, 0, calculateCapacity(len(input)))
+				}
+				out = append(out, input[lastWrite:quotePos]...)
+				out = append(out, replacement...)
+				lastWrite = endQuote
+			}
+		}
+
+		i = endQuote
+	}
+
+	if out == nil {
+		return input
+	}
+	out = append(out, input[lastWrite:]...)
+	return out
+}
+
+// skipWhitespace returns the index of the first non-whitespace character starting from start.
+func skipWhitespace(input []byte, start int) int {
+	i := start
+	n := len(input)
+	for i < n {
+		c := input[i]
+		if c == ' ' || c == '\n' || c == '\t' || c == '\r' {
+			i++
+			continue
+		}
+		break
+	}
+	return i
+}
+
+// calculateCapacity calculates a safe initial capacity for the output buffer.
+// It uses int64 to avoid overflow during calculation and checks against MaxInt.
+func calculateCapacity(inputLen int) int {
+	// Heuristic: input size + 10% or at least 128 bytes
+	extra := int64(inputLen) / 10
+	if extra < 128 {
+		extra = 128
+	}
+	targetCap := int64(inputLen) + extra
+
+	// Check for overflow against int limit
+	if targetCap > int64(math.MaxInt) {
+		return math.MaxInt
+	}
+	return int(targetCap)
 }

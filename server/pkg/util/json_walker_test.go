@@ -199,3 +199,115 @@ func TestWalkJSONStrings_ZeroAlloc(t *testing.T) {
 		t.Error("WalkJSONStrings allocated new buffer even when no changes were made")
 	}
 }
+
+func TestWalkStandardJSONStrings(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		visitor  func(raw []byte) ([]byte, bool)
+		expected string
+	}{
+		{
+			name:  "no changes",
+			input: `{"key": "value"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return nil, false
+			},
+			expected: `{"key": "value"}`,
+		},
+		{
+			name:  "replace value",
+			input: `{"key": "value"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"value"` {
+					return []byte(`"REDACTED"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": "REDACTED"}`,
+		},
+		{
+			name:  "ignore keys",
+			input: `{"target": "value"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"target"` {
+					return []byte(`"FAIL"`), true
+				}
+				return nil, false
+			},
+			expected: `{"target": "value"}`,
+		},
+		{
+			name:  "nested object",
+			input: `{"a": {"b": "target"}}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"target"` {
+					return []byte(`"HIT"`), true
+				}
+				return nil, false
+			},
+			expected: `{"a": {"b": "HIT"}}`,
+		},
+		{
+			name:  "array",
+			input: `["a", "b"]`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				return []byte(`"X"`), true
+			},
+			expected: `["X", "X"]`,
+		},
+		{
+			name:  "mixed array",
+			input: `["a", {"k": "v"}, "b"]`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"v"` {
+					return []byte(`"V"`), true
+				}
+				return nil, false
+			},
+			expected: `["a", {"k": "V"}, "b"]`,
+		},
+		{
+			name:  "escaped quotes",
+			input: `{"key": "val\"ue"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"val\"ue"` {
+					return []byte(`"HIT"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": "HIT"}`,
+		},
+		{
+			name:  "url with slashes",
+			input: `{"url": "http://example.com/path"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"http://example.com/path"` {
+					return []byte(`"REDACTED"`), true
+				}
+				return nil, false
+			},
+			expected: `{"url": "REDACTED"}`,
+		},
+		{
+			name:  "escaped slash",
+			input: `{"key": "val\\/ue"}`,
+			visitor: func(raw []byte) ([]byte, bool) {
+				if string(raw) == `"val\\/ue"` {
+					return []byte(`"HIT"`), true
+				}
+				return nil, false
+			},
+			expected: `{"key": "HIT"}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := WalkStandardJSONStrings([]byte(tt.input), tt.visitor)
+			if string(result) != tt.expected {
+				t.Errorf("expected %s, got %s", tt.expected, string(result))
+			}
+		})
+	}
+}
