@@ -73,7 +73,7 @@ describe('JsonView', () => {
       const data = { key: 'very long content' };
       // maxHeight defaults to 400.
 
-      const { container } = render(<JsonView data={data} maxHeight={100} />);
+      render(<JsonView data={data} maxHeight={100} />);
 
       // The button "Show More" should be present if we force it?
       // Wait, render logic says:
