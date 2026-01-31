@@ -5,17 +5,103 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { StackEditor } from "@/components/stacks/stack-editor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
-import { use } from "react";
-import { apiClient } from "@/lib/client";
+import { RefreshCcw, Activity, PlayCircle, StopCircle, Box, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Sparkline } from "@/components/charts/sparkline";
+import { useServiceHealth } from "@/contexts/service-health-context";
 
-// Placeholder for StackStatus if we want a separate component
+// Helper component for rows to use hooks like useServiceHealth
+function ServiceRow({ svc, onRestart, onToggle }: { svc: UpstreamServiceConfig, onRestart: (name: string) => void, onToggle: (name: string, disable: boolean) => void }) {
+    const { getServiceHistory } = useServiceHealth();
+    const history = getServiceHistory(svc.name);
+    const latencies = history.map(h => h.latencyMs);
+    const maxLatency = Math.max(...latencies, 50);
+
+    const isRunning = !svc.disable;
+    const hasError = !!svc.lastError || svc.status === 'ERROR';
+
+    return (
+        <TableRow>
+            <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                    <Box className="h-4 w-4 text-muted-foreground" />
+                    {svc.name}
+                </div>
+            </TableCell>
+            <TableCell>
+                {isRunning ? (
+                    hasError ? (
+                        <Badge variant="destructive" className="flex w-fit items-center gap-1">
+                            <AlertTriangle className="h-3 w-3" /> Error
+                        </Badge>
+                    ) : (
+                        <Badge variant="default" className="bg-green-500 hover:bg-green-600 flex w-fit items-center gap-1">
+                            <CheckCircle className="h-3 w-3" /> Running
+                        </Badge>
+                    )
+                ) : (
+                    <Badge variant="secondary" className="flex w-fit items-center gap-1">
+                        <StopCircle className="h-3 w-3" /> Stopped
+                    </Badge>
+                )}
+            </TableCell>
+            <TableCell>
+                 <div className="w-[80px] h-[24px]">
+                    {isRunning && (
+                        <Sparkline
+                            data={latencies}
+                            width={80}
+                            height={24}
+                            color={hasError ? "#ef4444" : "#22c55e"}
+                            max={maxLatency}
+                        />
+                    )}
+                </div>
+            </TableCell>
+            <TableCell className="font-mono text-xs text-muted-foreground">
+                {svc.lastError ? (
+                    <span className="text-destructive truncate max-w-[200px] block" title={svc.lastError}>
+                        {svc.lastError}
+                    </span>
+                ) : (
+                    <span>-</span>
+                )}
+            </TableCell>
+            <TableCell className="text-right">
+                <div className="flex justify-end gap-2">
+                    {isRunning ? (
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => onToggle(svc.name, true)} title="Stop">
+                            <StopCircle className="h-4 w-4" />
+                        </Button>
+                    ) : (
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10" onClick={() => onToggle(svc.name, false)} title="Start">
+                            <PlayCircle className="h-4 w-4" />
+                        </Button>
+                    )}
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onRestart(svc.name)} title="Restart">
+                        <Activity className="h-4 w-4" />
+                    </Button>
+                </div>
+            </TableCell>
+        </TableRow>
+    );
+}
+
 /**
  * StackStatus component.
  * @param props - The component props.
@@ -23,136 +109,182 @@ import { apiClient } from "@/lib/client";
  * @returns The rendered component.
  */
 function StackStatus({ stackId }: { stackId: string }) {
-    const [services, setServices] = useState<any[]>([]);
+    const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
 
-    const fetchStatus = async () => {
+    const fetchStatus = useCallback(async () => {
         setIsLoading(true);
         try {
-            const collection = await apiClient.getCollection(stackId);
-            const svcList = collection.services || [];
+            const [collection, allServices] = await Promise.all([
+                apiClient.getCollection(stackId),
+                apiClient.listServices()
+            ]);
 
-            const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
-                // Default values if status fetch fails
-                let status = "Unknown";
-                let metrics = { uptime: "-", cpu: "-", mem: "-" };
+            const stackSvcList = collection.services || [];
+            // Normalize stack services to a set of names for easy lookup
+            // Note: collection.services returns configs, which have names.
+            const stackSvcNames = new Set(stackSvcList.map((s: any) => s.name));
 
-                try {
-                    const statusData = await apiClient.getServiceStatus(svc.name);
-                    status = statusData.status || "Unknown";
-                    if (statusData.metrics) {
-                         metrics = { ...metrics, ...statusData.metrics };
-                    }
-                } catch (e) {
-                    // ignore error, keep defaults
-                }
+            // Filter allServices to find those in this stack
+            // This ensures we get the runtime status (UpstreamServiceConfig with status/lastError)
+            const relevantServices = allServices.filter((s: any) => stackSvcNames.has(s.name));
 
-                return {
-                    name: svc.name,
-                    status: status,
-                    uptime: metrics.uptime || "-",
-                    cpu: metrics.cpu || "-",
-                    mem: metrics.mem || "-"
-                };
-            }));
-            setServices(servicesWithStatus);
+            // If some services in the stack definition are not yet registered/returned by listServices,
+            // we should probably include them as "Unknown" or "Not Created".
+            // But for now, let's show what we found.
+            setServices(relevantServices);
         } catch (error) {
             console.error("Failed to load stack status", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to load stack status. Ensure backend is reachable."
+            });
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [stackId, toast]);
 
     useEffect(() => {
         fetchStatus();
-    }, [stackId]);
+    }, [fetchStatus]);
+
+    const handleBulkToggle = async (enable: boolean) => {
+        const action = enable ? "start" : "stop";
+        if (!confirm(`Are you sure you want to ${action} all services in this stack?`)) return;
+
+        // Optimistic update
+        setServices(prev => prev.map(s => ({ ...s, disable: !enable })));
+
+        try {
+            await Promise.all(services.map(svc => apiClient.setServiceStatus(svc.name, !enable)));
+            toast({ title: "Success", description: `All services ${enable ? 'started' : 'stopped'}.` });
+            fetchStatus();
+        } catch (e) {
+             toast({ variant: "destructive", title: "Error", description: "Failed to update some services." });
+             fetchStatus();
+        }
+    };
+
+    const handleRestartAll = async () => {
+        if (!confirm(`Are you sure you want to restart all running services?`)) return;
+
+        try {
+            const running = services.filter(s => !s.disable);
+            await Promise.all(running.map(svc => apiClient.restartService(svc.name)));
+            toast({ title: "Success", description: "Restart signal sent to all running services." });
+        } catch (e) {
+            toast({ variant: "destructive", title: "Error", description: "Failed to restart some services." });
+        }
+    };
+
+    const handleToggle = async (name: string, disable: boolean) => {
+        try {
+            await apiClient.setServiceStatus(name, disable);
+            setServices(prev => prev.map(s => s.name === name ? { ...s, disable } : s));
+            toast({ title: disable ? "Service Stopped" : "Service Started", description: `Service ${name} updated.` });
+        } catch (e) {
+             toast({ variant: "destructive", title: "Error", description: "Failed to update service." });
+        }
+    }
+
+    const handleRestart = async (name: string) => {
+        try {
+            await apiClient.restartService(name);
+            toast({ title: "Service Restarted", description: `Service ${name} restarted.` });
+        } catch (e) {
+             toast({ variant: "destructive", title: "Error", description: "Failed to restart service." });
+        }
+    }
+
+    const runningCount = services.filter(s => !s.disable).length;
+    const errorCount = services.filter(s => s.lastError || s.status === 'ERROR').length;
 
     return (
-        <div className="space-y-4">
-             <div className="flex items-center gap-4">
-                 <Card className="flex-1">
+        <div className="space-y-6">
+             {/* Summary Cards */}
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Total Services</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Total Services</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{services.length}</div>
+                        <div className="text-3xl font-bold">{services.length}</div>
                     </CardContent>
                  </Card>
-                 <Card className="flex-1">
+                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Running</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Healthy / Running</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-500">
-                            {services.filter(s => s.status === "Active" || s.status === "Running").length}
+                        <div className="flex items-end gap-2">
+                             <div className="text-3xl font-bold text-green-500">
+                                {runningCount}
+                            </div>
+                            <div className="mb-1 text-sm text-muted-foreground">
+                                / {services.length}
+                            </div>
                         </div>
                     </CardContent>
                  </Card>
-                 <Card className="flex-1">
+                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Errors</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Issues</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-muted-foreground">
-                             {/* Placeholder logic for errors */}
-                             0
+                        <div className={`text-3xl font-bold ${errorCount > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                             {errorCount}
                         </div>
                     </CardContent>
                  </Card>
              </div>
 
-             <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+             <Card className="overflow-hidden border-muted/50 shadow-sm">
+                <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-muted/20 pb-4">
                     <div>
-                        <CardTitle className="text-lg">Runtime Status</CardTitle>
+                        <CardTitle className="text-lg">Services</CardTitle>
                         <CardDescription>Live status of services defined in this stack.</CardDescription>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={fetchStatus} disabled={isLoading}>
-                        <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    </Button>
-                </CardHeader>
-                <CardContent>
-                    <div className="rounded-md border">
-                        <div className="grid grid-cols-6 gap-4 p-4 border-b font-medium text-sm bg-muted/50">
-                            <div className="col-span-2">Service Name</div>
-                            <div>Status</div>
-                            <div>Uptime</div>
-                            <div>CPU</div>
-                            <div className="text-right">Actions</div>
-                        </div>
-                        {services.length === 0 && !isLoading && (
-                            <div className="p-4 text-center text-sm text-muted-foreground">No services in this stack.</div>
-                        )}
-                        {services.map((svc) => (
-                            <div key={svc.name} className="grid grid-cols-6 gap-4 p-4 items-center text-sm border-b last:border-0 hover:bg-muted/10 transition-colors">
-                                <div className="col-span-2 font-mono flex items-center gap-2">
-                                    <Box className="h-4 w-4 text-muted-foreground" />
-                                    {svc.name}
-                                </div>
-                                <div>
-                                    <Badge variant={(svc.status === "Running" || svc.status === "Active") ? "default" : "secondary"} className={(svc.status === "Running" || svc.status === "Active") ? "bg-green-500 hover:bg-green-600" : ""}>
-                                        {svc.status}
-                                    </Badge>
-                                </div>
-                                <div className="text-muted-foreground">{svc.uptime}</div>
-                                <div className="text-muted-foreground font-mono text-xs">{svc.cpu} / {svc.mem}</div>
-                                <div className="flex justify-end gap-2">
-                                    {(svc.status === "Running" || svc.status === "Active") ? (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" title="Stop">
-                                            <StopCircle className="h-4 w-4" />
-                                        </Button>
-                                    ) : (
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500" title="Start">
-                                            <PlayCircle className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                    <Button variant="ghost" size="icon" className="h-8 w-8" title="Logs">
-                                        <Activity className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="flex items-center gap-2">
+                         <Button variant="outline" size="sm" onClick={fetchStatus} disabled={isLoading}>
+                            <RefreshCcw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleBulkToggle(true)}>
+                            <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Start All
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleBulkToggle(false)}>
+                            <StopCircle className="mr-2 h-4 w-4 text-muted-foreground" /> Stop All
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handleRestartAll}>
+                            <Activity className="mr-2 h-4 w-4" /> Restart All
+                        </Button>
                     </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="bg-muted/10">
+                                <TableHead>Service Name</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Latency (24h)</TableHead>
+                                <TableHead>Last Error</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {services.length === 0 && !isLoading && (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                                        No services found in this stack.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {services.map((svc) => (
+                                <ServiceRow key={svc.name} svc={svc} onRestart={handleRestart} onToggle={handleToggle} />
+                            ))}
+                        </TableBody>
+                    </Table>
                 </CardContent>
              </Card>
         </div>
@@ -167,7 +299,7 @@ function StackStatus({ stackId }: { stackId: string }) {
  */
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
     const resolvedParams = use(params);
-    const [activeTab, setActiveTab] = useState("editor");
+    const [activeTab, setActiveTab] = useState("status");
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
@@ -177,21 +309,6 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
                         {resolvedParams.stackId}
                         <Badge variant="outline" className="text-xs font-normal">Stack</Badge>
                      </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                    {/* Refresh button here refreshes the page/tabs? Or specific component? */}
-                    {/* For now let's leave it generic or connected to context. But component has internal refresh */}
-                    <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-                        <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
-                    </Button>
-                    {activeTab === "editor" && (
-                         <Button size="sm" onClick={() => {
-                             // This button duplicates the Save inside Editor,
-                             // maybe just let Editor handle it or use a global context/ref
-                         }} className="hidden">
-                            Deploy Stack
-                        </Button>
-                    )}
                 </div>
             </div>
 
