@@ -265,9 +265,6 @@ export const apiClient = {
              // Fallback to REST if gRPC fails (e.g. in E2E tests passing through Next.js proxy or mock)
              // Check if we are in a test env or just try fetch
              const res = await fetchWithAuth(`/api/v1/services/${id}`);
-             if (res.status === 404) {
-                 throw new Error("Service not found");
-             }
              if (res.ok) {
                  const data = await res.json();
                  // REST returns { service: ... }, gRPC returns { service: ... }
