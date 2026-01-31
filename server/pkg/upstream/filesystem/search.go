@@ -68,6 +68,11 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				return nil, err
 			}
 
+			// Verify root existence first
+			if _, err := fs.Stat(resolvedPath); err != nil {
+				return nil, err
+			}
+
 			matches := []map[string]interface{}{}
 			maxMatches := 100
 			matchCount := 0
