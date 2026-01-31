@@ -247,11 +247,11 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                   throw new Error("Invalid state received from server")
               }
 
-              // Explicitly construct storage object to avoid implicit tainting
+              // Explicitly construct storage object to avoid implicit tainting.
+              // Note: We do not store the 'state' inside the value as it is used in the key.
               const storageData = {
                   serviceId: '',
                   credentialId: initialData.id,
-                  state: safeState,
                   redirectUrl: redirectUrl,
                   returnPath: '/credentials'
               }
