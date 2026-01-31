@@ -11,11 +11,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw, Activity, PlayCircle, StopCircle, Trash2, Box } from "lucide-react";
+import { RefreshCw, Activity, PlayCircle, StopCircle, Trash2, Box, Rocket, AlertTriangle } from "lucide-react";
 import { use } from "react";
 import { apiClient } from "@/lib/client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-// Placeholder for StackStatus if we want a separate component
 /**
  * StackStatus component.
  * @param props - The component props.
@@ -25,6 +37,7 @@ import { apiClient } from "@/lib/client";
 function StackStatus({ stackId }: { stackId: string }) {
     const [services, setServices] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [errorCount, setErrorCount] = useState(0);
 
     const fetchStatus = async () => {
         setIsLoading(true);
@@ -32,6 +45,7 @@ function StackStatus({ stackId }: { stackId: string }) {
             const collection = await apiClient.getCollection(stackId);
             const svcList = collection.services || [];
 
+            let errors = 0;
             const servicesWithStatus = await Promise.all(svcList.map(async (svc: any) => {
                 // Default values if status fetch fails
                 let status = "Unknown";
@@ -44,7 +58,12 @@ function StackStatus({ stackId }: { stackId: string }) {
                          metrics = { ...metrics, ...statusData.metrics };
                     }
                 } catch (e) {
-                    // ignore error, keep defaults
+                    // Service might not be registered yet or error
+                    status = "Error"; // Or "Not Deployed"
+                }
+
+                if (status !== "Active" && status !== "Running") {
+                    errors++;
                 }
 
                 return {
@@ -56,8 +75,10 @@ function StackStatus({ stackId }: { stackId: string }) {
                 };
             }));
             setServices(servicesWithStatus);
+            setErrorCount(errors);
         } catch (error) {
             console.error("Failed to load stack status", error);
+            toast.error("Failed to load stack status");
         } finally {
             setIsLoading(false);
         }
@@ -90,12 +111,11 @@ function StackStatus({ stackId }: { stackId: string }) {
                  </Card>
                  <Card className="flex-1">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Errors</CardTitle>
+                        <CardTitle className="text-sm font-medium">Issues</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-muted-foreground">
-                             {/* Placeholder logic for errors */}
-                             0
+                        <div className={`text-2xl font-bold ${errorCount > 0 ? "text-red-500" : "text-muted-foreground"}`}>
+                             {errorCount}
                         </div>
                     </CardContent>
                  </Card>
@@ -108,7 +128,7 @@ function StackStatus({ stackId }: { stackId: string }) {
                         <CardDescription>Live status of services defined in this stack.</CardDescription>
                     </div>
                     <Button variant="ghost" size="sm" onClick={fetchStatus} disabled={isLoading}>
-                        <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                     </Button>
                 </CardHeader>
                 <CardContent>
@@ -130,7 +150,14 @@ function StackStatus({ stackId }: { stackId: string }) {
                                     {svc.name}
                                 </div>
                                 <div>
-                                    <Badge variant={(svc.status === "Running" || svc.status === "Active") ? "default" : "secondary"} className={(svc.status === "Running" || svc.status === "Active") ? "bg-green-500 hover:bg-green-600" : ""}>
+                                    <Badge
+                                        variant={(svc.status === "Running" || svc.status === "Active") ? "default" : "secondary"}
+                                        className={
+                                            (svc.status === "Running" || svc.status === "Active") ? "bg-green-500 hover:bg-green-600" :
+                                            (svc.status === "Error" || svc.status === "Unknown") ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" : ""
+                                        }
+                                    >
+                                        {svc.status === "Error" && <AlertTriangle className="h-3 w-3 mr-1" />}
                                         {svc.status}
                                     </Badge>
                                 </div>
@@ -168,6 +195,33 @@ function StackStatus({ stackId }: { stackId: string }) {
 export default function StackDetailPage({ params }: { params: Promise<{ stackId: string }> }) {
     const resolvedParams = use(params);
     const [activeTab, setActiveTab] = useState("editor");
+    const [isDeploying, setIsDeploying] = useState(false);
+    const router = useRouter();
+
+    const handleDeploy = async () => {
+        setIsDeploying(true);
+        try {
+            await apiClient.applyCollection(resolvedParams.stackId);
+            toast.success("Stack deployment initiated");
+            setActiveTab("status");
+        } catch (e) {
+            console.error(e);
+            toast.error("Failed to deploy stack");
+        } finally {
+            setIsDeploying(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await apiClient.deleteCollection(resolvedParams.stackId);
+            toast.success("Stack deleted");
+            router.push("/stacks");
+        } catch (e) {
+            console.error(e);
+            toast.error("Failed to delete stack");
+        }
+    };
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6 h-[calc(100vh-4rem)] flex flex-col">
@@ -179,19 +233,40 @@ export default function StackDetailPage({ params }: { params: Promise<{ stackId:
                      </h2>
                 </div>
                 <div className="flex items-center gap-2">
-                    {/* Refresh button here refreshes the page/tabs? Or specific component? */}
-                    {/* For now let's leave it generic or connected to context. But component has internal refresh */}
                     <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-                        <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
+                        <RefreshCw className="mr-2 h-4 w-4" /> Refresh
                     </Button>
-                    {activeTab === "editor" && (
-                         <Button size="sm" onClick={() => {
-                             // This button duplicates the Save inside Editor,
-                             // maybe just let Editor handle it or use a global context/ref
-                         }} className="hidden">
-                            Deploy Stack
-                        </Button>
-                    )}
+                    <Button
+                        size="sm"
+                        onClick={handleDeploy}
+                        disabled={isDeploying}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                        {isDeploying ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
+                        Deploy Stack
+                    </Button>
+
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Stack?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Are you sure you want to delete this stack? This will NOT delete the running services, only the stack definition from the registry.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </div>
 

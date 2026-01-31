@@ -65,7 +65,7 @@ func (a *Application) getStackConfig(w http.ResponseWriter, r *http.Request, sto
 
 	// Convert to YAML
 	// First Proto -> JSON
-	opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: true}
+	opts := protojson.MarshalOptions{UseProtoNames: true, EmitUnpopulated: false}
 	jsonBytes, err := opts.Marshal(collection)
 	if err != nil {
 		logging.GetLogger().Error("failed to marshal stack to json", "id", stackID, "error", err)
