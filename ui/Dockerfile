@@ -16,10 +16,11 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
-# Copy proto to parent directory as expected by tsconfig.json ("../proto/*")
-COPY proto/ ../proto/
+# Copy proto to a local directory for production build
+# Note: In next.config.ts, we handle both '../proto' (local dev) and './proto' (docker/production)
+COPY proto/ ./proto/
 # Symlink node_modules so proto files can find dependencies
-RUN ln -s /app/node_modules ../proto/node_modules
+RUN ln -s /app/node_modules ./proto/node_modules
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
