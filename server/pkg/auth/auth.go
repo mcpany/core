@@ -462,11 +462,17 @@ var (
 // It supports API Key and OAuth2 authentication methods.
 //
 // Parameters:
-//   - ctx: The context for the request.
+//   - ctx: The context for the request. Must not be nil.
 //   - config: The authentication configuration.
-//   - r: The HTTP request to validate.
+//   - r: The HTTP request to validate. Must not be nil.
 //
-// Returns an error if validation fails or the method is unsupported.
+// Returns:
+//   - error: An error if validation fails or the method is unsupported.
+//
+// Throws/Errors:
+//   - Returns error if the configuration is invalid (e.g., missing issuer for OIDC).
+//   - Returns error if the request is missing required credentials (e.g., header missing).
+//   - Returns error if credentials are invalid.
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed

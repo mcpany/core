@@ -64,18 +64,36 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The protobuf definition of the tool.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP SDK compatible tool definition.
 	MCPTool() *mcp.Tool
+
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the execution. Must not be nil.
+	//   - req: *ExecutionRequest. The execution request. Must not be nil.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if execution fails.
+	//
+	// Throws/Errors:
+	//   - Returns error if inputs are invalid.
+	//   - Returns error if the underlying service call fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
