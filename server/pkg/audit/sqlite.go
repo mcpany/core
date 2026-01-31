@@ -21,7 +21,17 @@ import (
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
+
+	queue     chan Entry
+	wg        sync.WaitGroup
+	done      chan struct{}
+	closeOnce sync.Once
 }
+
+const (
+	sqliteBatchSize = 100
+	sqliteBatchWait = 100 * time.Millisecond
+)
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
 //
@@ -88,9 +98,15 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		return nil, fmt.Errorf("failed to ensure columns: %w", err)
 	}
 
-	return &SQLiteAuditStore{
-		db: db,
-	}, nil
+	store := &SQLiteAuditStore{
+		db:    db,
+		queue: make(chan Entry, 1000), // Buffer size 1000
+		done:  make(chan struct{}),
+	}
+	store.wg.Add(1)
+	go store.worker()
+
+	return store, nil
 }
 
 func ensureColumns(db *sql.DB) error {
@@ -129,6 +145,131 @@ func ensureColumn(db *sql.DB, colName string) error {
 	return err
 }
 
+func (s *SQLiteAuditStore) worker() {
+	defer s.wg.Done()
+	var batch []Entry
+	ticker := time.NewTicker(sqliteBatchWait)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case entry, ok := <-s.queue:
+			if !ok {
+				s.flushBatch(batch)
+				return
+			}
+			batch = append(batch, entry)
+			if len(batch) >= sqliteBatchSize {
+				s.flushBatch(batch)
+				batch = nil
+			}
+		case <-ticker.C:
+			if len(batch) > 0 {
+				s.flushBatch(batch)
+				batch = nil
+			}
+		case <-s.done:
+			// Drain queue
+			for {
+				select {
+				case entry := <-s.queue:
+					batch = append(batch, entry)
+					if len(batch) >= sqliteBatchSize {
+						s.flushBatch(batch)
+						batch = nil
+					}
+				default:
+					s.flushBatch(batch)
+					return
+				}
+			}
+		}
+	}
+}
+
+func (s *SQLiteAuditStore) flushBatch(batch []Entry) {
+	if len(batch) == 0 {
+		return
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		fmt.Printf("Failed to begin transaction: %v\n", err)
+		return
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	// Get previous hash
+	var prevHash string
+	err = tx.QueryRowContext(ctx, "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Printf("Failed to get previous hash: %v\n", err)
+		return
+	}
+	if err == sql.ErrNoRows {
+		prevHash = ""
+	}
+
+	stmt, err := tx.PrepareContext(ctx, `
+	INSERT INTO audit_logs (
+		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`)
+	if err != nil {
+		fmt.Printf("Failed to prepare statement: %v\n", err)
+		return
+	}
+	defer func() { _ = stmt.Close() }()
+
+	for _, entry := range batch {
+		// Marshal complex types
+		argsJSON := "{}"
+		if len(entry.Arguments) > 0 {
+			argsJSON = string(entry.Arguments)
+		}
+
+		resultJSON := "{}"
+		if entry.Result != nil {
+			if b, err := json.Marshal(entry.Result); err == nil {
+				resultJSON = string(b)
+			}
+		}
+
+		ts := entry.Timestamp.Format(time.RFC3339Nano)
+
+		// Compute hash
+		hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
+
+		_, err = stmt.ExecContext(ctx,
+			ts,
+			entry.ToolName,
+			entry.UserID,
+			entry.ProfileID,
+			argsJSON,
+			resultJSON,
+			entry.Error,
+			entry.DurationMs,
+			prevHash,
+			hash,
+		)
+		if err != nil {
+			fmt.Printf("Failed to insert entry: %v\n", err)
+			return
+		}
+		prevHash = hash
+	}
+
+	if err := tx.Commit(); err != nil {
+		fmt.Printf("Failed to commit transaction: %v\n", err)
+	}
+}
+
 // Write writes an audit entry to the database.
 //
 // ctx is the context for the request.
@@ -136,57 +277,14 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	// Marshal complex types
-	argsJSON := "{}"
-	if len(entry.Arguments) > 0 {
-		argsJSON = string(entry.Arguments)
+	select {
+	case s.queue <- entry:
+		return nil
+	default:
+		// ⚡ BOLT: Dropping log if queue is full to prevent blocking main thread.
+		// Randomized Selection from Top 5 High-Impact Targets
+		return fmt.Errorf("audit queue full")
 	}
-
-	resultJSON := "{}"
-	if entry.Result != nil {
-		if b, err := json.Marshal(entry.Result); err == nil {
-			resultJSON = string(b)
-		}
-	}
-
-	ts := entry.Timestamp.Format(time.RFC3339Nano)
-
-	// Get previous hash
-	var prevHash string
-	// Order by ID desc to get the last entry
-	err := s.db.QueryRowContext(ctx, "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("failed to get previous hash: %w", err)
-	}
-	if err == sql.ErrNoRows {
-		prevHash = "" // First entry
-	}
-
-	// Compute hash
-	hash := computeHash(ts, entry.ToolName, entry.UserID, entry.ProfileID, argsJSON, resultJSON, entry.Error, entry.DurationMs, prevHash)
-
-	query := `
-	INSERT INTO audit_logs (
-		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`
-
-	_, err = s.db.ExecContext(ctx, query,
-		ts,
-		entry.ToolName,
-		entry.UserID,
-		entry.ProfileID,
-		argsJSON,
-		resultJSON,
-		entry.Error,
-		entry.DurationMs,
-		prevHash,
-		hash,
-	)
-	return err
 }
 
 // Read reads audit entries from the database based on the filter.
@@ -313,7 +411,19 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Returns an error if the operation fails.
 func (s *SQLiteAuditStore) Close() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.db.Close()
+	var err error
+	s.closeOnce.Do(func() {
+		// Signal worker to stop
+		close(s.done)
+		// Do not close queue to avoid panics in concurrent Writes.
+		// The worker will drain the queue via the done signal loop.
+
+		// Wait for worker to finish flushing
+		s.wg.Wait()
+
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		err = s.db.Close()
+	})
+	return err
 }
