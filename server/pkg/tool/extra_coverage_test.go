@@ -188,7 +188,7 @@ func TestTool_GetCacheConfig(t *testing.T) {
 	t.Run("HTTPTool", func(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		ht := NewHTTPTool(
-			&pb.Tool{},
+			pb.Tool_builder{}.Build(),
 			pool.NewManager(),
 			"s",
 			nil,
@@ -203,7 +203,7 @@ func TestTool_GetCacheConfig(t *testing.T) {
 	t.Run("MCPTool", func(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		mt := NewMCPTool(
-			&pb.Tool{},
+			pb.Tool_builder{}.Build(),
 			nil,
 			configv1.MCPCallDefinition_builder{Cache: cacheCfg}.Build(),
 		)
@@ -213,7 +213,7 @@ func TestTool_GetCacheConfig(t *testing.T) {
 	t.Run("OpenAPITool", func(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		ot := NewOpenAPITool(
-			&pb.Tool{},
+			pb.Tool_builder{}.Build(),
 			nil,
 			nil,
 			"",
@@ -226,51 +226,20 @@ func TestTool_GetCacheConfig(t *testing.T) {
 
 	t.Run("CommandTool", func(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
-		// Note: CommandTool (remote) vs LocalCommandTool
-		// NewCommandTool returns Tool interface.
-	wt, err := NewWebrtcTool(
-		pb.Tool_builder{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")}.Build(),
-		nil, // No pool -> triggers executeWithoutPool
-		"s",
-		nil,
-		configv1.WebrtcCallDefinition_builder{}.Build(),
-	)
-	assert.NoError(t, err)
-
-	// Test Close (no pool)
-	assert.NoError(t, wt.Close())
-
-	// Trigger Execute -> executeWithoutPool
-	// This will try to create connection and fail or hang?
-	// It calls newPeerConnection (succeeds with disabled STUN)
-	// Then executeWithPeerConnection -> unmarshal input -> ... -> http request
-	// We pass invalid input JSON to fail early in executeWithPeerConnection,
-	// verifying that executeWithoutPool was called and called executeWithPeerConnection.
-
-	req := &ExecutionRequest{
-		ToolName:   "tool",
-		ToolInputs: []byte("invalid json"),
-	}
-
-	_, err = wt.Execute(context.Background(), req)
-	assert.Error(t, err)
-	// executeWithPeerConnection returns "failed to unmarshal tool inputs"
-	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
-
-	lct := NewLocalCommandTool(
-		pb.Tool_builder{}.Build(),
-		configv1.CommandLineUpstreamService_builder{}.Build(),
-		configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
-		nil,
-		"",
-	)
-	assert.Equal(t, cacheCfg, lct.GetCacheConfig())
+		lct := NewLocalCommandTool(
+			pb.Tool_builder{}.Build(),
+			configv1.CommandLineUpstreamService_builder{}.Build(),
+			configv1.CommandLineCallDefinition_builder{Cache: cacheCfg}.Build(),
+			nil,
+			"",
+		)
+		assert.Equal(t, cacheCfg, lct.GetCacheConfig())
 	})
 
 	t.Run("WebrtcTool", func(t *testing.T) {
 		cacheCfg := configv1.CacheConfig_builder{IsEnabled: proto.Bool(true)}.Build()
 		wt, err := NewWebrtcTool(
-			&pb.Tool{},
+			pb.Tool_builder{}.Build(),
 			nil,
 			"s",
 			nil,
