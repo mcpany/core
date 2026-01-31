@@ -543,8 +543,8 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	graph := m.GetGraph(context.Background())
 
 	var svcNode *topologyv1.Node
-	for _, child := range graph.Core.Children {
-		if child.Id == "svc-test-service" {
+	for _, child := range graph.GetCore().GetChildren() {
+		if child.GetId() == "svc-test-service" {
 			svcNode = child
 			break
 		}
@@ -552,13 +552,13 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	require.NotNil(t, svcNode)
 
 	// Verify Metrics
-	require.NotNil(t, svcNode.Metrics)
+	require.NotNil(t, svcNode.GetMetrics())
 	// QPS depends on how many seconds passed in current minute.
 	// We can't easily assert exact QPS without mocking time, but it should be > 0.
-	assert.True(t, svcNode.Metrics.Qps > 0)
-	assert.Equal(t, 0.1, svcNode.Metrics.ErrorRate)
-	assert.Equal(t, 50.0, svcNode.Metrics.LatencyMs)
+	assert.True(t, svcNode.GetMetrics().GetQps() > 0)
+	assert.Equal(t, 0.1, svcNode.GetMetrics().GetErrorRate())
+	assert.Equal(t, 50.0, svcNode.GetMetrics().GetLatencyMs())
 
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
-	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.Status)
+	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
