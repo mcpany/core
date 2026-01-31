@@ -14,19 +14,23 @@ import (
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
-	// ctx is the context for the request.
-	// params is the params.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - params: *mcp.CreateMessageParams. The parameters for message creation.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - *mcp.CreateMessageResult: The result of the message creation.
+	//   - error: An error if the operation fails.
 	CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error)
 
 	// ListRoots requests the list of roots from the client.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - *mcp.ListRootsResult: The list of roots.
+	//   - error: An error if the operation fails.
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
 
@@ -37,20 +41,24 @@ type sessionContextKey struct{}
 
 // NewContextWithSession creates a new context with the given Session.
 //
-// ctx is the context for the request.
-// s is the s.
+// Parameters:
+//   - ctx: context.Context. The context to extend.
+//   - s: Session. The session to embed.
 //
-// Returns the result.
+// Returns:
+//   - context.Context: A new context containing the session.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
 
 // GetSession retrieves the Session from the context.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: context.Context. The context to search.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - Session: The session if found.
+//   - bool: True if the session was found.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok

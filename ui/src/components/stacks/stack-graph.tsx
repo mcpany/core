@@ -78,7 +78,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 /**
  * ServiceNode component for ReactFlow.
  */
-// eslint-disable-next-line react/display-name
 const ServiceNode = React.memo(({ data }: { data: ParsedService }) => {
     let Icon = Cpu;
     if (data.type === "image") Icon = Database;

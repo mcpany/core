@@ -26,10 +26,12 @@ type StaticResource struct {
 
 // NewStaticResource creates a new instance of StaticResource.
 //
-// def is the def.
-// serviceID is the serviceID.
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The resource definition.
+//   - serviceID: string. The service ID providing the resource.
 //
-// Returns the result.
+// Returns:
+//   - *StaticResource: The new static resource.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -61,10 +63,12 @@ func (r *StaticResource) Service() string {
 
 // Read retrieves the content of the resource by fetching the URI.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *mcp.ReadResourceResult: The content of the resource.
+//   - error: An error if the resource cannot be fetched or read.
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
@@ -148,9 +152,11 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 
 // Subscribe is not yet implemented for static resources.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _ : context.Context. The context (unused).
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: Always returns an error indicating not implemented.
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

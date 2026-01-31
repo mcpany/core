@@ -105,6 +105,7 @@ Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript).
 ```bash
 make lint
 ```
+This runs `golangci-lint` for the server and `npm run lint` for the UI.
 
 ### Building
 Compile all artifacts (Server binary and UI assets).
