@@ -48,24 +48,18 @@ export interface ButtonProps
 }
 
 /**
- * Button component.
+ * Displays a button or a component that looks like a button.
+ *
  * @param props - The component props.
- * @param props.className - The name of the class.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.asChild - The asChild property.
- * @returns The rendered component.
+ * @param props.className - Additional class names for styling.
+ * @param props.variant - The visual style of the button (default, destructive, outline, secondary, ghost, link).
+ * @param props.size - The size of the button (default, sm, lg, icon).
+ * @param props.asChild - Whether to render as a child component (using Radix Slot).
+ * @param ref - The ref forwarded to the button element.
+ * @returns The rendered button component.
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-/**
- * Comp component.
- * @param props - The component props.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
- */
     const Comp = asChild ? Slot : "button"
     return (
       <Comp

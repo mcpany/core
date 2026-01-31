@@ -15,7 +15,7 @@
 ## 1. Project Identity
 
 **What is this?**
-MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
+MCP Any is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server. It adheres to a strict **Configuration over Code** philosophy, allowing you to expose capabilities without writing custom adapter code.
 
 **Why does it exist?**
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
