@@ -27,19 +27,63 @@ const mockTrace: Trace = {
   },
 };
 
+const nestedTrace: Trace = {
+    id: "trace-nested",
+    timestamp: new Date().toISOString(),
+    totalDuration: 200,
+    status: "success",
+    trigger: "user",
+    rootSpan: {
+      id: "span-root",
+      name: "orchestrator",
+      type: "tool",
+      startTime: 1000,
+      endTime: 1200,
+      status: "success",
+      input: { task: "do complex thing" },
+      output: { result: "done" },
+      children: [
+          {
+              id: "span-child-1",
+              name: "sub-tool",
+              type: "tool",
+              startTime: 1050,
+              endTime: 1150,
+              status: "success",
+              input: { sub: "task" },
+              output: { sub: "done" },
+              children: []
+          },
+          {
+              id: "span-child-2",
+              name: "weather-service",
+              type: "service",
+              serviceName: "wttr.in",
+              startTime: 1160,
+              endTime: 1190,
+              status: "success",
+              input: { city: "London" },
+              output: { temp: 20 },
+              children: []
+          }
+      ],
+    },
+  };
+
 describe("SequenceDiagram", () => {
-  it("renders participants correctly", () => {
+  it("renders participants correctly for simple trace", () => {
     render(<SequenceDiagram trace={mockTrace} />);
     expect(screen.getByText("Client")).toBeInTheDocument();
     expect(screen.getByText("MCP Core")).toBeInTheDocument();
-    expect(screen.getByText("Tool")).toBeInTheDocument();
+    expect(screen.getByText("test-tool")).toBeInTheDocument();
   });
 
-  it("renders interaction labels", () => {
+  it("renders interaction labels for simple trace", () => {
     render(<SequenceDiagram trace={mockTrace} />);
     expect(screen.getByText("Execute Request")).toBeInTheDocument();
     expect(screen.getByText("Call test-tool")).toBeInTheDocument();
-    expect(screen.getByText("Execution Result")).toBeInTheDocument();
+    // "Result" is the label for return from tool
+    expect(screen.getAllByText("Result")[0]).toBeInTheDocument();
     expect(screen.getByText("Response")).toBeInTheDocument();
   });
 
@@ -53,8 +97,22 @@ describe("SequenceDiagram", () => {
     fireEvent.click(requestLabel);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Client requests tool execution")).toBeInTheDocument();
+    expect(screen.getByText("Client requests execution")).toBeInTheDocument();
     // Check payload
     expect(screen.getByText(/value/)).toBeInTheDocument();
+  });
+
+  it("renders nested interactions correctly", () => {
+      render(<SequenceDiagram trace={nestedTrace} />);
+
+      // Participants
+      expect(screen.getByText("orchestrator")).toBeInTheDocument();
+      expect(screen.getByText("sub-tool")).toBeInTheDocument();
+      expect(screen.getByText("wttr.in")).toBeInTheDocument();
+
+      // Interactions
+      expect(screen.getByText("Call orchestrator")).toBeInTheDocument();
+      expect(screen.getByText("Call sub-tool")).toBeInTheDocument();
+      expect(screen.getByText("Access weather-service")).toBeInTheDocument();
   });
 });
