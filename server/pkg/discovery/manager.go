@@ -50,6 +50,8 @@ func (m *Manager) RegisterProvider(p Provider) {
 // It also updates the internal status of each provider.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
+	// ⚡ BOLT: Protect slice with mutex for parallel access
+	var servicesMu sync.Mutex
 	log := logging.GetLogger()
 
 	m.mu.RLock()
@@ -57,29 +59,40 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	copy(providers, m.providers)
 	m.mu.RUnlock()
 
+	// ⚡ BOLT: Parallelize service discovery to reduce startup time
+	// Randomized Selection from Top 5 High-Impact Targets
+	var wg sync.WaitGroup
 	for _, p := range providers {
-		log.Info("Running auto-discovery", "provider", p.Name())
-		services, err := p.Discover(ctx)
+		wg.Add(1)
+		go func(p Provider) {
+			defer wg.Done()
+			log.Info("Running auto-discovery", "provider", p.Name())
+			services, err := p.Discover(ctx)
 
-		m.mu.Lock()
-		status := &ProviderStatus{
-			Name:      p.Name(),
-			LastRunAt: time.Now(),
-		}
+			m.mu.Lock()
+			status := &ProviderStatus{
+				Name:      p.Name(),
+				LastRunAt: time.Now(),
+			}
 
-		if err != nil {
-			log.Warn("Auto-discovery failed", "provider", p.Name(), "error", err)
-			status.Status = "ERROR"
-			status.LastError = err.Error()
-		} else {
-			log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
-			status.Status = "OK"
-			status.DiscoveredCount = len(services)
-			allServices = append(allServices, services...)
-		}
-		m.statuses[p.Name()] = status
-		m.mu.Unlock()
+			if err != nil {
+				log.Warn("Auto-discovery failed", "provider", p.Name(), "error", err)
+				status.Status = "ERROR"
+				status.LastError = err.Error()
+			} else {
+				log.Info("Auto-discovery success", "provider", p.Name(), "count", len(services))
+				status.Status = "OK"
+				status.DiscoveredCount = len(services)
+
+				servicesMu.Lock()
+				allServices = append(allServices, services...)
+				servicesMu.Unlock()
+			}
+			m.statuses[p.Name()] = status
+			m.mu.Unlock()
+		}(p)
 	}
+	wg.Wait()
 
 	return allServices
 }

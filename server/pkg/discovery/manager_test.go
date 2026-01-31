@@ -83,3 +83,41 @@ func TestManager_GetStatuses(t *testing.T) {
 	assert.Equal(t, "p1", statuses[0].Name)
 	assert.Equal(t, "PENDING", statuses[0].Status)
 }
+
+type SlowMockProvider struct {
+	MockProvider
+	delay time.Duration
+}
+
+func (m *SlowMockProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	time.Sleep(m.delay)
+	return m.MockProvider.Discover(ctx)
+}
+
+func TestManager_Run_Parallel(t *testing.T) {
+	manager := NewManager()
+	delay := 100 * time.Millisecond
+
+	// Provider 1: Slow
+	p1 := &SlowMockProvider{
+		MockProvider: MockProvider{name: "p1"},
+		delay:        delay,
+	}
+	manager.RegisterProvider(p1)
+
+	// Provider 2: Slow
+	p2 := &SlowMockProvider{
+		MockProvider: MockProvider{name: "p2"},
+		delay:        delay,
+	}
+	manager.RegisterProvider(p2)
+
+	start := time.Now()
+	manager.Run(context.Background())
+	duration := time.Since(start)
+
+	// If sequential, it would be >= 200ms. If parallel, it should be ~100ms.
+	// We check if it is significantly less than 2 * delay.
+	// We allow some buffer for overhead, so < 1.5 * delay is a safe check for parallelism.
+	assert.Less(t, duration, time.Duration(1.5*float64(delay)), "Discovery should be parallel")
+}
