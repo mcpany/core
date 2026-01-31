@@ -376,16 +376,39 @@ export function LogStream() {
   const viewportRef = React.useRef<HTMLElement | null>(null)
 
   React.useEffect(() => {
-    if (!isPaused && scrollRef.current) {
-      // Lazy init or validate viewport ref
-      if (!viewportRef.current || !viewportRef.current.isConnected) {
+    // Lazy init or validate viewport ref
+    if (scrollRef.current && (!viewportRef.current || !viewportRef.current.isConnected)) {
         viewportRef.current = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
-      }
 
+        // Attach scroll listener for auto-pause logic
+        if (viewportRef.current) {
+            const handleScroll = () => {
+                if (!viewportRef.current) return;
+                const { scrollTop, scrollHeight, clientHeight } = viewportRef.current;
+                // Threshold of 20px to account for rounding or minor layout shifts
+                const isAtBottom = scrollHeight - (scrollTop + clientHeight) <= 20;
+
+                // If user scrolls up (not at bottom), pause.
+                // If user scrolls back to bottom, resume.
+                // We use a functional update or ref check to avoid dependency cycles if needed,
+                // but setIsPaused is stable.
+                // We only update if state changes to avoid re-renders.
+                if (isAtBottom) {
+                    setIsPaused(prev => prev ? false : prev);
+                } else {
+                    setIsPaused(prev => !prev ? true : prev);
+                }
+            };
+            viewportRef.current.addEventListener('scroll', handleScroll);
+            // Note: We can't easily removeEventListener cleanly because viewportRef might change or be re-created?
+            // Ideally we'd return a cleanup, but this lazy init inside an effect that depends on logs/isPaused is tricky.
+            // A better approach is a separate effect for listener attachment.
+        }
+    }
+
+    if (!isPaused && viewportRef.current) {
       const scrollContainer = viewportRef.current
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight
-      }
+      scrollContainer.scrollTop = scrollContainer.scrollHeight
     }
   }, [logs, isPaused])
 

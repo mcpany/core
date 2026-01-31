@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
@@ -81,8 +82,19 @@ func InitTelemetry(ctx context.Context, serviceName string, version string, cfg 
 
 func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {
 	exporterType := cfg.GetTracesExporter()
-	// If OTLP endpoint is set, default to otlp if type not specified
-	if cfg.GetOtlpEndpoint() != "" && (exporterType == "" || exporterType == exporterOTLP) {
+	if exporterType == "" {
+		if v := os.Getenv("OTEL_TRACES_EXPORTER"); v != "" {
+			exporterType = v
+		}
+	}
+
+	// If OTLP endpoint is set (via config or env), default to otlp if type not specified or is otlp
+	otlpEndpoint := cfg.GetOtlpEndpoint()
+	if otlpEndpoint == "" {
+		otlpEndpoint = os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	}
+
+	if otlpEndpoint != "" && (exporterType == "" || exporterType == exporterOTLP) {
 		exporterType = exporterOTLP
 	}
 
@@ -94,6 +106,7 @@ func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.Tele
 		opts := []otlptracehttp.Option{
 			otlptracehttp.WithInsecure(),
 		}
+		// Pass endpoint if explicitly set via config, otherwise let SDK read env var or fallback
 		if cfg.GetOtlpEndpoint() != "" {
 			opts = append(opts, otlptracehttp.WithEndpoint(cfg.GetOtlpEndpoint()))
 		}
@@ -126,8 +139,19 @@ func initTracer(ctx context.Context, res *resource.Resource, cfg *config_v1.Tele
 
 func initMeter(ctx context.Context, res *resource.Resource, cfg *config_v1.TelemetryConfig, _ io.Writer) (func(context.Context) error, error) {
 	exporterType := cfg.GetMetricsExporter()
-	// If OTLP endpoint is set, default to otlp if type not specified
-	if cfg.GetOtlpEndpoint() != "" && (exporterType == "" || exporterType == exporterOTLP) {
+	if exporterType == "" {
+		if v := os.Getenv("OTEL_METRICS_EXPORTER"); v != "" {
+			exporterType = v
+		}
+	}
+
+	// If OTLP endpoint is set (via config or env), default to otlp if type not specified or is otlp
+	otlpEndpoint := cfg.GetOtlpEndpoint()
+	if otlpEndpoint == "" {
+		otlpEndpoint = os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	}
+
+	if otlpEndpoint != "" && (exporterType == "" || exporterType == exporterOTLP) {
 		exporterType = exporterOTLP
 	}
 
