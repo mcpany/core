@@ -20,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/hashicorp/vault/api"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/validation"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -64,6 +65,13 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 }
 
 func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) { //nolint:gocyclo
+	// If context requests skipping secret validation, we bypass actual resolution
+	// and return a placeholder. This prevents Oracle Attacks where users can probe
+	// the existence of environment variables or files via the validation API.
+	if skip, ok := ctx.Value(consts.SkipSecretValidationKey).(bool); ok && skip {
+		return "secret-validation-placeholder", nil
+	}
+
 	if depth > maxSecretRecursionDepth {
 		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
 	}

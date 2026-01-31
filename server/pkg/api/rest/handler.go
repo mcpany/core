@@ -12,6 +12,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
+	"github.com/mcpany/core/server/pkg/consts"
 	"gopkg.in/yaml.v3"
 )
 
@@ -78,7 +79,7 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			// Run semantic validation (checks file existence, connectivity, etc.)
 			// We skip secret validation (regex checks) to prevent oracle attacks where users probe secret values.
-			ctx := context.WithValue(r.Context(), config.SkipSecretValidationKey, true)
+			ctx := context.WithValue(r.Context(), consts.SkipSecretValidationKey, true)
 			// We also skip filesystem existence checks to prevent filesystem enumeration attacks.
 			ctx = context.WithValue(ctx, config.SkipFilesystemCheckKey, true)
 			validationErrors := config.Validate(ctx, cfg, config.Server)

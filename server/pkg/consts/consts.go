@@ -52,6 +52,9 @@ const (
 
 	// ContextKeyRemoteAddr is the context key for the remote address.
 	ContextKeyRemoteAddr = "remote_addr"
+
+	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
+	SkipSecretValidationKey = "skip_secret_validation"
 )
 
 const (
