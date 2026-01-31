@@ -13,6 +13,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestLocalCommandTool_DoesNotLeakHostEnv(t *testing.T) {
@@ -94,4 +95,55 @@ func TestCommandTool_DoesNotLeakHostEnv(t *testing.T) {
 	assert.True(t, ok)
 
 	assert.NotContains(t, stdout, secretValue, "Host environment variable should NOT be leaked via CommandTool")
+}
+
+func TestLocalCommandTool_SecretLeak_Stderr(t *testing.T) {
+	// Setup a tool using JSON protocol
+	// Command: sh -c 'echo "SECRET=$SECRET_VAL" >&2; echo "invalid json"'
+
+	secretVal := "super_secret_password"
+
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"properties": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{},
+			}),
+		},
+	}
+	toolProto := v1.Tool_builder{
+		Name:        proto.String("leak-tool"),
+		InputSchema: inputSchema,
+	}.Build()
+
+	secretValProto := configv1.SecretValue_builder{
+		PlainText: proto.String(secretVal),
+	}.Build()
+
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("sh"),
+		Local:   proto.Bool(true),
+		CommunicationProtocol: configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON.Enum(),
+		Env: map[string]*configv1.SecretValue{
+			"SECRET_VAL": secretValProto,
+		},
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "echo \"SECRET=$SECRET_VAL\" >&2; echo \"invalid json\""},
+	}.Build()
+
+	localTool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
+
+	req := &ExecutionRequest{
+		ToolName: "leak-tool",
+		ToolInputs: []byte("{}"),
+	}
+
+	_, err := localTool.Execute(context.Background(), req)
+
+	// Expect error because stdout is not valid JSON
+	assert.Error(t, err)
+
+	// The secret should NOT be present in the error message
+	assert.NotContains(t, err.Error(), secretVal, "Secret leaked in error message!")
 }
