@@ -4,8 +4,24 @@
  */
 
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import React from 'react';
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
+
+// Mock react-virtuoso
+vi.mock("react-virtuoso", () => ({
+  Virtuoso: React.forwardRef(({ data, itemContent }: any, ref: any) => {
+    return (
+      <div ref={ref}>
+        {data.map((item: any, index: number) => (
+          <div key={item.id || index}>
+            {itemContent(index, item)}
+          </div>
+        ))}
+      </div>
+    );
+  }),
+}));
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
