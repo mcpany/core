@@ -4,29 +4,31 @@
  */
 
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useServiceHealthHistory, ServiceHealth } from "./use-service-health-history";
 
 describe("useServiceHealthHistory", () => {
     beforeEach(() => {
-        window.localStorage.clear();
         vi.restoreAllMocks();
-        // vi.useFakeTimers(); // Removing fake timers to avoid async/timeout issues with fetch
     });
-
-    // afterEach(() => {
-    //     vi.useRealTimers();
-    // });
 
     const mockServices: ServiceHealth[] = [
         { id: "svc-1", name: "Service 1", status: "healthy", latency: "10ms", uptime: "99%" },
         { id: "svc-2", name: "Service 2", status: "degraded", latency: "100ms", uptime: "95%" }
     ];
 
+    const mockHistory = {
+        "svc-1": [{ timestamp: 1234567890, status: "healthy" }],
+        "svc-2": [{ timestamp: 1234567890, status: "degraded" }]
+    };
+
     it("should fetch initial health data and update history", async () => {
         global.fetch = vi.fn().mockResolvedValue({
             ok: true,
-            json: async () => mockServices
+            json: async () => ({
+                services: mockServices,
+                history: mockHistory
+            })
         });
 
         const { result } = renderHook(() => useServiceHealthHistory());
@@ -39,46 +41,10 @@ describe("useServiceHealthHistory", () => {
             expect(result.current.isLoading).toBe(false);
         });
 
+        // Verify URL
+        expect(global.fetch).toHaveBeenCalledWith("/api/v1/dashboard/health");
+
         expect(result.current.services).toEqual(mockServices);
-        expect(Object.keys(result.current.history)).toHaveLength(2);
-        expect(result.current.history["svc-1"]).toHaveLength(1);
-        expect(result.current.history["svc-1"][0].status).toBe("healthy");
-    });
-
-    it("should persist history to localStorage", async () => {
-         global.fetch = vi.fn().mockResolvedValue({
-            ok: true,
-            json: async () => mockServices
-        });
-
-        const { result } = renderHook(() => useServiceHealthHistory());
-
-        await waitFor(() => {
-            expect(result.current.isLoading).toBe(false);
-        });
-
-        const stored = window.localStorage.getItem("mcp_service_health_history");
-        expect(stored).toBeTruthy();
-        const parsed = JSON.parse(stored!);
-        expect(parsed["svc-1"]).toHaveLength(1);
-    });
-
-    it("should load history from localStorage on mount", async () => {
-        const initialHistory = {
-            "svc-1": [{ timestamp: 1234567890, status: "unhealthy" }]
-        };
-        window.localStorage.setItem("mcp_service_health_history", JSON.stringify(initialHistory));
-
-        global.fetch = vi.fn().mockResolvedValue({
-            ok: true,
-            json: async () => []
-        });
-
-        const { result } = renderHook(() => useServiceHealthHistory());
-
-        // Should have loaded immediately (in useEffect)
-        expect(result.current.history["svc-1"]).toHaveLength(1);
-        // Typescript issue potentially if casting needed, but let's assume valid JSON
-        expect(result.current.history["svc-1"][0].status).toBe("unhealthy");
+        expect(result.current.history).toEqual(mockHistory);
     });
 });
