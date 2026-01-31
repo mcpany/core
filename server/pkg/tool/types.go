@@ -2754,7 +2754,15 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// We still block shell metacharacters to prevent command injection.
 	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\"
 
+    // Sentinel Security Update:
+    // For strict shells (sh, bash, python, etc.), spaces in unquoted context are dangerous
+    // because they delimit arguments, allowing argument injection (e.g., sh -c "curl {{input}}").
+    // For other tools (git, docker), spaces are safe (treated as single argument).
 	charsToCheck := dangerousChars
+    if isStrictShell(command) {
+        charsToCheck += " "
+    }
+
 	// For 'env' command, '=' is dangerous as it allows setting arbitrary environment variables
 	if filepath.Base(command) == "env" {
 		charsToCheck += "="
@@ -2925,10 +2933,8 @@ func checkForUnsafeURL(val string) error {
 			h, _, err := net.SplitHostPort(host)
 			if err == nil {
 				host = h
-			} else {
-				// Maybe it's just IPv6 without brackets? net.SplitHostPort expects brackets for IPv6.
-				// If error, use original.
 			}
+			// If error, use original. Maybe it's just IPv6 without brackets?
 		}
 
 		// If host is an IP, we must validate it.
@@ -2949,4 +2955,32 @@ func checkForUnsafeURL(val string) error {
 		}
 	}
 	return nil
+}
+
+func isStrictShell(cmd string) bool {
+    base := strings.ToLower(filepath.Base(cmd))
+    // Shells that interpret arguments as scripts/commands
+    shells := []string{
+        "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+        "cmd", "cmd.exe", "powershell", "powershell.exe", "pwsh", "pwsh.exe",
+        "ssh", "scp", "su", "sudo", "env",
+        "expect",
+    }
+    for _, s := range shells {
+        if base == s {
+            return true
+        }
+    }
+
+    // Check interpreters (prefix match for versioning)
+    interpreters := []string{
+        "python", "ruby", "perl", "php", "lua", "node", "deno", "bun",
+        "awk", "sed",
+    }
+    for _, s := range interpreters {
+        if strings.HasPrefix(base, s) {
+            return true
+        }
+    }
+    return false
 }

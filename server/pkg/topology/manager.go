@@ -385,12 +385,8 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	coreNode := topologyv1.Node_builder{
-		Id:     "mcp-core",
-		Label:  "MCP Any",
-		Type:   topologyv1.NodeType_NODE_TYPE_CORE,
-		Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-	}.Build()
+	// Accumulate core children
+	var coreChildren []*topologyv1.Node
 
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
@@ -405,26 +401,10 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 		}
 
 		for _, svc := range services {
-			svcNode := topologyv1.Node_builder{
-				Id:     "svc-" + svc.GetName(),
-				Label:  svc.GetName(),
-				Type:   topologyv1.NodeType_NODE_TYPE_SERVICE,
-				Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-			}.Build()
-			if svc.GetDisable() {
-				svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_INACTIVE
-			}
-
-			// Add Tools
+			// Build tools for this service
+			var svcChildren []*topologyv1.Node
 			if svcTools, ok := toolsByService[svc.GetName()]; ok {
 				for _, t := range svcTools {
-					toolNode := topologyv1.Node_builder{
-						Id:     "tool-" + t.Tool().GetName(),
-						Label:  t.Tool().GetName(),
-						Type:   topologyv1.NodeType_NODE_TYPE_TOOL,
-						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
-					}.Build()
-
 					// Mock API Call node
 					apiNode := topologyv1.Node_builder{
 						Id:     "api-" + t.Tool().GetName(),
@@ -432,13 +412,34 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 						Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 					}.Build()
-					toolNode.Children = append(toolNode.Children, apiNode)
 
-					svcNode.Children = append(svcNode.Children, toolNode)
+					toolNode := topologyv1.Node_builder{
+						Id:       "tool-" + t.Tool().GetName(),
+						Label:    t.Tool().GetName(),
+						Type:     topologyv1.NodeType_NODE_TYPE_TOOL,
+						Status:   topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
+						Children: []*topologyv1.Node{apiNode},
+					}.Build()
+
+					svcChildren = append(svcChildren, toolNode)
 				}
 			}
 
-			coreNode.Children = append(coreNode.Children, svcNode)
+			// Determine service status
+			status := topologyv1.NodeStatus_NODE_STATUS_ACTIVE
+			if svc.GetDisable() {
+				status = topologyv1.NodeStatus_NODE_STATUS_INACTIVE
+			}
+
+			svcNode := topologyv1.Node_builder{
+				Id:       "svc-" + svc.GetName(),
+				Label:    svc.GetName(),
+				Type:     topologyv1.NodeType_NODE_TYPE_SERVICE,
+				Status:   status,
+				Children: svcChildren,
+			}.Build()
+
+			coreChildren = append(coreChildren, svcNode)
 		}
 	}
 
@@ -454,7 +455,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			topologyv1.Node_builder{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
-	coreNode.Children = append(coreNode.Children, middlewareNode)
+	coreChildren = append(coreChildren, middlewareNode)
 
 	// Add Webhooks Node
 	// This would ideally come from the WebhookManager
@@ -468,7 +469,15 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			topologyv1.Node_builder{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
-	coreNode.Children = append(coreNode.Children, webhookNode)
+	coreChildren = append(coreChildren, webhookNode)
+
+	coreNode := topologyv1.Node_builder{
+		Id:       "mcp-core",
+		Label:    "MCP Any",
+		Type:     topologyv1.NodeType_NODE_TYPE_CORE,
+		Status:   topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
+		Children: coreChildren,
+	}.Build()
 
 	// Build Clients list from active sessions
 	clients := make([]*topologyv1.Node, 0, len(m.sessions))
