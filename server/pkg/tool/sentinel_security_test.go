@@ -1,7 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package tool
+package tool_test
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -39,7 +40,7 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	toolProto.SetName("awk_wrapper")
 
 	// Sentinel Security: We use NewCommandTool directly as it wraps local execution
-	tool := NewCommandTool(
+	tObj := tool.NewCommandTool(
 		toolProto,
 		svc,
 		callDef,
@@ -55,13 +56,13 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	}
 	inputBytes, _ := json.Marshal(inputMap)
 
-	req := &ExecutionRequest{
-		ToolName: "awk_wrapper",
+	req := &tool.ExecutionRequest{
+		ToolName:   "awk_wrapper",
 		ToolInputs: inputBytes,
 	}
 
 	// 3. Execute - Expect Error
-	res, err := tool.Execute(context.Background(), req)
+	res, err := tObj.Execute(context.Background(), req)
 
 	// 4. Assert
 	assert.Error(t, err)
@@ -94,7 +95,7 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("perl_wrapper")
 
-	tool := NewCommandTool(
+	tObj := tool.NewCommandTool(
 		toolProto,
 		svc,
 		callDef,
@@ -111,13 +112,13 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	}
 	inputBytes, _ := json.Marshal(inputMap)
 
-	req := &ExecutionRequest{
-		ToolName: "perl_wrapper",
+	req := &tool.ExecutionRequest{
+		ToolName:   "perl_wrapper",
 		ToolInputs: inputBytes,
 	}
 
 	// 3. Execute - Expect Error
-	res, err := tool.Execute(context.Background(), req)
+	res, err := tObj.Execute(context.Background(), req)
 
 	// 4. Assert
 	assert.Error(t, err)
@@ -150,7 +151,7 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	toolProto := &v1.Tool{}
 	toolProto.SetName("awk_wrapper_evasion")
 
-	tool := NewCommandTool(
+	tObj := tool.NewCommandTool(
 		toolProto,
 		svc,
 		callDef,
@@ -166,13 +167,13 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	}
 	inputBytes, _ := json.Marshal(inputMap)
 
-	req := &ExecutionRequest{
-		ToolName: "awk_wrapper_evasion",
+	req := &tool.ExecutionRequest{
+		ToolName:   "awk_wrapper_evasion",
 		ToolInputs: inputBytes,
 	}
 
 	// 3. Execute - Expect Error
-	res, err := tool.Execute(context.Background(), req)
+	res, err := tObj.Execute(context.Background(), req)
 
 	// 4. Assert
 	assert.Error(t, err)
