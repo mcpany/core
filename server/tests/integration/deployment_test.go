@@ -34,7 +34,7 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
+	// t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
 	// // t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
 		// t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
