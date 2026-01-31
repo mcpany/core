@@ -17,6 +17,11 @@ export enum WizardStep {
     REVIEW = 4,
 }
 
+export interface ParamValue {
+    type: 'plainText' | 'environmentVariable';
+    value: string;
+}
+
 /**
  * WizardState type definition.
  */
@@ -25,7 +30,7 @@ export interface WizardState {
     config: Partial<UpstreamServiceConfig>;
     // Temporary state for the wizard that might not map 1:1 to config yet
     selectedTemplateId?: string;
-    params: Record<string, string>; // Key-Value pairs for parameters/env vars
+    params: Record<string, ParamValue>; // Key-Value pairs for parameters/env vars
     webhooks: any[]; // TODO: Define webhook type
     transformers: any[];
     authType?: 'local' | 'new';
@@ -78,7 +83,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         const saved = sessionStorage.getItem('wizard_state');
         if (saved) {
             try {
-                setState(JSON.parse(saved));
+                const parsed = JSON.parse(saved);
+                // Migration logic: if params are strings, convert to objects
+                if (parsed.params) {
+                    const migratedParams: Record<string, ParamValue> = {};
+                    Object.entries(parsed.params).forEach(([k, v]) => {
+                        if (typeof v === 'string') {
+                            migratedParams[k] = { type: 'plainText', value: v as string };
+                        } else {
+                            migratedParams[k] = v as ParamValue;
+                        }
+                    });
+                    parsed.params = migratedParams;
+                }
+                setState(parsed);
             } catch (e) {
                 console.error("Failed to hydrate wizard state", e);
             }
@@ -133,17 +151,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
     const nextStep = () => {
         const validation = validateStep(state.currentStep);
         if (!validation.valid) {
-            // caller should handle error display, or we throw?
-            // Better to return boolean if possible, but the signature is void.
-            // We'll trust the caller to check validateStep OR we change nextStep signature?
-            // Let's change nextStep to return boolean?
-            // But consumers might expect void.
-            // Let's just return early and let UI handle validation check separately?
-            // Or exposing validateStep is better.
             console.warn("Validation failed:", validation.error);
-            // We won't block here if the UI doesn't check, but we should.
-            // Let's allow movement if we change the nextStep to check it?
-            // Ideally validation is UI concern before calling nextStep.
         }
 
         setState(prev => {
