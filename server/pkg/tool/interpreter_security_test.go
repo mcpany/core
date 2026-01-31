@@ -17,9 +17,9 @@ import (
 func TestInterpreterSecurity(t *testing.T) {
 	// 1. Ruby Interpolation Injection
 	t.Run("Ruby_DoubleQuotes_Injection", func(t *testing.T) {
-		toolDef := &pb.Tool{
+		toolDef := (&pb.Tool_builder{
 			Name: proto.String("ruby_tool"),
-		}
+		}).Build()
 		cmd := "ruby"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
@@ -57,9 +57,9 @@ func TestInterpreterSecurity(t *testing.T) {
 
 	// 2. Python F-String Injection
 	t.Run("Python_FString_Injection", func(t *testing.T) {
-		toolDef := &pb.Tool{
+		toolDef := (&pb.Tool_builder{
 			Name: proto.String("python_tool"),
-		}
+		}).Build()
 		cmd := "python3"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
@@ -97,9 +97,9 @@ func TestInterpreterSecurity(t *testing.T) {
 
     // 2b. Python Raw F-String Injection (fr'...')
     t.Run("Python_RawFString_Injection", func(t *testing.T) {
-		toolDef := &pb.Tool{
+		toolDef := (&pb.Tool_builder{
 			Name: proto.String("python_tool"),
-		}
+		}).Build()
 		cmd := "python3"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
@@ -136,9 +136,9 @@ func TestInterpreterSecurity(t *testing.T) {
 
     // 3. Python Valid JSON input (Should be allowed)
     t.Run("Python_Valid_JSON", func(t *testing.T) {
-        toolDef := &pb.Tool{
+        toolDef := (&pb.Tool_builder{
             Name: proto.String("python_json"),
-        }
+        }).Build()
 		cmd := "python3"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
@@ -177,9 +177,9 @@ func TestInterpreterSecurity(t *testing.T) {
 
 	// 4. JS Template Literal Injection
 	t.Run("JS_Template_Injection", func(t *testing.T) {
-		toolDef := &pb.Tool{
+		toolDef := (&pb.Tool_builder{
 			Name: proto.String("node_tool"),
-		}
+		}).Build()
 		cmd := "node"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
@@ -217,9 +217,9 @@ func TestInterpreterSecurity(t *testing.T) {
 
 	// 5. Bash Backtick Injection
 	t.Run("Bash_Backtick_Injection", func(t *testing.T) {
-		toolDef := &pb.Tool{
+		toolDef := (&pb.Tool_builder{
 			Name: proto.String("bash_tool"),
-		}
+		}).Build()
 		cmd := "bash"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
