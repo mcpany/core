@@ -52,9 +52,14 @@ const (
 
 	// ContextKeyRemoteAddr is the context key for the remote address.
 	ContextKeyRemoteAddr = "remote_addr"
+)
 
+// ContextKey is a custom type for context keys to avoid collisions.
+type ContextKey string
+
+const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
-	SkipSecretValidationKey = "skip_secret_validation"
+	SkipSecretValidationKey ContextKey = "skip_secret_validation"
 )
 
 const (
