@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { DynamicForm } from "@/components/ui/dynamic-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -51,6 +52,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+  const [inputMode, setInputMode] = useState<"visual" | "json">("visual");
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -172,14 +174,41 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="args">Arguments</Label>
+                        <Tabs value={inputMode} onValueChange={(v: any) => setInputMode(v)} className="w-[150px]">
+                            <TabsList className="grid w-full grid-cols-2 h-7">
+                                <TabsTrigger value="visual" className="text-[10px] h-5">Form</TabsTrigger>
+                                <TabsTrigger value="json" className="text-[10px] h-5">JSON</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+
+                    {inputMode === "json" ? (
+                        <Textarea
+                            id="args"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            className="font-mono text-sm"
+                            rows={8}
+                        />
+                    ) : (
+                        <ScrollArea className="max-h-[300px] border rounded-md p-4 bg-background/50">
+                            <DynamicForm
+                                schema={tool.inputSchema}
+                                value={(() => {
+                                    try {
+                                        return JSON.parse(input);
+                                    } catch (e) {
+                                        return {};
+                                    }
+                                })()}
+                                onChange={(val) => {
+                                    setInput(JSON.stringify(val, null, 2));
+                                }}
+                            />
+                        </ScrollArea>
+                    )}
                 </div>
 
                 {output && (
