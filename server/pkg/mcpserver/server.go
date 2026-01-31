@@ -71,8 +71,11 @@ type Server struct {
 // the core MCP server functionality. This can be used for advanced
 // configurations or direct interaction with the MCP server.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - *mcp.Server: The underlying server instance.
+//   (*mcp.Server): The underlying server instance.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -91,17 +94,18 @@ func (s *Server) Server() *mcp.Server {
 // requests and managing the lifecycle of tools, prompts, and resources.
 //
 // Parameters:
-//   - ctx: The application's root context.
-//   - toolManager: Manages the lifecycle and access to tools.
-//   - promptManager: Manages the lifecycle and access to prompts.
-//   - resourceManager: Manages the lifecycle and access to resources.
-//   - authManager: Handles authentication for incoming requests.
-//   - serviceRegistry: Keeps track of all registered upstream services.
-//   - bus: The event bus used for asynchronous communication between components.
+//   _ (context.Context): The application's root context (unused).
+//   toolManager (tool.ManagerInterface): Manages the lifecycle and access to tools.
+//   promptManager (prompt.ManagerInterface): Manages the lifecycle and access to prompts.
+//   resourceManager (resource.ManagerInterface): Manages the lifecycle and access to resources.
+//   authManager (*auth.Manager): Handles authentication for incoming requests.
+//   serviceRegistry (*serviceregistry.ServiceRegistry): Keeps track of all registered upstream services.
+//   bus (*bus.Provider): The event bus used for asynchronous communication between components.
+//   debug (bool): Enable debug mode.
 //
 // Returns:
-//   - *Server: A new instance of the Server.
-//   - error: An error if initialization fails.
+//   (*Server): A new instance of the Server.
+//   (error): An error if initialization fails.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -332,10 +336,12 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // returns them to the client.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "prompts/list" request from the client.
+//   _ (context.Context): The context for the request.
+//   _ (*mcp.ListPromptsRequest): The "prompts/list" request from the client.
 //
-// Returns a list of available prompts or an error if the retrieval fails.
+// Returns:
+//   (*mcp.ListPromptsResult): A list of available prompts.
+//   (error): An error if the retrieval fails.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -355,6 +361,14 @@ func (s *Server) ListPrompts(
 // CreateMessage requests a message creation from the client (sampling).
 // This method exposes sampling to the Server instance if a session is available.
 // Note: In a stateless request context without a persistent session, this might fail.
+//
+// Parameters:
+//   ctx (context.Context): The context.
+//   params (*mcp.CreateMessageParams): The parameters for creating a message.
+//
+// Returns:
+//   (*mcp.CreateMessageResult): The result of the message creation.
+//   (error): An error if the operation fails.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -369,12 +383,12 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 // prompt.ErrPromptNotFound error.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "prompts/get" request from the client, containing the prompt
-//     name and arguments.
+//   ctx (context.Context): The context for the request.
+//   req (*mcp.GetPromptRequest): The "prompts/get" request from the client, containing the prompt name and arguments.
 //
-// Returns the result of the prompt execution or an error if the prompt is not
-// found or execution fails.
+// Returns:
+//   (*mcp.GetPromptResult): The result of the prompt execution.
+//   (error): An error if the prompt is not found or execution fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -407,10 +421,12 @@ func (s *Server) GetPrompt(
 // format, and returns them to the client.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "resources/list" request from the client.
+//   _ (context.Context): The context for the request.
+//   _ (*mcp.ListResourcesRequest): The "resources/list" request from the client.
 //
-// Returns a list of available resources or an error if the retrieval fails.
+// Returns:
+//   (*mcp.ListResourcesResult): A list of available resources.
+//   (error): An error if the retrieval fails.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -433,12 +449,12 @@ func (s *Server) ListResources(
 // error.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - req: The "resources/read" request from the client, containing the URI
-//     of the resource to be read.
+//   ctx (context.Context): The context for the request.
+//   req (*mcp.ReadResourceRequest): The "resources/read" request from the client, containing the URI of the resource to be read.
 //
-// Returns the content of the resource or an error if the resource is not found
-// or reading fails.
+// Returns:
+//   (*mcp.ReadResourceResult): The content of the resource.
+//   (error): An error if the resource is not found or reading fails.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -463,8 +479,11 @@ func (s *Server) ReadResource(
 // AuthManager returns the server's authentication manager, which is responsible
 // for handling authentication for incoming requests.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - The authentication manager instance.
+//   (*auth.Manager): The authentication manager instance.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
@@ -472,8 +491,11 @@ func (s *Server) AuthManager() *auth.Manager {
 // ToolManager returns the server's tool manager, which is responsible for
 // managing the lifecycle and access to tools.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - The tool manager interface.
+//   (tool.ManagerInterface): The tool manager interface.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
@@ -481,8 +503,11 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 // PromptManager returns the server's prompt manager, which is responsible for
 // managing the lifecycle and access to prompts.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - The prompt manager interface.
+//   (prompt.ManagerInterface): The prompt manager interface.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
@@ -490,8 +515,11 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 // ResourceManager returns the server's resource manager, which is responsible
 // for managing the lifecycle and access to resources.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - The resource manager interface.
+//   (resource.ManagerInterface): The resource manager interface.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
@@ -499,8 +527,11 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 // ServiceRegistry returns the server's service registry, which keeps track of
 // all registered upstream services.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - The service registry instance.
+//   (*serviceregistry.ServiceRegistry): The service registry instance.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
@@ -508,8 +539,11 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 // AddServiceInfo adds information about a service to the tool manager.
 //
 // Parameters:
-//   - serviceID: The unique identifier of the service.
-//   - info: The service information to add.
+//   serviceID (string): The unique identifier of the service.
+//   info (*tool.ServiceInfo): The service information to add.
+//
+// Returns:
+//   None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -517,19 +551,22 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 // GetTool retrieves a tool by its name.
 //
 // Parameters:
-//   - toolName: The name of the tool to retrieve.
+//   toolName (string): The name of the tool to retrieve.
 //
 // Returns:
-//   - The tool instance if found.
-//   - A boolean indicating whether the tool was found.
+//   (tool.Tool): The tool instance if found.
+//   (bool): A boolean indicating whether the tool was found.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
 // ListTools returns a list of all available tools.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - A slice of all available tools.
+//   ([]tool.Tool): A slice of all available tools.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -539,12 +576,12 @@ func (s *Server) ListTools() []tool.Tool {
 // CallTool executes a tool with the provided request.
 //
 // Parameters:
-//   - ctx: The context for the execution.
-//   - req: The execution request containing tool name and arguments.
+//   ctx (context.Context): The context for the execution.
+//   req (*tool.ExecutionRequest): The execution request containing tool name and arguments.
 //
 // Returns:
-//   - The result of the tool execution.
-//   - An error if the tool execution fails or access is denied.
+//   (any): The result of the tool execution.
+//   (error): An error if the tool execution fails or access is denied.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -700,7 +737,10 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 // SetMCPServer sets the MCP server provider for the tool manager.
 //
 // Parameters:
-//   - mcpServer: The MCP server provider to set.
+//   mcpServer (tool.MCPServerProvider): The MCP server provider to set.
+//
+// Returns:
+//   None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -708,10 +748,10 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 // AddTool registers a new tool with the tool manager.
 //
 // Parameters:
-//   - t: The tool instance to register.
+//   t (tool.Tool): The tool instance to register.
 //
 // Returns:
-//   - An error if the tool cannot be added (e.g., if it already exists).
+//   (error): An error if the tool cannot be added (e.g., if it already exists).
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -719,11 +759,11 @@ func (s *Server) AddTool(t tool.Tool) error {
 // GetServiceInfo retrieves information about a service by its ID.
 //
 // Parameters:
-//   - serviceID: The unique identifier of the service.
+//   serviceID (string): The unique identifier of the service.
 //
 // Returns:
-//   - A pointer to the ServiceInfo if found.
-//   - A boolean indicating whether the service was found.
+//   (*tool.ServiceInfo): A pointer to the ServiceInfo if found.
+//   (bool): A boolean indicating whether the service was found.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -735,7 +775,10 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // ClearToolsForService removes all tools associated with a specific service.
 //
 // Parameters:
-//   - serviceKey: The identifier of the service whose tools should be cleared.
+//   serviceKey (string): The identifier of the service whose tools should be cleared.
+//
+// Returns:
+//   None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -743,7 +786,10 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 // SetReloadFunc sets the function to be called when a configuration reload is triggered.
 //
 // Parameters:
-//   - f: The function to execute on reload.
+//   f (func(context.Context) error): The function to execute on reload.
+//
+// Returns:
+//   None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -751,10 +797,10 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 // Reload reloads the server's configuration and updates its state.
 //
 // Parameters:
-//   - ctx: The context for the reload operation.
+//   ctx (context.Context): The context for the reload operation.
 //
 // Returns:
-//   - An error if the reload function fails.
+//   (error): An error if the reload function fails.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
