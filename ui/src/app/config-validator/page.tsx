@@ -6,12 +6,24 @@
 "use client";
 
 import { useState } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
+
+// ⚡ Bolt Optimization: Lazy load Monaco Editor to reduce initial bundle size.
+// Randomized Selection from Top 5 High-Impact Targets
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full items-center justify-center text-muted-foreground">
+      <Loader2 className="h-6 w-6 animate-spin" />
+      <span className="ml-2">Loading Editor...</span>
+    </div>
+  ),
+});
 
 /**
  * ConfigValidatorPage allows users to validate their YAML or JSON configuration
