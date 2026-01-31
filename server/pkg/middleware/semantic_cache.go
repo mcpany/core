@@ -19,28 +19,33 @@ type EmbeddingProvider interface {
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
-	// ctx is the context for the request.
-	// key is the key.
-	// vector is the vector.
-	// result is the result.
-	// ttl is the ttl.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - key: string. The key associated with the entry (e.g., hash of input).
+	//   - vector: []float32. The embedding vector.
+	//   - result: any. The result to cache.
+	//   - ttl: time.Duration. The time-to-live for the entry.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error
 	// Search searches for the most similar entry in the vector store.
 	//
-	// ctx is the context for the request.
-	// key is the key.
-	// query is the query.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - key: string. The key to search for (e.g., hash of input).
+	//   - query: []float32. The query embedding vector.
 	//
-	// Returns the result.
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - any: The cached result if a match is found.
+	//   - float32: The similarity score (0.0 to 1.0).
+	//   - bool: True if a match exceeding the threshold is found, false otherwise.
 	Search(ctx context.Context, key string, query []float32) (any, float32, bool)
 	// Prune removes expired entries.
 	//
-	// ctx is the context for the request.
-	// key is the key.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - key: string. The key to prune.
 	Prune(ctx context.Context, key string)
 }
 
@@ -53,11 +58,13 @@ type SemanticCache struct {
 
 // NewSemanticCache creates a new SemanticCache.
 //
-// provider is the provider.
-// store is the store.
-// threshold is the threshold.
+// Parameters:
+//   - provider: EmbeddingProvider. The provider for generating embeddings.
+//   - store: VectorStore. The store for caching vectors.
+//   - threshold: float32. The similarity threshold for a cache hit (0.0 to 1.0).
 //
-// Returns the result.
+// Returns:
+//   - *SemanticCache: The initialized SemanticCache.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -89,13 +96,15 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 
 // Set adds a result to the cache using the provided embedding.
 //
-// ctx is the context for the request.
-// key is the key.
-// embedding is the embedding.
-// result is the result.
-// ttl is the ttl.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - key: string. The key associated with the entry.
+//   - embedding: []float32. The embedding vector.
+//   - result: any. The result to cache.
+//   - ttl: time.Duration. The time-to-live for the entry.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

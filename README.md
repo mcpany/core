@@ -4,23 +4,28 @@
 
 ## 1. Elevator Pitch
 
-**What is this project and why does it exist?**
-
 **MCP Any** is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
 
+**Why it exists:**
 Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
 
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**The Solution:**
+Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
 ## 2. Architecture
 
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services.
+MCP Any acts as a centralized **Gateway** and **Middleware** between AI Agents (Clients) and your Upstream Services.
 
-**High-Level Overview:**
+**Stack & Design:**
+*   **Runtime:** Go (High performance, concurrency)
+*   **Pattern:** Adapter & Gateway
+*   **Protocol:** Model Context Protocol (MCP)
+
+**High-Level Components:**
 1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration.
+2.  **Service Registry**: Dynamically loads tool definitions from configuration (Hot-Reloadable).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, etc.).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies (DLP, RBAC).
 
 ```mermaid
 graph TD
@@ -132,7 +137,21 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
 
 ### Required Secrets
-Sensitive information (like upstream API keys) should be injected via environment variables or a secret manager, referenced in your configuration files using `${ENV_VAR_NAME}` syntax.
+
+**Security First:** Never commit secrets to version control.
+
+MCP Any supports injecting sensitive information (like upstream API keys, database credentials) via environment variables or secret managers.
+
+**Usage:**
+1.  **Define:** Set the environment variable (e.g., `export OPENAI_API_KEY=sk-...`).
+2.  **Reference:** Use the `${ENV_VAR_NAME}` syntax in your YAML/JSON configuration files.
+3.  **Run:** The server will resolve these placeholders at runtime.
+
+Example `config.yaml`:
+```yaml
+authentication:
+  apiKey: ${OPENAI_API_KEY}
+```
 
 ## Documentation
 *   **[Developer Guide](server/docs/developer_guide.md)**: Detailed internal architecture and contribution guide.
