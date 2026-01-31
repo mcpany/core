@@ -21,8 +21,13 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 	handler := app.handleUserDetail(store)
 
 	// Setup: Create 2 users
-	victim := &configv1.User{Id: proto.String("victim-user"), Roles: []string{"user"}}
-	admin := &configv1.User{Id: proto.String("admin-user"), Roles: []string{"admin"}}
+	victim := &configv1.User{}
+	victim.SetId("victim-user")
+	victim.SetRoles([]string{"user"})
+
+	admin := &configv1.User{}
+	admin.SetId("admin-user")
+	admin.SetRoles([]string{"admin"})
 
 	require.NoError(t, store.CreateUser(context.Background(), victim))
 	require.NoError(t, store.CreateUser(context.Background(), admin))
