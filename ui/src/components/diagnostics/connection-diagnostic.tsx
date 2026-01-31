@@ -230,7 +230,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
 
     // --- Step 3: Operational Verification ---
     // Only proceed if backend check was successful or skipped (disabled)
-    const backendStep = steps.find(s => s.id === "backend_health");
     // We access current state via a fresh look or logic flow, but here 'steps' state is stale closure.
     // However, we can infer success if we reached here without returning early?
     // Actually, I didn't return early in backend_health block. I should probably check if previous steps failed.
