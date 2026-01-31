@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { JsonView } from "@/components/ui/json-view";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -165,7 +166,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                       </TabsContent>
                       <TabsContent value="json" className="mt-2">
                         <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/50">
-                            <pre className="text-xs">{JSON.stringify(tool.inputSchema, null, 2)}</pre>
+                            <JsonView data={tool.inputSchema} defaultExpandDepth={3} className="text-xs" />
                         </ScrollArea>
                       </TabsContent>
                     </Tabs>
@@ -186,7 +187,17 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                      <div className="grid gap-2">
                         <Label>Result</Label>
                         <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                            <pre className="text-xs text-green-600 dark:text-green-400 font-mono">{output}</pre>
+                            <JsonView
+                                data={(() => {
+                                    try {
+                                        return JSON.parse(output);
+                                    } catch {
+                                        return output;
+                                    }
+                                })()}
+                                defaultExpandDepth={3}
+                                className="text-xs font-mono"
+                            />
                         </ScrollArea>
                     </div>
                 )}
