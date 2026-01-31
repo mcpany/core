@@ -4,6 +4,8 @@
 package tool
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
@@ -47,6 +49,9 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	var canonicalArgs []byte
+	canonicalArgsInitialized := false
+
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
 		if policy == nil {
@@ -71,7 +76,11 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 					// Cannot match argument regex at registration time
 					matched = false
 				} else {
-					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), arguments); !matchedArgs {
+					if !canonicalArgsInitialized {
+						canonicalArgs = getCanonicalArgs(arguments)
+						canonicalArgsInitialized = true
+					}
+					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), canonicalArgs); !matchedArgs {
 						matched = false
 					}
 				}
@@ -189,6 +198,9 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns true if successful.
 // Returns an error if the operation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	var canonicalArgs []byte
+	canonicalArgsInitialized := false
+
 	for _, policy := range policies {
 		policyBlocked := false
 		matchedRule := false
@@ -209,8 +221,14 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 			if matched && rule.GetArgumentRegex() != "" {
 				if arguments == nil {
 					matched = false
-				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(arguments) {
-					matched = false
+				} else {
+					if !canonicalArgsInitialized {
+						canonicalArgs = getCanonicalArgs(arguments)
+						canonicalArgsInitialized = true
+					}
+					if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(canonicalArgs) {
+						matched = false
+					}
 				}
 			}
 
@@ -233,4 +251,28 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 		}
 	}
 	return true, nil
+}
+
+func getCanonicalArgs(raw []byte) []byte {
+	if raw == nil {
+		return nil
+	}
+	var v interface{}
+	// Use standard encoding/json to ensure consistent behavior
+	if err := json.Unmarshal(raw, &v); err != nil {
+		// If it's not valid JSON, we can't canonicalize it.
+		// Return raw as fallback, assuming the policy might match the raw string (e.g. for non-JSON tools if any).
+		return raw
+	}
+
+	// Use Encoder to disable HTML escaping (preserves <, >, &)
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(v); err != nil {
+		return raw
+	}
+
+	// Encoder appends a newline, trim it to match Marshal behavior
+	return bytes.TrimSuffix(buf.Bytes(), []byte{'\n'})
 }
