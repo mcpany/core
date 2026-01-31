@@ -49,3 +49,28 @@ func TestSanitizeSchema_Recursive(t *testing.T) {
 	foo := props["foo"].(map[string]interface{})
 	assert.Equal(t, "object", foo["type"])
 }
+
+func TestSanitizeSchema_Definitions(t *testing.T) {
+	// Check if definitions are sanitized in the current implementation
+	rawSchema := map[string]interface{}{
+		"definitions": map[string]interface{}{
+			"foo": map[string]interface{}{
+				"properties": map[string]interface{}{
+					"bar": map[string]interface{}{
+						"type": "string",
+					},
+				},
+			},
+		},
+	}
+
+	sanitized, err := SanitizeJSONSchema(rawSchema)
+	assert.NoError(t, err)
+
+	sanitizedMap := sanitized.AsMap()
+	defs := sanitizedMap["definitions"].(map[string]interface{})
+	foo := defs["foo"].(map[string]interface{})
+
+	// Bolt Optimization: We now sanitize definitions as well.
+	assert.Equal(t, "object", foo["type"])
+}
