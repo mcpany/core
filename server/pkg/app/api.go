@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -425,6 +426,9 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 }
 
 func checkFilesystemAccess(path string) error {
+	if err := validation.IsAllowedPath(path); err != nil {
+		return err
+	}
 	_, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {

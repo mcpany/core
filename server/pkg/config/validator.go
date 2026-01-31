@@ -578,8 +578,32 @@ func validateServiceConfig(ctx context.Context, service *configv1.UpstreamServic
 		return validateSQLService(sqlService)
 	} else if graphqlService := service.GetGraphqlService(); graphqlService != nil {
 		return validateGraphQLService(graphqlService)
+	} else if fsService := service.GetFilesystemService(); fsService != nil {
+		return validateFilesystemService(ctx, fsService)
 	} else if webrtcService := service.GetWebrtcService(); webrtcService != nil {
 		return validateWebrtcService(webrtcService)
+	}
+	return nil
+}
+
+func validateFilesystemService(ctx context.Context, fs *configv1.FilesystemUpstreamService) error {
+	for _, path := range fs.GetRootPaths() {
+		if path == "" {
+			return fmt.Errorf("empty root path")
+		}
+
+		if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+			if err := validation.IsSecurePath(path); err != nil {
+				return fmt.Errorf("filesystem path %q is not secure: %w", path, err)
+			}
+		} else {
+			if err := validation.IsAllowedPath(path); err != nil {
+				return fmt.Errorf("filesystem path %q is not allowed: %w", path, err)
+			}
+			if err := validateDirectoryExists(ctx, path); err != nil {
+				return fmt.Errorf("filesystem path %q error: %w", path, err)
+			}
+		}
 	}
 	return nil
 }
