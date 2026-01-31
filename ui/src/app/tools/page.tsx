@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { List, LayoutList, Layers } from "lucide-react";
+import { List, LayoutList, Layers, Star, X } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { SmartToolSearch } from "@/components/tools/smart-tool-search";
@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -41,12 +42,14 @@ export default function ToolsPage() {
   const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const { isPinned, togglePin, isLoaded } = usePinnedTools();
+  const { isPinned, togglePin, bulkSetPins, isLoaded } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
+  const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -101,6 +104,37 @@ export default function ToolsPage() {
         console.error("Failed to toggle tool", e);
         fetchTools(); // Revert
     }
+  };
+
+  const handleBulkEnable = async () => {
+    if (selectedTools.size === 0) return;
+    try {
+        await Promise.all(Array.from(selectedTools).map(name => apiClient.setToolStatus(name, false)));
+        toast({ title: "Bulk Action", description: `Enabled ${selectedTools.size} tools.` });
+        fetchTools();
+        setSelectedTools(new Set());
+    } catch (e) {
+        toast({ title: "Error", description: "Failed to enable tools.", variant: "destructive" });
+    }
+  };
+
+  const handleBulkDisable = async () => {
+    if (selectedTools.size === 0) return;
+    try {
+        await Promise.all(Array.from(selectedTools).map(name => apiClient.setToolStatus(name, true)));
+        toast({ title: "Bulk Action", description: `Disabled ${selectedTools.size} tools.` });
+        fetchTools();
+        setSelectedTools(new Set());
+    } catch (e) {
+        toast({ title: "Error", description: "Failed to disable tools.", variant: "destructive" });
+    }
+  };
+
+  const handleBulkPin = (pin: boolean) => {
+    if (selectedTools.size === 0) return;
+    bulkSetPins(Array.from(selectedTools), pin);
+    setSelectedTools(new Set());
+    toast({ title: "Bulk Action", description: `${pin ? "Pinned" : "Unpinned"} ${selectedTools.size} tools.` });
   };
 
   const toggleCompact = () => {
@@ -232,6 +266,8 @@ export default function ToolsPage() {
               toggleTool={toggleTool}
               openInspector={openInspector}
               usageStats={toolUsage}
+              selectedTools={selectedTools}
+              onSelectionChange={setSelectedTools}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -254,6 +290,8 @@ export default function ToolsPage() {
                       toggleTool={toggleTool}
                       openInspector={openInspector}
                       usageStats={toolUsage}
+                      selectedTools={selectedTools}
+                      onSelectionChange={setSelectedTools}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -262,6 +300,32 @@ export default function ToolsPage() {
           )}
         </CardContent>
       </Card>
+
+      {selectedTools.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-foreground/90 text-background px-4 py-3 rounded-full shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-4 fade-in duration-300 backdrop-blur-md border border-white/20">
+            <span className="font-medium text-sm whitespace-nowrap pl-2">
+                {selectedTools.size} selected
+            </span>
+            <div className="h-4 w-px bg-background/20" />
+            <div className="flex items-center gap-1">
+                <Button size="sm" variant="ghost" className="h-8 hover:bg-background/20 hover:text-background" onClick={handleBulkEnable}>
+                    Enable
+                </Button>
+                <Button size="sm" variant="ghost" className="h-8 hover:bg-background/20 hover:text-background" onClick={handleBulkDisable}>
+                    Disable
+                </Button>
+            </div>
+            <div className="h-4 w-px bg-background/20" />
+            <div className="flex items-center gap-1">
+                 <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-background/20 hover:text-background" onClick={() => handleBulkPin(true)} title="Pin Selected">
+                    <Star className="h-4 w-4 fill-current" />
+                </Button>
+                 <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-background/20 hover:text-background" onClick={() => setSelectedTools(new Set())} title="Clear Selection">
+                    <X className="h-4 w-4" />
+                </Button>
+            </div>
+        </div>
+      )}
 
       <ToolInspector
         tool={selectedTool}
