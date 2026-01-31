@@ -15,13 +15,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 )
 
 func TestDockerComposeE2E(t *testing.T) {
@@ -548,28 +548,80 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	content, err := os.ReadFile(originalPath)
 	require.NoError(t, err)
 
-	// Replace fixed ports with 0 ports
-	// Match pattern: "HOST_PORT:CONTAINER_PORT"
-	// We want to replace any HostPort with a specific port from our range.
-	re := regexp.MustCompile(`"([0-9\$\{}:_a-zA-Z-]+):([0-9]+)"`)
-	port := 25200
-	s := re.ReplaceAllStringFunc(string(content), func(match string) string {
-		parts := re.FindStringSubmatch(match)
-		res := fmt.Sprintf(`"%d:%s"`, port, parts[2])
-		port++
-		return res
-	})
+	// Parse YAML structure
+	var data map[string]interface{}
+	err = yaml.Unmarshal(content, &data)
+	require.NoError(t, err, "Failed to parse docker-compose YAML")
 
-	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
-	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
-
-	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
-	// We assume typical docker-compose indentation of services/environment.
-	// This is a simple injection that works for standard file structures.
-	// A more robust way would be to unmarshal/marshal YAML.
-	if !strings.Contains(s, "MCPANY_ENABLE_FILE_CONFIG") {
-		s = strings.Replace(s, "environment:", "environment:\n      MCPANY_ENABLE_FILE_CONFIG: \"true\"", -1)
+	// Helper to find free ports
+	portCounter := 25200
+	getFreePort := func() int {
+		p := portCounter
+		portCounter++
+		return p
 	}
+
+	services, ok := data["services"].(map[string]interface{})
+	if ok {
+		for name, svc := range services {
+			s, ok := svc.(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			// Modify Ports
+			if ports, ok := s["ports"].([]interface{}); ok {
+				newPorts := []string{}
+				for _, p := range ports {
+					// Handle different formats: "80:80", 80, struct
+					pStr := fmt.Sprintf("%v", p)
+					parts := strings.Split(pStr, ":")
+					if len(parts) >= 2 {
+						// Replace host port (first part) with dynamic port
+						containerPort := parts[len(parts)-1]
+						newPorts = append(newPorts, fmt.Sprintf("%d:%s", getFreePort(), containerPort))
+					} else {
+						newPorts = append(newPorts, pStr) // Keep as is if no mapping? Or ignore
+					}
+				}
+				s["ports"] = newPorts
+			}
+
+			// Inject Environment Variables into mcpany-server
+			if strings.Contains(name, "mcpany-server") || strings.Contains(name, "server") {
+				envMap := make(map[string]string)
+				// Check if env is list or map
+				if envList, ok := s["environment"].([]interface{}); ok {
+					for _, e := range envList {
+						parts := strings.SplitN(fmt.Sprintf("%v", e), "=", 2)
+						if len(parts) == 2 {
+							envMap[parts[0]] = parts[1]
+						}
+					}
+				} else if envM, ok := s["environment"].(map[string]interface{}); ok {
+					for k, v := range envM {
+						envMap[k] = fmt.Sprintf("%v", v)
+					}
+				}
+
+				// Inject required vars
+				envMap["MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES"] = "true"
+				envMap["MCPANY_DANGEROUS_ALLOW_LOCAL_IPS"] = "true"
+				envMap["MCPANY_ENABLE_FILE_CONFIG"] = "true"
+
+				// Reconstruct environment list
+				newEnv := []string{}
+				for k, v := range envMap {
+					newEnv = append(newEnv, fmt.Sprintf("%s=%s", k, v))
+				}
+				s["environment"] = newEnv
+			}
+		}
+	}
+
+	// Serialize back to YAML
+	newContent, err := yaml.Marshal(data)
+	require.NoError(t, err, "Failed to marshal modified docker-compose YAML")
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")
@@ -580,7 +632,7 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	tmpFile, err := os.CreateTemp(buildDir, "docker-compose-dynamic-*.yml")
 	require.NoError(t, err)
 
-	_, err = tmpFile.WriteString(s)
+	_, err = tmpFile.Write(newContent)
 	require.NoError(t, err)
 	tmpFile.Close()
 
