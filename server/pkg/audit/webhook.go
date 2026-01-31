@@ -146,5 +146,8 @@ func (s *WebhookAuditStore) Close() error {
 		close(s.queue)
 	}
 	s.wg.Wait()
+	if s.client != nil {
+		s.client.CloseIdleConnections()
+	}
 	return nil
 }

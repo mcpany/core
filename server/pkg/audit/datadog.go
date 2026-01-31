@@ -171,5 +171,8 @@ func (e *DatadogAuditStore) Close() error {
 		close(e.queue)
 	}
 	e.wg.Wait()
+	if e.client != nil {
+		e.client.CloseIdleConnections()
+	}
 	return nil
 }
