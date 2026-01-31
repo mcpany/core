@@ -93,7 +93,7 @@ test.describe('Playground Complex Schema Support', () => {
     // await expect(page.getByText('developer', { exact: false })).toBeVisible();
 
     // Verify result
-    // Note: JsonView renders strings with quotes
-    await expect(page.getByText('"Executed complex_tool')).toBeVisible();
+    // Note: JsonView renders strings with quotes. Using regex for robust matching.
+    await expect(page.getByText(/"Executed complex_tool/)).toBeVisible();
   });
 });
