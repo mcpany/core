@@ -23,16 +23,17 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{}
-	callDef.SetArgs([]string{"-c", "awk '{{script}}'"})
-
-	param1 := &configv1.CommandLineParameterMapping{}
-	param1.SetSchema(configv1.ParameterSchema_builder{
-		Name: proto.String("script"),
-		Type: &stringType,
-	}.Build())
-
-	callDef.SetParameters([]*configv1.CommandLineParameterMapping{param1})
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "awk '{{script}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("script"),
+					Type: &stringType,
+				}.Build(),
+			},
+		},
+	}
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("awk_wrapper")
@@ -77,16 +78,17 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{}
-	callDef.SetArgs([]string{"-c", "perl -e '{{script}}'"})
-
-	param2 := &configv1.CommandLineParameterMapping{}
-	param2.SetSchema(configv1.ParameterSchema_builder{
-		Name: proto.String("script"),
-		Type: &stringType,
-	}.Build())
-
-	callDef.SetParameters([]*configv1.CommandLineParameterMapping{param2})
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "perl -e '{{script}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("script"),
+					Type: &stringType,
+				}.Build(),
+			},
+		},
+	}
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("perl_wrapper")
@@ -132,16 +134,17 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{}
-	callDef.SetArgs([]string{"-c", "awk '{{script}}'"})
-
-	param3 := &configv1.CommandLineParameterMapping{}
-	param3.SetSchema(configv1.ParameterSchema_builder{
-		Name: proto.String("script"),
-		Type: &stringType,
-	}.Build())
-
-	callDef.SetParameters([]*configv1.CommandLineParameterMapping{param3})
+	callDef := &configv1.CommandLineCallDefinition{
+		Args: []string{"-c", "awk '{{script}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("script"),
+					Type: &stringType,
+				}.Build(),
+			},
+		},
+	}
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("awk_wrapper_evasion")
