@@ -52,16 +52,17 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		users       []*configv1.User
 		settings    *configv1.GlobalSettings
 		collections []*configv1.Collection
+		profiles    []*configv1.ProfileDefinition
 
 		wg   sync.WaitGroup
 		mu   sync.Mutex
 		errs []error
 	)
 
-	// ⚡ BOLT: Parallelized data loading (4 concurrent queries) to reduce latency.
+	// ⚡ BOLT: Parallelized data loading (5 concurrent queries) to reduce latency.
 	// Randomized Selection from Top 5 High-Impact Targets
 
-	wg.Add(4)
+	wg.Add(5)
 
 	// 1. Load services
 	go func() {
@@ -181,10 +182,57 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 		}
 	}()
 
+	// 5. Load Profiles
+	go func() {
+		defer wg.Done()
+		rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
+		if err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to query profile_definitions: %w", err))
+			mu.Unlock()
+			return
+		}
+		defer func() { _ = rows.Close() }()
+
+		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
+		for rows.Next() {
+			var configJSON string
+			if err := rows.Scan(&configJSON); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to scan profile config_json: %w", err))
+				mu.Unlock()
+				return
+			}
+			var p configv1.ProfileDefinition
+			if err := opts.Unmarshal([]byte(configJSON), &p); err != nil {
+				mu.Lock()
+				errs = append(errs, fmt.Errorf("failed to unmarshal profile config: %w", err))
+				mu.Unlock()
+				return
+			}
+			profiles = append(profiles, &p)
+		}
+		if err := rows.Err(); err != nil {
+			mu.Lock()
+			errs = append(errs, fmt.Errorf("failed to iterate profile rows: %w", err))
+			mu.Unlock()
+		}
+	}()
+
 	wg.Wait()
 
 	if len(errs) > 0 {
 		return nil, errs[0]
+	}
+
+	// Merge Profiles into Global Settings
+	if len(profiles) > 0 {
+		if settings == nil {
+			settings = configv1.GlobalSettings_builder{}.Build()
+		}
+		current := settings.GetProfileDefinitions()
+		current = append(current, profiles...)
+		settings.SetProfileDefinitions(current)
 	}
 
 	builder := configv1.McpAnyServerConfig_builder{
