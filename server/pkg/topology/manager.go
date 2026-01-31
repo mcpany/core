@@ -404,7 +404,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 				Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 			}.Build()
 			if svc.GetDisable() {
-				svcNode.Status = topologyv1.NodeStatus_NODE_STATUS_INACTIVE
+				svcNode.SetStatus(topologyv1.NodeStatus_NODE_STATUS_INACTIVE)
 			}
 
 			// Add Tools
@@ -424,13 +424,13 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 						Type:   topologyv1.NodeType_NODE_TYPE_API_CALL,
 						Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE,
 					}.Build()
-					toolNode.Children = append(toolNode.Children, apiNode)
+					toolNode.SetChildren(append(toolNode.GetChildren(), apiNode))
 
-					svcNode.Children = append(svcNode.Children, toolNode)
+					svcNode.SetChildren(append(svcNode.GetChildren(), toolNode))
 				}
 			}
 
-			coreNode.Children = append(coreNode.Children, svcNode)
+			coreNode.SetChildren(append(coreNode.GetChildren(), svcNode))
 		}
 	}
 
@@ -446,7 +446,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			topologyv1.Node_builder{Id: "mw-log", Label: "Logging", Type: topologyv1.NodeType_NODE_TYPE_MIDDLEWARE, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
-	coreNode.Children = append(coreNode.Children, middlewareNode)
+	coreNode.SetChildren(append(coreNode.GetChildren(), middlewareNode))
 
 	// Add Webhooks Node
 	// This would ideally come from the WebhookManager
@@ -460,7 +460,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			topologyv1.Node_builder{Id: "wh-1", Label: "event-logger", Type: topologyv1.NodeType_NODE_TYPE_WEBHOOK, Status: topologyv1.NodeStatus_NODE_STATUS_ACTIVE}.Build(),
 		},
 	}.Build()
-	coreNode.Children = append(coreNode.Children, webhookNode)
+	coreNode.SetChildren(append(coreNode.GetChildren(), webhookNode))
 
 	// Build Clients list from active sessions
 	clients := make([]*topologyv1.Node, 0, len(m.sessions))
