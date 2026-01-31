@@ -8,20 +8,30 @@
 import React, { useEffect, useRef } from "react";
 import Editor, { useMonaco, OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { STACK_CONFIG_SCHEMA } from "@/lib/stack-schema";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 
+/**
+ * Props for the ConfigEditor component.
+ */
 interface ConfigEditorProps {
+  /** The current text content of the editor. */
   value: string;
+  /** Callback triggered when the editor content changes. */
   onChange: (value: string | undefined) => void;
+  /** The language for syntax highlighting (e.g., "yaml", "json"). Defaults to "yaml". */
   language?: string;
+  /** Whether the editor is in read-only mode. Defaults to false. */
   readOnly?: boolean;
 }
 
 /**
- * ConfigEditor.
+ * A Monaco-based code editor component for editing configuration files.
  *
- * @param readOnly = false - The readOnly = false.
+ * It supports syntax highlighting, auto-completion for specific YAML schemas (mocked),
+ * and automatic theme switching (light/dark/dracula).
+ *
+ * @param props - The component props.
+ * @returns The rendered ConfigEditor component.
  */
 export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {
   const { theme, systemTheme } = useTheme();

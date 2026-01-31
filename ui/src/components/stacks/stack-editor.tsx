@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from "react";
 import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import jsyaml from "js-yaml";
@@ -24,9 +24,18 @@ interface StackEditorProps {
 }
 
 /**
- * StackEditor.
+ * A comprehensive editor for managing stack configurations.
  *
- * @param { stackId - The { stackId.
+ * It provides a split-view interface with:
+ * - Left panel: Service Palette for dragging/dropping templates.
+ * - Center panel: Monaco-based YAML editor with validation.
+ * - Right panel: Live visualizer of the defined services.
+ *
+ * It handles loading, saving, validating, and exporting stack configurations.
+ *
+ * @param props - The component props.
+ * @param props.stackId - The unique identifier of the stack to edit.
+ * @returns The rendered StackEditor component.
  */
 export function StackEditor({ stackId }: StackEditorProps) {
     const [content, setContent] = useState("");

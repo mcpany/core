@@ -30,11 +30,13 @@ import { formatDistanceToNow } from "date-fns";
  */
 interface InspectorTableProps {
   /**
-   * List of traces to display in the table.
+   * List of trace objects to display in the table.
+   * Each trace represents a request or operation within the system.
    */
   traces: Trace[];
   /**
-   * Whether the table is currently loading data.
+   * Indicates if the table is currently fetching or processing data.
+   * If true, a loading state will be shown if there are no traces.
    */
   loading?: boolean;
 }
@@ -43,9 +45,9 @@ interface InspectorTableProps {
  * Renders an icon representing the status of a trace span.
  *
  * @param props - The component props.
- * @param props.status - The status of the span (e.g., 'success', 'error').
- * @param props.className - Optional CSS classes.
- * @returns The status icon component.
+ * @param props.status - The status of the span (e.g., 'success', 'error', 'pending').
+ * @param props.className - Optional CSS class names to apply to the icon.
+ * @returns The rendered status icon component.
  */
 function StatusIcon({ status, className }: { status: SpanStatus, className?: string }) {
   if (status === 'error') return <AlertCircle className={cn("text-destructive", className)} />;
@@ -54,12 +56,12 @@ function StatusIcon({ status, className }: { status: SpanStatus, className?: str
 }
 
 /**
- * Renders an icon representing the type of a trace span.
+ * Renders an icon representing the type of a trace span (e.g., tool execution, service call).
  *
  * @param props - The component props.
  * @param props.type - The type of the span (e.g., 'tool', 'service', 'resource').
- * @param props.className - Optional CSS classes.
- * @returns The type icon component.
+ * @param props.className - Optional CSS class names to apply to the icon.
+ * @returns The rendered type icon component.
  */
 function TypeIcon({ type, className }: { type: string, className?: string }) {
     switch(type) {
@@ -72,7 +74,7 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
 
 /**
  * ⚡ BOLT: Memoized row component to prevent unnecessary re-renders when parent updates.
- * Randomized Selection from Top 5 High-Impact Targets
+ * Displays a single trace row in the table.
  */
 const TraceRow = React.memo(({ trace, onClick }: { trace: Trace; onClick: (t: Trace) => void }) => {
   return (
@@ -111,13 +113,13 @@ const TraceRow = React.memo(({ trace, onClick }: { trace: Trace; onClick: (t: Tr
 TraceRow.displayName = 'TraceRow';
 
 /**
- * A table component for displaying and inspecting traces.
- * Allows clicking on a row to view detailed trace information in a sheet.
+ * A table component for displaying and inspecting system traces.
+ *
+ * It renders a list of traces with details like timestamp, type, name, status, and duration.
+ * Clicking on a row opens a side sheet with detailed information about the selected trace.
  *
  * @param props - The component props.
- * @param props.traces - The list of traces to display.
- * @param props.loading - Whether the data is loading.
- * @returns The rendered table component.
+ * @returns The rendered InspectorTable component.
  */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);

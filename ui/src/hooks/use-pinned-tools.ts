@@ -8,8 +8,15 @@ import { useState, useEffect } from "react";
 const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
- * Hook for pinnedtools.
- * @returns The result.
+ * Hook to manage the list of pinned tools in the user interface.
+ *
+ * It persists the list of pinned tool names in localStorage so they remain pinned across sessions.
+ *
+ * @returns An object containing:
+ * - `pinnedTools`: The array of pinned tool names.
+ * - `togglePin`: A function to toggle the pinned state of a tool.
+ * - `isPinned`: A function to check if a specific tool is pinned.
+ * - `isLoaded`: A boolean indicating if the initial load from localStorage is complete.
  */
 export function usePinnedTools() {
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);

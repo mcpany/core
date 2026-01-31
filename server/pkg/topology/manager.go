@@ -378,9 +378,15 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 
 // GetGraph generates the current topology graph.
 //
-// _ is an unused parameter.
+// It constructs a graph representation of the system, including the core node,
+// connected services, tools, and clients. It enriches the graph with real-time
+// metrics (QPS, error rate, latency) from the traffic history.
 //
-// Returns the result.
+// Parameters:
+//   - ctx: context.Context. The context for the operation (unused).
+//
+// Returns:
+//   - *topologyv1.Graph: The generated topology graph.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -50,23 +50,29 @@ const JsonViewer = dynamic(() => import("./json-viewer"), {
 });
 
 /**
- * LogLevel type definition.
+ * LogLevel defines the severity of a log message.
  */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
 /**
- * LogEntry type definition.
+ * LogEntry represents a single log message from the system.
  */
 export interface LogEntry {
+  /** Unique identifier for the log entry. */
   id: string
+  /** ISO timestamp of when the log was created. */
   timestamp: string
+  /** Severity level of the log. */
   level: LogLevel
+  /** The log message content. */
   message: string
+  /** The source component or service that generated the log. */
   source?: string
+  /** Additional metadata associated with the log. */
   metadata?: Record<string, unknown>
-  // Optimization: Pre-computed lowercase string for search performance
+  /** Optimization: Pre-computed lowercase string for search performance. */
   searchStr?: string
-  // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
+  /** Optimization: Pre-computed formatted time string to avoid repeated Date parsing. */
   formattedTime?: string
 }
 
@@ -249,8 +255,18 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
- * LogStream component.
- * @returns The rendered component.
+ * A live-streaming log viewer component.
+ *
+ * It connects to a WebSocket endpoint to display real-time logs, offering features like:
+ * - Filtering by log level (INFO, WARN, ERROR, DEBUG).
+ * - Filtering by source.
+ * - Free-text search with highlighting.
+ * - Pausing/resuming the stream.
+ * - Auto-scrolling to the latest log.
+ * - Expandable JSON views for log messages.
+ * - Exporting logs to a file.
+ *
+ * @returns The rendered LogStream component.
  */
 export function LogStream() {
   const [logs, setLogs] = React.useState<LogEntry[]>([])

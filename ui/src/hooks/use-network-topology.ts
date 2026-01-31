@@ -68,8 +68,12 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
 /**
  * Hook to fetch and manage network topology data.
- * It periodically polls the backend for topology updates and handles layouting.
- * @returns The network graph state and actions.
+ *
+ * It periodically polls the backend for topology updates (via context),
+ * processes the raw graph data into React Flow nodes and edges, and handles
+ * the auto-layout of the graph using Dagre.
+ *
+ * @returns The network graph state and actions (nodes, edges, layout controls).
  */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);

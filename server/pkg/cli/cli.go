@@ -10,8 +10,10 @@ import (
 	"io"
 )
 
-// JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes
-// JSON-encoded data from a reader.
+// JSONExecutor handles JSON-based communication between an input reader and an output writer.
+//
+// It is designed to facilitate command-line interactions or inter-process communication
+// where messages are exchanged as JSON objects.
 type JSONExecutor struct {
 	// in is the writer to which the JSON-encoded data is sent.
 	in io.Writer
@@ -21,10 +23,12 @@ type JSONExecutor struct {
 
 // NewJSONExecutor creates a new JSONExecutor with the given writer and reader.
 //
-// in is the in.
-// out is the out.
+// Parameters:
+//   - in: io.Writer. The destination for JSON-encoded output.
+//   - out: io.Reader. The source for JSON-encoded input.
 //
-// Returns the result.
+// Returns:
+//   - *JSONExecutor: A new instance of JSONExecutor.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -34,6 +38,16 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 
 // Execute sends the given data as a JSON-encoded message to the writer and
 // decodes the JSON-encoded response from the reader into the given result.
+//
+// It first encodes the 'data' parameter to the executor's input writer, then
+// waits to decode the response from the executor's output reader into 'result'.
+//
+// Parameters:
+//   - data: any. The payload to encode and send.
+//   - result: any. A pointer to the target struct/map where the response will be decoded.
+//
+// Returns:
+//   - error: An error if encoding or decoding fails.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

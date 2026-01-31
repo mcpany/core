@@ -17,21 +17,26 @@ import {
     Search,
     Plus
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * ServiceTemplate type definition.
+ * ServiceTemplate defines the structure for a reusable service configuration template.
  */
 export interface ServiceTemplate {
+    /** Unique identifier for the template. */
     id: string;
+    /** Display name of the template. */
     name: string;
+    /** Brief description of what the service does. */
     description: string;
+    /** Icon component to represent the service. */
     icon: React.ElementType;
+    /** Category the service belongs to. */
     category: "Database" | "MCP Server" | "Utility" | "AI";
+    /** The YAML configuration snippet that will be inserted. */
     yamlSnippet: string;
 }
 
@@ -124,14 +129,20 @@ const TEMPLATES: ServiceTemplate[] = [
     }
 ];
 
+/**
+ * Props for the ServicePalette component.
+ */
 interface ServicePaletteProps {
+    /** Callback function triggered when a user selects a template. */
     onTemplateSelect: (snippet: string) => void;
 }
 
 /**
- * ServicePalette.
+ * A sidebar component that displays a palette of available service templates.
+ * Users can search, filter, and select templates to inject into the configuration.
  *
- * @param { onTemplateSelect - The { onTemplateSelect.
+ * @param props - The component props.
+ * @returns The rendered ServicePalette component.
  */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const [search, setSearch] = React.useState("");

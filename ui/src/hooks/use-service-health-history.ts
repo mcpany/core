@@ -51,10 +51,15 @@ interface HealthResponse {
 }
 
 /**
- * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
- * It polls the backend API for health data (which now includes server-side history).
+ * Hook that fetches and maintains real-time health history of services.
  *
- * @returns An object containing the current services list, their health history, and a loading state.
+ * It periodically polls the backend API for health status and history data,
+ * updating automatically when the tab is visible.
+ *
+ * @returns An object containing:
+ * - `services`: The list of current service health statuses.
+ * - `history`: A map of service IDs to their health history points.
+ * - `isLoading`: A boolean indicating if the initial data fetch is in progress.
  */
 export function useServiceHealthHistory() {
   const [history, setHistory] = useState<ServiceHistory>({});

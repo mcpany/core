@@ -36,9 +36,15 @@ interface ParsedService {
 }
 
 /**
- * StackVisualizer.
+ * A real-time visualizer for the stack configuration.
  *
- * @param { yamlContent - The { yamlContent.
+ * It parses the YAML content on the fly and renders a list of cards representing
+ * the services defined in the configuration. It handles syntax errors gracefully
+ * by displaying an error message.
+ *
+ * @param props - The component props.
+ * @param props.yamlContent - The raw YAML string to parse and visualize.
+ * @returns The rendered StackVisualizer component.
  */
 export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     const { services, error } = useMemo(() => {

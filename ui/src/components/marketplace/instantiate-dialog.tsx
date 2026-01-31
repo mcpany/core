@@ -17,17 +17,29 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { SchemaForm } from "./schema-form";
 import { SecretValue } from "@proto/config/v1/auth";
 
+/**
+ * Props for the InstantiateDialog component.
+ */
 interface InstantiateDialogProps {
+    /** Whether the dialog is currently open. */
     open: boolean;
+    /** Callback triggered when the open state changes. */
     onOpenChange: (open: boolean) => void;
+    /** The configuration template to base the new instance on. */
     templateConfig?: UpstreamServiceConfig;
+    /** Callback triggered when instantiation is successfully completed. */
     onComplete: () => void;
 }
 
 /**
- * InstantiateDialog.
+ * A dialog for creating a new service instance from a template.
  *
- * @param onComplete - The onComplete.
+ * It allows the user to customize the service name, command arguments,
+ * environment variables, and authentication settings before creation.
+ * If a JSON schema is provided in the template, it renders a form based on that schema.
+ *
+ * @param props - The component props.
+ * @returns The rendered InstantiateDialog component.
  */
 export function InstantiateDialog({ open, onOpenChange, templateConfig, onComplete }: InstantiateDialogProps) {
     const { toast } = useToast();

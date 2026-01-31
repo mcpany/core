@@ -6,16 +6,29 @@
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
 
+/**
+ * Configuration options for the useTraces hook.
+ */
 interface UseTracesOptions {
+    /** Whether to start the hook in a paused state. Defaults to false. */
     initialPaused?: boolean;
 }
 
 /**
- * Hook to manage trace subscriptions via WebSocket.
+ * Hook to manage real-time trace subscriptions via WebSocket.
+ *
+ * It connects to the trace WebSocket endpoint, handles reconnection logic,
+ * and maintains the state of received traces, including deduplication.
  *
  * @param options - Configuration options for the trace hook.
- * @param options.initialPaused - Whether to start in a paused state.
- * @returns An object containing the current traces, loading state, connection status, and controls.
+ * @returns An object containing:
+ * - `traces`: The array of collected traces.
+ * - `loading`: A boolean indicating if the connection is initializing.
+ * - `isConnected`: A boolean indicating if the WebSocket is connected.
+ * - `isPaused`: A boolean indicating if trace collection is currently paused.
+ * - `setIsPaused`: A function to toggle the paused state.
+ * - `clearTraces`: A function to clear the current list of traces.
+ * - `refresh`: A function to clear traces and reconnect the WebSocket.
  */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);

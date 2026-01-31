@@ -10,22 +10,27 @@ import { UpstreamServiceConfig } from "@/lib/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Terminal, Globe, Play } from "lucide-react";
 
+/**
+ * Props for the CollectionDetailsDialog component.
+ */
 interface CollectionDetailsDialogProps {
+    /** Whether the dialog is currently open. */
     open: boolean;
+    /** Callback triggered when the open state changes. */
     onOpenChange: (open: boolean) => void;
+    /** The service collection object to display details for. */
     collection: ServiceCollection | undefined;
+    /** Callback triggered when the user clicks "Instantiate" on a specific service within the collection. */
     onInstantiateService: (service: UpstreamServiceConfig) => void;
 }
 
 /**
- * CollectionDetailsDialog component.
- * Displays details about a specific service collection in a dialog.
+ * A dialog component that displays detailed information about a Service Collection.
+ *
+ * It lists the individual services contained within the collection and provides
+ * a way to instantiate them individually.
  *
  * @param props - The component props.
- * @param props.open - Whether the dialog is open.
- * @param props.onOpenChange - Callback function when the dialog open state changes.
- * @param props.collection - The service collection to display details for.
- * @param props.onInstantiateService - Callback function to instantiate a service from the collection.
  * @returns The rendered CollectionDetailsDialog component.
  */
 export function CollectionDetailsDialog({
