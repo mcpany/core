@@ -10,6 +10,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -24,40 +25,44 @@ func TestGenerateDocumentation(t *testing.T) {
 	})
 
 	cfg := func() *configv1.McpAnyServerConfig {
-		c := &configv1.McpAnyServerConfig{}
-		svc := &configv1.UpstreamServiceConfig{}
-		svc.SetName("weather")
-		svc.SetId("weather-id")
+		param := configv1.HttpParameterMapping_builder{
+			Schema: configv1.ParameterSchema_builder{
+				Name: proto.String("query"),
+				Type: configv1.ParameterType_STRING.Enum(),
+			}.Build(),
+		}.Build()
 
-		httpSvc := &configv1.HttpUpstreamService{}
-		httpSvc.SetAddress("http://example.com")
+		callDef := configv1.HttpCallDefinition_builder{
+			EndpointPath: proto.String("/weather"),
+			Method:       configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+			Parameters:   []*configv1.HttpParameterMapping{param},
+		}.Build()
 
-		callDef := &configv1.HttpCallDefinition{}
-		callDef.SetEndpointPath("/weather")
-		callDef.SetMethod(configv1.HttpCallDefinition_HTTP_METHOD_GET)
+		tool := configv1.ToolDefinition_builder{
+			Name:        proto.String("get_weather"),
+			Description: proto.String("Get the weather"),
+			InputSchema: inputSchema,
+			ServiceId:   proto.String("weather-id"),
+			CallId:      proto.String("weather_call"),
+		}.Build()
 
-		param := &configv1.HttpParameterMapping{}
-		schema := &configv1.ParameterSchema{}
-		schema.SetName("query")
-		schema.SetType(configv1.ParameterType_STRING)
-		param.SetSchema(schema)
-		callDef.SetParameters([]*configv1.HttpParameterMapping{param})
+		httpSvc := configv1.HttpUpstreamService_builder{
+			Address: proto.String("http://example.com"),
+			Calls: map[string]*configv1.HttpCallDefinition{
+				"weather_call": callDef,
+			},
+			Tools: []*configv1.ToolDefinition{tool},
+		}.Build()
 
-		httpSvc.SetCalls(map[string]*configv1.HttpCallDefinition{
-			"weather_call": callDef,
-		})
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name:        proto.String("weather"),
+			Id:          proto.String("weather-id"),
+			HttpService: httpSvc,
+		}.Build()
 
-		tool := &configv1.ToolDefinition{}
-		tool.SetName("get_weather")
-		tool.SetDescription("Get the weather")
-		tool.SetInputSchema(inputSchema)
-		tool.SetServiceId("weather-id")
-		tool.SetCallId("weather_call")
-		httpSvc.SetTools([]*configv1.ToolDefinition{tool})
-
-		svc.SetHttpService(httpSvc)
-		c.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
-		return c
+		return configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
+		}.Build()
 	}()
 
 	doc, err := config.GenerateDocumentation(context.Background(), cfg)

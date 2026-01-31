@@ -125,6 +125,8 @@ func TestMergeStrategyAndFiltering(t *testing.T) {
 
 	configContent := fmt.Sprintf(`
 global_settings:
+  db_driver: "sqlite"
+  db_path: "%s"
   profiles: ["custom_profile"]
   profile_definitions:
     - name: "custom_profile"
@@ -133,6 +135,10 @@ global_settings:
       service_config:
         "mock-service":
           enabled: true
+
+users:
+  - id: "default"
+    profile_ids: ["custom_profile"]
 
 upstream_services:
   - name: "mock-service"
@@ -149,7 +155,7 @@ upstream_services:
           tags: ["visible"]
         - name: "tool_b"
           tags: ["hidden"] # Should be filtered out by profile "custom_profile" (selecting "visible")
-`, mockServerBin)
+`, filepath.Join(tmpDir, "test.db"), mockServerBin)
 
 	err = os.WriteFile(configPath, []byte(configContent), 0644)
 	require.NoError(t, err)
@@ -233,11 +239,13 @@ upstream_services:
 	require.Eventually(t, func() bool {
 		tools, err := callListTools()
 		if err != nil {
+			t.Logf("ListTools error: %v", err)
 			return false
 		}
 
 		for _, tool := range tools {
-			if tool["name"] == "tool_a" {
+			name, _ := tool["name"].(string)
+			if name == "tool_a" || name == "mock-service.tool_a" {
 				// Verify override worked
 				if desc, ok := tool["description"].(string); ok && desc == "Overridden Description A" {
 					return true
@@ -251,7 +259,8 @@ upstream_services:
 	tools, err := callListTools()
 	require.NoError(t, err)
 	for _, tool := range tools {
-		if tool["name"] == "tool_b" {
+		name, _ := tool["name"].(string)
+		if name == "tool_b" || name == "mock-service.tool_b" {
 			assert.Fail(t, "tool_b should be filtered out")
 		}
 	}

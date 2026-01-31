@@ -395,7 +395,15 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// Build Service -> Tool subtree
 	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
+		// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets.
+		// Optimized nested loop to O(N+M) using a map.
 		tools := m.toolManager.ListTools()
+		toolsByService := make(map[string][]tool.Tool)
+		for _, t := range tools {
+			svcID := t.Tool().GetServiceId()
+			toolsByService[svcID] = append(toolsByService[svcID], t)
+		}
+
 		for _, svc := range services {
 			svcNode := topologyv1.Node_builder{
 				Id:     "svc-" + svc.GetName(),
@@ -408,8 +416,8 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			}
 
 			// Add Tools
-			for _, t := range tools {
-				if t.Tool().GetServiceId() == svc.GetName() {
+			if svcTools, ok := toolsByService[svc.GetName()]; ok {
+				for _, t := range svcTools {
 					toolNode := topologyv1.Node_builder{
 						Id:     "tool-" + t.Tool().GetName(),
 						Label:  t.Tool().GetName(),

@@ -56,6 +56,10 @@ const (
 	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
 	// Value should be a boolean.
 	SkipSecretValidationKey contextKey = "skip_secret_validation"
+
+	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
+	// Value should be a boolean.
+	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
 )
 
 var (
@@ -98,7 +102,7 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	serviceNames := make(map[string]bool)
 
 	if gs := config.GetGlobalSettings(); gs != nil {
-		if err := validateGlobalSettings(gs, binaryType); err != nil {
+		if err := validateGlobalSettings(ctx, gs, binaryType); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
 				ServiceName: "global_settings",
 				Err:         err,
@@ -188,7 +192,7 @@ func validateCollection(ctx context.Context, collection *configv1.Collection) er
 	return nil
 }
 
-func validateStdioArgs(command string, args []string, workingDir string) error {
+func validateStdioArgs(ctx context.Context, command string, args []string, workingDir string) error {
 	// Only check for common interpreters to avoid false positives on arbitrary flags
 	baseCmd := filepath.Base(command)
 	isInterpreter := false
@@ -259,7 +263,7 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 		}
 
 		// Check if file exists
-		if err := validateFileExists(arg, workingDir); err != nil {
+		if err := validateFileExists(ctx, arg, workingDir); err != nil {
 			return WrapActionableError(fmt.Sprintf("argument %q looks like a script file but does not exist", arg), err)
 		}
 
@@ -270,7 +274,12 @@ func validateStdioArgs(command string, args []string, workingDir string) error {
 	return nil
 }
 
-func validateFileExists(path string, workingDir string) error {
+func validateFileExists(ctx context.Context, path string, workingDir string) error {
+	// Security: If context requests skipping filesystem checks, return success immediately.
+	if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+		return nil
+	}
+
 	targetPath := path
 	// If path is relative and workingDir is set, join them.
 	// Note: If workingDir is empty, we check relative to CWD (process root), which is standard behavior.
@@ -311,6 +320,10 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 	// Security: If context requests skipping secret validation, we skip strict existence checks
 	// to prevent information leakage (oracle attacks) where a user can probe environment variables or files.
 	skipExistenceCheck, _ := ctx.Value(SkipSecretValidationKey).(bool)
+	skipFilesystemCheck, _ := ctx.Value(SkipFilesystemCheckKey).(bool)
+	if skipFilesystemCheck {
+		skipExistenceCheck = true
+	}
 
 	switch secret.WhichValue() {
 	case configv1.SecretValue_EnvironmentVariable_case:
@@ -329,8 +342,14 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 			}
 		}
 	case configv1.SecretValue_FilePath_case:
-		if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
-			return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
+		if skipFilesystemCheck {
+			if err := validation.IsSecurePath(secret.GetFilePath()); err != nil {
+				return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
+			}
+		} else {
+			if err := validation.IsAllowedPath(secret.GetFilePath()); err != nil {
+				return fmt.Errorf("invalid secret file path %q: %w", secret.GetFilePath(), err)
+			}
 		}
 		// Validate that the file actually exists to fail fast
 		// We skip this check if we are in validation mode to prevent file existence enumeration.
@@ -392,7 +411,7 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 	return nil
 }
 
-func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) error {
+func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, binaryType BinaryType) error {
 	switch binaryType {
 	case Server:
 		if gs.GetMcpListenAddress() != "" {
@@ -422,7 +441,7 @@ func validateGlobalSettings(gs *configv1.GlobalSettings, binaryType BinaryType) 
 		return fmt.Errorf("dlp config error: %w", err)
 	}
 
-	if err := validateGCSettings(gs.GetGcSettings()); err != nil {
+	if err := validateGCSettings(ctx, gs.GetGcSettings()); err != nil {
 		return fmt.Errorf("gc settings error: %w", err)
 	}
 
@@ -493,15 +512,51 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.Authentication_BasicAuth_case:
-		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
+		return validateBasicAuth(ctx, authConfig.GetBasicAuth(), authCtx)
 	case configv1.Authentication_Mtls_case:
-		return validateMtlsAuth(authConfig.GetMtls())
+		return validateMtlsAuth(ctx, authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
 		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	case configv1.Authentication_Oidc_case:
 		return validateOIDCAuth(ctx, authConfig.GetOidc())
 	case configv1.Authentication_TrustedHeader_case:
 		return validateTrustedHeaderAuth(authConfig.GetTrustedHeader())
+	}
+	return nil
+}
+
+func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth, authCtx AuthValidationContext) error {
+	if basicAuth.GetUsername() == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'username' is empty"),
+			Suggestion: "Set the 'username' field.",
+		}
+	}
+
+	// For incoming auth (Users), we accept either a plain text password (for seeding) OR a hash.
+	if authCtx == AuthValidationContextIncoming && basicAuth.GetPasswordHash() != "" {
+		return nil
+	}
+
+	if basicAuth.GetPassword() == nil {
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'password' is missing"),
+			Suggestion: "Set the 'password' field.",
+		}
+	}
+
+	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
+		return WrapActionableError("basic auth password validation failed", err)
+	}
+	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
+	if err != nil {
+		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
+	}
+	if passwordValue == "" {
+		return &ActionableError{
+			Err:        fmt.Errorf("basic auth 'password' is empty"),
+			Suggestion: "Check that the environment variable or file providing the password is not empty.",
+		}
 	}
 	return nil
 }
@@ -516,7 +571,7 @@ func validateServiceConfig(ctx context.Context, service *configv1.UpstreamServic
 	} else if openapiService := service.GetOpenapiService(); openapiService != nil {
 		return validateOpenAPIService(openapiService)
 	} else if commandLineService := service.GetCommandLineService(); commandLineService != nil {
-		return validateCommandLineService(commandLineService)
+		return validateCommandLineService(ctx, commandLineService)
 	} else if mcpService := service.GetMcpService(); mcpService != nil {
 		return validateMcpService(ctx, mcpService)
 	} else if sqlService := service.GetSqlService(); sqlService != nil {
@@ -662,7 +717,7 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 	return nil
 }
 
-func validateCommandLineService(commandLineService *configv1.CommandLineUpstreamService) error {
+func validateCommandLineService(ctx context.Context, commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return &ActionableError{
 			Err:        fmt.Errorf("command_line_service has empty command"),
@@ -672,18 +727,18 @@ func validateCommandLineService(commandLineService *configv1.CommandLineUpstream
 
 	// Only validate command existence if not running in a container
 	if commandLineService.GetContainerEnvironment().GetImage() == "" {
-		if err := validateCommandExists(commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
+		if err := validateCommandExists(ctx, commandLineService.GetCommand(), commandLineService.GetWorkingDirectory()); err != nil {
 			return WrapActionableError("command_line_service command validation failed", err)
 		}
 	}
 
-	if err := validateContainerEnvironment(commandLineService.GetContainerEnvironment()); err != nil {
+	if err := validateContainerEnvironment(ctx, commandLineService.GetContainerEnvironment()); err != nil {
 		return err
 	}
 	return nil
 }
 
-func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
+func validateContainerEnvironment(ctx context.Context, env *configv1.ContainerEnvironment) error {
 	if env == nil {
 		return nil
 	}
@@ -699,8 +754,14 @@ func validateContainerEnvironment(env *configv1.ContainerEnvironment) error {
 			// dest is the key (Host Path), src is the value (Container Path).
 			// We must validate the Host Path (dest) to ensure it is secure.
 			// It must be either relative to the CWD or in the allowed list.
-			if err := validation.IsAllowedPath(dest); err != nil {
-				return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
+			if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+				if err := validation.IsSecurePath(dest); err != nil {
+					return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
+				}
+			} else {
+				if err := validation.IsAllowedPath(dest); err != nil {
+					return fmt.Errorf("container environment volume host path %q is not a secure path: %w", dest, err)
+				}
 			}
 		}
 	}
@@ -741,11 +802,11 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 
 		// If running in Docker (container_image is set), we don't enforce host path/command restrictions
 		if stdioConn.GetContainerImage() == "" {
-			if err := validateCommandExists(stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
+			if err := validateCommandExists(ctx, stdioConn.GetCommand(), stdioConn.GetWorkingDirectory()); err != nil {
 				return WrapActionableError("mcp service with stdio_connection command validation failed", err)
 			}
 
-			if err := validateStdioArgs(stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
+			if err := validateStdioArgs(ctx, stdioConn.GetCommand(), stdioConn.GetArgs(), stdioConn.GetWorkingDirectory()); err != nil {
 				return WrapActionableError("mcp service with stdio_connection argument validation failed", err)
 			}
 
@@ -753,7 +814,7 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 				if err := validation.IsAllowedPath(stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection has insecure working_directory %q: %w", stdioConn.GetWorkingDirectory(), err)
 				}
-				if err := validateDirectoryExists(stdioConn.GetWorkingDirectory()); err != nil {
+				if err := validateDirectoryExists(ctx, stdioConn.GetWorkingDirectory()); err != nil {
 					return fmt.Errorf("mcp service with stdio_connection working_directory validation failed: %w", err)
 				}
 			}
@@ -881,9 +942,9 @@ func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Au
 	case configv1.Authentication_BearerToken_case:
 		return validateBearerTokenAuth(ctx, authConfig.GetBearerToken())
 	case configv1.Authentication_BasicAuth_case:
-		return validateBasicAuth(ctx, authConfig.GetBasicAuth())
+		return validateBasicAuth(ctx, authConfig.GetBasicAuth(), authCtx)
 	case configv1.Authentication_Mtls_case:
-		return validateMtlsAuth(authConfig.GetMtls())
+		return validateMtlsAuth(ctx, authConfig.GetMtls())
 	case configv1.Authentication_Oauth2_case:
 		return validateOAuth2Auth(ctx, authConfig.GetOauth2())
 	case configv1.Authentication_Oidc_case:
@@ -964,34 +1025,6 @@ func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTo
 		return &ActionableError{
 			Err:        fmt.Errorf("bearer token 'token' is empty"),
 			Suggestion: "Check that the environment variable or file providing the Bearer token is not empty.",
-		}
-	}
-	return nil
-}
-
-func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth) error {
-	if basicAuth.GetUsername() == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'username' is empty"),
-			Suggestion: "Set the 'username' field.",
-		}
-	}
-	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
-		return WrapActionableError("basic auth password validation failed", err)
-	}
-
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
-		return nil
-	}
-
-	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
-	if err != nil {
-		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
-	}
-	if passwordValue == "" {
-		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'password' is empty"),
-			Suggestion: "Check that the environment variable or file providing the password is not empty.",
 		}
 	}
 	return nil
@@ -1085,26 +1118,44 @@ func validateTrustedHeaderAuth(th *configv1.TrustedHeaderAuth) error {
 	return nil
 }
 
-func validateMtlsAuth(mtls *configv1.MTLSAuth) error {
+func validateMtlsAuth(ctx context.Context, mtls *configv1.MTLSAuth) error {
 	if mtls.GetClientCertPath() == "" {
 		return fmt.Errorf("mtls 'client_cert_path' is empty")
 	}
 	if mtls.GetClientKeyPath() == "" {
 		return fmt.Errorf("mtls 'client_key_path' is empty")
 	}
-	if err := validation.IsAllowedPath(mtls.GetClientCertPath()); err != nil {
-		return fmt.Errorf("mtls 'client_cert_path' is not a secure path: %w", err)
+	skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool)
+	checkPath := func(path, name string) error {
+		if ok && skip {
+			if err := validation.IsSecurePath(path); err != nil {
+				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
+			}
+		} else {
+			if err := validation.IsAllowedPath(path); err != nil {
+				return fmt.Errorf("mtls '%s' is not a secure path: %w", name, err)
+			}
+		}
+		return nil
 	}
-	if err := validation.IsAllowedPath(mtls.GetClientKeyPath()); err != nil {
-		return fmt.Errorf("mtls 'client_key_path' is not a secure path: %w", err)
+
+	if err := checkPath(mtls.GetClientCertPath(), "client_cert_path"); err != nil {
+		return err
+	}
+	if err := checkPath(mtls.GetClientKeyPath(), "client_key_path"); err != nil {
+		return err
 	}
 	if mtls.GetCaCertPath() != "" {
-		if err := validation.IsAllowedPath(mtls.GetCaCertPath()); err != nil {
-			return fmt.Errorf("mtls 'ca_cert_path' is not a secure path: %w", err)
+		if err := checkPath(mtls.GetCaCertPath(), "ca_cert_path"); err != nil {
+			return err
 		}
 	}
 
 	check := func(path, fieldName string) error {
+		// Security: If context requests skipping filesystem checks, return success immediately.
+		if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+			return nil
+		}
 		if _, err := osStat(path); err != nil {
 			if os.IsNotExist(err) {
 				return &ActionableError{
@@ -1219,7 +1270,7 @@ func validateDLPConfig(dlp *configv1.DLPConfig) error {
 	return nil
 }
 
-func validateGCSettings(gc *configv1.GCSettings) error {
+func validateGCSettings(ctx context.Context, gc *configv1.GCSettings) error {
 	if gc == nil {
 		return nil
 	}
@@ -1238,8 +1289,15 @@ func validateGCSettings(gc *configv1.GCSettings) error {
 			if path == "" {
 				return fmt.Errorf("empty gc path")
 			}
-			if err := validation.IsAllowedPath(path); err != nil {
-				return fmt.Errorf("gc path %q is not secure: %w", path, err)
+			if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+				// Just check string safety to prevent traversal, but skip disk checks (IsAllowedPath calls EvalSymlinks)
+				if err := validation.IsSecurePath(path); err != nil {
+					return fmt.Errorf("gc path %q is not secure: %w", path, err)
+				}
+			} else {
+				if err := validation.IsAllowedPath(path); err != nil {
+					return fmt.Errorf("gc path %q is not secure: %w", path, err)
+				}
 			}
 			// We might also checking if it's absolute?
 			if !filepath.IsAbs(path) {
@@ -1255,7 +1313,12 @@ func validateProfileDefinition(_ *configv1.ProfileDefinition) error {
 	return nil
 }
 
-func validateCommandExists(command string, workingDir string) error {
+func validateCommandExists(ctx context.Context, command string, workingDir string) error {
+	// Security: If context requests skipping filesystem checks, return success immediately.
+	if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+		return nil
+	}
+
 	// If the command is an absolute path, check if it exists and is executable
 	if filepath.IsAbs(command) {
 		info, err := osStat(command)
@@ -1307,7 +1370,12 @@ func validateCommandExists(command string, workingDir string) error {
 	return nil
 }
 
-func validateDirectoryExists(path string) error {
+func validateDirectoryExists(ctx context.Context, path string) error {
+	// Security: If context requests skipping filesystem checks, return success immediately.
+	if skip, ok := ctx.Value(SkipFilesystemCheckKey).(bool); ok && skip {
+		return nil
+	}
+
 	info, err := osStat(path)
 	if err != nil {
 		if os.IsNotExist(err) {

@@ -149,6 +149,10 @@ type Manager struct {
 	cachedMCPTools []*mcp.Tool
 	toolsMutex     sync.RWMutex
 
+	// Indices for O(1) cleanup
+	serviceToolIDs   map[string]map[string]struct{}
+	serviceToolNames map[string]map[string]struct{}
+
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
 	allowedServicesCache map[string]map[string]bool
@@ -165,6 +169,8 @@ func NewManager(bus *bus.Provider) *Manager {
 		tools:                xsync.NewMap[string, Tool](),
 		serviceInfo:          xsync.NewMap[string, *ServiceInfo](),
 		nameMap:              xsync.NewMap[string, string](),
+		serviceToolIDs:       make(map[string]map[string]struct{}),
+		serviceToolNames:     make(map[string]map[string]struct{}),
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
 		allowedServicesCache: make(map[string]map[string]bool),
 	}
@@ -679,18 +685,33 @@ func (tm *Manager) AddTool(tool Tool) error {
 	log.Debug("Adding tool to Manager")
 	tm.tools.Store(toolID, tool)
 
+	// Update indices
+	serviceID := tool.Tool().GetServiceId()
+	if tm.serviceToolIDs[serviceID] == nil {
+		tm.serviceToolIDs[serviceID] = make(map[string]struct{})
+	}
+	tm.serviceToolIDs[serviceID][toolID] = struct{}{}
+
 	// Map client-facing name to internal ID
 	// Use tool.Tool().GetName() which is the raw name (e.g. "mcp:list_roots")
 	// If the tool has a Service ID, we ONLY expose the namespaced version "service.tool"
 	// to prevent auth bypasses and collisions.
 	// If it doesn't have a Service ID (e.g. internal tools), we expose the short name.
+	var nameKey string
 	if tool.Tool().GetServiceId() == "" {
-		tm.nameMap.Store(tool.Tool().GetName(), toolID)
+		nameKey = tool.Tool().GetName()
+		tm.nameMap.Store(nameKey, toolID)
 	} else {
 		// Enforce namespacing for service tools
-		fullExposedName := tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
-		tm.nameMap.Store(fullExposedName, toolID)
+		nameKey = tool.Tool().GetServiceId() + "." + tool.Tool().GetName()
+		tm.nameMap.Store(nameKey, toolID)
 	}
+
+	// Update name index
+	if tm.serviceToolNames[serviceID] == nil {
+		tm.serviceToolNames[serviceID] = make(map[string]struct{})
+	}
+	tm.serviceToolNames[serviceID][nameKey] = struct{}{}
 
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
@@ -913,31 +934,26 @@ func (tm *Manager) ClearToolsForService(serviceID string) {
 	log := logging.GetLogger().With("serviceID", serviceID)
 	log.Debug("Clearing existing tools for serviceID before reload/overwrite.")
 	deletedCount := 0
-	tm.tools.Range(func(key string, value Tool) bool {
-		if value.Tool().GetServiceId() == serviceID {
-			tm.tools.Delete(key)
-			// Also remove from nameMap.
-			// This is inefficient as we have to scan nameMap or store reverse mapping.
-			// Since ClearToolsForService is rare (only on reload), scanning nameMap is acceptable?
-			// OR we assume nameMap is consistent.
-			// Let's scan nameMap to clean up by Value? No Xsync Map doesn't support Range easily for Delete?
-			// It does supports Range.
-			// But deleting while ranging?
+
+	// ⚡ BOLT: Use secondary index for O(1) cleanup instead of O(N) map scan
+	// Randomized Selection from Top 5 High-Impact Targets
+
+	// 1. Cleanup Tools
+	if toolIDs, ok := tm.serviceToolIDs[serviceID]; ok {
+		for toolID := range toolIDs {
+			tm.tools.Delete(toolID)
 			deletedCount++
 		}
-		return true
-	})
+		delete(tm.serviceToolIDs, serviceID)
+	}
 
-	// Cleanup NameMap
-	tm.nameMap.Range(func(key, value string) bool {
-		// If the ID (value) belongs to the service?
-		// We don't verify serviceID from key easily without parsing.
-		// Value is toolID: "serviceID.sanitizedName".
-		if strings.HasPrefix(value, serviceID+".") {
-			tm.nameMap.Delete(key)
+	// 2. Cleanup NameMap
+	if names, ok := tm.serviceToolNames[serviceID]; ok {
+		for name := range names {
+			tm.nameMap.Delete(name)
 		}
-		return true
-	})
+		delete(tm.serviceToolNames, serviceID)
+	}
 
 	if deletedCount > 0 {
 		tm.toolsMutex.Lock()

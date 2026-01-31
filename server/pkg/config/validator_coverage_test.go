@@ -22,11 +22,11 @@ func TestValidateFileExists(t *testing.T) {
 	defer os.Remove(f.Name())
 
 	// Case 1: File exists
-	err = validateFileExists(f.Name(), "")
+	err = validateFileExists(context.Background(), f.Name(), "")
 	assert.NoError(t, err)
 
 	// Case 2: File does not exist
-	err = validateFileExists("/path/to/non/existent/file", "")
+	err = validateFileExists(context.Background(), "/path/to/non/existent/file", "")
 	assert.Error(t, err)
 
 	// Case 3: Directory
@@ -34,7 +34,7 @@ func TestValidateFileExists(t *testing.T) {
 	require.NoError(t, err)
 	defer os.Remove(d)
 
-	err = validateFileExists(d, "")
+	err = validateFileExists(context.Background(), d, "")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "is a directory")
 }
@@ -119,7 +119,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 			"": "/container/path",
 		},
 	}.Build()
-	err := validateContainerEnvironment(env)
+	err := validateContainerEnvironment(context.Background(), env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "host path is empty")
 
@@ -127,7 +127,7 @@ func TestValidateContainerEnvironment_Errors(t *testing.T) {
 	env.SetVolumes(map[string]string{
 		"/host/path": "",
 	})
-	err = validateContainerEnvironment(env)
+	err = validateContainerEnvironment(context.Background(), env)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "container path is empty")
 }
@@ -165,14 +165,14 @@ func TestValidateUpstreamAuthentication_Errors(t *testing.T) {
 
 func TestValidateSQLService_Errors(t *testing.T) {
 	// Empty Driver
-	s := &configv1.SqlUpstreamService{}
+	s := configv1.SqlUpstreamService_builder{}.Build()
 	s.SetDriver("")
 	err := validateSQLService(s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "driver")
 
 	// Empty DSN
-	s = &configv1.SqlUpstreamService{}
+	s = configv1.SqlUpstreamService_builder{}.Build()
 	s.SetDriver("postgres")
 	s.SetDsn("")
 	err = validateSQLService(s)
@@ -196,28 +196,32 @@ func TestValidateSQLService_Errors(t *testing.T) {
 
 func TestValidateGraphQLService_Errors(t *testing.T) {
 	// Empty Address
-	s := &configv1.GraphQLUpstreamService{}
-	s.SetAddress("")
+	s := configv1.GraphQLUpstreamService_builder{
+		Address: proto.String(""),
+	}.Build()
 	err := validateGraphQLService(s)
 	assert.Error(t, err)
 
 	// Invalid URL
-	s = &configv1.GraphQLUpstreamService{}
-	s.SetAddress("not-url")
+	s = configv1.GraphQLUpstreamService_builder{
+		Address: proto.String("not-url"),
+	}.Build()
 	err = validateGraphQLService(s)
 	assert.Error(t, err)
 }
 
 func TestValidateWebrtcService_Errors(t *testing.T) {
 	// Empty Address
-	s := &configv1.WebrtcUpstreamService{}
-	s.SetAddress("")
+	s := configv1.WebrtcUpstreamService_builder{
+		Address: proto.String(""),
+	}.Build()
 	err := validateWebrtcService(s)
 	assert.Error(t, err)
 
 	// Invalid URL
-	s = &configv1.WebrtcUpstreamService{}
-	s.SetAddress("not-url")
+	s = configv1.WebrtcUpstreamService_builder{
+		Address: proto.String("not-url"),
+	}.Build()
 	err = validateWebrtcService(s)
 	assert.Error(t, err)
 }
@@ -263,15 +267,15 @@ func TestValidateUpstreamAuthentication_AllTypes(t *testing.T) {
 
 func TestValidateGCSettings(t *testing.T) {
 	// Case 1: Invalid interval
-	gc := &configv1.GCSettings{}
+	gc := configv1.GCSettings_builder{}.Build()
 	gc.SetInterval("invalid")
-	err := validateGCSettings(gc)
+	err := validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 
 	// Case 2: Invalid TTL
-	gc = &configv1.GCSettings{}
+	gc = configv1.GCSettings_builder{}.Build()
 	gc.SetTtl("invalid")
-	err = validateGCSettings(gc)
+	err = validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 
 	// Case 3: Empty path in Paths
@@ -279,7 +283,7 @@ func TestValidateGCSettings(t *testing.T) {
 		Enabled: proto.Bool(true),
 		Paths:   []string{""},
 	}.Build()
-	err = validateGCSettings(gc)
+	err = validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 
 	// Case 4: Relative path
@@ -287,7 +291,7 @@ func TestValidateGCSettings(t *testing.T) {
 		Enabled: proto.Bool(true),
 		Paths:   []string{"relative/path"},
 	}.Build()
-	err = validateGCSettings(gc)
+	err = validateGCSettings(context.Background(), gc)
 	assert.Error(t, err)
 }
 
@@ -313,13 +317,11 @@ func TestValidateHTTPService_SchemaErrors(t *testing.T) {
 func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 	ctx := context.Background()
 	// Value missing
-	auth := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String("api_key"),
-			},
-		},
-	}
+	auth := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("api_key"),
+		}.Build(),
+	}.Build()
 	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "required for outgoing")
@@ -341,20 +343,18 @@ func TestValidateAPIKeyAuth_Errors(t *testing.T) {
 func TestValidateAPIKeyAuth_Incoming_Errors(t *testing.T) {
 	ctx := context.Background()
 	// Both Value and VerificationValue missing
-	auth := &configv1.Authentication{
-		AuthMethod: &configv1.Authentication_ApiKey{
-			ApiKey: &configv1.APIKeyAuth{
-				ParamName: proto.String("api_key"),
-			},
-		},
-	}
+	auth := configv1.Authentication_builder{
+		ApiKey: configv1.APIKeyAuth_builder{
+			ParamName: proto.String("api_key"),
+		}.Build(),
+	}.Build()
 	// Use validateAuthentication to access internal logic via authCtx
 	err := validateAuthentication(ctx, auth, AuthValidationContextIncoming)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "api key configuration is empty")
 
 	// VerificationValue present (Valid for Incoming)
-	auth.GetApiKey().VerificationValue = proto.String("static-key")
+	auth.GetApiKey().SetVerificationValue("static-key")
 	err = validateAuthentication(ctx, auth, AuthValidationContextIncoming)
 	assert.NoError(t, err)
 }
@@ -407,10 +407,10 @@ func TestValidateCollection_Coverage(t *testing.T) {
 	ctx := context.Background()
 
 	// 1. Invalid Name
-	coll := &configv1.Collection{
+	coll := configv1.Collection_builder{
 		Name:    proto.String(""),
 		HttpUrl: proto.String("http://example.com/collection.json"),
-	}
+	}.Build()
 	if err := validateCollection(ctx, coll); err == nil {
 		t.Error("Expected error for empty name")
 	}
