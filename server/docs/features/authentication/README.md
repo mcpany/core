@@ -18,7 +18,7 @@ upstream_services:
       api_key:
         param_name: "X-Mcp-Api-Key"
         in: "HEADER"
-        key_value: "my-secret-key"
+        value: "my-secret-key"
 ```
 
 ### Outgoing Authentication

@@ -73,4 +73,78 @@ describe('PlaygroundClient', () => {
       // Optional: check it's visible
       expect(durationBadge).toBeVisible();
   });
+
+  it('exports session history', async () => {
+    // Mock URL.createObjectURL
+    const mockCreateObjectURL = vi.fn();
+    const mockRevokeObjectURL = vi.fn();
+    global.URL.createObjectURL = mockCreateObjectURL;
+    global.URL.revokeObjectURL = mockRevokeObjectURL;
+
+    // Mock anchor click
+    const mockClick = vi.fn();
+    const mockAnchor = { href: '', download: '', click: mockClick };
+
+    // Save original
+    const originalCreateElement = document.createElement.bind(document);
+
+    const mockCreateElement = vi.spyOn(document, 'createElement').mockImplementation((tagName: string, options) => {
+        if (tagName === 'a') {
+            return mockAnchor as any;
+        }
+        return originalCreateElement(tagName, options);
+    });
+
+    const originalAppendChild = document.body.appendChild.bind(document.body);
+    const mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation((node) => {
+        if (node === mockAnchor) return node;
+        return originalAppendChild(node);
+    });
+
+    const originalRemoveChild = document.body.removeChild.bind(document.body);
+    const mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation((node) => {
+        if (node === mockAnchor) return node;
+        return originalRemoveChild(node);
+    });
+
+    render(<PlaygroundClient />);
+
+    // Trigger export
+    const exportBtn = screen.getByTitle('Export Session');
+    fireEvent.click(exportBtn);
+
+    expect(mockCreateObjectURL).toHaveBeenCalled();
+    expect(mockCreateElement).toHaveBeenCalledWith('a');
+    expect(mockAnchor.download).toMatch(/playground-session-.*\.json/);
+    expect(mockClick).toHaveBeenCalled();
+
+    // cleanup
+    mockCreateElement.mockRestore();
+    mockAppendChild.mockRestore();
+    mockRemoveChild.mockRestore();
+  });
+
+  it('imports session history', async () => {
+    render(<PlaygroundClient />);
+
+    const file = new File([JSON.stringify([{
+        id: "test-id",
+        type: "user",
+        content: "Imported Message",
+        timestamp: new Date().toISOString()
+    }])], "session.json", { type: "application/json" });
+
+    // The hidden input
+    // eslint-disable-next-line testing-library/no-node-access
+    const fileInput = document.querySelector('input[type="file"]');
+    if (!fileInput) throw new Error("File input not found");
+
+    await waitFor(() => {
+        fireEvent.change(fileInput, { target: { files: [file] } });
+    });
+
+    await waitFor(() => {
+        expect(screen.getByText('Imported Message')).toBeInTheDocument();
+    });
+  });
 });
