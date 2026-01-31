@@ -2628,7 +2628,7 @@ func isShellCommand(cmd string) bool {
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
-		"lua", "awk", "gawk", "nawk",
+		"lua", "awk", "gawk", "nawk", "mawk", "sed",
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
