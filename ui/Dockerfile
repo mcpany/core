@@ -5,7 +5,7 @@ FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-WORKDIR /app
+WORKDIR /workspace/ui
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
@@ -13,10 +13,14 @@ RUN npm install -g npm@latest && npm install --no-audit --package-lock=false --r
 
 # Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY ui/ .
-COPY proto/ /proto/
+WORKDIR /workspace
+COPY --from=deps /workspace/ui/node_modules ./ui/node_modules
+COPY ui/ ./ui/
+# Copy proto files into the UI directory so they are available as 'localProto'
+# This ensures Next.js/Webpack can resolve them within the project root.
+COPY proto/ ./ui/proto/
+
+WORKDIR /workspace/ui
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -44,7 +48,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Handle public directory if it exists
-COPY --from=builder /app/public ./public
+COPY --from=builder /workspace/ui/public ./public
 
 
 # Set the correct permission for prerender cache
@@ -53,8 +57,8 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /workspace/ui/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /workspace/ui/.next/static ./.next/static
 
 USER nextjs
 
