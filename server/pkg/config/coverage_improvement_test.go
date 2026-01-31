@@ -188,7 +188,7 @@ func TestSecretsHydration(t *testing.T) {
 		}.Build(),
     }
 
-    	// Command Line Service
+	// Command Line Service
 	cmdService := func() *configv1.UpstreamServiceConfig {
 		cmd := configv1.CommandLineUpstreamService_builder{
 			Env: map[string]*configv1.SecretValue{
@@ -355,7 +355,7 @@ func TestValidatorCommandExists(t *testing.T) {
     f.Close()
     os.Chmod(exePath, 0755)
 
-    	// Valid command absolute path
+	// Valid command absolute path
 	cfg := func() *configv1.UpstreamServiceConfig {
 		cmd := configv1.CommandLineUpstreamService_builder{
 			Command: proto.String(exePath),
