@@ -10,6 +10,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/upstream"
@@ -84,4 +85,12 @@ func TestHealthCheck(t *testing.T) {
 	// Verify error is gone
 	msg, ok = registry.GetServiceError(serviceID)
 	assert.False(t, ok, "Service should be healthy now")
+
+	// Verify history
+	history := health.GetHealthHistory()
+	hist, exists := history["unhealthy-service"]
+	if assert.True(t, exists, "History should exist for service") {
+		assert.NotEmpty(t, hist, "History should not be empty")
+		assert.Equal(t, "healthy", hist[len(hist)-1].Status)
+	}
 }

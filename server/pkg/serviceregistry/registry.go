@@ -12,6 +12,7 @@ import (
 
 	config "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -426,6 +427,15 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 			r.healthErrors[id] = errStr
 		} else {
 			delete(r.healthErrors, id)
+		}
+
+		// Update health history
+		if cfg, ok := r.serviceConfigs[id]; ok {
+			status := "healthy"
+			if errStr != "" {
+				status = "unhealthy"
+			}
+			health.AddHealthStatus(cfg.GetName(), status)
 		}
 		r.mu.Unlock()
 	}
