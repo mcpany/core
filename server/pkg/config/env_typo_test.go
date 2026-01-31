@@ -10,7 +10,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestEnvVarTypoSuggestion(t *testing.T) {
@@ -82,9 +81,11 @@ func TestEnvVarTypoSuggestion(t *testing.T) {
 			// Ensure target is unset (in case it leaks from env)
 			os.Unsetenv(tt.targetEnv)
 
-			secret := configv1.SecretValue_builder{
-				EnvironmentVariable: proto.String(tt.targetEnv),
-			}.Build()
+			secret := &configv1.SecretValue{
+				Value: &configv1.SecretValue_EnvironmentVariable{
+					EnvironmentVariable: tt.targetEnv,
+				},
+			}
 
 			err := validateSecretValue(context.Background(), secret)
 			assert.Error(t, err)

@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -118,35 +117,17 @@ func (a *Application) handleTraces() http.HandlerFunc {
 		history := a.standardMiddlewares.Audit.GetHistory()
 		var traces []*Trace
 
-		// ⚡ BOLT: Optimized trace retrieval
-		// Randomized Selection from Top 5 High-Impact Targets
-		// Only unmarshal the requested number of recent traces to save CPU and bandwidth.
-		limitStr := r.URL.Query().Get("limit")
-		limit := len(history)
-		if limitStr != "" {
-			if parsed, err := strconv.Atoi(limitStr); err == nil && parsed > 0 {
-				limit = parsed
-			}
-		}
-
-		// Determine start index. History is chronological (oldest -> newest).
-		// We want the last `limit` items.
-		startIdx := 0
-		if len(history) > limit {
-			startIdx = len(history) - limit
-		}
-
-		// Iterate backwards from end to startIdx to return newest first
-		for i := len(history) - 1; i >= startIdx; i-- {
+		for _, msg := range history {
 			var entry audit.Entry
-			if err := json.Unmarshal(history[i], &entry); err == nil {
+			if err := json.Unmarshal(msg, &entry); err == nil {
 				traces = append(traces, toTrace(entry))
 			}
 		}
 
-		if traces == nil {
-			traces = []*Trace{}
-		}
+		// Reverse to show newest first? Or keeps chronological?
+		// The history appends new items. So it's oldest first.
+		// UI usually expects newest first or handles sort.
+		// Let's send chronological (oldest -> newest).
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(traces)

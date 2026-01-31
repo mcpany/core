@@ -1223,6 +1223,25 @@ func TestHandleLogsWS(t *testing.T) {
 	assert.Equal(t, testMsg, msg)
 }
 
+func TestHandleUploadSkillAsset(t *testing.T) {
+	tmpDir := t.TempDir()
+	sm, _ := skill.NewManager(tmpDir)
+	app := &Application{SkillManager: sm}
+
+	testSkill := &skill.Skill{
+		Frontmatter: skill.Frontmatter{Name: "test-skill"},
+		Instructions: "Run this.",
+	}
+	sm.CreateSkill(testSkill)
+
+	t.Run("Valid Upload", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/skills/test-skill/assets?path=scripts/test.py", bytes.NewReader([]byte("print('hello')")))
+		w := httptest.NewRecorder()
+		app.handleUploadSkillAsset().ServeHTTP(w, req)
+		assert.Equal(t, http.StatusOK, w.Code)
+	})
+}
+
 func TestHandleSystemStatus(t *testing.T) {
 	app := NewApplication()
 	app.startTime = time.Now().Add(-10 * time.Second)
@@ -1348,6 +1367,19 @@ func TestHandleServiceValidate(t *testing.T) {
 	w := httptest.NewRecorder()
 	app.handleServiceValidate().ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestHandleValidate(t *testing.T) {
+	app := &Application{}
+	reqBody := ValidateRequest{
+		Content: `{"upstream_services": [{"name": "test", "http_service": {"address": "http://localhost:8080"}}]}`,
+		Format:  "json",
+	}
+	body, _ := json.Marshal(reqBody)
+	req, _ := http.NewRequest("POST", "/api/v1/validate", bytes.NewBuffer(body))
+	rr := httptest.NewRecorder()
+	app.handleValidate().ServeHTTP(rr, req)
+	assert.Equal(t, http.StatusOK, rr.Code)
 }
 
 func TestUploadFile_Security(t *testing.T) {

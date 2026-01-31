@@ -14,19 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewTemplateManager_Seeded(t *testing.T) {
+func TestNewTemplateManager_Empty(t *testing.T) {
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
 	assert.NotNil(t, tm)
-	assert.NotEmpty(t, tm.ListTemplates())
-	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
+	assert.Empty(t, tm.ListTemplates())
 }
 
 func TestSaveTemplate_New(t *testing.T) {
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
-	// Clear seeds for easier testing
-	tm.templates = []*configv1.UpstreamServiceConfig{}
 
 	tmpl := &configv1.UpstreamServiceConfig{}
 	tmpl.SetName("Test Service")
@@ -50,7 +47,6 @@ func TestSaveTemplate_New(t *testing.T) {
 func TestSaveTemplate_Update(t *testing.T) {
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
-	tm.templates = []*configv1.UpstreamServiceConfig{}
 
 	tmpl := &configv1.UpstreamServiceConfig{}
 	tmpl.SetName("Test Service")
@@ -73,7 +69,6 @@ func TestSaveTemplate_Update(t *testing.T) {
 func TestSaveTemplate_Persistence(t *testing.T) {
 	tempDir := t.TempDir()
 	tm1 := NewTemplateManager(tempDir)
-	tm1.templates = []*configv1.UpstreamServiceConfig{}
 
 	tmpl := &configv1.UpstreamServiceConfig{}
 	tmpl.SetName("Persistent Service")
@@ -84,8 +79,6 @@ func TestSaveTemplate_Persistence(t *testing.T) {
 
 	// Create new manager pointing to same dir
 	tm2 := NewTemplateManager(tempDir)
-	// It will load the one we saved.
-	// Note: It will NOT seed because the file exists and is not empty (it has 1 item).
 	list := tm2.ListTemplates()
 	assert.Len(t, list, 1)
 	assert.Equal(t, "Persistent Service", list[0].GetName())
@@ -94,7 +87,6 @@ func TestSaveTemplate_Persistence(t *testing.T) {
 func TestDeleteTemplate(t *testing.T) {
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
-	tm.templates = []*configv1.UpstreamServiceConfig{}
 
 	tmpl1 := &configv1.UpstreamServiceConfig{}
 	tmpl1.SetName("S1")
@@ -118,14 +110,12 @@ func TestDeleteTemplate(t *testing.T) {
 
 	// Verify persistence
 	tm2 := NewTemplateManager(tempDir)
-	// Will NOT seed because file exists and has 1 item
 	assert.Len(t, tm2.ListTemplates(), 1)
 }
 
 func TestDeleteTemplate_NotFound(t *testing.T) {
 	tempDir := t.TempDir()
 	tm := NewTemplateManager(tempDir)
-	tm.templates = []*configv1.UpstreamServiceConfig{}
 
 	tmpl := &configv1.UpstreamServiceConfig{}
 	tmpl.SetName("S1")

@@ -38,15 +38,6 @@ type Engine interface {
 	Unmarshal(b []byte, v proto.Message) error
 }
 
-// StructuredEngine defines an interface for engines that can unmarshal directly
-// from a map structure, avoiding double parsing.
-type StructuredEngine interface {
-	Engine
-	// UnmarshalFromMap populates the provided proto.Message from a raw map.
-	// It accepts originalBytes optionally to provide line numbers in error messages.
-	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
-}
-
 // ConfigurableEngine defines an interface for engines that support configuration options.
 type ConfigurableEngine interface {
 	Engine
@@ -107,15 +98,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
-	return e.unmarshalInternal(yamlMap, v, b)
-}
-
-// UnmarshalFromMap populates the provided proto.Message from a raw map.
-func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
-	return e.unmarshalInternal(yamlMap, v, originalBytes)
-}
-
-func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	// Apply environment variable overrides: MCPANY__SECTION__KEY -> section.key
 	// This allows overriding any configuration value using environment variables.
 	applyEnvVarsFromSlice(yamlMap, os.Environ(), v)
@@ -145,12 +127,10 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 	// Finally, unmarshal the JSON into the protobuf message.
 	if err := protojson.Unmarshal(jsonData, v); err != nil {
 		// Attempt to find the line number in the original YAML
-		if originalBytes != nil {
-			if matches := unknownFieldRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
-				unknownField := matches[1]
-				if line := findKeyLine(originalBytes, unknownField); line > 0 {
-					err = fmt.Errorf("line %d: %w", line, err)
-				}
+		if matches := unknownFieldRegex.FindStringSubmatch(err.Error()); len(matches) > 1 {
+			unknownField := matches[1]
+			if line := findKeyLine(b, unknownField); line > 0 {
+				err = fmt.Errorf("line %d: %w", line, err)
 			}
 		}
 

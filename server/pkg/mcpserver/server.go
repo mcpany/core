@@ -42,11 +42,7 @@ var fastJSON = jsoniter.Config{
 	ValidateJsonRawMessage: true,
 }.Froze()
 
-// AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
-// It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
-//
-// Side Effects:
-//   - When set, this function is called synchronously during Server() access.
+// AddReceivingMiddlewareHook is a hook for adding receiving middleware.
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application. It orchestrates the handling of

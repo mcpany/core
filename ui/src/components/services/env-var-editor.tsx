@@ -20,11 +20,9 @@ interface EnvVar {
   secretId?: string;
 }
 
-import { SecretValue } from "@proto/config/v1/auth";
-
 interface EnvVarEditorProps {
-  initialEnv?: Record<string, SecretValue>;
-  onChange: (env: Record<string, SecretValue>) => void;
+  initialEnv?: Record<string, { plainText?: string; secretId?: string }>;
+  onChange: (env: Record<string, { plainText?: string; secretId?: string }>) => void;
 }
 
 /**
@@ -36,26 +34,23 @@ export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
   const [envVars, setEnvVars] = useState<EnvVar[]>(() => {
       if (!initialEnv) return [];
       return Object.entries(initialEnv).map(([key, val]) => {
-          // Heuristic: if plainText starts with ${ and ends with }, treat as secret ref
-          const plainText = val.plainText || "";
-          const secretMatch = plainText.match(/^\$\{(.+)\}$/);
-          if (secretMatch) {
-               return { key, value: secretMatch[1], isSecretRef: true, secretId: secretMatch[1] };
+          if (val.secretId) {
+               return { key, value: val.secretId, isSecretRef: true, secretId: val.secretId };
           }
-          return { key, value: plainText, isSecretRef: false };
+          return { key, value: val.plainText || "", isSecretRef: false };
       });
   });
 
   const [showValues, setShowValues] = useState<Record<number, boolean>>({});
 
   const updateParent = (vars: EnvVar[]) => {
-      const newEnv: Record<string, SecretValue> = {};
+      const newEnv: Record<string, { plainText?: string; secretId?: string }> = {};
       vars.forEach(v => {
           if (v.key) {
              if (v.isSecretRef && v.secretId) {
-                 newEnv[v.key] = { plainText: `\${${v.secretId}}`, validationRegex: "" };
+                 newEnv[v.key] = { secretId: v.secretId };
              } else {
-                 newEnv[v.key] = { plainText: v.value, validationRegex: "" };
+                 newEnv[v.key] = { plainText: v.value };
              }
           }
       });

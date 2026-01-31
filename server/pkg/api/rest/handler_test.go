@@ -62,12 +62,12 @@ func TestValidateConfigHandler(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 		},
 		{
-			name:           "Semantic Check (Missing Command - Ignored due to Security)",
+			name:           "Semantic Error (Missing Command)",
 			method:         http.MethodPost,
 			body:           `{"content": "upstream_services:\n  - name: broken-service\n    command_line_service:\n      command: /this/path/definitely/does/not/exist/12345"}`,
 			expectedStatus: http.StatusOK,
-			expectedValid:  true, // Security: We skip filesystem checks to prevent enumeration
-			expectError:    false,
+			expectedValid:  false,
+			expectError:    true,
 		},
 	}
 

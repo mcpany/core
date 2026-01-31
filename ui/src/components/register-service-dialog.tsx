@@ -251,7 +251,6 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
           prompts: [],
           autoDiscoverTool: false,
           configError: "",
-          configurationSchema: "",
           tags: values.tags ? values.tags.split(",").map(t => t.trim()).filter(t => t) : [],
       };
 

@@ -131,7 +131,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (type === 'grpc') newService.grpcService = { address: "", useReflection: true, tools: [], resources: [], calls: {}, prompts: [], protoDefinitions: [], protoCollection: [] };
         if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
         if (type === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
-        if (type === 'openapi') newService.openapiService = { address: "", specUrl: "", tools: [], resources: [], calls: {}, prompts: [] };
+        if (type === 'openapi') newService.openapiService = { address: "", specSource: { $case: "specUrl", specUrl: "" }, tools: [], resources: [], calls: {}, prompts: [] };
 
         onChange(newService);
     };
@@ -350,8 +350,9 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <Label htmlFor="openapi-spec">Spec URL</Label>
                                          <Input
                                             id="openapi-spec"
-                                            value={service.openapiService.specUrl || ""}
-                                            onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } })}
+                                            // @ts-expect-error: Suppress type error if applicable - Proto oneof handling might be tricky in TS without proper generated types helper
+                                            value={(service.openapiService as any).specUrl || ""}
+                                            onChange={(e) => onChange({ ...service, openapiService: { ...service.openapiService!, specUrl: e.target.value } as any })}
                                             placeholder="https://api.example.com/openapi.json"
                                         />
                                     </div>
@@ -399,11 +400,11 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 if (val === 'none') {
                                                     updateService({ upstreamAuth: undefined });
                                                 } else if (val === 'apikey') {
-                                                    updateService({ upstreamAuth: { apiKey: { paramName: "", value: { plainText: "", validationRegex: "" }, in: 0, verificationValue: "" } } });
+                                                    updateService({ upstreamAuth: { apiKey: { key: "", value: "", location: 0 } } });
                                                 } else if (val === 'bearer') {
-                                                    updateService({ upstreamAuth: { bearerToken: { token: { plainText: "", validationRegex: "" } } } });
+                                                    updateService({ upstreamAuth: { bearerToken: { token: "" } } });
                                                 } else if (val === 'oauth2') {
-                                                    updateService({ upstreamAuth: { oauth2: { clientId: { plainText: "", validationRegex: "" }, clientSecret: { plainText: "", validationRegex: "" }, tokenUrl: "", authorizationUrl: "", scopes: "", issuerUrl: "", audience: "" } } });
+                                                    updateService({ upstreamAuth: { oauth2: { clientId: { plainText: "" }, clientSecret: { plainText: "" }, tokenUrl: "", authorizationUrl: "", scopes: "" } } });
                                                 }
                                             }}
                                         >
@@ -444,8 +445,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                 <Label htmlFor="api-key-name">Key Name (Header/Param Name)</Label>
                                                 <Input
                                                     id="api-key-name"
-                                                    value={service.upstreamAuth.apiKey.paramName}
-                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, paramName: e.target.value } } })}
+                                                    value={service.upstreamAuth.apiKey.key}
+                                                    onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, key: e.target.value } } })}
                                                     placeholder="X-API-Key"
                                                 />
                                             </div>
@@ -455,13 +456,13 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                     <Input
                                                         id="api-key-value"
                                                         type="password"
-                                                        value={service.upstreamAuth.apiKey.value?.plainText || ""}
-                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: { plainText: e.target.value, validationRegex: "" } } } })}
+                                                        value={service.upstreamAuth.apiKey.value}
+                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: e.target.value } } })}
                                                         placeholder="secret-key-123"
                                                     />
                                                     <SecretPicker
                                                         onSelect={(key) => {
-                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: { plainText: `\${${key}}`, validationRegex: "" } } } });
+                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, value: `\${${key}}` } } });
                                                         }}
                                                     >
                                                         <Button variant="outline" size="icon" title="Insert Secret Reference">
@@ -474,8 +475,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                              <div className="space-y-2">
                                                 <Label htmlFor="api-key-location">Location</Label>
                                                 <Select
-                                                     value={service.upstreamAuth.apiKey.in?.toString() || "0"}
-                                                     onValueChange={(val) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, in: parseInt(val) } } })}
+                                                     value={service.upstreamAuth.apiKey.location?.toString() || "0"}
+                                                     onValueChange={(val) => updateService({ upstreamAuth: { ...service.upstreamAuth, apiKey: { ...service.upstreamAuth!.apiKey!, location: parseInt(val) } } })}
                                                 >
                                                     <SelectTrigger id="api-key-location">
                                                         <SelectValue />
@@ -498,13 +499,13 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                                     <Input
                                                         id="bearer-token"
                                                         type="password"
-                                                        value={service.upstreamAuth.bearerToken.token?.plainText || ""}
-                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: { plainText: e.target.value, validationRegex: "" } } } })}
+                                                        value={service.upstreamAuth.bearerToken.token}
+                                                        onChange={(e) => updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: e.target.value } } })}
                                                         placeholder="ey..."
                                                     />
                                                     <SecretPicker
                                                         onSelect={(key) => {
-                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: { plainText: `\${${key}}`, validationRegex: "" } } } });
+                                                            updateService({ upstreamAuth: { ...service.upstreamAuth, bearerToken: { ...service.upstreamAuth!.bearerToken!, token: `\${${key}}` } } });
                                                         }}
                                                     >
                                                         <Button variant="outline" size="icon" title="Insert Secret Reference">

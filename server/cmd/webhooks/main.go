@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/sidecar/webhooks"
+	"github.com/mcpany/core/server/cmd/webhooks/hooks"
 	webhook "github.com/standard-webhooks/standard-webhooks/libraries/go"
 )
 
@@ -38,13 +38,13 @@ func main() {
 		}
 	}
 
-	reg := webhooks.NewRegistry()
+	reg := hooks.NewRegistry()
 	// Simulate loading from config
 	// In real world, we would read a directory of yaml/proto files
 	// For now, we manually register the known system hooks
-	reg.Register("/markdown", &webhooks.MarkdownHandler{})
-	reg.Register("/truncate", &webhooks.TruncateHandler{})
-	reg.Register("/paginate", &webhooks.PaginateHandler{})
+	reg.Register("/markdown", &hooks.MarkdownHandler{})
+	reg.Register("/truncate", &hooks.TruncateHandler{})
+	reg.Register("/paginate", &hooks.PaginateHandler{})
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path

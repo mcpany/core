@@ -124,7 +124,6 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
         id: username,
         authentication: {
             basic_auth: {
-                username: username,
                 // hash for "password" (bcrypt cost 12)
                 password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
             }

@@ -8,20 +8,21 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestStripSecretsFromAuth_OAuth2(t *testing.T) {
-	auth := configv1.Authentication_builder{
-		Oauth2: configv1.OAuth2Auth_builder{
-			ClientId: configv1.SecretValue_builder{
-				PlainText: proto.String("client-id"),
-			}.Build(),
-			ClientSecret: configv1.SecretValue_builder{
-				PlainText: proto.String("client-secret"),
-			}.Build(),
-		}.Build(),
-	}.Build()
+	auth := &configv1.Authentication{}
+	oauth := &configv1.OAuth2Auth{}
+
+	clientId := &configv1.SecretValue{}
+	clientId.SetPlainText("client-id")
+	oauth.SetClientId(clientId)
+
+	clientSecret := &configv1.SecretValue{}
+	clientSecret.SetPlainText("client-secret")
+	oauth.SetClientSecret(clientSecret)
+
+	auth.SetOauth2(oauth)
 
 	StripSecretsFromAuth(auth)
 
@@ -38,22 +39,22 @@ func TestStripSecretsFromAuth_OAuth2(t *testing.T) {
 func TestStripSecretsFromService_MoreTypes(t *testing.T) {
 	// gRPC Service (currently no-op but need coverage)
 	grpcSvc := func() *configv1.UpstreamServiceConfig {
-		return configv1.UpstreamServiceConfig_builder{
-			GrpcService: configv1.GrpcUpstreamService_builder{
-				Address: proto.String("127.0.0.1:50051"),
-			}.Build(),
-		}.Build()
+		svc := &configv1.UpstreamServiceConfig{}
+		grpc := &configv1.GrpcUpstreamService{}
+		grpc.SetAddress("127.0.0.1:50051")
+		svc.SetGrpcService(grpc)
+		return svc
 	}()
 	StripSecretsFromService(grpcSvc)
 	assert.Equal(t, "127.0.0.1:50051", grpcSvc.GetGrpcService().GetAddress())
 
 	// OpenAPI Service (currently no-op)
 	openapiSvc := func() *configv1.UpstreamServiceConfig {
-		return configv1.UpstreamServiceConfig_builder{
-			OpenapiService: configv1.OpenapiUpstreamService_builder{
-				Address: proto.String("http://api.example.com"),
-			}.Build(),
-		}.Build()
+		svc := &configv1.UpstreamServiceConfig{}
+		openapi := &configv1.OpenapiUpstreamService{}
+		openapi.SetAddress("http://api.example.com")
+		svc.SetOpenapiService(openapi)
+		return svc
 	}()
 	StripSecretsFromService(openapiSvc)
 	assert.Equal(t, "http://api.example.com", openapiSvc.GetOpenapiService().GetAddress())
@@ -61,13 +62,13 @@ func TestStripSecretsFromService_MoreTypes(t *testing.T) {
 
 func TestStripSecretsFromMcpService_Calls(t *testing.T) {
 	mcpSvc := func() *configv1.UpstreamServiceConfig {
-		return configv1.UpstreamServiceConfig_builder{
-			McpService: configv1.McpUpstreamService_builder{
-				Calls: map[string]*configv1.MCPCallDefinition{
-					"call1": configv1.MCPCallDefinition_builder{}.Build(),
-				},
-			}.Build(),
-		}.Build()
+		svc := &configv1.UpstreamServiceConfig{}
+		mcp := &configv1.McpUpstreamService{}
+		mcp.SetCalls(map[string]*configv1.MCPCallDefinition{
+			"call1": {},
+		})
+		svc.SetMcpService(mcp)
+		return svc
 	}()
 	StripSecretsFromService(mcpSvc)
 	// Just ensuring it doesn't panic and code path is executed

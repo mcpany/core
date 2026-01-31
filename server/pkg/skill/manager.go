@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/validation"
 	"gopkg.in/yaml.v3"
 )
 
@@ -163,12 +162,13 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// validate path to prevent traversal and ensure it is relative
-	if err := validation.IsSecureRelativePath(relPath); err != nil {
-		return fmt.Errorf("invalid asset path: %w", err)
+	// validate path to prevent traversal
+	// filepath.Clean removes ..
+	cleanPath := filepath.Clean(relPath)
+	if strings.Contains(cleanPath, "..") || strings.HasPrefix(cleanPath, "/") {
+		return fmt.Errorf("invalid asset path: %s", relPath)
 	}
 
-	cleanPath := filepath.Clean(relPath)
 	skillDir := filepath.Join(m.rootDir, skillName)
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", skillName)

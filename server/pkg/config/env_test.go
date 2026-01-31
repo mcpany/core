@@ -26,7 +26,7 @@ func TestEnvVarConfigPath(t *testing.T) {
 	defer os.Unsetenv("MCPANY_CONFIG_PATH")
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	fs := afero.NewMemMapFs()
 	// Create files to avoid load errors, though we mostly care about configPaths parsing
@@ -52,7 +52,7 @@ func TestEnvVarConfigPathMultiple(t *testing.T) {
 	defer os.Unsetenv("MCPANY_CONFIG_PATH")
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	fs := afero.NewMemMapFs()
 	_ = afero.WriteFile(fs, "env-config1.yaml", []byte("upstream_services: []"), 0644)
@@ -78,7 +78,7 @@ func TestEnvVarProfilesMultiple(t *testing.T) {
 	defer os.Unsetenv("MCPANY_PROFILES")
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	fs := afero.NewMemMapFs()
 
@@ -104,7 +104,7 @@ func TestEnvVarConfigPathWithSpaces(t *testing.T) {
 	defer os.Unsetenv("MCPANY_CONFIG_PATH")
 
 	settings := &Settings{
-		proto: configv1.GlobalSettings_builder{}.Build(),
+		proto: &configv1.GlobalSettings{},
 	}
 	fs := afero.NewMemMapFs()
 	_ = afero.WriteFile(fs, "env-config1.yaml", []byte("upstream_services: []"), 0644)

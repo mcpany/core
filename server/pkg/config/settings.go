@@ -48,7 +48,7 @@ var (
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
-			proto: configv1.GlobalSettings_builder{}.Build(),
+			proto: &configv1.GlobalSettings{},
 		}
 	})
 	return globalSettings

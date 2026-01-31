@@ -222,7 +222,7 @@ func TestCoverageEnhancement_URLConstruction(t *testing.T) {
                 }
             }
         }`
-        serviceConfig := configv1.UpstreamServiceConfig_builder{}.Build()
+        serviceConfig := &configv1.UpstreamServiceConfig{}
         require.NoError(t, protojson.Unmarshal([]byte(configJSON), serviceConfig))
 
         // Clear previous tools

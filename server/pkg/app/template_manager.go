@@ -12,7 +12,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
 
 // TemplateManager manages the persistence and lifecycle of service templates.
@@ -34,27 +33,7 @@ func NewTemplateManager(dataDir string) *TemplateManager {
 	if err := tm.load(); err != nil {
 		logging.GetLogger().Info("No existing templates found or failed to load, starting empty", "error", err)
 	}
-	tm.seedAndSave()
 	return tm
-}
-
-// seedAndSave helper to avoid lock contention.
-func (tm *TemplateManager) seedAndSave() {
-	tm.mu.Lock()
-	if len(tm.templates) > 0 {
-		tm.mu.Unlock()
-		return
-	}
-
-	logging.GetLogger().Info("Seeding builtin templates", "count", len(BuiltinTemplates))
-	for _, t := range BuiltinTemplates {
-		tm.templates = append(tm.templates, proto.Clone(t).(*configv1.UpstreamServiceConfig))
-	}
-	tm.mu.Unlock()
-
-	if err := tm.save(); err != nil {
-		logging.GetLogger().Error("failed to save builtin templates", "error", err)
-	}
 }
 
 func (tm *TemplateManager) load() error {

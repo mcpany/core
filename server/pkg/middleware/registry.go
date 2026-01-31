@@ -294,11 +294,7 @@ func InitStandardMiddlewares(
 	// Context Optimizer
 	var contextOptimizer *ContextOptimizer
 	if contextOptimizerConfig != nil {
-		maxChars := int(contextOptimizerConfig.GetMaxChars())
-		if maxChars == 0 {
-			maxChars = 32000 // Default to approx 8000 tokens
-		}
-		contextOptimizer = NewContextOptimizer(maxChars)
+		contextOptimizer = NewContextOptimizer(int(contextOptimizerConfig.GetMaxChars()))
 		Register("context_optimizer", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 			return contextOptimizer.Handler
 		})

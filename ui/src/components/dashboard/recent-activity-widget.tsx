@@ -45,9 +45,9 @@ export function RecentActivityWidget() {
 
   const fetchTraces = async () => {
     try {
-      const data = await apiClient.getTraces({ limit: 5 });
+      const data = await apiClient.getTraces();
       // Take top 5
-      setTraces(data);
+      setTraces(data.slice(0, 5));
       setError(null);
     } catch (err) {
       console.error("Failed to load recent activity", err);

@@ -96,9 +96,9 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 			return err
 		}
 
-		// ⚡ BOLT: Removed mutex lock around onFailure to reduce contention.
-		// Randomized Selection from Top 5 High-Impact Targets
+		cb.mutex.Lock()
 		cb.onFailure(originState)
+		cb.mutex.Unlock()
 		return err
 	}
 
@@ -109,9 +109,9 @@ func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context
 		return nil
 	}
 
-	// ⚡ BOLT: Removed mutex lock around onSuccess to reduce contention.
-	// Randomized Selection from Top 5 High-Impact Targets
+	cb.mutex.Lock()
 	cb.onSuccess(originState)
+	cb.mutex.Unlock()
 	return nil
 }
 
@@ -126,16 +126,6 @@ func (cb *CircuitBreaker) setState(newState State) {
 }
 
 func (cb *CircuitBreaker) onSuccess(originState State) {
-	// Optimization: Fast path for Closed state.
-	// If state is Closed, we just need to reset failures.
-	if cb.getState() == StateClosed {
-		atomic.StoreInt32(&cb.failures, 0)
-		return
-	}
-
-	cb.mutex.Lock()
-	defer cb.mutex.Unlock()
-
 	if cb.getState() == StateHalfOpen {
 		if originState != StateHalfOpen {
 			return
@@ -148,32 +138,6 @@ func (cb *CircuitBreaker) onSuccess(originState State) {
 
 func (cb *CircuitBreaker) onFailure(originState State) {
 	currentState := cb.getState()
-
-	// Optimization: Fast path for Closed state (most common).
-	// We increment failures atomically. Only if we hit threshold do we lock.
-	// We must also check that we STARTED in Closed state. If we started in HalfOpen,
-	// we need to run the slow path to check for flapping (HalfOpen -> Closed transition).
-	if currentState == StateClosed && originState == StateClosed {
-		newFailures := atomic.AddInt32(&cb.failures, 1)
-		if newFailures >= cb.config.GetConsecutiveFailures() {
-			cb.mutex.Lock()
-			defer cb.mutex.Unlock()
-
-			// Re-check state to handle races
-			if cb.getState() == StateClosed {
-				cb.setState(StateOpen)
-				cb.openTime = time.Now()
-			}
-		}
-		return
-	}
-
-	cb.mutex.Lock()
-	defer cb.mutex.Unlock()
-
-	// Re-read state under lock
-	currentState = cb.getState()
-
 	if currentState == StateOpen {
 		return
 	}

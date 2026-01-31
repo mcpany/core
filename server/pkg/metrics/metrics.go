@@ -41,8 +41,7 @@ func Initialize() error {
 	var err error
 	initOnce.Do(func() {
 		// Create a Prometheus sink
-		var sink *prometheus.PrometheusSink
-		sink, err = NewPrometheusSink()
+		sink, err := NewPrometheusSink()
 		if err != nil {
 			return
 		}

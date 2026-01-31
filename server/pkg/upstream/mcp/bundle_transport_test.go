@@ -26,14 +26,12 @@ import (
 )
 
 func TestBundleDockerTransport_Connect(t *testing.T) {
-	transport := &BundleDockerTransport{
-		Image:   "test-image",
-		Command: "test-cmd",
-	}
+	// Setup mock docker client
+	originalNewDockerClient := newDockerClient
+	defer func() { newDockerClient = originalNewDockerClient }()
 
-	// Use DI instead of global variable swapping
-	transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
-		return &bundleMockDockerClient{
+	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(strings.NewReader("")), nil // Mock empty pull
 			},
@@ -65,6 +63,11 @@ func TestBundleDockerTransport_Connect(t *testing.T) {
 				return nil
 			},
 		}, nil
+	}
+
+	transport := &BundleDockerTransport{
+		Image:   "test-image",
+		Command: "test-cmd",
 	}
 
 	conn, err := transport.Connect(context.Background())

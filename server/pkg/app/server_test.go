@@ -2252,8 +2252,6 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	// Set the API key
 	viper.Set("api-key", "test-api-key")
 	defer viper.Set("api-key", "")
-	viper.Set("db-path", ":memory:")
-	defer viper.Set("db-path", "")
 
 	// Get the address from the listener
 	l, err := net.Listen("tcp", "127.0.0.1:0")
@@ -3237,10 +3235,6 @@ func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
 func TestTemplateManager_Persistence(t *testing.T) {
 	tmpDir := t.TempDir()
 	tm := NewTemplateManager(tmpDir)
-	// Clear seeded templates for clean state testing
-	for _, tpl := range tm.ListTemplates() {
-		tm.DeleteTemplate(tpl.GetId())
-	}
 
 	tpl1 := &configv1.UpstreamServiceConfig{}
 	tpl1.SetName("svc1")
@@ -3262,8 +3256,7 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 	os.WriteFile(path, []byte("{invalid json"), 0600)
 
 	tm := NewTemplateManager(tmpDir)
-	// Should fallback to seeded templates
-	assert.Len(t, tm.ListTemplates(), len(BuiltinTemplates))
+	assert.Empty(t, tm.ListTemplates())
 }
 
 func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {

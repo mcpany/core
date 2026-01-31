@@ -10,7 +10,6 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 type MockStore struct {
@@ -53,20 +52,20 @@ func TestMultiStore(t *testing.T) {
 	t.Run("MergeConfigs", func(t *testing.T) {
 		s1 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key1"),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key1")
+				cfg.SetGlobalSettings(gs)
+				return cfg
 			}(),
 		}
 		s2 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						McpListenAddress: proto.String(":8080"),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetMcpListenAddress(":8080")
+				cfg.SetGlobalSettings(gs)
+				return cfg
 			}(),
 		}
 
@@ -81,20 +80,20 @@ func TestMultiStore(t *testing.T) {
 	t.Run("OverrideValues", func(t *testing.T) {
 		s1 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key1"),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key1")
+				cfg.SetGlobalSettings(gs)
+				return cfg
 			}(),
 		}
 		s2 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key2"),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key2")
+				cfg.SetGlobalSettings(gs)
+				return cfg
 			}(),
 		}
 
@@ -107,7 +106,7 @@ func TestMultiStore(t *testing.T) {
 
 	t.Run("ErrorInStore", func(t *testing.T) {
 		s1 := &MockStore{
-			Config: configv1.McpAnyServerConfig_builder{}.Build(),
+			Config: &configv1.McpAnyServerConfig{},
 		}
 		s2 := &MockStore{
 			Err: errors.New("load error"),
@@ -122,22 +121,20 @@ func TestMultiStore(t *testing.T) {
 	t.Run("MergeLists", func(t *testing.T) {
 		s1 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				svc1 := configv1.UpstreamServiceConfig_builder{
-					Name: proto.String("svc1"),
-				}.Build()
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{svc1},
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				svc1 := &configv1.UpstreamServiceConfig{}
+				svc1.SetName("svc1")
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc1})
+				return cfg
 			}(),
 		}
 		s2 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				svc2 := configv1.UpstreamServiceConfig_builder{
-					Name: proto.String("svc2"),
-				}.Build()
-				return configv1.McpAnyServerConfig_builder{
-					UpstreamServices: []*configv1.UpstreamServiceConfig{svc2},
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				svc2 := &configv1.UpstreamServiceConfig{}
+				svc2.SetName("svc2")
+				cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc2})
+				return cfg
 			}(),
 		}
 
@@ -156,11 +153,11 @@ func TestMultiStore(t *testing.T) {
 		}
 		s2 := &MockStore{
 			Config: func() *configv1.McpAnyServerConfig {
-				return configv1.McpAnyServerConfig_builder{
-					GlobalSettings: configv1.GlobalSettings_builder{
-						ApiKey: proto.String("key2"),
-					}.Build(),
-				}.Build()
+				cfg := &configv1.McpAnyServerConfig{}
+				gs := &configv1.GlobalSettings{}
+				gs.SetApiKey("key2")
+				cfg.SetGlobalSettings(gs)
+				return cfg
 			}(),
 		}
 

@@ -32,7 +32,7 @@ const TEMPLATES = [
             commandLineService: {
                 command: 'npx -y @modelcontextprotocol/server-postgres',
                 env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
+                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname" }
                 }
             }
         },
@@ -48,7 +48,7 @@ const TEMPLATES = [
             commandLineService: {
                 command: 'npx -y @modelcontextprotocol/server-filesystem',
                 env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
+                    "ALLOWED_PATH": { plainText: "/home/user" }
                 }
             }
         },

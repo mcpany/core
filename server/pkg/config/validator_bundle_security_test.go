@@ -9,24 +9,23 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestValidate_McpBundleConnection_Security(t *testing.T) {
 	t.Run("invalid bundle connection - insecure path with ..", func(t *testing.T) {
 		cfg := func() *configv1.McpAnyServerConfig {
-			svc := configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("mcp-bundle-svc-insecure-dotdot"),
-				McpService: configv1.McpUpstreamService_builder{
-					BundleConnection: configv1.McpBundleConnection_builder{
-						BundlePath: proto.String("../insecure.bundle"),
-					}.Build(),
-				}.Build(),
-			}.Build()
+			cfg := &configv1.McpAnyServerConfig{}
+			svc := &configv1.UpstreamServiceConfig{}
+			svc.SetName("mcp-bundle-svc-insecure-dotdot")
 
-			return configv1.McpAnyServerConfig_builder{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
-			}.Build()
+			mcp := &configv1.McpUpstreamService{}
+			conn := &configv1.McpBundleConnection{}
+			conn.SetBundlePath("../insecure.bundle")
+			mcp.SetBundleConnection(conn)
+			svc.SetMcpService(mcp)
+
+			cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+			return cfg
 		}()
 
 		validationErrors := Validate(context.Background(), cfg, Server)
@@ -38,18 +37,18 @@ func TestValidate_McpBundleConnection_Security(t *testing.T) {
 
 	t.Run("invalid bundle connection - absolute path not in allowed list", func(t *testing.T) {
 		cfg := func() *configv1.McpAnyServerConfig {
-			svc := configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("mcp-bundle-svc-absolute"),
-				McpService: configv1.McpUpstreamService_builder{
-					BundleConnection: configv1.McpBundleConnection_builder{
-						BundlePath: proto.String("/etc/passwd"),
-					}.Build(),
-				}.Build(),
-			}.Build()
+			cfg := &configv1.McpAnyServerConfig{}
+			svc := &configv1.UpstreamServiceConfig{}
+			svc.SetName("mcp-bundle-svc-absolute")
 
-			return configv1.McpAnyServerConfig_builder{
-				UpstreamServices: []*configv1.UpstreamServiceConfig{svc},
-			}.Build()
+			mcp := &configv1.McpUpstreamService{}
+			conn := &configv1.McpBundleConnection{}
+			conn.SetBundlePath("/etc/passwd")
+			mcp.SetBundleConnection(conn)
+			svc.SetMcpService(mcp)
+
+			cfg.SetUpstreamServices([]*configv1.UpstreamServiceConfig{svc})
+			return cfg
 		}()
 
 		validationErrors := Validate(context.Background(), cfg, Server)

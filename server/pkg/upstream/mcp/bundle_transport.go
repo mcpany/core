@@ -53,10 +53,6 @@ type BundleDockerTransport struct {
 	Env        []string
 	Mounts     []mount.Mount
 	WorkingDir string
-
-	// dockerClientFactory allows injecting a custom docker client for testing.
-	// If nil, newDockerClient is used.
-	dockerClientFactory func(ops ...client.Opt) (dockerClient, error)
 }
 
 // Connect establishes a connection to the service within the Docker container.
@@ -67,13 +63,7 @@ type BundleDockerTransport struct {
 // Returns an error if the operation fails.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
-
-	factory := t.dockerClientFactory
-	if factory == nil {
-		factory = newDockerClient
-	}
-
-	cli, err := factory(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create docker client: %w", err)
 	}

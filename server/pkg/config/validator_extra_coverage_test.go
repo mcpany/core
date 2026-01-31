@@ -16,10 +16,10 @@ import (
 func TestValidateOAuth2Auth_IssuerUrl_Error(t *testing.T) {
 	ctx := context.Background()
 	// Test case where TokenUrl is empty, so it falls back to IssuerUrl validation
-	auth := configv1.OAuth2Auth_builder{
+	auth := &configv1.OAuth2Auth{
 		TokenUrl:  proto.String(""),
 		IssuerUrl: proto.String("not-a-url"),
-	}.Build()
+	}
 	err := validateOAuth2Auth(ctx, auth)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid oauth2 issuer_url")
@@ -39,7 +39,7 @@ func TestValidateSchema_InvalidJsonSchema(t *testing.T) {
 }
 
 func TestMcpService_NoConnectionType(t *testing.T) {
-	s := configv1.McpUpstreamService_builder{}.Build()
+	s := &configv1.McpUpstreamService{}
 	err := validateMcpService(context.Background(), s)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no connection_type")
@@ -49,43 +49,43 @@ func TestValidateAuth_SecretValidationErrors(t *testing.T) {
 	ctx := context.Background()
 
 	// Basic Auth: Password secret validation fails (e.g. invalid file path)
-	basicAuth := configv1.BasicAuth_builder{
+	basicAuth := &configv1.BasicAuth{
 		Username: proto.String("user"),
-		Password: configv1.SecretValue_builder{
-			FilePath: proto.String("/invalid/path\x00"),
-		}.Build(),
-	}.Build()
-	auth := configv1.Authentication_builder{
-		BasicAuth: basicAuth,
-	}.Build()
+		Password: &configv1.SecretValue{
+			Value: &configv1.SecretValue_FilePath{FilePath: "/invalid/path\x00"},
+		},
+	}
+	auth := &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_BasicAuth{BasicAuth: basicAuth},
+	}
 	err := validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "basic auth password validation failed")
 
 	// Bearer Token: Token secret validation fails
-	bearerAuth := configv1.BearerTokenAuth_builder{
-		Token: configv1.SecretValue_builder{
-			FilePath: proto.String("/invalid/path\x00"),
-		}.Build(),
-	}.Build()
-	auth = configv1.Authentication_builder{
-		BearerToken: bearerAuth,
-	}.Build()
+	bearerAuth := &configv1.BearerTokenAuth{
+		Token: &configv1.SecretValue{
+			Value: &configv1.SecretValue_FilePath{FilePath: "/invalid/path\x00"},
+		},
+	}
+	auth = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_BearerToken{BearerToken: bearerAuth},
+	}
 	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "bearer token validation failed")
 
-	// OAuth2: ClientID/Secret validation fails
-	oauth := configv1.OAuth2Auth_builder{
-		TokenUrl: proto.String("https://example.com/token"),
-		ClientId: configv1.SecretValue_builder{
-			FilePath: proto.String("/invalid/path\x00"),
-		}.Build(),
-	}.Build()
-	auth = configv1.Authentication_builder{
-		Oauth2: oauth,
-	}.Build()
-	err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "oauth2 client_id validation failed")
+    // OAuth2: ClientID/Secret validation fails
+    oauth := &configv1.OAuth2Auth{
+        TokenUrl: proto.String("https://example.com/token"),
+        ClientId: &configv1.SecretValue{
+			Value: &configv1.SecretValue_FilePath{FilePath: "/invalid/path\x00"},
+		},
+    }
+    auth = &configv1.Authentication{
+		AuthMethod: &configv1.Authentication_Oauth2{Oauth2: oauth},
+	}
+    err = validateUpstreamAuthentication(ctx, auth, AuthValidationContextOutgoing)
+    assert.Error(t, err)
+    assert.Contains(t, err.Error(), "oauth2 client_id validation failed")
 }

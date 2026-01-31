@@ -5,14 +5,16 @@
 
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2, Clock, Terminal, Globe, Database, User, Webhook as WebhookIcon, Play, Pause } from "lucide-react";
 import { Trace, SpanStatus } from "@/app/api/traces/route"; // Import type from route (or move types to shared)
 import { formatDistanceToNow } from "date-fns";
 import React, { memo, useMemo } from "react";
-import { Virtuoso } from "react-virtuoso";
 
 interface TraceListProps {
   traces: Trace[];
@@ -39,7 +41,7 @@ const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isS
     <button
       onClick={() => onSelect(trace.id)}
       className={cn(
-        "flex flex-col items-start gap-2 p-4 text-left text-sm transition-all hover:bg-accent/50 border-b last:border-0 w-full",
+        "flex flex-col items-start gap-2 p-4 text-left text-sm transition-all hover:bg-accent/50 border-b last:border-0",
         isSelected && "bg-accent border-l-2 border-l-primary"
       )}
     >
@@ -108,28 +110,23 @@ export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchC
              {isLive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
         </Button>
       </div>
-      <div className="flex-1 min-h-0">
-        {filteredTraces.length === 0 ? (
-           <div className="p-8 text-center text-muted-foreground text-sm">
-              No traces found.
-           </div>
-        ) : (
-          // ⚡ BOLT: Implemented virtualization for trace list using react-virtuoso.
-          // Randomized Selection from Top 5 High-Impact Targets
-          <Virtuoso
-            style={{ height: '100%' }}
-            data={filteredTraces}
-            itemContent={(index, trace) => (
-              <TraceListItem
-                key={trace.id}
-                trace={trace}
-                isSelected={selectedId === trace.id}
-                onSelect={onSelect}
-              />
-            )}
-          />
-        )}
-      </div>
+      <ScrollArea className="flex-1">
+        <div className="flex flex-col">
+          {filteredTraces.length === 0 && (
+             <div className="p-8 text-center text-muted-foreground text-sm">
+                No traces found.
+             </div>
+          )}
+          {filteredTraces.map((trace) => (
+            <TraceListItem
+              key={trace.id}
+              trace={trace}
+              isSelected={selectedId === trace.id}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

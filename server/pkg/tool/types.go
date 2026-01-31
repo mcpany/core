@@ -1808,12 +1808,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						if err := checkForArgumentInjection(argStr); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
-						// If running a shell, validate that inputs are safe for shell execution
-						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
-								return nil, fmt.Errorf("args parameter: %w", err)
-							}
-						}
 						args = append(args, argStr)
 					} else {
 						return nil, fmt.Errorf("non-string value in 'args' array")
@@ -2615,7 +2609,7 @@ func isShellCommand(cmd string) bool {
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
 		"node", "nodejs", "bun", "deno",
-		"lua", "awk", "gawk", "nawk",
+		"lua", "awk", "gawk", "nawk", "sed",
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
@@ -2691,16 +2685,6 @@ func isVersionSuffix(s string) bool {
 func checkForShellInjection(val string, template string, placeholder string, command string) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
-
-	// Sentinel Security Update:
-	// On Windows cmd.exe, single quotes are NOT strong quotes.
-	// They are just literal characters and do not prevent variable expansion or command chaining.
-	// Therefore, we must treat single-quoted arguments as unquoted/unsafe for cmd.exe.
-	base := strings.ToLower(filepath.Base(command))
-	isWindowsCmd := base == "cmd.exe" || base == "cmd"
-	if isWindowsCmd && quoteLevel == 2 {
-		quoteLevel = 0
-	}
 
 	if quoteLevel == 2 { // Single Quoted
 		// In single quotes, the only dangerous character is single quote itself

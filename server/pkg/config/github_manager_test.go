@@ -13,7 +13,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
@@ -61,21 +60,20 @@ func TestUpstreamServiceManager_LoadAndMergeServices_GitHub(t *testing.T) {
 		g.httpClient = &http.Client{}
 		return g, nil
 	}
-	collection := configv1.Collection_builder{
-		Name:    proto.String("github-dir"),
-		HttpUrl: proto.String("https://github.com/mcpany/core/tree/main/examples"),
-		Authentication: configv1.Authentication_builder{
-			BearerToken: configv1.BearerTokenAuth_builder{
-				Token: configv1.SecretValue_builder{
-					PlainText: proto.String("my-secret-token"),
-				}.Build(),
-			}.Build(),
-		}.Build(),
-	}.Build()
-
-	config := configv1.McpAnyServerConfig_builder{
-		Collections: []*configv1.Collection{collection},
-	}.Build()
+	collection := &configv1.Collection{}
+	collection.SetName("github-dir")
+	collection.SetHttpUrl("https://github.com/mcpany/core/tree/main/examples")
+	auth := &configv1.Authentication{}
+	secret := &configv1.SecretValue{}
+	secret.SetPlainText("my-secret-token")
+	bearer := &configv1.BearerTokenAuth{}
+	bearer.SetToken(secret)
+	auth.AuthMethod = &configv1.Authentication_BearerToken{
+		BearerToken: bearer,
+	}
+	collection.SetAuthentication(auth)
+	config := &configv1.McpAnyServerConfig{}
+	config.SetCollections([]*configv1.Collection{collection})
 
 	loadedServices, err := manager.LoadAndMergeServices(context.Background(), config)
 	require.NoError(t, err)

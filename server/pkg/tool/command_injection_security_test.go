@@ -141,34 +141,6 @@ func TestCommandInjection_Advanced(t *testing.T) {
 			})
 		}
 	})
-
-	// Case 9: cmd.exe single quote bypass prevention
-	t.Run("cmd_exe_single_quote_bypass", func(t *testing.T) {
-		cmd := "cmd.exe"
-		toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
-		service := configv1.CommandLineUpstreamService_builder{
-			Command: &cmd,
-		}.Build()
-		// Single quoted template, which is unsafe in cmd.exe
-		callDef := configv1.CommandLineCallDefinition_builder{
-			Args: []string{"/c", "echo '{{input}}'"},
-			Parameters: []*configv1.CommandLineParameterMapping{
-				configv1.CommandLineParameterMapping_builder{
-					Schema: configv1.ParameterSchema_builder{Name: proto.String("input")}.Build(),
-				}.Build(),
-			},
-		}.Build()
-		tool := NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
-
-		req := &ExecutionRequest{
-			ToolName: "test",
-			ToolInputs: []byte(`{"input": "& calc"}`),
-		}
-
-		_, err := tool.Execute(context.Background(), req)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "shell injection detected", "cmd.exe should block injection even in single quotes")
-	})
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {
