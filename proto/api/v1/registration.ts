@@ -15,87 +15,129 @@ import { UpstreamServiceConfig } from "../../config/v1/upstream_service";
 
 export const protobufPackage = "mcpany.api.v1";
 
+/** RegisterServiceRequest represents a request to register a new upstream service. */
 export interface RegisterServiceRequest {
+  /** The configuration for the upstream service to be registered. */
   config?: UpstreamServiceConfig | undefined;
 }
 
+/** RegisterServiceResponse represents the response after registering a service. */
 export interface RegisterServiceResponse {
-  /** e.g., "Service registered successfully" */
+  /** A message indicating the result of the registration (e.g., "Service registered successfully"). */
   message: string;
+  /** A list of tools that were automatically discovered during registration. */
   discoveredTools: ToolDefinition[];
-  /** The generated key for the service */
+  /** The unique key generated for the registered service. */
   serviceKey: string;
+  /** A list of resources that were automatically discovered during registration. */
   discoveredResources: ResourceDefinition[];
 }
 
+/** ValidateServiceRequest represents a request to validate a service configuration without registering it. */
 export interface ValidateServiceRequest {
+  /** The configuration for the upstream service to be validated. */
   config?: UpstreamServiceConfig | undefined;
 }
 
+/** ValidateServiceResponse represents the result of a service validation request. */
 export interface ValidateServiceResponse {
+  /** Indicates whether the service configuration is valid. */
   valid: boolean;
+  /** A message providing details about the validation result, such as error messages if invalid. */
   message: string;
+  /** A list of tools that would be discovered if the service were registered. */
   discoveredTools: ToolDefinition[];
+  /** A list of resources that would be discovered if the service were registered. */
   discoveredResources: ResourceDefinition[];
 }
 
+/** ListServicesRequest represents a request to list all registered services. */
 export interface ListServicesRequest {
 }
 
+/** ListServicesResponse contains the list of registered services. */
 export interface ListServicesResponse {
+  /** The list of registered upstream service configurations. */
   services: UpstreamServiceConfig[];
 }
 
+/** InitiateOAuth2FlowRequest represents a request to start an OAuth2 flow. */
 export interface InitiateOAuth2FlowRequest {
+  /** The ID of the service for which to initiate OAuth2. */
   serviceId: string;
+  /** The namespace of the service. */
   namespace: string;
+  /** The ID of the credential to associate with the OAuth2 flow. */
   credentialId: string;
+  /** The URL to redirect to after the OAuth2 flow completes. */
   redirectUrl: string;
 }
 
+/** InitiateOAuth2FlowResponse contains the URL to start the OAuth2 flow. */
 export interface InitiateOAuth2FlowResponse {
+  /** The authorization URL to redirect the user to. */
   authorizationUrl: string;
+  /** The state parameter used for CSRF protection. */
   state: string;
 }
 
+/** UnregisterServiceRequest represents a request to remove a service. */
 export interface UnregisterServiceRequest {
-  /** User-defined unique ID for the service to deregister */
+  /** The unique user-defined ID of the service to unregister. */
   serviceName: string;
-  /** Optional namespace for the service */
+  /** The optional namespace of the service. */
   namespace: string;
 }
 
+/** UnregisterServiceResponse represents the response after unregistering a service. */
 export interface UnregisterServiceResponse {
-  /** e.g., "Service unregistered successfully" */
+  /** A message indicating the result of the unregistration (e.g., "Service unregistered successfully"). */
   message: string;
 }
 
+/** RegisterToolsRequest represents a request to manually register tools for a service. */
 export interface RegisterToolsRequest {
+  /** The name of the service to register tools for. */
   serviceName: string;
+  /** The namespace of the service. */
   namespace: string;
+  /** The list of tool definitions to register. */
   tools: ToolDefinition[];
 }
 
+/** RegisterToolsResponse represents the response after registering tools. */
 export interface RegisterToolsResponse {
+  /** A message indicating the result of the registration. */
   message: string;
+  /** The number of tools successfully registered. */
   toolsRegistered: number;
 }
 
+/** GetServiceRequest represents a request to retrieve a specific service. */
 export interface GetServiceRequest {
+  /** The name of the service to retrieve. */
   serviceName: string;
 }
 
+/** GetServiceResponse contains the requested service configuration. */
 export interface GetServiceResponse {
+  /** The configuration of the requested upstream service. */
   service?: UpstreamServiceConfig | undefined;
 }
 
+/** GetServiceStatusRequest represents a request to retrieve the status of a service. */
 export interface GetServiceStatusRequest {
+  /** The name of the service to retrieve status for. */
   serviceName: string;
+  /** The namespace of the service. */
   namespace: string;
 }
 
+/** GetServiceStatusResponse contains the status and metrics of a service. */
 export interface GetServiceStatusResponse {
+  /** The list of tools currently active for the service. */
   tools: ToolDefinition[];
+  /** A map of metrics for the service (e.g., request count, latency). */
   metrics: { [key: string]: Long };
 }
 
@@ -1464,29 +1506,47 @@ export const GetServiceStatusResponse_MetricsEntry: MessageFns<GetServiceStatusR
   },
 };
 
+/**
+ * RegistrationService manages the lifecycle of upstream services.
+ * It allows registering, validating, and managing services that MCP Any proxies to.
+ */
 export interface RegistrationService {
+  /**
+   * RegisterService registers a new upstream service with the MCP Any server.
+   * It validates the configuration and initializes the service.
+   */
   RegisterService(
     request: DeepPartial<RegisterServiceRequest>,
     metadata?: grpc.Metadata,
   ): Promise<RegisterServiceResponse>;
+  /**
+   * ValidateService validates an upstream service configuration without registering it.
+   * This is useful for dry-run checks and UI validation.
+   */
   ValidateService(
     request: DeepPartial<ValidateServiceRequest>,
     metadata?: grpc.Metadata,
   ): Promise<ValidateServiceResponse>;
+  /** UnregisterService removes an existing upstream service. */
   UnregisterService(
     request: DeepPartial<UnregisterServiceRequest>,
     metadata?: grpc.Metadata,
   ): Promise<UnregisterServiceResponse>;
+  /** InitiateOAuth2Flow starts an OAuth2 authentication flow for a service. */
   InitiateOAuth2Flow(
     request: DeepPartial<InitiateOAuth2FlowRequest>,
     metadata?: grpc.Metadata,
   ): Promise<InitiateOAuth2FlowResponse>;
+  /** RegisterTools manually registers tools for a specific service. */
   RegisterTools(request: DeepPartial<RegisterToolsRequest>, metadata?: grpc.Metadata): Promise<RegisterToolsResponse>;
+  /** GetServiceStatus retrieves the runtime status and metrics of a registered service. */
   GetServiceStatus(
     request: DeepPartial<GetServiceStatusRequest>,
     metadata?: grpc.Metadata,
   ): Promise<GetServiceStatusResponse>;
+  /** ListServices returns a list of all registered upstream services. */
   ListServices(request: DeepPartial<ListServicesRequest>, metadata?: grpc.Metadata): Promise<ListServicesResponse>;
+  /** GetService retrieves the configuration of a specific service. */
   GetService(request: DeepPartial<GetServiceRequest>, metadata?: grpc.Metadata): Promise<GetServiceResponse>;
 }
 
