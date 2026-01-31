@@ -83,7 +83,8 @@ func TestSplunkAuditStore(t *testing.T) {
 
 func TestSplunkAuditStore_Batch(t *testing.T) {
 	var totalReceived int32
-	done := make(chan struct{})
+	// Use buffered channel to prevent deadlock if test finishes before reading done
+	done := make(chan struct{}, 1)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
@@ -96,7 +97,11 @@ func TestSplunkAuditStore_Batch(t *testing.T) {
 		atomic.AddInt32(&totalReceived, int32(count))
 		w.WriteHeader(http.StatusOK)
 		if atomic.LoadInt32(&totalReceived) >= 5 {
-			done <- struct{}{}
+			// Non-blocking send
+			select {
+			case done <- struct{}{}:
+			default:
+			}
 		}
 	}))
 	defer ts.Close()
