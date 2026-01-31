@@ -41,11 +41,12 @@ test('TraceList renders traces', () => {
     />
   );
 
-  expect(screen.getByText("test_tool_1", { exact: false })).toBeDefined();
-  expect(screen.getByText("test_tool_2", { exact: false })).toBeDefined();
+  // Use findByText to wait for rendering if async, or relax exact match
+  await expect(screen.findByText(/test_tool_1/i)).resolves.toBeDefined();
+  await expect(screen.findByText(/test_tool_2/i)).resolves.toBeDefined();
 });
 
-test('TraceList filters traces based on search query', () => {
+test('TraceList filters traces based on search query', async () => {
     const onSearchChange = () => {}; // Mock
 
     render(
