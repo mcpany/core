@@ -167,14 +167,37 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
   // Optimization: Defer JSON parsing until expanded to avoid O(N) parsing on render.
   // We use a heuristic to decide if we should show the expand button.
   const isPotentialJson = React.useMemo(() => isLikelyJson(log.message), [log.message]);
+  const hasMetadata = React.useMemo(() => log.metadata && Object.keys(log.metadata).length > 0, [log.metadata]);
+  const canExpand = isPotentialJson || hasMetadata;
 
-  // Only parse if expanded and looks like JSON
+  // Only parse if expanded
   const jsonContent = React.useMemo(() => {
-    if (isExpanded && isPotentialJson) {
-      return safeParseJson(log.message);
+    if (!isExpanded) return null;
+
+    if (isPotentialJson && !hasMetadata) {
+        return safeParseJson(log.message);
     }
-    return null;
-  }, [isExpanded, isPotentialJson, log.message]);
+
+    // If we have metadata, we construct a combined view or structured view
+    let content: Record<string, unknown> = {};
+
+    if (isPotentialJson) {
+        content.message_payload = safeParseJson(log.message);
+    } else {
+        content.message = log.message;
+    }
+
+    if (hasMetadata && log.metadata) {
+        // Merge metadata at root if possible, or keep separate?
+        // Separate is safer to avoid collision
+        content.metadata = log.metadata;
+    }
+
+    // Special case: if message is NOT JSON but we have metadata,
+    // we might just want to show metadata.
+    // The structure above { message: "...", metadata: {...} } works well.
+    return content;
+  }, [isExpanded, isPotentialJson, hasMetadata, log.message, log.metadata]);
 
   return (
     <div
@@ -213,33 +236,48 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
           )}
 
           <div className="flex-1 min-w-0 flex flex-col">
-            <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start">
-               {isPotentialJson && (
+            <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start flex-wrap gap-y-1">
+               {canExpand && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground"
-                    aria-label={isExpanded ? "Collapse JSON" : "Expand JSON"}
+                    aria-label={isExpanded ? "Collapse Details" : "Expand Details"}
                   >
                     {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </button>
                )}
-               <span className="break-all whitespace-pre-wrap">
+               <span className="break-all whitespace-pre-wrap mr-2">
                  <HighlightText text={log.message} regex={highlightRegex} />
                </span>
+
                {duration && (
-                <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
+                <span className="mr-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
                   {duration}
                 </span>
-              )}
+               )}
+
+               {/* Render Metadata Badges */}
+               {log.metadata && Object.entries(log.metadata).map(([key, value]) => {
+                   if (key === 'duration') return null;
+                   if (value === null || value === undefined) return null;
+                   if (typeof value === 'object') return null; // Skip complex objects in badge view
+
+                   return (
+                       <span key={key} className="mr-2 inline-flex items-center rounded-sm border border-white/10 px-1.5 py-0.5 text-[10px] text-muted-foreground font-mono shrink-0 hover:bg-white/5 transition-colors cursor-help" title={`${key}: ${value}`}>
+                           <span className="opacity-70 mr-1">{key}:</span>
+                           <span className="text-foreground font-semibold">{String(value)}</span>
+                       </span>
+                   );
+               })}
             </span>
 
-            {isExpanded && isPotentialJson && (
+            {isExpanded && canExpand && (
               <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
                 {jsonContent ? (
                   <JsonViewer data={jsonContent} />
                 ) : (
                   <div className="p-2 bg-muted/20 rounded border border-white/10 text-muted-foreground italic">
-                    Invalid JSON
+                    Invalid JSON or Empty Data
                   </div>
                 )}
               </div>
