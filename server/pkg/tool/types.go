@@ -2605,6 +2605,16 @@ func checkForLocalFileAccess(val string) error {
 	return nil
 }
 
+func checkForSSRF(val string) error {
+	lower := strings.ToLower(val)
+	if strings.Contains(lower, "://") {
+		if err := validation.IsSafeURL(val); err != nil {
+			return fmt.Errorf("ssrf attempt detected: %w", err)
+		}
+	}
+	return nil
+}
+
 func checkForArgumentInjection(val string) error {
 	if strings.HasPrefix(val, "-") {
 		// Allow negative numbers
@@ -2963,9 +2973,16 @@ func validateSafePathAndInjection(val string, isDocker bool) error {
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
+	if err := checkForSSRF(val); err != nil {
+		return err
+	}
+
 	// Also check decoded value just in case the input was already encoded
 	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
 		if err := checkForPathTraversal(decodedVal); err != nil {
+			return fmt.Errorf("%w (decoded)", err)
+		}
+		if err := checkForSSRF(decodedVal); err != nil {
 			return fmt.Errorf("%w (decoded)", err)
 		}
 	}
