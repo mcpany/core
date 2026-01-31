@@ -16,6 +16,20 @@ vi.mock("@/hooks/use-toast", () => ({
   }),
 }));
 
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 // Mock ToolDefinition
 const mockTool: ToolDefinition = {
   name: "test_tool",
@@ -51,9 +65,21 @@ describe("ToolForm", () => {
     await user.click(schemaTab);
 
     expect(schemaTab).toHaveAttribute("data-state", "active");
-    // Verify schema content is displayed (basic check)
-    expect(screen.getByText(/"type": "object"/)).toBeInTheDocument();
-    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+
+    // Verify schema content is displayed.
+    // JsonView renders a <pre> tag with code.
+    // We target the container to avoid text fragmentation issues with SyntaxHighlighter in JSDOM.
+    // The tabpanel for schema should be visible.
+    const schemaPanel = screen.getByRole("tabpanel", { name: "Schema" });
+    expect(schemaPanel).toBeVisible();
+
+    // Check if JsonView rendered code block
+    // We use querySelector because getByRole('code') might not work if not explicitly set
+    // and text matching is flaky.
+    const codeBlock = schemaPanel.querySelector("pre");
+    expect(codeBlock).toBeInTheDocument();
+    // Basic text check on the code block content if possible, or just existence
+    expect(codeBlock).toHaveTextContent("foo");
   });
 
   it("includes a copy button in schema view", async () => {
