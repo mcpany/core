@@ -64,7 +64,7 @@ test.describe('Tool Exploration', () => {
         const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
         await toolRow.getByText('Inspect').click();
 
-        await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
+        await expect(page.getByText('Schema Reference').first()).toBeVisible();
         await expect(page.getByText('weather-tool').first()).toBeVisible();
     });
 });
