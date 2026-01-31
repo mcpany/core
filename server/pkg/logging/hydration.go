@@ -28,7 +28,7 @@ func HydrateFromFile(path string) error {
 
 		// Parse slog JSON
 		var rawMap map[string]interface{}
-		if err := json.Unmarshal(line, &rawMap); err != nil {
+		if err := json.Unmarshal([]byte(line), &rawMap); err != nil {
 			continue // Skip malformed lines
 		}
 
