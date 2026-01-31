@@ -33,6 +33,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * The number of tools registered for this service.
      */
     toolCount?: number;
+    /**
+     * The runtime status of the service (e.g. "OK", "ERROR", "CONNECTING").
+     */
+    status?: string;
 }
 
 // Re-export generated types
@@ -229,7 +233,28 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/services');
         if (!res.ok) throw new Error('Failed to fetch services');
         const data = await res.json();
-        const list = Array.isArray(data) ? data : (data.services || []);
+
+        let list: any[] = [];
+        // Handle ListServicesResponse format from admin.proto which includes service_states
+        if (data.service_states) {
+            // Map ServiceState to config object with added status
+            list = data.service_states.map((state: any) => ({
+                ...state.config,
+                status: state.status, // "OK", "ERROR", "CONNECTING"
+                last_error: state.error || state.config?.last_error, // Prefer state error
+            }));
+        } else if (data.serviceStates) {
+            // Handle camelCase if JSON marshalling does that
+            list = data.serviceStates.map((state: any) => ({
+                ...state.config,
+                status: state.status,
+                last_error: state.error || state.config?.lastError,
+            }));
+        } else {
+            // Fallback to deprecated services field or direct array
+            list = Array.isArray(data) ? data : (data.services || []);
+        }
+
         // Map snake_case to camelCase for UI compatibility
         return list.map((s: any) => ({
             ...s,
@@ -241,7 +266,7 @@ export const apiClient = {
             upstreamAuth: s.upstream_auth,
             preCallHooks: s.pre_call_hooks,
             postCallHooks: s.post_call_hooks,
-            lastError: s.last_error,
+            lastError: s.last_error || s.lastError,
             toolCount: s.tool_count,
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
