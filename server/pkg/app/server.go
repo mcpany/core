@@ -1639,6 +1639,10 @@ func (a *Application) runServerMode(
 
 				if subtle.ConstantTimeCompare([]byte(requestKey), []byte(apiKey)) == 1 {
 					isAuthenticated = true
+					// Inject API Key into context if needed
+					ctx = auth.ContextWithAPIKey(ctx, requestKey)
+					// Global API Key grants Admin privileges (Root Access)
+					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 				} else {
 					// Global auth configured but failed
 					http.Error(w, "Unauthorized (Global)", http.StatusUnauthorized)
@@ -2215,6 +2219,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 					authenticated = true
 					// Inject API Key into context if needed
 					ctx = auth.ContextWithAPIKey(ctx, requestKey)
+					// Global API Key grants Admin privileges (Root Access)
+					ctx = auth.ContextWithRoles(ctx, []string{"admin"})
 				}
 			}
 
