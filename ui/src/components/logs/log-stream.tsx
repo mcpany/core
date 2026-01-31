@@ -27,7 +27,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
@@ -36,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso"
 
 // ⚡ Bolt Optimization: Lazy load the syntax highlighter.
 // react-syntax-highlighter is a heavy dependency. By lazy loading it only when a user
@@ -176,9 +176,6 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
   return (
     <div
       className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
-      // Optimization: content-visibility allows the browser to skip rendering work for off-screen rows.
-      // This significantly improves performance when the log list grows large.
-      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 32px' } as React.CSSProperties}
     >
       <div className="flex flex-row w-full items-start gap-1 sm:gap-3">
           <div className="flex items-center gap-2 sm:contents">
@@ -281,7 +278,7 @@ export function LogStream() {
     return new RegExp(`(${escaped})`, 'gi');
   }, [deferredSearchQuery]);
 
-  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const virtuosoRef = React.useRef<VirtuosoHandle>(null)
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
   const logBufferRef = React.useRef<LogEntry[]>([])
@@ -370,24 +367,6 @@ export function LogStream() {
       clearInterval(flushInterval)
     }
   }, []) // Empty dependency array -> run once
-
-  // Auto-scroll
-  // Optimization: Cache the viewport element to avoid frequent DOM queries (querySelector).
-  const viewportRef = React.useRef<HTMLElement | null>(null)
-
-  React.useEffect(() => {
-    if (!isPaused && scrollRef.current) {
-      // Lazy init or validate viewport ref
-      if (!viewportRef.current || !viewportRef.current.isConnected) {
-        viewportRef.current = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
-      }
-
-      const scrollContainer = viewportRef.current
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight
-      }
-    }
-  }, [logs, isPaused])
 
   // Optimization: Extract unique sources from logs efficiently
   const uniqueSources = React.useMemo(() => {
@@ -539,18 +518,24 @@ export function LogStream() {
              </div>
         </CardHeader>
         <CardContent className="flex-1 p-0 overflow-hidden bg-black/90 font-mono text-sm relative">
-             <ScrollArea className="h-full w-full p-4" ref={scrollRef}>
-                <div className="space-y-1" data-testid="log-rows-container">
-                    {filteredLogs.length === 0 && (
-                        <div className="text-muted-foreground text-center py-10 italic">
-                            {isConnected ? "No logs found matching your criteria..." : "Waiting for connection..."}
-                        </div>
-                    )}
-                    {filteredLogs.map((log) => (
-                      <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
-                    ))}
+             {filteredLogs.length === 0 ? (
+                <div className="text-muted-foreground text-center py-10 italic">
+                    {isConnected ? "No logs found matching your criteria..." : "Waiting for connection..."}
                 </div>
-             </ScrollArea>
+             ) : (
+                // ⚡ BOLT: Implemented virtualization for log stream.
+                // Randomized Selection from Top 5 High-Impact Targets
+                <div className="h-full w-full p-4">
+                  <Virtuoso
+                    ref={virtuosoRef}
+                    data={filteredLogs}
+                    followOutput={isPaused ? false : "auto"}
+                    itemContent={(index, log) => (
+                      <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
+                    )}
+                  />
+                </div>
+             )}
         </CardContent>
       </Card>
     </div>
