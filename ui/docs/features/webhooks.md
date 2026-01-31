@@ -1,6 +1,6 @@
 # Webhooks
 
-**Status:** Implemented
+**Status:** Implemented (Preview)
 
 ## Goal
 
@@ -24,7 +24,9 @@ Navigate to `/webhooks`. This page lists all configured outbound webhooks.
 
 ### 3. Test Delivery
 
-Click the **"Test"** button on a webhook row to send a sample payload to the configured URL. The response status code (e.g., 200 OK) will be displayed ensuring connectivity.
+Click the **"Test"** button on a webhook row to send a sample payload to the configured URL.
+
+> **Note**: Currently, the test feature is a client-side simulation to verify UI interaction. Full backend delivery verification is in development.
 
 ## Technical Details
 
