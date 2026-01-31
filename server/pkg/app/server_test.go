@@ -2249,6 +2249,8 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 
+	logging.GetLogger().Info("Test Config Debug", "MCPANY_CONFIG_PATH", os.Getenv("MCPANY_CONFIG_PATH"), "viper_config_path", viper.Get("config-path"))
+
 	// Set the API key
 	viper.Set("api-key", "test-api-key")
 	defer viper.Set("api-key", "")

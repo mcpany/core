@@ -320,6 +320,7 @@ func (a *Application) Run(opts RunOptions) error {
 	a.fs = fs
 	a.configPaths = opts.ConfigPaths
 	a.explicitAPIKey = opts.APIKey
+	log.Info("DEBUG: Run API Key", "key", opts.APIKey)
 
 	// Telemetry initialization moved after config loading
 
@@ -1473,6 +1474,7 @@ func (a *Application) runServerMode(
 
 	// Use passed globalSettings for middleware config check
 	if globalSettings != nil {
+		logging.GetLogger().Info("DEBUG: GlobalSettings middlewares", "count", len(globalSettings.GetMiddlewares()), "middlewares", globalSettings.GetMiddlewares())
 		for _, m := range globalSettings.GetMiddlewares() {
 			if m.GetName() == authMiddlewareName && m.GetDisabled() {
 				authDisabled = true
@@ -2201,6 +2203,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 			apiKey := a.SettingsManager.GetAPIKey()
+			requestKey := r.Header.Get("X-API-Key")
+			logging.GetLogger().Info("DEBUG: AuthMiddleware details", "configured_key", apiKey, "request_key", requestKey, "path", r.URL.Path)
 			authenticated := false
 
 			// 1. Check Global API Key

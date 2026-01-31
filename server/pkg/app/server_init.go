@@ -70,6 +70,10 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			}.Build(),
 		},
 	}.Build()
+	// panic("DEBUG: initializeDatabase called") // Commented out to avoid crashing, but using error log as panic alternative if needed.
+	// actually, use fmt.Println to bypass logger if logger is borked
+	fmt.Println("DEBUG:fmt: Initializing DB with defaultGS")
+	log.Info("DEBUG: Initializing DB with defaultGS", "middlewares", defaultGS.GetMiddlewares())
 
 	// Default Weather Service for demonstration
 	weatherService := configv1.UpstreamServiceConfig_builder{
