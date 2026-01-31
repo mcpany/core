@@ -23,17 +23,17 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "awk '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("awk_wrapper")
@@ -55,7 +55,7 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "awk_wrapper",
+		ToolName:   "awk_wrapper",
 		ToolInputs: inputBytes,
 	}
 
@@ -78,17 +78,17 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "perl -e '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("perl_wrapper")
@@ -111,7 +111,7 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "perl_wrapper",
+		ToolName:   "perl_wrapper",
 		ToolInputs: inputBytes,
 	}
 
@@ -134,17 +134,17 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 
 	stringType := configv1.ParameterType(configv1.ParameterType_value["STRING"])
 
-	callDef := &configv1.CommandLineCallDefinition{
+	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "awk '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
-	}
+	}.Build()
 
 	toolProto := &v1.Tool{}
 	toolProto.SetName("awk_wrapper_evasion")
@@ -166,7 +166,7 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	inputBytes, _ := json.Marshal(inputMap)
 
 	req := &ExecutionRequest{
-		ToolName: "awk_wrapper_evasion",
+		ToolName:   "awk_wrapper_evasion",
 		ToolInputs: inputBytes,
 	}
 
