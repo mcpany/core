@@ -2692,18 +2692,24 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
-	// Sentinel Security Update:
-	// On Windows cmd.exe, single quotes are NOT strong quotes.
-	// They are just literal characters and do not prevent variable expansion or command chaining.
-	// Therefore, we must treat single-quoted arguments as unquoted/unsafe for cmd.exe.
 	base := strings.ToLower(filepath.Base(command))
 	isWindowsCmd := base == "cmd.exe" || base == "cmd"
 	if isWindowsCmd && quoteLevel == 2 {
 		quoteLevel = 0
 	}
 
+	// Sentinel Security Update: Interpreter Injection Protection
+	if isInterpreter(command) {
+		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+			return err
+		}
+	}
+
+	if quoteLevel == 3 { // Backticked
+		return checkBacktickInjection(val, command)
+	}
+
 	if quoteLevel == 2 { // Single Quoted
-		// In single quotes, the only dangerous character is single quote itself
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
@@ -2720,6 +2726,75 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		return nil
 	}
 
+	return checkUnquotedInjection(val, command)
+}
+
+func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Python: Check for f-string prefix in template
+	if strings.HasPrefix(base, "python") {
+		// Scan template to find the prefix of the quote containing the placeholder
+		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
+		hasFString := false
+		for i := 0; i < len(template)-1; i++ {
+			if template[i+1] == '\'' || template[i+1] == '"' {
+				prefix := strings.ToLower(getPrefix(template, i+1))
+				if prefix == "f" || prefix == "fr" || prefix == "rf" {
+					hasFString = true
+					break
+				}
+			}
+		}
+		if hasFString {
+			if strings.ContainsAny(val, "{}") {
+				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+			}
+		}
+	}
+
+	// Ruby: #{...} works in double quotes
+	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "#{") {
+			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+		}
+	}
+
+	// Node/JS/Perl/PHP: ${...} works in backticks (JS) or double quotes (Perl/PHP)
+	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
+	isPerl := strings.HasPrefix(base, "perl")
+	isPhp := strings.HasPrefix(base, "php")
+
+	if isNode && quoteLevel == 3 { // Backtick
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("javascript template literal injection detected: value contains '${'")
+		}
+	}
+	if (isPerl || isPhp) && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "${") {
+			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
+		}
+	}
+	return nil
+}
+
+func checkBacktickInjection(val, command string) error {
+	// Backticks in Shell are command substitution (Level 0 danger).
+	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
+	// we must enforce strict checks.
+	if !isInterpreter(command) {
+		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
+		if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
+			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
+		}
+	}
+	// For interpreters (like JS), we already handled specific injections above.
+	// We should still prevent breaking out of backticks.
+	if strings.Contains(val, "`") {
+		return fmt.Errorf("backtick injection detected")
+	}
+	return nil
+}
+
+func checkUnquotedInjection(val, command string) error {
 	// Unquoted (or unknown quoting): strict check
 	// Block common shell metacharacters and globbing/expansion characters
 	// % and ^ are Windows CMD metacharacters
@@ -2740,16 +2815,45 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	return nil
 }
 
+func isInterpreter(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	for _, interp := range interpreters {
+		if base == interp || strings.HasPrefix(base, interp) {
+			return true
+		}
+	}
+	return false
+}
+
+func isWordChar(c byte) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_'
+}
+
+func getPrefix(s string, idx int) string {
+	// idx is index of quote char
+	start := idx - 1
+	for start >= 0 {
+		c := s[start]
+		if !isWordChar(c) {
+			break
+		}
+		start--
+	}
+	return s[start+1 : idx]
+}
+
 func analyzeQuoteContext(template, placeholder string) int {
 	if template == "" || placeholder == "" {
 		return 0
 	}
 
-	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single
-	minLevel := 2
+	// Levels: 0 = Unquoted (Strict), 1 = Double, 2 = Single, 3 = Backtick
+	minLevel := 3
 
 	inSingle := false
 	inDouble := false
+	inBacktick := false
 	escaped := false
 
 	foundAny := false
@@ -2759,10 +2863,13 @@ func analyzeQuoteContext(template, placeholder string) int {
 		if strings.HasPrefix(template[i:], placeholder) {
 			foundAny = true
 			currentLevel := 0
-			if inSingle {
+			switch {
+			case inSingle:
 				currentLevel = 2
-			} else if inDouble {
+			case inDouble:
 				currentLevel = 1
+			case inBacktick:
+				currentLevel = 3
 			}
 
 			if currentLevel < minLevel {
@@ -2786,10 +2893,19 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
-		if char == '\'' && !inDouble {
-			inSingle = !inSingle
-		} else if char == '"' && !inSingle {
-			inDouble = !inDouble
+		switch char {
+		case '\'':
+			if !inDouble && !inBacktick {
+				inSingle = !inSingle
+			}
+		case '"':
+			if !inSingle && !inBacktick {
+				inDouble = !inDouble
+			}
+		case '`':
+			if !inSingle && !inDouble {
+				inBacktick = !inBacktick
+			}
 		}
 	}
 
