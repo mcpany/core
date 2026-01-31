@@ -91,7 +91,8 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		}
 		// File reading is blocking and generally fast, but technically could verify context.
 		// For simplicity and standard library limits, we just read.
-		content, err := os.ReadFile(secret.GetFilePath())
+		// Sentinel Security: Path is validated by IsAllowedPath which checks for traversal and allowed directories.
+		content, err := os.ReadFile(secret.GetFilePath()) //nolint:gosec
 		if err != nil {
 			return "", fmt.Errorf("failed to read secret from file %q: %w", secret.GetFilePath(), err)
 		}

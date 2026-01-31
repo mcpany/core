@@ -506,7 +506,9 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 
 	script := strings.Join(scriptCommands, " && ")
 
-	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec // Script is configured by user
+	// Sentinel Security: We use sh -c here because setup_commands are arbitrary shell commands.
+	// This is explicitly allowed by the user via the MCP_ALLOW_UNSAFE_SETUP_COMMANDS env var.
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script) //nolint:gosec
 	cmd.Dir = stdio.GetWorkingDirectory()
 	cmd.Env = buildSafeEnv(resolvedEnv)
 	env := cmd.Env // For validation below

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -340,6 +341,17 @@ func prepareAndExecuteRequest(ctx context.Context, w http.ResponseWriter, req Te
 	method := req.Method
 	if method == "" {
 		method = "GET"
+	}
+
+	// Sentinel Security: Validate URL Scheme
+	u, err := url.Parse(req.TargetURL)
+	if err != nil {
+		writeError(w, fmt.Errorf("invalid target url format: %v", err))
+		return
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		writeError(w, fmt.Errorf("invalid target url scheme: %s (must be http or https)", u.Scheme))
+		return
 	}
 
 	// Use a clean http client

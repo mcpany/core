@@ -305,7 +305,7 @@ func NewApplication() *Application {
 // shutdown is initiated when the context is canceled.
 //
 // Parameters:
-//   - opts (RunOptions): The options for running the application.
+//   - opts (RunOptions): The configuration options for the application runtime.
 //
 // Returns:
 //   - (error): An error if any part of the startup or execution fails.

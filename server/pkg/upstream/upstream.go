@@ -13,16 +13,16 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Upstream defines the standard interface for all backend service integrations.
-// Each implementation of this interface is responsible for discovering and
-// registering its capabilities, such as tools, prompts, and resources, with the
-// appropriate managers.
+// Upstream defines the standard contract for backend service integrations.
+// Implementations bridge external protocols (like gRPC, HTTP, SQL) to the MCP ecosystem.
 type Upstream interface {
-	// Shutdown gracefully terminates the upstream service.
+	// Shutdown gracefully terminates the upstream connection and cleans up resources.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: Context for the shutdown operation (e.g., timeout).
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: Non-nil if shutdown encountered issues.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,

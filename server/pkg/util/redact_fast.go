@@ -176,20 +176,30 @@ func redactJSONFast(input []byte) []byte {
 					if out == nil {
 						// Allocate slightly more than input size to avoid reallocations when replacement is longer than original
 						// 1.1x is a heuristic, but we cap it to avoid excessive memory usage for large inputs.
-						extra := len(input) / 10
-						if extra > 16384 {
-							extra = 16384
+						// Sentinel Security: Limit maximum allocation to prevent DoS
+						const maxAllocation = 100 * 1024 * 1024 // 100MB
+						if len(input) > maxAllocation {
+							// If input is huge, just use input length.
+							out = make([]byte, 0, len(input))
+						} else {
+							extra := len(input) / 10
+							if extra > 16384 {
+								extra = 16384
+							}
+							if extra < 128 {
+								extra = 128
+							}
+							// Use int64 for calculation to avoid overflow before comparison
+							targetCap := int64(len(input)) + int64(extra)
+							// Check against max int to be safe on 32-bit systems, though slices are limited by arch
+							if targetCap > math.MaxInt || targetCap < int64(len(input)) {
+								targetCap = int64(len(input))
+							}
+							if targetCap > int64(maxAllocation) {
+								targetCap = int64(maxAllocation)
+							}
+							out = make([]byte, 0, int(targetCap))
 						}
-						if extra < 128 {
-							extra = 128
-						}
-						// Use int64 for calculation to avoid overflow before comparison
-						targetCap := int64(len(input)) + int64(extra)
-						// Check against max int to be safe on 32-bit systems, though slices are limited by arch
-						if targetCap > math.MaxInt || targetCap < int64(len(input)) {
-							targetCap = int64(len(input))
-						}
-						out = make([]byte, 0, int(targetCap))
 					}
 
 					// Determine value end

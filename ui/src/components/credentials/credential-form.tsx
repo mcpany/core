@@ -250,11 +250,8 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
                   returnPath: '/credentials'
               }))
 
-              // Legacy keys for compatibility with /auth/callback/page.tsx
-              sessionStorage.setItem('oauth_credential_id', initialData.id)
-              sessionStorage.setItem('oauth_state', res.state)
-              sessionStorage.setItem('oauth_redirect_url', redirectUrl)
-              sessionStorage.setItem('oauth_return_path', '/credentials')
+              // Legacy keys removed to prevent sensitive data leakage (CodeQL alert)
+              // The unified 'oauth_pending_STATE' key above is sufficient and safer.
 
               window.location.href = res.authorization_url
           } else {

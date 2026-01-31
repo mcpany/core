@@ -169,6 +169,12 @@ func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) er
 	}
 
 	cleanPath := filepath.Clean(relPath)
+
+	// Extra defensive check for CodeQL path traversal rules
+	if strings.Contains(cleanPath, "..") || strings.HasPrefix(cleanPath, "/") || strings.HasPrefix(cleanPath, "\\") {
+		return fmt.Errorf("invalid asset path (traversal detected): %s", cleanPath)
+	}
+
 	skillDir := filepath.Join(m.rootDir, skillName)
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", skillName)

@@ -195,16 +195,33 @@ func skipWhitespace(input []byte, start int) int {
 // calculateCapacity calculates a safe initial capacity for the output buffer.
 // It uses int64 to avoid overflow during calculation and checks against MaxInt.
 func calculateCapacity(inputLen int) int {
+	// Sentinel Security: Limit maximum allocation to prevent DoS
+	const maxAllocation = 100 * 1024 * 1024 // 100MB
+
+	if inputLen < 0 {
+		return 0
+	}
+	if inputLen > maxAllocation {
+		// If input is huge, don't try to allocate even more.
+		// Just cap at inputLen (we might resize later, but don't start massive).
+		return inputLen
+	}
+
 	// Heuristic: input size + 10% or at least 128 bytes
 	extra := int64(inputLen) / 10
 	if extra < 128 {
 		extra = 128
 	}
-	targetCap := int64(inputLen) + extra
 
-	// Check for overflow against int limit
-	if targetCap > int64(math.MaxInt) {
+	// Check for overflow before addition
+	if int64(math.MaxInt)-int64(inputLen) < extra {
 		return math.MaxInt
 	}
+
+	targetCap := int64(inputLen) + extra
+	if targetCap > int64(maxAllocation) {
+		return maxAllocation
+	}
+
 	return int(targetCap)
 }
