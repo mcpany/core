@@ -12,6 +12,11 @@ export interface Stack {
   serviceCount: number;
 }
 
+// Partial definition to handle loose inputs without strict import of ServiceCollection
+interface ServiceCollectionLike {
+    services?: UpstreamServiceConfig[] | Record<string, UpstreamServiceConfig>;
+}
+
 export const stackManager = {
   /**
    * List all stacks.
@@ -89,11 +94,11 @@ export const stackManager = {
    * @param name Stack Name
    * @param config The stack configuration (list of services or ServiceCollection)
    */
-  saveStack: async (name: string, config: any) => {
+  saveStack: async (name: string, config: UpstreamServiceConfig[] | ServiceCollectionLike) => {
     let newServices: UpstreamServiceConfig[] = [];
     if (Array.isArray(config)) {
       newServices = config;
-    } else if (config.services) {
+    } else if (config && typeof config === 'object' && 'services' in config) {
         if (Array.isArray(config.services)) {
             newServices = config.services;
         } else {
