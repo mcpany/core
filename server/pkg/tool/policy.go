@@ -4,11 +4,12 @@
 package tool
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
@@ -189,6 +190,17 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns true if successful.
 // Returns an error if the operation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	// Normalize JSON arguments to prevent policy evasion via duplicate keys
+	normalizedArgs := arguments
+	if len(arguments) > 0 {
+		var obj interface{}
+		if err := json.Unmarshal(arguments, &obj); err == nil {
+			if normalized, err := json.Marshal(obj); err == nil {
+				normalizedArgs = normalized
+			}
+		}
+	}
+
 	for _, policy := range policies {
 		policyBlocked := false
 		matchedRule := false
@@ -209,7 +221,7 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 			if matched && rule.GetArgumentRegex() != "" {
 				if arguments == nil {
 					matched = false
-				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(arguments) {
+				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(normalizedArgs) {
 					matched = false
 				}
 			}
