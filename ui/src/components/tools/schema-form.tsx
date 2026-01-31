@@ -22,16 +22,16 @@ export interface Schema {
   properties?: Record<string, Schema>;
   items?: Schema;
   required?: string[];
-  enum?: any[];
-  default?: any;
+  enum?: string[] | number[];
+  default?: unknown;
   format?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface SchemaFormProps {
   schema: Schema;
-  value: any;
-  onChange: (value: any) => void;
+  value: unknown;
+  onChange: (value: unknown) => void;
   name?: string;
   required?: boolean;
   depth?: number;
@@ -72,23 +72,23 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
   const isObject = type === "object" || !!schema.properties;
   const isArray = type === "array" || !!schema.items;
 
-  const handleObjectChange = (key: string, val: any) => {
-    onChange({ ...value, [key]: val });
+  const handleObjectChange = (key: string, val: unknown) => {
+    onChange({ ...(value as object || {}), [key]: val });
   };
 
   const handleArrayAdd = () => {
     const newItem = getDefaultValue(schema.items || {});
-    onChange([...(value || []), newItem]);
+    onChange([...(value as unknown[] || []), newItem]);
   };
 
   const handleArrayRemove = (index: number) => {
-    const newValue = [...(value || [])];
+    const newValue = [...(value as unknown[] || [])];
     newValue.splice(index, 1);
     onChange(newValue);
   };
 
-  const handleArrayChange = (index: number, val: any) => {
-    const newValue = [...(value || [])];
+  const handleArrayChange = (index: number, val: unknown) => {
+    const newValue = [...(value as unknown[] || [])];
     newValue[index] = val;
     onChange(newValue);
   };
@@ -127,7 +127,7 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
             <SchemaForm
               key={key}
               schema={propSchema}
-              value={value?.[key]}
+              value={(value as Record<string, unknown>)?.[key]}
               onChange={(val) => handleObjectChange(key, val)}
               name={key}
               required={schema.required?.includes(key)}
@@ -158,11 +158,12 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
                     <SchemaForm
                       key={key}
                       schema={propSchema}
-                      value={value?.[key]}
+                      value={(value as Record<string, unknown>)?.[key]}
                       onChange={(val) => handleObjectChange(key, val)}
                       name={key}
                       required={schema.required?.includes(key)}
                       depth={depth + 1}
+                      path={currentPath}
                     />
                   ))}
             </CollapsibleContent>
@@ -177,7 +178,7 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
       <div className={cn("space-y-2", depth > 0 && "mt-2")}>
         {renderLabel(inputId)}
         <div className="border rounded-md p-3 bg-muted/20">
-            {Array.isArray(value) && value.map((item: any, index: number) => (
+            {Array.isArray(value) && value.map((item: unknown, index: number) => (
                 <div key={index} className="flex items-start gap-2 mb-3 last:mb-0">
                     <div className="flex-1">
                         <SchemaForm
@@ -216,12 +217,12 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
      return (
         <div className={cn("space-y-1.5", depth > 0 && "mt-2")}>
             {renderLabel(inputId)}
-            <Select value={value} onValueChange={onChange}>
+            <Select value={value as string} onValueChange={onChange}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select option" />
                 </SelectTrigger>
                 <SelectContent>
-                    {schema.enum.map((opt: any) => (
+                    {schema.enum.map((opt: unknown) => (
                         <SelectItem key={String(opt)} value={String(opt)}>
                             {String(opt)}
                         </SelectItem>
@@ -260,7 +261,7 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
               <Input
                   id={inputId}
                   type="number"
-                  value={value}
+                  value={value as number}
                   onChange={(e) => onChange(e.target.value === "" ? "" : Number(e.target.value))}
                   placeholder={String(schema.default ?? "")}
                   className="font-mono text-sm"
@@ -276,7 +277,7 @@ export function SchemaForm({ schema, value, onChange, name, required = false, de
           <Input
               id={inputId}
               type="text"
-              value={value || ""}
+              value={value as string || ""}
               onChange={(e) => onChange(e.target.value)}
               placeholder={String(schema.default ?? "")}
               className="font-sans text-sm"
