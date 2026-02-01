@@ -25,7 +25,7 @@ type SystemStatusResponse struct {
 
 func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request) {
 	uptime := int64(time.Since(a.startTime).Seconds())
-	activeConns := atomic.LoadInt32(&a.activeConnections)
+	activeConns := a.activeConnections.Load()
 
 	warnings := []string{}
 	if a.SettingsManager.GetAPIKey() == "" {

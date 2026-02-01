@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { apiClient } from "@/lib/client";
 import { analyzeConnectionError, DiagnosticResult } from "@/lib/diagnostics-utils";
+import { Graph, Node } from "@/types/topology";
 
 interface DiagnosticStep {
   id: string;
@@ -21,13 +22,6 @@ interface DiagnosticStep {
   status: "pending" | "running" | "success" | "failure" | "skipped";
   detail?: string;
   logs: string[];
-}
-
-interface ServiceHealth {
-  id: string;
-  name: string;
-  status: "healthy" | "degraded" | "unhealthy" | "inactive";
-  message?: string;
 }
 
 interface ConnectionDiagnosticDialogProps {
@@ -185,40 +179,56 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     addLog("backend_health", "Querying backend service status...");
 
     try {
-        const res = await fetch("/api/dashboard/health", { cache: 'no-store' });
+        const res = await fetch("/api/v1/topology", { cache: 'no-store' });
         if (!res.ok) {
              throw new Error(`API Error: ${res.status} ${res.statusText}`);
         }
-        const data: ServiceHealth[] = await res.json();
+        const graph: Graph = await res.json();
 
-        // Find our service
-        const serviceStatus = data.find(s => s.id === service.id || s.name === service.name);
+        // Recursively search for the service node
+        const findServiceNode = (nodes: Node[] | undefined): Node | undefined => {
+            if (!nodes) return undefined;
+            for (const node of nodes) {
+                if (node.type === 'NODE_TYPE_SERVICE' && (node.id === `svc-${service.name}` || node.label === service.name)) {
+                    return node;
+                }
+                if (node.children) {
+                    const found = findServiceNode(node.children);
+                    if (found) return found;
+                }
+            }
+            return undefined;
+        };
 
-        if (!serviceStatus) {
+        const serviceNode = findServiceNode(graph.core ? [graph.core] : undefined);
+
+        if (!serviceNode) {
              addLog("backend_health", "Warning: Service not found in backend registry.");
              addLog("backend_health", "This might happen if the service was just added or backend is restarting.");
              updateStep("backend_health", { status: "failure", detail: "Service Not Found" });
         } else {
-             addLog("backend_health", `Backend reports status: ${serviceStatus.status.toUpperCase()}`);
+             const statusStr = serviceNode.status.replace('NODE_STATUS_', '');
+             addLog("backend_health", `Backend reports status: ${statusStr}`);
 
-             if (serviceStatus.status === 'healthy') {
+             if (serviceNode.status === 'NODE_STATUS_ACTIVE') {
                  addLog("backend_health", "Service is connected and responding.");
                  updateStep("backend_health", { status: "success", detail: "Connected" });
-             } else if (serviceStatus.status === 'inactive') {
+             } else if (serviceNode.status === 'NODE_STATUS_INACTIVE') {
                  addLog("backend_health", "Service is explicitly disabled.");
                  updateStep("backend_health", { status: "skipped", detail: "Disabled" });
              } else {
-                 // Unhealthy or Degraded
-                 addLog("backend_health", `Error: ${serviceStatus.message || "Unknown error"}`);
+                 // Error or Unspecified
+                 const errorMsg = serviceNode.metadata?.["error"] || "Unknown error";
+                 addLog("backend_health", `Error: ${errorMsg}`);
 
-                 const diagnosis = analyzeConnectionError(serviceStatus.message || "");
+                 const diagnosis = analyzeConnectionError(errorMsg);
                  if (diagnosis.category !== 'unknown') {
                      addLog("backend_health", `Analysis: ${diagnosis.title} - ${diagnosis.description}`);
                      addLog("backend_health", `Suggestion: ${diagnosis.suggestion}`);
                      setDiagnosticResult(diagnosis);
                  }
 
-                 updateStep("backend_health", { status: "failure", detail: serviceStatus.status });
+                 updateStep("backend_health", { status: "failure", detail: "Unhealthy" });
              }
         }
 
@@ -229,13 +239,6 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     }
 
     // --- Step 3: Operational Verification ---
-    // Only proceed if backend check was successful or skipped (disabled)
-    const backendStep = steps.find(s => s.id === "backend_health");
-    // We access current state via a fresh look or logic flow, but here 'steps' state is stale closure.
-    // However, we can infer success if we reached here without returning early?
-    // Actually, I didn't return early in backend_health block. I should probably check if previous steps failed.
-
-    // Let's perform operational check regardless, as it fetches specific service details which might reveal more.
     updateStep("operational", { status: "running" });
     addLog("operational", "Verifying service operations...");
 
@@ -275,8 +278,9 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             throw new Error("Failed to retrieve service details");
         }
 
-    } catch (e: any) {
-        addLog("operational", `Failed to verify operations: ${e.message}`);
+    } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "Unknown error";
+        addLog("operational", `Failed to verify operations: ${msg}`);
         updateStep("operational", { status: "failure", detail: "Verification Failed" });
     }
 
