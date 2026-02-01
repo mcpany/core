@@ -41,15 +41,30 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByText('get_weather').first()).toBeVisible();
 
   // Check if schema is displayed (using the new Sheet layout)
-  await expect(page.getByText('Schema', { exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Schema' })).toBeVisible();
 
-  // Switch to JSON tab to verify raw schema
-  await page.getByRole('tab', { name: 'JSON' }).click();
+  // Switch to Schema tab to verify raw schema
+  await page.getByRole('tab', { name: 'Schema' }).click();
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
-  // We check for "location" property in the JSON view
-  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
-  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+  // We check for "location" property in the JSON View component (which renders as divs/spans, not textarea or pre usually)
+  // But ToolArgumentsEditor uses JsonView which often renders text.
+  // Actually, ToolArgumentsEditor has Tabs: Form, JSON, Schema.
+  // The inspector defaults to "Test & Execute" -> Form.
+  // The test clicks "JSON" tab of the Editor? No, previous test clicked "JSON".
+  // Wait, I am editing the "Test & Execute" tab content.
+  // The editor has 3 sub-tabs: Form, JSON, Schema.
+  // If I click Schema tab, I see the schema.
+
+  // Let's look at the code:
+  // <TabsTrigger value="schema">Schema</TabsTrigger>
+
+  // So:
+  await page.getByRole('tab', { name: 'Schema' }).click();
+
+  // JsonView usually renders keys and values.
+  await expect(page.getByText('"location"')).toBeVisible();
+  await expect(page.getByText('"string"')).toBeVisible();
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
