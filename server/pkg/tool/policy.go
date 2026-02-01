@@ -234,3 +234,74 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 	}
 	return true, nil
 }
+
+// compiledExportRule holds the pre-compiled regex for an export rule.
+type compiledExportRule struct {
+	nameRegex *regexp.Regexp
+	rule      *configv1.ExportRule
+}
+
+// CompiledExportPolicy holds a compiled version of an export policy.
+type CompiledExportPolicy struct {
+	policy        *configv1.ExportPolicy
+	compiledRules []compiledExportRule
+}
+
+// NewCompiledExportPolicy compiles an export policy.
+//
+// policy is the policy.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func NewCompiledExportPolicy(policy *configv1.ExportPolicy) (*CompiledExportPolicy, error) {
+	if policy == nil {
+		return nil, nil
+	}
+	compiledRules := make([]compiledExportRule, len(policy.GetRules()))
+	for i, rule := range policy.GetRules() {
+		var nameRe *regexp.Regexp
+		var err error
+
+		if rule.GetNameRegex() != "" {
+			nameRe, err = regexp.Compile(rule.GetNameRegex())
+			if err != nil {
+				return nil, fmt.Errorf("invalid name regex %q: %w", rule.GetNameRegex(), err)
+			}
+		}
+
+		compiledRules[i] = compiledExportRule{
+			nameRegex: nameRe,
+			rule:      rule,
+		}
+	}
+	return &CompiledExportPolicy{
+		policy:        policy,
+		compiledRules: compiledRules,
+	}, nil
+}
+
+// ShouldExportCompiled determines whether a named item should be exported based on the compiled policy.
+// ⚡ BOLT: Optimized version of ShouldExport that uses pre-compiled regexes to avoid repeated compilation overhead.
+// Randomized Selection from Top 5 High-Impact Targets
+func ShouldExportCompiled(name string, policy *CompiledExportPolicy) bool {
+	if policy == nil || policy.policy == nil {
+		return true
+	}
+
+	// Iterate strict rules first
+	for _, cRule := range policy.compiledRules {
+		if cRule.nameRegex == nil {
+			continue
+		}
+		if cRule.nameRegex.MatchString(name) {
+			return cRule.rule.GetAction() == configv1.ExportPolicy_EXPORT
+		}
+	}
+
+	// Check default action
+	if policy.policy.GetDefaultAction() == configv1.ExportPolicy_UNEXPORT {
+		return false
+	}
+	// EXPORT or UNSPECIFIED -> Export
+	return true
+}

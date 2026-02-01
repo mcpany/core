@@ -256,8 +256,22 @@ func (u *Upstream) Register(
 		}
 	}
 
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
-	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
+	// Compile Export Policies once
+	toolExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetToolExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile tool export policy: %w", err)
+	}
+	resourceExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetResourceExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile resource export policy: %w", err)
+	}
+	promptExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetPromptExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile prompt export policy: %w", err)
+	}
+
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload, toolExportPolicy, resourceExportPolicy)
+	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload, promptExportPolicy)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
 	return serviceID, discoveredTools, nil, nil
@@ -266,7 +280,16 @@ func (u *Upstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
+func (u *Upstream) createAndRegisterHTTPTools(
+	ctx context.Context,
+	serviceID, address string,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	toolManager tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	_ bool,
+	toolExportPolicy *tool.CompiledExportPolicy,
+	resourceExportPolicy *tool.CompiledExportPolicy,
+) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -328,7 +351,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		}
 
 		// Check Export Policy
-		if !tool.ShouldExport(toolNamePart, serviceConfig.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(toolNamePart, toolExportPolicy) {
 			log.Info("Skipping non-exported tool", "toolName", toolNamePart)
 			continue
 		}
@@ -696,7 +719,7 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(resourceDef.GetName(), serviceConfig.GetResourceExportPolicy()) {
+		if !tool.ShouldExportCompiled(resourceDef.GetName(), resourceExportPolicy) {
 			log.Info("Skipping non-exported resource", "resourceName", resourceDef.GetName())
 			continue
 		}
@@ -736,7 +759,14 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	return discoveredTools
 }
 
-func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string, serviceConfig *configv1.UpstreamServiceConfig, promptManager prompt.ManagerInterface, isReload bool) {
+func (u *Upstream) createAndRegisterPrompts(
+	_ context.Context,
+	serviceID string,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	promptManager prompt.ManagerInterface,
+	isReload bool,
+	promptExportPolicy *tool.CompiledExportPolicy,
+) {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	for _, promptDef := range httpService.GetPrompts() {
@@ -745,7 +775,7 @@ func (u *Upstream) createAndRegisterPrompts(_ context.Context, serviceID string,
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(promptDef.GetName(), serviceConfig.GetPromptExportPolicy()) {
+		if !tool.ShouldExportCompiled(promptDef.GetName(), promptExportPolicy) {
 			log.Info("Skipping non-exported prompt", "promptName", promptDef.GetName())
 			continue
 		}

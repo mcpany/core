@@ -166,7 +166,21 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceID, err)
 	}
 
-	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, resourceManager, isReload, fds)
+	// Compile Export Policies once
+	toolExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetToolExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile tool export policy: %w", err)
+	}
+	resourceExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetResourceExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile resource export policy: %w", err)
+	}
+	promptExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetPromptExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile prompt export policy: %w", err)
+	}
+
+	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, resourceManager, isReload, fds, toolExportPolicy, resourceExportPolicy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceID, err)
 	}
@@ -188,13 +202,13 @@ func (u *Upstream) Register(
 		logging.GetLogger().Debug("Auto-discovery disabled for gRPC service with reflection enabled", "serviceID", serviceID)
 	}
 
-	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds)
+	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds, toolExportPolicy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from config for %s: %w", serviceID, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromConfig...)
 
-	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, promptManager, isReload)
+	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, promptManager, isReload, promptExportPolicy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register prompts from config for %s: %w", serviceID, err)
 	}
@@ -216,6 +230,8 @@ func (u *Upstream) createAndRegisterGRPCTools(
 	resourceManager resource.ManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
+	toolExportPolicy *tool.CompiledExportPolicy,
+	resourceExportPolicy *tool.CompiledExportPolicy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	if parsedData == nil {
@@ -247,8 +263,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 			continue
 		}
 		// Check Export Policy
-		serviceInfo, _ := tm.GetServiceInfo(serviceID)
-		if serviceInfo != nil && !tool.ShouldExport(toolDef.Name, serviceInfo.Config.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(toolDef.Name, toolExportPolicy) {
 			log.Info("Skipping non-exported tool (annotation)", "toolName", toolDef.Name)
 			continue
 		}
@@ -409,6 +424,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 	_ resource.ManagerInterface,
 	_ bool,
 	fds *descriptorpb.FileDescriptorSet,
+	toolExportPolicy *tool.CompiledExportPolicy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	if fds == nil {
@@ -436,8 +452,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 		// Check Export Policy
-		serviceInfo, _ := tm.GetServiceInfo(serviceID)
-		if serviceInfo != nil && !tool.ShouldExport(definition.GetName(), serviceInfo.Config.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(definition.GetName(), toolExportPolicy) {
 			log.Info("Skipping non-exported tool (config)", "toolName", definition.GetName())
 			continue
 		}
@@ -519,6 +534,7 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 	serviceID string,
 	promptManager prompt.ManagerInterface,
 	isReload bool,
+	promptExportPolicy *tool.CompiledExportPolicy,
 ) error {
 	log := logging.GetLogger()
 	serviceInfo, ok := u.toolManager.GetServiceInfo(serviceID)
@@ -537,7 +553,7 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(promptDef.GetName(), serviceInfo.Config.GetPromptExportPolicy()) {
+		if !tool.ShouldExportCompiled(promptDef.GetName(), promptExportPolicy) {
 			continue
 		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
