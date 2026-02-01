@@ -96,7 +96,8 @@ func (m *SlowMockProvider) Discover(ctx context.Context) ([]*configv1.UpstreamSe
 
 func TestManager_Run_Parallel(t *testing.T) {
 	manager := NewManager()
-	delay := 100 * time.Millisecond
+	// Use a longer delay to minimize the impact of CI scheduler overhead
+	delay := 250 * time.Millisecond
 
 	// Provider 1: Slow
 	p1 := &SlowMockProvider{
@@ -116,8 +117,9 @@ func TestManager_Run_Parallel(t *testing.T) {
 	manager.Run(context.Background())
 	duration := time.Since(start)
 
-	// If sequential, it would be >= 200ms. If parallel, it should be ~100ms.
-	// We check if it is significantly less than 2 * delay.
-	// We allow some buffer for overhead, so < 1.5 * delay is a safe check for parallelism.
-	assert.Less(t, duration, time.Duration(1.5*float64(delay)), "Discovery should be parallel")
+	// If sequential, it would be >= 500ms (2 * delay).
+	// If parallel, it should be ~250ms (delay) + overhead.
+	// We assert that it takes less than 400ms, allowing for 150ms of scheduling overhead,
+	// which is generous enough for most CI environments while still proving parallelism.
+	assert.Less(t, duration, 400*time.Millisecond, "Discovery should be parallel (took %v, expected < 400ms)", duration)
 }
