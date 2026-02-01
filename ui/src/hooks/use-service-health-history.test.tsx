@@ -32,7 +32,10 @@ describe("useServiceHealthHistory", () => {
             expect(result.current.isLoading).toBe(false);
         });
 
-        expect(result.current.services).toEqual(mockServices);
+        // Services might be populated after loading state change
+        await waitFor(() => {
+             expect(result.current.services).toEqual(mockServices);
+        });
     });
 
     // Skipped flaky localStorage persistence tests

@@ -7,7 +7,8 @@ import { render, screen } from '@testing-library/react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { UserProvider } from '@/components/user-context';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { describe, it, expect, vi } from 'vitest';
+import { KeyboardShortcutsProvider } from '@/contexts/keyboard-shortcuts-context';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
@@ -23,12 +24,31 @@ vi.mock('@/lib/client', () => ({
 }));
 
 describe('AppSidebar Navigation', () => {
+  beforeEach(() => {
+    // Mock matchMedia
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(), // deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
+  });
+
   const renderSidebar = () => {
     return render(
       <UserProvider>
-        <SidebarProvider>
-          <AppSidebar />
-        </SidebarProvider>
+        <KeyboardShortcutsProvider>
+          <SidebarProvider>
+            <AppSidebar />
+          </SidebarProvider>
+        </KeyboardShortcutsProvider>
       </UserProvider>
     );
   };

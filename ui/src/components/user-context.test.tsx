@@ -30,7 +30,7 @@ const TestComponent = () => {
 
 describe('UserContext', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks(); // Use resetAllMocks to clear implementations
     localStorage.clear();
   });
 
@@ -53,12 +53,13 @@ describe('UserContext', () => {
   });
 
   it('handles login', async () => {
-    (apiClient.login as any).mockResolvedValue({ token: 'token' });
-    (apiClient.getCurrentUser as any).mockResolvedValue({
+    // Return null initially (logged out)
+    (apiClient.getCurrentUser as any).mockResolvedValueOnce(null).mockResolvedValueOnce({
       id: '1',
       name: 'Test User',
       role: 'admin',
     });
+    (apiClient.login as any).mockResolvedValue({ token: 'token' });
 
     render(
       <UserProvider>
@@ -66,7 +67,10 @@ describe('UserContext', () => {
       </UserProvider>
     );
 
-    // Initial state (no user)
+    // Wait for initial loading to finish
+    await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
+
+    // Now "Login" should be visible
     const loginButton = await screen.findByText('Login');
 
     await act(async () => {
