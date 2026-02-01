@@ -88,13 +88,13 @@ test.describe('Logs Page', () => {
     await expect(page.getByText(JSON.stringify({ foo: "bar", nested: { val: 123 } }))).toBeVisible({ timeout: 10000 });
 
     // Check for the Expand JSON button
-    const expandButton = page.getByLabel("Expand JSON");
+    const expandButton = page.getByLabel("Expand Details");
     await expect(expandButton).toBeVisible();
 
     // Click it
     await expandButton.click();
 
     // Verify it expanded (Collapse button visible)
-    await expect(page.getByLabel("Collapse JSON")).toBeVisible();
+    await expect(page.getByLabel("Collapse Details")).toBeVisible();
   });
 });
