@@ -53,11 +53,35 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Functional check: Try to create and start a container to catch overlayfs/DinD issues
+	// Use alpine:latest which is used in tests. Try to ensure it exists.
+	// We ignore pull error here and let Create fail if missing, to avoid complex pull logic.
+	_, _ = cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("Docker functional check failed (Create): %v", err)
+		return false
+	}
+	defer func() {
+		_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+	}()
+
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
+		t.Logf("Docker functional check failed (Start): %v", err)
+		return false
+	}
+
 	return true
 }
 
@@ -200,7 +224,7 @@ func TestLocalExecutor(t *testing.T) {
 
 func TestDockerExecutor(t *testing.T) {
 	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+		t.Skip("Cannot connect to Docker daemon or Docker is not functional, skipping Docker tests")
 	}
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}

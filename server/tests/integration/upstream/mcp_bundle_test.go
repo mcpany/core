@@ -236,9 +236,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
 
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	// Check if Docker is functional (runs a container)
+	if err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: functional check failed (overlayfs/DinD issue?): %v", err)
 	}
 
 	tempDir := t.TempDir()
