@@ -4,7 +4,9 @@
 package transformer
 
 import (
+	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"strings"
@@ -20,6 +22,7 @@ type TextTemplate struct {
 	startTag string
 	endTag   string
 	IsJSON   bool
+	IsXML    bool
 }
 
 // NewTemplate parses a template string and creates a new TextTemplate.
@@ -38,8 +41,13 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	// 2. Must NOT start with the startTag (to avoid misidentifying "{{ var }}" as JSON)
 	isObject := strings.HasPrefix(trimmed, "{") && strings.HasSuffix(trimmed, "}")
 	isArray := strings.HasPrefix(trimmed, "[") && strings.HasSuffix(trimmed, "]")
-
 	isJSON := (isObject || isArray) && !strings.HasPrefix(trimmed, startTag)
+
+	// Heuristic detection of XML:
+	// 1. Must start with < and end with >
+	// 2. Must NOT start with the startTag
+	// 3. Must NOT be detected as JSON (unlikely overlap, but good to be safe)
+	isXML := !isJSON && strings.HasPrefix(trimmed, "<") && strings.HasSuffix(trimmed, ">") && !strings.HasPrefix(trimmed, startTag)
 
 	return &TextTemplate{
 		template: tpl,
@@ -47,6 +55,7 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 		startTag: startTag,
 		endTag:   endTag,
 		IsJSON:   isJSON,
+		IsXML:    isXML,
 	}, nil
 }
 
@@ -74,6 +83,16 @@ func (t *TextTemplate) Render(params map[string]any) (string, error) {
 			return w.Write(b)
 		}
 
+		if t.IsXML {
+			if s, ok := val.(string); ok {
+				return writeXMLEscaped(w, s)
+			}
+			// For non-string values in XML, we just print them.
+			// Ideally we would XML-encode objects, but that's complex without a schema.
+			// fmt.Fprintf handles basic types safely (no < > injected).
+			return fmt.Fprintf(w, "%v", val)
+		}
+
 		if s, ok := val.(string); ok {
 			return io.WriteString(w, s)
 		}
@@ -87,4 +106,12 @@ func escapeJSONString(s string) string {
 		return string(b[1 : len(b)-1])
 	}
 	return s
+}
+
+func writeXMLEscaped(w io.Writer, s string) (int, error) {
+	var b bytes.Buffer
+	if err := xml.EscapeText(&b, []byte(s)); err != nil {
+		return 0, fmt.Errorf("failed to escape XML: %w", err)
+	}
+	return w.Write(b.Bytes())
 }
