@@ -23,12 +23,13 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 }));
 
 describe('JsonView', () => {
-  it('renders JSON string correctly', () => {
+  it('renders JSON string correctly', async () => {
     const data = { key: 'value' };
     render(<JsonView data={data} />);
     // SyntaxHighlighter might break it up into spans, so we search for text parts
-    expect(screen.getByText(/"key"/)).toBeInTheDocument();
-    expect(screen.getByText(/"value"/)).toBeInTheDocument();
+    // Use findByText to wait for dynamic import
+    expect(await screen.findByText(/"key"/)).toBeInTheDocument();
+    expect(await screen.findByText(/"value"/)).toBeInTheDocument();
   });
 
   it('renders null correctly', () => {
@@ -47,7 +48,7 @@ describe('JsonView', () => {
     expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
 
-  it('supports smart table view', () => {
+  it('supports smart table view', async () => {
     const data = [
         { id: 1, name: 'Alice' },
         { id: 2, name: 'Bob' }
@@ -64,7 +65,8 @@ describe('JsonView', () => {
     // Switch to JSON
     const jsonBtn = screen.getByText('JSON');
     fireEvent.click(jsonBtn);
-    expect(screen.getByText(/"Alice"/)).toBeInTheDocument();
+    // Use findByText to wait for dynamic import
+    expect(await screen.findByText(/"Alice"/)).toBeInTheDocument();
   });
 
   it('collapses long content', () => {

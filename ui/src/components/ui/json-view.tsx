@@ -6,13 +6,25 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+// ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
+// react-syntax-highlighter is a heavy dependency.
+// Randomized Selection from Top 5 High-Impact Targets
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const SyntaxHighlighter = dynamic(
+  () => import("react-syntax-highlighter").then((mod) => mod.Prism),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-40 w-full rounded-md bg-[#1e1e1e]" />,
+  }
+);
 
 interface JsonViewProps {
   data: unknown;
