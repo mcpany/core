@@ -322,6 +322,13 @@ var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 // If a variable is missing and no default is provided, it returns an error with line number information.
 // It supports nested braces in default values, e.g., ${VAR:{"key": "value"}}.
 func expand(b []byte) ([]byte, error) {
+	// ⚡ Bolt Optimization: Fast path for no variables.
+	// Avoids allocation and copy if no '$' is present.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	if bytes.IndexByte(b, '$') == -1 {
+		return b, nil
+	}
+
 	var missingErrBuilder strings.Builder
 	missingCount := 0
 
