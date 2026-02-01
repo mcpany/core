@@ -102,6 +102,15 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Errors:
+//   - Returns error if router registration fails (internal logic error).
+//   - Returns error if tool manager fails to add built-in tools.
+//
+// Side Effects:
+//   - Configures the global MCP server instance.
+//   - Sets up middleware on the server.
+//   - Registers event bus subscriptions.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -366,6 +375,13 @@ func (s *Server) ListPrompts(
 // Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation.
 //   - error: An error if no active session is found in context or if the operation fails.
+//
+// Errors:
+//   - Returns error if no active session is found in the context.
+//   - Returns error if the sampling request fails.
+//
+// Side Effects:
+//   - Sends a "sampling/createMessage" JSON-RPC request to the client.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -387,8 +403,10 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //
-// Throws/Errors:
-//   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
+// Errors:
+//   - Returns prompt.ErrPromptNotFound if the requested prompt does not exist.
+//   - Returns error if access is denied by profile.
+//   - Returns error if prompt execution fails.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -456,8 +474,13 @@ func (s *Server) ListResources(
 //   - *mcp.ReadResourceResult: The content of the resource.
 //   - error: An error if the resource is not found or reading fails.
 //
-// Throws/Errors:
-//   - resource.ErrResourceNotFound: If the requested resource does not exist.
+// Errors:
+//   - Returns resource.ErrResourceNotFound if the requested resource does not exist.
+//   - Returns error if access is denied by profile.
+//   - Returns error if reading the resource fails.
+//
+// Side Effects:
+//   - May trigger external API calls or file reads depending on the resource implementation.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -577,8 +600,18 @@ func (s *Server) ListTools() []tool.Tool {
 //   - req: *tool.ExecutionRequest. The execution request containing tool name and arguments.
 //
 // Returns:
-//   - any: The result of the tool execution.
+//   - any: The result of the tool execution (usually *mcp.CallToolResult or equivalent).
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Errors:
+//   - Returns error if tool is not found.
+//   - Returns error if access is denied by profile.
+//   - Returns error if tool execution fails.
+//
+// Side Effects:
+//   - Executes the tool which may have arbitrary side effects.
+//   - Logs tool execution start and end.
+//   - Increments metrics for tool calls, errors, and latency.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.

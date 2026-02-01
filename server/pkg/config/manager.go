@@ -46,12 +46,10 @@ type UpstreamServiceManager struct {
 // It initializes the manager with the specified enabled profiles and default settings.
 //
 // Parameters:
-//
-//	enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
+//   - enabledProfiles: []string. A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
-//
-//	A pointer to a fully initialized UpstreamServiceManager.
+//   - *UpstreamServiceManager: A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -77,14 +75,21 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // based on their priority and name.
 //
 // Parameters:
-//
-//	ctx: The context for the operation.
-//	config: The main server configuration containing service definitions and collection references.
+//   - ctx: context.Context. The context for the operation.
+//   - config: *configv1.McpAnyServerConfig. The main server configuration containing service definitions and collection references.
 //
 // Returns:
+//   - []*configv1.UpstreamServiceConfig: A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
+//   - error: An error if any critical failure occurs during loading or merging.
 //
-//	A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
-//	An error if any critical failure occurs during loading or merging.
+// Errors:
+//   - Returns error if profile resolution fails.
+//   - Returns error if service addition fails.
+//   - Returns error if github collection loading fails.
+//
+// Side Effects:
+//   - Fetches remote configuration from GitHub or HTTP URLs.
+//   - Modifies internal state to store loaded services.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {
