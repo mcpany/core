@@ -246,6 +246,16 @@ export const apiClient = {
             toolExportPolicy: s.tool_export_policy,
             promptExportPolicy: s.prompt_export_policy,
             resourceExportPolicy: s.resource_export_policy,
+            callPolicies: s.call_policies?.map((p: any) => ({
+                defaultAction: p.default_action,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    nameRegex: r.name_regex,
+                    argumentRegex: r.argument_regex,
+                    urlRegex: r.url_regex,
+                    callIdRegex: r.call_id_regex
+                }))
+            })),
         }));
     },
 
@@ -282,6 +292,16 @@ export const apiClient = {
                          toolExportPolicy: s.tool_export_policy,
                          promptExportPolicy: s.prompt_export_policy,
                          resourceExportPolicy: s.resource_export_policy,
+                         callPolicies: s.call_policies?.map((p: any) => ({
+                            defaultAction: p.default_action,
+                            rules: p.rules?.map((r: any) => ({
+                                action: r.action,
+                                nameRegex: r.name_regex,
+                                argumentRegex: r.argument_regex,
+                                urlRegex: r.url_regex,
+                                callIdRegex: r.call_id_regex
+                            }))
+                        })),
                      };
                  }
                  return data;
@@ -370,6 +390,18 @@ export const apiClient = {
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
         }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map((p: any) => ({
+                default_action: p.defaultAction,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex
+                }))
+            }));
+        }
         if (config.toolExportPolicy) {
             payload.tool_export_policy = config.toolExportPolicy;
         }
@@ -430,6 +462,18 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map((p: any) => ({
+                default_action: p.defaultAction,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex
+                }))
+            }));
         }
         if (config.toolExportPolicy) {
             payload.tool_export_policy = config.toolExportPolicy;
@@ -506,6 +550,18 @@ export const apiClient = {
         }
         if (config.postCallHooks) {
             payload.post_call_hooks = config.postCallHooks;
+        }
+        if (config.callPolicies) {
+            payload.call_policies = config.callPolicies.map((p: any) => ({
+                default_action: p.defaultAction,
+                rules: p.rules?.map((r: any) => ({
+                    action: r.action,
+                    name_regex: r.nameRegex,
+                    argument_regex: r.argumentRegex,
+                    url_regex: r.urlRegex,
+                    call_id_regex: r.callIdRegex
+                }))
+            }));
         }
         if (config.toolExportPolicy) {
             payload.tool_export_policy = config.toolExportPolicy;
