@@ -1121,8 +1121,18 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	absMcpAnyBinaryPath, err := filepath.Abs(mcpanyBinary)
 	require.NoError(t, err, "Failed to get absolute path for MCPANY binary: %s", mcpanyBinary)
-	_, err = os.Stat(absMcpAnyBinaryPath)
-	require.NoError(t, err, "MCPANY binary not found at %s. Run 'make build'.", absMcpAnyBinaryPath)
+	if _, err := os.Stat(absMcpAnyBinaryPath); os.IsNotExist(err) {
+		t.Logf("Project Root: %s", root)
+		t.Logf("Search Path: %s", absMcpAnyBinaryPath)
+		// List build directory to help debugging
+		buildDir := filepath.Dir(filepath.Dir(absMcpAnyBinaryPath))
+		entries, _ := os.ReadDir(buildDir)
+		t.Logf("Contents of %s:", buildDir)
+		for _, e := range entries {
+			t.Logf("  %s", e.Name())
+		}
+		require.NoError(t, err, "MCPANY binary not found at %s. Run 'make build'.", absMcpAnyBinaryPath)
+	}
 
 	// Generate a random API key for this test
 	apiKey := fmt.Sprintf("test-key-%d", time.Now().UnixNano())
