@@ -676,7 +676,11 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	// Get configured middlewares
 	// We clone them to avoid modifying the singleton's underlying slice if we append/modify.
-	middlewares := append([]*config_v1.Middleware(nil), config.GlobalSettings().Middlewares()...)
+	var middlewares []*config_v1.Middleware
+	if cfg.GetGlobalSettings() != nil {
+		middlewares = append([]*config_v1.Middleware(nil), cfg.GetGlobalSettings().GetMiddlewares()...)
+	}
+
 	if len(middlewares) == 0 {
 		// Default chain if none configured
 		middlewares = []*config_v1.Middleware{
@@ -1813,8 +1817,6 @@ func (a *Application) runServerMode(
 	var oidcConfig *config_v1.OIDCConfig
 	if globalSettings != nil {
 		oidcConfig = globalSettings.GetOidc()
-	} else {
-		oidcConfig = config.GlobalSettings().GetOidc()
 	}
 
 	if oidcConfig != nil {
