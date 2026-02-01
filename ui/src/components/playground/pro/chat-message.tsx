@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { DiffEditor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 /**
  * MessageType type definition.
@@ -89,8 +90,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
         return (
             <div className="flex justify-end gap-3 pl-10 group">
                 <div className="flex flex-col items-end gap-1 max-w-full">
-                     <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 shadow-sm max-w-full overflow-hidden">
-                        <p className="whitespace-pre-wrap font-mono text-sm break-words">{message.content}</p>
+                     <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 shadow-sm max-w-full overflow-hidden text-sm">
+                        <MarkdownRenderer content={message.content || ''} className="text-primary-foreground [&_a]:text-primary-foreground/90 [&_code]:text-primary-foreground [&_code]:bg-primary-foreground/20" />
                     </div>
                      <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                         <HydrationSafeTime date={message.timestamp} />
@@ -110,8 +111,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                     <AvatarFallback><Bot className="size-4 text-primary" /></AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col items-start gap-1 max-w-full">
-                    <div className="bg-muted/50 rounded-2xl rounded-tl-sm px-4 py-2 shadow-sm border max-w-full overflow-hidden">
-                         <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                    <div className="bg-muted/50 rounded-2xl rounded-tl-sm px-4 py-2 shadow-sm border max-w-full overflow-hidden text-sm w-full">
+                         <MarkdownRenderer content={message.content || ''} />
                     </div>
                     <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                          <HydrationSafeTime date={message.timestamp} />
