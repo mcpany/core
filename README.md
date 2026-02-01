@@ -4,17 +4,15 @@
 
 ## 1. Elevator Pitch
 
-**What is this project and why does it exist?**
+**The Problem:** Adopting the Model Context Protocol (MCP) usually means maintaining a fragmented mess of separate server binaries for every tool in your stack—a phenomenon we call "binary fatigue."
 
-**MCP Any** is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
+**The Solution:** **MCP Any** is the definitive **Universal Adapter** for the Model Context Protocol. It unifies your infrastructure by acting as a single, high-performance gateway that instantly transforms *any* API (REST, gRPC, GraphQL, or local CLI) into a fully compliant MCP server.
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
-
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+**Don't write code to bridge your APIs to AI agents. Just configure them.**
 
 ## 2. Architecture
 
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
+MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. Built with **Go** for high performance and concurrency, it uses a modular architecture to support various upstream protocols.
 
 **High-Level Overview:**
 1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
@@ -63,6 +61,7 @@ Follow these steps to get up and running immediately.
     ```
 
 2.  **Prepare dependencies:**
+    This command installs necessary tools (like `protoc`, linters) into a local directory.
     ```bash
     make prepare
     ```
