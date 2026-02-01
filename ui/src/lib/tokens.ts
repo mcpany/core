@@ -44,12 +44,20 @@ export function estimateTokens(text: string): number {
     return Math.max(h1, h2);
 }
 
+interface TokenEstimatableMessage {
+    content?: unknown;
+    toolName?: string;
+    toolArgs?: unknown;
+    toolResult?: unknown;
+    [key: string]: unknown;
+}
+
 /**
  * Calculates total tokens for a sequence of messages.
  * @param messages - Array of message objects with content.
  * @returns Total estimated tokens.
  */
-export function estimateMessageTokens(messages: any[]): number {
+export function estimateMessageTokens(messages: TokenEstimatableMessage[]): number {
     return messages.reduce((acc, msg) => {
         let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content || "");
         if (msg.toolName) content += ` ${msg.toolName}`;
