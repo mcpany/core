@@ -100,15 +100,20 @@ message CommandLineCallDefinition {
 
 // InputTransformer defines how to render a template from input parameters.
 message InputTransformer {
-  // A text template to be rendered.
-  // This is used for generating the request body for POST/PUT requests.
-  // The template engine is compatible with Jinja2.
+  enum TemplateFormat {
+    TEMPLATE_FORMAT_UNSPECIFIED = 0;
+    TEMPLATE_FORMAT_JSON = 1;
+    TEMPLATE_FORMAT_XML = 2;
+    TEMPLATE_FORMAT_YAML = 3;
+  }
   // A text template to be rendered.
   // This is used for generating the request body for POST/PUT requests.
   // The template engine is compatible with Jinja2.
   string template = 1 [deprecated = true];
   // A webhook to call to transform the input.
   WebhookConfig webhook = 2;
+  // The format of the template output, used for escaping.
+  TemplateFormat format = 3 [json_name = "format"];
 }
 
 // OutputTransformer defines how to parse an output text into structured data.

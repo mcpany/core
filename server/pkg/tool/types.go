@@ -470,7 +470,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 	// Cache templates
 	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}", transformer.TemplateFormat(it.GetFormat())) //nolint:staticcheck
 		if err != nil {
 			t.initError = fmt.Errorf("failed to parse input template: %w", err)
 		} else {
@@ -1148,7 +1148,7 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 
 	// Cache templates
 	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}", transformer.TemplateFormat(it.GetFormat())) //nolint:staticcheck
 		if err != nil {
 			t.initError = fmt.Errorf("failed to parse input template: %w", err)
 		} else {
@@ -1371,7 +1371,7 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 
 	// Cache templates
 	if it := t.inputTransformer; it != nil && it.GetTemplate() != "" { //nolint:staticcheck
-		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}") //nolint:staticcheck
+		tpl, err := transformer.NewTemplate(it.GetTemplate(), "{{", "}}", transformer.TemplateFormat(it.GetFormat())) //nolint:staticcheck
 		if err != nil {
 			t.initError = fmt.Errorf("failed to parse input template: %w", err)
 		} else {

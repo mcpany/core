@@ -177,3 +177,50 @@ func TestTextTemplate_FalsePositives(t *testing.T) {
 	// Expect NO escaping
 	assert.Equal(t, `[INFO] foo"bar`, rendered)
 }
+
+func TestTextTemplate_XMLEscaping(t *testing.T) {
+	t.Parallel()
+	// XML template with explicit format
+	templateString := `<user name="{{name}}">{{bio}}</user>`
+	tpl, err := NewTemplate(templateString, "{{", "}}", TemplateFormatXML)
+	require.NoError(t, err)
+
+	// Malicious input
+	params := map[string]any{
+		"name": `foo"bar`,
+		"bio":  `<b>Bold</b> & "Quote"`,
+	}
+
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect XML escaping
+	// " -> &#34; (or &quot;)
+	// < -> &lt;
+	// > -> &gt;
+	// & -> &amp;
+	expected := `<user name="foo&#34;bar">&lt;b&gt;Bold&lt;/b&gt; &amp; &#34;Quote&#34;</user>`
+	assert.Equal(t, expected, rendered)
+}
+
+func TestTextTemplate_YAMLEscaping(t *testing.T) {
+	t.Parallel()
+	// YAML template with explicit format. Note explicit quotes in template.
+	templateString := `name: "{{name}}"`
+	tpl, err := NewTemplate(templateString, "{{", "}}", TemplateFormatYAML)
+	require.NoError(t, err)
+
+	// Malicious input
+	params := map[string]any{
+		"name": `foo"bar\baz`,
+	}
+
+	rendered, err := tpl.Render(params)
+	require.NoError(t, err)
+
+	// Expect JSON-style string content escaping (for double quoted YAML string)
+	// " -> \"
+	// \ -> \\
+	expected := `name: "foo\"bar\\baz"`
+	assert.Equal(t, expected, rendered)
+}

@@ -237,15 +237,61 @@ export interface InputTransformer {
    * A text template to be rendered.
    * This is used for generating the request body for POST/PUT requests.
    * The template engine is compatible with Jinja2.
-   * A text template to be rendered.
-   * This is used for generating the request body for POST/PUT requests.
-   * The template engine is compatible with Jinja2.
    *
    * @deprecated
    */
   template: string;
   /** A webhook to call to transform the input. */
-  webhook?: WebhookConfig | undefined;
+  webhook?:
+    | WebhookConfig
+    | undefined;
+  /** The format of the template output, used for escaping. */
+  format: InputTransformer_TemplateFormat;
+}
+
+export enum InputTransformer_TemplateFormat {
+  TEMPLATE_FORMAT_UNSPECIFIED = 0,
+  TEMPLATE_FORMAT_JSON = 1,
+  TEMPLATE_FORMAT_XML = 2,
+  TEMPLATE_FORMAT_YAML = 3,
+  UNRECOGNIZED = -1,
+}
+
+export function inputTransformer_TemplateFormatFromJSON(object: any): InputTransformer_TemplateFormat {
+  switch (object) {
+    case 0:
+    case "TEMPLATE_FORMAT_UNSPECIFIED":
+      return InputTransformer_TemplateFormat.TEMPLATE_FORMAT_UNSPECIFIED;
+    case 1:
+    case "TEMPLATE_FORMAT_JSON":
+      return InputTransformer_TemplateFormat.TEMPLATE_FORMAT_JSON;
+    case 2:
+    case "TEMPLATE_FORMAT_XML":
+      return InputTransformer_TemplateFormat.TEMPLATE_FORMAT_XML;
+    case 3:
+    case "TEMPLATE_FORMAT_YAML":
+      return InputTransformer_TemplateFormat.TEMPLATE_FORMAT_YAML;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return InputTransformer_TemplateFormat.UNRECOGNIZED;
+  }
+}
+
+export function inputTransformer_TemplateFormatToJSON(object: InputTransformer_TemplateFormat): string {
+  switch (object) {
+    case InputTransformer_TemplateFormat.TEMPLATE_FORMAT_UNSPECIFIED:
+      return "TEMPLATE_FORMAT_UNSPECIFIED";
+    case InputTransformer_TemplateFormat.TEMPLATE_FORMAT_JSON:
+      return "TEMPLATE_FORMAT_JSON";
+    case InputTransformer_TemplateFormat.TEMPLATE_FORMAT_XML:
+      return "TEMPLATE_FORMAT_XML";
+    case InputTransformer_TemplateFormat.TEMPLATE_FORMAT_YAML:
+      return "TEMPLATE_FORMAT_YAML";
+    case InputTransformer_TemplateFormat.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
 }
 
 /** OutputTransformer defines how to parse an output text into structured data. */
@@ -1285,7 +1331,7 @@ export const CommandLineCallDefinition: MessageFns<CommandLineCallDefinition> = 
 };
 
 function createBaseInputTransformer(): InputTransformer {
-  return { template: "", webhook: undefined };
+  return { template: "", webhook: undefined, format: 0 };
 }
 
 export const InputTransformer: MessageFns<InputTransformer> = {
@@ -1295,6 +1341,9 @@ export const InputTransformer: MessageFns<InputTransformer> = {
     }
     if (message.webhook !== undefined) {
       WebhookConfig.encode(message.webhook, writer.uint32(18).fork()).join();
+    }
+    if (message.format !== 0) {
+      writer.uint32(24).int32(message.format);
     }
     return writer;
   },
@@ -1322,6 +1371,14 @@ export const InputTransformer: MessageFns<InputTransformer> = {
           message.webhook = WebhookConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.format = reader.int32() as any;
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1335,6 +1392,7 @@ export const InputTransformer: MessageFns<InputTransformer> = {
     return {
       template: isSet(object.template) ? globalThis.String(object.template) : "",
       webhook: isSet(object.webhook) ? WebhookConfig.fromJSON(object.webhook) : undefined,
+      format: isSet(object.format) ? inputTransformer_TemplateFormatFromJSON(object.format) : 0,
     };
   },
 
@@ -1345,6 +1403,9 @@ export const InputTransformer: MessageFns<InputTransformer> = {
     }
     if (message.webhook !== undefined) {
       obj.webhook = WebhookConfig.toJSON(message.webhook);
+    }
+    if (message.format !== 0) {
+      obj.format = inputTransformer_TemplateFormatToJSON(message.format);
     }
     return obj;
   },
@@ -1358,6 +1419,7 @@ export const InputTransformer: MessageFns<InputTransformer> = {
     message.webhook = (object.webhook !== undefined && object.webhook !== null)
       ? WebhookConfig.fromPartial(object.webhook)
       : undefined;
+    message.format = object.format ?? 0;
     return message;
   },
 };
