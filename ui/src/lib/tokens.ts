@@ -18,6 +18,8 @@ export function estimateTokens(text: string): number {
     // split(/\s+/) allocates a large array of strings, which is O(N) memory and slower.
     // This implementation is ~4.5x faster and generates zero garbage.
     // Randomized Selection from Top 5 High-Impact Targets
+    // Note: We use char codes for standard whitespace (space, tab, newline, CR) which covers
+    // typical JSON/English usage. This avoids the overhead of Unicode-aware regex execution.
     let wordCount = 0;
     let inWord = false;
     for (let i = 0; i < charCount; i++) {
