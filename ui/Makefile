@@ -80,6 +80,8 @@ test-local:
 
 # Build the UI test Docker image
 build-test-docker:
+	@echo "Generating protobuf files..."
+	@$(MAKE) -C .. gen
 	@echo "Building UI test Docker image (mcpany-ui-e2e)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
