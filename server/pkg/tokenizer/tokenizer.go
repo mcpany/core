@@ -184,9 +184,7 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// Randomized Selection from Top 5 High-Impact Targets
 	// clear() removes keys but keeps allocated buckets. If the map grew large,
 	// we discard it to allow GC to reclaim memory, rather than poisoning the pool.
-	if len(visited) > 1024 {
-		// Discard
-	} else {
+	if len(visited) <= 1024 {
 		// Ensure map is cleared before putting back
 		clear(visited)
 		visitedPool.Put(visited)
