@@ -2656,6 +2656,8 @@ func isShellCommand(cmd string) bool {
 		"gcc", "g++", "clang", "java",
 		// Additional dangerous tools
 		"zip", "unzip", "rsync", "nmap", "tcpdump", "gdb", "lldb",
+		// Wrappers that can execute other commands
+		"time", "timeout", "nice", "nohup", "stdbuf", "watch",
 	}
 	base := filepath.Base(cmd)
 	for _, shell := range shells {
