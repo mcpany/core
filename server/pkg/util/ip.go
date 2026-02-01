@@ -39,10 +39,33 @@ func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 // Returns:
 //   - string: The cleaned IP address string, or an empty string if the address is invalid.
 func ExtractIP(addr string) string {
-	ipStr, _, err := net.SplitHostPort(addr)
-	if err != nil {
-		ipStr = addr
+	// ⚡ BOLT: Optimization - Fast path to avoid net.SplitHostPort allocation (AddrError)
+	// Randomized Selection from Top 5 High-Impact Targets
+	ipStr := addr
+	shouldSplit := true
+
+	// Check for colon
+	lastColon := strings.LastIndexByte(addr, ':')
+	switch {
+	case lastColon == -1:
+		shouldSplit = false // IPv4 or Hostname (no port)
+	case len(addr) > 0 && addr[len(addr)-1] == ']':
+		shouldSplit = false // [IPv6] (no port)
+	case strings.IndexByte(addr, '[') == -1:
+		// Has colon, doesn't end with ']', and no brackets found.
+		// If multiple colons, it is Bare IPv6 (or invalid).
+		if strings.IndexByte(addr, ':') != lastColon {
+			shouldSplit = false
+		}
 	}
+
+	if shouldSplit {
+		host, _, err := net.SplitHostPort(addr)
+		if err == nil {
+			ipStr = host
+		}
+	}
+
 	if len(ipStr) > 0 && ipStr[0] == '[' && ipStr[len(ipStr)-1] == ']' {
 		ipStr = ipStr[1 : len(ipStr)-1]
 	}
