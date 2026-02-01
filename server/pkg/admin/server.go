@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/storage"
@@ -425,4 +426,40 @@ func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest
 		}.Build())
 	}
 	return pb.ListAuditLogsResponse_builder{Entries: pbEntries}.Build(), nil
+}
+
+// GetHealthHistory returns the historical health data for services.
+func (s *Server) GetHealthHistory(_ context.Context, req *pb.GetHealthHistoryRequest) (*pb.GetHealthHistoryResponse, error) {
+	history := health.GetHealthHistory()
+
+	pbServices := make(map[string]*pb.ServiceHistory)
+
+	// Optional filtering by service ID
+	targetService := req.GetServiceId()
+
+	for name, points := range history {
+		if targetService != "" && name != targetService {
+			continue
+		}
+
+		pbPoints := make([]*pb.HealthPoint, 0, len(points))
+		for _, p := range points {
+			if req.GetStartTime() > 0 && p.Timestamp < req.GetStartTime() {
+				continue
+			}
+			pbPoints = append(pbPoints, pb.HealthPoint_builder{
+				Timestamp: proto.Int64(p.Timestamp),
+				Status:    proto.String(p.Status),
+				LatencyMs: proto.Int64(p.LatencyMs),
+			}.Build())
+		}
+
+		pbServices[name] = pb.ServiceHistory_builder{
+			Points: pbPoints,
+		}.Build()
+	}
+
+	return pb.GetHealthHistoryResponse_builder{
+		Services: pbServices,
+	}.Build(), nil
 }

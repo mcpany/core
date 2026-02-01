@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
@@ -18,7 +18,7 @@ interface HealthPoint {
 
 /**
  * HealthHistoryChart component.
- * Displays server uptime history over the last 24 hours.
+ * Displays server uptime history over the last 24 hours based on real health checks.
  * @returns The rendered component.
  */
 export function HealthHistoryChart() {
@@ -28,58 +28,130 @@ export function HealthHistoryChart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // In a real app, this would be a dedicated history endpoint.
-                // For this implementation, we simulate 24 hours of data based on
-                // the current status and some randomized historical noise.
-                const [status, traffic] = await Promise.all([
-                    apiClient.getDoctorStatus(),
-                    apiClient.getDashboardTraffic()
-                ]);
+                // Fetch real health history from the backend
+                const response = await apiClient.getHealthHistory();
 
-                const points: HealthPoint[] = [];
+                // Aggregate all points from all services into a single timeline
+                // response is { services: { "svc1": { points: [...] } } }
+                const allPoints: { timestamp: number, status: string }[] = [];
+                Object.values(response.services || {}).forEach((svc: any) => {
+                    if (svc.points) {
+                        allPoints.push(...svc.points.map((p: any) => ({
+                            timestamp: Number(p.timestamp),
+                            status: p.status
+                        })));
+                    }
+                });
 
-                // Use traffic history to infer historical health
-                // If we have errors in a given interval (minute), we can mark it as degraded or error.
-                // Traffic history is minute-by-minute (last 60 mins)
-                // We want to show 24 hours?
-                // The backend now returns last 60 minutes of data.
-                // The UI expects 24 hours?
-                // "Displays server uptime history over the last 24 hours." description says so.
-                // But our backend now only returns 60 minutes.
-                // Let's adjust the chart to show available history (60 mins) or whatever backend returns.
-                // If backend returns 60 points, we show 60 points.
+                if (allPoints.length === 0) {
+                    // Fallback to empty state
+                    setData([]);
+                    return;
+                }
 
-                if (traffic && traffic.length > 0) {
-                     for (const t of traffic) {
-                        let pointStatus: HealthPoint["status"] = "ok";
-                        let uptime = 100;
+                // Bucketize into 24 hourly bars
+                const now = Date.now();
+                const start = now - 24 * 60 * 60 * 1000;
+                const bucketSize = 60 * 60 * 1000; // 1 hour
+                const buckets: Record<number, { ok: number, total: number }> = {};
 
-                        // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
-                        const reqs = t.requests || t.total || 0;
-                        const errs = t.errors || 0;
+                // Initialize buckets
+                // We use floor to snap to hour boundaries for cleaner UX?
+                // Or relative to now? Relative to now ensures we cover exactly "last 24h".
+                // Let's use relative to now.
+                for (let i = 0; i < 24; i++) {
+                    const bucketStart = start + i * bucketSize;
+                    buckets[bucketStart] = { ok: 0, total: 0 };
+                }
 
-                        if (errs > 0) {
-                            if (reqs > 0 && (errs / reqs) > 0.1) { // >10% error rate
-                                pointStatus = "degraded";
-                                uptime = 80;
-                            }
-                             if (reqs > 0 && (errs / reqs) > 0.5) { // >50% error rate
-                                pointStatus = "error";
-                                uptime = 0;
+                allPoints.forEach(p => {
+                    if (p.timestamp < start) return;
+
+                    // Find bucket
+                    // We iterate to find the bucket index
+                    const offset = p.timestamp - start;
+                    const bucketIndex = Math.floor(offset / bucketSize);
+
+                    // Clamp to [0, 23]
+                    if (bucketIndex >= 0 && bucketIndex < 24) {
+                        const bucketStart = start + bucketIndex * bucketSize;
+                        if (buckets[bucketStart]) {
+                            buckets[bucketStart].total++;
+                            // Case-insensitive check
+                            if (p.status.toUpperCase() === "OK" || p.status.toUpperCase() === "HEALTHY") {
+                                buckets[bucketStart].ok++;
                             }
                         }
+                    }
+                });
 
-                        points.push({
-                            time: t.time,
-                            status: pointStatus,
-                            uptime: uptime
-                        });
-                     }
-                } else {
-                     // Fallback to showing just current status if no history
-                     // Or just empty
-                }
-                setData(points);
+                const chartData = Object.entries(buckets).map(([timeStr, counts]) => {
+                    const time = parseInt(timeStr);
+                    // If no data points in that hour, assume it was fine (100%) or gap?
+                    // GitHub style: gaps are empty.
+                    // But for "uptime bar", gap usually means "no outage recorded".
+                    // Let's assume 100 if seeded data should be there.
+                    // If total is 0, we can skip or show 100?
+                    // Let's show 100 to keep the bar full if it's "System Uptime".
+                    // Wait, if no data, maybe the system was down/off?
+                    // Let's show 0 or "unknown" if total is 0?
+                    // Recharts needs a value.
+                    // Let's go with: if total > 0 calculate, else 100 (optimistic) or 0 (pessimistic).
+                    // Given we seed data, we should have data. If we don't, it might be before seeding.
+
+                    const hasData = counts.total > 0;
+                    const uptime = hasData ? (counts.ok / counts.total) * 100 : 100;
+
+                    let status: "ok" | "degraded" | "error" = "ok";
+                    if (uptime < 100) status = "degraded";
+                    if (uptime < 90) status = "error";
+
+                    // If no data, render as gray/offline?
+                    // Let's allow "offline" status.
+                    if (!hasData) status = "ok"; // Default to OK for visual continuity or use "offline"
+
+                    return {
+                        time: new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        uptime: Math.round(uptime),
+                        status
+                    };
+                });
+
+                // Sort by time (Object.entries might not guarantee order)
+                chartData.sort((a, b) => {
+                    // Re-parsing time string is hard.
+                    // Better to rely on the fact that buckets keys are timestamps.
+                    // But mapping lost the timestamp.
+                    return 0; // We iterated in order, hopefully fine.
+                    // Actually, Object.entries order is not guaranteed for numbers.
+                    // Let's map directly from sorted keys.
+                });
+
+                // Proper sorting
+                const sortedKeys = Object.keys(buckets).map(Number).sort((a, b) => a - b);
+                const sortedChartData = sortedKeys.map(time => {
+                     const counts = buckets[time];
+                     const hasData = counts.total > 0;
+                     const uptime = hasData ? (counts.ok / counts.total) * 100 : 100;
+                     let status: HealthPoint["status"] = "ok";
+                     if (uptime < 100) status = "degraded";
+                     if (uptime < 90) status = "error";
+                     if (!hasData) status = "offline"; // Use offline for gaps
+
+                     // Map offline to 100 for height but gray color?
+                     // Or 0 height?
+                     // If 0 height, it's invisible.
+                     // Let's use 100 height but gray color.
+                     const displayUptime = hasData ? uptime : 100;
+
+                     return {
+                        time: new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        uptime: Math.round(displayUptime),
+                        status
+                     };
+                });
+
+                setData(sortedChartData);
             } catch (error) {
                 console.error("Failed to fetch health history", error);
             } finally {
@@ -95,13 +167,27 @@ export function HealthHistoryChart() {
         ok: "hsl(var(--chart-2))",
         degraded: "hsl(var(--chart-4))",
         error: "hsl(var(--chart-1))",
-        offline: "hsl(var(--muted-foreground))",
+        offline: "hsl(var(--muted))", // Gray for no data
         unknown: "hsl(var(--muted-foreground))",
     };
 
     const getBarColor = (status: HealthPoint["status"]) => {
         return STATUS_COLORS[status] || "hsl(var(--muted))";
     };
+
+    if (loading) {
+        return (
+             <Card className="col-span-4 backdrop-blur-sm bg-background/50 h-[300px] animate-pulse">
+                <CardHeader>
+                    <div className="h-6 w-1/3 bg-muted rounded"></div>
+                    <div className="h-4 w-2/3 bg-muted rounded mt-2"></div>
+                </CardHeader>
+                <CardContent className="flex items-center justify-center">
+                    <div className="text-muted-foreground text-sm">Loading history...</div>
+                </CardContent>
+             </Card>
+        );
+    }
 
     return (
         <Card className="col-span-4 backdrop-blur-sm bg-background/50">
@@ -125,6 +211,7 @@ export function HealthHistoryChart() {
                             />
                             <YAxis hide domain={[0, 100]} />
                             <Tooltip
+                                cursor={{ fill: 'var(--muted)', opacity: 0.1 }}
                                 content={({ active, payload }) => {
                                     if (active && payload && payload.length) {
                                         const d = payload[0].payload as HealthPoint;
@@ -135,16 +222,16 @@ export function HealthHistoryChart() {
                                                         <span className="text-[0.70rem] uppercase text-muted-foreground">
                                                             Time
                                                         </span>
-                                                        <span className="font-bold text-muted-foreground">
+                                                        <span className="font-bold text-foreground">
                                                             {d.time}
                                                         </span>
                                                     </div>
                                                     <div className="flex flex-col">
                                                         <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                                            Uptime
+                                                            Status
                                                         </span>
-                                                        <span className="font-bold" style={{ color: getBarColor(d.status) }}>
-                                                            {d.uptime}%
+                                                        <span className="font-bold capitalize" style={{ color: getBarColor(d.status) }}>
+                                                            {d.status === 'offline' ? 'No Data' : `${d.uptime}%`}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -176,7 +263,7 @@ export function HealthHistoryChart() {
                         <span>Down</span>
                     </div>
                     <div className="font-medium text-foreground">
-                        99.9% Overall Uptime
+                        24h History
                     </div>
                 </div>
             </CardContent>
