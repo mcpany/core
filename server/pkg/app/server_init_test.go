@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -223,6 +224,20 @@ func (m *MockStore) SaveCredential(ctx context.Context, cred *configv1.Credentia
 func (m *MockStore) DeleteCredential(ctx context.Context, id string) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
+}
+
+// Logs
+func (m *MockStore) SaveLog(ctx context.Context, log *storage.LogEntry) error {
+	args := m.Called(ctx, log)
+	return args.Error(0)
+}
+
+func (m *MockStore) ListLogs(ctx context.Context, limit int) ([]*storage.LogEntry, error) {
+	args := m.Called(ctx, limit)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*storage.LogEntry), args.Error(1)
 }
 
 func (m *MockStore) Close() error {

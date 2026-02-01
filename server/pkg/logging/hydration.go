@@ -4,12 +4,35 @@
 package logging
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
 )
+
+// HydrateFromStorage populates the global broadcaster's history from storage.
+func HydrateFromStorage(ctx context.Context, store storage.Storage) error {
+	logs, err := store.ListLogs(ctx, 1000)
+	if err != nil {
+		return err
+	}
+
+	var broadcastMessages [][]byte
+	for _, l := range logs {
+		data, err := json.Marshal(l)
+		if err == nil {
+			broadcastMessages = append(broadcastMessages, data)
+		}
+	}
+
+	if len(broadcastMessages) > 0 {
+		GlobalBroadcaster.Hydrate(broadcastMessages)
+	}
+	return nil
+}
 
 // HydrateFromFile reads the last N lines from the given log file,
 // parses them (assuming JSON format), and populates the global broadcaster's history.
@@ -33,7 +56,7 @@ func HydrateFromFile(path string) error {
 		}
 
 		// Map to LogEntry
-		entry := LogEntry{
+		entry := storage.LogEntry{
 			ID:       uuid.New().String(),
 			Metadata: make(map[string]any),
 		}

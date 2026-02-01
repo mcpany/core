@@ -230,8 +230,37 @@ type Storage interface {
 	// Returns an error if the operation fails.
 	DeleteCredential(ctx context.Context, id string) error
 
+	// Logs
+
+	// SaveLog saves a log entry.
+	//
+	// ctx is the context for the request.
+	// log is the log entry.
+	//
+	// Returns an error if the operation fails.
+	SaveLog(ctx context.Context, log *LogEntry) error
+
+	// ListLogs retrieves the most recent log entries.
+	//
+	// ctx is the context for the request.
+	// limit is the maximum number of logs to return.
+	//
+	// Returns the result.
+	// Returns an error if the operation fails.
+	ListLogs(ctx context.Context, limit int) ([]*LogEntry, error)
+
 	// Close closes the underlying storage connection.
 	//
 	// Returns an error if the operation fails.
 	Close() error
+}
+
+// LogEntry is the structure for logs.
+type LogEntry struct {
+	ID        string         `json:"id"`
+	Timestamp string         `json:"timestamp"`
+	Level     string         `json:"level"`
+	Message   string         `json:"message"`
+	Source    string         `json:"source,omitempty"`
+	Metadata  map[string]any `json:"metadata,omitempty"`
 }

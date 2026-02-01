@@ -809,6 +809,34 @@ func (a *Application) Run(opts RunOptions) error {
 		})
 	}
 
+	// Hydrate logs from storage
+	if err := logging.HydrateFromStorage(opts.Ctx, a.Storage); err != nil {
+		log.Error("Failed to hydrate logs from storage", "error", err)
+	}
+
+	// Start log persistence worker
+	go func() {
+		logCh := logging.GlobalBroadcaster.Subscribe()
+		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
+
+		for {
+			select {
+			case <-workerCtx.Done():
+				return
+			case msg := <-logCh:
+				var entry storage.LogEntry
+				if err := json.Unmarshal(msg, &entry); err == nil {
+					// Use a separate context for save to ensure it completes?
+					// Or just background.
+					if err := a.Storage.SaveLog(context.Background(), &entry); err != nil {
+						// silent fail to avoid infinite recursion if logging about logging failure
+						continue
+					}
+				}
+			}
+		}
+	}()
+
 	// Start servers
 	if err := a.runServerMode(
 		opts.Ctx,

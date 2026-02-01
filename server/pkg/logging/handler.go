@@ -12,18 +12,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/storage"
 )
-
-// LogEntry is the structure for logs sent over WebSocket.
-// It matches the frontend expectation.
-type LogEntry struct {
-	ID        string         `json:"id"`
-	Timestamp string         `json:"timestamp"`
-	Level     string         `json:"level"`
-	Message   string         `json:"message"`
-	Source    string         `json:"source,omitempty"`
-	Metadata  map[string]any `json:"metadata,omitempty"`
-}
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
@@ -64,7 +54,7 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 //
 // Returns an error if the operation fails.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
-	entry := LogEntry{
+	entry := storage.LogEntry{
 		ID:        uuid.New().String(),
 		Timestamp: r.Time.Format(time.RFC3339),
 		Level:     r.Level.String(),

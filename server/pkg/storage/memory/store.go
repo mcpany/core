@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -31,6 +32,7 @@ type Store struct {
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
+	logs               []*storage.LogEntry
 }
 
 // NewStore creates a new memory store.
@@ -45,6 +47,7 @@ func NewStore() *Store {
 		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
+		logs:               make([]*storage.LogEntry, 0),
 	}
 }
 
@@ -572,4 +575,57 @@ func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	defer s.mu.Unlock()
 	delete(s.credentials, id)
 	return nil
+}
+
+// Logs
+
+// SaveLog saves a log entry.
+//
+// _ is an unused parameter.
+// log is the log entry.
+//
+// Returns an error if the operation fails.
+func (s *Store) SaveLog(_ context.Context, log *storage.LogEntry) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	// Clone to ensure we don't store a reference that might change
+	newLog := *log
+	s.logs = append(s.logs, &newLog)
+	return nil
+}
+
+// ListLogs retrieves the most recent log entries.
+//
+// _ is an unused parameter.
+// limit is the maximum number of logs to return.
+//
+// Returns the result.
+// Returns an error if the operation fails.
+func (s *Store) ListLogs(_ context.Context, limit int) ([]*storage.LogEntry, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	// Sort by timestamp desc (newest first) to get the limit, then reverse?
+	// Or just take last N if we assume they are appended in order.
+	// SaveLog appends, so they are sorted by insertion time (approx timestamp).
+	// So we want the last `limit` entries.
+
+	count := len(s.logs)
+	if count == 0 {
+		return []*storage.LogEntry{}, nil
+	}
+
+	startIndex := 0
+	if count > limit {
+		startIndex = count - limit
+	}
+
+	result := make([]*storage.LogEntry, 0, count-startIndex)
+	for i := startIndex; i < count; i++ {
+		// Clone result
+		l := *s.logs[i]
+		result = append(result, &l)
+	}
+
+	return result, nil
 }
