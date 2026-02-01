@@ -65,16 +65,16 @@ func seedHistoryLocked(hist *ServiceHealthHistory) {
 	for t := start; t.Before(now); t = t.Add(1 * time.Minute) {
 		// Simulate latency with a sine wave + noise
 		// Period of 6 hours
-		noise := rand.Float64() * 20
+		noise := rand.Float64() * 20 //nolint:gosec // Seeding dummy data
 		baseLatency := 50.0
 		latency := baseLatency + 20*math.Sin(float64(t.Unix())/10000.0) + noise
 
 		// Simulate random errors (99.9% uptime)
 		status := "OK"
-		if rand.Float64() > 0.999 {
+		if rand.Float64() > 0.999 { //nolint:gosec // Seeding dummy data
 			status = "ERROR"
 			latency = 0
-		} else if rand.Float64() > 0.99 {
+		} else if rand.Float64() > 0.99 { //nolint:gosec // Seeding dummy data
 			status = "DEGRADED" // Use string to match typical status
 			latency += 100 // Spike
 		}
