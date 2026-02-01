@@ -222,6 +222,7 @@ func GetProjectRoot() (string, error) {
 		// Allow overriding via environment variable
 		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
 			projectRoot = envRoot
+			fmt.Printf("GetProjectRoot: Using MCPANY_PROJECT_ROOT env var: %s\n", projectRoot)
 			return
 		}
 
@@ -231,13 +232,15 @@ func GetProjectRoot() (string, error) {
 		if err != nil {
 			return
 		}
+		startDir := dir
 		for {
 			if _, statErr := os.Stat(filepath.Join(dir, "go.mod")); statErr == nil {
 				projectRoot = dir
+				fmt.Printf("GetProjectRoot: Found go.mod at %s (started from %s)\n", projectRoot, startDir)
 				return
 			}
 			if dir == filepath.Dir(dir) {
-				err = fmt.Errorf("go.mod not found")
+				err = fmt.Errorf("go.mod not found (searched up from %s)", startDir)
 				return
 			}
 			dir = filepath.Dir(dir)
@@ -579,7 +582,8 @@ func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
 	// Check 1: Info (Connectivity to daemon)
-	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...) //nolint:gosec // Test helper
+	//nolint:gosec // Test helper, variables are controlled
+	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...)
 	if err := cmd.Run(); err != nil {
 		return false
 	}
@@ -588,7 +592,12 @@ func IsDockerSocketAccessible() bool {
 	// Some environments allow talking to daemon but fail to run containers (e.g. nested docker with overlayfs issues)
 	// We run 'alpine:latest' 'true' which exits immediately with 0 if successful.
 	// Use alpine:latest as it is small and usually cached.
-	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
+	// Clone args to avoid modifying the global slice
+	runArgs := make([]string, len(dockerArgs))
+	copy(runArgs, dockerArgs)
+	runArgs = append(runArgs, "run", "--rm", "alpine:latest", "true")
+
+	//nolint:gosec // Test helper, variables are controlled
 	runCmd := exec.CommandContext(context.Background(), dockerExe, runArgs...)
 	if err := runCmd.Run(); err != nil {
 		return false
