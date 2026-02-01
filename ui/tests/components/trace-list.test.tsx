@@ -3,10 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TraceList } from '@/components/traces/trace-list';
 import { Trace } from '@/app/api/traces/route';
+
+// Mock react-virtuoso for this test
+vi.mock('react-virtuoso', () => ({
+  Virtuoso: ({ data, itemContent }: any) => {
+    return (
+      <div data-testid="virtuoso-mock">
+        {data.map((item: any, index: number) => (
+          <div key={index}>{itemContent(index, item)}</div>
+        ))}
+      </div>
+    );
+  }
+}));
 
 // Mock traces
 const MOCK_TRACES: Trace[] = [
