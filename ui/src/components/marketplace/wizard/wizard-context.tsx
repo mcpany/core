@@ -17,6 +17,9 @@ export enum WizardStep {
     REVIEW = 4,
 }
 
+/**
+ * ParamValue represents a parameter value with its type (plain text or environment variable).
+ */
 export interface ParamValue {
     type: 'plainText' | 'environmentVariable';
     value: string;
