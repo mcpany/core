@@ -28,6 +28,18 @@ interface DynamicFormProps {
   parentPath?: string;
 }
 
+/**
+ * A form component that dynamically renders input fields based on a JSON schema.
+ * Supports nested objects, arrays, enums, and basic primitive types.
+ *
+ * @param props - The component props
+ * @param props.schema - The JSON schema defining the form structure
+ * @param props.value - The current value of the form data
+ * @param props.onChange - Callback fired when the form data changes
+ * @param props.className - Optional CSS class name
+ * @param props.parentPath - Internal path used for recursion
+ * @returns The rendered form component
+ */
 export function DynamicForm({
   schema,
   value,
