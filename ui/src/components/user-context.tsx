@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -36,8 +37,8 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
-  login: (role: UserRole) => void;
+  /** Logs in the user. */
+  login: (username: string, password: string) => Promise<void>;
   /** Logs out the current user. */
   logout: () => void;
 }
@@ -55,34 +56,48 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const checkAuth = async () => {
+      try {
+          const currentUser = await apiClient.getCurrentUser();
+          if (currentUser) {
+              setUser({
+                  id: currentUser.id || '1',
+                  name: currentUser.name || 'User',
+                  email: currentUser.email || 'user@example.com',
+                  role: (currentUser.role as UserRole) || 'viewer',
+                  avatar: currentUser.avatar
+              });
+          } else {
+              setUser(null);
+          }
+      } catch (e) {
+          console.error("Auth check failed", e);
+          setUser(null);
+      } finally {
+          setLoading(false);
+      }
+  };
+
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    checkAuth();
   }, []);
 
-  const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
+  const login = async (username: string, password: string) => {
+    try {
+        const res = await apiClient.login(username, password);
+        if (res.token) {
+            localStorage.setItem('mcp_auth_token', res.token);
+            await checkAuth();
+        }
+    } catch (e) {
+        console.error("Login failed", e);
+        throw e;
+    }
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('mcp_auth_token');
     localStorage.removeItem('mcp_user_role');
   };
 

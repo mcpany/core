@@ -218,6 +218,60 @@ const getMetadata = () => {
  * API Client for interacting with the MCP Any server.
  */
 export const apiClient = {
+    // Auth
+
+    /**
+     * Logs in using username and password.
+     * @param username The username.
+     * @param password The password.
+     * @returns A promise that resolves to the login response (token).
+     */
+    login: async (username: string, password: string) => {
+        const res = await fetch('/api/v1/auth/login', {
+            method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        if (!res.ok) {
+            throw new Error('Login failed');
+        }
+        return res.json();
+    },
+
+    /**
+     * Gets the current logged-in user.
+     * @returns A promise that resolves to the current user or null if not logged in.
+     */
+    getCurrentUser: async () => {
+        if (typeof window === 'undefined') return null;
+        const token = localStorage.getItem('mcp_auth_token');
+        if (!token) return null;
+
+        try {
+            // Decode token (Basic Auth: base64(username:password))
+            const decoded = atob(token);
+            const username = decoded.split(':')[0];
+
+            // Fetch user by ID (assuming ID=Username for now)
+            // Or iterate listUsers?
+            // "Find user by username (using ListUsers for now, or GetUser if ID==Username)"
+            // Let's try GetUser first.
+            const userRes = await fetchWithAuth(`/api/v1/users/${username}`);
+            if (userRes.ok) {
+                const data = await userRes.json();
+                return data; // Expected { ...user_fields }
+            } else {
+                 // Fallback to list users and find by username?
+                 const users = await apiClient.listUsers();
+                 const found = (users as any[]).find((u: any) => u.name === username || u.email === username || u.id === username);
+                 if (found) return found;
+            }
+        } catch (e) {
+            console.error("Failed to get current user", e);
+        }
+        return null;
+    },
+
     // Services (Migrated to gRPC)
 
     /**
