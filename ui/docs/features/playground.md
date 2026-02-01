@@ -19,7 +19,7 @@ Navigate to `/playground`. The interface presents a clean slate with access to a
 
 ![Playground Overview](screenshots/playground_blank.png)
 
-> **Note**: The page title is "MCPAny Manager".
+> **Note**: The page title is "Console".
 
 ### 2. Select a Tool
 
