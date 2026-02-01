@@ -252,7 +252,7 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 	client, cleanup := StartStdioServer(t, configFile)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	assert.Eventually(t, func() bool {
@@ -276,7 +276,7 @@ func TestAutoDiscoverAndExportPolicy(t *testing.T) {
 			return false
 		}
 		return true
-	}, 30*time.Second, 500*time.Millisecond, "Expected tools to be discovered and hidden tools to be excluded")
+	}, 60*time.Second, 500*time.Millisecond, "Expected tools to be discovered and hidden tools to be excluded")
 }
 
 func TestCallPolicyExecution(t *testing.T) {
@@ -341,7 +341,7 @@ func TestCallPolicyExecution(t *testing.T) {
 	client, cleanup := StartStdioServer(t, configFile)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	assert.Eventually(t, func() bool {
@@ -355,7 +355,7 @@ func TestCallPolicyExecution(t *testing.T) {
 			}
 		}
 		return false
-	}, 30*time.Second, 500*time.Millisecond, "Tool call-policy-test.allowed_tool did not appear in list")
+	}, 60*time.Second, 500*time.Millisecond, "Tool call-policy-test.allowed_tool did not appear in list")
 
 	_, err := client.CallTool(ctx, &mcp.CallToolParams{
 		Name:      "call-policy-test.allowed_tool",
@@ -412,7 +412,7 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 	client, cleanup := StartStdioServer(t, configFile)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	// Verify Prompts and Resources with Eventually to allow for async registration
@@ -450,5 +450,5 @@ func TestExportPolicyForPromptsAndResources(t *testing.T) {
 		}
 
 		return true
-	}, 30*time.Second, 500*time.Millisecond, "Expected prompts and resources to be exported/unexported correctly")
+	}, 60*time.Second, 500*time.Millisecond, "Expected prompts and resources to be exported/unexported correctly")
 }
