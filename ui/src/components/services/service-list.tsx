@@ -36,6 +36,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { ServiceOnboarding } from "./service-onboarding";
 
 
 interface ServiceListProps {
@@ -51,6 +52,7 @@ interface ServiceListProps {
   onLogin?: (service: UpstreamServiceConfig) => void;
   onRestart?: (name: string) => void;
   onBulkEdit?: (names: string[], updates: { tags?: string[] }) => void;
+  onSelectTemplate?: (templateId: string) => void;
 }
 
 /**
@@ -58,7 +60,7 @@ interface ServiceListProps {
  *
  * @param onExport - The onExport.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
+export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit, onSelectTemplate }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
@@ -107,6 +109,9 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
   }
 
   if (services.length === 0) {
+      if (onSelectTemplate) {
+          return <ServiceOnboarding onSelectTemplate={onSelectTemplate} />;
+      }
       return <div className="text-center py-10 text-muted-foreground">No services registered.</div>;
   }
 

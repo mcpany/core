@@ -23,7 +23,7 @@ import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceList } from "@/components/services/service-list";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { ServiceTemplateSelector } from "@/components/services/service-template-selector";
-import { ServiceTemplate } from "@/lib/templates";
+import { ServiceTemplate, SERVICE_TEMPLATES } from "@/lib/templates";
 import { BulkServiceImport } from "@/components/services/bulk-service-import";
 import {
     Dialog,
@@ -230,6 +230,14 @@ export default function ServicesPage() {
 
       setSelectedService(newService);
       setConfiguringTemplate(null); // Clear the configuration step
+  };
+
+  const handleOnboardingSelect = (templateId: string) => {
+      const template = SERVICE_TEMPLATES.find(t => t.id === templateId);
+      if (template) {
+          handleTemplateSelect(template);
+          setIsSheetOpen(true);
+      }
   };
 
   const handleDuplicate = useCallback((service: UpstreamServiceConfig) => {
@@ -451,6 +459,7 @@ export default function ServicesPage() {
                 onBulkEdit={handleBulkEdit}
                 onLogin={handleLogin}
                 onRestart={handleRestart}
+                onSelectTemplate={handleOnboardingSelect}
              />
         </CardContent>
       </Card>
