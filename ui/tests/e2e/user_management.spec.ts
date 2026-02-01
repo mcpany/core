@@ -55,6 +55,6 @@ test.describe('User Management', () => {
         await expect(page.locator('tr:has-text("test-api-user") >> text=API Key')).toBeVisible();
 
         // Screenshot
-        await page.screenshot({ path: 'verification.png', fullPage: true });
+
     });
 });
