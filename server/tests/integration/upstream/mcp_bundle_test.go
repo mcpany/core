@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/prompt"
@@ -236,9 +237,37 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
 	}
 
-	// Check if Docker is available and accessible
+	// Check if Docker is available and functional (runtime check)
+	// We use the helper from the parent package, but since we are in `upstream` package,
+	// and `e2e_helpers.go` is in `integration` package, we might need to import it or duplicate logic.
+	// `mcp_bundle_test.go` is in `upstream` package (directory `server/tests/integration/upstream`).
+	// `e2e_helpers.go` is in `integration` package (directory `server/tests/integration`).
+	// To use `integration.RequireDockerRuntime`, we need to import `github.com/mcpany/core/server/tests/integration`.
+	// But `e2e_helpers.go` declares `package integration`.
+	// This creates a potential import cycle if `integration` imports `upstream`?
+	// `integration` imports `github.com/mcpany/core/server/pkg/app` and proto.
+	// It does NOT import `upstream` package.
+	// However, `upstream` tests are inside `upstream` folder but usually use `upstream_test` package or stay in `upstream`.
+	// If `mcp_bundle_test.go` is `package upstream`, it can import `integration` ("github.com/mcpany/core/server/tests/integration").
+	// Let's verify package name of mcp_bundle_test.go. It says `package upstream`.
+
+	// Since I cannot easily add imports and verify cycles without `go mod` tools here,
+	// I will duplicate the lightweight check to be safe and self-contained.
+
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	}
+
+	// Runtime check for OverlayFS issue
+	out, err := exec.Command("docker", "run", "--rm", "alpine:latest", "true").CombinedOutput()
+	if err != nil {
+		outStr := string(out)
+		if strings.Contains(outStr, "mount source: \"overlay\"") && strings.Contains(outStr, "invalid argument") {
+			t.Skipf("Skipping Docker test due to OverlayFS issue in CI: %v", err)
+		}
+		// If it fails for other reasons (e.g. image pull failure), we log but might proceed or skip?
+		// To be safe, if we can't run alpine, we can't run the bundle.
+		t.Skipf("Skipping Docker test: failed to run minimal container: %v. Output: %s", err, outStr)
 	}
 
 	tempDir := t.TempDir()
