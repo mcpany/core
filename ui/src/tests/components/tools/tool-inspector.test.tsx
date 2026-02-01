@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ToolInspector } from '@/components/tools/tool-inspector';
@@ -11,12 +10,15 @@ import { ToolDefinition } from '@/lib/client';
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Mock dependencies
-vi.mock('@/components/ui/sheet', () => ({
-  Sheet: ({ children, open }: { children: React.ReactNode; open: boolean }) => open ? <div>{children}</div> : null,
-  SheetContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  SheetHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  SheetTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  SheetDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+
+// Mock Dialog as it uses Portals which can be tricky in tests
+vi.mock('@/components/ui/dialog', () => ({
+  Dialog: ({ children, open }: { children: React.ReactNode; open: boolean }) => open ? <div>{children}</div> : null,
+  DialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DialogTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DialogDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DialogFooter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 vi.mock('@/components/ui/tabs', () => ({
@@ -25,6 +27,13 @@ vi.mock('@/components/ui/tabs', () => ({
   TabsTrigger: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
   TabsContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
+
+// Mock ResizeObserver for Recharts
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 // Mock fetch
 global.fetch = vi.fn();
@@ -70,14 +79,18 @@ describe('ToolInspector', () => {
     expect(screen.getByText('test_service')).toBeDefined();
   });
 
-  it('renders input fields based on schema', () => {
+  it('renders visual editor tabs', () => {
     render(
       <TooltipProvider>
         <ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />
       </TooltipProvider>
     );
-    expect(screen.getAllByText(/arg1/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/"string"/)).toBeDefined();
-    // In a real DOM (not mocked Sheet), we would look for the input
+    // Check for main tabs
+    expect(screen.getByText('Test & Execute')).toBeDefined();
+
+    // Check for ToolArgumentsEditor tabs (Form/JSON/Schema)
+    // Note: Since we mock Tabs, we expect to see the Trigger buttons.
+    expect(screen.getByText('Form')).toBeDefined();
+    expect(screen.getByText('JSON')).toBeDefined();
   });
 });
