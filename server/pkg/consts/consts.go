@@ -54,6 +54,14 @@ const (
 	ContextKeyRemoteAddr = "remote_addr"
 )
 
+// ContextKey is a custom type for context keys to avoid collisions.
+type ContextKey string
+
+const (
+	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
+	SkipSecretValidationKey ContextKey = "skip_secret_validation"
+)
+
 const (
 	// CommandStatusSuccess represents the status for a successful command execution.
 	CommandStatusSuccess = "SUCCESS"

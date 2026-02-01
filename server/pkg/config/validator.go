@@ -16,6 +16,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/santhosh-tekuri/jsonschema/v5"
@@ -53,10 +54,6 @@ const (
 type contextKey string
 
 const (
-	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
-	// Value should be a boolean.
-	SkipSecretValidationKey contextKey = "skip_secret_validation"
-
 	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
 	// Value should be a boolean.
 	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
@@ -319,7 +316,7 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 	}
 	// Security: If context requests skipping secret validation, we skip strict existence checks
 	// to prevent information leakage (oracle attacks) where a user can probe environment variables or files.
-	skipExistenceCheck, _ := ctx.Value(SkipSecretValidationKey).(bool)
+	skipExistenceCheck, _ := ctx.Value(consts.SkipSecretValidationKey).(bool)
 	skipFilesystemCheck, _ := ctx.Value(SkipFilesystemCheckKey).(bool)
 	if skipFilesystemCheck {
 		skipExistenceCheck = true
@@ -383,7 +380,7 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 
 		// Security: If context requests skipping secret validation, stop here.
 		// This prevents information leakage (oracle attacks) where a user can probe secret values via regex.
-		if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
+		if skip, ok := ctx.Value(consts.SkipSecretValidationKey).(bool); ok && skip {
 			return nil
 		}
 
@@ -990,7 +987,7 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 
 		// If we are skipping secret validation, we should also skip attempting to resolve it for "not empty" check
 		// because ResolveSecret will read the value.
-		if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
+		if skip, ok := ctx.Value(consts.SkipSecretValidationKey).(bool); ok && skip {
 			return nil
 		}
 
@@ -1013,7 +1010,7 @@ func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTo
 		return WrapActionableError("bearer token validation failed", err)
 	}
 
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
+	if skip, ok := ctx.Value(consts.SkipSecretValidationKey).(bool); ok && skip {
 		return nil
 	}
 
@@ -1065,7 +1062,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return WrapActionableError("oauth2 client_id validation failed", err)
 	}
 
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); !ok || !skip {
+	if skip, ok := ctx.Value(consts.SkipSecretValidationKey).(bool); !ok || !skip {
 		clientID, err := util.ResolveSecret(ctx, oauth.GetClientId())
 		if err != nil {
 			return fmt.Errorf("failed to resolve oauth2 client_id: %w", err)
@@ -1079,7 +1076,7 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 		return WrapActionableError("oauth2 client_secret validation failed", err)
 	}
 
-	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); !ok || !skip {
+	if skip, ok := ctx.Value(consts.SkipSecretValidationKey).(bool); !ok || !skip {
 		clientSecret, err := util.ResolveSecret(ctx, oauth.GetClientSecret())
 		if err != nil {
 			return fmt.Errorf("failed to resolve oauth2 client_secret: %w", err)
