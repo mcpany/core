@@ -14,6 +14,12 @@ import (
 
 const trueVal = "true"
 
+// LookupIP is a variable to allow mocking in tests.
+// It defaults to net.DefaultResolver.LookupIP.
+var LookupIP = func(ctx context.Context, network, host string) ([]net.IP, error) {
+	return net.DefaultResolver.LookupIP(ctx, network, host)
+}
+
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
@@ -58,7 +64,7 @@ var IsSafeURL = func(urlStr string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+	ips, err := LookupIP(ctx, "ip", host)
 	if err != nil {
 		return fmt.Errorf("failed to resolve host %q: %w", host, err)
 	}

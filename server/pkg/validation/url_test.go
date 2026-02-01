@@ -4,11 +4,27 @@
 package validation
 
 import (
+	"context"
+	"fmt"
+	"net"
 	"os"
 	"testing"
 )
 
 func TestIsSafeURL(t *testing.T) {
+	// Mock LookupIP to avoid network dependencies
+	originalLookupIP := LookupIP
+	defer func() { LookupIP = originalLookupIP }()
+	LookupIP = func(_ context.Context, _, host string) ([]net.IP, error) {
+		if host == "google.com" {
+			return []net.IP{net.ParseIP("8.8.8.8")}, nil
+		}
+		if host == "localhost" {
+			return []net.IP{net.ParseIP("127.0.0.1")}, nil
+		}
+		return nil, fmt.Errorf("lookup failed for %s", host)
+	}
+
 	// Ensure the bypass env var is not set for this test
 	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
@@ -68,7 +84,7 @@ func TestIsSafeURL(t *testing.T) {
 		// but standard environment usually resolves 127.0.0.1 to 127.0.0.1.
 		{
 			name:    "Localhost Domain",
-			url:     "http://127.0.0.1",
+			url:     "http://localhost",
 			wantErr: true,
 		},
 	}
