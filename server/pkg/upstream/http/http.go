@@ -180,9 +180,16 @@ func (u *Upstream) Register(
 	}
 	u.poolManager.Register(serviceID, httpPool)
 
+	callPolicies := serviceConfig.GetCallPolicies()
+	compiledCallPolicies, err := tool.CompileCallPolicies(callPolicies)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile call policies: %w", err)
+	}
+
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:             serviceConfig.GetName(),
+		Config:           serviceConfig,
+		CompiledPolicies: compiledCallPolicies,
 	}
 	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
 	toolManager.AddServiceInfo(serviceID, info)
@@ -256,7 +263,7 @@ func (u *Upstream) Register(
 		}
 	}
 
-	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload)
+	discoveredTools := u.createAndRegisterHTTPTools(ctx, serviceID, address, serviceConfig, toolManager, resourceManager, isReload, compiledCallPolicies)
 	u.createAndRegisterPrompts(ctx, serviceID, serviceConfig, promptManager, isReload)
 	log.Info("Registered HTTP service", "serviceID", serviceID, "toolsAdded", len(discoveredTools))
 
@@ -266,7 +273,7 @@ func (u *Upstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
+func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool, compiledCallPolicies []*tool.CompiledCallPolicy) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -290,11 +297,6 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 	sort.Strings(sortedCallIDs)
 
 	callPolicies := serviceConfig.GetCallPolicies()
-	compiledCallPolicies, err := tool.CompileCallPolicies(callPolicies)
-	if err != nil {
-		log.Error("Failed to compile call policies", "error", err)
-		return nil
-	}
 
 	// Optimization: Parse baseURL once outside the loop to avoid redundant parsing for each call.
 	baseURL, err := url.Parse(address)
