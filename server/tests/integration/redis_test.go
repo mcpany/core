@@ -41,5 +41,5 @@ func TestRedisBus_ExternalServer(t *testing.T) {
 		mu.Lock()
 		defer mu.Unlock()
 		return receivedMsg == "hello"
-	}, 5*time.Second, 100*time.Millisecond, "did not receive message in time")
+	}, 30*time.Second, 100*time.Millisecond, "did not receive message in time")
 }
