@@ -320,6 +320,7 @@ func (a *Application) Run(opts RunOptions) error {
 	a.fs = fs
 	a.configPaths = opts.ConfigPaths
 	a.explicitAPIKey = opts.APIKey
+	log.Info("DEBUG: Run API Key", "key", opts.APIKey)
 
 	// Telemetry initialization moved after config loading
 
@@ -1461,21 +1462,25 @@ func (a *Application) runServerMode(
 	}, nil)
 
 	// Wrap the HTTP handler with OpenTelemetry instrumentation
-	httpHandler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Enforce 10MB limit for JSON-RPC body to prevent DoS
-		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
-		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
-		rawHTTPHandler.ServeHTTP(w, r.WithContext(ctx))
-	}), "server-request")
+	// Note: We don't inject HTTPRequestContextKey here anymore because we do it globally
+	// in the HTTPRequestContextMiddleware.
+	httpHandler := otelhttp.NewHandler(rawHTTPHandler, "server-request")
 
 	// Check if auth middleware is disabled in config
 	var authDisabled bool
 
 	// Use passed globalSettings for middleware config check
 	if globalSettings != nil {
+		logging.GetLogger().Info("DEBUG: GlobalSettings middlewares", "count", len(globalSettings.GetMiddlewares()), "middlewares", globalSettings.GetMiddlewares())
 		for _, m := range globalSettings.GetMiddlewares() {
 			if m.GetName() == authMiddlewareName && m.GetDisabled() {
-				authDisabled = true
+				// Only disable if API Key is NOT set.
+				// If API Key is present, we enforce auth regardless of this flag to prevent accidental exposure.
+				if a.SettingsManager.GetAPIKey() == "" {
+					authDisabled = true
+				} else {
+					logging.GetLogger().Warn("Auth middleware disabled in config but API Key is present. IGNORING disable flag to enforce security.", "api_key_present", true)
+				}
 				break
 			}
 		}
@@ -1935,8 +1940,10 @@ func (a *Application) runServerMode(
 			csrfMiddleware.Handler(
 				middleware.JSONRPCComplianceMiddleware(
 					middleware.RecoveryMiddleware(
-						ipMiddleware.Handler(
-							rateLimiter.Handler(finalHandler),
+						a.HTTPRequestContextMiddleware(
+							ipMiddleware.Handler(
+								rateLimiter.Handler(finalHandler),
+							),
 						),
 					),
 				),
@@ -2201,6 +2208,8 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)
 			apiKey := a.SettingsManager.GetAPIKey()
+			requestKey := r.Header.Get("X-API-Key")
+			logging.GetLogger().Info("DEBUG: AuthMiddleware details", "configured_key", apiKey, "request_key", requestKey, "path", r.URL.Path)
 			authenticated := false
 
 			// 1. Check Global API Key
@@ -2279,6 +2288,15 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+
+// HTTPRequestContextMiddleware injects the HTTP request into the context.
+func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 // startGrpcServer starts a gRPC server in a new goroutine. It handles graceful
