@@ -222,7 +222,8 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     *
+     * @returns Promise<UpstreamServiceConfig[]> - A promise that resolves to a list of services.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -251,8 +252,9 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     *
+     * @param id - string. The ID of the service to retrieve.
+     * @returns Promise<UpstreamServiceConfig> - A promise that resolves to the service configuration.
      */
     getService: async (id: string) => {
          try {
@@ -292,9 +294,10 @@ export const apiClient = {
 
     /**
      * Sets the status (enabled/disabled) of a service.
-     * @param name The name of the service.
-     * @param disable True to disable the service, false to enable it.
-     * @returns A promise that resolves to the updated service status.
+     *
+     * @param name - string. The name of the service.
+     * @param disable - boolean. True to disable the service, false to enable it.
+     * @returns Promise<any> - A promise that resolves to the updated service status.
      */
     setServiceStatus: async (name: string, disable: boolean) => {
         const response = await fetchWithAuth(`/api/v1/services/${name}`, {
@@ -332,8 +335,9 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     *
+     * @param config - UpstreamServiceConfig. The configuration of the service to register.
+     * @returns Promise<any> - A promise that resolves to the registered service configuration.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -469,8 +473,9 @@ export const apiClient = {
 
     /**
      * Validates a service configuration.
-     * @param config The service configuration to validate.
-     * @returns A promise that resolves to the validation result.
+     *
+     * @param config - UpstreamServiceConfig. The service configuration to validate.
+     * @returns Promise<any> - A promise that resolves to the validation result.
      */
     validateService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)

@@ -29,38 +29,21 @@ type UpstreamAuthenticator interface {
 }
 
 // NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
+// provided authentication configuration.
+//
+// It supports API key, bearer token, and basic authentication, as well as substitution
+// of environment variables in the authentication parameters.
 //
 // If the `authConfig` is `nil`, no authenticator is created, and the function
 // returns `nil, nil`. If the configuration is invalid (e.g., missing required
 // fields), an error is returned.
 //
 // Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
+//   - authConfig: The configuration that specifies the authentication method and its parameters.
 //
 // Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
-//
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
-//
-// Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
+//   - UpstreamAuthenticator: The initialized authenticator, or nil if no auth is configured.
+//   - error: An error if the configuration is invalid.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil

@@ -262,6 +262,9 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Parameters:
 //   - serviceID: The unique identifier for the service.
 //   - info: The struct containing the service's metadata.
+//
+// Returns:
+//   None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -385,6 +388,9 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Parameters:
 //   - ctx: The context to control the lifecycle of the health check loop.
 //   - interval: The interval between health checks.
+//
+// Returns:
+//   None.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)

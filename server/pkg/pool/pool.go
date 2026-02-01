@@ -35,13 +35,17 @@ var (
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	Close() error
+
 	// IsHealthy returns true if the client's connection is active and usable.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: The context for the request.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the client is healthy, false otherwise.
 	IsHealthy(ctx context.Context) bool
 }
 
@@ -50,17 +54,38 @@ type ClosableClient interface {
 // parameter T is constrained to types that implement the ClosableClient
 // interface.
 type Pool[T ClosableClient] interface {
-	// Get retrieves a client from the pool. If no idle clients are available and
-	// the pool is not full, it may create a new one.
+	// Get retrieves a client from the pool.
+	//
+	// If no idle clients are available and the pool is not full, it may create a new one.
+	//
+	// Parameters:
+	//   - ctx: The context for the request.
+	//
+	// Returns:
+	//   - T: A client from the pool.
+	//   - error: An error if the pool is closed or a client cannot be created.
 	Get(ctx context.Context) (T, error)
+
 	// Put returns a client to the pool, making it available for reuse.
-	Put(T)
+	//
+	// Parameters:
+	//   - client: The client to return.
+	//
+	// Returns:
+	//   None.
+	Put(client T)
+
 	// Close terminates all clients in the pool and prevents new ones from being
 	// created.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
 	Close() error
+
 	// Len returns the number of idle clients currently in the pool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - int: The number of idle clients.
 	Len() int
 }
 
@@ -462,7 +487,8 @@ type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - int: The number of idle clients.
 	Len() int
 }
 
@@ -477,20 +503,26 @@ type Manager struct {
 
 // NewManager creates and returns a new pool Manager for managing multiple named
 // connection pools.
+//
+// Returns:
+//   - *Manager: The created Manager.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
 	}
 }
 
-// Register adds a new pool to the manager under a given name. If a pool with
-// the same name already exists, the old pool is closed before the new one is
-// registered. This ensures that there are no resource leaks from orphaned
-// pools.
+// Register adds a new pool to the manager under a given name.
+//
+// If a pool with the same name already exists, the old pool is closed before the new one is
+// registered. This ensures that there are no resource leaks from orphaned pools.
 //
 // Parameters:
 //   - name: The name to register the pool under.
 //   - pool: The pool to register.
+//
+// Returns:
+//   None.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -508,7 +540,11 @@ func (m *Manager) Register(name string, pool any) {
 
 // Deregister closes and removes a pool from the manager.
 //
-// name is the name of the resource.
+// Parameters:
+//   - name: The name of the pool to deregister.
+//
+// Returns:
+//   None.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -545,8 +581,12 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 }
 
 // CloseAll iterates through all registered pools in the manager and closes them,
-// releasing all their associated resources. This is typically called during a
-// graceful shutdown of the application.
+// releasing all their associated resources.
+//
+// This is typically called during a graceful shutdown of the application.
+//
+// Returns:
+//   None.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

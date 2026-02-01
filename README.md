@@ -107,9 +107,19 @@ make lint
 ```
 
 ### Building
-Compile all artifacts (Server binary and UI assets).
+Compile the server binary.
 ```bash
 make build
+```
+
+To build everything (Server and UI):
+```bash
+make all
+```
+
+To build Docker images:
+```bash
+make docker-build-all
 ```
 
 ### Code Generation

@@ -105,6 +105,9 @@ func StartServer(addr string) error {
 //   - name: The name of the gauge.
 //   - val: The value to set.
 //   - labels: A list of labels to apply to the gauge.
+//
+// Returns:
+//   None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -118,8 +121,11 @@ func SetGauge(name string, val float32, labels ...string) {
 // IncrCounter increments a counter.
 //
 // Parameters:
-//   - name: The name of the counter (as a path).
+//   - name: The name of the counter (as a slice of path segments).
 //   - val: The amount to increment.
+//
+// Returns:
+//   None.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
@@ -127,9 +133,12 @@ func IncrCounter(name []string, val float32) {
 // IncrCounterWithLabels increments a counter with labels.
 //
 // Parameters:
-//   - name: The name of the counter (as a path).
+//   - name: The name of the counter (as a slice of path segments).
 //   - val: The amount to increment.
 //   - labels: The labels to apply.
+//
+// Returns:
+//   None.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -137,8 +146,11 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 // MeasureSince measures the time since a given start time and records it.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
+//   - name: The name of the metric (as a slice of path segments).
 //   - start: The start time.
+//
+// Returns:
+//   None.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
@@ -146,9 +158,12 @@ func MeasureSince(name []string, start time.Time) {
 // MeasureSinceWithLabels measures the time since a given start time and records it with labels.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
+//   - name: The name of the metric (as a slice of path segments).
 //   - start: The start time.
 //   - labels: The labels to apply.
+//
+// Returns:
+//   None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -156,8 +171,11 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 // AddSample adds a sample to a histogram/summary.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
+//   - name: The name of the metric (as a slice of path segments).
 //   - val: The value to sample.
+//
+// Returns:
+//   None.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
@@ -165,9 +183,12 @@ func AddSample(name []string, val float32) {
 // AddSampleWithLabels adds a sample to a histogram/summary with labels.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
+//   - name: The name of the metric (as a slice of path segments).
 //   - val: The value to sample.
 //   - labels: The labels to apply.
+//
+// Returns:
+//   None.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

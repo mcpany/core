@@ -20,9 +20,11 @@ import (
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: The context for the request.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	Shutdown(ctx context.Context) error
 
 	// Register inspects the upstream service defined by the serviceConfig,
@@ -37,10 +39,10 @@ type Upstream interface {
 	//   - isReload: Indicates whether this is an initial registration or a reload.
 	//
 	// Returns:
-	//   - A unique service key.
-	//   - A list of discovered tool definitions.
-	//   - A list of discovered resource definitions.
-	//   - An error if registration fails.
+	//   - string: A unique service key.
+	//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+	//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+	//   - error: An error if registration fails.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
@@ -55,6 +57,11 @@ type Upstream interface {
 // runtime health status.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
-	// Returns nil if healthy, or an error if unhealthy.
+	//
+	// Parameters:
+	//   - ctx: The context for the health check.
+	//
+	// Returns:
+	//   - error: nil if healthy, or an error if unhealthy.
 	CheckHealth(ctx context.Context) error
 }

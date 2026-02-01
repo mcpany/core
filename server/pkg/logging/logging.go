@@ -32,15 +32,18 @@ func ForTestsOnlyResetLogger() {
 }
 
 // Init initializes the application's global logger with a specific log level
-// and output destination. This function is designed to be called only once,
-// typically at the start of the application, to ensure a consistent logging
-// setup.
+// and output destination.
+//
+// This function is designed to be called only once, typically at the start of the application,
+// to ensure a consistent logging setup.
 //
 // Parameters:
 //   - level: The minimum log level to be recorded (e.g., `slog.LevelInfo`).
-//   - output: The `io.Writer` to which log entries will be written (e.g.,
-//     `os.Stdout`).
+//   - output: The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
 //   - format: Optional format string ("json" or "text"). Defaults to "text".
+//
+// Returns:
+//   None.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
