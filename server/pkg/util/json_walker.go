@@ -9,22 +9,18 @@ import (
 )
 
 // WalkJSONStrings visits every string value in the JSON input.
-// visitor is called for every string value (not keys).
-// visitor receives:
 //
-//	raw: the raw bytes of the string, including quotes.
-//
-// visitor returns:
-//
-//	replacement: the new bytes to replace 'raw' with, or nil to keep original.
-//	modified: true if replacement should be used.
+// Summary: Iterates through JSON input, invoking a visitor function for every string value. Supports comments.
 //
 // Parameters:
-//   - input: The JSON input to walk.
-//   - visitor: A function that visits every string value.
+//   - input: []byte. The JSON input to walk.
+//   - visitor: func([]byte) ([]byte, bool). A callback that receives the raw string bytes and returns a replacement and a boolean indicating if replacement should occur.
 //
 // Returns:
 //   - []byte: The potentially modified JSON output.
+//
+// Throws/Errors:
+//   - Does not panic. Handles malformed JSON gracefully by skipping invalid parts.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0
@@ -109,10 +105,18 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 }
 
 // WalkStandardJSONStrings visits every string value in the JSON input.
-// ⚡ Bolt: Optimized for standard JSON (no comments).
-// It assumes the input is standard JSON (no comments) and skips comment detection logic
-// for significantly improved performance on mixed payloads.
-// visitor is called for every string value (not keys).
+//
+// Summary: Optimized version of WalkJSONStrings for standard JSON (no comments), but falls back gracefully if comments are encountered.
+//
+// Parameters:
+//   - input: []byte. The JSON input.
+//   - visitor: func([]byte) ([]byte, bool). The visitor callback.
+//
+// Returns:
+//   - []byte: The potentially modified JSON output.
+//
+// Throws/Errors:
+//   - Does not panic.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
 	var out []byte
 	i := 0

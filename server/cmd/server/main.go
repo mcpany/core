@@ -52,7 +52,10 @@ const (
 //   - cmd: *cobra.Command. The command instance to check for the --env-file flag.
 //
 // Returns:
-//   - error: An error if the specified file cannot be loaded or if the default .env file is present but invalid.
+//   - error: Nil on success.
+//
+// Throws/Errors:
+//   - Returns error if the specified file cannot be loaded or if the default .env file is present but invalid.
 //
 // Side Effects:
 //   - Modifies the process environment variables.

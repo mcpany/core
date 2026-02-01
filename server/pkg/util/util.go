@@ -501,16 +501,17 @@ func IsNil(i any) bool {
 }
 
 // ToString converts a value to a string representation efficiently.
-// It handles common types like string, json.Number, int, float, and bool
-// without using reflection when possible.
-// Optimization: We manually handle all standard Go numeric types to avoid the overhead
-// of reflection (fmt.Sprintf) which is significantly slower and generates more allocations.
+//
+// Summary: Converts any value to its string representation, optimized for common types to avoid reflection overhead.
 //
 // Parameters:
-//   - v: The value to convert to a string.
+//   - v: any. The value to convert (supports primitives, json.Number, fmt.Stringer, etc).
 //
 // Returns:
-//   - string: The string representation of the value.
+//   - string: The string representation. Returns "<nil>" for nil values.
+//
+// Throws/Errors:
+//   - Does not panic. handles recursion loops by returning "<recursion limit reached>".
 func ToString(v any) string {
 	return toStringRecursive(v, 0)
 }
@@ -616,14 +617,17 @@ func RandomFloat64() float64 {
 }
 
 // SanitizeFilename cleans a filename to ensure it is safe to use.
-// It removes any directory components, null bytes, and restricts characters
-// to alphanumeric, dots, dashes, and underscores.
+//
+// Summary: Sanitizes a filename by removing directory components and restricting characters to alphanumerics, dots, dashes, and underscores.
 //
 // Parameters:
-//   - filename: The filename to sanitize.
+//   - filename: string. The filename to sanitize.
 //
 // Returns:
-//   - string: The sanitized filename.
+//   - string: The safe filename. If the result is empty or unsafe (e.g. ".."), returns "unnamed_file".
+//
+// Throws/Errors:
+//   - Does not throw. Truncates result to 255 bytes.
 func SanitizeFilename(filename string) string {
 	// 1. Base name only
 	filename = filepath.Base(filename)
