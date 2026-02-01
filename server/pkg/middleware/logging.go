@@ -24,7 +24,8 @@ import (
 //   - log: The logger to be used. If `nil`, the default global logger will be
 //     used.
 //
-// Returns an `mcp.Middleware` function.
+// Returns:
+//   - mcp.Middleware: An MCP middleware function that performs logging.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

@@ -23,8 +23,8 @@ type Label = metrics.Label
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.
 //
 // Returns:
-//   - A pointer to a prometheus.PrometheusSink.
-//   - An error if the sink creation fails.
+//   - *prometheus.PrometheusSink: A pointer to a prometheus.PrometheusSink.
+//   - error: An error if the sink creation fails.
 func NewPrometheusSink() (*prometheus.PrometheusSink, error) {
 	return prometheus.NewPrometheusSink()
 }
@@ -36,7 +36,7 @@ var initOnce sync.Once
 // The metrics are exposed on the /metrics endpoint.
 //
 // Returns:
-//   - An error if the initialization fails.
+//   - error: An error if the initialization fails.
 func Initialize() error {
 	var err error
 	initOnce.Do(func() {
@@ -62,7 +62,7 @@ func Initialize() error {
 // Handler returns an http.Handler for the /metrics endpoint.
 //
 // Returns:
-//   - An http.Handler that serves the Prometheus metrics.
+//   - http.Handler: An http.Handler that serves the Prometheus metrics.
 func Handler() http.Handler {
 	return promhttp.Handler()
 }
@@ -70,10 +70,10 @@ func Handler() http.Handler {
 // StartServer starts an HTTP server to expose the metrics.
 //
 // Parameters:
-//   - addr: The address to listen on (e.g., ":8080").
+//   - addr: string. The address to listen on (e.g., ":8080").
 //
 // Returns:
-//   - An error if the server fails to start.
+//   - error: An error if the server fails to start.
 func StartServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", Handler())
@@ -102,9 +102,12 @@ func StartServer(addr string) error {
 // SetGauge sets the value of a gauge.
 //
 // Parameters:
-//   - name: The name of the gauge.
-//   - val: The value to set.
-//   - labels: A list of labels to apply to the gauge.
+//   - name: string. The name of the gauge.
+//   - val: float32. The value to set.
+//   - labels: ...string. A list of labels to apply to the gauge.
+//
+// Returns:
+//   None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -118,8 +121,11 @@ func SetGauge(name string, val float32, labels ...string) {
 // IncrCounter increments a counter.
 //
 // Parameters:
-//   - name: The name of the counter (as a path).
-//   - val: The amount to increment.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
+//
+// Returns:
+//   None.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
@@ -127,9 +133,12 @@ func IncrCounter(name []string, val float32) {
 // IncrCounterWithLabels increments a counter with labels.
 //
 // Parameters:
-//   - name: The name of the counter (as a path).
-//   - val: The amount to increment.
-//   - labels: The labels to apply.
+//   - name: []string. The name of the counter (as a path).
+//   - val: float32. The amount to increment.
+//   - labels: []metrics.Label. The labels to apply.
+//
+// Returns:
+//   None.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
@@ -137,8 +146,11 @@ func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 // MeasureSince measures the time since a given start time and records it.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
-//   - start: The start time.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
+//
+// Returns:
+//   None.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
@@ -146,9 +158,12 @@ func MeasureSince(name []string, start time.Time) {
 // MeasureSinceWithLabels measures the time since a given start time and records it with labels.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
-//   - start: The start time.
-//   - labels: The labels to apply.
+//   - name: []string. The name of the metric (as a path).
+//   - start: time.Time. The start time.
+//   - labels: []metrics.Label. The labels to apply.
+//
+// Returns:
+//   None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
@@ -156,8 +171,11 @@ func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Lab
 // AddSample adds a sample to a histogram/summary.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
-//   - val: The value to sample.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
+//
+// Returns:
+//   None.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
@@ -165,9 +183,12 @@ func AddSample(name []string, val float32) {
 // AddSampleWithLabels adds a sample to a histogram/summary with labels.
 //
 // Parameters:
-//   - name: The name of the metric (as a path).
-//   - val: The value to sample.
-//   - labels: The labels to apply.
+//   - name: []string. The name of the metric (as a path).
+//   - val: float32. The value to sample.
+//   - labels: []metrics.Label. The labels to apply.
+//
+// Returns:
+//   None.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

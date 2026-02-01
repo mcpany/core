@@ -17,6 +17,9 @@ type WrappedServerStream struct {
 
 // Context returns the modified context.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - context.Context: The modified context.
 func (w *WrappedServerStream) Context() context.Context {

@@ -2,25 +2,23 @@
 
 **One server, Infinite possibilities.**
 
-## 1. Elevator Pitch
+## Elevator Pitch
 
-**What is this project and why does it exist?**
+**MCP Any** is a configuration-driven **Universal Adapter** that transforms *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
 
-**MCP Any** is a configuration-driven **Universal Adapter** that turns *any* API (REST, gRPC, GraphQL, Command-line) into a Model Context Protocol (MCP) compliant server.
+Traditional MCP adoption requires a separate server binary for every tool, leading to "binary fatigue." MCP Any solves this by providing a single gateway binary that manages multiple services defined purely through lightweight configuration files.
 
-Traditional MCP adoption suffers from "binary fatigue"—requiring a separate server binary for every tool. MCP Any solves this by allowing you to run a single binary that acts as a gateway to multiple services, defined purely through lightweight configuration files.
+**Why it exists:** To eliminate code-heavy integrations. Don't write code to expose your APIs to AI agents; configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
-**The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
+## Architecture
 
-## 2. Architecture
+MCP Any serves as a centralized middleware between AI Agents (Clients) and Upstream Services. Built with **Go**, it prioritizes high performance and concurrency using a modular architecture.
 
-MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.
-
-**High-Level Overview:**
-1.  **Core Server**: A Go-based runtime that speaks the MCP protocol.
-2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
-3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
-4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+**Components:**
+1.  **Core Server**: The Go-based runtime implementing the MCP protocol.
+2.  **Service Registry**: Dynamically loads tool definitions from local or remote configuration files.
+3.  **Adapters**: Protocol translation modules for gRPC, HTTP, OpenAPI, and CLI.
+4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies.
 
 ```mermaid
 graph TD
@@ -40,14 +38,12 @@ graph TD
     end
 ```
 
-### Key Design Patterns
+### Design Patterns
 *   **Adapter Pattern**: Decouples the MCP protocol from upstream API specifics.
-*   **Configuration as Code**: All services are defined in declarative YAML/JSON.
-*   **Sidecar/Gateway**: Can be deployed as a standalone gateway or a sidecar in Kubernetes.
+*   **Configuration as Code**: Defines all services in declarative YAML/JSON.
+*   **Sidecar/Gateway**: Deploys as a standalone gateway or a Kubernetes sidecar.
 
-## 3. Getting Started
-
-Follow these steps to get up and running immediately.
+## Getting Started
 
 ### Prerequisites
 *   [Go 1.23+](https://go.dev/doc/install) (for building from source)
@@ -71,7 +67,7 @@ Follow these steps to get up and running immediately.
     ```bash
     make build
     ```
-    This will create the `server` binary in `build/bin/`.
+    This creates the `server` binary in `build/bin/`.
 
 4.  **Run with an example configuration:**
     ```bash
@@ -79,74 +75,64 @@ Follow these steps to get up and running immediately.
     ```
 
 ### Hello World
-Once the server is running, you can verify it using `curl` or an MCP client.
+Verify the server is running:
 ```bash
 # Check health
 curl http://localhost:50050/health
 ```
 
-To connect an AI client (like Claude Desktop or Gemini CLI):
+Connect an AI client (e.g., Gemini CLI):
 ```bash
 gemini mcp add --transport http --trust mcpany http://localhost:50050
 ```
 
-## 4. Development
+## Development
 
-We follow a strict development workflow to ensure quality.
+We enforce a strict workflow to maintain code quality.
 
-### Testing
-Run all unit, integration, and end-to-end tests to ensure code correctness.
-```bash
-make test
-```
+*   **Test**: Run unit, integration, and end-to-end tests.
+    ```bash
+    make test
+    ```
+*   **Lint**: Enforce style guides (GoDoc, TSDoc).
+    ```bash
+    make lint
+    ```
+*   **Build**: Compile server binary and UI assets.
+    ```bash
+    make build
+    ```
+*   **Generate**: Update Protocol Buffers and auto-generated files.
+    ```bash
+    make gen
+    ```
 
-### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript).
-```bash
-make lint
-```
+## Configuration
 
-### Building
-Compile all artifacts (Server binary and UI assets).
-```bash
-make build
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
-```
-
-## 5. Configuration
-
-MCP Any is configured via environment variables and YAML/JSON configuration files for services.
+Configure MCP Any via environment variables and YAML/JSON files.
 
 ### Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `MCPANY_MCP_LISTEN_ADDRESS` | MCP server's bind address (host:port) | `50050` |
-| `MCPANY_CONFIG_PATH` | Paths to config files or directories (comma-separated) | `[]` |
-| `MCPANY_METRICS_LISTEN_ADDRESS` | Address to expose Prometheus metrics | Disabled |
+| `MCPANY_MCP_LISTEN_ADDRESS` | MCP server bind address | `50050` |
+| `MCPANY_CONFIG_PATH` | Comma-separated paths to config files | `[]` |
+| `MCPANY_METRICS_LISTEN_ADDRESS` | Prometheus metrics address | Disabled |
 | `MCPANY_DEBUG` | Enable debug logging | `false` |
-| `MCPANY_LOG_LEVEL` | Set the log level (debug, info, warn, error) | `info` |
-| `MCPANY_LOG_FORMAT` | Set the log format (text, json) | `text` |
-| `MCPANY_GRPC_PORT` | Port for the gRPC registration server | Disabled |
-| `MCPANY_STDIO` | Enable stdio mode for JSON-RPC communication | `false` |
-| `MCPANY_API_KEY` | API key for securing the MCP server | Empty (No Auth) |
+| `MCPANY_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
+| `MCPANY_LOG_FORMAT` | Log format (text, json) | `text` |
+| `MCPANY_GRPC_PORT` | gRPC registration server port | Disabled |
+| `MCPANY_STDIO` | Enable stdio mode for JSON-RPC | `false` |
+| `MCPANY_API_KEY` | API key for securing the server | Empty |
 
-### Required Secrets
-Sensitive information (like upstream API keys) should **never** be hardcoded in configuration files. Instead, use environment variables referencing them.
+### Secrets Management
+**Never** hardcode sensitive information. Use environment variable references in configuration files:
 
-Example Config:
 ```yaml
 upstreamAuth:
   apiKey:
     value: "${OPENAI_API_KEY}" # References env var
 ```
 
-Ensure `OPENAI_API_KEY` is set in the server's environment.
-
 ## License
-This project is licensed under the terms of the [Apache 2.0 License](LICENSE).
+[Apache 2.0 License](LICENSE)

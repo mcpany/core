@@ -13,15 +13,22 @@ import (
 )
 
 // ProviderStatus represents the status of a discovery provider.
+// It tracks the operational state, errors, and statistics of a provider.
 type ProviderStatus struct {
-	Name            string
-	Status          string // "OK", "ERROR"
-	LastError       string
-	LastRunAt       time.Time
+	// Name is the unique identifier of the provider.
+	Name string
+	// Status indicates the current state (e.g., "OK", "ERROR", "PENDING").
+	Status string
+	// LastError contains the message of the last error encountered, if any.
+	LastError string
+	// LastRunAt specifies the timestamp of the last discovery execution.
+	LastRunAt time.Time
+	// DiscoveredCount indicates the number of services found in the last run.
 	DiscoveredCount int
 }
 
 // Manager manages auto-discovery providers.
+// It orchestrates the registration and execution of multiple providers to find upstream services.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -29,6 +36,9 @@ type Manager struct {
 }
 
 // NewManager creates a new discovery manager.
+//
+// Returns:
+//   - *Manager: A new instance of the discovery Manager.
 func NewManager() *Manager {
 	return &Manager{
 		statuses: make(map[string]*ProviderStatus),
@@ -36,6 +46,12 @@ func NewManager() *Manager {
 }
 
 // RegisterProvider registers a new provider.
+//
+// Parameters:
+//   - p: Provider. The discovery provider to register.
+//
+// Returns:
+//   None.
 func (m *Manager) RegisterProvider(p Provider) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -47,7 +63,13 @@ func (m *Manager) RegisterProvider(p Provider) {
 }
 
 // Run runs all registered providers and returns the aggregated discovered services.
-// It also updates the internal status of each provider.
+// It also updates the internal status of each provider based on the execution result.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the discovery operations.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: A slice of discovered service configurations.
 func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 	var allServices []*configv1.UpstreamServiceConfig
 	log := logging.GetLogger()
@@ -85,6 +107,9 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 }
 
 // GetStatuses returns the current status of all providers.
+//
+// Returns:
+//   - []*ProviderStatus: A slice containing the status of each registered provider.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -101,6 +126,13 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 }
 
 // GetProviderStatus returns the status of a specific provider.
+//
+// Parameters:
+//   - name: string. The name of the provider to retrieve status for.
+//
+// Returns:
+//   - *ProviderStatus: The status of the requested provider.
+//   - bool: True if the provider was found, false otherwise.
 func (m *Manager) GetProviderStatus(name string) (*ProviderStatus, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
