@@ -26,6 +26,13 @@ type PostgresAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - dsn: string. The dsn.
+//
+// Returns:
+//   - *PostgresAuditStore: The resulting instance.
+//   - error: An error if the operation fails.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -83,6 +90,13 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - entry: Entry. The entry.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
@@ -164,6 +178,14 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - _: Filter. The _.
+//
+// Returns:
+//   - []Entry: The result.
+//   - error: An error if the operation fails.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -172,6 +194,10 @@ func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) 
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -238,6 +264,9 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 // Close closes the database connection.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

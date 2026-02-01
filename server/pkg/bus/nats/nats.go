@@ -28,6 +28,13 @@ type Bus[T any] struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - config: The configuration object.
+//
+// Returns:
+//   - *Bus[T]: The resulting instance.
+//   - error: An error if the operation fails.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {
@@ -71,6 +78,14 @@ func (b *Bus[T]) Close() {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - topic: string. The topic.
+//   - msg: T. The msg.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -86,6 +101,14 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - topic: string. The topic.
+//   - handler: func(T). The handler.
+//
+// Returns:
+//   - func(): The result.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -105,6 +128,14 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - topic: string. The topic.
+//   - handler: func(T). The handler.
+//
+// Returns:
+//   - func(): The result.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

@@ -23,6 +23,13 @@ type LocalLimiter struct {
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -34,6 +41,14 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - n: int. The n.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
@@ -42,6 +57,10 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //
 // rps is the rps.
 // burst is the burst.
+//
+// Parameters:
+//   - rps: float64. The rps.
+//   - burst: int. The burst.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -58,6 +77,9 @@ type LocalStrategy struct{}
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Returns the result.
+//
+// Returns:
+//   - *LocalStrategy: The resulting instance.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
@@ -72,6 +94,17 @@ func NewLocalStrategy() *LocalStrategy {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - _: string. The _.
+//   - _: string. The _.
+//   - _: string. The _.
+//   - config: The configuration object.
+//
+// Returns:
+//   - Limiter: The result.
+//   - error: An error if the operation fails.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

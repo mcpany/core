@@ -47,6 +47,12 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	if u.checker != nil {
 		res := u.checker.Check(ctx)
@@ -62,6 +68,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // poolManager is the connection pool manager to be used for managing gRPC
 // connections.
+//
+// Parameters:
+//   - poolManager: *pool.Manager. The poolManager instance.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -76,6 +88,12 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.reflectionCache.Stop()
 	u.poolManager.Deregister(u.serviceID)

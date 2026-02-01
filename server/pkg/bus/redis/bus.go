@@ -25,6 +25,13 @@ type Bus[T any] struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - redisConfig: *bus.RedisBus. The redisConfig instance.
+//
+// Returns:
+//   - *Bus[T]: The resulting instance.
+//   - error: An error if the operation fails.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
@@ -44,6 +51,12 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 // client is the client.
 //
 // Returns the result.
+//
+// Parameters:
+//   - client: *redis.Client. The client instance.
+//
+// Returns:
+//   - *Bus[T]: The resulting instance.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -57,6 +70,14 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // msg is the msg.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic.
+//   - msg: T. The msg.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -72,6 +93,14 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic.
+//   - handler: func(T). The handler.
+//
+// Returns:
+//   - func(): The result.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -128,6 +157,14 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // handler is the handler.
 //
 // Returns the result.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - topic: string. The topic.
+//   - handler: func(T). The handler.
+//
+// Returns:
+//   - func(): The result.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -162,6 +199,9 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 // Close closes the Redis client.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

@@ -23,6 +23,13 @@ type SQLiteVectorStore struct {
 
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
 // It loads existing entries from the database into memory.
+//
+// Parameters:
+//   - path: string. The file path.
+//
+// Returns:
+//   - *SQLiteVectorStore: The resulting instance.
+//   - error: An error if the operation fails.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -164,6 +171,16 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 // ttl is the ttl.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//   - vector: []float32. The vector.
+//   - result: any. The result.
+//   - ttl: time.Duration. The ttl.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -213,6 +230,16 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 // Returns the result.
 // Returns the result.
 // Returns true if successful.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//   - query: []float32. The query.
+//
+// Returns:
+//   - any: The result.
+//   - float32: The result.
+//   - bool: True if successful, false otherwise.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
@@ -221,6 +248,10 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 //
 // ctx is the context for the request.
 // key is the key.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -231,6 +262,9 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 // Close closes the database connection.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

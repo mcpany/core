@@ -67,6 +67,14 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 //
 // Returns the response.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//
+// Returns:
+//   - *v1.ValidateServiceResponse: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")

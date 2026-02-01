@@ -23,6 +23,12 @@ type CallPolicyMiddleware struct {
 // toolManager is the toolManager.
 //
 // Returns the result.
+//
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The toolManager.
+//
+// Returns:
+//   - *CallPolicyMiddleware: The resulting instance.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
@@ -37,6 +43,15 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//   - next: tool.ExecutionFunc. The next.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

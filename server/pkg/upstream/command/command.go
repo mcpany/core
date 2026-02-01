@@ -39,6 +39,12 @@ type Upstream struct {
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -52,6 +58,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of CommandUpstream.
 //
 // Returns the result.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

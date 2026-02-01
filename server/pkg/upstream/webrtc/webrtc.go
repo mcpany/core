@@ -37,6 +37,12 @@ type Upstream struct {
 
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -45,6 +51,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // poolManager is the connection pool manager, though it is not currently used
 // by the WebRTC upstream as connections are transient.
+//
+// Parameters:
+//   - poolManager: *pool.Manager. The poolManager instance.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

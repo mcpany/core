@@ -18,6 +18,9 @@ var redisClientCreator = redis.NewClient
 // SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
 // creator: A function that takes Redis options and returns a client instance.
+//
+// Parameters:
+//   - creator func(opts *redis.Options): *redis.Client. The creator func(opts *redis.Options) instance.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -27,6 +30,9 @@ var timeNow = time.Now
 // SetTimeNowForTests allows injecting a mock time provider for deterministic testing.
 //
 // nowFunc: A function that returns the current time.
+//
+// Parameters:
+//   - nowFunc func(): time.Time. The nowFunc func().
 func SetTimeNowForTests(nowFunc func() time.Time) {
 	timeNow = nowFunc
 }

@@ -15,6 +15,12 @@ type MockUpstreamAuthenticator struct {
 // req is the request object.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - req: The request object.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (m *MockUpstreamAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

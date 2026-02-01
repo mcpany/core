@@ -85,6 +85,13 @@ type TrafficPoint struct {
 // tm is the tm.
 //
 // Returns the result.
+//
+// Parameters:
+//   - registry: serviceregistry.ServiceRegistryInterface. The registry.
+//   - tm: tool.ManagerInterface. The tm.
+//
+// Returns:
+//   - *Manager: The resulting instance.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
@@ -206,6 +213,13 @@ func (m *Manager) handleActivity(event activityEvent) {
 // sessionID is the sessionID.
 // meta is the meta.
 // serviceID is the serviceID (optional).
+//
+// Parameters:
+//   - sessionID: string. The sessionID.
+//   - meta: map[string]interface{}. The meta.
+//   - latency: time.Duration. The latency.
+//   - isError: bool. Whether isError is enabled.
+//   - serviceID: string. The ID of the service.
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -235,6 +249,12 @@ func (m *Manager) Close() {
 
 // GetStats returns the aggregated stats.
 // serviceID is optional.
+//
+// Parameters:
+//   - serviceID: string. The ID of the service.
+//
+// Returns:
+//   - Stats: The result.
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -274,6 +294,12 @@ func (m *Manager) GetStats(serviceID string) Stats {
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.
 // serviceID is optional.
+//
+// Parameters:
+//   - serviceID: string. The ID of the service.
+//
+// Returns:
+//   - []TrafficPoint: The result.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -326,6 +352,9 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
 // This is primarily for testing and debugging purposes.
+//
+// Parameters:
+//   - points: []TrafficPoint. The points.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -381,6 +410,12 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 // _ is an unused parameter.
 //
 // Returns the result.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - *topologyv1.Graph: The resulting instance.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

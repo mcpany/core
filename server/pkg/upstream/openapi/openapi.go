@@ -43,6 +43,12 @@ type OpenAPIUpstream struct { //nolint:revive
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -56,6 +62,9 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
+//
+// Returns:
+//   - upstream.Upstream: The result.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -253,6 +262,13 @@ type httpClientImpl struct {
 
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
+//
+// Parameters:
+//   - req: The request object.
+//
+// Returns:
+//   - *http.Response: The resulting instance.
+//   - error: An error if the operation fails.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

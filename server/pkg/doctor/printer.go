@@ -11,6 +11,10 @@ import (
 )
 
 // PrintResults prints the doctor check results in a structured table.
+//
+// Parameters:
+//   - w: io.Writer. The w.
+//   - results: []CheckResult. The results.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

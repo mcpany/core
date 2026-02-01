@@ -26,6 +26,13 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 // NewUpdater creates a new Updater.
+//
+// Parameters:
+//   - httpClient: *http.Client. The httpClient instance.
+//   - githubAPIURL: string. The githubAPIURL.
+//
+// Returns:
+//   - *Updater: The resulting instance.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -53,6 +60,17 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Returns the result.
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - owner: string. The owner.
+//   - repo: string. The repo.
+//   - currentVersion: string. The currentVersion.
+//
+// Returns:
+//   - *github.RepositoryRelease: The resulting instance.
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -76,6 +94,17 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // checksumsAssetName is the checksumsAssetName.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - fs: afero.Fs. The fs.
+//   - executablePath: string. The executablePath.
+//   - release: *github.RepositoryRelease. The release instance.
+//   - assetName: string. The assetName.
+//   - checksumsAssetName: string. The checksumsAssetName.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Updater) UpdateTo(ctx context.Context, fs afero.Fs, executablePath string, release *github.RepositoryRelease, assetName, checksumsAssetName string) error {
 	var asset *github.ReleaseAsset
 	for _, a := range release.Assets {

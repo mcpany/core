@@ -13,6 +13,13 @@ import (
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
 // based on the provided ExportPolicy.
+//
+// Parameters:
+//   - name: string. The name.
+//   - policy: *configv1.ExportPolicy. The policy instance.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -46,6 +53,16 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // EvaluateCallPolicy checks if a call should be allowed based on the policies.
 // If arguments is nil, it performs a static check (ignoring rules with argument_regex).
 // It returns true if the call is allowed, false otherwise.
+//
+// Parameters:
+//   - policies: []*configv1.CallPolicy. The policies.
+//   - toolName: string. The toolName.
+//   - callID: string. The callID.
+//   - arguments: []byte. The arguments.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -118,6 +135,13 @@ type CompiledCallPolicy struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - policies: []*configv1.CallPolicy. The policies.
+//
+// Returns:
+//   - []*CompiledCallPolicy: The result.
+//   - error: An error if the operation fails.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -139,6 +163,13 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - policy: *configv1.CallPolicy. The policy instance.
+//
+// Returns:
+//   - *CompiledCallPolicy: The resulting instance.
+//   - error: An error if the operation fails.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -188,6 +219,16 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - policies: []*CompiledCallPolicy. The policies.
+//   - toolName: string. The toolName.
+//   - callID: string. The callID.
+//   - arguments: []byte. The arguments.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

@@ -40,6 +40,9 @@ var (
 )
 
 // SetGlobalAlertConfig sets the global alert configuration.
+//
+// Parameters:
+//   - cfg: *configv1.AlertConfig. The cfg instance.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()

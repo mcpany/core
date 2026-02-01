@@ -102,6 +102,14 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults)
 // without performing strict validation or filtering. This is useful for tools that need
 // to inspect the configuration (like validate or doc) regardless of validity.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The store.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The resulting instance.
+//   - error: An error if the operation fails.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
