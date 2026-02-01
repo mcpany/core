@@ -203,7 +203,7 @@ export function AnalyticsDashboard() {
                                 <Activity className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalRequests.toLocaleString()}</div>
+                                <div className="text-2xl font-bold" data-testid="total-requests-value">{totalRequests.toLocaleString()}</div>
                                 <p className="text-xs text-muted-foreground">
                                     <span className="text-emerald-500 flex items-center">
                                        <Activity className="h-3 w-3 mr-1" /> Live

@@ -284,7 +284,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		}
 
 		// Convert map to slice of ToolFailureStats
-		var stats []ToolFailureStats
+		stats := make([]ToolFailureStats, 0)
 		for _, s := range toolStats {
 			total := s.Success + s.Error
 			if total == 0 {

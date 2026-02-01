@@ -63,7 +63,7 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
         <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+        <div className="text-2xl font-bold tracking-tight" data-testid={`metric-value-${metric.label}`}>{metric.value}</div>
         <div className="flex items-center justify-between mt-1">
             {metric.change && (
           <p className={`text-xs flex items-center ${trendColor}`}>
