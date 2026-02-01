@@ -62,12 +62,8 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 		servicePriorities:       make(map[string]int32),
 		profileServiceOverrides: make(map[string]*configv1.ProfileServiceConfig),
 		profileSecrets:          make(map[string]*configv1.SecretValue),
-		httpClient: &http.Client{
-			Transport: &http.Transport{
-				DialContext: util.SafeDialContext,
-			},
-		},
-		newGitHub:       NewGitHub,
+		httpClient:              util.NewSafeHTTPClient(),
+		newGitHub:               NewGitHub,
 		enabledProfiles: enabledProfiles,
 	}
 }
