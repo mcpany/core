@@ -69,7 +69,9 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         }
     } else {
         // Server-side: Inject API Key from env
-        const apiKey = process.env.MCPANY_API_KEY;
+        // We check NEXT_PUBLIC_ variant too because in Client Components (during SSR),
+        // private env vars are stripped by Next.js compiler.
+        const apiKey = process.env.MCPANY_API_KEY || process.env.NEXT_PUBLIC_MCPANY_API_KEY;
         if (apiKey) {
             headers.set('X-API-Key', apiKey);
         }

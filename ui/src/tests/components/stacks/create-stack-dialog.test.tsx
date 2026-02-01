@@ -6,7 +6,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CreateStackDialog } from '@/components/stacks/create-stack-dialog';
 import { apiClient } from '@/lib/client';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 // Mock API client
 vi.mock('@/lib/client', () => ({
@@ -34,7 +34,7 @@ describe('CreateStackDialog', () => {
 
   it('opens dialog and submits form', async () => {
     const onStackCreated = vi.fn();
-    (apiClient.createCollection as any).mockResolvedValue({ name: 'test-stack' });
+    (apiClient.createCollection as Mock).mockResolvedValue({ name: 'test-stack' });
 
     render(<CreateStackDialog onStackCreated={onStackCreated} />);
 
@@ -65,7 +65,7 @@ describe('CreateStackDialog', () => {
   });
 
   it('displays error on failure', async () => {
-    (apiClient.createCollection as any).mockRejectedValue(new Error('Failed'));
+    (apiClient.createCollection as Mock).mockRejectedValue(new Error('Failed'));
 
     render(<CreateStackDialog />);
 

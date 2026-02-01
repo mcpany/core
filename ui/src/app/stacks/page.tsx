@@ -108,7 +108,7 @@ export default function StacksPage() {
       {stacks.length === 0 && !loading && !error && (
         <div className="flex flex-col items-center justify-center h-64 text-center border-2 border-dashed rounded-lg">
              <Layers className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
-             <h3 className="text-lg font-medium">No stacks found</h3>
+             <h3 className="text-lg font-medium">No collections found</h3>
              <p className="text-sm text-muted-foreground mb-4">Create your first stack to get started.</p>
         </div>
       )}
