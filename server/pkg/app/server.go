@@ -802,6 +802,9 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 	a.Storage = s
 
+	// Inject storage into logging to enable persistence
+	logging.SetStorage(s)
+
 	// Signal startup complete
 	startupCallback := func() {
 		a.startupOnce.Do(func() {
@@ -1888,6 +1891,7 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
+	mux.Handle("/api/v1/debug/seed_logs", authMiddleware(a.handleDebugSeedLogs()))
 
 	// Register Debugger API if enabled
 	if standardMiddlewares != nil && standardMiddlewares.Debugger != nil {

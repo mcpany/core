@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -176,6 +177,108 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// Logs
+
+// SaveLog saves a log entry.
+func (s *Store) SaveLog(ctx context.Context, log *loggingv1.LogEntry) error {
+	query := `
+	INSERT INTO logs (id, timestamp, level, source, message, metadata_json, created_at)
+	VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+	`
+	_, err := s.db.ExecContext(ctx, query,
+		log.GetId(),
+		log.GetTimestamp(),
+		log.GetLevel(),
+		log.GetSource(),
+		log.GetMessage(),
+		log.GetMetadataJson(),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to save log: %w", err)
+	}
+	return nil
+}
+
+// ListLogs lists log entries.
+func (s *Store) ListLogs(ctx context.Context, filter *loggingv1.LogFilter) ([]*loggingv1.LogEntry, error) {
+	query := "SELECT id, timestamp, level, source, message, metadata_json FROM logs WHERE 1=1"
+	var args []interface{}
+	paramIdx := 1
+
+	if filter != nil {
+		if filter.GetSource() != "" && filter.GetSource() != "ALL" {
+			query += fmt.Sprintf(" AND source = $%d", paramIdx)
+			args = append(args, filter.GetSource())
+			paramIdx++
+		}
+		if filter.GetLevel() != "" && filter.GetLevel() != "ALL" {
+			query += fmt.Sprintf(" AND level = $%d", paramIdx)
+			args = append(args, filter.GetLevel())
+			paramIdx++
+		}
+		if filter.GetSearch() != "" {
+			query += fmt.Sprintf(" AND (message LIKE $%d OR source LIKE $%d)", paramIdx, paramIdx+1)
+			term := "%" + filter.GetSearch() + "%"
+			args = append(args, term, term)
+			paramIdx += 2
+		}
+		if filter.GetStartTime() != "" {
+			query += fmt.Sprintf(" AND timestamp >= $%d", paramIdx)
+			args = append(args, filter.GetStartTime())
+			paramIdx++
+		}
+		if filter.GetEndTime() != "" {
+			query += fmt.Sprintf(" AND timestamp <= $%d", paramIdx)
+			args = append(args, filter.GetEndTime())
+			paramIdx++
+		}
+	}
+
+	query += " ORDER BY timestamp DESC"
+
+	if filter != nil && filter.GetLimit() > 0 {
+		query += fmt.Sprintf(" LIMIT $%d", paramIdx)
+		args = append(args, filter.GetLimit())
+	} else {
+		query += " LIMIT 1000" // Default limit
+	}
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query logs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []*loggingv1.LogEntry
+	for rows.Next() {
+		var l loggingv1.LogEntry
+		// Ensure nullable fields are handled if necessary, but protobuf fields are not null in Go structs (strings are empty).
+		// Postgres might return NULL for source/metadata_json if not set.
+		var source, metadataJSON sql.NullString
+		if err := rows.Scan(&l.Id, &l.Timestamp, &l.Level, &source, &l.Message, &metadataJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan log: %w", err)
+		}
+		if source.Valid {
+			l.Source = source.String
+		}
+		if metadataJSON.Valid {
+			l.MetadataJson = metadataJSON.String
+		}
+		logs = append(logs, &l)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating logs: %w", err)
+	}
+
+	// Reverse logs to be chronological (oldest to newest)
+	for i, j := 0, len(logs)-1; i < j; i, j = i+1, j-1 {
+		logs[i], logs[j] = logs[j], logs[i]
+	}
+
+	return logs, nil
 }
 
 // GetService retrieves an upstream service configuration by name.

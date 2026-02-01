@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package logging.v1;
+
+option go_package = "github.com/mcpany/core/proto/logging/v1;loggingv1";
+
+message LogEntry {
+  string id = 1;
+  string timestamp = 2; // RFC3339
+  string level = 3;
+  string message = 4;
+  string source = 5;
+  string metadata_json = 6;
+}
+
+message LogFilter {
+  string source = 1;
+  string level = 2;
+  string search = 3;
+  string start_time = 4; // RFC3339
+  string end_time = 5; // RFC3339
+  int32 limit = 6;
+}

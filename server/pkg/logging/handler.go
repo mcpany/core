@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 )
 
 // LogEntry is the structure for logs sent over WebSocket.
@@ -32,6 +34,8 @@ type BroadcastHandler struct {
 	group       string
 	mu          sync.Mutex
 	level       slog.Level
+	storage     storage.Storage
+	logChan     chan *loggingv1.LogEntry
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
@@ -44,6 +48,28 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastH
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
 		level:       level,
+	}
+}
+
+// SetStorage sets the storage for the handler.
+func (h *BroadcastHandler) SetStorage(s storage.Storage) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.storage = s
+	if h.logChan == nil {
+		h.logChan = make(chan *loggingv1.LogEntry, 1000)
+		go h.processLogs()
+	}
+}
+
+func (h *BroadcastHandler) processLogs() {
+	for entry := range h.logChan {
+		h.mu.Lock()
+		s := h.storage
+		h.mu.Unlock()
+		if s != nil {
+			_ = s.SaveLog(context.Background(), entry)
+		}
 	}
 }
 
@@ -110,6 +136,34 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	}
 
 	h.broadcaster.Broadcast(data)
+
+	// Send to storage if enabled
+	h.mu.Lock()
+	hasStorage := h.logChan != nil
+	h.mu.Unlock()
+
+	if hasStorage {
+		// Create proto entry
+		protoEntry := &loggingv1.LogEntry{
+			Id:        entry.ID,
+			Timestamp: entry.Timestamp,
+			Level:     entry.Level,
+			Message:   entry.Message,
+			Source:    entry.Source,
+		}
+		if len(entry.Metadata) > 0 {
+			if mdBytes, err := json.Marshal(entry.Metadata); err == nil {
+				protoEntry.MetadataJson = string(mdBytes)
+			}
+		}
+
+		select {
+		case h.logChan <- protoEntry:
+		default:
+			// Drop if buffer full
+		}
+	}
+
 	return nil
 }
 
