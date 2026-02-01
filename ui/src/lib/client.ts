@@ -165,6 +165,33 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+/**
+ * Represents the health status of a specific service.
+ */
+export interface ServiceHealth {
+    /** Unique identifier for the service. */
+    id: string;
+    /** Display name of the service. */
+    name: string;
+    /** Current status (e.g., "healthy", "degraded", "down"). */
+    status: string;
+    /** Latency of the last health check. */
+    latency: string;
+    /** Uptime percentage. */
+    uptime: string;
+    /** Optional message detailing status or errors. */
+    message?: string;
+}
+
+/**
+ * Response structure for the dashboard health API.
+ */
+export interface ServiceHealthResponse {
+    /** List of health statuses for all services. */
+    services: ServiceHealth[];
+    /** Historical health data points, keyed by service ID (or "system"). */
+    history: Record<string, { timestamp: number; status: string }[]>;
+}
 
 /**
  * Metric definition for dashboard.
@@ -866,6 +893,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the dashboard health history.
+     * @returns A promise that resolves to the health history.
+     */
+    getDashboardHealth: async (): Promise<ServiceHealthResponse> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch dashboard health');
+        return res.json();
+    },
+
+    /**
      * Gets the latest execution traces.
      * @param options Optional parameters.
      * @returns A promise that resolves to the traces list.
@@ -891,6 +928,19 @@ export const apiClient = {
             body: JSON.stringify(points)
         });
         if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
+    /**
+     * Seeds the dashboard health history (Debug/Test only).
+     * @param points The health points to seed.
+     */
+    seedHealthData: async (points: Record<string, any[]>) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_health', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(points)
+        });
+        if (!res.ok) throw new Error('Failed to seed health data');
     },
 
     /**
