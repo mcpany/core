@@ -181,3 +181,54 @@ func TestHashUserPassword_Redaction(t *testing.T) {
 	// 4. Verify that the hash was restored to "real-hash"
 	assert.Equal(t, "real-hash", updatedUser.GetAuthentication().GetBasicAuth().GetPasswordHash())
 }
+
+func TestHandleUserMe(t *testing.T) {
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.AuthManager = auth.NewManager()
+	store := memory.NewStore()
+	app.Storage = store
+	handler := app.handleUserMe(store)
+
+	t.Run("System Admin (Virtual User)", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users/me", nil)
+		ctx := auth.ContextWithUser(req.Context(), "system-admin")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var u configv1.User
+		err := protojson.Unmarshal(w.Body.Bytes(), &u)
+		require.NoError(t, err)
+		assert.Equal(t, "system-admin", u.GetId())
+		assert.Contains(t, u.GetRoles(), "admin")
+	})
+
+	t.Run("Regular User", func(t *testing.T) {
+		user := configv1.User_builder{Id: proto.String("regular-user")}.Build()
+		require.NoError(t, store.CreateUser(context.Background(), user))
+
+		req := httptest.NewRequest(http.MethodGet, "/users/me", nil)
+		ctx := auth.ContextWithUser(req.Context(), "regular-user")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		var u configv1.User
+		err := protojson.Unmarshal(w.Body.Bytes(), &u)
+		require.NoError(t, err)
+		assert.Equal(t, "regular-user", u.GetId())
+	})
+
+	t.Run("Unauthorized", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users/me", nil)
+		// No auth context
+		w := httptest.NewRecorder()
+		handler(w, req)
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+	})
+}

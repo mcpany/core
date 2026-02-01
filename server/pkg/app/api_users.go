@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
@@ -272,6 +273,16 @@ func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {
 		id, ok := auth.UserFromContext(r.Context())
 		if !ok {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Special handling for system-admin (virtual user)
+		if id == "system-admin" {
+			virtualUser := configv1.User_builder{
+				Id:    proto.String("system-admin"),
+				Roles: []string{"admin"},
+			}.Build()
+			writeJSON(w, http.StatusOK, util.SanitizeUser(virtualUser))
 			return
 		}
 

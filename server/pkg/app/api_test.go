@@ -1581,6 +1581,7 @@ func TestSkillServiceServer(t *testing.T) {
 }
 
 func TestConfigDiffGeneration(t *testing.T) {
+	t.Setenv("MCPANY_ENABLE_FILE_CONFIG", "true")
 	app := NewApplication()
 	fs := afero.NewMemMapFs()
 	ctx := context.Background()
