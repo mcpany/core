@@ -974,6 +974,19 @@ export const apiClient = {
     },
 
     /**
+     * Applies a service collection (stack), syncing its state.
+     * @param name The name of the collection to apply.
+     * @returns A promise that resolves when the collection is applied.
+     */
+    applyCollection: async (name: string) => {
+        const res = await fetchWithAuth(`/api/v1/collections/${name}/apply`, {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to apply collection');
+        return res.json();
+    },
+
+    /**
      * Gets the configuration for a stack (Compatibility wrapper).
      * @param stackId The ID of the stack.
      * @returns A promise that resolves to the stack configuration.
