@@ -3,16 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents the result of a diagnostic analysis on an error.
+ * Provides user-friendly categorization and remediation suggestions.
+ */
 export interface DiagnosticResult {
+  /** The category of the issue (e.g., network connectivity, authentication, configuration). */
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
+  /** A short, human-readable title for the error. */
   title: string;
+  /** A detailed description of what went wrong. */
   description: string;
+  /** Actionable advice for the user to fix the issue. */
   suggestion: string;
+  /** The severity level of the issue. */
   severity: "critical" | "warning" | "info";
 }
 
 /**
  * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
+ * It uses heuristic pattern matching to identify common issues like DNS failures,
+ * connection refusals, authentication errors, and protocol mismatches.
  *
  * @param error - The raw error string received from the backend or network.
  * @returns A structured DiagnosticResult containing the category, severity, and suggested remediation.

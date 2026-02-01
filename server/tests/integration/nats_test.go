@@ -5,6 +5,7 @@ package integration
 
 import (
 	"context"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -45,6 +46,9 @@ func TestNatsBus_EmbeddedServer(t *testing.T) {
 }
 
 func TestNatsBus_ExternalServer(t *testing.T) {
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping Docker-dependent test in CI")
+	}
 	serverInfo := StartMCPANYServer(t, "external-nats")
 	defer serverInfo.CleanupFunc()
 
