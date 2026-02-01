@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/testutil"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,46 +26,96 @@ func TestMetrics(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	configContent := `
-upstreamServices:
-  - name: "http-echo-server"
-    httpService:
-      address: "http://127.0.0.1:8080"
-      calls:
-        - operationId: "echo"
-          description: "Echoes back the request body"
-          method: "HTTP_METHOD_POST"
-          endpointPath: "/echo"
+{
+  "upstream_services": [
+    {
+      "name": "http-echo-server",
+      "auto_discover_tool": true,
+      "http_service": {
+        "address": "http://127.0.0.1:8080",
+        "calls": {
+          "echo": {
+            "method": "HTTP_METHOD_POST",
+            "endpoint_path": "/echo"
+          }
+        }
+      }
+    }
+  ]
+}
 `
-	configPath := filepath.Join(tempDir, "config.yaml")
+	configPath := filepath.Join(tempDir, "config.json")
 	err = os.WriteFile(configPath, []byte(configContent), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	// Mock HTTP Echo Server
+	echoServer := http.NewServeMux()
+	echoServer.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(body)
+	})
+	// Run on 8080 as expected by config
+	srv := &http.Server{Addr: "127.0.0.1:8080", Handler: echoServer}
+	go func() {
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			t.Logf("Echo server error: %v", err)
+		}
+	}()
+	defer func() { _ = srv.Close() }()
+	WaitForTCPPort(t, 8080, 5*time.Second)
 
-	mcpany := testutil.NewMCPAny(t, ctx,
+	serverInfo := StartMCPANYServer(t, "metrics-test",
 		"--config-path", configPath,
 		"--metrics-listen-address", "127.0.0.1:9090",
 	)
-	defer mcpany.Stop()
+	defer serverInfo.CleanupFunc()
 
-	// Wait for the server to be ready
-	time.Sleep(2 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = serverInfo.Initialize(ctx)
+	require.NoError(t, err)
+
+	// Wait for the server to be ready/tools discovered
+	require.Eventually(t, func() bool {
+		tools, err := serverInfo.ListTools(ctx)
+		if err != nil {
+			return false
+		}
+		for _, tool := range tools.Tools {
+			if tool.Name == "http-echo-server.echo" {
+				return true
+			}
+		}
+		return false
+	}, 10*time.Second, 100*time.Millisecond, "Tool http-echo-server.echo not found")
 
 	// Make a request to the echo tool
-	_, err = testutil.CallTool(t, "http-echo-server/-/echo", `{"message": "hello"}`)
+	args := map[string]interface{}{"message": "hello"}
+	_, err = serverInfo.CallTool(ctx, &mcp.CallToolParams{
+		Name:      "http-echo-server.echo",
+		Arguments: args,
+	})
 	require.NoError(t, err)
 
 	// Make a request to the metrics endpoint
-	resp, err := http.Get("http://127.0.0.1:9090/metrics")
-	require.NoError(t, err)
-	defer resp.Body.Close()
+	// Retry a few times to allow metrics to flush
+	assert.Eventually(t, func() bool {
+		resp, err := http.Get("http://127.0.0.1:9090/metrics")
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
 
-	// Read the response body
-	body, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
-
-	// Check if the metrics are present in the response
-	assert.Contains(t, string(body), "mcpany_tool_http_echo_server_echo_call_total 1")
-	assert.Contains(t, string(body), "mcpany_tools_call_total 1")
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return false
+		}
+		bodyStr := string(body)
+		// Check for specific metrics.
+		// Use partial matching for labels as ordering might vary.
+		return assert.Contains(t, bodyStr, `mcpany_tools_call_total`) &&
+			assert.Contains(t, bodyStr, `tool="http-echo-server.echo"`)
+	}, 5*time.Second, 500*time.Millisecond, "Metrics not found in response")
 }

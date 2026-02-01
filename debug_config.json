@@ -1,0 +1,17 @@
+{
+  "upstream_services": [
+    {
+      "name": "http-echo-server",
+      "http_service": {
+        "address": "http://127.0.0.1:8080",
+        "calls": {
+          "echo": {
+            "description": "Echoes back the request body",
+            "method": "HTTP_METHOD_POST",
+            "endpoint_path": "/echo"
+          }
+        }
+      }
+    }
+  ]
+}
