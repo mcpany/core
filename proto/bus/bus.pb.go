@@ -24,6 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// MessageBus defines the configuration for the internal message bus.
 type MessageBus struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_BusType isMessageBus_BusType   `protobuf_oneof:"bus_type"`
@@ -219,10 +220,14 @@ type MessageBus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Fields of oneof xxx_hidden_BusType:
+	// Configuration for an in-memory message bus.
 	InMemory *InMemoryBus
-	Redis    *RedisBus
-	Nats     *NatsBus
-	Kafka    *KafkaBus
+	// Configuration for a Redis-backed message bus.
+	Redis *RedisBus
+	// Configuration for a NATS-backed message bus.
+	Nats *NatsBus
+	// Configuration for a Kafka-backed message bus.
+	Kafka *KafkaBus
 	// -- end of xxx_hidden_BusType
 }
 
@@ -260,18 +265,22 @@ type isMessageBus_BusType interface {
 }
 
 type messageBus_InMemory struct {
+	// Configuration for an in-memory message bus.
 	InMemory *InMemoryBus `protobuf:"bytes,1,opt,name=in_memory,json=inMemory,oneof"`
 }
 
 type messageBus_Redis struct {
+	// Configuration for a Redis-backed message bus.
 	Redis *RedisBus `protobuf:"bytes,2,opt,name=redis,oneof"`
 }
 
 type messageBus_Nats struct {
+	// Configuration for a NATS-backed message bus.
 	Nats *NatsBus `protobuf:"bytes,3,opt,name=nats,oneof"`
 }
 
 type messageBus_Kafka struct {
+	// Configuration for a Kafka-backed message bus.
 	Kafka *KafkaBus `protobuf:"bytes,4,opt,name=kafka,oneof"`
 }
 
@@ -283,6 +292,8 @@ func (*messageBus_Nats) isMessageBus_BusType() {}
 
 func (*messageBus_Kafka) isMessageBus_BusType() {}
 
+// InMemoryBus configures an in-memory message bus.
+// Suitable for single-instance deployments.
 type InMemoryBus struct {
 	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -326,6 +337,7 @@ func (b0 InMemoryBus_builder) Build() *InMemoryBus {
 	return m0
 }
 
+// NatsBus configures a NATS-backed message bus.
 type NatsBus struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ServerUrl   *string                `protobuf:"bytes,1,opt,name=server_url,json=serverUrl"`
@@ -390,6 +402,7 @@ func (x *NatsBus) ClearServerUrl() {
 type NatsBus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The URL of the NATS server.
 	ServerUrl *string
 }
 
@@ -404,6 +417,7 @@ func (b0 NatsBus_builder) Build() *NatsBus {
 	return m0
 }
 
+// RedisBus configures a Redis-backed message bus.
 type RedisBus struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Address     *string                `protobuf:"bytes,1,opt,name=address"`
@@ -521,8 +535,11 @@ func (x *RedisBus) ClearPassword() {
 type RedisBus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Address  *string
-	Db       *int32
+	// The address of the Redis server.
+	Address *string
+	// The database index to use.
+	Db *int32
+	// The password for authentication.
 	Password *string
 }
 
@@ -545,6 +562,7 @@ func (b0 RedisBus_builder) Build() *RedisBus {
 	return m0
 }
 
+// KafkaBus configures a Kafka-backed message bus.
 type KafkaBus struct {
 	state                    protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Brokers       []string               `protobuf:"bytes,1,rep,name=brokers"`
@@ -649,8 +667,11 @@ func (x *KafkaBus) ClearConsumerGroup() {
 type KafkaBus_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Brokers       []string
-	TopicPrefix   *string
+	// A list of Kafka broker addresses.
+	Brokers []string
+	// The prefix for topics used by the bus.
+	TopicPrefix *string
+	// The consumer group ID.
 	ConsumerGroup *string
 }
 

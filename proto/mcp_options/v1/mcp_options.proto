@@ -14,60 +14,72 @@ option features.(pb.go).api_level = API_OPAQUE;
 
 // Option to specify the MCP tool name, applied to a method.
 extend google.protobuf.MethodOptions {
+   // The name of the tool exposed via MCP.
    string tool_name = 301009001;
 }
 
 // Option to specify the MCP tool description, applied to a method.
 extend google.protobuf.MethodOptions {
+   // The description of the tool exposed via MCP.
    string tool_description = 301009002;
 }
 
 // Option to specify the MCP prompt name, applied to a method.
 extend google.protobuf.MethodOptions {
+   // The name of the prompt exposed via MCP.
    string prompt_name = 301009003;
 }
 
 // Option to specify the MCP prompt description, applied to a method.
 extend google.protobuf.MethodOptions {
+   // The description of the prompt exposed via MCP.
    string prompt_description = 301009004;
 }
 
 // Option to specify the MCP prompt template, applied to a method.
 extend google.protobuf.MethodOptions {
+   // The template for the prompt.
    string prompt_template = 301009005;
 }
 
 // Option to specify the MCP resource name, applied to a message.
 extend google.protobuf.MessageOptions {
+   // The name of the resource exposed via MCP.
    string resource_name = 301009006;
 }
 
 // Option to specify the MCP resource description, applied to a message.
 extend google.protobuf.MessageOptions {
+     // The description of the resource exposed via MCP.
      string resource_description = 301009007;
 }
 
 // Option to specify the MCP field description, applied to a field.
 extend google.protobuf.FieldOptions {
+     // The description of the field, used in MCP schemas.
      string field_description = 301009008;
 }
 
 // Option to specify the MCP tool read-only hint, applied to a method.
 extend google.protobuf.MethodOptions {
+   // Indicates if the tool is read-only (i.e., does not modify state).
    bool mcp_tool_readonly_hint = 301009009;
 }
 
 // Option to specify the MCP tool destructive hint, applied to a method.
 extend google.protobuf.MethodOptions {
+   // Indicates if the tool operation is destructive (e.g., deletes data).
    bool mcp_tool_destructive_hint = 301009010;
 }
 
 // Option to specify the MCP tool idempotent hint, applied to a method.
 extend google.protobuf.MethodOptions {
+   // Indicates if the tool operation is idempotent (safe to retry).
    bool mcp_tool_idempotent_hint = 301009011;
 }
 
 // Option to specify the MCP tool open-world hint, applied to a method.
 extend google.protobuf.MethodOptions {
+   // Indicates if the tool interacts with an open world (e.g., internet search).
    bool mcp_tool_openworld_hint = 301009012;
 }

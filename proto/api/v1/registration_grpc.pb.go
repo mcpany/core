@@ -35,14 +35,24 @@ const (
 // RegistrationServiceClient is the client API for RegistrationService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// RegistrationService provides methods for managing upstream services.
 type RegistrationServiceClient interface {
+	// RegisterService registers a new upstream service with the MCP Any server.
 	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
+	// ValidateService checks if a service configuration is valid without registering it.
 	ValidateService(ctx context.Context, in *ValidateServiceRequest, opts ...grpc.CallOption) (*ValidateServiceResponse, error)
+	// UnregisterService removes an upstream service from the registry.
 	UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error)
+	// InitiateOAuth2Flow starts an OAuth2 authentication flow for a service.
 	InitiateOAuth2Flow(ctx context.Context, in *InitiateOAuth2FlowRequest, opts ...grpc.CallOption) (*InitiateOAuth2FlowResponse, error)
+	// RegisterTools manually registers tools for a service.
 	RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error)
+	// GetServiceStatus retrieves the runtime status of a registered service.
 	GetServiceStatus(ctx context.Context, in *GetServiceStatusRequest, opts ...grpc.CallOption) (*GetServiceStatusResponse, error)
+	// ListServices retrieves a list of all registered upstream services.
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
+	// GetService retrieves details of a specific upstream service.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
 }
 
@@ -137,14 +147,24 @@ func (c *registrationServiceClient) GetService(ctx context.Context, in *GetServi
 // RegistrationServiceServer is the server API for RegistrationService service.
 // All implementations must embed UnimplementedRegistrationServiceServer
 // for forward compatibility.
+//
+// RegistrationService provides methods for managing upstream services.
 type RegistrationServiceServer interface {
+	// RegisterService registers a new upstream service with the MCP Any server.
 	RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error)
+	// ValidateService checks if a service configuration is valid without registering it.
 	ValidateService(context.Context, *ValidateServiceRequest) (*ValidateServiceResponse, error)
+	// UnregisterService removes an upstream service from the registry.
 	UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error)
+	// InitiateOAuth2Flow starts an OAuth2 authentication flow for a service.
 	InitiateOAuth2Flow(context.Context, *InitiateOAuth2FlowRequest) (*InitiateOAuth2FlowResponse, error)
+	// RegisterTools manually registers tools for a service.
 	RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error)
+	// GetServiceStatus retrieves the runtime status of a registered service.
 	GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error)
+	// ListServices retrieves a list of all registered upstream services.
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
+	// GetService retrieves details of a specific upstream service.
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }

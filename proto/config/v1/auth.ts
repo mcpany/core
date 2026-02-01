@@ -15,31 +15,47 @@ export const protobufPackage = "mcpany.config.v1";
  * It can be a plain text value, an environment variable, a file path, or content fetched from a remote URL.
  */
 export interface SecretValue {
-  plainText?: string | undefined;
-  environmentVariable?: string | undefined;
-  filePath?: string | undefined;
-  remoteContent?: RemoteContent | undefined;
-  vault?: VaultSecret | undefined;
+  /** The raw secret value. */
+  plainText?:
+    | string
+    | undefined;
+  /** The name of the environment variable containing the secret. */
+  environmentVariable?:
+    | string
+    | undefined;
+  /** The path to a file containing the secret. */
+  filePath?:
+    | string
+    | undefined;
+  /** Configuration to fetch the secret from a remote URL. */
+  remoteContent?:
+    | RemoteContent
+    | undefined;
+  /** Configuration to fetch the secret from HashiCorp Vault. */
+  vault?:
+    | VaultSecret
+    | undefined;
+  /** Configuration to fetch the secret from AWS Secrets Manager. */
   awsSecretManager?:
     | AwsSecretManagerSecret
     | undefined;
-  /** Optional: A regex to validate the resolved secret value. */
+  /** Optional: A regex pattern to validate the resolved secret value. */
   validationRegex: string;
 }
 
 /** AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager. */
 export interface AwsSecretManagerSecret {
-  /** The name or ARN of the secret. */
+  /** The name or ARN of the secret in AWS Secrets Manager. */
   secretId: string;
-  /** Optional: The key to extract from the secret JSON. */
+  /** Optional: The specific key to extract from the secret's JSON structure. */
   jsonKey: string;
-  /** Optional: The version stage (defaults to AWSCURRENT). */
+  /** Optional: The version stage of the secret (defaults to "AWSCURRENT"). */
   versionStage: string;
-  /** Optional: The version ID. */
+  /** Optional: The unique identifier of the version of the secret. */
   versionId: string;
-  /** Optional: The region. If not set, uses environment or profile. */
+  /** Optional: The AWS region. If not set, uses the environment or profile configuration. */
   region: string;
-  /** Optional: Profile to use. */
+  /** Optional: The AWS profile to use for credentials. */
   profile: string;
 }
 
@@ -47,7 +63,7 @@ export interface AwsSecretManagerSecret {
 export interface VaultSecret {
   /** The address of the Vault server (e.g., "https://vault.example.com"). */
   address: string;
-  /** The token to authenticate with Vault. */
+  /** The token used to authenticate with Vault. */
   token?:
     | SecretValue
     | undefined;
@@ -59,21 +75,42 @@ export interface VaultSecret {
 
 /** RemoteContent represents content that is fetched from a remote URL. */
 export interface RemoteContent {
+  /** The HTTP URL to fetch content from. */
   httpUrl: string;
+  /** Authentication configuration for the request. */
   auth?: Authentication | undefined;
 }
 
 /**
  * Authentication defines an authentication method that can be used for both
- * incoming requests (validation) and outgoing requests (client).
+ * incoming requests (validation) and outgoing requests (client credentials).
  */
 export interface Authentication {
-  apiKey?: APIKeyAuth | undefined;
-  bearerToken?: BearerTokenAuth | undefined;
-  basicAuth?: BasicAuth | undefined;
-  oauth2?: OAuth2Auth | undefined;
-  oidc?: OIDCAuth | undefined;
-  mtls?: MTLSAuth | undefined;
+  /** Authentication using an API Key. */
+  apiKey?:
+    | APIKeyAuth
+    | undefined;
+  /** Authentication using a Bearer Token. */
+  bearerToken?:
+    | BearerTokenAuth
+    | undefined;
+  /** Authentication using Basic Auth (username/password). */
+  basicAuth?:
+    | BasicAuth
+    | undefined;
+  /** Authentication using OAuth 2.0. */
+  oauth2?:
+    | OAuth2Auth
+    | undefined;
+  /** Authentication using OpenID Connect (OIDC). */
+  oidc?:
+    | OIDCAuth
+    | undefined;
+  /** Authentication using Mutual TLS (mTLS). */
+  mtls?:
+    | MTLSAuth
+    | undefined;
+  /** Authentication based on a trusted header. */
   trustedHeader?: TrustedHeaderAuth | undefined;
 }
 
@@ -81,23 +118,23 @@ export interface Authentication {
 export interface APIKeyAuth {
   /** The name of the parameter carrying the key (e.g., "X-API-Key", "api_key"). */
   paramName: string;
+  /** The location of the API key (HEADER, QUERY, or COOKIE). */
   in: APIKeyAuth_Location;
-  /** The API key value. Used for client authentication (outgoing). */
+  /** The API key value. Used for client authentication (outgoing requests). */
   value?:
     | SecretValue
     | undefined;
   /**
-   * The expected API key value. Used for server validation (incoming).
-   * This is a plain string because we compare against it.
+   * The expected API key value. Used for server validation (incoming requests).
+   * This is a plain string because it is compared directly.
    */
   verificationValue: string;
 }
 
-/** Where the API key is located. */
+/** Where the API key is located in the request. */
 export enum APIKeyAuth_Location {
   HEADER = 0,
   QUERY = 1,
-  /** COOKIE - Added COOKIE for completeness */
   COOKIE = 2,
   UNRECOGNIZED = -1,
 }
@@ -136,12 +173,13 @@ export function aPIKeyAuth_LocationToJSON(object: APIKeyAuth_Location): string {
 
 /** BearerTokenAuth defines authentication using a bearer token. */
 export interface BearerTokenAuth {
-  /** The bearer token. */
+  /** The bearer token value. */
   token?: SecretValue | undefined;
 }
 
 /** BasicAuth defines authentication using a username and password. */
 export interface BasicAuth {
+  /** The username. */
   username: string;
   /** The password. Used for client authentication (outgoing). */
   password?:
@@ -153,46 +191,53 @@ export interface BasicAuth {
 
 /** OAuth2Auth defines authentication using the OAuth 2.0 client credentials flow. */
 export interface OAuth2Auth {
+  /** The URL to retrieve the token from. */
   tokenUrl: string;
-  clientId?: SecretValue | undefined;
+  /** The client ID. */
+  clientId?:
+    | SecretValue
+    | undefined;
+  /** The client secret. */
   clientSecret?:
     | SecretValue
     | undefined;
-  /** Space-delimited list of scopes. */
+  /** A space-delimited list of requested scopes. */
   scopes: string;
-  /** Issuer URL for validation/discovery. */
+  /** The issuer URL for validation/discovery. */
   issuerUrl: string;
-  /** Audience for validation. */
+  /** The audience for validation. */
   audience: string;
-  /** Authorization URL (optional, mainly for 3-legged flows if we ever support them). */
+  /** The authorization URL (optional, mainly for 3-legged flows). */
   authorizationUrl: string;
 }
 
 /** OIDCAuth defines authentication using OpenID Connect. */
 export interface OIDCAuth {
-  /** The issuer URL. */
+  /** The issuer URL of the OIDC provider. */
   issuer: string;
-  /** The subject to validate (incoming). */
+  /** The expected subject (sub) claim to validate (incoming). */
   subject: string;
-  /** The email to validate (incoming). */
+  /** The expected email claim to validate (incoming). */
   email: string;
-  /** The audience(s) to validate (incoming). */
+  /** The expected audience (aud) claim to validate (incoming). */
   audience: string[];
 }
 
 /** MTLSAuth defines authentication using mutual TLS. */
 export interface MTLSAuth {
-  /** Path to the client certificate file. */
+  /** The path to the client certificate file. */
   clientCertPath: string;
-  /** Path to the client private key file. */
+  /** The path to the client private key file. */
   clientKeyPath: string;
-  /** Path to the CA certificate file for verifying the server's certificate. */
+  /** The path to the CA certificate file used to verify the server's certificate. */
   caCertPath: string;
 }
 
 /** TrustedHeaderAuth defines authentication using a trusted header. */
 export interface TrustedHeaderAuth {
+  /** The name of the header to check. */
   headerName: string;
+  /** The expected value of the header. */
   headerValue: string;
 }
 
@@ -200,37 +245,37 @@ export interface TrustedHeaderAuth {
 export interface UserToken {
   /** The ID of the user who owns this token. */
   userId: string;
-  /** The ID of the service this token is for. */
+  /** The ID of the service this token is associated with. */
   serviceId: string;
-  /** The access token. */
+  /** The access token string. */
   accessToken: string;
-  /** The refresh token. */
+  /** The refresh token string (if available). */
   refreshToken: string;
-  /** The token type (e.g. "Bearer"). */
+  /** The type of the token (e.g., "Bearer"). */
   tokenType: string;
-  /** The expiry time of the token (RFC3339). */
+  /** The expiry time of the token (RFC3339 format). */
   expiry: string;
   /** The scopes associated with the token. */
   scope: string;
-  /** The timestamp when the token was created/updated (RFC3339). */
+  /** The timestamp when the token was last created or updated (RFC3339 format). */
   updatedAt: string;
-  /** The email associated with the token (if available). */
+  /** The email address associated with the token (if available). */
   email: string;
 }
 
 /** Credential represents a reusable authentication configuration. */
 export interface Credential {
-  /** Unique identifier for the credential. */
+  /** The unique identifier for the credential. */
   id: string;
-  /** Human-readable name (e.g. "My GitHub Personal"). */
+  /** A human-readable name for the credential (e.g. "My GitHub Personal"). */
   name: string;
-  /** The authentication configuration. */
+  /** The authentication details. */
   authentication?:
     | Authentication
     | undefined;
   /**
-   * Optional: For interactive OAuth, the persisted session/tokens.
-   * This allows the proxy to use this credential by refreshing the token.
+   * Optional: The persisted session/token for interactive OAuth.
+   * This allows the system to reuse the credential by refreshing the token.
    */
   token?: UserToken | undefined;
 }

@@ -10,8 +10,11 @@ import Long from "long";
 
 export const protobufPackage = "mcpany.mcp_options.v1";
 
+/** Content represents a structured message content, typically used in chat interactions. */
 export interface Content {
+  /** The actual text content. */
   content: string;
+  /** The role of the entity providing the content (e.g., "user", "assistant"). */
   role: string;
 }
 

@@ -21,6 +21,10 @@ import (
 )
 
 // AuditMiddleware provides audit logging for tool executions.
+//
+// It intercepts tool execution requests, logs details such as execution time, user context, arguments,
+// and results to a configured audit store (e.g., File, SQL, Webhook). It also handles redaction
+// of sensitive information.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig
@@ -31,10 +35,12 @@ type AuditMiddleware struct {
 
 // NewAuditMiddleware creates a new AuditMiddleware.
 //
-// auditConfig is the auditConfig.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The configuration for audit logging.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *AuditMiddleware: The initialized middleware instance.
+//   - error: An error if the audit store initialization fails.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -85,18 +91,30 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
-// This is primarily used for testing.
+//
+// This is primarily used for testing or manual overrides of the store.
+//
+// Parameters:
+//   - store: audit.Store. The audit store implementation to use.
+//
+// Returns:
+//   None.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.store = store
 }
 
-// UpdateConfig updates the audit configuration safely.
+// UpdateConfig updates the audit configuration safely at runtime.
 //
-// auditConfig is the auditConfig.
+// It reinitializes the audit store if the configuration changes significantly (e.g., different storage backend).
+// It also refreshes the redactor with the latest global settings.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - auditConfig: *configv1.AuditConfig. The new audit configuration.
+//
+// Returns:
+//   - error: An error if re-initialization of the store fails.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -141,12 +159,17 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 
 // Execute intercepts tool execution to log audit events.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// It wraps the execution of the next handler, measuring duration and capturing
+// input/output for auditing. It respects configuration settings for logging arguments and results.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The result of the tool execution.
+//   - error: An error if the tool execution fails.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -250,21 +273,42 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
+//
+// Returns:
+//   - chan []byte: A channel that receives broadcast messages.
+//   - [][]byte: The current history of messages.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan []byte, [][]byte) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
 // GetHistory returns the current broadcast history.
+//
+// Returns:
+//   - [][]byte: A slice of historical messages.
 func (m *AuditMiddleware) GetHistory() [][]byte {
 	return m.broadcaster.GetHistory()
 }
 
 // Unsubscribe removes a subscriber channel.
+//
+// Parameters:
+//   - ch: chan []byte. The channel to unsubscribe.
+//
+// Returns:
+//   None.
 func (m *AuditMiddleware) Unsubscribe(ch chan []byte) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
-// Read reads audit entries from the underlying store.
+// Read reads audit entries from the underlying store matching the filter.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - filter: audit.Filter. The criteria to filter audit logs.
+//
+// Returns:
+//   - []audit.Entry: A slice of audit entries matching the filter.
+//   - error: An error if the read operation fails or the store is not initialized.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -276,9 +320,10 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close closes the underlying store.
+// Close closes the underlying audit store.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the close operation fails.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -24,6 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Content represents a structured message content, typically used in chat interactions.
 type Content struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Content     *string                `protobuf:"bytes,1,opt,name=content"`
@@ -116,8 +117,10 @@ func (x *Content) ClearRole() {
 type Content_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The actual text content.
 	Content *string
-	Role    *string
+	// The role of the entity providing the content (e.g., "user", "assistant").
+	Role *string
 }
 
 func (b0 Content_builder) Build() *Content {

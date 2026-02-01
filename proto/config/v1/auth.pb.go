@@ -24,13 +24,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Where the API key is located.
+// Where the API key is located in the request.
 type APIKeyAuth_Location int32
 
 const (
 	APIKeyAuth_HEADER APIKeyAuth_Location = 0
 	APIKeyAuth_QUERY  APIKeyAuth_Location = 1
-	APIKeyAuth_COOKIE APIKeyAuth_Location = 2 // Added COOKIE for completeness
+	APIKeyAuth_COOKIE APIKeyAuth_Location = 2
 )
 
 // Enum value maps for APIKeyAuth_Location.
@@ -352,14 +352,20 @@ type SecretValue_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Fields of oneof xxx_hidden_Value:
-	PlainText           *string
+	// The raw secret value.
+	PlainText *string
+	// The name of the environment variable containing the secret.
 	EnvironmentVariable *string
-	FilePath            *string
-	RemoteContent       *RemoteContent
-	Vault               *VaultSecret
-	AwsSecretManager    *AwsSecretManagerSecret
+	// The path to a file containing the secret.
+	FilePath *string
+	// Configuration to fetch the secret from a remote URL.
+	RemoteContent *RemoteContent
+	// Configuration to fetch the secret from HashiCorp Vault.
+	Vault *VaultSecret
+	// Configuration to fetch the secret from AWS Secrets Manager.
+	AwsSecretManager *AwsSecretManagerSecret
 	// -- end of xxx_hidden_Value
-	// Optional: A regex to validate the resolved secret value.
+	// Optional: A regex pattern to validate the resolved secret value.
 	ValidationRegex *string
 }
 
@@ -407,26 +413,32 @@ type isSecretValue_Value interface {
 }
 
 type secretValue_PlainText struct {
+	// The raw secret value.
 	PlainText string `protobuf:"bytes,1,opt,name=plain_text,json=plainText,oneof"`
 }
 
 type secretValue_EnvironmentVariable struct {
+	// The name of the environment variable containing the secret.
 	EnvironmentVariable string `protobuf:"bytes,2,opt,name=environment_variable,json=environmentVariable,oneof"`
 }
 
 type secretValue_FilePath struct {
+	// The path to a file containing the secret.
 	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,oneof"`
 }
 
 type secretValue_RemoteContent struct {
+	// Configuration to fetch the secret from a remote URL.
 	RemoteContent *RemoteContent `protobuf:"bytes,4,opt,name=remote_content,json=remoteContent,oneof"`
 }
 
 type secretValue_Vault struct {
+	// Configuration to fetch the secret from HashiCorp Vault.
 	Vault *VaultSecret `protobuf:"bytes,5,opt,name=vault,oneof"`
 }
 
 type secretValue_AwsSecretManager struct {
+	// Configuration to fetch the secret from AWS Secrets Manager.
 	AwsSecretManager *AwsSecretManagerSecret `protobuf:"bytes,6,opt,name=aws_secret_manager,json=awsSecretManager,oneof"`
 }
 
@@ -647,17 +659,17 @@ func (x *AwsSecretManagerSecret) ClearProfile() {
 type AwsSecretManagerSecret_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The name or ARN of the secret.
+	// The name or ARN of the secret in AWS Secrets Manager.
 	SecretId *string
-	// Optional: The key to extract from the secret JSON.
+	// Optional: The specific key to extract from the secret's JSON structure.
 	JsonKey *string
-	// Optional: The version stage (defaults to AWSCURRENT).
+	// Optional: The version stage of the secret (defaults to "AWSCURRENT").
 	VersionStage *string
-	// Optional: The version ID.
+	// Optional: The unique identifier of the version of the secret.
 	VersionId *string
-	// Optional: The region. If not set, uses environment or profile.
+	// Optional: The AWS region. If not set, uses the environment or profile configuration.
 	Region *string
-	// Optional: Profile to use.
+	// Optional: The AWS profile to use for credentials.
 	Profile *string
 }
 
@@ -838,7 +850,7 @@ type VaultSecret_builder struct {
 
 	// The address of the Vault server (e.g., "https://vault.example.com").
 	Address *string
-	// The token to authenticate with Vault.
+	// The token used to authenticate with Vault.
 	Token *SecretValue
 	// The path to the secret in Vault (e.g., "secret/data/my-app/db").
 	Path *string
@@ -954,8 +966,10 @@ func (x *RemoteContent) ClearAuth() {
 type RemoteContent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The HTTP URL to fetch content from.
 	HttpUrl *string
-	Auth    *Authentication
+	// Authentication configuration for the request.
+	Auth *Authentication
 }
 
 func (b0 RemoteContent_builder) Build() *RemoteContent {
@@ -971,7 +985,7 @@ func (b0 RemoteContent_builder) Build() *RemoteContent {
 }
 
 // Authentication defines an authentication method that can be used for both
-// incoming requests (validation) and outgoing requests (client).
+// incoming requests (validation) and outgoing requests (client credentials).
 type Authentication struct {
 	state                 protoimpl.MessageState      `protogen:"opaque.v1"`
 	xxx_hidden_AuthMethod isAuthentication_AuthMethod `protobuf_oneof:"auth_method"`
@@ -1269,12 +1283,19 @@ type Authentication_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	// Fields of oneof xxx_hidden_AuthMethod:
-	ApiKey        *APIKeyAuth
-	BearerToken   *BearerTokenAuth
-	BasicAuth     *BasicAuth
-	Oauth2        *OAuth2Auth
-	Oidc          *OIDCAuth
-	Mtls          *MTLSAuth
+	// Authentication using an API Key.
+	ApiKey *APIKeyAuth
+	// Authentication using a Bearer Token.
+	BearerToken *BearerTokenAuth
+	// Authentication using Basic Auth (username/password).
+	BasicAuth *BasicAuth
+	// Authentication using OAuth 2.0.
+	Oauth2 *OAuth2Auth
+	// Authentication using OpenID Connect (OIDC).
+	Oidc *OIDCAuth
+	// Authentication using Mutual TLS (mTLS).
+	Mtls *MTLSAuth
+	// Authentication based on a trusted header.
 	TrustedHeader *TrustedHeaderAuth
 	// -- end of xxx_hidden_AuthMethod
 }
@@ -1322,30 +1343,37 @@ type isAuthentication_AuthMethod interface {
 }
 
 type authentication_ApiKey struct {
+	// Authentication using an API Key.
 	ApiKey *APIKeyAuth `protobuf:"bytes,1,opt,name=api_key,oneof"`
 }
 
 type authentication_BearerToken struct {
+	// Authentication using a Bearer Token.
 	BearerToken *BearerTokenAuth `protobuf:"bytes,2,opt,name=bearer_token,oneof"`
 }
 
 type authentication_BasicAuth struct {
+	// Authentication using Basic Auth (username/password).
 	BasicAuth *BasicAuth `protobuf:"bytes,3,opt,name=basic_auth,oneof"`
 }
 
 type authentication_Oauth2 struct {
+	// Authentication using OAuth 2.0.
 	Oauth2 *OAuth2Auth `protobuf:"bytes,4,opt,name=oauth2,oneof"`
 }
 
 type authentication_Oidc struct {
+	// Authentication using OpenID Connect (OIDC).
 	Oidc *OIDCAuth `protobuf:"bytes,5,opt,name=oidc,oneof"`
 }
 
 type authentication_Mtls struct {
+	// Authentication using Mutual TLS (mTLS).
 	Mtls *MTLSAuth `protobuf:"bytes,6,opt,name=mtls,oneof"`
 }
 
 type authentication_TrustedHeader struct {
+	// Authentication based on a trusted header.
 	TrustedHeader *TrustedHeaderAuth `protobuf:"bytes,7,opt,name=trusted_header,oneof"`
 }
 
@@ -1508,11 +1536,12 @@ type APIKeyAuth_builder struct {
 
 	// The name of the parameter carrying the key (e.g., "X-API-Key", "api_key").
 	ParamName *string
-	In        *APIKeyAuth_Location
-	// The API key value. Used for client authentication (outgoing).
+	// The location of the API key (HEADER, QUERY, or COOKIE).
+	In *APIKeyAuth_Location
+	// The API key value. Used for client authentication (outgoing requests).
 	Value *SecretValue
-	// The expected API key value. Used for server validation (incoming).
-	// This is a plain string because we compare against it.
+	// The expected API key value. Used for server validation (incoming requests).
+	// This is a plain string because it is compared directly.
 	VerificationValue *string
 }
 
@@ -1594,7 +1623,7 @@ func (x *BearerTokenAuth) ClearToken() {
 type BearerTokenAuth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The bearer token.
+	// The bearer token value.
 	Token *SecretValue
 }
 
@@ -1722,6 +1751,7 @@ func (x *BasicAuth) ClearPasswordHash() {
 type BasicAuth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The username.
 	Username *string
 	// The password. Used for client authentication (outgoing).
 	Password *SecretValue
@@ -1968,16 +1998,19 @@ func (x *OAuth2Auth) ClearAuthorizationUrl() {
 type OAuth2Auth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	TokenUrl     *string
-	ClientId     *SecretValue
+	// The URL to retrieve the token from.
+	TokenUrl *string
+	// The client ID.
+	ClientId *SecretValue
+	// The client secret.
 	ClientSecret *SecretValue
-	// Space-delimited list of scopes.
+	// A space-delimited list of requested scopes.
 	Scopes *string
-	// Issuer URL for validation/discovery.
+	// The issuer URL for validation/discovery.
 	IssuerUrl *string
-	// Audience for validation.
+	// The audience for validation.
 	Audience *string
-	// Authorization URL (optional, mainly for 3-legged flows if we ever support them).
+	// The authorization URL (optional, mainly for 3-legged flows).
 	AuthorizationUrl *string
 }
 
@@ -2143,13 +2176,13 @@ func (x *OIDCAuth) ClearEmail() {
 type OIDCAuth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The issuer URL.
+	// The issuer URL of the OIDC provider.
 	Issuer *string
-	// The subject to validate (incoming).
+	// The expected subject (sub) claim to validate (incoming).
 	Subject *string
-	// The email to validate (incoming).
+	// The expected email claim to validate (incoming).
 	Email *string
-	// The audience(s) to validate (incoming).
+	// The expected audience (aud) claim to validate (incoming).
 	Audience []string
 }
 
@@ -2294,11 +2327,11 @@ func (x *MTLSAuth) ClearCaCertPath() {
 type MTLSAuth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Path to the client certificate file.
+	// The path to the client certificate file.
 	ClientCertPath *string
-	// Path to the client private key file.
+	// The path to the client private key file.
 	ClientKeyPath *string
-	// Path to the CA certificate file for verifying the server's certificate.
+	// The path to the CA certificate file used to verify the server's certificate.
 	CaCertPath *string
 }
 
@@ -2414,7 +2447,9 @@ func (x *TrustedHeaderAuth) ClearHeaderValue() {
 type TrustedHeaderAuth_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	HeaderName  *string
+	// The name of the header to check.
+	HeaderName *string
+	// The expected value of the header.
 	HeaderValue *string
 }
 
@@ -2724,21 +2759,21 @@ type UserToken_builder struct {
 
 	// The ID of the user who owns this token.
 	UserId *string
-	// The ID of the service this token is for.
+	// The ID of the service this token is associated with.
 	ServiceId *string
-	// The access token.
+	// The access token string.
 	AccessToken *string
-	// The refresh token.
+	// The refresh token string (if available).
 	RefreshToken *string
-	// The token type (e.g. "Bearer").
+	// The type of the token (e.g., "Bearer").
 	TokenType *string
-	// The expiry time of the token (RFC3339).
+	// The expiry time of the token (RFC3339 format).
 	Expiry *string
 	// The scopes associated with the token.
 	Scope *string
-	// The timestamp when the token was created/updated (RFC3339).
+	// The timestamp when the token was last created or updated (RFC3339 format).
 	UpdatedAt *string
-	// The email associated with the token (if available).
+	// The email address associated with the token (if available).
 	Email *string
 }
 
@@ -2924,14 +2959,14 @@ func (x *Credential) ClearToken() {
 type Credential_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Unique identifier for the credential.
+	// The unique identifier for the credential.
 	Id *string
-	// Human-readable name (e.g. "My GitHub Personal").
+	// A human-readable name for the credential (e.g. "My GitHub Personal").
 	Name *string
-	// The authentication configuration.
+	// The authentication details.
 	Authentication *Authentication
-	// Optional: For interactive OAuth, the persisted session/tokens.
-	// This allows the proxy to use this credential by refreshing the token.
+	// Optional: The persisted session/token for interactive OAuth.
+	// This allows the system to reuse the credential by refreshing the token.
 	Token *UserToken
 }
 
