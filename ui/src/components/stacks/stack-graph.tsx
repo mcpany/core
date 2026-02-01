@@ -13,7 +13,6 @@ import {
     BackgroundVariant,
     useNodesState,
     useEdgesState,
-    Position,
     Node,
     Edge,
 } from '@xyflow/react';
@@ -106,6 +105,8 @@ const ServiceNode = React.memo(({ data }: { data: ParsedService }) => {
         </Card>
     );
 });
+ServiceNode.displayName = "ServiceNode";
+
 ServiceNode.displayName = "ServiceNode";
 
 const nodeTypes = {
