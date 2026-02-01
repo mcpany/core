@@ -410,24 +410,42 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 	}
 	r.mu.RUnlock()
 
-	for id, u := range targets {
-		var errStr string
-		if checker, ok := u.(upstream.HealthChecker); ok {
-			// Use a short timeout for health checks
-			checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-			if err := checker.CheckHealth(checkCtx); err != nil {
-				errStr = err.Error()
-			}
-			cancel()
-		}
+	// ⚡ BOLT: Parallelized health checks to avoid blocking the loop on slow upstreams.
+	// Randomized Selection from Top 5 High-Impact Targets
+	var wg sync.WaitGroup
+	var resultsMu sync.Mutex
+	results := make(map[string]string)
 
-		r.mu.Lock()
+	for id, u := range targets {
+		wg.Add(1)
+		go func(id string, u upstream.Upstream) {
+			defer wg.Done()
+			var errStr string
+			if checker, ok := u.(upstream.HealthChecker); ok {
+				// Use a short timeout for health checks
+				checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+				if err := checker.CheckHealth(checkCtx); err != nil {
+					errStr = err.Error()
+				}
+				cancel()
+			}
+
+			resultsMu.Lock()
+			results[id] = errStr
+			resultsMu.Unlock()
+		}(id, u)
+	}
+
+	wg.Wait()
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for id, errStr := range results {
 		if errStr != "" {
 			r.healthErrors[id] = errStr
 		} else {
 			delete(r.healthErrors, id)
 		}
-		r.mu.Unlock()
 	}
 }
 
