@@ -89,6 +89,16 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 	case configv1.SecretValue_FilePath_case:
 		// Clean the path to prevent path traversal issues and satisfy taint analysis.
 		cleanPath := filepath.Clean(secret.GetFilePath())
+		// Explicitly check for directory traversal to satisfy static analysis (taint tracking).
+		// While IsAllowedPath does this, redundant inline checking helps tools see the guard.
+		// We split by separator to avoid false positives with filenames like "my..file".
+		parts := strings.Split(cleanPath, string(os.PathSeparator))
+		for _, part := range parts {
+			if part == ".." {
+				return "", fmt.Errorf("invalid secret file path %q: path contains '..'", cleanPath)
+			}
+		}
+
 		if err := validation.IsAllowedPath(cleanPath); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", cleanPath, err)
 		}
