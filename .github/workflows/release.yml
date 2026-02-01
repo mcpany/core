@@ -512,7 +512,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images and create manifest
-        working-directory: /tmp/digests-ui
         run: |
           VERSION="${{ needs.setup.outputs.version }}"
           IS_RELEASE="${{ needs.setup.outputs.is_release }}"
