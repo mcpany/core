@@ -7,17 +7,23 @@ import { test, expect } from '@playwright/test';
 import { seedCollection, cleanupCollection } from './e2e/test-data';
 
 test.describe('Stack Editor', () => {
+  let stackName: string;
+
   test.beforeEach(async ({ request }) => {
-      await seedCollection('default-stack', request);
+      // Use a unique name for each test to avoid interference/race conditions
+      stackName = `stack-${Math.random().toString(36).substring(7)}`;
+      await seedCollection(stackName, request);
       // Wait a bit for potential backend sync (though seedCollection awaits response)
   });
 
   test.afterEach(async ({ request }) => {
-      await cleanupCollection('default-stack', request);
+      if (stackName) {
+          await cleanupCollection(stackName, request);
+      }
   });
 
   test('should load the editor and show initial config in graph', async ({ page }) => {
-    await page.goto('/stacks/default-stack');
+    await page.goto(`/stacks/${stackName}`);
 
     // Check for React Flow container
     const visualizer = page.locator('.stack-visualizer-container');
@@ -30,7 +36,7 @@ test.describe('Stack Editor', () => {
   });
 
   test('should update graph when template added', async ({ page }) => {
-    await page.goto('/stacks/default-stack');
+    await page.goto(`/stacks/${stackName}`);
     const visualizer = page.locator('.stack-visualizer-container');
 
     // Wait for initial load
