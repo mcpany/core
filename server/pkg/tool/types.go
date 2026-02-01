@@ -378,7 +378,25 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	if err := t.resilienceManager.Execute(ctx, work); err != nil {
 		metrics.IncrCounter(metricGrpcRequestError, 1)
-		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
+
+		// Sanitize error message to prevent information leakage (Chatty Errors)
+		errMsg := err.Error()
+
+		// 1. Redact JSON content (likely in Status Details or custom error fields)
+		// We use RedactSensitiveKeysInJSONLike to handle embedded JSON or key-value pairs in error text.
+		redactedMsg := util.RedactSensitiveKeysInJSONLike(errMsg)
+
+		// 2. Redact DSNs (connection strings with passwords)
+		redactedMsg = util.RedactDSN(redactedMsg)
+
+		// 3. Truncate if too long (similar to HTTPTool)
+		// We allow slightly more for gRPC as it might have structured details, but limit unlimited stacks.
+		const maxErrorLen = 500
+		if len(redactedMsg) > maxErrorLen {
+			redactedMsg = redactedMsg[:maxErrorLen] + "... (truncated)"
+		}
+
+		return nil, fmt.Errorf("failed to invoke grpc method: %s", redactedMsg)
 	}
 	metrics.IncrCounter(metricGrpcRequestSuccess, 1)
 

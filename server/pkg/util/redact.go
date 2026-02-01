@@ -105,6 +105,39 @@ func init() {
 	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
 	b, _ := json.Marshal(redactedPlaceholder)
 	redactedValue = json.RawMessage(b)
+
+	// Build sensitiveKeysRegex for RedactSensitiveKeysInJSONLike
+	// We need to escape keys if they contain regex special characters.
+	// We sort keys by length descending to match longer keys first.
+	sortedKeys := make([]string, len(sensitiveKeys))
+	copy(sortedKeys, sensitiveKeys)
+	sort.Slice(sortedKeys, func(i, j int) bool {
+		return len(sortedKeys[i]) > len(sortedKeys[j])
+	})
+
+	escapedKeys := make([]string, len(sortedKeys))
+	for i, k := range sortedKeys {
+		escapedKeys[i] = regexp.QuoteMeta(k)
+	}
+
+	// Pattern: "key"\s*:\s*"([^"]*)"
+	// Note: We use simple double quotes matching. It doesn't handle escaped quotes inside the string value perfectly,
+	// but for error message sanitization it is a good heuristic.
+	// We use `(?i)` for case-insensitive matching of keys.
+	pattern := `(?i)"(` + strings.Join(escapedKeys, "|") + `)"\s*:\s*"([^"]*)"`
+	sensitiveKeysRegex = regexp.MustCompile(pattern)
+}
+
+var sensitiveKeysRegex *regexp.Regexp
+
+// RedactSensitiveKeysInJSONLike redacts values for sensitive keys in a string that looks like JSON or key-value pairs.
+// It targets patterns like "key": "value" or "key":"value" found in mixed strings (e.g. log messages).
+func RedactSensitiveKeysInJSONLike(s string) string {
+	if sensitiveKeysRegex == nil {
+		return s
+	}
+	// Replace with "key": "[REDACTED]"
+	return sensitiveKeysRegex.ReplaceAllString(s, "\"$1\": \""+redactedPlaceholder+"\"")
 }
 
 // RedactJSON parses a JSON byte slice and redacts sensitive keys.
