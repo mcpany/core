@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
+import { SchemaForm, Schema } from "./schema-form";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -51,6 +52,8 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   const [output, setOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+  const [mode, setMode] = useState<"wizard" | "json">("wizard");
+  const [formValue, setFormValue] = useState<unknown>({});
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -98,17 +101,35 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
   useEffect(() => {
       if (open && tool) {
           fetchMetrics();
+          setFormValue({});
+          setInput("{}");
+          setMode("wizard");
+          setOutput(null);
       }
   }, [open, tool]);
 
   if (!tool) return null;
+
+  const handleModeChange = (newMode: string) => {
+      if (newMode === "json") {
+          setInput(JSON.stringify(formValue, null, 2));
+      } else {
+          try {
+              const parsed = JSON.parse(input);
+              setFormValue(parsed);
+          } catch (e) {
+              console.error("Invalid JSON", e);
+          }
+      }
+      setMode(newMode as "wizard" | "json");
+  };
 
 
   const handleExecute = async () => {
     setLoading(true);
     setOutput(null);
     try {
-      const args = JSON.parse(input);
+      const args = mode === "json" ? JSON.parse(input) : formValue;
       // const start = Date.now();
       const res = await apiClient.executeTool({
           toolName: tool.name,
@@ -119,8 +140,8 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       // Refresh metrics after execution to show it in the graph
       // Give it a small delay for backend to write audit log
       setTimeout(fetchMetrics, 500);
-    } catch (e: any) {
-      setOutput(`Error: ${e.message}`);
+    } catch (e) {
+      setOutput(`Error: ${(e as Error).message}`);
       setTimeout(fetchMetrics, 500);
     } finally {
       setLoading(false);
@@ -160,7 +181,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                       </TabsList>
                       <TabsContent value="visual" className="mt-2">
                          <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-muted/20">
-                            <SchemaViewer schema={tool.inputSchema as any} />
+                            <SchemaViewer schema={tool.inputSchema as Schema} />
                          </ScrollArea>
                       </TabsContent>
                       <TabsContent value="json" className="mt-2">
@@ -172,14 +193,32 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="args">Arguments (JSON)</Label>
-                    <Textarea
-                        id="args"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="font-mono text-sm"
-                        rows={5}
-                    />
+                    <div className="flex items-center justify-between">
+                         <Label htmlFor="args">Arguments</Label>
+                         <Tabs value={mode} onValueChange={handleModeChange} className="w-[120px]">
+                            <TabsList className="grid w-full grid-cols-2 h-7">
+                                <TabsTrigger value="wizard" className="text-[10px] h-5">Wizard</TabsTrigger>
+                                <TabsTrigger value="json" className="text-[10px] h-5">JSON</TabsTrigger>
+                            </TabsList>
+                         </Tabs>
+                    </div>
+                    {mode === "wizard" ? (
+                         <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-background/50">
+                             <SchemaForm
+                                schema={tool.inputSchema as Schema}
+                                value={formValue}
+                                onChange={setFormValue}
+                             />
+                         </ScrollArea>
+                    ) : (
+                        <Textarea
+                            id="args"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            className="font-mono text-sm"
+                            rows={12}
+                        />
+                    )}
                 </div>
 
                 {output && (
