@@ -55,7 +55,8 @@ describe("ConfigValidatorPage", () => {
     );
 
     render(<ConfigValidatorPage />);
-    const editor = screen.getByTestId("monaco-editor");
+    // Wait for the editor to load (lazy loaded)
+    const editor = await waitFor(() => screen.getByTestId("monaco-editor"));
     fireEvent.change(editor, { target: { value: "foo: bar" } });
 
     const button = screen.getByText("Validate Configuration");
@@ -75,7 +76,8 @@ describe("ConfigValidatorPage", () => {
     );
 
     render(<ConfigValidatorPage />);
-    const editor = screen.getByTestId("monaco-editor");
+    // Wait for the editor to load (lazy loaded)
+    const editor = await waitFor(() => screen.getByTestId("monaco-editor"));
     fireEvent.change(editor, { target: { value: "invalid yaml" } });
 
     const button = screen.getByText("Validate Configuration");
