@@ -45,6 +45,7 @@ func (m *hunterMockToolManager) GetTool(_ string) (tool.Tool, bool)    { return 
 func (m *hunterMockToolManager) ListTools() []tool.Tool                { return nil }
 func (m *hunterMockToolManager) ListServices() []*tool.ServiceInfo     { return nil }
 func (m *hunterMockToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
+func (m *hunterMockToolManager) CountToolsForService(_ string) int     { return 0 }
 func (m *hunterMockToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) { return nil, nil }
 func (m *hunterMockToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 

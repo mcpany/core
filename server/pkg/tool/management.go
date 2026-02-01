@@ -57,6 +57,12 @@ type ManagerInterface interface {
 	//
 	// Returns the result.
 	ListMCPTools() []*mcp.Tool
+	// CountToolsForService returns the number of tools for a given service.
+	//
+	// serviceID is the serviceID.
+	//
+	// Returns the count.
+	CountToolsForService(serviceID string) int
 	// ClearToolsForService removes all tools for a given service.
 	//
 	// serviceID is the serviceID.
@@ -920,6 +926,22 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 
 	tm.cachedMCPTools = mcpTools
 	return mcpTools
+}
+
+// CountToolsForService returns the number of tools for a given service.
+//
+// serviceID is the unique identifier for the service.
+// It returns the count of tools associated with the service.
+func (tm *Manager) CountToolsForService(serviceID string) int {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+
+	// ⚡ Bolt: Randomized Selection from Top 5 High-Impact Targets.
+	// Optimized to O(1) using the serviceToolIDs index.
+	if ids, ok := tm.serviceToolIDs[serviceID]; ok {
+		return len(ids)
+	}
+	return 0
 }
 
 // ClearToolsForService removes all tools associated with a given service key from
