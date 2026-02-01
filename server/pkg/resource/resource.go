@@ -167,6 +167,10 @@ func (rm *Manager) AddResource(resource Resource) {
 	rm.resources[uri] = resource
 
 	// Update service index
+	// Defensive check: Ensure serviceIndex is initialized (handling zero-value Manager struct)
+	if rm.serviceIndex == nil {
+		rm.serviceIndex = make(map[string]map[string]struct{})
+	}
 	if _, ok := rm.serviceIndex[serviceID]; !ok {
 		rm.serviceIndex[serviceID] = make(map[string]struct{})
 	}
