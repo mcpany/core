@@ -27,9 +27,57 @@ export function useTraces(options: UseTracesOptions = {}) {
     const isMountedRef = useRef(true);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // ⚡ Bolt Optimization: Buffer for incoming traces to support batch processing
+    // Randomized Selection from Top 5 High-Impact Targets
+    const traceBufferRef = useRef<Trace[]>([]);
+
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
+
+    // ⚡ Bolt Optimization: Periodic flush of trace buffer to reduce render cycles
+    useEffect(() => {
+        const flushInterval = setInterval(() => {
+            if (traceBufferRef.current.length > 0) {
+                // Capture buffer and clear ref immediately to avoid race conditions and side effects in setTraces
+                const buffer = [...traceBufferRef.current];
+                traceBufferRef.current = [];
+
+                setTraces((prev) => {
+                    if (buffer.length === 0) return prev;
+
+                    // Optimization: Efficient merge strategy
+                    // 1. Identify updates vs new items
+                    const prevIds = new Set(prev.map(t => t.id));
+                    const updates = new Map<string, Trace>();
+                    const newItemsMap = new Map<string, Trace>();
+
+                    // Process buffer (latest update in buffer wins)
+                    buffer.forEach(t => {
+                        if (prevIds.has(t.id)) {
+                            updates.set(t.id, t);
+                        } else {
+                            newItemsMap.set(t.id, t);
+                        }
+                    });
+
+                    // Convert new items map to array and reverse (newest first)
+                    // Map preserves insertion order, so we reverse to put latest buffer items at top
+                    const uniqueNewItems = Array.from(newItemsMap.values()).reverse();
+
+                    // 2. Apply updates to existing items (preserve order)
+                    let newPrev = prev;
+                    if (updates.size > 0) {
+                        newPrev = prev.map(t => updates.get(t.id) || t);
+                    }
+
+                    return [...uniqueNewItems, ...newPrev];
+                });
+            }
+        }, 100); // Flush every 100ms
+
+        return () => clearInterval(flushInterval);
+    }, []);
 
     const connect = () => {
         if (!isMountedRef.current) return;
@@ -64,16 +112,8 @@ export function useTraces(options: UseTracesOptions = {}) {
             if (isPausedRef.current) return;
             try {
                 const trace: Trace = JSON.parse(event.data);
-                setTraces((prev) => {
-                    // Deduplicate by ID
-                    const index = prev.findIndex(t => t.id === trace.id);
-                    if (index !== -1) {
-                        const newTraces = [...prev];
-                        newTraces[index] = trace;
-                        return newTraces;
-                    }
-                    return [trace, ...prev];
-                });
+                // ⚡ Bolt Optimization: Push to buffer instead of setting state directly
+                traceBufferRef.current.push(trace);
             } catch (e) {
                 console.error("Failed to parse trace", e);
             }
