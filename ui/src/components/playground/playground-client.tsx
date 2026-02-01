@@ -8,7 +8,7 @@
 import { apiClient, ToolDefinition } from "@/lib/client";
 
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff } from "lucide-react";
+import { Send, Bot, User, Terminal, Loader2, Sparkles, AlertCircle, Trash2, Command, ChevronRight, FileDiff, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -69,9 +69,27 @@ export function PlaygroundClient() {
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
   const [toolToConfigure, setToolToConfigure] = useState<ToolDefinition | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const lastExecutionRef = useRef<{ toolName: string; args: string; result: unknown } | null>(null);
 
   useEffect(() => {
+    // Load history from localStorage
+    const saved = localStorage.getItem("playground_history");
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            const rehydrated = parsed.map((m: any) => ({
+                ...m,
+                timestamp: new Date(m.timestamp)
+            }));
+            if (rehydrated.length > 0) {
+                setMessages(rehydrated);
+            }
+        } catch (e) {
+            console.error("Failed to load history", e);
+        }
+    }
+
     // Load tools on mount
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
@@ -100,8 +118,12 @@ export function PlaygroundClient() {
     }
   }, []);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom and persist history
   useEffect(() => {
+    if (messages.length > 0) {
+        localStorage.setItem("playground_history", JSON.stringify(messages));
+    }
+
     if (scrollAreaRef.current) {
         const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
         if (scrollContainer) {
@@ -109,6 +131,42 @@ export function PlaygroundClient() {
         }
     }
   }, [messages]);
+
+  const handleExport = () => {
+      const blob = new Blob([JSON.stringify(messages, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `playground-history-${new Date().toISOString()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+          try {
+              const content = event.target?.result as string;
+              const parsed = JSON.parse(content);
+              if (Array.isArray(parsed)) {
+                   const rehydrated = parsed.map((m: any) => ({
+                      ...m,
+                      timestamp: new Date(m.timestamp)
+                  }));
+                  setMessages(rehydrated);
+              }
+          } catch (err) {
+              console.error("Failed to parse import file", err);
+          }
+      };
+      reader.readAsText(file);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -258,6 +316,7 @@ export function PlaygroundClient() {
           content: "Chat cleared. Ready for new commands.",
           timestamp: new Date(),
       }]);
+      localStorage.removeItem("playground_history");
   };
 
   return (
@@ -267,6 +326,19 @@ export function PlaygroundClient() {
               <Bot className="text-primary" /> Playground
           </h2>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleExport} title="Export Session">
+                <Download className="size-4 text-muted-foreground" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} title="Import Session">
+                <Upload className="size-4 text-muted-foreground" />
+            </Button>
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
+                onChange={handleImport}
+            />
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">

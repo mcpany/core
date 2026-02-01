@@ -15,7 +15,7 @@ The Playground is the central specialized interface for Developers to interactiv
 
 ### 1. Overview
 
-Navigate to `/playground`. The interface presents a clean slate with access to all available tools on the left sidebar.
+Navigate to `/playground`. The interface presents a clean slate. Click the **Available Tools** button (or press `Cmd+K`) to open the tools sidebar.
 
 ![Playground Overview](screenshots/playground_blank.png)
 
