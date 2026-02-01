@@ -19,7 +19,8 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 ## Usage
 
 1.  Navigate to the **Services** page.
-2.  Click the **Status Icon** (or the "Troubleshoot" button) next to any service.
+2.  Click the **Actions** menu (three dots) next to any service and select **Diagnose**.
+    *   Alternatively, if a service is in an error state, click the red **Alert Icon** button to immediately troubleshoot the error.
 3.  Click **Start Diagnostics**.
 4.  Follow the on-screen progress and review the **Diagnostic Result** card for suggestions.
 
