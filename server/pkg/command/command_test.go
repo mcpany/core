@@ -53,11 +53,25 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Validate container creation (to catch overlayfs issues in dind)
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine:latest",
+		Cmd:   []string{"true"},
+	}, nil, nil, nil, "")
+	if err != nil {
+		t.Logf("docker container create check failed: %v", err)
+		return false
+	}
+
+	// Clean up
+	_ = cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 	return true
 }
 
