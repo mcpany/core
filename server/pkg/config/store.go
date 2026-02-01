@@ -323,10 +323,13 @@ var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 // It supports nested braces in default values, e.g., ${VAR:{"key": "value"}}.
 func expand(b []byte) ([]byte, error) {
 	// ⚡ Bolt Optimization: Fast path for no variables.
-	// Avoids allocation and copy if no '$' is present.
+	// Avoids expensive parsing loop if no '$' is present.
+	// We return a copy to maintain safety (fresh allocation) while avoiding the overhead of bytes.Buffer.
 	// Randomized Selection from Top 5 High-Impact Targets.
 	if bytes.IndexByte(b, '$') == -1 {
-		return b, nil
+		tmp := make([]byte, len(b))
+		copy(tmp, b)
+		return tmp, nil
 	}
 
 	var missingErrBuilder strings.Builder
