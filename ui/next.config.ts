@@ -125,6 +125,12 @@ const nextConfig: NextConfig = {
     const rootProto = path.join(__dirname, '../proto');
     const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
 
+    console.log(`[NextConfig] Resolving @proto alias:`);
+    console.log(`  - __dirname: ${__dirname}`);
+    console.log(`  - localProto: ${localProto} (exists: ${fs.existsSync(localProto)})`);
+    console.log(`  - rootProto: ${rootProto} (exists: ${fs.existsSync(rootProto)})`);
+    console.log(`  - Selected protoPath: ${protoPath}`);
+
     config.resolve.alias = {
       ...config.resolve.alias,
       '@proto': protoPath,
