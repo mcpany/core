@@ -5,9 +5,14 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import fs from 'fs';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
+
+if (!fs.existsSync(AUDIT_DIR)) {
+  fs.mkdirSync(AUDIT_DIR, { recursive: true });
+}
 
 test.describe('Service Config Diff', () => {
     test('Shows diff when editing service config', async ({ page }) => {

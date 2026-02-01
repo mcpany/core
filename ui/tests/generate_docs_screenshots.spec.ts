@@ -633,6 +633,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Credentials Screenshots', async ({ page }) => {
+      // Mock credentials list
+      await page.route('**/api/v1/credentials', async route => {
+          await route.fulfill({
+              json: { credentials: [] }
+          });
+      });
+
       await page.goto('/credentials');
       await page.waitForTimeout(1000);
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'credentials.png'), fullPage: true });
