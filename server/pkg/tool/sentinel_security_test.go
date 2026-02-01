@@ -26,12 +26,12 @@ func TestSentinelRCE_AwkInShell(t *testing.T) {
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "awk '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
 	}.Build()
 
@@ -81,12 +81,12 @@ func TestSentinelRCE_Backticks(t *testing.T) {
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "perl -e '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
 	}.Build()
 
@@ -137,12 +137,12 @@ func TestSentinelRCE_WhitespaceEvasion(t *testing.T) {
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"-c", "awk '{{script}}'"},
 		Parameters: []*configv1.CommandLineParameterMapping{
-			{
+			configv1.CommandLineParameterMapping_builder{
 				Schema: configv1.ParameterSchema_builder{
 					Name: proto.String("script"),
 					Type: &stringType,
 				}.Build(),
-			},
+			}.Build(),
 		},
 	}.Build()
 

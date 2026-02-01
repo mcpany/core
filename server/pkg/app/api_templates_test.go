@@ -95,13 +95,11 @@ func TestHandleTemplates_Create(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	// 3. Valid JSON but unrelated content (protojson might error or ignore)
+	// 3. Valid JSON but unrelated content
 	req = httptest.NewRequest(http.MethodPost, "/templates", bytes.NewReader([]byte(`{"unknown_field": "value"}`)))
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
-	// protojson unmarshal errors on unknown fields by default? No, default DiscardUnknown is false, so it errors.
-	// Check strictness. Default AllowPartial is false, DiscardUnknown is false.
-	// So unknown fields cause error.
+	// protojson unmarshal errors on unknown fields by default
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
@@ -124,9 +122,7 @@ func TestHandleTemplateDetail_Delete(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, w.Code)
 	assert.Empty(t, app.TemplateManager.ListTemplates())
 
-	// 2. Delete Non-Existent (idempotent, effectively success usually, but let's check code)
-	// Code: a.TemplateManager.DeleteTemplate(id) returns error?
-	// TemplateManager.DeleteTemplate filters list and saves. It does NOT return error if not found.
+	// 2. Delete Non-Existent (idempotent operation)
 	req = httptest.NewRequest(http.MethodDelete, "/templates/non-existent", nil)
 	w = httptest.NewRecorder()
 	handler.ServeHTTP(w, req)
