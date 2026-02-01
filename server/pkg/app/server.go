@@ -252,7 +252,7 @@ type Application struct {
 	// startTime is the time the application started.
 	startTime time.Time
 	// activeConnections tracks the number of active HTTP connections.
-	activeConnections int32
+	activeConnections atomic.Int32
 
 	// RegistrationRetryDelay allows configuring the retry delay for service registration.
 	// If 0, it defaults to 5 seconds (in the worker).
@@ -2134,9 +2134,9 @@ func (a *Application) runServerMode(
 		connState := func(_ net.Conn, state http.ConnState) {
 			switch state {
 			case http.StateNew:
-				atomic.AddInt32(&a.activeConnections, 1)
+			a.activeConnections.Add(1)
 			case http.StateClosed, http.StateHijacked:
-				atomic.AddInt32(&a.activeConnections, -1)
+			a.activeConnections.Add(-1)
 			}
 		}
 
