@@ -8,11 +8,11 @@
 import React, { useState, useEffect } from "react";
 import { Save, RefreshCw, FileText, AlertTriangle, Download, Columns, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import jsyaml from "js-yaml";
-import { apiClient } from "@/lib/client";
+import { stackManager } from "@/lib/stack-manager";
 
 // New Components
 import { ServicePalette } from "@/components/stacks/service-palette";
@@ -45,21 +45,19 @@ export function StackEditor({ stackId }: StackEditorProps) {
     const loadConfig = async () => {
         setIsLoading(true);
         try {
-            const collection = await apiClient.getCollection(stackId);
-            console.log("DEBUG: collection:", JSON.stringify(collection));
+            const stack = await stackManager.getStack(stackId);
             // Transform services array to map for YAML Editor
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const servicesMap: Record<string, any> = {};
-            if (collection.services && Array.isArray(collection.services)) {
-                collection.services.forEach((s: any) => {
+            if (stack?.services) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                stack.services.forEach((s: any) => {
                     servicesMap[s.name] = s;
                 });
-            } else if (collection.services) {
-                // Already a map?
-                Object.assign(servicesMap, collection.services);
             }
 
             const configObj = {
-                ...collection,
+                name: stackId,
                 services: servicesMap
             };
 
@@ -102,27 +100,24 @@ export function StackEditor({ stackId }: StackEditorProps) {
 
         setIsSaving(true);
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const configObj = jsyaml.load(content) as any;
 
-            // Transform services map to array for Backend
+            // Transform services map to array for StackManager
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let servicesArray: any[] = [];
             if (configObj.services) {
                 if (Array.isArray(configObj.services)) {
                      servicesArray = configObj.services;
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     Object.entries(configObj.services).forEach(([key, val]: [string, any]) => {
                         servicesArray.push({ ...val, name: key });
                     });
                 }
             }
 
-            const collection = {
-                ...configObj,
-                name: stackId, // Ensure ID matches
-                services: servicesArray
-            };
-
-            await apiClient.saveCollection(collection);
+            await stackManager.saveStack(stackId, servicesArray);
             toast.success("Configuration saved successfully");
         } catch (error) {
             console.error(error);
@@ -150,14 +145,6 @@ export function StackEditor({ stackId }: StackEditorProps) {
 
         if (match) {
             // Found services block.
-            // We want to insert AFTER the services block, but before the next root key if possible.
-            // Or just at the end of the services block.
-            // Since we can't easily parse partial YAML AST, we'll try to insert at the end of the file,
-            // assuming services is usually the main or last block.
-            // OR we can find the end of the services block by indentation.
-
-            // For now, simpler: Append to the end of the file, ensuring a newline.
-            // Users can move it if needed. The visualizer will still work.
             if (!newContent.endsWith("\n")) newContent += "\n";
             newContent += snippet;
         } else {
