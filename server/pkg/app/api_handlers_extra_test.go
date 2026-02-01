@@ -16,6 +16,7 @@ import (
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/storage/memory"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -105,10 +106,11 @@ func TestHandleCreateService_Unsafe_NonAdmin(t *testing.T) {
 	handler := app.handleServices(store)
 
 	// Unsafe config (Filesystem)
+	// Use "." as path so it passes validation (CWD is allowed) but fails IsUnsafeConfig check
 	svc := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("unsafe-fs"),
 		FilesystemService: configv1.FilesystemUpstreamService_builder{
-			RootPaths: map[string]string{"/": "/"},
+			RootPaths: map[string]string{"/": "."},
 			Os:        configv1.OsFs_builder{}.Build(),
 		}.Build(),
 	}.Build()
@@ -175,6 +177,10 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 
 	t.Run("Valid Filesystem", func(t *testing.T) {
 		tmpDir := t.TempDir()
+		// Whitelist temp dir for this test
+		validation.SetAllowedPaths([]string{tmpDir})
+		defer validation.SetAllowedPaths(nil)
+
 		svc := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("valid-fs"),
 			FilesystemService: configv1.FilesystemUpstreamService_builder{
@@ -206,11 +212,12 @@ func TestHandleServiceValidate_Connectivity(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.ServeHTTP(w, req)
 
-		assert.Equal(t, http.StatusOK, w.Code)
+		// Static validation now catches disallowed paths
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 		var resp map[string]any
 		json.Unmarshal(w.Body.Bytes(), &resp)
 		assert.False(t, resp["valid"].(bool))
-		assert.Contains(t, resp["details"], "Filesystem path check failed")
+		assert.Contains(t, resp["details"], "Static validation failed")
 	})
 
 	t.Run("Valid Command", func(t *testing.T) {

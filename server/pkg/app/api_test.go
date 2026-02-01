@@ -1029,7 +1029,7 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 	t.Run("Block Filesystem Service (Regular User)", func(t *testing.T) {
 		osFs := &configv1.OsFs{}
 		fsSvc := &configv1.FilesystemUpstreamService{}
-		fsSvc.SetRootPaths(map[string]string{"/": "/"})
+		fsSvc.SetRootPaths(map[string]string{"/": "."})
 		fsSvc.SetOs(osFs)
 
 		svc := &configv1.UpstreamServiceConfig{}
@@ -1048,7 +1048,7 @@ func TestAPIHandler_SecurityValidation(t *testing.T) {
 	t.Run("Allow Filesystem Service (Admin)", func(t *testing.T) {
 		osFs := &configv1.OsFs{}
 		fsSvc := &configv1.FilesystemUpstreamService{}
-		fsSvc.SetRootPaths(map[string]string{"/": "/"})
+		fsSvc.SetRootPaths(map[string]string{"/": "."})
 		fsSvc.SetOs(osFs)
 
 		svc := &configv1.UpstreamServiceConfig{}
