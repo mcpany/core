@@ -6,6 +6,7 @@ package integration
 
 import (
 	"context"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -26,7 +27,14 @@ func waitForSubscribers(t *testing.T, client *goredis.Client, topic string, expe
 	}, 5*time.Second, 100*time.Millisecond, "timed out waiting for subscribers on topic %s", topic)
 }
 
+func skipIfCI(t *testing.T) {
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping Docker-dependent test in CI")
+	}
+}
+
 func TestRedisBus_Integration_Subscribe(t *testing.T) {
+	skipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -63,6 +71,7 @@ func TestRedisBus_Integration_Subscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
+	skipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -99,6 +108,7 @@ func TestRedisBus_Integration_SubscribeOnce(t *testing.T) {
 }
 
 func TestBusProvider_Integration_Redis(t *testing.T) {
+	skipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -120,6 +130,7 @@ func TestBusProvider_Integration_Redis(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
+	skipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
@@ -173,6 +184,7 @@ func TestRedisBus_Integration_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Integration_Concurrent(t *testing.T) {
+	skipIfCI(t)
 	redisAddr, cleanup := StartRedisContainer(t)
 	defer cleanup()
 
