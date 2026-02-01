@@ -48,6 +48,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 			nil,
 			false,
 			nil,
+			nil, // toolExportPolicy
 		)
 		require.NoError(t, err)
 		assert.Nil(t, tools)
@@ -69,6 +70,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 			nil,
 			false,
 			fds,
+			nil, // toolExportPolicy
 		)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create protodesc files")
@@ -104,6 +106,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 			nil,
 			false,
 			fds,
+			nil, // toolExportPolicy
 		)
 		require.NoError(t, err)
 		assert.Empty(t, tools)
@@ -137,7 +140,7 @@ func TestGRPCUpstream_createAndRegisterGRPCToolsFromConfig(t *testing.T) {
 		tm.AddServiceInfo(serviceID, &tool.ServiceInfo{Config: serviceConfig.Build()})
 
 		discoveredTools, err := upstream.(*Upstream).createAndRegisterGRPCToolsFromConfig(
-			context.Background(), serviceID, tm, nil, false, fds,
+			context.Background(), serviceID, tm, nil, false, fds, nil, // toolExportPolicy
 		)
 		require.NoError(t, err)
 		assert.Len(t, discoveredTools, 1)
@@ -165,7 +168,7 @@ func TestGRPCUpstream_createAndRegisterPromptsFromConfig(t *testing.T) {
 	tm.AddServiceInfo("test-service", &tool.ServiceInfo{Config: serviceConfig.Build()})
 	upstream.(*Upstream).toolManager = tm
 
-	err := upstream.(*Upstream).createAndRegisterPromptsFromConfig(context.Background(), "test-service", promptManager, false)
+	err := upstream.(*Upstream).createAndRegisterPromptsFromConfig(context.Background(), "test-service", promptManager, false, nil) // promptExportPolicy
 	require.NoError(t, err)
 	_, ok := promptManager.GetPrompt("test-service.test-prompt")
 	assert.True(t, ok)

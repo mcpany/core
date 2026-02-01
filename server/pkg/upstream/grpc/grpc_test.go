@@ -275,14 +275,14 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 	tm := NewMockToolManager()
 
 	t.Run("nil parsed data", func(t *testing.T) {
-		tools, err := upstream.(*Upstream).createAndRegisterGRPCTools(context.Background(), "test-service", nil, tm, nil, false, nil)
+		tools, err := upstream.(*Upstream).createAndRegisterGRPCTools(context.Background(), "test-service", nil, tm, nil, false, nil, nil) // toolExportPolicy
 		require.NoError(t, err)
 		assert.Nil(t, tools)
 	})
 
 	t.Run("service info not found", func(t *testing.T) {
 		parsedData := &protobufparser.ParsedMcpAnnotations{}
-		_, err := upstream.(*Upstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, nil)
+		_, err := upstream.(*Upstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, nil, nil) // toolExportPolicy
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "service info not found")
 	})
@@ -324,7 +324,7 @@ func TestGRPCUpstream_createAndRegisterGRPCTools(t *testing.T) {
 			},
 		}
 
-		_, err := upstream.(*Upstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, fds)
+		_, err := upstream.(*Upstream).createAndRegisterGRPCTools(context.Background(), "test-service", parsedData, tm, nil, false, fds, nil) // toolExportPolicy
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create protodesc files")
 	})
