@@ -101,7 +101,7 @@ make test
 ```
 
 ### Linting
-Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript).
+Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). See [Contributing](#6-contributing) for documentation standards.
 ```bash
 make lint
 ```
@@ -147,6 +147,20 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` is set in the server's environment.
+
+## 6. Contributing
+
+We maintain a "Gold Standard" for code quality and documentation.
+
+### Documentation Standards
+*   **GoDoc Compliance:** All exported functions, types, and constants must be documented.
+*   **Structure:**
+    *   **Summary:** Concise, one-line action statement.
+    *   **Parameters:** Description of each parameter.
+    *   **Returns:** Description of return values.
+    *   **Errors:** Explicit list of possible errors.
+    *   **Side Effects:** Notes on global state modification, I/O, or network calls.
+*   **Empty Calories:** Avoid comments that just repeat the function name (e.g., `// SetID sets the ID`). Explain *why* or *what* implications it has.
 
 ## License
 This project is licensed under the terms of the [Apache 2.0 License](LICENSE).

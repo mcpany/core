@@ -97,9 +97,10 @@ type ManagerInterface interface {
 	ClearResourcesForService(serviceID string)
 }
 
-// Manager is a thread-safe implementation of the
-// ManagerInterface. It uses a map to store resources and a mutex to
-// protect concurrent access.
+// Manager is a thread-safe implementation of the ManagerInterface.
+//
+// It uses a map to store resources and a mutex to protect concurrent access.
+// It also caches the list of resources to optimize read performance.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
