@@ -365,6 +365,7 @@ jobs:
           done
 
       - name: Inspect image
+        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
 
@@ -583,5 +584,6 @@ jobs:
           done
 
       - name: Inspect image
+        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect mcpany/ui:${{ needs.setup.outputs.version }}
