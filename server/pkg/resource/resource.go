@@ -103,6 +103,9 @@ type ManagerInterface interface {
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
+	// ⚡ BOLT: Secondary index for O(1) lookup of resources by service ID.
+	// Maps ServiceID -> Set of URIs
+	serviceIndex      map[string]map[string]struct{}
 	onListChangedFunc func()
 	cachedResources   []Resource
 }
@@ -113,7 +116,8 @@ type Manager struct {
 //   - *Manager: A new Manager instance.
 func NewManager() *Manager {
 	return &Manager{
-		resources: make(map[string]Resource),
+		resources:    make(map[string]Resource),
+		serviceIndex: make(map[string]map[string]struct{}),
 	}
 }
 
@@ -142,7 +146,32 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
-	rm.resources[resource.Resource().URI] = resource
+
+	uri := resource.Resource().URI
+	serviceID := resource.Service()
+
+	// Check if we are overwriting an existing resource
+	if old, ok := rm.resources[uri]; ok {
+		oldService := old.Service()
+		// If service changed, remove from old index
+		if oldService != serviceID {
+			if set, ok := rm.serviceIndex[oldService]; ok {
+				delete(set, uri)
+				if len(set) == 0 {
+					delete(rm.serviceIndex, oldService)
+				}
+			}
+		}
+	}
+
+	rm.resources[uri] = resource
+
+	// Update service index
+	if _, ok := rm.serviceIndex[serviceID]; !ok {
+		rm.serviceIndex[serviceID] = make(map[string]struct{})
+	}
+	rm.serviceIndex[serviceID][uri] = struct{}{}
+
 	rm.cachedResources = nil
 	callback = rm.onListChangedFunc
 	rm.mu.Unlock()
@@ -161,8 +190,18 @@ func (rm *Manager) AddResource(resource Resource) {
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
-	if _, ok := rm.resources[uri]; ok {
+	if res, ok := rm.resources[uri]; ok {
 		delete(rm.resources, uri)
+
+		// Remove from service index
+		serviceID := res.Service()
+		if set, ok := rm.serviceIndex[serviceID]; ok {
+			delete(set, uri)
+			if len(set) == 0 {
+				delete(rm.serviceIndex, serviceID)
+			}
+		}
+
 		rm.cachedResources = nil
 		callback = rm.onListChangedFunc
 	}
@@ -246,16 +285,19 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 // Parameters:
 //   - serviceID: The ID of the service whose resources should be cleared.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
+	// ⚡ BOLT: Optimized cleanup using secondary index.
+	// Randomized Selection from Top 5 High-Impact Targets
 	var callback func()
 	rm.mu.Lock()
-	changed := false
-	for uri, resource := range rm.resources {
-		if resource.Service() == serviceID {
+
+	uris, ok := rm.serviceIndex[serviceID]
+	if ok && len(uris) > 0 {
+		for uri := range uris {
 			delete(rm.resources, uri)
-			changed = true
 		}
-	}
-	if changed {
+		// Clear the index entry for this service
+		delete(rm.serviceIndex, serviceID)
+
 		rm.cachedResources = nil
 		callback = rm.onListChangedFunc
 	}
