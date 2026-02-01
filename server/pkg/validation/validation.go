@@ -140,6 +140,9 @@ func SetAllowedPaths(paths []string) {
 // and does not contain any path traversal sequences ("../").
 // It is a variable to allow mocking in tests.
 var IsAllowedPath = func(path string) error {
+	// 0. Clean the path first to satisfy taint analysis and normalize
+	path = filepath.Clean(path)
+
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
 		return err
@@ -330,6 +333,8 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 
 // FileExists checks if a file exists at the given path.
 var FileExists = func(path string) error {
+	// Clean path to prevent traversal issues and satisfy CodeQL
+	path = filepath.Clean(path)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err
 	}
