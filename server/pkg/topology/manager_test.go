@@ -178,6 +178,7 @@ func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 func TestManager_RecordActivity(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
@@ -229,6 +230,7 @@ func TestManager_RecordActivity(t *testing.T) {
 func TestManager_GetStats(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
@@ -250,8 +252,6 @@ func TestManager_GetStats(t *testing.T) {
 func TestManager_GetGraph(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
-	m := NewManager(mockRegistry, mockTM)
-	defer m.Close()
 
 	svcConfig := configv1.UpstreamServiceConfig_builder{
 		Name: proto.String("test-service"),
@@ -263,7 +263,11 @@ func TestManager_GetGraph(t *testing.T) {
 		Name:      proto.String("test-tool"),
 		ServiceId: proto.String("test-service"),
 	}.Build())
+	// ListTools is called by background task AND GetGraph
 	mockTM.On("ListTools").Return([]tool.Tool{mockTool})
+
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
 
 	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false, "")
 
@@ -312,6 +316,7 @@ func TestManager_GetGraph(t *testing.T) {
 func TestManager_Middleware(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
@@ -462,6 +467,7 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 func TestManager_GetTrafficHistory(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
@@ -489,6 +495,7 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 func TestManager_SeedTrafficHistory(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 

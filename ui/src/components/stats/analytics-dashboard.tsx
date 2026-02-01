@@ -240,6 +240,58 @@ export function AnalyticsDashboard() {
                         </Card>
                     </div>
 
+                    {/* Context History Chart */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Context Usage History</CardTitle>
+                            <CardDescription>
+                                Total estimated tokens across all tools over time.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="pl-2">
+                            <div className="h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={trafficData}>
+                                        <defs>
+                                            <linearGradient id="colorContext" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <XAxis
+                                            dataKey="time"
+                                            stroke="hsl(var(--muted-foreground))"
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                        />
+                                        <YAxis
+                                            stroke="hsl(var(--muted-foreground))"
+                                            fontSize={12}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            tickFormatter={(value) => formatTokenCount(value)}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground))' }}
+                                            labelStyle={{ color: 'hsl(var(--foreground))' }}
+                                            formatter={(value: number) => [formatTokenCount(value), 'Tokens']}
+                                        />
+                                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} vertical={false} />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="contextTokens"
+                                            stroke="#8b5cf6"
+                                            fillOpacity={1}
+                                            fill="url(#colorContext)"
+                                            isAnimationActive={false}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                         <Card className="col-span-4">
                             <CardHeader>

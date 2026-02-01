@@ -12,6 +12,7 @@ import (
 	topologyv1 "github.com/mcpany/core/proto/topology/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/serviceregistry"
+	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
@@ -58,10 +59,11 @@ type Stats struct {
 
 // MinuteStats tracks stats for a single minute.
 type MinuteStats struct {
-	Requests     int64
-	Errors       int64
-	Latency      int64 // Total latency in ms
-	ServiceStats map[string]*ServiceTrafficStats
+	Requests      int64
+	Errors        int64
+	Latency       int64 // Total latency in ms
+	ContextTokens int64 // Total context tokens (snapshot at end of minute)
+	ServiceStats  map[string]*ServiceTrafficStats
 }
 
 // ServiceTrafficStats tracks stats for a single service in a minute.
@@ -73,10 +75,11 @@ type ServiceTrafficStats struct {
 
 // TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
-	Time    string `json:"time"`
-	Total   int64  `json:"requests"` // mapped to "requests" for UI
-	Errors  int64  `json:"errors"`
-	Latency int64  `json:"latency"`
+	Time          string `json:"time"`
+	Total         int64  `json:"requests"` // mapped to "requests" for UI
+	Errors        int64  `json:"errors"`
+	Latency       int64  `json:"latency"`
+	ContextTokens int64  `json:"contextTokens"`
 }
 
 // NewManager creates a new Topology Manager.
@@ -100,14 +103,46 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 
 // processLoop handles asynchronous activity recording to avoid locking the request path.
 func (m *Manager) processLoop() {
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+
+	// Initial record
+	m.recordContextUsage()
+
 	for {
 		select {
 		case <-m.shutdownCh:
 			return
 		case event := <-m.activityCh:
 			m.handleActivity(event)
+		case <-ticker.C:
+			m.recordContextUsage()
 		}
 	}
+}
+
+// recordContextUsage calculates and stores the total context tokens of all tools.
+func (m *Manager) recordContextUsage() {
+	tools := m.toolManager.ListTools()
+	totalTokens := 0
+	t := tokenizer.NewSimpleTokenizer()
+
+	for _, tool := range tools {
+		// Estimate tokens for the tool definition
+		c, _ := tokenizer.CountTokensInValue(t, tool.Tool())
+		totalTokens += c
+	}
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	now := time.Now().Truncate(time.Minute).Unix()
+	if _, ok := m.trafficHistory[now]; !ok {
+		m.trafficHistory[now] = &MinuteStats{
+			ServiceStats: make(map[string]*ServiceTrafficStats),
+		}
+	}
+	m.trafficHistory[now].ContextTokens = int64(totalTokens)
 }
 
 // handleActivity processes a single activity event.
@@ -287,8 +322,9 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 		key := t.Unix()
 
 		stats := m.trafficHistory[key]
-		var reqs, errs, lat int64
+		var reqs, errs, lat, contextTokens int64
 		if stats != nil {
+			contextTokens = stats.ContextTokens
 			if serviceID != "" && stats.ServiceStats != nil {
 				if sStats, ok := stats.ServiceStats[serviceID]; ok {
 					reqs = sStats.Requests
@@ -315,10 +351,11 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 		}
 
 		points = append(points, TrafficPoint{
-			Time:    t.Format("15:04"),
-			Total:   reqs,
-			Errors:  errs,
-			Latency: avgLat,
+			Time:          t.Format("15:04"),
+			Total:         reqs,
+			Errors:        errs,
+			Latency:       avgLat,
+			ContextTokens: contextTokens,
 		})
 	}
 	return points
@@ -363,9 +400,10 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
 		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
-			Requests: p.Total,
-			Errors:   p.Errors,
-			Latency:  p.Latency * p.Total, // Reverse average
+			Requests:      p.Total,
+			Errors:        p.Errors,
+			Latency:       p.Latency * p.Total, // Reverse average
+			ContextTokens: p.ContextTokens,
 		}
 		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 

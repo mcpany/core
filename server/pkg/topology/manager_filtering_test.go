@@ -7,12 +7,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestManager_Filtering(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := new(MockToolManager)
+	mockTM.On("ListTools").Return([]tool.Tool{})
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
