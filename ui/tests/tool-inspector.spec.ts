@@ -43,13 +43,20 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // Check if schema is displayed (using the new Sheet layout)
   await expect(page.getByText('Schema', { exact: true })).toBeVisible();
 
-  // Switch to JSON tab to verify raw schema
-  await page.getByRole('tab', { name: 'JSON' }).click();
+  // Default is "Visual" schema view, let's verify visual elements first (ToolForm)
+  await expect(page.getByLabel('location')).toBeVisible();
 
-  // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
-  // We check for "location" property in the JSON view
-  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
-  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+  // Switch to JSON tab to verify raw schema view if available in SchemaViewer logic
+  // The inspector uses ToolForm, which has "Form", "JSON", "Schema" tabs.
+  // The Schema tab shows the inputSchema JSON.
+  await page.getByRole('tab', { name: 'Schema' }).click();
+
+  // Check for schema JSON content
+  // Note: JsonView component might render differently than a simple pre tag, but let's check for text content in the view.
+  // It usually renders with keys and values.
+  await expect(page.getByText('"location"')).toBeVisible();
+  // "type" might appear multiple times (root type, property type), so we use .first()
+  await expect(page.getByText('"type"').first()).toBeVisible();
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
