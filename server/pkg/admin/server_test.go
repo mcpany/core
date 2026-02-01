@@ -10,6 +10,7 @@ import (
 
 	pb "github.com/mcpany/core/proto/admin/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/discovery"
@@ -297,6 +298,14 @@ func (m *mockStorage) DeleteUser(ctx context.Context, id string) error {
 		return m.deleteUserErr
 	}
 	return m.Store.DeleteUser(ctx, id)
+}
+
+func (m *mockStorage) SaveLog(ctx context.Context, log *loggingv1.LogEntry) error {
+	return m.Store.SaveLog(ctx, log)
+}
+
+func (m *mockStorage) ListLogs(ctx context.Context, filter *loggingv1.LogFilter) ([]*loggingv1.LogEntry, error) {
+	return m.Store.ListLogs(ctx, filter)
 }
 
 func TestServer_UserManagement_Errors(t *testing.T) {

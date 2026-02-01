@@ -13,6 +13,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
 	"github.com/mcpany/core/server/pkg/app"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
@@ -258,4 +259,12 @@ func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1
 func (m *MockStorage) Close() error {
 	args := m.Called()
 	return args.Error(0)
+}
+
+func (m *MockStorage) SaveLog(ctx context.Context, log *loggingv1.LogEntry) error {
+	return nil
+}
+
+func (m *MockStorage) ListLogs(ctx context.Context, filter *loggingv1.LogFilter) ([]*loggingv1.LogEntry, error) {
+	return nil, nil
 }

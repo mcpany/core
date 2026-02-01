@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/storage/memory"
@@ -297,6 +298,14 @@ func (m *MockStorage) SaveSecret(ctx context.Context, secret *configv1.Secret) e
 		return errors.New("save failed")
 	}
 	return m.Storage.SaveSecret(ctx, secret)
+}
+
+func (m *MockStorage) SaveLog(ctx context.Context, log *loggingv1.LogEntry) error {
+	return m.Storage.SaveLog(ctx, log)
+}
+
+func (m *MockStorage) ListLogs(ctx context.Context, filter *loggingv1.LogFilter) ([]*loggingv1.LogEntry, error) {
+	return m.Storage.ListLogs(ctx, filter)
 }
 
 func TestHandleCreateService_SaveError(t *testing.T) {

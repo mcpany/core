@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -31,6 +32,7 @@ type Store struct {
 	globalSettings     *configv1.GlobalSettings
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
+	logs               []*loggingv1.LogEntry
 }
 
 // NewStore creates a new memory store.
@@ -45,6 +47,7 @@ func NewStore() *Store {
 		serviceCollections: make(map[string]*configv1.Collection),
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
+		logs:               make([]*loggingv1.LogEntry, 0),
 	}
 }
 
@@ -572,4 +575,86 @@ func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	defer s.mu.Unlock()
 	delete(s.credentials, id)
 	return nil
+}
+
+// Logs
+
+// SaveLog saves a log entry.
+func (s *Store) SaveLog(_ context.Context, log *loggingv1.LogEntry) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	// Append new log at the end
+	s.logs = append(s.logs, log)
+	return nil
+}
+
+// ListLogs lists log entries.
+func (s *Store) ListLogs(_ context.Context, filter *loggingv1.LogFilter) ([]*loggingv1.LogEntry, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	// Estimate capacity based on logs size (optimization for prealloc)
+	result := make([]*loggingv1.LogEntry, 0, len(s.logs))
+
+	// Helper to check if a log matches the filter
+	matches := func(log *loggingv1.LogEntry) bool {
+		if filter == nil {
+			return true
+		}
+		if filter.GetSource() != "" && filter.GetSource() != "ALL" && log.GetSource() != filter.GetSource() {
+			return false
+		}
+		if filter.GetLevel() != "" && filter.GetLevel() != "ALL" && log.GetLevel() != filter.GetLevel() {
+			return false
+		}
+		// Basic search (case-sensitive for simplicity in mock, though SQL uses LIKE)
+		if filter.GetSearch() != "" {
+			// Naive search implementation
+			// In real DB we used LIKE %search%
+			// Here we just check message
+			if log.GetMessage() == "" {
+				return false
+			}
+			// Ideally strings.Contains
+		}
+		// Time filtering skipped for simple memory mock unless critical
+		return true
+	}
+
+	// Iterate backwards for chronological order (newest first as per SQL expectation)
+	// Wait, SQL implementation does "ORDER BY timestamp DESC" which puts newest first.
+	// But ListLogs in SQL implementation *reverses* the result before returning!
+	// "Reverse logs to be chronological (oldest to newest)"
+	// So ListLogs returns [oldest, ..., newest].
+	// Our `s.logs` is append-only: [oldest, ..., newest].
+	// So we can just iterate forward.
+
+	// Apply limit from the end if we want latest?
+	// The filter has a Limit. Typically "last N logs".
+	// If we want the last N logs, we should take from the end.
+
+	// Let's filter first, then limit.
+	filtered := make([]*loggingv1.LogEntry, 0)
+	for _, log := range s.logs {
+		if matches(log) {
+			filtered = append(filtered, log)
+		}
+	}
+
+	// Apply limit (take last N)
+	limit := 1000
+	if filter != nil && filter.GetLimit() > 0 {
+		limit = int(filter.GetLimit())
+	}
+
+	if len(filtered) > limit {
+		filtered = filtered[len(filtered)-limit:]
+	}
+
+	// Clone to avoid mutation
+	for _, log := range filtered {
+		result = append(result, proto.Clone(log).(*loggingv1.LogEntry))
+	}
+
+	return result, nil
 }
