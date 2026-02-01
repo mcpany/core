@@ -83,3 +83,43 @@ func TestManager_GetStatuses(t *testing.T) {
 	assert.Equal(t, "p1", statuses[0].Name)
 	assert.Equal(t, "PENDING", statuses[0].Status)
 }
+
+type SlowMockProvider struct {
+	MockProvider
+	delay time.Duration
+}
+
+func (m *SlowMockProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
+	time.Sleep(m.delay)
+	return m.MockProvider.Discover(ctx)
+}
+
+func TestManager_Run_Parallel(t *testing.T) {
+	manager := NewManager()
+	// Use a longer delay to minimize the impact of CI scheduler overhead
+	delay := 250 * time.Millisecond
+
+	// Provider 1: Slow
+	p1 := &SlowMockProvider{
+		MockProvider: MockProvider{name: "p1"},
+		delay:        delay,
+	}
+	manager.RegisterProvider(p1)
+
+	// Provider 2: Slow
+	p2 := &SlowMockProvider{
+		MockProvider: MockProvider{name: "p2"},
+		delay:        delay,
+	}
+	manager.RegisterProvider(p2)
+
+	start := time.Now()
+	manager.Run(context.Background())
+	duration := time.Since(start)
+
+	// If sequential, it would be >= 500ms (2 * delay).
+	// If parallel, it should be ~250ms (delay) + overhead.
+	// We assert that it takes less than 450ms, allowing for 200ms of scheduling overhead,
+	// which is generous enough for most CI environments while still proving parallelism.
+	assert.Less(t, duration, 450*time.Millisecond, "Discovery should be parallel (took %v, expected < 450ms)", duration)
+}
