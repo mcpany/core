@@ -71,19 +71,23 @@ func IsValidBindAddress(s string) error {
 //
 // IsSecurePath is a variable to allow mocking in tests.
 var IsSecurePath = func(path string) error {
-	// Check original path for traversal attempts before cleaning
-	parts := strings.Split(path, string(os.PathSeparator))
-	for _, part := range parts {
-		if part == ".." {
-			return fmt.Errorf("path contains '..', which is not allowed")
+	// ⚡ BOLT: Fast path to avoid expensive string splitting for safe paths.
+	// Randomized Selection from Top 5 High-Impact Targets
+	if strings.Contains(path, "..") {
+		// Check original path for traversal attempts before cleaning
+		parts := strings.Split(path, string(os.PathSeparator))
+		for _, part := range parts {
+			if part == ".." {
+				return fmt.Errorf("path contains '..', which is not allowed")
+			}
 		}
-	}
 
-	clean := filepath.Clean(path)
-	parts = strings.Split(clean, string(os.PathSeparator))
-	for _, part := range parts {
-		if part == ".." {
-			return fmt.Errorf("path contains '..', which is not allowed")
+		clean := filepath.Clean(path)
+		parts = strings.Split(clean, string(os.PathSeparator))
+		for _, part := range parts {
+			if part == ".." {
+				return fmt.Errorf("path contains '..', which is not allowed")
+			}
 		}
 	}
 	return nil
