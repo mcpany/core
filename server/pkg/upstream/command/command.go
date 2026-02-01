@@ -36,9 +36,11 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _: The context (unused).
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -51,13 +53,28 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
-// Returns the result.
+// Returns:
+//   - upstream.Upstream: A new Upstream instance.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Register processes the configuration for a command-line service, creates a
 // new tool for each defined command, and registers them with the tool manager.
+//
+// Parameters:
+//   - ctx: The context for the registration.
+//   - serviceConfig: The service configuration.
+//   - toolManager: The tool manager.
+//   - promptManager: The prompt manager.
+//   - resourceManager: The resource manager.
+//   - isReload: Whether this is a configuration reload.
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: The discovered tools.
+//   - []*configv1.ResourceDefinition: The discovered resources.
+//   - error: An error if the registration fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

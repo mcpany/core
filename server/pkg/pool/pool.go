@@ -35,13 +35,16 @@ var (
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if the operation fails.
 	Close() error
 	// IsHealthy returns true if the client's connection is active and usable.
 	//
-	// ctx is the context for the request.
+	// Parameters:
+	//   - ctx: The context for the request.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if healthy.
 	IsHealthy(ctx context.Context) bool
 }
 
@@ -60,7 +63,8 @@ type Pool[T ClosableClient] interface {
 	Close() error
 	// Len returns the number of idle clients currently in the pool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - int: The number of idle clients.
 	Len() int
 }
 
@@ -96,8 +100,11 @@ type poolImpl[T ClosableClient] struct {
 //   - maxSize: The maximum number of clients the pool can hold (active + idle).
 //   - idleTimeout: (Not yet used) Intended for future implementation of idle
 //     connection handling.
+//   - disableHealthCheck: Whether to disable health checks on creation.
 //
-// Returns a new `Pool` instance or an error if the configuration is invalid.
+// Returns:
+//   - Pool[T]: A new `Pool` instance.
+//   - error: An error if the configuration is invalid.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	initialSize, maxIdleSize, maxSize int,
@@ -199,8 +206,9 @@ func (p *poolImpl[T]) release(n int64) {
 //   - ctx: The context for the operation, which can be used to cancel the wait
 //     for a client.
 //
-// Returns a client from the pool or an error if the pool is closed, the context
-// is canceled, or the factory fails to create a new client.
+// Returns:
+//   - T: A client from the pool.
+//   - error: An error if the pool is closed, the context is canceled, or the factory fails to create a new client.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -451,7 +459,8 @@ func (p *poolImpl[T]) Close() error {
 
 // Len returns the current number of idle clients in the pool.
 //
-// Returns the result.
+// Returns:
+//   - int: The number of idle clients.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -462,7 +471,8 @@ type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - int: The number of idle clients.
 	Len() int
 }
 
@@ -477,6 +487,9 @@ type Manager struct {
 
 // NewManager creates and returns a new pool Manager for managing multiple named
 // connection pools.
+//
+// Returns:
+//   - *Manager: A new Manager instance.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -508,7 +521,8 @@ func (m *Manager) Register(name string, pool any) {
 
 // Deregister closes and removes a pool from the manager.
 //
-// name is the name of the resource.
+// Parameters:
+//   - name: The name of the resource to remove.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -531,8 +545,9 @@ func (m *Manager) Deregister(name string) {
 //   - m: The Manager instance.
 //   - name: The name of the pool to retrieve.
 //
-// Returns the typed `Pool` and a boolean indicating whether the pool was found
-// and of the correct type.
+// Returns:
+//   - Pool[T]: The typed pool.
+//   - bool: True if the pool was found and of the correct type.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

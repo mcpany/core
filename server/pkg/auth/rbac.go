@@ -15,20 +15,24 @@ const RolesContextKey authContextKey = "user_roles"
 
 // ContextWithRoles returns a new context with the user roles.
 //
-// ctx is the context for the request.
-// roles is the roles.
+// Parameters:
+//   - ctx: The context for the request.
+//   - roles: The roles to add.
 //
-// Returns the result.
+// Returns:
+//   - context.Context: The new context with the roles.
 func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 	return context.WithValue(ctx, RolesContextKey, roles)
 }
 
 // RolesFromContext returns the user roles from the context.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx: The context for the request.
 //
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - []string: The user roles.
+//   - bool: True if the roles were found in the context.
 func RolesFromContext(ctx context.Context) ([]string, bool) {
 	val, ok := ctx.Value(RolesContextKey).([]string)
 	return val, ok
@@ -40,17 +44,20 @@ type RBACEnforcer struct {
 
 // NewRBACEnforcer creates a new RBACEnforcer.
 //
-// Returns the result.
+// Returns:
+//   - *RBACEnforcer: A new RBACEnforcer instance.
 func NewRBACEnforcer() *RBACEnforcer {
 	return &RBACEnforcer{}
 }
 
 // HasRole checks if the given user has the specified role.
 //
-// user is the user.
-// role is the role.
+// Parameters:
+//   - user: The user to check.
+//   - role: The role to check for.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if the user has the role.
 func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 	if user == nil {
 		return false
@@ -60,10 +67,12 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 
 // HasAnyRole checks if the user has at least one of the specified roles.
 //
-// user is the user.
-// roles is the roles.
+// Parameters:
+//   - user: The user to check.
+//   - roles: The roles to check for.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if the user has at least one of the roles.
 func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 	if user == nil {
 		return false
@@ -78,10 +87,12 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 
 // HasRoleInContext checks if the context contains the specified role.
 //
-// ctx is the context for the request.
-// role is the role.
+// Parameters:
+//   - ctx: The context for the request.
+//   - role: The role to check for.
 //
-// Returns true if successful.
+// Returns:
+//   - bool: True if the role is present in the context.
 func (e *RBACEnforcer) HasRoleInContext(ctx context.Context, role string) bool {
 	roles, ok := RolesFromContext(ctx)
 	if !ok {

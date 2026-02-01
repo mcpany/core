@@ -30,16 +30,19 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
-// Returns the result.
+// Returns:
+//   - *Upstream: A new Upstream instance.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _: The context (unused).
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -55,17 +58,19 @@ func ptr(s string) *string {
 
 // Register discovers and registers tools from the SQL configuration.
 //
-// ctx is the context for the request.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - ctx: The context for the request.
+//   - serviceConfig: The service configuration.
+//   - toolManager: The tool manager.
+//   - _: The prompt manager (unused).
+//   - _: The resource manager (unused).
+//   - _: Reload flag (unused).
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: The discovered tools.
+//   - []*configv1.ResourceDefinition: The discovered resources.
+//   - error: An error if the operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

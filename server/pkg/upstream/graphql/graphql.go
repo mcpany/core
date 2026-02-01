@@ -93,16 +93,19 @@ type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
-// Returns the result.
+// Returns:
+//   - upstream.Upstream: A new Upstream instance.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _: The context (unused).
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -174,11 +177,13 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Parameters:
+//   - ctx: The context for the request.
+//   - req: The execution request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - any: The result of the query.
+//   - error: An error if the query fails.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -203,17 +208,19 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 
 // Register inspects the GraphQL upstream service and registers its capabilities.
 //
-// ctx is the context for the request.
-// serviceConfig is the serviceConfig.
-// toolManager is the toolManager.
-// _ is an unused parameter.
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Parameters:
+//   - ctx: The context for the registration.
+//   - serviceConfig: The service configuration.
+//   - toolManager: The tool manager.
+//   - _: The prompt manager (unused).
+//   - _: The resource manager (unused).
+//   - _: Reload flag (unused).
 //
-// Returns the result.
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: The discovered tools.
+//   - []*configv1.ResourceDefinition: The discovered resources.
+//   - error: An error if the registration fails.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

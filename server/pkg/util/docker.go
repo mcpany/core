@@ -43,6 +43,9 @@ func IsDockerSocketAccessible() bool {
 
 // CloseDockerClient closes the shared Docker client.
 // It should be called on application shutdown.
+//
+// Returns:
+//   None.
 func CloseDockerClient() {
 	if dockerClient != nil {
 		_ = dockerClient.Close()

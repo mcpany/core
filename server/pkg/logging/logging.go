@@ -24,6 +24,9 @@ var (
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
 // test cases. This function should not be used in production code.
+//
+// Returns:
+//   None.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -83,7 +86,7 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 // with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
 // Returns:
-//   - The global `*slog.Logger` instance.
+//   - *slog.Logger: The global logger instance.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -109,7 +112,7 @@ func GetLogger() *slog.Logger {
 //   - level: The log level from the configuration.
 //
 // Returns:
-//   - The corresponding slog.Level.
+//   - slog.Level: The corresponding slog.Level.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

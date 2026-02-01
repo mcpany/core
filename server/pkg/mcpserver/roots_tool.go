@@ -23,7 +23,8 @@ type RootsTool struct {
 
 // NewRootsTool creates a new RootsTool.
 //
-// Returns the result.
+// Returns:
+//   - *RootsTool: A new RootsTool instance.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -47,25 +48,29 @@ func NewRootsTool() *RootsTool {
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The protobuf definition.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
 // Execute executes the tool.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Parameters:
+//   - ctx: The context for the request.
+//   - _: The execution request (unused).
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - any: The result of the execution.
+//   - error: An error if the operation fails.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -82,7 +87,8 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 
 // GetCacheConfig returns nil as this tool shouldn't be cached aggressively or depends on client state.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: Always nil.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

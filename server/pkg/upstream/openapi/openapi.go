@@ -56,6 +56,9 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
+//
+// Returns:
+//   - upstream.Upstream: A new OpenAPIUpstream instance.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -71,6 +74,20 @@ func NewOpenAPIUpstream() upstream.Upstream {
 // Register processes an OpenAPI service configuration. It parses the OpenAPI
 // specification, extracts the operations, converts them into tools, and
 // registers them with the tool manager.
+//
+// Parameters:
+//   - ctx: The context for the registration.
+//   - serviceConfig: The service configuration.
+//   - toolManager: The tool manager.
+//   - promptManager: The prompt manager.
+//   - resourceManager: The resource manager.
+//   - isReload: Whether this is a configuration reload.
+//
+// Returns:
+//   - string: The service ID.
+//   - []*configv1.ToolDefinition: The discovered tools.
+//   - []*configv1.ResourceDefinition: The discovered resources.
+//   - error: An error if the registration fails.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

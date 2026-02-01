@@ -15,25 +15,75 @@ import (
 // ManagerInterface defines the interface for managing alerts.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
+	//
+	// Returns:
+	//   - []*Alert: A list of alerts.
 	ListAlerts() []*Alert
 	// GetAlert retrieves an alert by its ID.
+	//
+	// Parameters:
+	//   - id: The ID of the alert.
+	//
+	// Returns:
+	//   - *Alert: The alert if found, or nil.
 	GetAlert(id string) *Alert
 	// CreateAlert creates a new alert.
+	//
+	// Parameters:
+	//   - alert: The alert to create.
+	//
+	// Returns:
+	//   - *Alert: The created alert.
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
+	//
+	// Parameters:
+	//   - id: The ID of the alert to update.
+	//   - alert: The new alert data.
+	//
+	// Returns:
+	//   - *Alert: The updated alert.
 	UpdateAlert(id string, alert *Alert) *Alert
 
 	// Rules
 
 	// ListRules returns a list of all alert rules.
+	//
+	// Returns:
+	//   - []*AlertRule: A list of alert rules.
 	ListRules() []*AlertRule
 	// GetRule retrieves an alert rule by its ID.
+	//
+	// Parameters:
+	//   - id: The ID of the rule.
+	//
+	// Returns:
+	//   - *AlertRule: The rule if found, or nil.
 	GetRule(id string) *AlertRule
 	// CreateRule creates a new alert rule.
+	//
+	// Parameters:
+	//   - rule: The rule to create.
+	//
+	// Returns:
+	//   - *AlertRule: The created rule.
 	CreateRule(rule *AlertRule) *AlertRule
 	// UpdateRule updates an existing alert rule.
+	//
+	// Parameters:
+	//   - id: The ID of the rule to update.
+	//   - rule: The new rule data.
+	//
+	// Returns:
+	//   - *AlertRule: The updated rule.
 	UpdateRule(id string, rule *AlertRule) *AlertRule
 	// DeleteRule deletes an alert rule by its ID.
+	//
+	// Parameters:
+	//   - id: The ID of the rule to delete.
+	//
+	// Returns:
+	//   - error: An error if the deletion fails.
 	DeleteRule(id string) error
 }
 
@@ -45,6 +95,9 @@ type Manager struct {
 }
 
 // NewManager creates a new Manager and seeds it with initial data.
+//
+// Returns:
+//   - *Manager: A new Manager instance.
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),
@@ -69,6 +122,9 @@ func (m *Manager) seedData() {
 }
 
 // ListAlerts returns all alerts sorted by timestamp descending.
+//
+// Returns:
+//   - []*Alert: A list of alerts.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -84,6 +140,12 @@ func (m *Manager) ListAlerts() []*Alert {
 }
 
 // GetAlert returns an alert by ID, or nil if not found.
+//
+// Parameters:
+//   - id: The ID of the alert.
+//
+// Returns:
+//   - *Alert: The alert if found, or nil.
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -91,6 +153,12 @@ func (m *Manager) GetAlert(id string) *Alert {
 }
 
 // CreateAlert creates a new alert.
+//
+// Parameters:
+//   - alert: The alert to create.
+//
+// Returns:
+//   - *Alert: The created alert.
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -105,6 +173,13 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 }
 
 // UpdateAlert updates an existing alert.
+//
+// Parameters:
+//   - id: The ID of the alert to update.
+//   - alert: The new alert data.
+//
+// Returns:
+//   - *Alert: The updated alert.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -121,6 +196,9 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 }
 
 // ListRules returns all rules.
+//
+// Returns:
+//   - []*AlertRule: A list of alert rules.
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -135,6 +213,12 @@ func (m *Manager) ListRules() []*AlertRule {
 }
 
 // GetRule returns a rule by ID.
+//
+// Parameters:
+//   - id: The ID of the rule.
+//
+// Returns:
+//   - *AlertRule: The rule if found, or nil.
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -142,6 +226,12 @@ func (m *Manager) GetRule(id string) *AlertRule {
 }
 
 // CreateRule creates a new rule.
+//
+// Parameters:
+//   - rule: The rule to create.
+//
+// Returns:
+//   - *AlertRule: The created rule.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -154,6 +244,13 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 }
 
 // UpdateRule updates a rule.
+//
+// Parameters:
+//   - id: The ID of the rule to update.
+//   - rule: The new rule data.
+//
+// Returns:
+//   - *AlertRule: The updated rule.
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -173,6 +270,12 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 }
 
 // DeleteRule deletes a rule.
+//
+// Parameters:
+//   - id: The ID of the rule to delete.
+//
+// Returns:
+//   - error: An error if the deletion fails.
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

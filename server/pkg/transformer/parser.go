@@ -40,7 +40,8 @@ var (
 
 // NewTextParser returns a shared instance of TextParser.
 //
-// Returns the result.
+// Returns:
+//   - *TextParser: A shared TextParser instance.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -53,10 +54,13 @@ func NewTextParser() *TextParser {
 // Transform takes a map of data and a Go template string and returns a byte
 // slice containing the transformed output.
 //
-// templateStr is the Go template to be executed.
-// data is the map containing the data to be used in the template.
-// It returns the transformed data as a byte slice or an error if the
-// transformation fails.
+// Parameters:
+//   - templateStr: The Go template string.
+//   - data: The data to apply to the template.
+//
+// Returns:
+//   - []byte: The transformed data.
+//   - error: An error if the transformation fails.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
@@ -64,12 +68,15 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 // Parse extracts data from an input byte slice based on the specified input
 // type and configuration.
 //
-// inputType specifies the format of the input data ("json", "xml", "text", or "jq").
-// input is the raw byte slice containing the data to be parsed.
-// config is a map where keys are the desired output keys and values are the
-// extraction rules (JSONPath, XPath, or regex) for the corresponding data.
-// jqQuery is the JQ query string (only used when inputType is "jq").
-// It returns the extracted data (as a map or any for JQ) or an error if parsing fails.
+// Parameters:
+//   - inputType: The type of input ("json", "xml", "text", "jq").
+//   - input: The raw input data.
+//   - config: A map of keys to extraction rules (paths/regex).
+//   - jqQuery: A JQ query string (only used if inputType is "jq").
+//
+// Returns:
+//   - any: The extracted data.
+//   - error: An error if parsing fails.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

@@ -17,10 +17,12 @@ import (
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
-	// text is the text.
+	// Parameters:
+	//   - text: The input text.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - int: The token count.
+	//   - error: An error if the operation fails.
 	CountTokens(text string) (int, error)
 }
 
@@ -30,17 +32,20 @@ type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer creates a new SimpleTokenizer.
 //
-// Returns the result.
+// Returns:
+//   - *SimpleTokenizer: A new SimpleTokenizer instance.
 func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
 
 // CountTokens counts tokens in text using the simple heuristic.
 //
-// text is the text.
+// Parameters:
+//   - text: The input text.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - int: The token count.
+//   - error: An error if the operation fails.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -60,17 +65,20 @@ type WordTokenizer struct {
 
 // NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3.
 //
-// Returns the result.
+// Returns:
+//   - *WordTokenizer: A new WordTokenizer instance.
 func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
 
 // CountTokens counts tokens in text using the word-based heuristic.
 //
-// text is the text.
+// Parameters:
+//   - text: The input text.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - int: The token count.
+//   - error: An error if the operation fails.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -151,11 +159,13 @@ func countWords(text string) int {
 
 // CountTokensInValue recursively counts tokens in arbitrary structures.
 //
-// t is the t.
-// v is the v.
+// Parameters:
+//   - t: The tokenizer to use.
+//   - v: The value to count tokens in.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - int: The total token count.
+//   - error: An error if the operation fails.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// OPTIMIZATION: Handle common primitive types and simple collections
 	// without allocating the 'visited' map. This significantly improves performance

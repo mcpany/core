@@ -69,7 +69,8 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 
 // NewLocalExecutor creates a new local command executor.
 //
-// Returns the result.
+// Returns:
+//   - Executor: A new local executor.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }

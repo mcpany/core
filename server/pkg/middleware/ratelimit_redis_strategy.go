@@ -22,7 +22,8 @@ type RedisStrategy struct {
 
 // NewRedisStrategy creates a new RedisStrategy.
 //
-// Returns the result.
+// Returns:
+//   - *RedisStrategy: A new RedisStrategy instance.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }
@@ -34,14 +35,16 @@ type cachedRedisClient struct {
 
 // Create creates a new RedisLimiter.
 //
-// _ is an unused parameter.
-// serviceID is the serviceID.
-// limitScopeKey is the limitScopeKey.
-// partitionKey is the partitionKey.
-// config holds the configuration settings.
+// Parameters:
+//   - _: The context (unused).
+//   - serviceID: The service ID.
+//   - limitScopeKey: The limit scope key.
+//   - partitionKey: The partition key.
+//   - config: The rate limit configuration.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - Limiter: A new RedisLimiter.
+//   - error: An error if the operation fails.
 func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
