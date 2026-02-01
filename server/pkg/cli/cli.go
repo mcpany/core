@@ -13,18 +13,20 @@ import (
 // JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes
 // JSON-encoded data from a reader.
 type JSONExecutor struct {
-	// in is the writer to which the JSON-encoded data is sent.
+	// in is the writer where JSON commands are written to (e.g. stdin of a process).
 	in io.Writer
-	// out is the reader from which the JSON-encoded data is read.
+	// out is the reader where JSON responses are read from (e.g. stdout of a process).
 	out io.Reader
 }
 
 // NewJSONExecutor creates a new JSONExecutor with the given writer and reader.
 //
-// in is the in.
-// out is the out.
+// Parameters:
+//   - in: io.Writer. The destination for writing JSON requests.
+//   - out: io.Reader. The source for reading JSON responses.
 //
-// Returns the result.
+// Returns:
+//   - *JSONExecutor: A new JSONExecutor instance.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,

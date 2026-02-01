@@ -207,10 +207,12 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 
 // CalculateToolResultTokens calculates the number of tokens in a tool result.
 //
-// t is the t.
-// result is the result.
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
+//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
 //
-// Returns the result.
+// Returns:
+//   - int: The estimated token count.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

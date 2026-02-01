@@ -24,30 +24,40 @@ type Bus[T any] interface {
 	// is sent to each subscriber's channel, and the handler is invoked by a
 	// dedicated goroutine for that subscriber.
 	//
-	// ctx is the context for the publish operation.
-	// topic is the topic to publish the message to.
-	// msg is the message to be sent.
+	// Parameters:
+	//   - ctx: context.Context. Controls the lifecycle of the publish operation (e.g. timeouts).
+	//   - topic: string. The destination topic for the message.
+	//   - msg: T. The payload message to be broadcasted.
+	//
+	// Returns:
+	//   - error: An error if the publish operation fails (e.g. underlying transport error).
 	Publish(ctx context.Context, topic string, msg T) error
 
 	// Subscribe registers a handler function for a given topic. It starts a
 	// dedicated goroutine for the subscription to process messages from a
 	// channel.
 	//
-	// ctx is the context for the subscribe operation.
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler.
+	// Parameters:
+	//   - ctx: context.Context. Controls the setup of the subscription. Note that context cancellation
+	//     may not automatically unsubscribe depending on implementation; use the returned unsubscribe function.
+	//   - topic: string. The topic to listen to.
+	//   - handler: func(T). The callback function invoked for each received message.
+	//
+	// Returns:
+	//   - func(): A cleanup function that removes the subscription when called.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
 	// SubscribeOnce registers a handler function that will be invoked only once
 	// for a given topic. After the handler is called, the subscription is
 	// automatically removed.
 	//
-	// ctx is the context for the subscribe operation.
-	// topic is the topic to subscribe to.
-	// handler is the function to be called with the message.
-	// It returns a function that can be called to unsubscribe the handler
-	// before it has been invoked.
+	// Parameters:
+	//   - ctx: context.Context. Controls the setup of the subscription.
+	//   - topic: string. The topic to listen to.
+	//   - handler: func(T). The callback function invoked for the single received message.
+	//
+	// Returns:
+	//   - func(): A cleanup function that removes the subscription if called before the first message.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 

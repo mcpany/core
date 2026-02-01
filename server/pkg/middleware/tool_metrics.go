@@ -83,9 +83,12 @@ type ToolMetricsMiddleware struct {
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
-// t is the t.
+// Parameters:
+//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
+//     If nil, a simple default tokenizer is used.
 //
-// Returns the result.
+// Returns:
+//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
