@@ -11,6 +11,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -310,17 +311,15 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 
 	// Sentinel Update: We now sanitize instead of block for usability.
 	// Input should be escaped and result in a safe string literal print.
-	assert.NoError(t, err)
-	if err == nil {
-		resMap, ok := res.(map[string]interface{})
-		assert.True(t, ok)
-		stdout, _ := resMap["stdout"].(string)
-		// It should print the literal string: '); print("INJECTED"); print('
-		// If code executed, it would print "INJECTED" (and empty strings).
-		// We verify it printed the literal characters like parens and quotes which proves it was treated as string.
-		assert.Contains(t, stdout, "INJECTED", "Should print literal content")
-		assert.Contains(t, stdout, ");", "Should print literal characters")
-	}
+	require.NoError(t, err)
+	resMap, ok := res.(map[string]interface{})
+	require.True(t, ok)
+	stdout, _ := resMap["stdout"].(string)
+	// It should print the literal string: '); print("INJECTED"); print('
+	// If code executed, it would print "INJECTED" (and empty strings).
+	// We verify it printed the literal characters like parens and quotes which proves it was treated as string.
+	assert.Contains(t, stdout, "INJECTED", "Should print literal content")
+	assert.Contains(t, stdout, ");", "Should print literal characters")
 }
 
 func TestLocalCommandTool_ShellInjection_ControlChars(t *testing.T) {

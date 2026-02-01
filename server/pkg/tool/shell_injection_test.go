@@ -10,6 +10,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -27,9 +28,9 @@ func TestShellInjection_Regression(t *testing.T) {
 		// Input "'; echo 'pwned'; '" -> Escaped to "\'; echo \'pwned\'; \'"
 		// Python output should be the literal string.
 		res, err := tool.Execute(context.Background(), req)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		resMap, ok := res.(map[string]interface{})
-		assert.True(t, ok)
+		require.True(t, ok)
 		stdout, _ := resMap["stdout"].(string)
 		// Check that it printed the literal string (containing escaped quote) and did NOT execute code.
 		// If executed code, it would output "pwned".
@@ -48,9 +49,9 @@ func TestShellInjection_Regression(t *testing.T) {
 		}
 
 		res, err := tool.Execute(context.Background(), req)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		resMap, ok := res.(map[string]interface{})
-		assert.True(t, ok)
+		require.True(t, ok)
 		stdout, _ := resMap["stdout"].(string)
 		assert.Contains(t, stdout, "'", "Should output literal single quote")
 	})
