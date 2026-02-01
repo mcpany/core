@@ -32,9 +32,11 @@ const (
 
 // ContextWithAPIKey returns a new context with the API Key embedded.
 //
+// Summary: Returns a new context with the API Key embedded.
+//
 // Parameters:
-//   - ctx: The context to extend.
-//   - apiKey: The API key to store in the context.
+//   - ctx (context.Context): The context to extend.
+//   - apiKey (string): The API key to store in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the API key.
@@ -44,8 +46,10 @@ func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 
 // APIKeyFromContext returns the API Key from the context if present.
 //
+// Summary: Returns the API Key from the context if present.
+//
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx (context.Context): The context to search.
 //
 // Returns:
 //   - string: The API key if found.
@@ -57,9 +61,11 @@ func APIKeyFromContext(ctx context.Context) (string, bool) {
 
 // ContextWithUser returns a new context with the user ID embedded.
 //
+// Summary: Returns a new context with the user ID embedded.
+//
 // Parameters:
-//   - ctx: The context to extend.
-//   - userID: The user ID to store in the context.
+//   - ctx (context.Context): The context to extend.
+//   - userID (string): The user ID to store in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the user ID.
@@ -69,8 +75,10 @@ func ContextWithUser(ctx context.Context, userID string) context.Context {
 
 // UserFromContext returns the user ID from the context if present.
 //
+// Summary: Returns the user ID from the context if present.
+//
 // Parameters:
-//   - ctx: The context to search.
+//   - ctx (context.Context): The context to search.
 //
 // Returns:
 //   - string: The user ID if found.
@@ -82,9 +90,11 @@ func UserFromContext(ctx context.Context) (string, bool) {
 
 // ContextWithProfileID returns a new context with the profile ID embedded.
 //
+// Summary: Returns a new context with the profile ID embedded.
+//
 // Parameters:
-//   - ctx: The context to extend.
-//   - profileID: The profile ID to store in the context.
+//   - ctx (context.Context): The context to extend.
+//   - profileID (string): The profile ID to store in the context.
 //
 // Returns:
 //   - context.Context: A new context containing the profile ID.

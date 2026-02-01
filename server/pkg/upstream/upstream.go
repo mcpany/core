@@ -14,33 +14,37 @@ import (
 )
 
 // Upstream defines the standard interface for all backend service integrations.
-// Each implementation of this interface is responsible for discovering and
-// registering its capabilities, such as tools, prompts, and resources, with the
-// appropriate managers.
+//
+// Summary: Defines the standard interface for all backend service integrations. Each implementation is responsible for discovering and registering its capabilities.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
-	// ctx is the context for the request.
-	//
-	// Returns an error if the operation fails.
-	Shutdown(ctx context.Context) error
-
-	// Register inspects the upstream service defined by the serviceConfig,
-	// discovers its capabilities, and registers them.
+	// Summary: Gracefully terminates the upstream service.
 	//
 	// Parameters:
-	//   - ctx: The context for the registration process.
-	//   - serviceConfig: The configuration for the upstream service.
-	//   - toolManager: The manager where discovered tools will be registered.
-	//   - promptManager: The manager where discovered prompts will be registered.
-	//   - resourceManager: The manager where discovered resources will be registered.
-	//   - isReload: Indicates whether this is an initial registration or a reload.
+	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - A unique service key.
-	//   - A list of discovered tool definitions.
-	//   - A list of discovered resource definitions.
-	//   - An error if registration fails.
+	//   - error: An error if the operation fails.
+	Shutdown(ctx context.Context) error
+
+	// Register inspects the upstream service and registers its capabilities.
+	//
+	// Summary: Inspects the upstream service defined by the serviceConfig, discovers its capabilities, and registers them.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the registration process.
+	//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+	//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+	//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
+	//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
+	//   - isReload (bool): Indicates whether this is an initial registration or a reload.
+	//
+	// Returns:
+	//   - string: A unique service key.
+	//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+	//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+	//   - error: An error if registration fails.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
@@ -51,10 +55,18 @@ type Upstream interface {
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
-// HealthChecker is an optional interface that Upstreams can implement to provide
-// runtime health status.
+// HealthChecker is an optional interface that Upstreams can implement to provide runtime health status.
+//
+// Summary: Optional interface that Upstreams can implement to provide runtime health status.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
-	// Returns nil if healthy, or an error if unhealthy.
+	//
+	// Summary: Performs a health check on the upstream service.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the health check.
+	//
+	// Returns:
+	//   - error: Returns nil if healthy, or an error if unhealthy.
 	CheckHealth(ctx context.Context) error
 }

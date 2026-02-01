@@ -23,20 +23,26 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
 )
 
-// Factory defines the interface for a factory that creates upstream service
-// instances.
+// Factory defines the interface for a factory that creates upstream service instances.
+//
+// Summary: Interface for a factory that creates upstream service instances.
 type Factory interface {
-	// NewUpstream creates a new upstream service instance based on the provided
-	// configuration.
+	// NewUpstream creates a new upstream service instance based on the provided configuration.
+	//
+	// Summary: Creates a new upstream service instance based on the provided configuration.
+	//
+	// Parameters:
+	//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+	//
+	// Returns:
+	//   - upstream.Upstream: A new upstream service instance.
+	//   - error: An error if the creation fails.
 	NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
 }
 
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
-// It creates different types of upstream services based on the service
-// configuration.
-// UpstreamServiceFactory is a concrete implementation of the Factory interface.
-// It creates different types of upstream services based on the service
-// configuration.
+//
+// Summary: Concrete implementation of the Factory interface. Creates different types of upstream services based on the service configuration.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
@@ -44,13 +50,14 @@ type UpstreamServiceFactory struct {
 
 // NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
 //
+// Summary: Creates a new UpstreamServiceFactory.
+//
 // Parameters:
-//   poolManager: The connection pool manager used by upstreams that require
-//   connection pooling (e.g., gRPC, HTTP, WebSocket).
-//   globalSettings: The global configuration settings.
+//   - poolManager (*pool.Manager): The connection pool manager used by upstreams that require connection pooling (e.g., gRPC, HTTP, WebSocket).
+//   - globalSettings (*configv1.GlobalSettings): The global configuration settings.
 //
 // Returns:
-//   Factory: A new Factory instance.
+//   - Factory: A new Factory instance.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -58,15 +65,16 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 	}
 }
 
-// NewUpstream creates and returns an appropriate upstream.Upstream implementation
-// based on the type of service specified in the configuration.
+// NewUpstream creates and returns an appropriate upstream.Upstream implementation.
+//
+// Summary: Creates and returns an appropriate upstream.Upstream implementation based on the type of service specified in the configuration.
 //
 // Parameters:
-//   config: The configuration for the upstream service.
+//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
 //
 // Returns:
-//   upstream.Upstream: A new upstream service instance.
-//   error: An error if the service type is unknown.
+//   - upstream.Upstream: A new upstream service instance.
+//   - error: An error if the service type is unknown or config is nil.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

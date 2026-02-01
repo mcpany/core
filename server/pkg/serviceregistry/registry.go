@@ -24,17 +24,15 @@ import (
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
-// It provides methods for registering, unregistering, and inspecting upstream services,
-// acting as the central management point for all external service connections.
+// Summary: Provides methods for registering, unregistering, and inspecting upstream services, acting as the central management point.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
-	// It initializes the upstream connection, performs capabilities discovery, and registers tools/resources
-	// with the respective managers.
+	// Summary: Initializes the upstream connection, performs capabilities discovery, and registers tools/resources with the respective managers.
 	//
 	// Parameters:
-	//   - ctx: The context for the registration process.
-	//   - serviceConfig: The configuration for the service to be registered.
+	//   - ctx (context.Context): The context for the registration process.
+	//   - serviceConfig (*config.UpstreamServiceConfig): The configuration for the service to be registered.
 	//
 	// Returns:
 	//   - string: The unique service key generated for the registered service.
@@ -43,11 +41,13 @@ type ServiceRegistryInterface interface { //nolint:revive
 	//   - error: An error if the registration fails (e.g., config error, connection failure).
 	RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error)
 
-	// UnregisterService removes a service from the registry and shuts down its upstream connection.
+	// UnregisterService removes a service from the registry.
+	//
+	// Summary: Removes a service from the registry and shuts down its upstream connection.
 	//
 	// Parameters:
-	//   - ctx: The context for the unregistration process.
-	//   - serviceName: The name of the service to remove.
+	//   - ctx (context.Context): The context for the unregistration process.
+	//   - serviceName (string): The name of the service to remove.
 	//
 	// Returns:
 	//   - error: An error if the service was not found or if shutdown failed.
@@ -55,15 +55,19 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetAllServices returns a list of all registered services.
 	//
+	// Summary: Returns a list of all registered services.
+	//
 	// Returns:
 	//   - []*config.UpstreamServiceConfig: A slice of configuration objects for all registered services.
-	//   - error: An error if the retrieval fails (unlikely in current implementation).
+	//   - error: An error if the retrieval fails.
 	GetAllServices() ([]*config.UpstreamServiceConfig, error)
 
 	// GetServiceInfo retrieves the metadata for a service by its ID.
 	//
+	// Summary: Retrieves the metadata for a service by its ID.
+	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID (string): The unique identifier of the service.
 	//
 	// Returns:
 	//   - *tool.ServiceInfo: The service metadata info if found.
@@ -72,8 +76,10 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceConfig returns the configuration for a given service key.
 	//
+	// Summary: Returns the configuration for a given service key.
+	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID (string): The unique identifier of the service.
 	//
 	// Returns:
 	//   - *config.UpstreamServiceConfig: The service configuration if found.
@@ -82,8 +88,10 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 	// GetServiceError returns the registration error for a service, if any.
 	//
+	// Summary: Returns the registration error for a service, if any.
+	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID (string): The unique identifier of the service.
 	//
 	// Returns:
 	//   - string: The error message associated with the service, or empty string.
@@ -93,9 +101,7 @@ type ServiceRegistryInterface interface { //nolint:revive
 
 // ServiceRegistry is responsible for managing the lifecycle of upstream services.
 //
-// It orchestrates the creation of upstream service instances via a factory and registers their
-// associated tools, prompts, and resources with the respective managers. It also handles the
-// configuration of authentication for each service.
+// Summary: Orchestrates the creation of upstream service instances via a factory and registers their associated tools, prompts, and resources.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -112,15 +118,14 @@ type ServiceRegistry struct {
 
 // New creates a new ServiceRegistry instance.
 //
-// It initializes the registry with the necessary managers and factory for creating and managing
-// upstream services.
+// Summary: Initializes the registry with the necessary managers and factory for creating and managing upstream services.
 //
 // Parameters:
-//   - factory: The factory used to create upstream service instances.
-//   - toolManager: The manager for registering discovered tools.
-//   - promptManager: The manager for registering discovered prompts.
-//   - resourceManager: The manager for registering discovered resources.
-//   - authManager: The manager for registering service-specific authenticators.
+//   - factory (factory.Factory): The factory used to create upstream service instances.
+//   - toolManager (tool.ManagerInterface): The manager for registering discovered tools.
+//   - promptManager (prompt.ManagerInterface): The manager for registering discovered prompts.
+//   - resourceManager (resource.ManagerInterface): The manager for registering discovered resources.
+//   - authManager (*auth.Manager): The manager for registering service-specific authenticators.
 //
 // Returns:
 //   - *ServiceRegistry: A new instance of ServiceRegistry.

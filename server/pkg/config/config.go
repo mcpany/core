@@ -16,18 +16,16 @@ import (
 
 // BindRootFlags binds the global and persistent command-line flags to the Viper configuration registry.
 //
-// It establishes the connection between Cobra command flags and Viper's configuration management,
-// enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
+// Summary: Establishes the connection between Cobra command flags and Viper's configuration management, enabling flag parsing and environment variable overrides.
 //
 // Parameters:
-//   - cmd: *cobra.Command. The command instance to which the persistent flags will be attached.
+//   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
 //
 // Returns:
-//   None.
+//   - None.
 //
 // Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails
-//   (e.g., if a flag with the same name already exists).
+//   - Exits the application with status code 1 if a flag binding operation fails.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
