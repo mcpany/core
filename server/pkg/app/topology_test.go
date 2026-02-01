@@ -104,15 +104,29 @@ func (m *MockToolManager) ListServices() []*tool.ServiceInfo {
 }
 
 func TestHandleTopology(t *testing.T) {
-	app := NewApplication()
-	mockRegistry := new(MockServiceRegistry)
-	mockTM := new(MockToolManager)
+	// Helper to setup app per test
+	setup := func(initialTools []tool.Tool) (*Application, *MockServiceRegistry, *MockToolManager, *topology.Manager) {
+		app := NewApplication()
+		mockRegistry := new(MockServiceRegistry)
+		mockTM := new(MockToolManager)
 
-	app.ServiceRegistry = mockRegistry
-	app.ToolManager = mockTM
-	app.TopologyManager = topology.NewManager(mockRegistry, mockTM)
+		app.ServiceRegistry = mockRegistry
+		app.ToolManager = mockTM
+		// Allow ListTools to be called by background ticker AND GetGraph
+		mockTM.On("ListTools").Return(initialTools).Maybe()
+
+		tm := topology.NewManager(mockRegistry, mockTM)
+		app.TopologyManager = tm
+		return app, mockRegistry, mockTM, tm
+	}
 
 	t.Run("Success", func(t *testing.T) {
+		tools := []tool.Tool{
+			&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool-1"), ServiceId: proto.String("service-1")}.Build()},
+		}
+		app, mockRegistry, _, tm := setup(tools)
+		defer tm.Close()
+
 		// Setup mock data
 		s1 := configv1.UpstreamServiceConfig_builder{}.Build()
 		s1.SetName("service-1")
@@ -121,11 +135,6 @@ func TestHandleTopology(t *testing.T) {
 		s2.SetDisable(true)
 		services := []*configv1.UpstreamServiceConfig{s1, s2}
 		mockRegistry.On("GetAllServices").Return(services, nil).Once()
-
-		tools := []tool.Tool{
-			&TestMockTool{toolDef: mcp_router_v1.Tool_builder{Name: proto.String("tool-1"), ServiceId: proto.String("service-1")}.Build()},
-		}
-		mockTM.On("ListTools").Return(tools).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/topology", nil)
 		w := httptest.NewRecorder()
@@ -169,6 +178,9 @@ func TestHandleTopology(t *testing.T) {
 	})
 
 	t.Run("MethodNotAllowed", func(t *testing.T) {
+		app, _, _, tm := setup([]tool.Tool{})
+		defer tm.Close()
+
 		req := httptest.NewRequest(http.MethodPost, "/topology", nil)
 		w := httptest.NewRecorder()
 		app.handleTopology()(w, req)
@@ -176,12 +188,16 @@ func TestHandleTopology(t *testing.T) {
 	})
 
 	t.Run("NotModified", func(t *testing.T) {
+		app, mockRegistry, _, tm := setup([]tool.Tool{})
+		defer tm.Close()
+
 		// Setup mock data again for this run
 		services := []*configv1.UpstreamServiceConfig{}
-		mockRegistry.On("GetAllServices").Return(services, nil).Once()
-		mockTM.On("ListTools").Return([]tool.Tool{}).Once()
 
 		// 1. First request to get ETag
+		mockRegistry.On("GetAllServices").Return(services, nil).Once()
+		// ListTools handled by setup().Maybe()
+
 		req1 := httptest.NewRequest(http.MethodGet, "/topology", nil)
 		w1 := httptest.NewRecorder()
 		app.handleTopology()(w1, req1)
@@ -191,7 +207,7 @@ func TestHandleTopology(t *testing.T) {
 
 		// 2. Second request with If-None-Match
 		mockRegistry.On("GetAllServices").Return(services, nil).Once()
-		mockTM.On("ListTools").Return([]tool.Tool{}).Once()
+		// ListTools handled by setup().Maybe()
 
 		req2 := httptest.NewRequest(http.MethodGet, "/topology", nil)
 		req2.Header.Set("If-None-Match", etag)

@@ -153,6 +153,9 @@ func TestHandleDashboardTraffic(t *testing.T) {
 	mockRegistry := new(MockServiceRegistry)     // from api_error_test.go
 	mockTM := tool.NewMockManagerInterface(ctrl) // from server/pkg/tool
 
+	// Mock ListTools for NewManager background context usage calculation
+	mockTM.EXPECT().ListTools().Return([]tool.Tool{}).AnyTimes()
+
 	// We need real Topology Manager logic, so we use real NewManager
 	tm := topology.NewManager(mockRegistry, mockTM)
 
@@ -196,6 +199,10 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 
 	mockRegistry := new(MockServiceRegistry)
 	mockTM := tool.NewMockManagerInterface(ctrl)
+
+	// Mock ListTools for NewManager
+	mockTM.EXPECT().ListTools().Return([]tool.Tool{}).AnyTimes()
+
 	tm := topology.NewManager(mockRegistry, mockTM)
 
 	app := &Application{
@@ -255,7 +262,8 @@ func TestHandleDashboardMetrics(t *testing.T) {
 		s.SetName("s1")
 		return []*configv1.UpstreamServiceConfig{s}
 	}(), nil)
-	mockTM.EXPECT().ListTools().Return([]tool.Tool{&TestMockTool{}})
+	// Allow multiple calls (background + request)
+	mockTM.EXPECT().ListTools().Return([]tool.Tool{&TestMockTool{}}).AnyTimes()
 
 	// Topology
 	tm := topology.NewManager(mockRegistry, mockTM)
