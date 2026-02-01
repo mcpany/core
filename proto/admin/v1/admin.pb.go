@@ -2412,6 +2412,368 @@ func (b0 AuditLogEntry_builder) Build() *AuditLogEntry {
 	return m0
 }
 
+type GetHealthHistoryRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceId   *string                `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
+	xxx_hidden_StartTime   int64                  `protobuf:"varint,2,opt,name=start_time,json=startTime"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *GetHealthHistoryRequest) Reset() {
+	*x = GetHealthHistoryRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHealthHistoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHealthHistoryRequest) ProtoMessage() {}
+
+func (x *GetHealthHistoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetHealthHistoryRequest) GetServiceId() string {
+	if x != nil {
+		if x.xxx_hidden_ServiceId != nil {
+			return *x.xxx_hidden_ServiceId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *GetHealthHistoryRequest) GetStartTime() int64 {
+	if x != nil {
+		return x.xxx_hidden_StartTime
+	}
+	return 0
+}
+
+func (x *GetHealthHistoryRequest) SetServiceId(v string) {
+	x.xxx_hidden_ServiceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *GetHealthHistoryRequest) SetStartTime(v int64) {
+	x.xxx_hidden_StartTime = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *GetHealthHistoryRequest) HasServiceId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetHealthHistoryRequest) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *GetHealthHistoryRequest) ClearServiceId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_ServiceId = nil
+}
+
+func (x *GetHealthHistoryRequest) ClearStartTime() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_StartTime = 0
+}
+
+type GetHealthHistoryRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	ServiceId *string
+	StartTime *int64
+}
+
+func (b0 GetHealthHistoryRequest_builder) Build() *GetHealthHistoryRequest {
+	m0 := &GetHealthHistoryRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ServiceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_ServiceId = b.ServiceId
+	}
+	if b.StartTime != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_StartTime = *b.StartTime
+	}
+	return m0
+}
+
+type GetHealthHistoryResponse struct {
+	state               protoimpl.MessageState     `protogen:"opaque.v1"`
+	xxx_hidden_Services map[string]*ServiceHistory `protobuf:"bytes,1,rep,name=services" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *GetHealthHistoryResponse) Reset() {
+	*x = GetHealthHistoryResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHealthHistoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHealthHistoryResponse) ProtoMessage() {}
+
+func (x *GetHealthHistoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *GetHealthHistoryResponse) GetServices() map[string]*ServiceHistory {
+	if x != nil {
+		return x.xxx_hidden_Services
+	}
+	return nil
+}
+
+func (x *GetHealthHistoryResponse) SetServices(v map[string]*ServiceHistory) {
+	x.xxx_hidden_Services = v
+}
+
+type GetHealthHistoryResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Services map[string]*ServiceHistory
+}
+
+func (b0 GetHealthHistoryResponse_builder) Build() *GetHealthHistoryResponse {
+	m0 := &GetHealthHistoryResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Services = b.Services
+	return m0
+}
+
+type ServiceHistory struct {
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Points *[]*HealthPoint        `protobuf:"bytes,1,rep,name=points"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ServiceHistory) Reset() {
+	*x = ServiceHistory{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceHistory) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceHistory) ProtoMessage() {}
+
+func (x *ServiceHistory) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ServiceHistory) GetPoints() []*HealthPoint {
+	if x != nil {
+		if x.xxx_hidden_Points != nil {
+			return *x.xxx_hidden_Points
+		}
+	}
+	return nil
+}
+
+func (x *ServiceHistory) SetPoints(v []*HealthPoint) {
+	x.xxx_hidden_Points = &v
+}
+
+type ServiceHistory_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Points []*HealthPoint
+}
+
+func (b0 ServiceHistory_builder) Build() *ServiceHistory {
+	m0 := &ServiceHistory{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Points = &b.Points
+	return m0
+}
+
+type HealthPoint struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Timestamp   int64                  `protobuf:"varint,1,opt,name=timestamp"`
+	xxx_hidden_Status      *string                `protobuf:"bytes,2,opt,name=status"`
+	xxx_hidden_LatencyMs   int64                  `protobuf:"varint,3,opt,name=latency_ms,json=latencyMs"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *HealthPoint) Reset() {
+	*x = HealthPoint{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthPoint) ProtoMessage() {}
+
+func (x *HealthPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *HealthPoint) GetTimestamp() int64 {
+	if x != nil {
+		return x.xxx_hidden_Timestamp
+	}
+	return 0
+}
+
+func (x *HealthPoint) GetStatus() string {
+	if x != nil {
+		if x.xxx_hidden_Status != nil {
+			return *x.xxx_hidden_Status
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *HealthPoint) GetLatencyMs() int64 {
+	if x != nil {
+		return x.xxx_hidden_LatencyMs
+	}
+	return 0
+}
+
+func (x *HealthPoint) SetTimestamp(v int64) {
+	x.xxx_hidden_Timestamp = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *HealthPoint) SetStatus(v string) {
+	x.xxx_hidden_Status = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *HealthPoint) SetLatencyMs(v int64) {
+	x.xxx_hidden_LatencyMs = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *HealthPoint) HasTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *HealthPoint) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *HealthPoint) HasLatencyMs() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *HealthPoint) ClearTimestamp() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Timestamp = 0
+}
+
+func (x *HealthPoint) ClearStatus() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Status = nil
+}
+
+func (x *HealthPoint) ClearLatencyMs() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_LatencyMs = 0
+}
+
+type HealthPoint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Timestamp *int64
+	Status    *string
+	LatencyMs *int64
+}
+
+func (b0 HealthPoint_builder) Build() *HealthPoint {
+	m0 := &HealthPoint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Timestamp != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Timestamp = *b.Timestamp
+	}
+	if b.Status != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Status = b.Status
+	}
+	if b.LatencyMs != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_LatencyMs = *b.LatencyMs
+	}
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
@@ -2491,7 +2853,24 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x05error\x18\a \x01(\tR\x05error\x12\x1a\n" +
 	"\bduration\x18\b \x01(\tR\bduration\x12\x1f\n" +
 	"\vduration_ms\x18\t \x01(\x03R\n" +
-	"durationMs2\xcd\b\n" +
+	"durationMs\"W\n" +
+	"\x17GetHealthHistoryRequest\x12\x1d\n" +
+	"\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x02 \x01(\x03R\tstartTime\"\xcd\x01\n" +
+	"\x18GetHealthHistoryResponse\x12S\n" +
+	"\bservices\x18\x01 \x03(\v27.mcpany.admin.v1.GetHealthHistoryResponse.ServicesEntryR\bservices\x1a\\\n" +
+	"\rServicesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
+	"\x05value\x18\x02 \x01(\v2\x1f.mcpany.admin.v1.ServiceHistoryR\x05value:\x028\x01\"F\n" +
+	"\x0eServiceHistory\x124\n" +
+	"\x06points\x18\x01 \x03(\v2\x1c.mcpany.admin.v1.HealthPointR\x06points\"b\n" +
+	"\vHealthPoint\x12\x1c\n" +
+	"\ttimestamp\x18\x01 \x01(\x03R\ttimestamp\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x1d\n" +
+	"\n" +
+	"latency_ms\x18\x03 \x01(\x03R\tlatencyMs2\xd7\t\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -2509,10 +2888,11 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
 	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\x12z\n" +
-	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB;B\n" +
+	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logs\x12\x87\x01\n" +
+	"\x10GetHealthHistory\x12(.mcpany.admin.v1.GetHealthHistoryRequest\x1a).mcpany.admin.v1.GetHealthHistoryResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/health/historyB;B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
 	(*ClearCacheRequest)(nil),          // 0: mcpany.admin.v1.ClearCacheRequest
 	(*ClearCacheResponse)(nil),         // 1: mcpany.admin.v1.ClearCacheResponse
@@ -2541,55 +2921,65 @@ var file_proto_admin_v1_admin_proto_goTypes = []any{
 	(*ListAuditLogsRequest)(nil),       // 24: mcpany.admin.v1.ListAuditLogsRequest
 	(*ListAuditLogsResponse)(nil),      // 25: mcpany.admin.v1.ListAuditLogsResponse
 	(*AuditLogEntry)(nil),              // 26: mcpany.admin.v1.AuditLogEntry
-	(*v1.UpstreamServiceConfig)(nil),   // 27: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                   // 28: mcpany.mcp_router.v1.Tool
-	(*v1.User)(nil),                    // 29: mcpany.config.v1.User
+	(*GetHealthHistoryRequest)(nil),    // 27: mcpany.admin.v1.GetHealthHistoryRequest
+	(*GetHealthHistoryResponse)(nil),   // 28: mcpany.admin.v1.GetHealthHistoryResponse
+	(*ServiceHistory)(nil),             // 29: mcpany.admin.v1.ServiceHistory
+	(*HealthPoint)(nil),                // 30: mcpany.admin.v1.HealthPoint
+	nil,                                // 31: mcpany.admin.v1.GetHealthHistoryResponse.ServicesEntry
+	(*v1.UpstreamServiceConfig)(nil),   // 32: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                   // 33: mcpany.mcp_router.v1.Tool
+	(*v1.User)(nil),                    // 34: mcpany.config.v1.User
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	27, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	32, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
-	27, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	27, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	32, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	32, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 4: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
-	28, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	28, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	29, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
-	29, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
-	29, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
-	29, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
-	29, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
-	29, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
+	33, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	33, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	34, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
+	34, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
+	34, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
+	34, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
+	34, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
+	34, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
 	23, // 13: mcpany.admin.v1.GetDiscoveryStatusResponse.providers:type_name -> mcpany.admin.v1.DiscoveryProviderStatus
 	26, // 14: mcpany.admin.v1.ListAuditLogsResponse.entries:type_name -> mcpany.admin.v1.AuditLogEntry
-	0,  // 15: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 16: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	5,  // 17: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	7,  // 18: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	9,  // 19: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	11, // 20: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
-	13, // 21: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
-	15, // 22: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
-	17, // 23: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
-	19, // 24: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
-	21, // 25: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
-	24, // 26: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
-	1,  // 27: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 28: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	6,  // 29: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	8,  // 30: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	10, // 31: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	12, // 32: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
-	14, // 33: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
-	16, // 34: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
-	18, // 35: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
-	20, // 36: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
-	22, // 37: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
-	25, // 38: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
-	27, // [27:39] is the sub-list for method output_type
-	15, // [15:27] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	31, // 15: mcpany.admin.v1.GetHealthHistoryResponse.services:type_name -> mcpany.admin.v1.GetHealthHistoryResponse.ServicesEntry
+	30, // 16: mcpany.admin.v1.ServiceHistory.points:type_name -> mcpany.admin.v1.HealthPoint
+	29, // 17: mcpany.admin.v1.GetHealthHistoryResponse.ServicesEntry.value:type_name -> mcpany.admin.v1.ServiceHistory
+	0,  // 18: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	2,  // 19: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 20: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 21: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 22: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	11, // 23: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
+	13, // 24: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
+	15, // 25: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
+	17, // 26: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
+	19, // 27: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
+	21, // 28: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
+	24, // 29: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
+	27, // 30: mcpany.admin.v1.AdminService.GetHealthHistory:input_type -> mcpany.admin.v1.GetHealthHistoryRequest
+	1,  // 31: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	3,  // 32: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 33: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 34: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 35: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	12, // 36: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
+	14, // 37: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
+	16, // 38: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
+	18, // 39: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
+	20, // 40: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
+	22, // 41: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
+	25, // 42: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
+	28, // 43: mcpany.admin.v1.AdminService.GetHealthHistory:output_type -> mcpany.admin.v1.GetHealthHistoryResponse
+	31, // [31:44] is the sub-list for method output_type
+	18, // [18:31] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -2603,7 +2993,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   32,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

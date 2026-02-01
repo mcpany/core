@@ -1364,6 +1364,19 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the health history of services.
+     * @param serviceId Optional service ID to filter by.
+     * @returns A promise that resolves to the health history map.
+     */
+    getHealthHistory: async (serviceId?: string) => {
+        let url = '/api/v1/health/history';
+        if (serviceId) url += `?service_id=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch health history');
+        return res.json();
+    },
+
     // Audit Logs
 
     /**

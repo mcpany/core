@@ -110,8 +110,19 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	check.Check = func(ctx context.Context) error {
 		start := time.Now()
 		err := originalCheck(ctx)
-		duration := time.Since(start).Seconds()
-		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(duration), []metrics.Label{
+		duration := time.Since(start)
+		durationSeconds := duration.Seconds()
+		latencyMs := duration.Milliseconds()
+
+		statusStr := "OK"
+		if err != nil {
+			statusStr = "ERROR"
+		}
+
+		// Record history point for every check
+		AddHistoryPoint(serviceName, statusStr, latencyMs)
+
+		metrics.AddSampleWithLabels([]string{healthCheckLatencyMetric}, float32(durationSeconds), []metrics.Label{
 			{Name: "service", Value: serviceName},
 			{Name: "status", Value: lo.Ternary(err == nil, "success", "failure")},
 		})
@@ -140,8 +151,8 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 			metrics.SetGauge(healthStatusGauge, status, serviceName)
 			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
 
-			// Record history
-			AddHealthStatus(serviceName, string(state.Status))
+			// Record history - moved to check wrapper for granular latency tracking
+			// AddHealthStatus(serviceName, string(state.Status))
 
 			globalAlertConfigMu.RLock()
 			alertConfig := globalAlertConfig
