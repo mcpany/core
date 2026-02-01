@@ -62,10 +62,12 @@ export default function ToolsPage() {
   const fetchToolUsage = async () => {
     try {
         const stats = await apiClient.getToolUsage();
-        if (!stats) return;
+        if (!stats || !Array.isArray(stats)) return; // Ensure array
         const statsMap: Record<string, ToolAnalytics> = {};
         stats.forEach(s => {
-            statsMap[`${s.name}@${s.serviceId}`] = s;
+            if (s && s.name) {
+                statsMap[`${s.name}@${s.serviceId}`] = s;
+            }
         });
         setToolUsage(statsMap);
     } catch (e) {
@@ -76,7 +78,11 @@ export default function ToolsPage() {
   const fetchTools = async () => {
     try {
       const res = await apiClient.listTools();
-      setTools(res?.tools || []);
+      if (res && res.tools) {
+          setTools(res.tools);
+      } else {
+          setTools([]);
+      }
     } catch (e) {
       console.error("Failed to fetch tools", e);
     }
@@ -85,7 +91,11 @@ export default function ToolsPage() {
   const fetchServices = async () => {
     try {
       const res = await apiClient.listServices();
-      setServices(res);
+      if (Array.isArray(res)) {
+          setServices(res);
+      } else {
+          setServices([]);
+      }
     } catch (e) {
       console.error("Failed to fetch services", e);
     }

@@ -88,11 +88,11 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         setLoading(true);
         try {
             const res = await apiClient.listResources();
-            if (!res) {
+            if (res && Array.isArray(res.resources)) {
+                setResources(res.resources);
+            } else {
                 setResources([]);
-                return;
             }
-            setResources(res?.resources || []);
         } catch (e) {
             console.error("Failed to load resources", e);
             toast({

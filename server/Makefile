@@ -692,7 +692,7 @@ endif
 
 BUILD_CONTEXT_DIR := .build-context
 
-prepare-docker-context:
+prepare-docker-context: gen
 	@echo "Preparing build context..."
 	@rm -rf $(BUILD_CONTEXT_DIR)
 	@mkdir -p $(BUILD_CONTEXT_DIR)/core
