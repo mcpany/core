@@ -7,6 +7,7 @@ import (
 	"archive/zip"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -242,6 +243,33 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}
 
 	tempDir := t.TempDir()
+
+	// Determine the base directory for bundles.
+	// Use MCP_BUNDLE_DIR if set (e.g. from Makefile) to avoid overlay-on-overlay mount issues in CI.
+	// Fallback to t.TempDir() if not set.
+	bundleBaseDir := os.Getenv("MCP_BUNDLE_DIR")
+	if bundleBaseDir == "" {
+		bundleBaseDir = tempDir
+	}
+
+	// Create a specific subdirectory for this test to verify mounting.
+	// We use filepath.Base(filepath.Dir(tempDir)) which contains the unique test run ID (e.g. TestName12345)
+	// to avoid collisions when bundleBaseDir is shared.
+	uniqueID := filepath.Base(filepath.Dir(tempDir))
+	testBundleDir := filepath.Join(bundleBaseDir, "e2e_check_"+uniqueID)
+	require.NoError(t, os.MkdirAll(testBundleDir, 0755))
+	defer os.RemoveAll(testBundleDir) // Cleanup check dir
+
+	// Pre-check: Verify if Docker bind mounts work in this environment.
+	// In some CI/Dind environments (like GitHub Actions with specific runners), bind mounting
+	// a directory from the runner into a container can fail with "invalid argument" (overlayfs issues).
+	// We use the alpine image as a lightweight check using the actual directory we plan to use.
+	checkCmd := exec.Command("docker", "run", "--rm", "-v", fmt.Sprintf("%s:/test", testBundleDir), "node:18-alpine", "ls", "/test")
+	if output, err := checkCmd.CombinedOutput(); err != nil {
+		t.Logf("Docker bind mount check failed: %v, output: %s", err, string(output))
+		t.Skip("Skipping Docker bundle test: bind mounts not working in this environment")
+	}
+
 	bundlePath := createE2EBundle(t, tempDir)
 
 	toolManager := tool.NewManager(nil)
@@ -249,10 +277,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	resourceManager := resource.NewManager()
 	upstreamService := mcp.NewUpstream(nil)
 	if impl, ok := upstreamService.(*mcp.Upstream); ok {
-		// Use a test-specific temp directory for bundles to ensure isolation
-		// and avoid conflicts with global state or other tests.
-		// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
-		impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		// Use a subdirectory "e2e_bundles_<random>" to ensure isolation within the working baseDir
+		uniqueID := filepath.Base(filepath.Dir(tempDir))
+		impl.BundleBaseDir = filepath.Join(bundleBaseDir, "e2e_bundles_"+uniqueID)
 		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
 			t.Fatalf("Failed to create test bundle dir: %v", err)
 		}
