@@ -3,6 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * JSON Schema definition for the Stack Configuration format.
+ * This schema validates the structure of `mcp-stack.yaml` or `mcp-stack.json` files,
+ * which define multi-service deployments (similar to Docker Compose).
+ *
+ * @remarks
+ * This schema is used by the Monaco Editor to provide IntelliSense and validation
+ * when editing stack configurations in the UI.
+ */
 export const STACK_CONFIG_SCHEMA = {
   uri: "http://mcp-any/stack-config.json",
   fileMatch: ["*"],
