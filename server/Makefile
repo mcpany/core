@@ -528,12 +528,14 @@ $(E2E_BIN_DIR):
 .PHONY: build-e2e-timeserver-docker
 build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifneq ($(SKIP_DOCKER_TESTS),true)
+ifneq ($(SKIP_DOCKER_REBUILD),true)
 ifdef HAS_DOCKER
 	@echo "Building E2E time server Docker image (mcpany-e2e-time-server)..."
 	@$(DOCKER_BUILD_CMD) -t mcpany-e2e-time-server -f tests/integration/examples/Dockerfile.timeserver $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/examples
 else
 	@echo "Docker not found. Cannot build E2E time server image."
 	@exit 1
+endif
 endif
 else
 	@echo "Skipping E2E time server Docker image build..."
