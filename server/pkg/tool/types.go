@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/resilience"
+	"github.com/mcpany/core/server/pkg/telemetry"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
@@ -572,12 +573,19 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, end := telemetry.StartSpan(ctx, "http_tool_execute")
+	defer end()
+
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
 	defer metrics.MeasureSince(metricHTTPRequestLatency, time.Now())
 
-	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+	if allowed, err := func() (bool, error) {
+		_, end := telemetry.StartSpan(ctx, "policy_check")
+		defer end()
+		return EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs)
+	}(); err != nil {
 		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
 	} else if !allowed {
 		return nil, fmt.Errorf("tool execution blocked by policy")
@@ -599,7 +607,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	}
 	defer httpPool.Put(httpClient)
 
-	inputs, urlString, inputsModified, err := t.prepareInputsAndURL(ctx, req)
+	inputs, urlString, inputsModified, err := func() (map[string]any, string, bool, error) {
+		ctx, end := telemetry.StartSpan(ctx, "prepare_inputs")
+		defer end()
+		return t.prepareInputsAndURL(ctx, req)
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -608,7 +620,11 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
-	body, contentType, err := t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName, req.ToolInputs, inputsModified)
+	body, contentType, err := func() (io.Reader, string, error) {
+		ctx, end := telemetry.StartSpan(ctx, "prepare_body")
+		defer end()
+		return t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName, req.ToolInputs, inputsModified)
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -637,6 +653,9 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	var resp *http.Response
 	work := func(ctx context.Context) error {
+		ctx, end := telemetry.StartSpan(ctx, "upstream_call")
+		defer end()
+
 		var bodyForAttempt io.Reader
 		if body != nil {
 			if seeker, ok := body.(io.Seeker); ok {
@@ -717,6 +736,8 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	defer func() { _ = resp.Body.Close() }()
 	metrics.IncrCounter(metricHTTPRequestSuccess, 1)
 
+	ctx, endProc := telemetry.StartSpan(ctx, "process_response")
+	defer endProc()
 	return t.processResponse(ctx, resp)
 }
 
@@ -1740,6 +1761,9 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, end := telemetry.StartSpan(ctx, "command_tool_execute")
+	defer end()
+
 	if t.initError != nil {
 		return nil, t.initError
 	}

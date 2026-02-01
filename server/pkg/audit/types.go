@@ -7,19 +7,22 @@ import (
 	"context"
 	"encoding/json"
 	"time"
+
+	"github.com/mcpany/core/server/pkg/telemetry"
 )
 
 // Entry represents a single audit log entry.
 type Entry struct {
-	Timestamp  time.Time       `json:"timestamp"`
-	ToolName   string          `json:"tool_name"`
-	UserID     string          `json:"user_id,omitempty"`
-	ProfileID  string          `json:"profile_id,omitempty"`
-	Arguments  json.RawMessage `json:"arguments,omitempty"`
-	Result     any             `json:"result,omitempty"`
-	Error      string          `json:"error,omitempty"`
-	Duration   string          `json:"duration"`
-	DurationMs int64           `json:"duration_ms"`
+	Timestamp  time.Time        `json:"timestamp"`
+	ToolName   string           `json:"tool_name"`
+	UserID     string           `json:"user_id,omitempty"`
+	ProfileID  string           `json:"profile_id,omitempty"`
+	Arguments  json.RawMessage  `json:"arguments,omitempty"`
+	Result     any              `json:"result,omitempty"`
+	Error      string           `json:"error,omitempty"`
+	Duration   string           `json:"duration"`
+	DurationMs int64            `json:"duration_ms"`
+	Spans      []telemetry.Span `json:"spans,omitempty"`
 }
 
 // Filter defines the filters for reading audit logs.
