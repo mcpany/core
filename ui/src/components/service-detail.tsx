@@ -22,11 +22,12 @@ import { Badge } from "./ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { FileConfigCard } from "./file-config-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RegisterServiceDialog } from "./register-service-dialog";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { Button } from "@/components/ui/button";
 import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
 import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { ServiceEditor } from "@/components/services/editor/service-editor";
 
 /**
  * DefinitionsTable component.
@@ -150,6 +151,8 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [editingService, setEditingService] = useState<UpstreamServiceConfig | null>(null);
   const { toast } = useToast();
 
   const fetchService = async () => {
@@ -221,6 +224,30 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
     }
   };
 
+  const handleEditConfig = () => {
+      if (!service) return;
+      setEditingService(JSON.parse(JSON.stringify(service)));
+      setIsEditSheetOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+      if (!editingService) return;
+      try {
+          await apiClient.updateService(editingService);
+          toast({ title: "Service Updated", description: "Service configuration saved." });
+          setIsEditSheetOpen(false);
+          fetchService();
+      } catch (err: any) {
+          console.error("Failed to save service", err);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: err.message || "Failed to save service configuration."
+          });
+      }
+  };
+
+
   if (isLoading) {
     return (
       <Card className="w-full max-w-6xl">
@@ -283,125 +310,146 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
 
 
   return (
-    <Card className="w-full max-w-6xl shadow-2xl shadow-primary/5">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-3xl font-headline flex items-center gap-3">
-              <Server className="text-primary size-8" /> {service.name}
-            </CardTitle>
-            <CardDescription className="mt-1">
-              Service ID: <code className="bg-muted px-1 py-0.5 rounded-sm">{service.id || "N/A"}</code>
-            </CardDescription>
-             <Badge variant={isEnabled ? "default" : "secondary"} className="mt-2">
-              {isEnabled ? "Enabled" : "Disabled"}
-            </Badge>
-          </div>
-           <div className="flex items-center space-x-4">
-             <ConnectionDiagnosticDialog service={service} />
-             <RegisterServiceDialog
-                serviceToEdit={service}
-                onSuccess={fetchService}
-                trigger={<Button variant="outline" size="sm"><Wrench className="mr-2 h-4 w-4"/> Edit Config</Button>}
-             />
-            <div className="flex items-center space-x-2">
-                {/* Check if service has OAuth configured. We need to check upstreamAuth?.oauth2.
-                    Since UpstreamServiceConfig type might not have it strictly typed in frontend depending on generation,
-                    we use loose access or verify type.
-                    Assuming 'upstreamAuth' field exists.
-                 */}
-                 { (service as any).upstreamAuth?.oauth2 && (
-                     <Button variant="default" size="sm" onClick={handleConnect}>
-                         Connect Account
-                     </Button>
-                 )}
-
-                <Switch
-                id="service-status"
-                checked={isEnabled}
-                onCheckedChange={handleStatusChange}
-                aria-label="Service Status"
-                />
-                <Label htmlFor="service-status" className="flex flex-col">
-                <span>{ isEnabled ? 'Enabled' : 'Disabled' }</span>
-                </Label>
+    <>
+        <Card className="w-full max-w-6xl shadow-2xl shadow-primary/5">
+        <CardHeader>
+            <div className="flex justify-between items-start">
+            <div>
+                <CardTitle className="text-3xl font-headline flex items-center gap-3">
+                <Server className="text-primary size-8" /> {service.name}
+                </CardTitle>
+                <CardDescription className="mt-1">
+                Service ID: <code className="bg-muted px-1 py-0.5 rounded-sm">{service.id || "N/A"}</code>
+                </CardDescription>
+                <Badge variant={isEnabled ? "default" : "secondary"} className="mt-2">
+                {isEnabled ? "Enabled" : "Disabled"}
+                </Badge>
             </div>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="configuration"><Settings className="mr-2" />Configuration</TabsTrigger>
-                <TabsTrigger value="metrics"><TrendingUp className="mr-2"/>Metrics</TabsTrigger>
-                <TabsTrigger value="safety"><Shield className="mr-2"/>Safety</TabsTrigger>
-            </TabsList>
-             <TabsContent value="general" className="mt-4 grid gap-6">
-                <ServicePropertyCard title="General" data={{
-                    "Version": service.version || "N/A",
-                    "Service Type": serviceType,
-                }} />
-                <DefinitionsTable title="Tools" data={tools} icon={<Wrench />} serviceId={serviceId} linkPath="tool" />
-                <DefinitionsTable title="Prompts" data={prompts} icon={<Book />} serviceId={serviceId} linkPath="prompt" />
-                <DefinitionsTable title="Resources" data={resources} icon={<Database />} serviceId={serviceId} linkPath="resource" />
-            </TabsContent>
-            <TabsContent value="configuration" className="mt-4 grid gap-6">
-                 {service.grpcService && (
-                    <ServicePropertyCard title="gRPC Config" data={{
-                        "Address": service.grpcService.address,
-                        "Reflection Enabled": service.grpcService.useReflection ? "Yes" : "No",
-                    }} />
-                )}
-                 {service.httpService && (
-                    <ServicePropertyCard title="HTTP Config" data={{
-                        "Address": service.httpService.address,
-                    }} />
-                )}
-                 {service.commandLineService && (
-                    <ServicePropertyCard title="CLI Config" data={{
-                        "Command": service.commandLineService.command,
-                    }} />
-                )}
-                {service.openapiService && (
-                    <ServicePropertyCard title="OpenAPI Config" data={{
-                        "Address": service.openapiService.address,
-                        "Spec URL": service.openapiService.specUrl || "N/A",
-                    }} />
-                )}
-                {service.websocketService && (
-                    <ServicePropertyCard title="WebSocket Config" data={{
-                        "Address": service.websocketService.address,
-                    }} />
-                )}
-                {service.webrtcService && (
-                    <ServicePropertyCard title="WebRTC Config" data={{
-                        "Address": service.webrtcService.address,
-                    }} />
-                )}
-                {service.graphqlService && (
-                    <ServicePropertyCard title="GraphQL Config" data={{
-                        "Address": service.graphqlService.address,
-                    }} />
-                )}
-                {service.mcpService && (
-                    <ServicePropertyCard title="MCP Upstream Config" data={{
-                        "Type": service.mcpService.httpConnection ? "HTTP" : service.mcpService.stdioConnection ? "Stdio" : "Bundle",
-                        "Address/Command": service.mcpService.httpConnection?.httpAddress || service.mcpService.stdioConnection?.command || service.mcpService.bundleConnection?.bundlePath || "N/A",
-                    }} />
-                )}
+            <div className="flex items-center space-x-4">
+                <ConnectionDiagnosticDialog service={service} />
+                <Button variant="outline" size="sm" onClick={handleEditConfig}>
+                    <Wrench className="mr-2 h-4 w-4"/> Edit Config
+                </Button>
+                <div className="flex items-center space-x-2">
+                    {/* Check if service has OAuth configured. We need to check upstreamAuth?.oauth2.
+                        Since UpstreamServiceConfig type might not have it strictly typed in frontend depending on generation,
+                        we use loose access or verify type.
+                        Assuming 'upstreamAuth' field exists.
+                    */}
+                    { (service as any).upstreamAuth?.oauth2 && (
+                        <Button variant="default" size="sm" onClick={handleConnect}>
+                            Connect Account
+                        </Button>
+                    )}
 
-                <FileConfigCard service={service} />
-            </TabsContent>
-            <TabsContent value="metrics" className="mt-4 grid gap-6">
-                <MetricsCard serviceId={serviceId} />
-            </TabsContent>
-            <TabsContent value="safety" className="mt-4 grid gap-6">
-                <ToolSafetyTable tools={tools} onUpdate={fetchService} />
-                <ResourceSafetyTable resources={resources} onUpdate={fetchService} />
-            </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+                    <Switch
+                    id="service-status"
+                    checked={isEnabled}
+                    onCheckedChange={handleStatusChange}
+                    aria-label="Service Status"
+                    />
+                    <Label htmlFor="service-status" className="flex flex-col">
+                    <span>{ isEnabled ? 'Enabled' : 'Disabled' }</span>
+                    </Label>
+                </div>
+            </div>
+            </div>
+        </CardHeader>
+        <CardContent>
+            <Tabs defaultValue="general">
+                <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="general">General</TabsTrigger>
+                    <TabsTrigger value="configuration"><Settings className="mr-2" />Configuration</TabsTrigger>
+                    <TabsTrigger value="metrics"><TrendingUp className="mr-2"/>Metrics</TabsTrigger>
+                    <TabsTrigger value="safety"><Shield className="mr-2"/>Safety</TabsTrigger>
+                </TabsList>
+                <TabsContent value="general" className="mt-4 grid gap-6">
+                    <ServicePropertyCard title="General" data={{
+                        "Version": service.version || "N/A",
+                        "Service Type": serviceType,
+                    }} />
+                    <DefinitionsTable title="Tools" data={tools} icon={<Wrench />} serviceId={serviceId} linkPath="tool" />
+                    <DefinitionsTable title="Prompts" data={prompts} icon={<Book />} serviceId={serviceId} linkPath="prompt" />
+                    <DefinitionsTable title="Resources" data={resources} icon={<Database />} serviceId={serviceId} linkPath="resource" />
+                </TabsContent>
+                <TabsContent value="configuration" className="mt-4 grid gap-6">
+                    {service.grpcService && (
+                        <ServicePropertyCard title="gRPC Config" data={{
+                            "Address": service.grpcService.address,
+                            "Reflection Enabled": service.grpcService.useReflection ? "Yes" : "No",
+                        }} />
+                    )}
+                    {service.httpService && (
+                        <ServicePropertyCard title="HTTP Config" data={{
+                            "Address": service.httpService.address,
+                        }} />
+                    )}
+                    {service.commandLineService && (
+                        <ServicePropertyCard title="CLI Config" data={{
+                            "Command": service.commandLineService.command,
+                        }} />
+                    )}
+                    {service.openapiService && (
+                        <ServicePropertyCard title="OpenAPI Config" data={{
+                            "Address": service.openapiService.address,
+                            "Spec URL": service.openapiService.specUrl || "N/A",
+                        }} />
+                    )}
+                    {service.websocketService && (
+                        <ServicePropertyCard title="WebSocket Config" data={{
+                            "Address": service.websocketService.address,
+                        }} />
+                    )}
+                    {service.webrtcService && (
+                        <ServicePropertyCard title="WebRTC Config" data={{
+                            "Address": service.webrtcService.address,
+                        }} />
+                    )}
+                    {service.graphqlService && (
+                        <ServicePropertyCard title="GraphQL Config" data={{
+                            "Address": service.graphqlService.address,
+                        }} />
+                    )}
+                    {service.mcpService && (
+                        <ServicePropertyCard title="MCP Upstream Config" data={{
+                            "Type": service.mcpService.httpConnection ? "HTTP" : service.mcpService.stdioConnection ? "Stdio" : "Bundle",
+                            "Address/Command": service.mcpService.httpConnection?.httpAddress || service.mcpService.stdioConnection?.command || service.mcpService.bundleConnection?.bundlePath || "N/A",
+                        }} />
+                    )}
+
+                    <FileConfigCard service={service} />
+                </TabsContent>
+                <TabsContent value="metrics" className="mt-4 grid gap-6">
+                    <MetricsCard serviceId={serviceId} />
+                </TabsContent>
+                <TabsContent value="safety" className="mt-4 grid gap-6">
+                    <ToolSafetyTable tools={tools} onUpdate={fetchService} />
+                    <ResourceSafetyTable resources={resources} onUpdate={fetchService} />
+                </TabsContent>
+            </Tabs>
+        </CardContent>
+        </Card>
+
+        <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
+            <SheetContent className="sm:max-w-2xl w-full">
+                <SheetHeader className="mb-4">
+                    <SheetTitle>Edit Service</SheetTitle>
+                    <SheetDescription>
+                        Configure your upstream service details.
+                    </SheetDescription>
+                </SheetHeader>
+                <div className="h-[calc(100vh-140px)]">
+                    {editingService && (
+                        <ServiceEditor
+                            service={editingService}
+                            onChange={setEditingService}
+                            onSave={handleSaveEdit}
+                            onCancel={() => setIsEditSheetOpen(false)}
+                        />
+                    )}
+                </div>
+            </SheetContent>
+        </Sheet>
+    </>
   );
 }
