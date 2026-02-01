@@ -15,12 +15,18 @@ import (
 
 // JSON schema types.
 const (
-	TypeNumber  = "number"
+	// TypeNumber represents a JSON number type.
+	TypeNumber = "number"
+	// TypeInteger represents a JSON integer type.
 	TypeInteger = "integer"
+	// TypeBoolean represents a JSON boolean type.
 	TypeBoolean = "boolean"
-	TypeObject  = "object"
-	TypeArray   = "array"
-	TypeString  = "string"
+	// TypeObject represents a JSON object type.
+	TypeObject = "object"
+	// TypeArray represents a JSON array type.
+	TypeArray = "array"
+	// TypeString represents a JSON string type.
+	TypeString = "string"
 )
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.

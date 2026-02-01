@@ -4,20 +4,20 @@
 package bus
 
 const (
-	// ServiceRegistrationRequestTopic is the topic for service registration requests.
+	// ServiceRegistrationRequestTopic defines the NATS subject for publishing service registration requests.
 	ServiceRegistrationRequestTopic = "service_registration_requests"
-	// ServiceRegistrationResultTopic is the topic for service registration results.
+	// ServiceRegistrationResultTopic defines the NATS subject for receiving service registration outcomes.
 	ServiceRegistrationResultTopic = "service_registration_results"
-	// ServiceListRequestTopic is the topic for service list requests.
+	// ServiceListRequestTopic defines the NATS subject for requesting a list of registered services.
 	ServiceListRequestTopic = "service_list_requests"
-	// ServiceListResultTopic is the topic for service list results.
+	// ServiceListResultTopic defines the NATS subject for receiving the list of services.
 	ServiceListResultTopic = "service_list_results"
-	// ServiceGetRequestTopic is the topic for service get requests.
+	// ServiceGetRequestTopic defines the NATS subject for requesting details of a specific service.
 	ServiceGetRequestTopic = "service_get_requests"
-	// ServiceGetResultTopic is the topic for service get results.
+	// ServiceGetResultTopic defines the NATS subject for receiving service details.
 	ServiceGetResultTopic = "service_get_results"
-	// ToolExecutionRequestTopic is the topic for tool execution requests.
+	// ToolExecutionRequestTopic defines the NATS subject for submitting tool execution requests.
 	ToolExecutionRequestTopic = "tool_execution_requests"
-	// ToolExecutionResultTopic is the topic for tool execution results.
+	// ToolExecutionResultTopic defines the NATS subject for receiving tool execution results.
 	ToolExecutionResultTopic = "tool_execution_results"
 )
