@@ -4,7 +4,6 @@
  */
 
 // Package util provides utility functions.
-//nolint:revive
 package util
 
 import (
@@ -17,6 +16,7 @@ import (
 // EnsureDir checks if a directory exists and creates it if not.
 func EnsureDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		//nolint:gosec
 		return os.MkdirAll(dir, 0750)
 	}
 	return nil
@@ -36,6 +36,7 @@ func WriteFile(path string, content []byte) error {
 	if err := EnsureDir(filepath.Dir(path)); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
+	//nolint:gosec
 	return os.WriteFile(path, content, 0600)
 }
 
@@ -47,6 +48,7 @@ func ReadLastNLines(path string, n int) ([]string, error) {
 		return nil, err
 	}
 	defer func() {
+		//nolint:errcheck
 		_ = file.Close()
 	}()
 

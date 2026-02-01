@@ -123,7 +123,10 @@ const nextConfig: NextConfig = {
     // In Docker, we copy proto to ./proto. Locally, it maps to ../proto.
     const localProto = path.join(__dirname, 'proto');
     const rootProto = path.join(__dirname, '../proto');
-    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+    const hasLocal = fs.existsSync(localProto);
+    const protoPath = hasLocal ? localProto : rootProto;
+
+    console.log(`[NextConfig] Resolving @proto alias. Local: ${localProto} (Exists: ${hasLocal}), Root: ${rootProto}. Using: ${protoPath}`);
 
     config.resolve.alias = {
       ...config.resolve.alias,
