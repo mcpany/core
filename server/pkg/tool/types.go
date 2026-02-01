@@ -37,6 +37,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -378,7 +379,33 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 	if err := t.resilienceManager.Execute(ctx, work); err != nil {
 		metrics.IncrCounter(metricGrpcRequestError, 1)
-		return nil, fmt.Errorf("failed to invoke grpc method: %w", err)
+
+		// Log the full original error for observability
+		logging.GetLogger().Error("Failed to invoke grpc method", "tool", req.ToolName, "error", err)
+
+		// Sentinel Security Update: Information Leakage Prevention
+		// Redact sensitive information from the error message before returning it to the client.
+		errMsg := err.Error()
+
+		// 1. Redact DSNs (e.g. database connection strings with passwords)
+		errMsg = util.RedactDSN(errMsg)
+
+		// 2. Redact JSON content (e.g. if the error contains a JSON payload with secrets)
+		// We convert string to byte slice, redact, and back.
+		errMsg = string(util.RedactJSON([]byte(errMsg)))
+
+		// 3. Truncate long error messages to prevent stack trace leakage
+		const maxErrorLen = 500
+		if len(errMsg) > maxErrorLen {
+			errMsg = errMsg[:maxErrorLen] + "... (truncated)"
+		}
+
+		// Preserve status code if possible
+		if st, ok := status.FromError(err); ok {
+			return nil, status.Error(st.Code(), errMsg)
+		}
+
+		return nil, fmt.Errorf("failed to invoke grpc method: %s", errMsg)
 	}
 	metrics.IncrCounter(metricGrpcRequestSuccess, 1)
 
