@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -200,7 +201,7 @@ func (s *SQLiteAuditStore) flushBatch(batch []Entry) {
 
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		fmt.Printf("Failed to begin transaction: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to begin transaction: %v\n", err)
 		return
 	}
 	defer func() { _ = tx.Rollback() }()
@@ -209,7 +210,7 @@ func (s *SQLiteAuditStore) flushBatch(batch []Entry) {
 	var prevHash string
 	err = tx.QueryRowContext(ctx, "SELECT hash FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&prevHash)
 	if err != nil && err != sql.ErrNoRows {
-		fmt.Printf("Failed to get previous hash: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to get previous hash: %v\n", err)
 		return
 	}
 	if err == sql.ErrNoRows {
@@ -222,7 +223,7 @@ func (s *SQLiteAuditStore) flushBatch(batch []Entry) {
 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`)
 	if err != nil {
-		fmt.Printf("Failed to prepare statement: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to prepare statement: %v\n", err)
 		return
 	}
 	defer func() { _ = stmt.Close() }()
@@ -259,14 +260,14 @@ func (s *SQLiteAuditStore) flushBatch(batch []Entry) {
 			hash,
 		)
 		if err != nil {
-			fmt.Printf("Failed to insert entry: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Failed to insert entry: %v\n", err)
 			return
 		}
 		prevHash = hash
 	}
 
 	if err := tx.Commit(); err != nil {
-		fmt.Printf("Failed to commit transaction: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to commit transaction: %v\n", err)
 	}
 }
 
