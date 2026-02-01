@@ -165,17 +165,31 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+/**
+ * Represents the health status of a specific service.
+ */
 export interface ServiceHealth {
+    /** Unique identifier for the service. */
     id: string;
+    /** Display name of the service. */
     name: string;
+    /** Current status (e.g., "healthy", "degraded", "down"). */
     status: string;
+    /** Latency of the last health check. */
     latency: string;
+    /** Uptime percentage. */
     uptime: string;
+    /** Optional message detailing status or errors. */
     message?: string;
 }
 
+/**
+ * Response structure for the dashboard health API.
+ */
 export interface ServiceHealthResponse {
+    /** List of health statuses for all services. */
     services: ServiceHealth[];
+    /** Historical health data points, keyed by service ID (or "system"). */
     history: Record<string, { timestamp: number; status: string }[]>;
 }
 
