@@ -15,11 +15,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
+import { cn } from "@/lib/utils";
 
 interface ToolFormProps {
   tool: ToolDefinition;
   onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
+  submitLabel?: string;
+  footerContent?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
 }
 
 /**
@@ -27,7 +32,7 @@ interface ToolFormProps {
  *
  * @param onCancel - The onCancel.
  */
-export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
+export function ToolForm({ tool, onSubmit, onCancel, submitLabel, footerContent, children, className }: ToolFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [jsonInput, setJsonInput] = useState<string>("{}");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -197,7 +202,7 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   // actually including formData/jsonInput is enough.
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
+    <form onSubmit={handleSubmit} className={cn("space-y-4 py-2 flex flex-col h-[60vh]", className)}>
       <Tabs value={mode} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-1 mb-2">
             <TabsList className="grid w-[300px] grid-cols-3">
@@ -271,13 +276,20 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-end gap-2 pt-4 border-t mt-auto">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit">
-          Build Command
-        </Button>
+      {children}
+
+      <div className="flex justify-between items-center pt-4 border-t mt-auto">
+        <div className="flex items-center gap-2">
+          {footerContent}
+        </div>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit">
+            {submitLabel || "Build Command"}
+          </Button>
+        </div>
       </div>
     </form>
   );
