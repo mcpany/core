@@ -61,8 +61,13 @@ func TestLocalCommandTool_VimInjection_Prevention(t *testing.T) {
 		// We accept either because both are valid security blocks.
 		// The argument injection check (for +) runs before shell injection check.
 		msg := err.Error()
-		if !strings.Contains(msg, "argument injection detected") {
-			assert.Contains(t, msg, "shell injection detected")
+		t.Logf("Got error message: %q", msg)
+		if strings.Contains(msg, "argument injection detected") {
+			return // Success
 		}
+		if strings.Contains(msg, "shell injection detected") {
+			return // Success
+		}
+		t.Errorf("Expected 'argument injection detected' or 'shell injection detected', got: %q", msg)
 	}
 }
