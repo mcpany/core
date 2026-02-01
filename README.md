@@ -102,6 +102,7 @@ make test
 
 ### Linting
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript).
+Our linting pipeline includes automatic checks for documentation coverage to ensure 100% compliance.
 ```bash
 make lint
 ```
