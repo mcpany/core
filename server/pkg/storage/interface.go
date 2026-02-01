@@ -8,6 +8,7 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	loggingv1 "github.com/mcpany/core/proto/logging/v1"
 )
 
 // Storage defines the interface for persisting configuration.
@@ -229,6 +230,12 @@ type Storage interface {
 	//
 	// Returns an error if the operation fails.
 	DeleteCredential(ctx context.Context, id string) error
+
+	// Logs
+	// SaveLog saves a log entry.
+	SaveLog(ctx context.Context, log *loggingv1.LogEntry) error
+	// ListLogs lists log entries.
+	ListLogs(ctx context.Context, filter *loggingv1.LogFilter) ([]*loggingv1.LogEntry, error)
 
 	// Close closes the underlying storage connection.
 	//

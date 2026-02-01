@@ -67,34 +67,52 @@ test.describe('Logs Page', () => {
       }).toPass({ timeout: 2000 });
   });
 
-  test('should display and expand JSON logs', async ({ page }) => {
-    // Mock the WebSocket connection
-    await page.routeWebSocket(/\/api\/v1\/ws\/logs/, ws => {
-      // Send a JSON log immediately
-      const jsonMessage = { foo: "bar", nested: { val: 123 } };
-      const logEntry = {
-        id: "json-e2e-1",
-        timestamp: new Date().toISOString(),
-        level: "INFO",
-        message: JSON.stringify(jsonMessage),
-        source: "e2e-test"
-      };
-      ws.send(JSON.stringify(logEntry));
-    });
+  test('should display and expand JSON logs (Real Data)', async ({ page, request }) => {
+    const jsonMessage = { foo: "bar", nested: { val: 123 } };
+    const seedLog = {
+      level: "INFO",
+      message: JSON.stringify(jsonMessage),
+      source: "e2e-json-test"
+    };
 
-    await page.goto('/logs');
+    // Seed log
+    await request.post('/api/v1/debug/seed_logs', { data: [seedLog] });
 
-    // Wait for the log to appear
-    await expect(page.getByText(JSON.stringify({ foo: "bar", nested: { val: 123 } }))).toBeVisible({ timeout: 10000 });
+    // Wait for the log to appear (live update)
+    const row = page.locator('.group', { hasText: JSON.stringify(jsonMessage) });
+    await expect(row).toBeVisible({ timeout: 15000 });
 
     // Check for the Expand JSON button
-    const expandButton = page.getByLabel("Expand JSON");
+    const expandButton = row.getByLabel("Expand JSON");
     await expect(expandButton).toBeVisible();
 
     // Click it
     await expandButton.click();
 
     // Verify it expanded (Collapse button visible)
-    await expect(page.getByLabel("Collapse JSON")).toBeVisible();
+    await expect(row.getByLabel("Collapse JSON")).toBeVisible();
+  });
+
+  test('should display persistent logs after reload', async ({ page, request }) => {
+    // Seed a log via API
+    const uniqueMsg = "Persistent Log Test " + Date.now();
+    const seedLog = {
+      level: "WARN",
+      message: uniqueMsg,
+      source: "e2e-seed"
+    };
+
+    await request.post('/api/v1/debug/seed_logs', {
+      data: [seedLog]
+    });
+
+    // Wait for it to appear live
+    await expect(page.getByText(uniqueMsg)).toBeVisible({ timeout: 10000 });
+
+    // Reload the page
+    await page.reload();
+
+    // Check if log is still there (fetched from backend persistence)
+    await expect(page.getByText(uniqueMsg)).toBeVisible({ timeout: 10000 });
   });
 });

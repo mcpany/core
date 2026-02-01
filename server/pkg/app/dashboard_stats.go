@@ -197,6 +197,48 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
+// SeedLogRequest represents a request to seed logs.
+type SeedLogRequest struct {
+	Level   string `json:"level"`
+	Message string `json:"message"`
+	Source  string `json:"source"`
+}
+
+// handleDebugSeedLogs seeds log entries.
+func (a *Application) handleDebugSeedLogs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var entries []SeedLogRequest
+		if err := json.NewDecoder(r.Body).Decode(&entries); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		logger := logging.GetLogger()
+		for _, e := range entries {
+			// We can't easily set the timestamp to the past via the standard logger,
+			// but we can generate logs that will be stored.
+			switch e.Level {
+			case "ERROR":
+				logger.Error(e.Message, "source", e.Source)
+			case "WARN":
+				logger.Warn(e.Message, "source", e.Source)
+			case "DEBUG":
+				logger.Debug(e.Message, "source", e.Source)
+			default:
+				logger.Info(e.Message, "source", e.Source)
+			}
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	}
+}
+
 // ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`

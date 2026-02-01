@@ -12,13 +12,15 @@ import (
 	"sync/atomic"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
 )
 
 var (
-	mu            sync.Mutex
-	once          sync.Once
-	defaultLogger atomic.Pointer[slog.Logger]
+	mu               sync.Mutex
+	once             sync.Once
+	defaultLogger    atomic.Pointer[slog.Logger]
+	broadcastHandler *BroadcastHandler
 )
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
@@ -71,11 +73,20 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 			mainHandler = slog.NewTextHandler(output, opts)
 		}
 
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
+		broadcastHandler = NewBroadcastHandler(GlobalBroadcaster, level)
 		teeHandler := NewTeeHandler(mainHandler, broadcastHandler)
 
 		defaultLogger.Store(slog.New(teeHandler))
 	})
+}
+
+// SetStorage sets the storage for the logger.
+func SetStorage(s storage.Storage) {
+	mu.Lock()
+	defer mu.Unlock()
+	if broadcastHandler != nil {
+		broadcastHandler.SetStorage(s)
+	}
 }
 
 // GetLogger returns the shared global logger instance. If the logger has not yet
