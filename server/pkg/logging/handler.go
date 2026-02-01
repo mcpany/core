@@ -32,6 +32,7 @@ type BroadcastHandler struct {
 	group       string
 	mu          sync.Mutex
 	level       slog.Level
+	logChan     chan LogEntry
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
@@ -41,9 +42,23 @@ type BroadcastHandler struct {
 //
 // Returns the result.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
-	return &BroadcastHandler{
+	h := &BroadcastHandler{
 		broadcaster: broadcaster,
 		level:       level,
+		logChan:     make(chan LogEntry, 1000),
+	}
+	go h.processLogs()
+	return h
+}
+
+// processLogs handles the background processing of logs.
+func (h *BroadcastHandler) processLogs() {
+	for entry := range h.logChan {
+		data, err := json.Marshal(entry)
+		if err != nil {
+			continue
+		}
+		h.broadcaster.Broadcast(data)
 	}
 }
 
@@ -104,12 +119,14 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		entry.Source = f.Function
 	}
 
-	data, err := json.Marshal(entry)
-	if err != nil {
-		return err
+	// ⚡ BOLT: Offloaded JSON marshaling and broadcasting to a background goroutine
+	// to prevent blocking the request path.
+	// Randomized Selection from Top 5 High-Impact Targets
+	select {
+	case h.logChan <- entry:
+	default:
+		// Drop log if buffer is full to prevent blocking
 	}
-
-	h.broadcaster.Broadcast(data)
 	return nil
 }
 
@@ -126,6 +143,7 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 		attrs:       append(h.attrs, attrs...),
 		group:       h.group,
 		level:       h.level,
+		logChan:     h.logChan, // Share the same channel
 	}
 }
 
@@ -142,6 +160,7 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 		attrs:       h.attrs,
 		group:       name,
 		level:       h.level,
+		logChan:     h.logChan, // Share the same channel
 	}
 }
 
