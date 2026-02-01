@@ -95,12 +95,13 @@ export function HealthHistoryChart() {
         ok: "hsl(var(--chart-2))",
         degraded: "hsl(var(--chart-4))",
         error: "hsl(var(--chart-1))",
-        offline: "hsl(var(--muted-foreground))",
+        offline: "hsl(var(--muted-foreground))", // Ensure this is visible, usually gray
         unknown: "hsl(var(--muted-foreground))",
     };
 
     const getBarColor = (status: HealthPoint["status"]) => {
-        return STATUS_COLORS[status] || "hsl(var(--muted))";
+        // Fallback color should be visible
+        return STATUS_COLORS[status] || "hsl(var(--muted-foreground))";
     };
 
     return (

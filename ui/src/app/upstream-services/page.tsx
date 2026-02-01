@@ -54,6 +54,7 @@ export default function ServicesPage() {
     setLoading(true);
     try {
       const res = await apiClient.listServices();
+      // Defensive check: ensure res is handled even if null/undefined
       if (!res) {
           setServices([]);
           return;
@@ -62,6 +63,7 @@ export default function ServicesPage() {
       if (Array.isArray(res)) {
           setServices(res);
       } else {
+          // Fallback to empty array if services property is missing
           setServices(res.services || []);
       }
     } catch (e) {

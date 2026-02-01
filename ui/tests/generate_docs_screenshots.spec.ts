@@ -90,37 +90,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
-     // Mock Logs
-     // await page.route('**/api/v1/logs/stream**', async route => {
-     //     // This might be WS, but if HTTP fallback:
-     //     await route.fulfill({ json: [] });
-     // });
-
-     // Mock Health Check to prevent connection error banner
-     await page.route('**/healthz', async route => {
-         await route.fulfill({ status: 200, body: 'ok' });
-     });
-     await page.route('**/api/v1/health', async route => {
-         await route.fulfill({ status: 200, json: { status: 'ok' } });
-     });
-
-     // Mock Doctor (System Status) to prevent banner from showing in screenshots
-     await page.route('**/doctor', async route => {
-         await route.fulfill({
-             status: 200,
-             contentType: 'application/json',
-             body: JSON.stringify({
-                 status: 'healthy',
-                 checks: {},
-                 version: '1.0.0',
-                 uptime_seconds: 3600,
-                 active_connections: 5,
-                 bound_http_port: 8080,
-                 bound_grpc_port: 50051
-             })
-         });
-     });
-
      // Mock Dashboard Traffic
      await page.route('**/api/v1/dashboard/traffic', async route => {
          await route.fulfill({
@@ -131,6 +100,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
              })).reverse()
          });
      });
+
+
+    // Mock Health Check to prevent connection error banner if backend is slow
+    await page.route('**/healthz', async route => {
+         await route.fulfill({ status: 200, body: 'ok' });
+    });
 
   });
 

@@ -62,11 +62,11 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const loadPrompts = () => {
       apiClient.listPrompts()
           .then((data) => {
-              if (!data) {
+              if (data && Array.isArray(data.prompts)) {
+                  setPrompts(data.prompts);
+              } else {
                   setPrompts([]);
-                  return;
               }
-              setPrompts(data?.prompts || []);
           })
           .catch(err => {
               // Suppress console.error for expected network/auth errors to avoid noise
