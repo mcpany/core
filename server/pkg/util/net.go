@@ -136,6 +136,7 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 
 // SafeDialContext creates a connection to the given address with strict SSRF protection.
 // It is a convenience wrapper around SafeDialer with default settings (blocking private/loopback).
+// It respects environment variables for enabling local IPs in development.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the dial operation.
@@ -146,13 +147,25 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 //   - (net.Conn): The established connection.
 //   - (error): An error if the connection is blocked by policy or fails.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
-	return NewSafeDialer().DialContext(ctx, network, addr)
+	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
+	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
+		dialer.AllowLoopback = true
+	}
+	if os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == TrueStr {
+		dialer.AllowPrivate = true
+	}
+	return dialer.DialContext(ctx, network, addr)
 }
 
 // NewSafeHTTPClient creates a new HTTP client configured to prevent SSRF attacks.
 // It uses a custom Transport backed by SafeDialer.
 //
 // Configuration is loaded from environment variables:
+//   - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: Set to "true" to allow all local/private connections (for testing).
 //   - MCPANY_ALLOW_LOOPBACK_RESOURCES: Set to "true" to allow loopback connections.
 //   - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES: Set to "true" to allow private network connections.
 //
@@ -160,6 +173,10 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //   - (*http.Client): A configured HTTP client.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
+		dialer.AllowLoopback = true
+		dialer.AllowPrivate = true
+	}
 	if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == TrueStr {
 		dialer.AllowLoopback = true
 	}

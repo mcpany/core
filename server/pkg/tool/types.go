@@ -60,28 +60,50 @@ var (
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Tool is the fundamental interface for any executable tool in the system.
-// Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+//
+// Summary: Represents a different type of underlying service (e.g., gRPC, HTTP, command-line).
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Summary: Returns the protobuf definition of the tool.
+	//
+	// Returns:
+	//   - *v1.Tool: The protobuf definition of the tool.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Summary: Returns the MCP tool definition.
+	//
+	// Returns:
+	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
+
+	// Execute runs the tool with the provided context and request.
+	//
+	// Summary: Runs the tool with the provided context and request.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the execution.
+	//   - req (*ExecutionRequest): The execution request.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if the execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Summary: Returns the cache configuration for the tool.
+	//
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
-// ServiceInfo holds metadata about a registered upstream service, including its
-// configuration and any associated protobuf file descriptors.
+// ServiceInfo holds metadata about a registered upstream service.
+//
+// Summary: Holds metadata about a registered upstream service, including its configuration and any associated protobuf file descriptors.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
