@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -79,7 +80,7 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 2)
 
-		var entry1 LogEntry
+		var entry1 storage.LogEntry
 		err = json.Unmarshal(history[0], &entry1)
 		require.NoError(t, err)
 		assert.Equal(t, "First message", entry1.Message)
@@ -87,7 +88,7 @@ func TestHydrateFromFile(t *testing.T) {
 		assert.Equal(t, "component-a", entry1.Source)
 		assert.Equal(t, "value1", entry1.Metadata["extra"])
 
-		var entry2 LogEntry
+		var entry2 storage.LogEntry
 		err = json.Unmarshal(history[1], &entry2)
 		require.NoError(t, err)
 		assert.Equal(t, "Second message", entry2.Message)
@@ -115,7 +116,7 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 1) // Only one valid line
 
-		var entry LogEntry
+		var entry storage.LogEntry
 		err = json.Unmarshal(history[0], &entry)
 		require.NoError(t, err)
 		assert.Equal(t, "json", entry.Metadata["valid"])
@@ -138,7 +139,7 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 1)
 
-		var entry LogEntry
+		var entry storage.LogEntry
 		err = json.Unmarshal(history[0], &entry)
 		require.NoError(t, err)
 		assert.NotEmpty(t, entry.ID)

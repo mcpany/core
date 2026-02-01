@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,6 +37,11 @@ func (m *MockStoreWithGet) GetService(ctx context.Context, name string) (*config
 	if m.service != nil && m.service.GetName() == name {
 		return m.service, nil
 	}
+	return nil, nil
+}
+
+func (m *MockStoreWithGet) SaveLog(ctx context.Context, log *storage.LogEntry) error { return nil }
+func (m *MockStoreWithGet) ListLogs(ctx context.Context, limit int) ([]*storage.LogEntry, error) {
 	return nil, nil
 }
 

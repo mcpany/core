@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/mock"
@@ -252,6 +253,10 @@ func (m *MockStorage) SaveCredential(ctx context.Context, cred *configv1.Credent
 	return nil
 }
 func (m *MockStorage) DeleteCredential(ctx context.Context, id string) error { return nil }
+func (m *MockStorage) SaveLog(ctx context.Context, log *storage.LogEntry) error { return nil }
+func (m *MockStorage) ListLogs(ctx context.Context, limit int) ([]*storage.LogEntry, error) {
+	return nil, nil
+}
 func (m *MockStorage) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
 	return nil
 }

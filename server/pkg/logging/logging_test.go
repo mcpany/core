@@ -13,6 +13,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -185,7 +186,7 @@ func TestBroadcastHandler(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
+		var entry storage.LogEntry
 		err := json.Unmarshal(data, &entry)
 		require.NoError(t, err)
 		assert.Equal(t, "INFO", entry.Level)

@@ -1478,6 +1478,12 @@ func (s *MockServiceStore) SaveCredential(ctx context.Context, cred *configv1.Cr
 }
 func (s *MockServiceStore) DeleteCredential(ctx context.Context, id string) error { return nil }
 
+// Logs
+func (s *MockServiceStore) SaveLog(ctx context.Context, log *storage.LogEntry) error { return nil }
+func (s *MockServiceStore) ListLogs(ctx context.Context, limit int) ([]*storage.LogEntry, error) {
+	return nil, nil
+}
+
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
 }
