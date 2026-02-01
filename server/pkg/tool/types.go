@@ -2794,6 +2794,15 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
+	// Perl/Ruby open() vulnerability: if the string starts with '|', it executes the command.
+	// Also '>' and '<' can change the mode.
+	// We block these characters to prevent argument injection into open() or Kernel#open.
+	if strings.HasPrefix(base, "perl") || strings.HasPrefix(base, "ruby") {
+		if strings.ContainsAny(val, "|<>") {
+			return fmt.Errorf("interpreter injection detected: value contains dangerous character for open(): '|', '<', or '>'")
+		}
+	}
+
 	// Ruby: #{...} works in double quotes
 	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
 		if strings.Contains(val, "#{") {
