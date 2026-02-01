@@ -276,10 +276,12 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
 	if err != nil {
 		errStr := err.Error()
+		lowerErr := strings.ToLower(errStr)
 		if strings.Contains(errStr, "mount source: \"overlay\"") ||
 			strings.Contains(errStr, "invalid argument") ||
 			strings.Contains(errStr, "failed to extract layer") ||
-			strings.Contains(errStr, "overlayfs") {
+			strings.Contains(errStr, "overlayfs") ||
+			strings.Contains(lowerErr, "operation not permitted") {
 			t.Skipf("Skipping Docker test due to overlayfs/docker issue: %v", err)
 		}
 	}

@@ -635,10 +635,12 @@ func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs
 	if err != nil {
 		errStr := err.Error()
 		stderrStr := stderr.String()
+		lowerStderr := strings.ToLower(stderrStr)
 		if strings.Contains(errStr, "mount source: \"overlay\"") ||
 			strings.Contains(stderrStr, "mount source: \"overlay\"") ||
 			strings.Contains(stderrStr, "failed to extract layer") ||
-			strings.Contains(stderrStr, "overlayfs") {
+			strings.Contains(stderrStr, "overlayfs") ||
+			strings.Contains(lowerStderr, "operation not permitted") {
 			t.Skipf("Skipping Docker test due to overlayfs/docker issue: %v\nStderr: %s", err, stderrStr)
 		}
 		require.NoError(t, err, "failed to start docker container %s. Stderr: %s", imageName, stderrStr)
