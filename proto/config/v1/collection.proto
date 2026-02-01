@@ -11,7 +11,7 @@ import "proto/config/v1/auth.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "CollectionProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.(pb.go).api_level = API_HYBRID;
 
 message Collection {
   string name = 1;

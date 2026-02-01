@@ -10,7 +10,7 @@ import "google/protobuf/struct.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "SkillProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.(pb.go).api_level = API_HYBRID;
 
 // Skill describes an Agent Skill, which provides instructions and assets to an agent.
 message Skill {

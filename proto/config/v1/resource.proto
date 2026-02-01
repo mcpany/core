@@ -12,7 +12,7 @@ import "proto/config/v1/profile.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "ResourceProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.(pb.go).api_level = API_HYBRID;
 
 message ResourceAnnotation {
     // An array indicating the intended audience(s) for this

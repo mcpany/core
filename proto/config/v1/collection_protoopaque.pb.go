@@ -7,7 +7,7 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/collection.proto
 
-//go:build !protoopaque
+//go:build protoopaque
 
 package v1
 
@@ -27,17 +27,19 @@ const (
 )
 
 type Collection struct {
-	state          protoimpl.MessageState   `protogen:"hybrid.v1"`
-	Name           *string                  `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	Description    *string                  `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	Version        *string                  `protobuf:"bytes,3,opt,name=version" json:"version,omitempty"`
-	Priority       *int32                   `protobuf:"varint,4,opt,name=priority" json:"priority,omitempty"`
-	HttpUrl        *string                  `protobuf:"bytes,5,opt,name=http_url" json:"http_url,omitempty"`
-	Authentication *Authentication          `protobuf:"bytes,6,opt,name=authentication" json:"authentication,omitempty"`
-	Services       []*UpstreamServiceConfig `protobuf:"bytes,7,rep,name=services" json:"services,omitempty"`
-	Skills         []string                 `protobuf:"bytes,8,rep,name=skills" json:"skills,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Name           *string                   `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description    *string                   `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_Version        *string                   `protobuf:"bytes,3,opt,name=version"`
+	xxx_hidden_Priority       int32                     `protobuf:"varint,4,opt,name=priority"`
+	xxx_hidden_HttpUrl        *string                   `protobuf:"bytes,5,opt,name=http_url"`
+	xxx_hidden_Authentication *Authentication           `protobuf:"bytes,6,opt,name=authentication"`
+	xxx_hidden_Services       *[]*UpstreamServiceConfig `protobuf:"bytes,7,rep,name=services"`
+	xxx_hidden_Skills         []string                  `protobuf:"bytes,8,rep,name=skills"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Collection) Reset() {
@@ -66,157 +68,181 @@ func (x *Collection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Collection) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Collection) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Collection) GetVersion() string {
-	if x != nil && x.Version != nil {
-		return *x.Version
+	if x != nil {
+		if x.xxx_hidden_Version != nil {
+			return *x.xxx_hidden_Version
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Collection) GetPriority() int32 {
-	if x != nil && x.Priority != nil {
-		return *x.Priority
+	if x != nil {
+		return x.xxx_hidden_Priority
 	}
 	return 0
 }
 
 func (x *Collection) GetHttpUrl() string {
-	if x != nil && x.HttpUrl != nil {
-		return *x.HttpUrl
+	if x != nil {
+		if x.xxx_hidden_HttpUrl != nil {
+			return *x.xxx_hidden_HttpUrl
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Collection) GetAuthentication() *Authentication {
 	if x != nil {
-		return x.Authentication
+		return x.xxx_hidden_Authentication
 	}
 	return nil
 }
 
 func (x *Collection) GetServices() []*UpstreamServiceConfig {
 	if x != nil {
-		return x.Services
+		if x.xxx_hidden_Services != nil {
+			return *x.xxx_hidden_Services
+		}
 	}
 	return nil
 }
 
 func (x *Collection) GetSkills() []string {
 	if x != nil {
-		return x.Skills
+		return x.xxx_hidden_Skills
 	}
 	return nil
 }
 
 func (x *Collection) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
 }
 
 func (x *Collection) SetDescription(v string) {
-	x.Description = &v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
 }
 
 func (x *Collection) SetVersion(v string) {
-	x.Version = &v
+	x.xxx_hidden_Version = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
 }
 
 func (x *Collection) SetPriority(v int32) {
-	x.Priority = &v
+	x.xxx_hidden_Priority = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
 }
 
 func (x *Collection) SetHttpUrl(v string) {
-	x.HttpUrl = &v
+	x.xxx_hidden_HttpUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
 }
 
 func (x *Collection) SetAuthentication(v *Authentication) {
-	x.Authentication = v
+	x.xxx_hidden_Authentication = v
 }
 
 func (x *Collection) SetServices(v []*UpstreamServiceConfig) {
-	x.Services = v
+	x.xxx_hidden_Services = &v
 }
 
 func (x *Collection) SetSkills(v []string) {
-	x.Skills = v
+	x.xxx_hidden_Skills = v
 }
 
 func (x *Collection) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *Collection) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return x.Description != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *Collection) HasVersion() bool {
 	if x == nil {
 		return false
 	}
-	return x.Version != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *Collection) HasPriority() bool {
 	if x == nil {
 		return false
 	}
-	return x.Priority != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *Collection) HasHttpUrl() bool {
 	if x == nil {
 		return false
 	}
-	return x.HttpUrl != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *Collection) HasAuthentication() bool {
 	if x == nil {
 		return false
 	}
-	return x.Authentication != nil
+	return x.xxx_hidden_Authentication != nil
 }
 
 func (x *Collection) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
 }
 
 func (x *Collection) ClearDescription() {
-	x.Description = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Description = nil
 }
 
 func (x *Collection) ClearVersion() {
-	x.Version = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Version = nil
 }
 
 func (x *Collection) ClearPriority() {
-	x.Priority = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Priority = 0
 }
 
 func (x *Collection) ClearHttpUrl() {
-	x.HttpUrl = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_HttpUrl = nil
 }
 
 func (x *Collection) ClearAuthentication() {
-	x.Authentication = nil
+	x.xxx_hidden_Authentication = nil
 }
 
 type Collection_builder struct {
@@ -236,14 +262,29 @@ func (b0 Collection_builder) Build() *Collection {
 	m0 := &Collection{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Description = b.Description
-	x.Version = b.Version
-	x.Priority = b.Priority
-	x.HttpUrl = b.HttpUrl
-	x.Authentication = b.Authentication
-	x.Services = b.Services
-	x.Skills = b.Skills
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		x.xxx_hidden_Version = b.Version
+	}
+	if b.Priority != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		x.xxx_hidden_Priority = *b.Priority
+	}
+	if b.HttpUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		x.xxx_hidden_HttpUrl = b.HttpUrl
+	}
+	x.xxx_hidden_Authentication = b.Authentication
+	x.xxx_hidden_Services = &b.Services
+	x.xxx_hidden_Skills = b.Skills
 	return m0
 }
 

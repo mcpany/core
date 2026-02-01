@@ -19,7 +19,7 @@ import "proto/config/v1/webhook.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "UpstreamServiceProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.(pb.go).api_level = API_HYBRID;
 
 // UpstreamServiceConfig is the top-level configuration for a single upstream service
 // that mcpany will proxy. It defines the service's identity, how to connect to it,

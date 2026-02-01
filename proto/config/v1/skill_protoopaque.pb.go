@@ -7,7 +7,7 @@
 // 	protoc        v6.33.1
 // source: proto/config/v1/skill.proto
 
-//go:build !protoopaque
+//go:build protoopaque
 
 package v1
 
@@ -29,23 +29,18 @@ const (
 
 // Skill describes an Agent Skill, which provides instructions and assets to an agent.
 type Skill struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Unique identifier for the skill (e.g. "data-processing").
-	Name *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// Human-readable description of the skill.
-	Description *string `protobuf:"bytes,2,opt,name=description" json:"description,omitempty"`
-	// License information for the skill.
-	License *string `protobuf:"bytes,3,opt,name=license" json:"license,omitempty"`
-	// Instructions for the agent on how to use this skill (Markdown).
-	Instructions *string `protobuf:"bytes,4,opt,name=instructions" json:"instructions,omitempty"`
-	// List of tool names that this skill is allowed to use.
-	AllowedTools []string `protobuf:"bytes,5,rep,name=allowed_tools" json:"allowed_tools,omitempty"`
-	// List of asset file paths associated with this skill (relative to skill root).
-	Assets []string `protobuf:"bytes,6,rep,name=assets" json:"assets,omitempty"`
-	// Arbitrary metadata for the skill.
-	Metadata      map[string]string `protobuf:"bytes,7,rep,name=metadata" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name         *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Description  *string                `protobuf:"bytes,2,opt,name=description"`
+	xxx_hidden_License      *string                `protobuf:"bytes,3,opt,name=license"`
+	xxx_hidden_Instructions *string                `protobuf:"bytes,4,opt,name=instructions"`
+	xxx_hidden_AllowedTools []string               `protobuf:"bytes,5,rep,name=allowed_tools"`
+	xxx_hidden_Assets       []string               `protobuf:"bytes,6,rep,name=assets"`
+	xxx_hidden_Metadata     map[string]string      `protobuf:"bytes,7,rep,name=metadata" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *Skill) Reset() {
@@ -74,124 +69,144 @@ func (x *Skill) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Skill) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Skill) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+	if x != nil {
+		if x.xxx_hidden_Description != nil {
+			return *x.xxx_hidden_Description
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Skill) GetLicense() string {
-	if x != nil && x.License != nil {
-		return *x.License
+	if x != nil {
+		if x.xxx_hidden_License != nil {
+			return *x.xxx_hidden_License
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Skill) GetInstructions() string {
-	if x != nil && x.Instructions != nil {
-		return *x.Instructions
+	if x != nil {
+		if x.xxx_hidden_Instructions != nil {
+			return *x.xxx_hidden_Instructions
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *Skill) GetAllowedTools() []string {
 	if x != nil {
-		return x.AllowedTools
+		return x.xxx_hidden_AllowedTools
 	}
 	return nil
 }
 
 func (x *Skill) GetAssets() []string {
 	if x != nil {
-		return x.Assets
+		return x.xxx_hidden_Assets
 	}
 	return nil
 }
 
 func (x *Skill) GetMetadata() map[string]string {
 	if x != nil {
-		return x.Metadata
+		return x.xxx_hidden_Metadata
 	}
 	return nil
 }
 
 func (x *Skill) SetName(v string) {
-	x.Name = &v
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
 }
 
 func (x *Skill) SetDescription(v string) {
-	x.Description = &v
+	x.xxx_hidden_Description = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
 }
 
 func (x *Skill) SetLicense(v string) {
-	x.License = &v
+	x.xxx_hidden_License = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
 }
 
 func (x *Skill) SetInstructions(v string) {
-	x.Instructions = &v
+	x.xxx_hidden_Instructions = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
 }
 
 func (x *Skill) SetAllowedTools(v []string) {
-	x.AllowedTools = v
+	x.xxx_hidden_AllowedTools = v
 }
 
 func (x *Skill) SetAssets(v []string) {
-	x.Assets = v
+	x.xxx_hidden_Assets = v
 }
 
 func (x *Skill) SetMetadata(v map[string]string) {
-	x.Metadata = v
+	x.xxx_hidden_Metadata = v
 }
 
 func (x *Skill) HasName() bool {
 	if x == nil {
 		return false
 	}
-	return x.Name != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
 func (x *Skill) HasDescription() bool {
 	if x == nil {
 		return false
 	}
-	return x.Description != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
 func (x *Skill) HasLicense() bool {
 	if x == nil {
 		return false
 	}
-	return x.License != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
 func (x *Skill) HasInstructions() bool {
 	if x == nil {
 		return false
 	}
-	return x.Instructions != nil
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
 func (x *Skill) ClearName() {
-	x.Name = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
 }
 
 func (x *Skill) ClearDescription() {
-	x.Description = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Description = nil
 }
 
 func (x *Skill) ClearLicense() {
-	x.License = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_License = nil
 }
 
 func (x *Skill) ClearInstructions() {
-	x.Instructions = nil
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Instructions = nil
 }
 
 type Skill_builder struct {
@@ -217,13 +232,25 @@ func (b0 Skill_builder) Build() *Skill {
 	m0 := &Skill{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Description = b.Description
-	x.License = b.License
-	x.Instructions = b.Instructions
-	x.AllowedTools = b.AllowedTools
-	x.Assets = b.Assets
-	x.Metadata = b.Metadata
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Description != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Description = b.Description
+	}
+	if b.License != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_License = b.License
+	}
+	if b.Instructions != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_Instructions = b.Instructions
+	}
+	x.xxx_hidden_AllowedTools = b.AllowedTools
+	x.xxx_hidden_Assets = b.Assets
+	x.xxx_hidden_Metadata = b.Metadata
 	return m0
 }
 

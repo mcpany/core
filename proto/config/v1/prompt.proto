@@ -13,7 +13,7 @@ import "proto/config/v1/resource.proto";
 
 option go_package = "github.com/mcpany/core/proto/config/v1";
 option java_outer_classname = "PromptProto";
-option features.(pb.go).api_level = API_OPAQUE;
+option features.(pb.go).api_level = API_HYBRID;
 
 // PromptDefinition defines a prompt that can be used to interact with a language model.
 message PromptDefinition {
