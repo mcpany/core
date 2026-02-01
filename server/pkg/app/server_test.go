@@ -2504,8 +2504,8 @@ func TestRunServerMode_Auth(t *testing.T) {
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
-	config.GlobalSettings().SetAPIKey("global-secret")
-	defer config.GlobalSettings().SetAPIKey("")
+	// config.GlobalSettings().SetAPIKey("global-secret") // Causing race, and redundant as SettingsManager handles it
+	// defer config.GlobalSettings().SetAPIKey("")
 
 	authManager := auth.NewManager()
 	authManager.SetAPIKey("global-secret")
@@ -2544,7 +2544,9 @@ func TestRunServerMode_Auth(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
+		// Pass a clean GlobalSettings to avoid fallback to singleton race
+		gs := configv1.GlobalSettings_builder{}.Build()
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, gs, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
 	}()
 
 	waitForServerReady(t, bindAddress)
