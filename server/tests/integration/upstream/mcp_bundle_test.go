@@ -247,18 +247,25 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	// Determine the base directory for bundles.
 	// Use MCP_BUNDLE_DIR if set (e.g. from Makefile) to avoid overlay-on-overlay mount issues in CI.
 	// Fallback to t.TempDir() if not set.
-	bundleBaseDir := os.Getenv("MCP_BUNDLE_DIR")
-	if bundleBaseDir == "" {
-		bundleBaseDir = tempDir
+	// IMPORTANT: We must use a directory that is NOT a child of MCP_BUNDLE_DIR if we are running in parallel,
+	// because the mcp package's global Garbage Collector (triggerGC) scans MCP_BUNDLE_DIR and deletes unknown subdirectories.
+	// We use a SIBLING directory to avoid GC interference.
+	envBundleDir := os.Getenv("MCP_BUNDLE_DIR")
+	var testBundleDir string
+	if envBundleDir != "" {
+		// Use a sibling directory: .../bundles -> .../bundles_e2e_<random>
+		parentDir := filepath.Dir(envBundleDir)
+		uniqueID := filepath.Base(filepath.Dir(tempDir))
+		testBundleDir = filepath.Join(parentDir, "bundles_e2e_"+uniqueID)
+	} else {
+		// Fallback to temp dir
+		testBundleDir = filepath.Join(tempDir, "bundles")
 	}
 
-	// Create a specific subdirectory for this test to verify mounting.
-	// We use filepath.Base(filepath.Dir(tempDir)) which contains the unique test run ID (e.g. TestName12345)
-	// to avoid collisions when bundleBaseDir is shared.
-	uniqueID := filepath.Base(filepath.Dir(tempDir))
-	testBundleDir := filepath.Join(bundleBaseDir, "e2e_check_"+uniqueID)
 	require.NoError(t, os.MkdirAll(testBundleDir, 0755))
-	defer os.RemoveAll(testBundleDir) // Cleanup check dir
+	// We don't defer remove here because Upstream might try to use it?
+	// No, we use it as BaseDir. We should cleanup at end of test.
+	defer os.RemoveAll(testBundleDir)
 
 	// Pre-check: Verify if Docker bind mounts work in this environment.
 	// In some CI/Dind environments (like GitHub Actions with specific runners), bind mounting
@@ -277,12 +284,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	resourceManager := resource.NewManager()
 	upstreamService := mcp.NewUpstream(nil)
 	if impl, ok := upstreamService.(*mcp.Upstream); ok {
-		// Use a subdirectory "e2e_bundles_<random>" to ensure isolation within the working baseDir
-		uniqueID := filepath.Base(filepath.Dir(tempDir))
-		impl.BundleBaseDir = filepath.Join(bundleBaseDir, "e2e_bundles_"+uniqueID)
-		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
-			t.Fatalf("Failed to create test bundle dir: %v", err)
-		}
+		// Use the testBundleDir as the base directory for this upstream instance.
+		// Register will extract bundles into subdirectories of this base.
+		impl.BundleBaseDir = testBundleDir
 		t.Logf("Using BundleBaseDir: %s", impl.BundleBaseDir)
 	}
 	ctx := context.Background()
