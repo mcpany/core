@@ -303,11 +303,30 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
-      - name: Download Docker Images
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: image-server
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo
+
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server
+
+      - name: Download Cowsay Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay
+
+      - name: Download Everything Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything
 
       - name: Load Docker Images
         run: |
@@ -330,53 +349,115 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
-
   build-images:
-    name: Build ${{ matrix.target }}
+    name: Build Docker Images
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: build-docker
-            image: mcpany/server:latest
-            filename: server.tar
-          - target: build-http-echo-docker
-            image: mcpany/http-echo-server:latest
-            filename: http-echo.tar
-          - target: build-e2e-timeserver-docker
-            image: mcpany-e2e-time-server
-            filename: time-server.tar
-          - target: build-cowsay-docker
-            image: mcpany/e2e-cowsay-server:latest
-            filename: cowsay.tar
-          - target: build-everything-docker
-            image: mcpany/everything:latest
-            filename: everything.tar
-          - target: docker-build-ui
-            image: mcpany/ui:latest
-            filename: ui.tar
-          - target: docker-build-operator
-            image: mcpany/operator:latest
-            filename: operator.tar
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
       - uses: actions/checkout@v5
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build Image
+      - name: Build and Save Images
         run: |
-          make -C server ${{ matrix.target }}
-      - name: Save Image
-        run: |
-          docker save -o ${{ matrix.filename }} ${{ matrix.image }}
-      - name: Upload Image
+          # Server
+          make -C server build-docker
+          docker save -o server.tar mcpany/server:latest
+
+          # HTTP Echo
+          make -C server build-http-echo-docker
+          docker save -o http-echo.tar mcpany/http-echo-server:latest
+
+          # Time Server
+          make -C server build-e2e-timeserver-docker
+          docker save -o time-server.tar mcpany-e2e-time-server
+
+          # Cowsay
+          make -C server build-cowsay-docker
+          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+
+          # Everything
+          make -C server build-everything-docker
+          docker save -o everything.tar mcpany/everything:latest
+
+          # UI
+          make -C server docker-build-ui
+          docker save -o ui.tar mcpany/ui:latest
+
+          # Operator
+          make -C server docker-build-operator
+          docker save -o operator.tar mcpany/operator:latest
+
+          # UI Test Image
+          make -C ui build-test-docker
+          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+
+      - name: Upload Server Image
         uses: actions/upload-artifact@v4
         with:
-          name: image-${{ matrix.filename }}
-          path: ${{ matrix.filename }}
+          name: image-server
+          path: server.tar
           retention-days: 1
+
+      - name: Upload HTTP Echo Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-http-echo
+          path: http-echo.tar
+          retention-days: 1
+
+      - name: Upload Time Server Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-time-server
+          path: time-server.tar
+          retention-days: 1
+
+      - name: Upload Cowsay Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-cowsay
+          path: cowsay.tar
+          retention-days: 1
+
+      - name: Upload Everything Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-everything
+          path: everything.tar
+          retention-days: 1
+
+      - name: Upload UI Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-ui
+          path: ui.tar
+          retention-days: 1
+
+      - name: Upload Operator Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-operator
+          path: operator.tar
+          retention-days: 1
+
+      - name: Upload UI Test Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-ui-test
+          path: ui-test-image.tar
+          retention-days: 1
+
   e2e-sequential:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -415,12 +496,30 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
-
-      - name: Download Docker Images
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: image-server
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo
+
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server
+
+      - name: Download Cowsay Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay
+
+      - name: Download Everything Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything
 
       - name: Load Docker Images
         run: |
@@ -572,10 +671,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Download Docker Image
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server.tar
+          name: image-server
 
       - name: Load Docker Image
         run: |
@@ -586,68 +685,42 @@ jobs:
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:latest
 
-  build-ui-test-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build UI Test Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ui/Dockerfile.e2e
-          push: false
-          load: true
-          tags: mcpany-ui-e2e:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      - name: Save Docker Image
-        run: docker save mcpany-ui-e2e:latest -o ui-test-image.tar
-      - name: Upload Docker Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-test-image
-          path: ui-test-image.tar
-          retention-days: 1
-
   ui-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [build-ui-test-image, build-images]
+    needs: [build-images]
     strategy:
       fail-fast: false
       matrix:
         shard: [1/2, 2/2]
     steps:
-#      - name: Free Disk Space (Ubuntu)
-#        uses: jlumbroso/free-disk-space@main
-#        with:
-#          tool-cache: false
-#          android: true
-#          dotnet: true
-#          haskell: true
-#          large-packages: true
-#          docker-images: false
-#          swap-storage: true
-#
+      #      - name: Free Disk Space (Ubuntu)
+      #        uses: jlumbroso/free-disk-space@main
+      #        with:
+      #          tool-cache: false
+      #          android: true
+      #          dotnet: true
+      #          haskell: true
+      #          large-packages: true
+      #          docker-images: false
+      #          swap-storage: true
+      #
       - uses: actions/checkout@v5
-      - name: Download Docker Image
-        uses: actions/download-artifact@v4
-        with:
-          name: ui-test-image
-      - name: Load Docker Image
-        run: |
-          docker load -i ui-test-image.tar
-          rm ui-test-image.tar
 
-      - name: Download Docker Images
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: image-server
+
+      - name: Download UI Test Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui-test
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo
 
       - name: Load Docker Images
         run: |
@@ -694,11 +767,15 @@ jobs:
           cluster_name: mcp-e2e
           wait: 120s
 
-      - name: Download Docker Images
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: image-server
+
+      - name: Download Operator Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-operator
 
       - name: Load Docker Images into Kind
         run: |
@@ -713,17 +790,9 @@ jobs:
           kind load docker-image mcpany/server:latest --name mcp-e2e
           # Add others if needed? k8s tests probably use server.
 
-      - name: Download Docker Images
-        uses: actions/download-artifact@v4
-        with:
-          pattern: image-*
-          merge-multiple: true
-
-      - name: Load Docker Images
+      - name: Load Docker Images already loaded above
         run: |
-          for f in *.tar; do
-            docker load -i "$f"
-          done
+          echo "Images already loaded in previous step."
 
       - name: Run K8s E2E Tests
         run: |
@@ -731,7 +800,17 @@ jobs:
 
   ci-success:
     runs-on: ubuntu-latest
-    needs: [build-images, build-ui-test-image, unit-test, e2e-sequential, e2e-parallel, e2e-public-api, docker-smoke-test, ui-test, k8s-e2e]
+    needs:
+      [
+        build-images,
+        unit-test,
+        e2e-sequential,
+        e2e-parallel,
+        e2e-public-api,
+        docker-smoke-test,
+        ui-test,
+        k8s-e2e,
+      ]
     if: always()
     permissions:
       contents: read

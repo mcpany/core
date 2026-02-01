@@ -11,6 +11,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 env:
   # Define registries and image names centrally
@@ -295,6 +298,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images and create manifest
+        if: github.event_name != 'pull_request'
         run: |
           DOCKERHUB_IMAGE="${{ env.DOCKERHUB_IMAGE }}"
           GHCR_IMAGE="${{ env.GHCR_IMAGE }}"
@@ -361,6 +365,7 @@ jobs:
           done
 
       - name: Inspect image
+        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
 
@@ -512,6 +517,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images and create manifest
+        if: github.event_name != 'pull_request'
         working-directory: /tmp/digests-ui
         run: |
           VERSION="${{ needs.setup.outputs.version }}"
@@ -578,5 +584,6 @@ jobs:
           done
 
       - name: Inspect image
+        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect mcpany/ui:${{ needs.setup.outputs.version }}
