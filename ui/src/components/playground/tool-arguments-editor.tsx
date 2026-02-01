@@ -15,6 +15,9 @@ import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
 
+/**
+ * ToolArgumentsEditor props.
+ */
 export interface ToolArgumentsEditorProps {
   tool: ToolDefinition;
   value: Record<string, unknown>;

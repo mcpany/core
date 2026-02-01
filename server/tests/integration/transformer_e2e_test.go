@@ -173,18 +173,24 @@ func TestTransformerE2E_Extraction(t *testing.T) {
 		// mcpany response transformer output is usually the TOOL RESULT.
 		// If tool result is {"name":"test-json"}, and mcpany wraps it...
 		// It becomes content=[{type:"text", text:"{\"name\":...}"}]
-		t.Logf("JSON Result: %v", jsonResult)
+		t.Logf("JSON Result missing 'name': %v", jsonResult)
 	}
 	assert.Equal(t, "test-json", jsonResult["name"])
 	assert.Equal(t, float64(123), jsonResult["age"])
 
 	// Test XML extraction
 	xmlResult := callAndGetMap("mock-http-service.get_xml")
+	if _, ok := xmlResult["name"]; !ok {
+		t.Logf("XML Result missing 'name': %v", xmlResult)
+	}
 	assert.Equal(t, "test-xml", xmlResult["name"])
 	assert.Equal(t, "456", xmlResult["value"])
 
 	// Test Text extraction
 	textResult := callAndGetMap("mock-http-service.get_text")
+	if _, ok := textResult["name"]; !ok {
+		t.Logf("Text Result missing 'name': %v", textResult)
+	}
 	assert.Equal(t, "test-text", textResult["name"])
 	assert.Equal(t, "789", textResult["value"])
 }
