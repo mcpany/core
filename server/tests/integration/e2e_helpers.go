@@ -221,8 +221,12 @@ func GetProjectRoot() (string, error) {
 	findRootOnce.Do(func() {
 		// Allow overriding via environment variable
 		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
-			projectRoot = envRoot
-			return
+			// Validate path exists to avoid using stale/incorrect env var in mixed envs
+			if _, err := os.Stat(envRoot); err == nil {
+				projectRoot = envRoot
+				return
+			}
+			// If not found, ignore env var and proceed with auto-discovery
 		}
 
 		// Find the project root by looking for the go.mod file
