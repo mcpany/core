@@ -2606,12 +2606,12 @@ func checkForLocalFileAccess(val string) error {
 }
 
 func checkForArgumentInjection(val string) error {
-	if strings.HasPrefix(val, "-") {
-		// Allow negative numbers
+	if strings.HasPrefix(val, "-") || strings.HasPrefix(val, "+") {
+		// Allow numbers (negative or positive)
 		if _, err := strconv.ParseFloat(val, 64); err == nil {
 			return nil
 		}
-		return fmt.Errorf("argument injection detected: value starts with '-'")
+		return fmt.Errorf("argument injection detected: value starts with '-' or '+'")
 	}
 	return nil
 }
