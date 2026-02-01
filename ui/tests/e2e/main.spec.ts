@@ -29,7 +29,10 @@ test.describe('MCP Any UI E2E', () => {
       }
       const seedRes = await request.post('/api/v1/debug/seed_traffic', {
           data: trafficPoints,
-          headers: { 'Content-Type': 'application/json' }
+          headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
+          }
       });
       // If seeding fails (e.g. against a real env without debug endpoint), we continue.
       // The test assertions should handle empty state or existing data if possible.

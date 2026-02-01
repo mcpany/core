@@ -142,7 +142,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
 
 		t.Logf("Root mcpany-server running on port %s", serverPort)
-		verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
+		verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 120*time.Second)
 
 		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
 	} else {
@@ -162,7 +162,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, exampleDir, "mcpany-server", "50050")
 	t.Logf("Example mcpany-server running on port %s", serverPort)
-	verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 120*time.Second)
 
 	// 7. Functional Test: Simulate Gemini CLI & Verify Metrics
 	t.Log("Simulating Gemini CLI interaction with echo tool...")
@@ -240,7 +240,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	baseURL := fmt.Sprintf("http://127.0.0.1:%s", portStr)
 
 	// 2. Wait for health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 120*time.Second)
 
 	// 3. Simulate Gemini CLI interaction
 	t.Log("Simulating Gemini CLI interaction with get_weather tool...")

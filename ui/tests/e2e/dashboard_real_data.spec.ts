@@ -32,7 +32,8 @@ test.describe('Dashboard Real Data', () => {
         const seedRes = await request.post('/api/v1/debug/seed_traffic', {
             data: trafficPoints,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
             }
         });
         expect(seedRes.ok()).toBeTruthy();
@@ -108,7 +109,11 @@ test.describe('Dashboard Real Data', () => {
          }
 
          const seedRes = await request.post('/api/v1/debug/seed_traffic', {
-             data: trafficPoints
+             data: trafficPoints,
+             headers: {
+                 'Content-Type': 'application/json',
+                 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token'
+             }
          });
          expect(seedRes.ok()).toBeTruthy();
 
