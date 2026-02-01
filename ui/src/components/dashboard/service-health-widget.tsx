@@ -16,19 +16,36 @@ import { useServiceHealth } from "@/contexts/service-health-context";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Node, NodeStatus } from "@/types/topology";
 
+/**
+ * ServiceStatus represents the possible health states of a service.
+ */
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
+/**
+ * ServiceHealth describes the current health information of a service.
+ */
 export interface ServiceHealth {
+  /** The unique identifier of the service. */
   id: string;
+  /** The display name of the service. */
   name: string;
+  /** The current status of the service. */
   status: ServiceStatus;
+  /** The latency of the service check. */
   latency: string;
+  /** The uptime duration of the service. */
   uptime: string;
+  /** An optional message providing more details about the status. */
   message?: string;
 }
 
+/**
+ * HealthHistoryPoint represents a single data point in the health history of a service.
+ */
 export interface HealthHistoryPoint {
+  /** The timestamp of the health check in milliseconds. */
   timestamp: number;
+  /** The status of the service at that time. */
   status: ServiceStatus;
 }
 
