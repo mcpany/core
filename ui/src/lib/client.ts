@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { Collection } from '@proto/config/v1/collection';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -36,7 +37,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, Collection };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -915,7 +916,7 @@ export const apiClient = {
      * Lists all service collections (stacks).
      * @returns A promise that resolves to a list of collections.
      */
-    listCollections: async () => {
+    listCollections: async (): Promise<Collection[]> => {
         const res = await fetchWithAuth('/api/v1/collections');
         if (!res.ok) throw new Error('Failed to list collections');
         return res.json();
@@ -926,7 +927,7 @@ export const apiClient = {
      * @param name The name of the collection.
      * @returns A promise that resolves to the collection.
      */
-    getCollection: async (name: string) => {
+    getCollection: async (name: string): Promise<Collection> => {
         const res = await fetchWithAuth(`/api/v1/collections/${name}`);
         if (!res.ok) throw new Error('Failed to get collection');
         return res.json();
@@ -937,7 +938,7 @@ export const apiClient = {
      * @param collection The collection to save.
      * @returns A promise that resolves when the collection is saved.
      */
-    saveCollection: async (collection: any) => {
+    saveCollection: async (collection: Partial<Collection> & { name: string }) => {
         // Decide if create or update based on existence?
         // The API might expect POST for create, PUT for update.
         // For now, let's try POST to /api/v1/collections if id/name is new, or PUT if existing?

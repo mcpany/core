@@ -22,8 +22,9 @@ export function middleware(request: NextRequest) {
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);
 
-    // Inject API Key for backend authentication
-    if (process.env.MCPANY_API_KEY) {
+    // Inject API Key for backend authentication only if not present
+    // This allows clients/tests to provide their own key, while providing a default (e.g. admin key) if missing.
+    if (!requestHeaders.has('X-API-Key') && process.env.MCPANY_API_KEY) {
       requestHeaders.set('X-API-Key', process.env.MCPANY_API_KEY);
     }
 

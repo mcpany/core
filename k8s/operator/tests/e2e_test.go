@@ -61,6 +61,14 @@ func TestOperatorE2E(t *testing.T) {
 
 	// 5. Create Kind Cluster
 	t.Logf("Creating Kind cluster %s...", clusterName)
+
+	// Pre-create 'kind' network to avoid IPv6 issues in some CI environments
+	// Kind tries to ensure the network exists, and if it tries to create it with --ipv6 on a runner that doesn't support it, it fails.
+	// By creating it manually (defaulting to IPv4), we bypass that step.
+	t.Log("Pre-creating 'kind' docker network to ensure IPv4...")
+	// We ignore the error because it might already exist
+	_ = runCommand(t, ctx, rootDir, "docker", "network", "create", "kind")
+
 	// Generate temporary kind config with port mapping
 	kindConfigContent := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
