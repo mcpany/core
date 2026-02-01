@@ -16,6 +16,7 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/telemetry"
 	"github.com/mcpany/core/server/pkg/tool"
 	"google.golang.org/protobuf/proto"
 )
@@ -158,6 +159,9 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		return next(ctx, req)
 	}
 
+	// Initialize simple tracer for this request
+	ctx = telemetry.NewTraceContext(ctx)
+
 	start := time.Now()
 
 	// Execute the tool
@@ -171,6 +175,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		ToolName:   req.ToolName,
 		Duration:   duration.String(),
 		DurationMs: duration.Milliseconds(),
+		Spans:      telemetry.GetSpans(ctx),
 	}
 
 	if userID, ok := auth.UserFromContext(ctx); ok {

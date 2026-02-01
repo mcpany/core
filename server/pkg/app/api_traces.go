@@ -20,6 +20,7 @@ import (
 // Span represents a span in a trace.
 type Span struct {
 	ID           string         `json:"id"`
+	ParentID     string         `json:"parentId,omitempty"`
 	Name         string         `json:"name"`
 	Type         string         `json:"type"`
 	StartTime    int64          `json:"startTime"` // Unix millis
@@ -28,6 +29,7 @@ type Span struct {
 	Input        map[string]any `json:"input,omitempty"`
 	Output       map[string]any `json:"output,omitempty"`
 	ErrorMessage string         `json:"errorMessage,omitempty"`
+	Children     []*Span        `json:"children,omitempty"`
 }
 
 // Trace represents a full trace.
@@ -79,7 +81,7 @@ func toTrace(entry audit.Entry) *Trace {
 		}
 	}
 
-	span := Span{
+	rootSpan := Span{
 		ID:           spanID,
 		Name:         entry.ToolName,
 		Type:         "tool",
@@ -91,14 +93,55 @@ func toTrace(entry audit.Entry) *Trace {
 		ErrorMessage: entry.Error,
 	}
 
+	// Reconstruct children from telemetry spans
+	if len(entry.Spans) > 0 {
+		// 1. Create all span objects and map them by ID
+		spanMap := make(map[string]*Span)
+		var allSpans []*Span
+
+		for _, s := range entry.Spans {
+			apiSpan := &Span{
+				ID:        s.ID,
+				ParentID:  s.ParentID,
+				Name:      s.Name,
+				StartTime: s.StartTime.UnixMilli(),
+				EndTime:   s.EndTime.UnixMilli(),
+				Type:      "internal", // telemetry spans are internal steps
+				Status:    "success",  // assume success for now as simple tracer doesn't track status
+			}
+			spanMap[s.ID] = apiSpan
+			allSpans = append(allSpans, apiSpan)
+		}
+
+		// 2. Build the tree
+		// We iterate again. If a span has a parent that exists in our map, we add it to that parent.
+		// If it has no parent (or parent not found in telemetry), it is a direct child of the root span.
+		for _, s := range allSpans {
+			if s.ParentID != "" {
+				if parent, ok := spanMap[s.ParentID]; ok {
+					parent.Children = append(parent.Children, s)
+					continue
+				}
+			}
+			// Fallback: add to root
+			s.ParentID = rootSpan.ID
+			rootSpan.Children = append(rootSpan.Children, s)
+		}
+	}
+
 	return &Trace{
 		ID:            traceID,
-		RootSpan:      span,
+		RootSpan:      rootSpan,
 		Timestamp:     entry.Timestamp.Format(time.RFC3339),
 		TotalDuration: durationMs,
 		Status:        status,
 		Trigger:       "user", // Default to user for now
 	}
+}
+
+// Legacy function signature to keep code compatible if called elsewhere, though unexported
+func buildTrace(entry audit.Entry) *Trace {
+	return toTrace(entry)
 }
 
 func (a *Application) handleTraces() http.HandlerFunc {

@@ -13,6 +13,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/telemetry"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
@@ -263,4 +264,41 @@ func TestAuditMiddleware_WriteError(t *testing.T) {
 	res, err := mw.Execute(ctx, req, next)
 	assert.NoError(t, err)
 	assert.Equal(t, "success", res)
+}
+
+func TestAuditMiddleware_Execute_Tracing(t *testing.T) {
+	mockStore := &MockAuditStore{}
+	cfg := configv1.AuditConfig_builder{Enabled: proto.Bool(true)}.Build()
+	mw, err := NewAuditMiddleware(cfg)
+	require.NoError(t, err)
+	mw.SetStore(mockStore)
+
+	ctx := context.Background()
+	req := &tool.ExecutionRequest{ToolName: "trace-tool"}
+
+	// Mock next function that adds a span
+	next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		_, end := telemetry.StartSpan(ctx, "inner-span")
+		time.Sleep(1 * time.Millisecond)
+		end()
+		return "ok", nil
+	}
+
+	res, err := mw.Execute(ctx, req, next)
+	assert.NoError(t, err)
+	assert.Equal(t, "ok", res)
+
+	require.Len(t, mockStore.Entries, 1)
+	entry := mockStore.Entries[0]
+	assert.NotEmpty(t, entry.Spans)
+	// We expect at least the inner span.
+	// Since StartSpan generates random IDs, we can't match exact ID, but Name is "inner-span".
+	found := false
+	for _, s := range entry.Spans {
+		if s.Name == "inner-span" {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "Expected span 'inner-span' to be recorded")
 }
