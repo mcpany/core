@@ -80,6 +80,7 @@ Follow these steps to get up and running immediately.
 
 ### Hello World
 Once the server is running, you can verify it using `curl` or an MCP client.
+
 ```bash
 # Check health
 curl http://localhost:50050/health
@@ -147,6 +148,18 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` is set in the server's environment.
+
+## 6. Troubleshooting
+
+Common issues and their solutions.
+
+### Server Fails to Start
+*   **Port Conflict:** Ensure ports `50050` (HTTP) and `50051` (gRPC) are free. Use `lsof -i :50050` to check.
+*   **Config Error:** Run `./build/bin/server validate --config-path ...` to check your configuration syntax.
+
+### Docker Issues
+*   **Permissions:** If you see permission errors, try running with `sudo` or check your Docker group membership.
+*   **Network:** Ensure the container can access upstream services (use `--network host` if testing locally).
 
 ## License
 This project is licensed under the terms of the [Apache 2.0 License](LICENSE).

@@ -11,6 +11,8 @@ import { twMerge } from "tailwind-merge"
  *
  * @param inputs - A list of class values (strings, arrays, objects) to combine.
  * @returns A merged class name string.
+ * @throws {never} This function does not throw.
+ * @remarks Side Effects: None.
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
