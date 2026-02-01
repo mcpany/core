@@ -1444,7 +1444,9 @@ func (a *Application) runServerMode(
 	if err != nil {
 		return fmt.Errorf("failed to create IP allowlist middleware: %w", err)
 	}
+	a.configMu.Lock()
 	a.ipMiddleware = ipMiddleware
+	a.configMu.Unlock()
 
 	// localCtx is used to manage the lifecycle of the servers started in this function.
 	// It's canceled when this function returns, ensuring that all servers are shut down.
@@ -1908,11 +1910,15 @@ func (a *Application) runServerMode(
 
 	// Apply CORS Middleware
 	corsMiddleware := middleware.NewHTTPCORSMiddleware(a.SettingsManager.GetAllowedOrigins())
+	a.configMu.Lock()
 	a.corsMiddleware = corsMiddleware
+	a.configMu.Unlock()
 
 	// Apply CSRF Middleware
 	csrfMiddleware := middleware.NewCSRFMiddleware(a.SettingsManager.GetAllowedOrigins())
+	a.configMu.Lock()
 	a.csrfMiddleware = csrfMiddleware
+	a.configMu.Unlock()
 
 	// Prepare final handler (Mux wrapped with Content Optimizer and Debugger)
 	var finalHandler http.Handler = mux
