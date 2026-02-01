@@ -1779,23 +1779,33 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
+		var replacements []string
+		for k, v := range inputs {
+			val := util.ToString(v)
+			// Validate inputs globally first (independent of argument context)
+			if err := validateSafePathAndInjection(val, isDocker); err != nil {
+				return nil, fmt.Errorf("parameter %q: %w", k, err)
+			}
+			replacements = append(replacements, "{{" + k + "}}", val)
+		}
+
+		replacer := strings.NewReplacer(replacements...)
+
 		for i, arg := range args {
+			// Perform context-aware validation before replacement
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker); err != nil {
-						return nil, fmt.Errorf("parameter %q: %w", k, err)
-					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
 						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
 			}
+			args[i] = replacer.Replace(arg)
 		}
 	}
 
