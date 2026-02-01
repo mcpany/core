@@ -318,10 +318,20 @@ type ServiceStore interface {
 
 var unknownFieldRegex = regexp.MustCompile(`unknown field "([^"]+)"`)
 
+const maxExpandRecursionDepth = 100
+
 // expand replaces ${VAR}, $VAR, or ${VAR:default} with environment variables.
 // If a variable is missing and no default is provided, it returns an error with line number information.
 // It supports nested braces in default values, e.g., ${VAR:{"key": "value"}}.
 func expand(b []byte) ([]byte, error) {
+	return expandRecursive(b, 0)
+}
+
+func expandRecursive(b []byte, depth int) ([]byte, error) {
+	if depth > maxExpandRecursionDepth {
+		return nil, fmt.Errorf("environment variable expansion recursion depth exceeded (max %d)", maxExpandRecursionDepth)
+	}
+
 	var missingErrBuilder strings.Builder
 	missingCount := 0
 
@@ -348,7 +358,7 @@ func expand(b []byte) ([]byte, error) {
 
 		// Case 1: ${...}
 		if b[i+1] == '{' {
-			consumed := handleBracedVar(b, i, &buf, &missingErrBuilder, &missingCount)
+			consumed := handleBracedVar(b, i, &buf, &missingErrBuilder, &missingCount, depth)
 			if consumed > 0 {
 				i += consumed
 				continue
@@ -380,7 +390,7 @@ func expand(b []byte) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilder *strings.Builder, missingCount *int) int {
+func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilder *strings.Builder, missingCount *int, recursionDepth int) int {
 	// Find matching '}' accounting for nesting
 	innerStart := startIdx + 2
 	depth := 1
@@ -436,7 +446,7 @@ func handleBracedVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	useDefault := (ok && val == "" && hasDefault) || (!ok && hasDefault)
 
 	if useDefault {
-		expanded, err := expand([]byte(defaultValue))
+		expanded, err := expandRecursive([]byte(defaultValue), recursionDepth+1)
 		if err != nil {
 			*missingCount++
 			// Clean up error message from recursive call
