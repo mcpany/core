@@ -44,28 +44,9 @@ export function usePinnedTools() {
     });
   };
 
-  const bulkSetPins = (names: string[], shouldPin: boolean) => {
-    setPinnedTools((prev) => {
-      const currentSet = new Set(prev);
-      names.forEach((name) => {
-        if (shouldPin) currentSet.add(name);
-        else currentSet.delete(name);
-      });
-      const newPinned = Array.from(currentSet);
-
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newPinned));
-      } catch (error) {
-        console.error("Failed to save pinned tools", error);
-      }
-
-      return newPinned;
-    });
-  };
-
   const isPinned = (toolName: string) => {
     return pinnedTools.includes(toolName);
   };
 
-  return { pinnedTools, togglePin, bulkSetPins, isPinned, isLoaded };
+  return { pinnedTools, togglePin, isPinned, isLoaded };
 }

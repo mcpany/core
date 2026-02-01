@@ -9,7 +9,6 @@ import { memo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Wrench, Play, Star, Info } from "lucide-react";
@@ -25,8 +24,6 @@ interface ToolTableProps {
   toggleTool: (name: string, currentStatus: boolean) => void;
   openInspector: (tool: ToolDefinition) => void;
   usageStats?: Record<string, ToolAnalytics>;
-  selectedTools?: Set<string>;
-  onSelectionChange?: (selected: Set<string>) => void;
 }
 
 // ⚡ Bolt Optimization: Extracted ToolTable from page.tsx to prevent unnecessary re-renders
@@ -45,50 +42,12 @@ export const ToolTable = memo(function ToolTable({
   togglePin,
   toggleTool,
   openInspector,
-  usageStats,
-  selectedTools,
-  onSelectionChange
+  usageStats
 }: ToolTableProps) {
-  const isAllSelected = tools.length > 0 && tools.every(t => selectedTools?.has(t.name));
-  const isIndeterminate = !!(selectedTools && selectedTools.size > 0 && !isAllSelected);
-
-  const handleSelectAll = () => {
-    if (!onSelectionChange || !selectedTools) return;
-    const newSelected = new Set(selectedTools);
-    if (isAllSelected) {
-      // Deselect all visible
-      tools.forEach(t => newSelected.delete(t.name));
-    } else {
-      // Select all visible
-      tools.forEach(t => newSelected.add(t.name));
-    }
-    onSelectionChange(newSelected);
-  };
-
-  const handleSelectRow = (name: string) => {
-    if (!onSelectionChange || !selectedTools) return;
-    const newSelected = new Set(selectedTools);
-    if (newSelected.has(name)) {
-      newSelected.delete(name);
-    } else {
-      newSelected.add(name);
-    }
-    onSelectionChange(newSelected);
-  };
-
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[30px]">
-             {onSelectionChange && (
-                 <Checkbox
-                    checked={isAllSelected || (isIndeterminate ? "indeterminate" : false)}
-                    onCheckedChange={handleSelectAll}
-                    aria-label="Select all"
-                 />
-             )}
-          </TableHead>
           <TableHead className="w-[30px]"></TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Description</TableHead>
@@ -102,16 +61,7 @@ export const ToolTable = memo(function ToolTable({
       </TableHeader>
       <TableBody>
         {tools.map((tool) => (
-          <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selectedTools?.has(tool.name) && "bg-muted/50")}>
-            <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                {onSelectionChange && (
-                    <Checkbox
-                        checked={selectedTools?.has(tool.name)}
-                        onCheckedChange={() => handleSelectRow(tool.name)}
-                        aria-label={`Select ${tool.name}`}
-                    />
-                )}
-            </TableCell>
+          <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
             <TableCell className={isCompact ? "py-0 px-2" : ""}>
                 <Button
                   variant="ghost"
