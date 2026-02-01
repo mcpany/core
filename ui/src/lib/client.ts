@@ -23,6 +23,8 @@ import { BrowserHeaders } from 'browser-headers';
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
+ *
+ * Summary: Configuration object for an upstream service, augmented with runtime status.
  */
 export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount'> {
     /**
@@ -222,7 +224,11 @@ export const apiClient = {
 
     /**
      * Lists all registered upstream services.
-     * @returns A promise that resolves to a list of services.
+     *
+     * Summary: Retrieves the list of all configured upstream services.
+     *
+     * @returns Promise<UpstreamServiceConfig[]>. A promise that resolves to a list of services.
+     * @throws Error. If the fetch request fails.
      */
     listServices: async () => {
         // Fallback to REST for E2E reliability until gRPC-Web is stable
@@ -251,8 +257,12 @@ export const apiClient = {
 
     /**
      * Gets a single service by its ID.
-     * @param id The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     *
+     * Summary: Retrieves the configuration for a specific upstream service.
+     *
+     * @param id - string. The ID of the service to retrieve.
+     * @returns Promise<UpstreamServiceConfig>. A promise that resolves to the service configuration.
+     * @throws Error. If the service is not found or the request fails.
      */
     getService: async (id: string) => {
          try {
@@ -332,8 +342,12 @@ export const apiClient = {
 
     /**
      * Registers a new upstream service.
-     * @param config The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     *
+     * Summary: Creates a new upstream service configuration.
+     *
+     * @param config - UpstreamServiceConfig. The configuration to register.
+     * @returns Promise<UpstreamServiceConfig>. The created service configuration.
+     * @throws Error. If validation fails or registration is rejected.
      */
     registerService: async (config: UpstreamServiceConfig) => {
         // Map camelCase (UI) to snake_case (Server REST)
@@ -395,8 +409,12 @@ export const apiClient = {
 
     /**
      * Updates an existing upstream service.
-     * @param config The updated configuration of the service.
-     * @returns A promise that resolves to the updated service configuration.
+     *
+     * Summary: Modifies an existing upstream service configuration.
+     *
+     * @param config - UpstreamServiceConfig. The configuration to update.
+     * @returns Promise<UpstreamServiceConfig>. The updated configuration.
+     * @throws Error. If the service does not exist or validation fails.
      */
     updateService: async (config: UpstreamServiceConfig) => {
         // Same mapping as register
