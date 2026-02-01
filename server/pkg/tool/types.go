@@ -2613,6 +2613,10 @@ func checkForArgumentInjection(val string) error {
 		}
 		return fmt.Errorf("argument injection detected: value starts with '-'")
 	}
+	// Sentinel Security Update: Block response file injection
+	if strings.HasPrefix(val, "@") {
+		return fmt.Errorf("argument injection detected: value starts with '@' (response file)")
+	}
 	return nil
 }
 
