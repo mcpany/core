@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported
@@ -282,7 +282,7 @@ func NewCompiledExportPolicy(policy *configv1.ExportPolicy) (*CompiledExportPoli
 
 // ShouldExportCompiled determines whether a named item should be exported based on the compiled policy.
 // ⚡ BOLT: Optimized version of ShouldExport that uses pre-compiled regexes to avoid repeated compilation overhead.
-// Randomized Selection from Top 5 High-Impact Targets
+// Randomized Selection from Top 5 High-Impact Targets.
 func ShouldExportCompiled(name string, policy *CompiledExportPolicy) bool {
 	if policy == nil || policy.policy == nil {
 		return true

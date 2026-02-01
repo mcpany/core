@@ -289,7 +289,7 @@ func (u *Upstream) createAndRegisterHTTPTools(
 	_ bool,
 	toolExportPolicy *tool.CompiledExportPolicy,
 	resourceExportPolicy *tool.CompiledExportPolicy,
-) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
+) []*configv1.ToolDefinition {
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -366,345 +366,11 @@ func (u *Upstream) createAndRegisterHTTPTools(
 			continue
 		}
 
-		properties, requiredParams, err := schemaconv.ConfigSchemaToProtoProperties(httpDef.GetParameters())
-		if err != nil {
-			log.Error("Failed to convert schema to properties", "error", err)
-			continue
+		// Process individual tool registration
+		discoveredTool := u.processToolRegistration(ctx, serviceID, toolNamePart, definition, httpDef, baseURL, authenticator, serviceConfig, callPolicies, callID, toolManager)
+		if discoveredTool != nil {
+			discoveredTools = append(discoveredTools, discoveredTool)
 		}
-
-		method, err := httpMethodToString(httpDef.GetMethod())
-		if err != nil {
-			log.Error("Skipping tool creation due to unsupported HTTP method", "toolName", toolNamePart, "error", err)
-			continue
-		}
-
-		rawEndpointPath := httpDef.GetEndpointPath()
-		endpointURL, err := url.Parse(rawEndpointPath)
-		if err != nil {
-			// If parsing failed and the path starts with //, it might be because url.Parse
-			// treated it as a scheme-relative URL with an invalid host (e.g., //foo%2Fbar).
-			// Try parsing it as a path by prepending a slash.
-			if strings.HasPrefix(rawEndpointPath, "//") {
-				if parsedURL, err2 := url.Parse("/" + rawEndpointPath); err2 == nil {
-					// Remove the leading slash we added
-					parsedURL.Path = strings.TrimPrefix(parsedURL.Path, "/")
-					if parsedURL.RawPath != "" {
-						parsedURL.RawPath = strings.TrimPrefix(parsedURL.RawPath, "/")
-					}
-					endpointURL = parsedURL
-					err = nil
-				}
-			}
-
-			if err != nil {
-				log.Error("Failed to parse endpoint path", "path", rawEndpointPath, "error", err)
-				continue
-			}
-		}
-
-		// Fix for double slash bug (e.g., //foo).
-		// If the endpoint path starts with double slashes but has no scheme (e.g., //foo),
-		// url.Parse treats it as a scheme-relative URL (host="foo", path="").
-		// We want to treat it as a path relative to the base URL.
-		// However, we must be careful not to corrupt paths that happen to start with // but are correctly parsed as paths (e.g. ///foo).
-		// url.Parse("//foo") -> Host="foo", Path=""
-		// url.Parse("///foo") -> Host="", Path="///foo"
-		if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") {
-			if endpointURL.Host != "" {
-				// It was treated as scheme-relative (//Host/Path).
-				// Restore it to be just Path by prepending "//" + [User@] + Host.
-				// Note: url.Parse treats //user:pass@host/path as scheme-relative too.
-				// We need to preserve User info if present.
-				prefix := "//"
-				if endpointURL.User != nil {
-					prefix += endpointURL.User.String() + "@"
-				}
-				prefix += endpointURL.Host
-
-				endpointURL.Path = prefix + endpointURL.Path
-				if endpointURL.RawPath != "" {
-					endpointURL.RawPath = prefix + endpointURL.RawPath
-				}
-				endpointURL.Host = ""
-				endpointURL.User = nil
-			} else if endpointURL.Path == "" {
-				// It was treated as scheme-relative with empty host (e.g. "//") which results in empty path
-				endpointURL.Path = "//"
-			}
-		}
-
-		// Ensure baseURL has a trailing slash so ResolveReference appends to it,
-		// BUT ONLY IF we are actually appending a path segment.
-		baseForJoin := *baseURL
-
-		// Make endpoint path relative
-		// If the path starts with "/", we prepend "." to force it to be treated as a relative path segment
-		// by ResolveReference, instead of an absolute path that replaces the base path.
-		relPath := endpointURL.Path
-		relRawPath := endpointURL.RawPath
-
-		if strings.HasPrefix(relPath, "/") {
-			relPath = "." + relPath
-			if relRawPath != "" {
-				relRawPath = "." + relRawPath
-			}
-		}
-
-		// If the endpoint path has segments (not empty and not just /), force slash on base.
-		// If endpoint path is empty, we DON'T want to force a slash on base, because
-		// we want http://host/api + "" -> http://host/api
-		// But ResolveReference behavior is:
-		// Base: http://host/api, Rel: foo -> http://host/foo (Replaces last segment!)
-		// Base: http://host/api/, Rel: foo -> http://host/api/foo
-		// So if we have a relPath, we MUST ensure base has slash.
-		//
-		// Special case: If endpointURL.Path is exactly "/", we want to treat it as a slash
-		// relative to the base, effectively forcing a trailing slash on the base.
-		// But TrimPrefix(..., "/") makes it empty string.
-		// So we check if relPath is NOT empty OR if endpointURL.Path ended with a slash.
-		// We also check rawEndpointPath because if we trimmed slashes from //, endpointURL.Path
-		// might be empty, but we want to preserve the trailing slash implied by the original input.
-		if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") || strings.HasSuffix(rawEndpointPath, "/") {
-			if !strings.HasSuffix(baseForJoin.Path, "/") {
-				baseForJoin.Path += "/"
-				if baseForJoin.RawPath != "" {
-					baseForJoin.RawPath += "/"
-				}
-			}
-		}
-		// Construct a relative URL using RawPath to preserve encoding
-		relURL := &url.URL{
-			Path:     relPath,
-			RawPath:  relRawPath,
-			Fragment: endpointURL.Fragment,
-		}
-
-		resolvedURL := baseForJoin.ResolveReference(relURL)
-		// ResolveReference discards the base query, so we restore it
-		resolvedURL.RawQuery = baseURL.RawQuery
-		// ResolveReference also discards the base fragment if the reference has none (empty string).
-		// If the endpoint URL didn't specify a fragment, we should preserve the base fragment.
-		if endpointURL.Fragment == "" && baseURL.Fragment != "" {
-			resolvedURL.Fragment = baseURL.Fragment
-		}
-		// Merge query parameters, allowing endpoint parameters to override base parameters
-		// We use a manual parsing strategy to preserve invalid percent encodings.
-		type queryPart struct {
-			raw        string
-			key        string
-			isInvalid  bool
-			keyDecoded bool
-		}
-
-		parseQueryManual := func(rawQuery string) []queryPart {
-			var parts []queryPart
-			if rawQuery == "" {
-				return parts
-			}
-			// We treat '&' as the only separator.
-			for _, p := range strings.Split(rawQuery, "&") {
-				if p == "" {
-					continue
-				}
-				qp := queryPart{raw: p}
-
-				var key, value string
-				if idx := strings.Index(p, "="); idx >= 0 {
-					key = p[:idx]
-					value = p[idx+1:]
-				} else {
-					key = p
-				}
-
-				decodedKey, errKey := url.QueryUnescape(key)
-				if errKey == nil {
-					qp.key = decodedKey
-					qp.keyDecoded = true
-				}
-
-				_, errVal := url.QueryUnescape(value)
-
-				if errKey != nil || errVal != nil {
-					qp.isInvalid = true
-				}
-				parts = append(parts, qp)
-			}
-			return parts
-		}
-
-		// Only attempt merge if there is something to merge from endpoint
-		if strings.Trim(endpointURL.RawQuery, "&") != "" {
-			baseParts := parseQueryManual(resolvedURL.RawQuery)
-			endParts := parseQueryManual(endpointURL.RawQuery)
-
-			// Index endpoint parts by key
-			endPartsByKey := make(map[string][]string)
-			for _, p := range endParts {
-				// We include invalid parts if we managed to extract the key,
-				// so they can participate in override logic.
-				if p.keyDecoded {
-					endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
-				}
-			}
-
-			var finalParts []string
-			keysOverridden := make(map[string]bool)
-
-			// Process base parts
-			for _, bp := range baseParts {
-				// Check override if we have a decoded key
-				if bp.keyDecoded {
-					if parts, ok := endPartsByKey[bp.key]; ok {
-						if !keysOverridden[bp.key] {
-							finalParts = append(finalParts, parts...)
-							keysOverridden[bp.key] = true
-						}
-						// If overridden, we skip adding the base part (even if it was invalid)
-						continue
-					}
-				}
-
-				// If not overridden (or key not decoded), add the base part
-				finalParts = append(finalParts, bp.raw)
-			}
-
-			// Append remaining endpoint parts
-			for _, ep := range endParts {
-				// If we couldn't decode the key, we just append it (no override logic possible)
-				if !ep.keyDecoded {
-					finalParts = append(finalParts, ep.raw)
-					continue
-				}
-
-				// If key was not in base (so not added via base loop overrides), add it now.
-				if !keysOverridden[ep.key] {
-					finalParts = append(finalParts, ep.raw)
-					// We do not mark as overridden here because if multiple parts in endpoint have same key,
-					// they should all be added. Since keysOverridden is only set if found in base,
-					// we are safe to add duplicates from endpoint if they are new keys.
-				}
-			}
-
-			resolvedURL.RawQuery = strings.Join(finalParts, "&")
-		}
-		fullURL := resolvedURL.String()
-
-		var inputSchema *structpb.Struct
-		if httpDef.GetInputSchema() != nil && len(httpDef.GetInputSchema().GetFields()) > 0 {
-			// Clone the input schema to avoid modifying the configuration object
-			inputSchema = proto.Clone(httpDef.GetInputSchema()).(*structpb.Struct)
-
-			// Ensure properties from 'parameters' are in 'inputSchema.properties'
-			if properties != nil {
-				var existingProps map[string]*structpb.Value
-				if propsVal, ok := inputSchema.Fields["properties"]; ok {
-					if structVal := propsVal.GetStructValue(); structVal != nil {
-						existingProps = structVal.Fields
-					}
-				}
-
-				if existingProps == nil {
-					existingProps = make(map[string]*structpb.Value)
-					inputSchema.Fields["properties"] = structpb.NewStructValue(&structpb.Struct{Fields: existingProps})
-				}
-
-				for k, v := range properties.Fields {
-					if _, ok := existingProps[k]; !ok {
-						existingProps[k] = v
-					}
-				}
-			}
-
-			// Ensure required parameters from 'parameters' are also in 'inputSchema.required'
-			if len(requiredParams) > 0 {
-				var existingRequired []any
-				if reqVal, ok := inputSchema.Fields["required"]; ok {
-					if listVal := reqVal.GetListValue(); listVal != nil {
-						for _, v := range listVal.Values {
-							// Only preserve string values, as JSON Schema 'required' must be an array of strings.
-							if _, ok := v.GetKind().(*structpb.Value_StringValue); ok {
-								existingRequired = append(existingRequired, v.GetStringValue())
-							}
-						}
-					}
-				}
-
-				// Merge requiredParams into existingRequired
-				for _, reqParam := range requiredParams {
-					exists := false
-					for _, existing := range existingRequired {
-						if existingStr, ok := existing.(string); ok && existingStr == reqParam {
-							exists = true
-							break
-						}
-					}
-					if !exists {
-						existingRequired = append(existingRequired, reqParam)
-					}
-				}
-
-				// Write back to inputSchema
-				if len(existingRequired) > 0 {
-					requiredValue, err := structpb.NewList(existingRequired)
-					if err != nil {
-						log.Error("Failed to create required params list", "error", err)
-					} else {
-						inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
-					}
-				}
-			}
-		} else {
-			if properties == nil {
-				properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
-			}
-			inputSchema = &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"type":       structpb.NewStringValue("object"),
-					"properties": structpb.NewStructValue(properties),
-				},
-			}
-
-			if len(requiredParams) > 0 {
-				requiredList := make([]any, len(requiredParams))
-				for i, v := range requiredParams {
-					requiredList[i] = v
-				}
-				requiredValue, err := structpb.NewList(requiredList)
-				if err != nil {
-					log.Error("Failed to create required params list", "error", err)
-					continue
-				}
-				inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
-			}
-		}
-
-		newToolProto := pb.Tool_builder{
-			Name:                proto.String(toolNamePart),
-			Description:         proto.String(definition.GetDescription()),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
-			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
-				InputSchema:     inputSchema,
-				OutputSchema:    httpDef.GetOutputSchema(),
-			}.Build(),
-		}.Build()
-
-		log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
-
-		httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef, serviceConfig.GetResilience(), callPolicies, callID)
-		if err := toolManager.AddTool(httpTool); err != nil {
-			log.Error("Failed to add tool", "error", err)
-			continue
-		}
-		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolNamePart),
-			Description: proto.String(definition.GetDescription()),
-		}.Build())
 	}
 
 	callIDToName := make(map[string]string)
@@ -713,6 +379,328 @@ func (u *Upstream) createAndRegisterHTTPTools(
 		callIDToName[d.GetCallId()] = d.GetName()
 	}
 
+	u.processResources(serviceID, serviceConfig, httpService, callIDToName, toolManager, resourceManager, resourceExportPolicy)
+
+	return discoveredTools
+}
+
+func (u *Upstream) processToolRegistration(
+	ctx context.Context,
+	serviceID, toolNamePart string,
+	definition *configv1.ToolDefinition,
+	httpDef *configv1.HttpCallDefinition,
+	baseURL *url.URL,
+	authenticator auth.UpstreamAuthenticator,
+	serviceConfig *configv1.UpstreamServiceConfig,
+	callPolicies []*configv1.CallPolicy,
+	callID string,
+	toolManager tool.ManagerInterface,
+) *configv1.ToolDefinition {
+	log := logging.GetLogger()
+
+	properties, requiredParams, err := schemaconv.ConfigSchemaToProtoProperties(httpDef.GetParameters())
+	if err != nil {
+		log.Error("Failed to convert schema to properties", "error", err)
+		return nil
+	}
+
+	method, err := httpMethodToString(httpDef.GetMethod())
+	if err != nil {
+		log.Error("Skipping tool creation due to unsupported HTTP method", "toolName", toolNamePart, "error", err)
+		return nil
+	}
+
+	fullURL := resolveFullURL(baseURL, httpDef.GetEndpointPath())
+	if fullURL == "" {
+		return nil
+	}
+
+	inputSchema := constructInputSchema(httpDef, properties, requiredParams)
+
+	newToolProto := pb.Tool_builder{
+		Name:                proto.String(toolNamePart),
+		Description:         proto.String(definition.GetDescription()),
+		ServiceId:           proto.String(serviceID),
+		UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
+		Annotations: pb.ToolAnnotations_builder{
+			Title:           proto.String(definition.GetTitle()),
+			ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
+			DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
+			IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
+			OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
+			InputSchema:     inputSchema,
+			OutputSchema:    httpDef.GetOutputSchema(),
+		}.Build(),
+	}.Build()
+
+	log.DebugContext(ctx, "Tool protobuf is generated", "toolProto", newToolProto)
+
+	httpTool := tool.NewHTTPTool(newToolProto, u.poolManager, serviceID, authenticator, httpDef, serviceConfig.GetResilience(), callPolicies, callID)
+	if err := toolManager.AddTool(httpTool); err != nil {
+		log.Error("Failed to add tool", "error", err)
+		return nil
+	}
+	return configv1.ToolDefinition_builder{
+		Name:        proto.String(toolNamePart),
+		Description: proto.String(definition.GetDescription()),
+	}.Build()
+}
+
+func resolveFullURL(baseURL *url.URL, rawEndpointPath string) string {
+	log := logging.GetLogger()
+	endpointURL, err := url.Parse(rawEndpointPath)
+	if err != nil {
+		// If parsing failed and the path starts with //, it might be because url.Parse
+		// treated it as a scheme-relative URL with an invalid host (e.g., //foo%2Fbar).
+		// Try parsing it as a path by prepending a slash.
+		if strings.HasPrefix(rawEndpointPath, "//") {
+			if parsedURL, err2 := url.Parse("/" + rawEndpointPath); err2 == nil {
+				// Remove the leading slash we added
+				parsedURL.Path = strings.TrimPrefix(parsedURL.Path, "/")
+				if parsedURL.RawPath != "" {
+					parsedURL.RawPath = strings.TrimPrefix(parsedURL.RawPath, "/")
+				}
+				endpointURL = parsedURL
+				err = nil
+			}
+		}
+
+		if err != nil {
+			log.Error("Failed to parse endpoint path", "path", rawEndpointPath, "error", err)
+			return ""
+		}
+	}
+
+	// Fix for double slash bug (e.g., //foo).
+	if endpointURL.Scheme == "" && strings.HasPrefix(rawEndpointPath, "//") {
+		if endpointURL.Host != "" {
+			prefix := "//"
+			if endpointURL.User != nil {
+				prefix += endpointURL.User.String() + "@"
+			}
+			prefix += endpointURL.Host
+
+			endpointURL.Path = prefix + endpointURL.Path
+			if endpointURL.RawPath != "" {
+				endpointURL.RawPath = prefix + endpointURL.RawPath
+			}
+			endpointURL.Host = ""
+			endpointURL.User = nil
+		} else if endpointURL.Path == "" {
+			endpointURL.Path = "//"
+		}
+	}
+
+	baseForJoin := *baseURL
+	relPath := endpointURL.Path
+	relRawPath := endpointURL.RawPath
+
+	if strings.HasPrefix(relPath, "/") {
+		relPath = "." + relPath
+		if relRawPath != "" {
+			relRawPath = "." + relRawPath
+		}
+	}
+
+	if relPath != "" || strings.HasSuffix(endpointURL.Path, "/") || strings.HasSuffix(rawEndpointPath, "/") {
+		if !strings.HasSuffix(baseForJoin.Path, "/") {
+			baseForJoin.Path += "/"
+			if baseForJoin.RawPath != "" {
+				baseForJoin.RawPath += "/"
+			}
+		}
+	}
+
+	relURL := &url.URL{
+		Path:     relPath,
+		RawPath:  relRawPath,
+		Fragment: endpointURL.Fragment,
+	}
+
+	resolvedURL := baseForJoin.ResolveReference(relURL)
+	resolvedURL.RawQuery = baseURL.RawQuery
+	if endpointURL.Fragment == "" && baseURL.Fragment != "" {
+		resolvedURL.Fragment = baseURL.Fragment
+	}
+
+	// Merge query parameters logic
+	if strings.Trim(endpointURL.RawQuery, "&") != "" {
+		// Simplified query merge logic for brevity in refactor
+		// In a full refactor, this could be its own helper function
+		// For now, we inline a simpler version or assume the logic is complex enough to stay here?
+		// Actually, let's keep the manual parsing logic as it was critical for edge cases
+		// But to reduce complexity, we extract it.
+		resolvedURL.RawQuery = mergeQuery(resolvedURL.RawQuery, endpointURL.RawQuery)
+	}
+	return resolvedURL.String()
+}
+
+func mergeQuery(baseQuery, endpointQuery string) string {
+	type queryPart struct {
+		raw        string
+		key        string
+		isInvalid  bool
+		keyDecoded bool
+	}
+
+	parseQueryManual := func(rawQuery string) []queryPart {
+		var parts []queryPart
+		if rawQuery == "" {
+			return parts
+		}
+		for _, p := range strings.Split(rawQuery, "&") {
+			if p == "" {
+				continue
+			}
+			qp := queryPart{raw: p}
+			var key, value string
+			if idx := strings.Index(p, "="); idx >= 0 {
+				key = p[:idx]
+				value = p[idx+1:]
+			} else {
+				key = p
+			}
+			decodedKey, errKey := url.QueryUnescape(key)
+			if errKey == nil {
+				qp.key = decodedKey
+				qp.keyDecoded = true
+			}
+			_, errVal := url.QueryUnescape(value)
+			if errKey != nil || errVal != nil {
+				qp.isInvalid = true
+			}
+			parts = append(parts, qp)
+		}
+		return parts
+	}
+
+	baseParts := parseQueryManual(baseQuery)
+	endParts := parseQueryManual(endpointQuery)
+	endPartsByKey := make(map[string][]string)
+	for _, p := range endParts {
+		if p.keyDecoded {
+			endPartsByKey[p.key] = append(endPartsByKey[p.key], p.raw)
+		}
+	}
+
+	finalParts := make([]string, 0, len(baseParts)+len(endParts))
+	keysOverridden := make(map[string]bool)
+
+	for _, bp := range baseParts {
+		if bp.keyDecoded {
+			if parts, ok := endPartsByKey[bp.key]; ok {
+				if !keysOverridden[bp.key] {
+					finalParts = append(finalParts, parts...)
+					keysOverridden[bp.key] = true
+				}
+				continue
+			}
+		}
+		finalParts = append(finalParts, bp.raw)
+	}
+
+	for _, ep := range endParts {
+		if !ep.keyDecoded {
+			finalParts = append(finalParts, ep.raw)
+			continue
+		}
+		if !keysOverridden[ep.key] {
+			finalParts = append(finalParts, ep.raw)
+		}
+	}
+	return strings.Join(finalParts, "&")
+}
+
+func constructInputSchema(httpDef *configv1.HttpCallDefinition, properties *structpb.Struct, requiredParams []string) *structpb.Struct {
+	log := logging.GetLogger()
+	var inputSchema *structpb.Struct
+	if httpDef.GetInputSchema() != nil && len(httpDef.GetInputSchema().GetFields()) > 0 {
+		inputSchema = proto.Clone(httpDef.GetInputSchema()).(*structpb.Struct)
+		if properties != nil {
+			var existingProps map[string]*structpb.Value
+			if propsVal, ok := inputSchema.Fields["properties"]; ok {
+				if structVal := propsVal.GetStructValue(); structVal != nil {
+					existingProps = structVal.Fields
+				}
+			}
+			if existingProps == nil {
+				existingProps = make(map[string]*structpb.Value)
+				inputSchema.Fields["properties"] = structpb.NewStructValue(&structpb.Struct{Fields: existingProps})
+			}
+			for k, v := range properties.Fields {
+				if _, ok := existingProps[k]; !ok {
+					existingProps[k] = v
+				}
+			}
+		}
+		if len(requiredParams) > 0 {
+			var existingRequired []any
+			if reqVal, ok := inputSchema.Fields["required"]; ok {
+				if listVal := reqVal.GetListValue(); listVal != nil {
+					for _, v := range listVal.Values {
+						if _, ok := v.GetKind().(*structpb.Value_StringValue); ok {
+							existingRequired = append(existingRequired, v.GetStringValue())
+						}
+					}
+				}
+			}
+			for _, reqParam := range requiredParams {
+				exists := false
+				for _, existing := range existingRequired {
+					if existingStr, ok := existing.(string); ok && existingStr == reqParam {
+						exists = true
+						break
+					}
+				}
+				if !exists {
+					existingRequired = append(existingRequired, reqParam)
+				}
+			}
+			if len(existingRequired) > 0 {
+				requiredValue, err := structpb.NewList(existingRequired)
+				if err != nil {
+					log.Error("Failed to create required params list", "error", err)
+				} else {
+					inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
+				}
+			}
+		}
+	} else {
+		if properties == nil {
+			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
+		}
+		inputSchema = &structpb.Struct{
+			Fields: map[string]*structpb.Value{
+				"type":       structpb.NewStringValue("object"),
+				"properties": structpb.NewStructValue(properties),
+			},
+		}
+		if len(requiredParams) > 0 {
+			requiredList := make([]any, len(requiredParams))
+			for i, v := range requiredParams {
+				requiredList[i] = v
+			}
+			requiredValue, err := structpb.NewList(requiredList)
+			if err == nil {
+				inputSchema.Fields["required"] = structpb.NewListValue(requiredValue)
+			} else {
+				log.Error("Failed to create required params list", "error", err)
+			}
+		}
+	}
+	return inputSchema
+}
+
+func (u *Upstream) processResources(
+	serviceID string,
+	_ *configv1.UpstreamServiceConfig,
+	httpService *configv1.HttpUpstreamService,
+	callIDToName map[string]string,
+	toolManager tool.ManagerInterface,
+	resourceManager resource.ManagerInterface,
+	resourceExportPolicy *tool.CompiledExportPolicy,
+) {
+	log := logging.GetLogger()
 	for _, resourceDef := range httpService.GetResources() {
 		if resourceDef.GetDisable() {
 			log.Info("Skipping disabled resource", "resourceName", resourceDef.GetName())
@@ -755,8 +743,6 @@ func (u *Upstream) createAndRegisterHTTPTools(
 			resourceManager.AddResource(staticRes)
 		}
 	}
-
-	return discoveredTools
 }
 
 func (u *Upstream) createAndRegisterPrompts(
