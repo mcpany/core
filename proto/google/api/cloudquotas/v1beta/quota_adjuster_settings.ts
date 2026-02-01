@@ -47,9 +47,13 @@ export interface UpdateQuotaAdjusterSettingsRequest {
  */
 export interface QuotaAdjusterSettings {
   /**
-   * Identifier. Name of the config would be of the format:
+   * Identifier. Name of the configuration, in the formats below:
+   *
+   * * For a project:
    *   projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+   * * For a folder:
    *   folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+   * * For an organization:
    *   organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
    */
   name: string;
@@ -456,12 +460,12 @@ export const QuotaAdjusterSettings: MessageFns<QuotaAdjusterSettings> = {
  * - Get the name of the configurations.
  */
 export interface QuotaAdjusterSettingsManager {
-  /** RPC Method for updating QuotaAdjusterSettings based on the request */
+  /** Updates the QuotaAdjusterSettings for the specified resource. */
   UpdateQuotaAdjusterSettings(
     request: DeepPartial<UpdateQuotaAdjusterSettingsRequest>,
     metadata?: grpc.Metadata,
   ): Promise<QuotaAdjusterSettings>;
-  /** RPC Method for getting QuotaAdjusterSettings based on the request */
+  /** Gets the QuotaAdjusterSettings for the specified resource. */
   GetQuotaAdjusterSettings(
     request: DeepPartial<GetQuotaAdjusterSettingsRequest>,
     metadata?: grpc.Metadata,
