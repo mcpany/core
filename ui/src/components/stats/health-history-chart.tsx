@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiClient } from "@/lib/client";
@@ -28,58 +28,48 @@ export function HealthHistoryChart() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // In a real app, this would be a dedicated history endpoint.
-                // For this implementation, we simulate 24 hours of data based on
-                // the current status and some randomized historical noise.
-                const [status, traffic] = await Promise.all([
-                    apiClient.getDoctorStatus(),
-                    apiClient.getDashboardTraffic()
-                ]);
+                const response = await apiClient.getDashboardHealth();
 
-                const points: HealthPoint[] = [];
+                // Try to get "system" history, or fallback to aggregating all services
+                let history = response.history["system"];
 
-                // Use traffic history to infer historical health
-                // If we have errors in a given interval (minute), we can mark it as degraded or error.
-                // Traffic history is minute-by-minute (last 60 mins)
-                // We want to show 24 hours?
-                // The backend now returns last 60 minutes of data.
-                // The UI expects 24 hours?
-                // "Displays server uptime history over the last 24 hours." description says so.
-                // But our backend now only returns 60 minutes.
-                // Let's adjust the chart to show available history (60 mins) or whatever backend returns.
-                // If backend returns 60 points, we show 60 points.
+                if (!history && Object.keys(response.history).length > 0) {
+                     // Fallback: Use the history of the first service? Or aggregate?
+                     // For now, let's just use the first available one to show *something*
+                     const firstKey = Object.keys(response.history)[0];
+                     history = response.history[firstKey];
+                }
 
-                if (traffic && traffic.length > 0) {
-                     for (const t of traffic) {
-                        let pointStatus: HealthPoint["status"] = "ok";
+                if (history && history.length > 0) {
+                     const points: HealthPoint[] = history.map(h => {
+                        const date = new Date(h.timestamp);
+                        // Format time as HH:MM
+                        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
                         let uptime = 100;
+                        let status: HealthPoint["status"] = "ok";
 
-                        // Simple heuristic: if errors > 0, degraded. If errors > 50% of requests, error.
-                        const reqs = t.requests || t.total || 0;
-                        const errs = t.errors || 0;
-
-                        if (errs > 0) {
-                            if (reqs > 0 && (errs / reqs) > 0.1) { // >10% error rate
-                                pointStatus = "degraded";
-                                uptime = 80;
-                            }
-                             if (reqs > 0 && (errs / reqs) > 0.5) { // >50% error rate
-                                pointStatus = "error";
-                                uptime = 0;
-                            }
+                        // Map backend status to UI status/uptime
+                        // backend: "up", "down", "ok", "error", etc.
+                        const s = h.status.toLowerCase();
+                        if (s === 'down' || s === 'error' || s === 'offline') {
+                            status = "error";
+                            uptime = 0;
+                        } else if (s === 'degraded' || s === 'unhealthy') {
+                            status = "degraded";
+                            uptime = 80;
                         }
 
-                        points.push({
-                            time: t.time,
-                            status: pointStatus,
+                        return {
+                            time: timeStr,
+                            status: status,
                             uptime: uptime
-                        });
-                     }
+                        };
+                     });
+                     setData(points);
                 } else {
-                     // Fallback to showing just current status if no history
-                     // Or just empty
+                     setData([]);
                 }
-                setData(points);
             } catch (error) {
                 console.error("Failed to fetch health history", error);
             } finally {
@@ -121,7 +111,7 @@ export function HealthHistoryChart() {
                                 fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
-                                interval={3}
+                                interval="preserveStartEnd"
                             />
                             <YAxis hide domain={[0, 100]} />
                             <Tooltip
@@ -176,7 +166,9 @@ export function HealthHistoryChart() {
                         <span>Down</span>
                     </div>
                     <div className="font-medium text-foreground">
-                        99.9% Overall Uptime
+                        {data.length > 0 ? (
+                             (data.filter(d => d.status === 'ok').length / data.length * 100).toFixed(1)
+                        ) : '0.0'}% Overall Uptime
                     </div>
                 </div>
             </CardContent>

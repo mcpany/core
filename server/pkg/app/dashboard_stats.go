@@ -197,6 +197,27 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
+// handleDebugSeedHealth seeds the health history.
+func (a *Application) handleDebugSeedHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var points map[string][]health.HistoryPoint
+		if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		health.SeedHealthHistory(points)
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	}
+}
+
 // ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
@@ -539,6 +560,11 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			if h, ok := history[svc.GetName()]; ok {
 				historyByID[svc.GetId()] = h
 			}
+		}
+
+		// Include "system" history if present (for global dashboard)
+		if h, ok := history["system"]; ok {
+			historyByID["system"] = h
 		}
 
 		resp := ServiceHealthResponse{

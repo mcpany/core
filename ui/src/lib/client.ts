@@ -165,6 +165,19 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+export interface ServiceHealth {
+    id: string;
+    name: string;
+    status: string;
+    latency: string;
+    uptime: string;
+    message?: string;
+}
+
+export interface ServiceHealthResponse {
+    services: ServiceHealth[];
+    history: Record<string, { timestamp: number; status: string }[]>;
+}
 
 /**
  * Metric definition for dashboard.
@@ -866,6 +879,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the dashboard health history.
+     * @returns A promise that resolves to the health history.
+     */
+    getDashboardHealth: async (): Promise<ServiceHealthResponse> => {
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
+        if (!res.ok) throw new Error('Failed to fetch dashboard health');
+        return res.json();
+    },
+
+    /**
      * Gets the latest execution traces.
      * @param options Optional parameters.
      * @returns A promise that resolves to the traces list.
@@ -891,6 +914,19 @@ export const apiClient = {
             body: JSON.stringify(points)
         });
         if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
+    /**
+     * Seeds the dashboard health history (Debug/Test only).
+     * @param points The health points to seed.
+     */
+    seedHealthData: async (points: Record<string, any[]>) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed_health', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(points)
+        });
+        if (!res.ok) throw new Error('Failed to seed health data');
     },
 
     /**

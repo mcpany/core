@@ -73,3 +73,16 @@ func GetHealthHistory() map[string][]HistoryPoint {
 	}
 	return result
 }
+
+// SeedHealthHistory seeds the health history with the provided data.
+// It replaces existing history for the given services.
+func SeedHealthHistory(data map[string][]HistoryPoint) {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+
+	for name, points := range data {
+		hist := &ServiceHealthHistory{Points: make([]HistoryPoint, len(points))}
+		copy(hist.Points, points)
+		historyStore[name] = hist
+	}
+}
