@@ -13,6 +13,16 @@ interface ConfigEditorProps {
     readOnly?: boolean;
 }
 
+/**
+ * ConfigEditor component.
+ * Wraps Monaco Editor for editing YAML configurations.
+ *
+ * @param props - The component props.
+ * @param props.value - The current content of the editor.
+ * @param props.onChange - Callback when content changes.
+ * @param props.readOnly - Whether the editor is read-only.
+ * @returns The rendered editor component.
+ */
 export function ConfigEditor({ value, onChange, readOnly = false }: ConfigEditorProps) {
     const { theme } = useTheme();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

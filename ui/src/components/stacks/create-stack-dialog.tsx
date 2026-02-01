@@ -29,6 +29,16 @@ interface CreateStackDialogProps {
   onComplete: () => void;
 }
 
+/**
+ * CreateStackDialog component.
+ * A dialog for creating a new stack by uploading or pasting configuration.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the dialog is open.
+ * @param props.onOpenChange - Callback to change open state.
+ * @param props.onComplete - Callback when stack creation is complete.
+ * @returns The rendered dialog component.
+ */
 export function CreateStackDialog({
   open,
   onOpenChange,

@@ -56,6 +56,14 @@ const TEMPLATES = [
     }
 ];
 
+/**
+ * ServicePalette component.
+ * Displays a list of service templates that can be dragged or clicked to insert into the stack configuration.
+ *
+ * @param props - The component props.
+ * @param props.onTemplateSelect - Callback when a template is selected.
+ * @returns The rendered palette component.
+ */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const [search, setSearch] = useState("");
 

@@ -14,6 +14,12 @@ import { Layers, Cuboid, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
+/**
+ * StackList component.
+ * Displays a grid of cards representing the managed stacks.
+ *
+ * @returns The rendered list component.
+ */
 export function StackList() {
   const [stacks, setStacks] = useState<Stack[]>([]);
   const [isLoading, setIsLoading] = useState(true);

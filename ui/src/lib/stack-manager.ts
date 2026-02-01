@@ -7,6 +7,9 @@
 
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
+/**
+ * Represents a stack of services.
+ */
 export interface Stack {
   name: string;
   status: "Active" | "Partially Active" | "Inactive" | "Error";
@@ -19,6 +22,9 @@ interface ServiceCollectionLike {
     services?: UpstreamServiceConfig[] | Record<string, UpstreamServiceConfig>;
 }
 
+/**
+ * Manages stack operations by abstracting service tags.
+ */
 export const stackManager = {
   /**
    * List all stacks.

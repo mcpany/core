@@ -19,8 +19,6 @@ import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
-import { BrowserHeaders } from 'browser-headers';
-
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
@@ -69,7 +67,8 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
         }
     } else {
         // Server-side: Inject API Key from env
-        const apiKey = process.env.MCPANY_API_KEY;
+        // Fallback to NEXT_PUBLIC_MCPANY_API_KEY if MCPANY_API_KEY is missing (common in some envs)
+        const apiKey = process.env.MCPANY_API_KEY || process.env.NEXT_PUBLIC_MCPANY_API_KEY;
         if (apiKey) {
             headers.set('X-API-Key', apiKey);
         }
