@@ -139,11 +139,6 @@ func toTrace(entry audit.Entry) *Trace {
 	}
 }
 
-// Legacy function signature to keep code compatible if called elsewhere, though unexported
-func buildTrace(entry audit.Entry) *Trace {
-	return toTrace(entry)
-}
-
 func (a *Application) handleTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
