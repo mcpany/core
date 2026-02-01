@@ -27,6 +27,8 @@ import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-
 import { Button } from "@/components/ui/button";
 import { ToolSafetyTable } from "@/components/safety/tool-safety-table";
 import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
+import { PolicyEditor } from "@/components/safety/policy-editor";
+import { CallPolicy } from "@proto/config/v1/upstream_service";
 
 /**
  * DefinitionsTable component.
@@ -221,6 +223,19 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
     }
   };
 
+  const handlePoliciesUpdate = async (newPolicies: CallPolicy[]) => {
+      if (!service) return;
+      try {
+          const updatedService = { ...service, callPolicies: newPolicies };
+          await apiClient.updateService(updatedService);
+          setService(updatedService);
+          toast({ title: "Policies Updated", description: "Service configuration saved." });
+      } catch (e: any) {
+          toast({ variant: "destructive", title: "Failed to update policies", description: e.message });
+          fetchService();
+      }
+  };
+
   if (isLoading) {
     return (
       <Card className="w-full max-w-6xl">
@@ -398,6 +413,7 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             </TabsContent>
             <TabsContent value="safety" className="mt-4 grid gap-6">
                 <ToolSafetyTable tools={tools} onUpdate={fetchService} />
+                <PolicyEditor policies={service.callPolicies || []} onUpdate={handlePoliciesUpdate} />
                 <ResourceSafetyTable resources={resources} onUpdate={fetchService} />
             </TabsContent>
         </Tabs>
