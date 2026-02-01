@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// KindPostCall is the kind for post-call webhooks.
+// KindPostCall identifies a post-call webhook.
 const KindPostCall = "PostCall"
 
 // MarkdownHandler is a webhook handler that converts HTML content to Markdown.
