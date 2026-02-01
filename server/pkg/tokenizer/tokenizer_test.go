@@ -428,3 +428,36 @@ func TestFloatConsistency(t *testing.T) {
 		}
 	}
 }
+
+func TestCountTokensInValue_LargeStruct(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
+
+	// Create a large recursive structure to trigger the map discard logic.
+	// We need enough distinct objects to exceed the threshold (1024).
+	// A slice of 2000 pointers to ints will do.
+	size := 2000
+	largeSlice := make([]*int, size)
+	for i := 0; i < size; i++ {
+		val := i
+		largeSlice[i] = &val
+	}
+
+	got, err := CountTokensInValue(tokenizer, largeSlice)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	// Each *int is 1 token.
+	if got != size {
+		t.Errorf("Large Struct: got %d, want %d", got, size)
+	}
+
+	// Double check that running it again works (pool isn't corrupted)
+	got2, err2 := CountTokensInValue(tokenizer, largeSlice)
+	if err2 != nil {
+		t.Fatalf("Unexpected error on second run: %v", err2)
+	}
+	if got2 != size {
+		t.Errorf("Large Struct 2nd run: got %d, want %d", got2, size)
+	}
+}
