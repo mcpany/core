@@ -306,12 +306,20 @@ func TestLocalCommandTool_Execute_PythonInjection(t *testing.T) {
 	}
 
 	// Execute
-	_, err := ct.Execute(context.Background(), req)
+	res, err := ct.Execute(context.Background(), req)
 
-	// Expect strict shell injection prevention to kick in for Python
-	assert.Error(t, err)
-	if err != nil {
-		assert.Contains(t, err.Error(), "shell injection detected")
+	// Sentinel Update: We now sanitize instead of block for usability.
+	// Input should be escaped and result in a safe string literal print.
+	assert.NoError(t, err)
+	if err == nil {
+		resMap, ok := res.(map[string]interface{})
+		assert.True(t, ok)
+		stdout, _ := resMap["stdout"].(string)
+		// It should print the literal string: '); print("INJECTED"); print('
+		// If code executed, it would print "INJECTED" (and empty strings).
+		// We verify it printed the literal characters like parens and quotes which proves it was treated as string.
+		assert.Contains(t, stdout, "INJECTED", "Should print literal content")
+		assert.Contains(t, stdout, ");", "Should print literal characters")
 	}
 }
 
