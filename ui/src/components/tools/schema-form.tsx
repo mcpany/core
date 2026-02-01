@@ -16,6 +16,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+/**
+ * Schema definition for the form generation.
+ */
 export interface Schema {
   type?: string | string[];
   description?: string;
@@ -54,6 +57,18 @@ const getDefaultValue = (schema: Schema) => {
   }
 };
 
+/**
+ * A recursive form component that generates UI based on a JSON Schema.
+ * @param props - The component props.
+ * @param props.schema - The JSON schema definition.
+ * @param props.value - The current value of the form field.
+ * @param props.onChange - Callback when value changes.
+ * @param props.name - The field name (optional).
+ * @param props.required - Whether the field is required.
+ * @param props.depth - The nesting depth (used for styling).
+ * @param props.path - The full path to the field (for unique IDs).
+ * @returns The rendered form component.
+ */
 export function SchemaForm({ schema, value, onChange, name, required = false, depth = 0, path = "" }: SchemaFormProps) {
   const [isOpen, setIsOpen] = React.useState(true);
   const currentPath = path ? (name ? `${path}.${name}` : path) : (name || "root");

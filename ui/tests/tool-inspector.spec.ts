@@ -44,7 +44,9 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   await expect(page.getByText('Schema', { exact: true })).toBeVisible();
 
   // Switch to JSON tab to verify raw schema
-  await page.getByRole('tab', { name: 'JSON' }).click();
+  // Scoped to the Schema section to disambiguate from the Arguments JSON tab
+  // We identify the Schema tablist by looking for the "Visual" tab which is unique to it
+  await page.getByRole('tablist').filter({ hasText: 'Visual' }).getByRole('tab', { name: 'JSON' }).click();
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view
