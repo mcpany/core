@@ -99,6 +99,18 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 			}
 		}
 
+		// Additional Sanitization: Check if path is rooted in CWD to satisfy taint analysis.
+		// This explicitly bounds the path to the current working directory if it's relative.
+		if !filepath.IsAbs(cleanPath) {
+			cwd, err := os.Getwd()
+			if err == nil {
+				absPath := filepath.Join(cwd, cleanPath)
+				if !strings.HasPrefix(absPath, cwd) {
+					return "", fmt.Errorf("invalid secret file path %q: traverses outside CWD", cleanPath)
+				}
+			}
+		}
+
 		if err := validation.IsAllowedPath(cleanPath); err != nil {
 			return "", fmt.Errorf("invalid secret file path %q: %w", cleanPath, err)
 		}
