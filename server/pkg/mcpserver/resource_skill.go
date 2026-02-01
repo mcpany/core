@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mcpany/core/server/pkg/consts"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/skill"
@@ -111,6 +112,20 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 	if r.assetPath == "" {
 		// Read main SKILL.md
 		path := filepath.Join(r.skill.Path, skill.SkillFileName)
+
+		// ⚡ BOLT: Check file size to prevent OOM
+		// Randomized Selection from Top 5 High-Impact Targets
+		info, sErr := os.Stat(path)
+		if sErr != nil {
+			if os.IsNotExist(sErr) {
+				return nil, fmt.Errorf("skill file does not exist: %w", os.ErrNotExist)
+			}
+			return nil, fmt.Errorf("failed to stat skill file: %w", sErr)
+		}
+		if info.Size() > consts.DefaultMaxResourceSizeBytes {
+			return nil, fmt.Errorf("resource too large: size %d exceeds limit %d", info.Size(), consts.DefaultMaxResourceSizeBytes)
+		}
+
 		content, err = os.ReadFile(path) //nolint:gosec
 	} else {
 		// Read asset
@@ -157,6 +172,20 @@ func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error)
 		// Check if the resolved path is inside the resolved skill path
 		if !strings.HasPrefix(realPath, skillPath+string(os.PathSeparator)) && realPath != skillPath {
 			return nil, fmt.Errorf("invalid path: points outside skill directory")
+		}
+
+		// ⚡ BOLT: Check file size to prevent OOM
+		// Randomized Selection from Top 5 High-Impact Targets
+		info, sErr := os.Stat(realPath)
+		if sErr != nil {
+			if os.IsNotExist(sErr) {
+				// Don't leak path
+				return nil, fmt.Errorf("asset does not exist: %w", os.ErrNotExist)
+			}
+			return nil, fmt.Errorf("failed to stat asset file")
+		}
+		if info.Size() > consts.DefaultMaxResourceSizeBytes {
+			return nil, fmt.Errorf("resource too large: size %d exceeds limit %d", info.Size(), consts.DefaultMaxResourceSizeBytes)
 		}
 
 		content, err = os.ReadFile(realPath) //nolint:gosec // Path is sanitized and verified to be within skill directory

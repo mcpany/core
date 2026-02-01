@@ -50,6 +50,10 @@ const (
 	// 10MB should be enough for most use cases while preventing OOM.
 	DefaultMaxHTTPResponseBytes = 10 * 1024 * 1024
 
+	// DefaultMaxResourceSizeBytes is the default maximum size of a resource that can be read.
+	// 10MB limit prevents OOM when reading large files into memory.
+	DefaultMaxResourceSizeBytes = 10 * 1024 * 1024
+
 	// ContextKeyRemoteAddr is the context key for the remote address.
 	ContextKeyRemoteAddr = "remote_addr"
 )
