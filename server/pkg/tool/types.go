@@ -1779,8 +1779,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
-		for i, arg := range args {
+		for i := range args {
 			for k, v := range inputs {
+				arg := args[i]
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
@@ -1789,9 +1790,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+						sanitizedVal, err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand())
+						if err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
+						val = sanitizedVal
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -1823,9 +1826,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						if isShellCommand(t.service.GetCommand()) {
-							if err := checkForShellInjection(argStr, "", "", t.service.GetCommand()); err != nil {
+							sanitizedArg, err := checkForShellInjection(argStr, "", "", t.service.GetCommand())
+							if err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
+							argStr = sanitizedArg
 						}
 						args = append(args, argStr)
 					} else {
@@ -2072,8 +2077,9 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
-		for i, arg := range args {
+		for i := range args {
 			for k, v := range inputs {
+				arg := args[i]
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
@@ -2090,9 +2096,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+						sanitizedVal, err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand())
+						if err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
+						val = sanitizedVal
 					}
 					args[i] = strings.ReplaceAll(arg, placeholder, val)
 				}
@@ -2701,7 +2709,7 @@ func isVersionSuffix(s string) bool {
 	return true
 }
 
-func checkForShellInjection(val string, template string, placeholder string, command string) error {
+func checkForShellInjection(val string, template string, placeholder string, command string) (string, error) {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
@@ -2714,17 +2722,30 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Sentinel Security Update: Interpreter Injection Protection
 	if isInterpreter(command) {
 		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
-			return err
+			return "", err
 		}
 	}
 
 	if quoteLevel == 3 { // Backticked
-		return checkBacktickInjection(val, command)
+		if err := checkBacktickInjection(val, command); err != nil {
+			return "", err
+		}
+		return val, nil
 	}
 
 	if quoteLevel == 2 { // Single Quoted
-		if strings.Contains(val, "'") {
-			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		// Sentinel Security Update:
+		// For interpreters (Python, Ruby, Perl, etc.), we sanitize backslashes and single quotes
+		// to prevent escaping the quoting context. This improves usability by allowing these characters
+		// while maintaining security.
+		if isInterpreter(command) {
+			// Escape backslash first to avoid double escaping
+			val = strings.ReplaceAll(val, "\\", "\\\\")
+			// Escape single quote
+			val = strings.ReplaceAll(val, "'", "\\'")
+		} else if strings.Contains(val, "'") {
+			// For standard shells, single quotes are strong quotes and cannot contain single quotes.
+			return "", fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
 		}
 
 		// Sentinel Security Update:
@@ -2734,7 +2755,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 
 		// Block backticks (used by Perl, Ruby, PHP for execution)
 		if strings.Contains(val, "`") {
-			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
+			return "", fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
 		}
 
 		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
@@ -2752,11 +2773,11 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
 		for _, call := range dangerousCalls {
 			if strings.Contains(cleanVal, call) {
-				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
+				return "", fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
 			}
 		}
 
-		return nil
+		return val, nil
 	}
 
 	if quoteLevel == 1 { // Double Quoted
@@ -2764,12 +2785,15 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// We also need to block backslash because it can be used to escape the closing quote
 		// % is also dangerous in Windows CMD inside double quotes
 		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
-			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
+			return "", fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
-		return nil
+		return val, nil
 	}
 
-	return checkUnquotedInjection(val, command)
+	if err := checkUnquotedInjection(val, command); err != nil {
+		return "", err
+	}
+	return val, nil
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
