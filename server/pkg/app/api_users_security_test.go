@@ -4,6 +4,7 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"net/http"
 	"net/http/httptest"
@@ -71,5 +72,53 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		handler.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
+	})
+}
+
+func TestHandleUserDetail_PrivilegeEscalation(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleUserDetail(store)
+
+	// Setup: Create a regular user
+	attacker := configv1.User_builder{Id: proto.String("attacker"), Roles: []string{"user"}}.Build()
+	require.NoError(t, store.CreateUser(context.Background(), attacker))
+
+	t.Run("Attacker Elevates to Admin", func(t *testing.T) {
+		// Payload trying to add "admin" role
+		payload := `{"user": {"id": "attacker", "roles": ["admin"]}}`
+		req := httptest.NewRequest(http.MethodPut, "/users/attacker", bytes.NewBufferString(payload))
+		req.Header.Set("Content-Type", "application/json")
+
+		// Simulate Authenticated User: attacker
+		ctx := auth.ContextWithUser(req.Context(), "attacker")
+		ctx = auth.ContextWithRoles(ctx, []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		// We verify the state in the store
+		updatedUser, err := store.GetUser(context.Background(), "attacker")
+		require.NoError(t, err)
+
+		hasAdmin := false
+		for _, r := range updatedUser.GetRoles() {
+			if r == "admin" {
+				hasAdmin = true
+				break
+			}
+		}
+
+		if hasAdmin {
+			t.Logf("VULNERABILITY REPRODUCED: User 'attacker' successfully added 'admin' role.")
+			t.Fail()
+		} else {
+			// Fix implementation: We now silently ignore the change, so we expect 200 OK
+			// but the role should NOT be admin.
+			assert.Equal(t, http.StatusOK, w.Code)
+			// Ensure roles are still correct (i.e. kept original)
+			// attacker started with ["user"]
+			assert.Equal(t, []string{"user"}, updatedUser.GetRoles())
+		}
 	})
 }

@@ -187,6 +187,23 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			}
 			user.SetId(id)
 
+			// Security Check: Prevent privilege escalation.
+			// Non-admin users cannot change their roles or profile_ids.
+			// We silently ignore any attempts to change them by overwriting with existing values.
+			if !isAdmin {
+				existingUser, err := store.GetUser(r.Context(), id)
+				if err != nil {
+					logging.GetLogger().Error("failed to get existing user for security check", "error", err)
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
+				if existingUser != nil {
+					// Overwrite sensitive fields with existing values
+					user.SetRoles(existingUser.GetRoles())
+					user.SetProfileIds(existingUser.GetProfileIds())
+				}
+			}
+
 			if err := hashUserPassword(r.Context(), &user, store); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
