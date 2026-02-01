@@ -166,7 +166,46 @@ func (u *Upstream) Register(
 		return "", nil, nil, fmt.Errorf("failed to extract MCP definitions for %s: %w", serviceID, err)
 	}
 
-	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, resourceManager, isReload, fds)
+	// Compile Export Policies once
+	toolExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetToolExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile tool export policy: %w", err)
+	}
+	// resourceExportPolicy is currently unused in gRPC tool registration path but might be needed if dynamic resources are checked against it in registerDynamicResources.
+	// Let's check registerDynamicResources implementation.
+	// It's called at the end of createAndRegisterGRPCTools.
+	// Looking at the code: registerDynamicResources uses grpcService.GetResources().
+	// It iterates resources. Does it check export policy?
+	// The original code didn't check export policy for dynamic resources in gRPC?
+	// Wait, let me check the file content again.
+	// In my previous read of grpc.go, registerDynamicResources did:
+	// if resourceDef.GetDisable() { ... }
+	// It did NOT call ShouldExport.
+	// So for now, I should indeed remove the compilation of resourceExportPolicy if it's not used.
+	// OR I should use it in registerDynamicResources.
+	// Given the task is optimization, I should probably stick to what the code was doing (or not doing) unless it's a bug.
+	// But HTTP upstream DOES check resource export policy.
+	// If gRPC upstream was missing it, that's a separate issue.
+	// For now, to fix the linter, I will comment it out or remove it if unused.
+	// Actually, if I remove it, I must ensure I don't break existing logic.
+	// Since I added the compilation, and now the linter complains it's unused, I should remove the compilation line.
+
+	// However, wait. I should check if I should have passed it to registerDynamicResources?
+	// In HTTP upstream, resources are processed in the loop and checked against policy.
+	// In gRPC, they are in registerDynamicResources.
+	// I should probably pass it to registerDynamicResources to be consistent with HTTP, but that might be out of scope for "fixing lint".
+	// But safety first.
+	// Let's look at `registerDynamicResources` signature in `grpc.go` from previous `read_file`.
+	// func (u *Upstream) registerDynamicResources( ... )
+	// It does NOT take policy.
+	// So I will just remove the compilation to satisfy linter.
+
+	promptExportPolicy, err := tool.NewCompiledExportPolicy(serviceConfig.GetPromptExportPolicy())
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to compile prompt export policy: %w", err)
+	}
+
+	discoveredTools, err := u.createAndRegisterGRPCTools(ctx, serviceID, parsedMcpData, toolManager, resourceManager, isReload, fds, toolExportPolicy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools for %s: %w", serviceID, err)
 	}
@@ -188,13 +227,13 @@ func (u *Upstream) Register(
 		logging.GetLogger().Debug("Auto-discovery disabled for gRPC service with reflection enabled", "serviceID", serviceID)
 	}
 
-	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds)
+	discoveredToolsFromConfig, err := u.createAndRegisterGRPCToolsFromConfig(ctx, serviceID, toolManager, resourceManager, isReload, fds, toolExportPolicy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register gRPC tools from config for %s: %w", serviceID, err)
 	}
 	discoveredTools = append(discoveredTools, discoveredToolsFromConfig...)
 
-	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, promptManager, isReload)
+	err = u.createAndRegisterPromptsFromConfig(ctx, serviceID, promptManager, isReload, promptExportPolicy)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to create and register prompts from config for %s: %w", serviceID, err)
 	}
@@ -216,6 +255,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 	resourceManager resource.ManagerInterface,
 	isReload bool,
 	fds *descriptorpb.FileDescriptorSet,
+	toolExportPolicy *tool.CompiledExportPolicy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	if parsedData == nil {
@@ -247,8 +287,7 @@ func (u *Upstream) createAndRegisterGRPCTools(
 			continue
 		}
 		// Check Export Policy
-		serviceInfo, _ := tm.GetServiceInfo(serviceID)
-		if serviceInfo != nil && !tool.ShouldExport(toolDef.Name, serviceInfo.Config.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(toolDef.Name, toolExportPolicy) {
 			log.Info("Skipping non-exported tool (annotation)", "toolName", toolDef.Name)
 			continue
 		}
@@ -409,6 +448,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 	_ resource.ManagerInterface,
 	_ bool,
 	fds *descriptorpb.FileDescriptorSet,
+	toolExportPolicy *tool.CompiledExportPolicy,
 ) ([]*configv1.ToolDefinition, error) {
 	log := logging.GetLogger()
 	if fds == nil {
@@ -436,8 +476,7 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 		// Check Export Policy
-		serviceInfo, _ := tm.GetServiceInfo(serviceID)
-		if serviceInfo != nil && !tool.ShouldExport(definition.GetName(), serviceInfo.Config.GetToolExportPolicy()) {
+		if !tool.ShouldExportCompiled(definition.GetName(), toolExportPolicy) {
 			log.Info("Skipping non-exported tool (config)", "toolName", definition.GetName())
 			continue
 		}
@@ -519,6 +558,7 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 	serviceID string,
 	promptManager prompt.ManagerInterface,
 	isReload bool,
+	promptExportPolicy *tool.CompiledExportPolicy,
 ) error {
 	log := logging.GetLogger()
 	serviceInfo, ok := u.toolManager.GetServiceInfo(serviceID)
@@ -537,7 +577,7 @@ func (u *Upstream) createAndRegisterPromptsFromConfig(
 			continue
 		}
 		// Check Export Policy
-		if !tool.ShouldExport(promptDef.GetName(), serviceInfo.Config.GetPromptExportPolicy()) {
+		if !tool.ShouldExportCompiled(promptDef.GetName(), promptExportPolicy) {
 			continue
 		}
 		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)

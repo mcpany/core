@@ -345,3 +345,63 @@ func TestCompileCallPolicies_InvalidRegex(t *testing.T) {
 	_, err := CompileCallPolicies(policies)
 	assert.Error(t, err)
 }
+
+func TestShouldExportCompiled(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name     string
+		toolName string
+		policy   *configv1.ExportPolicy
+		want     bool
+	}{
+		{
+			name:     "Nil Policy",
+			toolName: "any",
+			policy:   nil,
+			want:     true,
+		},
+		{
+			name:     "Default Action Unspecified",
+			toolName: "any",
+			policy:   configv1.ExportPolicy_builder{}.Build(),
+			want:     true,
+		},
+		{
+			name:     "Rule Match Export",
+			toolName: "allowed_tool",
+			policy: configv1.ExportPolicy_builder{
+				DefaultAction: configv1.ExportPolicy_UNEXPORT.Enum(),
+				Rules: []*configv1.ExportRule{
+					configv1.ExportRule_builder{
+						NameRegex: proto.String("^allowed_.*"),
+						Action:    configv1.ExportPolicy_EXPORT.Enum(),
+					}.Build(),
+				},
+			}.Build(),
+			want:     true,
+		},
+		{
+			name:     "Rule Match Unexport",
+			toolName: "hidden_tool",
+			policy: configv1.ExportPolicy_builder{
+				DefaultAction: configv1.ExportPolicy_EXPORT.Enum(),
+				Rules: []*configv1.ExportRule{
+					configv1.ExportRule_builder{
+						NameRegex: proto.String("^hidden_.*"),
+						Action:    configv1.ExportPolicy_UNEXPORT.Enum(),
+					}.Build(),
+				},
+			}.Build(),
+			want:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			compiled, err := NewCompiledExportPolicy(tt.policy)
+			assert.NoError(t, err)
+			got := ShouldExportCompiled(tt.toolName, compiled)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
