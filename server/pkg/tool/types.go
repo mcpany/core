@@ -2816,6 +2816,12 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 			return fmt.Errorf("variable interpolation injection detected: value contains '${'")
 		}
 	}
+
+	if isPerl && quoteLevel == 1 { // Double Quoted
+		if strings.Contains(val, "@{") {
+			return fmt.Errorf("variable interpolation injection detected: value contains '@{'")
+		}
+	}
 	return nil
 }
 
