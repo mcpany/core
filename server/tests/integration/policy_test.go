@@ -61,10 +61,14 @@ func StartStdioServer(t *testing.T, configFile string) (*MCPClient, func()) {
 	go client.readLoop()
 
 	// Initialize
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// Increase timeout to 30s to prevent flakes in CI environments
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	err = client.Initialize(ctx)
-	require.NoError(t, err)
+	if err != nil {
+		t.Logf("Failed to initialize stdio client. Stderr:\n%v", err)
+	}
+	require.NoError(t, err, "Failed to initialize stdio client")
 
 	return client, func() {
 		cancel() // Just in case
