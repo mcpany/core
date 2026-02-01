@@ -1,7 +1,9 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:20-alpine AS base
+FROM node:20-bookworm-slim AS base
+# libc6-compat is not needed on Debian/Ubuntu base
+# RUN apk add --no-cache libc6-compat
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -9,13 +11,15 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
-RUN npm install -g npm@latest && npm install --no-audit --package-lock=false --registry=https://registry.npmjs.org/
+# Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
+RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
+COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules

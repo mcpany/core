@@ -2249,6 +2249,8 @@ func TestRun_APIKeyAuthentication(t *testing.T) {
 	app := NewApplication()
 	errChan := make(chan error, 1)
 
+	logging.GetLogger().Info("Test Config Debug", "MCPANY_CONFIG_PATH", os.Getenv("MCPANY_CONFIG_PATH"), "viper_config_path", viper.Get("config-path"))
+
 	// Set the API key
 	viper.Set("api-key", "test-api-key")
 	defer viper.Set("api-key", "")
@@ -2501,11 +2503,15 @@ func TestRunServerMode_Auth(t *testing.T) {
 	poolManager := pool.NewManager()
 	upstreamFactory := factory.NewUpstreamServiceFactory(poolManager, nil)
 
+	// Create local GlobalSettings to avoid modifying the global singleton (data race)
+	localGlobalSettings := configv1.GlobalSettings_builder{
+		ApiKey: proto.String("global-secret"),
+	}.Build()
+
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
-	config.GlobalSettings().SetAPIKey("global-secret")
-	defer config.GlobalSettings().SetAPIKey("")
+	// Removed modification of config.GlobalSettings() to avoid race
 
 	authManager := auth.NewManager()
 	authManager.SetAPIKey("global-secret")
@@ -2544,7 +2550,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, localGlobalSettings, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
 	}()
 
 	waitForServerReady(t, bindAddress)

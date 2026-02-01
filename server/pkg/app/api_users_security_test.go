@@ -21,14 +21,9 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 	handler := app.handleUserDetail(store)
 
 	// Setup: Create 2 users
-	victim := configv1.User_builder{
-		Id:    proto.String("victim-user"),
-		Roles: []string{"user"},
-	}.Build()
-	admin := configv1.User_builder{
-		Id:    proto.String("admin-user"),
-		Roles: []string{"admin"},
-	}.Build()
+	// Uses Builder pattern to support opaque API
+	victim := configv1.User_builder{Id: proto.String("victim-user"), Roles: []string{"user"}}.Build()
+	admin := configv1.User_builder{Id: proto.String("admin-user"), Roles: []string{"admin"}}.Build()
 
 	require.NoError(t, store.CreateUser(context.Background(), victim))
 	require.NoError(t, store.CreateUser(context.Background(), admin))
