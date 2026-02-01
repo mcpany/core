@@ -2931,7 +2931,10 @@ func analyzeQuoteContext(template, placeholder string) int {
 			continue
 		}
 
-		if char == '\\' {
+		// Sentinel Security Update: In single quotes, backslash is NOT an escape character
+		// (in standard POSIX shells). This prevents bypassing the parser by escaping the closing quote
+		// which the shell interprets as a literal backslash and a closing quote.
+		if !inSingle && char == '\\' {
 			escaped = true
 			continue
 		}
