@@ -51,7 +51,7 @@ services:
     volumes:
       - ../ui/test-results:/work/ui/test-results
       - ../build/playwright-report:/work/ui/playwright-report
-      - ../ui/.audit:/work/ui/.audit
+      - ../ui/.audit:/work/.audit
       - ../ui/docs:/work/ui/docs
       - ../docs:/work/docs
       - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
