@@ -596,8 +596,8 @@ func RequireDockerRuntime(t *testing.T) {
 
 	// Try running a minimal container to verify runtime (specifically storage driver)
 	dockerExe, dockerArgs := getDockerCommand()
-	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true")
-	cmd := exec.CommandContext(context.Background(), dockerExe, runArgs...)
+	runArgs := append(dockerArgs, "run", "--rm", "alpine:latest", "true") //nolint:gocritic // Creating a new slice from base
+	cmd := exec.CommandContext(context.Background(), dockerExe, runArgs...) //nolint:gosec // Test helper
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		outputStr := string(output)
