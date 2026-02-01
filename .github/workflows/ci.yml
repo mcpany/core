@@ -121,9 +121,17 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
+          # Configure multiple mirrors in array format safely
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
+          # Ensure file exists
+          if [ ! -f /etc/docker/daemon.json ]; then
+            echo '{}' | sudo tee /etc/docker/daemon.json
+          fi
+
+          # Use jq to merge configuration instead of overwriting
+          sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak
+          sudo cat /etc/docker/daemon.json.bak | jq '."registry-mirrors" = (."registry-mirrors" // []) + ["https://mirror.gcr.io"] | ."registry-mirrors" |= unique' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -240,9 +248,17 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
+          # Configure multiple mirrors in array format safely
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
+          # Ensure file exists
+          if [ ! -f /etc/docker/daemon.json ]; then
+            echo '{}' | sudo tee /etc/docker/daemon.json
+          fi
+
+          # Use jq to merge configuration instead of overwriting
+          sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak
+          sudo cat /etc/docker/daemon.json.bak | jq '."registry-mirrors" = (."registry-mirrors" // []) + ["https://mirror.gcr.io"] | ."registry-mirrors" |= unique' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -389,7 +405,17 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          # Configure multiple mirrors in array format safely
+
+          # Ensure file exists
+          if [ ! -f /etc/docker/daemon.json ]; then
+            echo '{}' | sudo tee /etc/docker/daemon.json
+          fi
+
+          # Use jq to merge configuration instead of overwriting
+          sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak
+          sudo cat /etc/docker/daemon.json.bak | jq '."registry-mirrors" = (."registry-mirrors" // []) + ["https://mirror.gcr.io"] | ."registry-mirrors" |= unique' | sudo tee /etc/docker/daemon.json
+
           sudo systemctl restart docker
           docker info
 
@@ -469,9 +495,17 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
+          # Configure multiple mirrors in array format safely
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
+          # Ensure file exists
+          if [ ! -f /etc/docker/daemon.json ]; then
+            echo '{}' | sudo tee /etc/docker/daemon.json
+          fi
+
+          # Use jq to merge configuration instead of overwriting
+          sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak
+          sudo cat /etc/docker/daemon.json.bak | jq '."registry-mirrors" = (."registry-mirrors" // []) + ["https://mirror.gcr.io"] | ."registry-mirrors" |= unique' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
@@ -556,9 +590,17 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
+          # Configure multiple mirrors in array format safely
           # Docker will try mirror.gcr.io first.
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+
+          # Ensure file exists
+          if [ ! -f /etc/docker/daemon.json ]; then
+            echo '{}' | sudo tee /etc/docker/daemon.json
+          fi
+
+          # Use jq to merge configuration instead of overwriting
+          sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak
+          sudo cat /etc/docker/daemon.json.bak | jq '."registry-mirrors" = (."registry-mirrors" // []) + ["https://mirror.gcr.io"] | ."registry-mirrors" |= unique' | sudo tee /etc/docker/daemon.json
 
           sudo systemctl restart docker
           docker info # Verify the mirrors are listed
