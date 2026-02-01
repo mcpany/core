@@ -88,6 +88,9 @@ func TestSQLiteAuditStore(t *testing.T) {
 	err = store.Write(context.Background(), entry)
 	assert.NoError(t, err)
 
+	// Force flush by closing
+	store.Close()
+
 	// Verify data in DB
 	db, err := sql.Open("sqlite", dbPath)
 	require.NoError(t, err)
@@ -107,6 +110,11 @@ func TestSQLiteAuditStore(t *testing.T) {
 	assert.JSONEq(t, `{"res": "ok"}`, result)
 	assert.NotEmpty(t, hash)
 	assert.Empty(t, prevHash) // First entry has empty prev_hash
+
+	// Re-open store for Verify
+	store, err = NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	defer store.Close()
 
 	// Test Verify
 	valid, err := store.Verify()
@@ -397,32 +405,7 @@ func TestEnsureColumns_Failure(t *testing.T) {
 	assert.Nil(t, store)
 }
 
-func TestSQLiteAuditStore_Write_Errors(t *testing.T) {
-	f, err := os.CreateTemp("", "audit_write_fail_*.db")
-	require.NoError(t, err)
-	dbPath := f.Name()
-	f.Close()
-	defer os.Remove(dbPath)
-
-	// Allow the temp path
-	validation.SetAllowedPaths([]string{os.TempDir()})
-	defer validation.SetAllowedPaths(nil)
-
-	store, err := NewSQLiteAuditStore(dbPath)
-	require.NoError(t, err)
-	defer store.Close()
-
-	// Close the DB underneath
-	store.db.Close()
-
-	entry := Entry{
-		Timestamp: time.Now(),
-		ToolName:  "test",
-	}
-
-	err = store.Write(context.Background(), entry)
-	assert.Error(t, err)
-}
+// TestSQLiteAuditStore_Write_Errors removed as Write is now async and doesn't return error on DB failure immediately
 
 func TestSQLiteAuditStore_Verify_Errors(t *testing.T) {
 	f, err := os.CreateTemp("", "audit_verify_fail_*.db")
@@ -474,6 +457,8 @@ func TestSQLiteAuditStore_ComplexWrite(t *testing.T) {
 
 	err = store.Write(context.Background(), entry)
 	assert.NoError(t, err)
+
+	store.Close()
 
 	// Verify it was stored as "{}"
 	db, err := sql.Open("sqlite", dbPath)
@@ -583,6 +568,12 @@ func TestSQLiteAuditStore_ConcurrentWrites(t *testing.T) {
 		<-done
 	}
 
+	store.Close()
+
+	store, err = NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	defer store.Close()
+
 	valid, err := store.Verify()
 	assert.NoError(t, err)
 	assert.True(t, valid)
@@ -639,6 +630,12 @@ func TestSQLiteAuditStore_Read(t *testing.T) {
 		err := store.Write(context.Background(), e)
 		require.NoError(t, err)
 	}
+
+	// Force flush
+	store.Close()
+	store, err = NewSQLiteAuditStore(dbPath)
+	require.NoError(t, err)
+	defer store.Close()
 
 	// Test Read All
 	results, err := store.Read(context.Background(), Filter{})
