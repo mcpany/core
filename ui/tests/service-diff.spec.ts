@@ -9,8 +9,8 @@ import path from 'path';
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
 
-test.describe('Service Config Diff', () => {
-    test('Shows diff when editing service config', async ({ page }) => {
+test.describe('Service Config Edit', () => {
+    test('Updates service config on detail page', async ({ page }) => {
         const serviceId = "svc-test-diff";
         const serviceName = "Test Service";
         const newServiceName = "Test Service Updated";
@@ -83,40 +83,25 @@ test.describe('Service Config Diff', () => {
         // Click Edit Config
         await page.getByRole('button', { name: 'Edit Config' }).click({ timeout: 10000 });
 
-        // Wait for dialog
-        await expect(page.getByRole('dialog')).toBeVisible();
+        // Wait for Sheet
+        await expect(page.getByText('Edit Service')).toBeVisible();
 
         // Change name
         await page.getByLabel('Service Name').fill(newServiceName);
         await page.getByLabel('Service Name').blur();
 
-        // Verify button text changed to "Review Changes"
-        await expect(page.getByRole('button', { name: 'Review Changes' })).toBeVisible();
+        // Verify "Save Changes" button is visible
+        await expect(page.getByRole('button', { name: 'Save Changes' })).toBeVisible();
 
-        // Click Review Changes
-        await page.getByRole('button', { name: 'Review Changes' }).click();
-
-        // Verify Diff View
-        await expect(page.getByText('Review Changes')).toBeVisible();
-        await expect(page.getByText('Review the changes before applying them.')).toBeVisible();
-
-        // Take screenshot
-        // We use try-catch to ensure screenshot failure doesn't fail test if dir missing (though we made it)
-        try {
-            await page.screenshot({ path: path.join(AUDIT_DIR, 'service_config_diff.png') });
-        } catch (e) {
-            console.error("Failed to take screenshot:", e);
-        }
-
-        // Verify buttons
-        await expect(page.getByRole('button', { name: 'Back to Edit' })).toBeVisible();
-        await expect(page.getByRole('button', { name: 'Confirm & Save' })).toBeVisible();
-
-        // Confirm
-        await page.getByRole('button', { name: 'Confirm & Save' }).click();
+        // Click Save Changes
+        await page.getByRole('button', { name: 'Save Changes' }).click();
 
         // Verify success
-        await expect(page.getByText(`${newServiceName} updated successfully.`, { exact: true })).toBeVisible();
-        await expect(page.getByRole('dialog')).not.toBeVisible();
+        // The toast appears. We check for the generic success or the specific text if toast contains it.
+        // The updated ServiceDetail uses: toast({ title: "Service Updated", ... })
+        await expect(page.getByText('Service Updated', { exact: true })).toBeVisible();
+
+        // Sheet should close
+        await expect(page.getByText('Edit Service')).not.toBeVisible();
     });
 });
