@@ -2623,7 +2623,7 @@ func isShellCommand(cmd string) bool {
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
 		"ssh", "scp", "su", "sudo", "env",
-		"busybox", "expect",
+		"busybox", "expect", "watch", "tmux", "screen",
 		// Common interpreters and runners that can execute code
 		"python", "python2", "python3",
 		"ruby", "perl", "php",
