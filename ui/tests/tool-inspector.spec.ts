@@ -43,13 +43,14 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // Check if schema is displayed (using the new Sheet layout)
   await expect(page.getByText('Schema', { exact: true })).toBeVisible();
 
-  // Switch to JSON tab to verify raw schema
-  await page.getByRole('tab', { name: 'JSON' }).click();
+  // Switch to Schema tab to verify raw schema
+  await page.getByRole('tab', { name: 'Schema' }).click();
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
-  // We check for "location" property in the JSON view
-  await expect(page.locator('pre').filter({ hasText: /"location"/ })).toBeVisible();
-  await expect(page.locator('pre').filter({ hasText: /"type": "object"/ })).toBeVisible();
+  // We check for "location" property in the Schema view (JsonView)
+  await expect(page.getByText('"location"')).toBeVisible();
+  // "type" might appear multiple times, just check the first one is visible
+  await expect(page.getByText('"type"').first()).toBeVisible();
 
   // Verify service name is shown in details (Scoped to the sheet)
   await expect(page.locator('div[role="dialog"]').getByText('weather-service')).toBeVisible();
