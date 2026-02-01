@@ -306,8 +306,7 @@ jobs:
       - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: docker-images
 
       - name: Load Docker Images
         run: |
@@ -330,53 +329,62 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
-
   build-images:
-    name: Build ${{ matrix.target }}
+    name: Build Docker Images
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: build-docker
-            image: mcpany/server:latest
-            filename: server.tar
-          - target: build-http-echo-docker
-            image: mcpany/http-echo-server:latest
-            filename: http-echo.tar
-          - target: build-e2e-timeserver-docker
-            image: mcpany-e2e-time-server
-            filename: time-server.tar
-          - target: build-cowsay-docker
-            image: mcpany/e2e-cowsay-server:latest
-            filename: cowsay.tar
-          - target: build-everything-docker
-            image: mcpany/everything:latest
-            filename: everything.tar
-          - target: docker-build-ui
-            image: mcpany/ui:latest
-            filename: ui.tar
-          - target: docker-build-operator
-            image: mcpany/operator:latest
-            filename: operator.tar
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
       - uses: actions/checkout@v5
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build Image
+      - name: Build and Save Images
         run: |
-          make -C server ${{ matrix.target }}
-      - name: Save Image
-        run: |
-          docker save -o ${{ matrix.filename }} ${{ matrix.image }}
-      - name: Upload Image
+          # Server
+          make -C server build-docker
+          docker save -o server.tar mcpany/server:latest
+
+          # HTTP Echo
+          make -C server build-http-echo-docker
+          docker save -o http-echo.tar mcpany/http-echo-server:latest
+
+          # Time Server
+          make -C server build-e2e-timeserver-docker
+          docker save -o time-server.tar mcpany-e2e-time-server
+
+          # Cowsay
+          make -C server build-cowsay-docker
+          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+
+          # Everything
+          make -C server build-everything-docker
+          docker save -o everything.tar mcpany/everything:latest
+
+          # UI
+          make -C server docker-build-ui
+          docker save -o ui.tar mcpany/ui:latest
+
+          # Operator
+          make -C server docker-build-operator
+          docker save -o operator.tar mcpany/operator:latest
+
+      - name: Upload Images
         uses: actions/upload-artifact@v4
         with:
-          name: image-${{ matrix.filename }}
-          path: ${{ matrix.filename }}
+          name: docker-images
+          path: "*.tar"
           retention-days: 1
+
   e2e-sequential:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -415,12 +423,10 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
-
       - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: docker-images
 
       - name: Load Docker Images
         run: |
@@ -575,7 +581,7 @@ jobs:
       - name: Download Docker Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server.tar
+          name: docker-images
 
       - name: Load Docker Image
         run: |
@@ -622,17 +628,17 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-#      - name: Free Disk Space (Ubuntu)
-#        uses: jlumbroso/free-disk-space@main
-#        with:
-#          tool-cache: false
-#          android: true
-#          dotnet: true
-#          haskell: true
-#          large-packages: true
-#          docker-images: false
-#          swap-storage: true
-#
+      #      - name: Free Disk Space (Ubuntu)
+      #        uses: jlumbroso/free-disk-space@main
+      #        with:
+      #          tool-cache: false
+      #          android: true
+      #          dotnet: true
+      #          haskell: true
+      #          large-packages: true
+      #          docker-images: false
+      #          swap-storage: true
+      #
       - uses: actions/checkout@v5
       - name: Download Docker Image
         uses: actions/download-artifact@v4
@@ -646,8 +652,7 @@ jobs:
       - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: docker-images
 
       - name: Load Docker Images
         run: |
@@ -697,8 +702,7 @@ jobs:
       - name: Download Docker Images
         uses: actions/download-artifact@v4
         with:
-          pattern: image-*
-          merge-multiple: true
+          name: docker-images
 
       - name: Load Docker Images into Kind
         run: |
@@ -731,7 +735,18 @@ jobs:
 
   ci-success:
     runs-on: ubuntu-latest
-    needs: [build-images, build-ui-test-image, unit-test, e2e-sequential, e2e-parallel, e2e-public-api, docker-smoke-test, ui-test, k8s-e2e]
+    needs:
+      [
+        build-images,
+        build-ui-test-image,
+        unit-test,
+        e2e-sequential,
+        e2e-parallel,
+        e2e-public-api,
+        docker-smoke-test,
+        ui-test,
+        k8s-e2e,
+      ]
     if: always()
     permissions:
       contents: read
