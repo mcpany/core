@@ -165,3 +165,37 @@ func TestResourceManager_ClearResourcesForService(t *testing.T) {
 	rm.ClearResourcesForService("non-existent-service")
 	assert.Equal(t, 4, changedCount, "OnListChanged should not be called when no resources are cleared")
 }
+
+func TestResourceManager_ServiceIndexConsistency(t *testing.T) {
+	t.Parallel()
+	rm := NewManager()
+
+	// 1. Add resource R1 to Service S1
+	rm.AddResource(&mockResource{uri: "r1", service: "s1"})
+
+	// 2. Overwrite resource R1, moving it to Service S2
+	// This should remove it from S1's index and add to S2's index
+	rm.AddResource(&mockResource{uri: "r1", service: "s2"})
+
+	// 3. Clear resources for S1. Should do nothing to R1.
+	rm.ClearResourcesForService("s1")
+	resources := rm.ListResources()
+	assert.Len(t, resources, 1, "R1 should persist after clearing S1")
+	if len(resources) > 0 {
+		assert.Equal(t, "s2", resources[0].Service())
+	}
+
+	// 4. Clear resources for S2. Should remove R1.
+	rm.ClearResourcesForService("s2")
+	assert.Len(t, rm.ListResources(), 0, "R1 should be removed after clearing S2")
+
+	// 5. Test Index Cleanup on Remove
+	rm.AddResource(&mockResource{uri: "r2", service: "s3"})
+	rm.RemoveResource("r2")
+
+	// If index wasn't cleaned, clearing S3 might try to delete r2 again (harmless but checking state)
+	// or more importantly, if we add r2 back to S3, it should work fine.
+	rm.AddResource(&mockResource{uri: "r2", service: "s3"})
+	rm.ClearResourcesForService("s3")
+	assert.Len(t, rm.ListResources(), 0)
+}
