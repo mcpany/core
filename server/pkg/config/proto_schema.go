@@ -18,11 +18,11 @@ type schemaGenerator struct {
 // GenerateSchemaFromProto generates a jsonschema from a protobuf message using reflection.
 //
 // Parameters:
-//   msg: The protobuf message to generate the schema from.
+//   - msg (protoreflect.Message): The protobuf message to generate the schema from.
 //
 // Returns:
-//   *jsonschema.Schema: The generated JSON schema.
-//   error: An error if the schema generation fails.
+//   - (*jsonschema.Schema): The generated JSON schema.
+//   - (error): An error if the schema generation fails.
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
 	schemaMap := GenerateSchemaMapFromProto(msg)
 	return CompileSchema(schemaMap)
@@ -32,10 +32,10 @@ func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, erro
 // This is useful if you want to export the schema as JSON.
 //
 // Parameters:
-//   msg: The protobuf message to generate the schema from.
+//   - msg (protoreflect.Message): The protobuf message to generate the schema from.
 //
 // Returns:
-//   map[string]interface{}: The generated JSON schema map.
+//   - (map[string]interface{}): The generated JSON schema map.
 func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{} {
 	gen := &schemaGenerator{
 		defs: make(map[string]interface{}),
@@ -52,10 +52,14 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 
 // CompileSchema compiles a raw JSON schema map into a jsonschema.Schema object.
 //
-// schemaMap is the schemaMap.
+// It marshals the map to JSON and then compiles it using the jsonschema compiler.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - schemaMap (map[string]interface{}): The raw JSON schema map.
+//
+// Returns:
+//   - (*jsonschema.Schema): The compiled JSON schema object.
+//   - (error): An error if marshaling or compilation fails.
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"
