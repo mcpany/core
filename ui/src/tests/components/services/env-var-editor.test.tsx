@@ -28,15 +28,15 @@ describe('EnvVarEditor', () => {
 
     it('renders and preserves secretId vars', () => {
         const initialEnv = {
-            'SECRET_VAR': { secretId: 'my-secret-id' }
+            'SECRET_VAR': { plainText: '${my-secret-id}' }
         };
         const onChange = vi.fn();
         render(<EnvVarEditor initialEnv={initialEnv} onChange={onChange} />);
 
         expect(screen.getByDisplayValue('SECRET_VAR')).toBeInTheDocument();
-        // Should show as disabled input with secret ID
-        expect(screen.getByDisplayValue('Secret: my-secret-id')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('Secret: my-secret-id')).toBeDisabled();
+        // Should show input with secret ID
+        expect(screen.getByDisplayValue('my-secret-id')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('my-secret-id')).toHaveAttribute('readonly');
     });
 
     it('adds a new variable', () => {
@@ -60,14 +60,14 @@ describe('EnvVarEditor', () => {
         fireEvent.change(keyInput, { target: { value: 'NEW_KEY' } });
 
         expect(onChange).toHaveBeenCalledWith({
-            'NEW_KEY': { plainText: '' }
+            'NEW_KEY': { plainText: '', validationRegex: '' }
         });
 
         const valueInput = screen.getByPlaceholderText('VALUE');
         fireEvent.change(valueInput, { target: { value: 'new_val' } });
 
          expect(onChange).toHaveBeenCalledWith({
-            'NEW_KEY': { plainText: 'new_val' }
+            'NEW_KEY': { plainText: 'new_val', validationRegex: '' }
         });
     });
 

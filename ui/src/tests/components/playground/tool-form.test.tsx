@@ -52,8 +52,13 @@ describe("ToolForm", () => {
 
     expect(schemaTab).toHaveAttribute("data-state", "active");
     // Verify schema content is displayed (basic check)
-    expect(screen.getByText(/"type": "object"/)).toBeInTheDocument();
-    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+    // We check that the schema content is present in the document.
+    // Syntax highlighting might split the text, so we check the container or use a more flexible check.
+    const panel = screen.getByRole("tabpanel", { name: "Schema" });
+    expect(panel).toBeInTheDocument();
+    expect(panel.textContent).toContain('"type"');
+    expect(panel.textContent).toContain('"object"');
+    expect(panel.textContent).toContain('"foo"');
   });
 
   it("includes a copy button in schema view", async () => {
