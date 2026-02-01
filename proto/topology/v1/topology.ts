@@ -10,16 +10,26 @@ import Long from "long";
 
 export const protobufPackage = "topology.v1";
 
+/** NodeType defines the classification of a node. */
 export enum NodeType {
   NODE_TYPE_UNSPECIFIED = 0,
+  /** NODE_TYPE_CLIENT - Represents a client (e.g., AI Agent). */
   NODE_TYPE_CLIENT = 1,
+  /** NODE_TYPE_CORE - Represents the MCP Any core server. */
   NODE_TYPE_CORE = 2,
+  /** NODE_TYPE_SERVICE - Represents an upstream service. */
   NODE_TYPE_SERVICE = 3,
+  /** NODE_TYPE_TOOL - Represents a specific tool within a service. */
   NODE_TYPE_TOOL = 4,
+  /** NODE_TYPE_RESOURCE - Represents a resource. */
   NODE_TYPE_RESOURCE = 5,
+  /** NODE_TYPE_PROMPT - Represents a prompt. */
   NODE_TYPE_PROMPT = 6,
+  /** NODE_TYPE_API_CALL - Represents an API call event. */
   NODE_TYPE_API_CALL = 7,
+  /** NODE_TYPE_MIDDLEWARE - Represents a middleware component. */
   NODE_TYPE_MIDDLEWARE = 8,
+  /** NODE_TYPE_WEBHOOK - Represents a webhook endpoint. */
   NODE_TYPE_WEBHOOK = 9,
   UNRECOGNIZED = -1,
 }
@@ -91,10 +101,14 @@ export function nodeTypeToJSON(object: NodeType): string {
   }
 }
 
+/** NodeStatus defines the operational state of a node. */
 export enum NodeStatus {
   NODE_STATUS_UNSPECIFIED = 0,
+  /** NODE_STATUS_ACTIVE - The node is active and healthy. */
   NODE_STATUS_ACTIVE = 1,
+  /** NODE_STATUS_INACTIVE - The node is inactive or disabled. */
   NODE_STATUS_INACTIVE = 2,
+  /** NODE_STATUS_ERROR - The node is in an error state. */
   NODE_STATUS_ERROR = 3,
   UNRECOGNIZED = -1,
 }
@@ -136,20 +150,29 @@ export function nodeStatusToJSON(object: NodeStatus): string {
   }
 }
 
-/** Graph represents the full network topology. */
+/** Graph represents the full network topology of the MCP Any system. */
 export interface Graph {
+  /** The list of client nodes connected to the system. */
   clients: Node[];
+  /** The core node representing the MCP Any server itself. */
   core?: Node | undefined;
 }
 
-/** Node represents a node in the topology graph. */
+/** Node represents a single entity in the topology graph. */
 export interface Node {
+  /** The unique identifier of the node. */
   id: string;
+  /** The human-readable label of the node. */
   label: string;
+  /** The type of the node. */
   type: NodeType;
+  /** The operational status of the node. */
   status: NodeStatus;
+  /** Additional metadata associated with the node. */
   metadata: { [key: string]: string };
+  /** Child nodes connected to this node. */
   children: Node[];
+  /** Performance and error metrics for the node. */
   metrics?: NodeMetrics | undefined;
 }
 
@@ -158,9 +181,13 @@ export interface Node_MetadataEntry {
   value: string;
 }
 
+/** NodeMetrics contains performance metrics for a node. */
 export interface NodeMetrics {
+  /** Queries per second. */
   qps: number;
+  /** Average latency in milliseconds. */
   latencyMs: number;
+  /** Error rate (percentage or count). */
   errorRate: number;
 }
 

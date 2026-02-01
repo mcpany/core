@@ -24,19 +24,29 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// NodeType defines the classification of a node.
 type NodeType int32
 
 const (
 	NodeType_NODE_TYPE_UNSPECIFIED NodeType = 0
-	NodeType_NODE_TYPE_CLIENT      NodeType = 1
-	NodeType_NODE_TYPE_CORE        NodeType = 2
-	NodeType_NODE_TYPE_SERVICE     NodeType = 3
-	NodeType_NODE_TYPE_TOOL        NodeType = 4
-	NodeType_NODE_TYPE_RESOURCE    NodeType = 5
-	NodeType_NODE_TYPE_PROMPT      NodeType = 6
-	NodeType_NODE_TYPE_API_CALL    NodeType = 7
-	NodeType_NODE_TYPE_MIDDLEWARE  NodeType = 8
-	NodeType_NODE_TYPE_WEBHOOK     NodeType = 9
+	// Represents a client (e.g., AI Agent).
+	NodeType_NODE_TYPE_CLIENT NodeType = 1
+	// Represents the MCP Any core server.
+	NodeType_NODE_TYPE_CORE NodeType = 2
+	// Represents an upstream service.
+	NodeType_NODE_TYPE_SERVICE NodeType = 3
+	// Represents a specific tool within a service.
+	NodeType_NODE_TYPE_TOOL NodeType = 4
+	// Represents a resource.
+	NodeType_NODE_TYPE_RESOURCE NodeType = 5
+	// Represents a prompt.
+	NodeType_NODE_TYPE_PROMPT NodeType = 6
+	// Represents an API call event.
+	NodeType_NODE_TYPE_API_CALL NodeType = 7
+	// Represents a middleware component.
+	NodeType_NODE_TYPE_MIDDLEWARE NodeType = 8
+	// Represents a webhook endpoint.
+	NodeType_NODE_TYPE_WEBHOOK NodeType = 9
 )
 
 // Enum value maps for NodeType.
@@ -89,13 +99,17 @@ func (x NodeType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
+// NodeStatus defines the operational state of a node.
 type NodeStatus int32
 
 const (
 	NodeStatus_NODE_STATUS_UNSPECIFIED NodeStatus = 0
-	NodeStatus_NODE_STATUS_ACTIVE      NodeStatus = 1
-	NodeStatus_NODE_STATUS_INACTIVE    NodeStatus = 2
-	NodeStatus_NODE_STATUS_ERROR       NodeStatus = 3
+	// The node is active and healthy.
+	NodeStatus_NODE_STATUS_ACTIVE NodeStatus = 1
+	// The node is inactive or disabled.
+	NodeStatus_NODE_STATUS_INACTIVE NodeStatus = 2
+	// The node is in an error state.
+	NodeStatus_NODE_STATUS_ERROR NodeStatus = 3
 )
 
 // Enum value maps for NodeStatus.
@@ -136,7 +150,7 @@ func (x NodeStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Graph represents the full network topology.
+// Graph represents the full network topology of the MCP Any system.
 type Graph struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Clients *[]*Node               `protobuf:"bytes,1,rep,name=clients"`
@@ -208,8 +222,10 @@ func (x *Graph) ClearCore() {
 type Graph_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// The list of client nodes connected to the system.
 	Clients []*Node
-	Core    *Node
+	// The core node representing the MCP Any server itself.
+	Core *Node
 }
 
 func (b0 Graph_builder) Build() *Graph {
@@ -221,7 +237,7 @@ func (b0 Graph_builder) Build() *Graph {
 	return m0
 }
 
-// Node represents a node in the topology graph.
+// Node represents a single entity in the topology graph.
 type Node struct {
 	state               protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id       string                 `protobuf:"bytes,1,opt,name=id"`
@@ -353,13 +369,20 @@ func (x *Node) ClearMetrics() {
 type Node_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id       string
-	Label    string
-	Type     NodeType
-	Status   NodeStatus
+	// The unique identifier of the node.
+	Id string
+	// The human-readable label of the node.
+	Label string
+	// The type of the node.
+	Type NodeType
+	// The operational status of the node.
+	Status NodeStatus
+	// Additional metadata associated with the node.
 	Metadata map[string]string
+	// Child nodes connected to this node.
 	Children []*Node
-	Metrics  *NodeMetrics
+	// Performance and error metrics for the node.
+	Metrics *NodeMetrics
 }
 
 func (b0 Node_builder) Build() *Node {
@@ -376,6 +399,7 @@ func (b0 Node_builder) Build() *Node {
 	return m0
 }
 
+// NodeMetrics contains performance metrics for a node.
 type NodeMetrics struct {
 	state                protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Qps       float64                `protobuf:"fixed64,1,opt,name=qps"`
@@ -446,8 +470,11 @@ func (x *NodeMetrics) SetErrorRate(v float64) {
 type NodeMetrics_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Qps       float64
+	// Queries per second.
+	Qps float64
+	// Average latency in milliseconds.
 	LatencyMs float64
+	// Error rate (percentage or count).
 	ErrorRate float64
 }
 

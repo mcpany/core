@@ -13,38 +13,55 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "mcpany.mcp_router.v1";
 
-/** Represents an MCP Tool exposed by the aggregator */
+/** Tool represents an MCP Tool exposed by the aggregator. */
 export interface Tool {
-  /** Unique name, e.g., "serviceName/methodName" or a hash */
+  /** Unique name of the tool (e.g., "serviceName/methodName" or a hash). */
   name: string;
-  /** User-friendly name */
+  /** User-friendly display name of the tool. */
   displayName: string;
-  /** Description from annotation */
+  /** Description of the tool, typically from the proto annotation. */
   description: string;
-  /** The ID of the registered user service that provides this tool */
+  /** The ID of the registered user service that provides this tool. */
   serviceId: string;
-  /** Fully qualified name of the gRPC method, e.g., /pkg.UserService/Method */
+  /** Fully qualified name of the underlying gRPC method (e.g., /pkg.UserService/Method). */
   underlyingMethodFqn: string;
-  /** Fully qualified name of the underlying method's request message */
+  /** Fully qualified name of the underlying method's request message. */
   requestTypeFqn: string;
-  /** Fully qualified name of the underlying method's response message */
+  /** Fully qualified name of the underlying method's response message. */
   responseTypeFqn: string;
-  inputSchema?: { [key: string]: any } | undefined;
-  outputSchema?: { [key: string]: any } | undefined;
-  annotations?: ToolAnnotations | undefined;
+  /** The JSON schema of the input arguments. */
+  inputSchema?:
+    | { [key: string]: any }
+    | undefined;
+  /** The JSON schema of the output results. */
+  outputSchema?:
+    | { [key: string]: any }
+    | undefined;
+  /** Annotations providing hints about the tool's behavior. */
+  annotations?:
+    | ToolAnnotations
+    | undefined;
+  /** Indicates if the tool response is a stream. */
   isStream: boolean;
+  /** Tags associated with the tool for categorization. */
   tags: string[];
+  /** List of profiles that have access to this tool. */
   profiles: string[];
+  /** Integrity check information for the tool definition. */
   integrity?: ToolIntegrity | undefined;
 }
 
+/** ToolIntegrity contains hash information to verify the tool definition. */
 export interface ToolIntegrity {
+  /** The hash value. */
   hash: string;
-  /** e.g. "sha256" */
+  /** The algorithm used (e.g. "sha256"). */
   algorithm: string;
 }
 
+/** ToolAnnotations provides hints about the tool's side effects and behavior. */
 export interface ToolAnnotations {
+  /** A short title for the tool. */
   title: string;
   /**
    * If true, the tool does not modify its environment.
@@ -72,64 +89,99 @@ export interface ToolAnnotations {
    * Default: true
    */
   openWorldHint: boolean;
-  inputSchema?: { [key: string]: any } | undefined;
+  /** Overrides for input schema. */
+  inputSchema?:
+    | { [key: string]: any }
+    | undefined;
+  /** Overrides for output schema. */
   outputSchema?: { [key: string]: any } | undefined;
 }
 
-/** Future: filtering options */
+/** ListToolsRequest is the request for listing tools. */
 export interface ListToolsRequest {
 }
 
+/** ListToolsResponse contains the list of tools. */
 export interface ListToolsResponse {
+  /** The list of tools. */
   tools: Tool[];
 }
 
+/** CallToolRequest is the request for executing a tool. */
 export interface CallToolRequest {
-  /** ID of the tool to execute */
+  /** ID of the tool to execute. */
   toolId: string;
-  /** Actual inputs for the tool, as a JSON-like object */
+  /**
+   * Actual inputs for the tool, as a JSON-like object.
+   * The fields should match the fields of the underlying gRPC method's request message.
+   */
   inputs?: { [key: string]: any } | undefined;
 }
 
+/** CallToolResponse contains the result of a tool execution. */
 export interface CallToolResponse {
-  /** Actual outputs from the tool, as a JSON-like object */
+  /**
+   * Actual outputs from the tool, as a JSON-like object.
+   * The fields will match the fields of the underlying gRPC method's response message.
+   */
   outputs?: { [key: string]: any } | undefined;
 }
 
 /** A Prompt is a pre-defined template for interacting with a language model. */
 export interface Prompt {
+  /** The unique name of the prompt. */
   name: string;
+  /** The display title of the prompt. */
   title: string;
+  /** A description of what the prompt does. */
   description: string;
+  /** The arguments required by the prompt. */
   arguments: PromptArgument[];
 }
 
+/** PromptArgument defines an argument for a prompt template. */
 export interface PromptArgument {
+  /** The name of the argument. */
   name: string;
+  /** The description of the argument. */
   description: string;
+  /** Whether the argument is required. */
   required: boolean;
 }
 
+/** ListPromptsRequest is the request for listing prompts. */
 export interface ListPromptsRequest {
+  /** Pagination cursor. */
   cursor: string;
 }
 
+/** ListPromptsResponse contains the list of prompts. */
 export interface ListPromptsResponse {
+  /** The list of prompts. */
   prompts: Prompt[];
+  /** The cursor for the next page of results. */
   nextCursor: string;
 }
 
+/** GetPromptRequest is the request for retrieving a prompt. */
 export interface GetPromptRequest {
+  /** The name of the prompt to retrieve. */
   name: string;
+  /** The arguments to fill in the prompt template. */
   arguments?: { [key: string]: any } | undefined;
 }
 
+/** GetPromptResponse contains the instantiated prompt messages. */
 export interface GetPromptResponse {
+  /** The description of the prompt. */
   description: string;
+  /** The sequence of messages that make up the prompt. */
   messages: PromptMessage[];
 }
 
+/** PromptMessage represents a single message in a prompt conversation. */
 export interface PromptMessage {
+  /** The role of the speaker. */
   role: PromptMessage_Role;
   text?: TextContent | undefined;
   image?: ImageContent | undefined;
@@ -137,6 +189,7 @@ export interface PromptMessage {
   resource?: ResourceContent | undefined;
 }
 
+/** Role defines who is speaking. */
 export enum PromptMessage_Role {
   USER = 0,
   ASSISTANT = 1,
@@ -170,22 +223,33 @@ export function promptMessage_RoleToJSON(object: PromptMessage_Role): string {
   }
 }
 
+/** TextContent represents text. */
 export interface TextContent {
+  /** The text content. */
   text: string;
 }
 
+/** ImageContent represents an image. */
 export interface ImageContent {
+  /** Base64 encoded image data. */
   data: string;
+  /** The MIME type of the image (e.g., "image/png"). */
   mimeType: string;
 }
 
+/** AudioContent represents audio. */
 export interface AudioContent {
+  /** Base64 encoded audio data. */
   data: string;
+  /** The MIME type of the audio. */
   mimeType: string;
 }
 
+/** ResourceContent represents an embedded resource. */
 export interface ResourceContent {
+  /** The URI of the resource. */
   uri: string;
+  /** The MIME type of the resource. */
   mimeType: string;
   text?: string | undefined;
   blob?: Uint8Array | undefined;
@@ -193,18 +257,25 @@ export interface ResourceContent {
 
 /** A Resource is a piece of data that can be used by tools or prompts. */
 export interface Resource {
+  /** The unique ID of the resource. */
   id: string;
+  /** The name of the resource. */
   name: string;
+  /** The description of the resource. */
   description: string;
-  /** e.g., "text", "image", "url" */
+  /** The type of the resource (e.g., "text", "image", "url"). */
   type: string;
+  /** The raw content of the resource. */
   content: Uint8Array;
 }
 
+/** ListResourcesRequest is the request for listing resources. */
 export interface ListResourcesRequest {
 }
 
+/** ListResourcesResponse contains the list of resources. */
 export interface ListResourcesResponse {
+  /** The list of resources. */
   resources: Resource[];
 }
 
@@ -2219,11 +2290,17 @@ export const ListResourcesResponse: MessageFns<ListResourcesResponse> = {
   },
 };
 
+/** McpRouter provides routing for MCP tools, prompts, and resources. */
 export interface McpRouter {
+  /** ListTools returns a list of available tools. */
   ListTools(request: DeepPartial<ListToolsRequest>, metadata?: grpc.Metadata): Promise<ListToolsResponse>;
+  /** CallTool executes a specific tool. */
   CallTool(request: DeepPartial<CallToolRequest>, metadata?: grpc.Metadata): Promise<CallToolResponse>;
+  /** ListPrompts returns a list of available prompts. */
   ListPrompts(request: DeepPartial<ListPromptsRequest>, metadata?: grpc.Metadata): Promise<ListPromptsResponse>;
+  /** GetPrompt retrieves a specific prompt, potentially filling in arguments. */
   GetPrompt(request: DeepPartial<GetPromptRequest>, metadata?: grpc.Metadata): Promise<GetPromptResponse>;
+  /** ListResources returns a list of available resources. */
   ListResources(request: DeepPartial<ListResourcesRequest>, metadata?: grpc.Metadata): Promise<ListResourcesResponse>;
 }
 

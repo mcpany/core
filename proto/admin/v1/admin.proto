@@ -17,49 +17,52 @@ option go_package = "github.com/mcpany/core/proto/admin/v1";
 option java_outer_classname = "AdminProto";
 
 // AdminService provides administrative operations for the MCP Any server.
+// It allows managing services, tools, users, and viewing audit logs.
 service AdminService {
   // ClearCache clears all cached data in the server.
+  // This is useful when configuration has changed and caches need to be invalidated.
   rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
 
-  // ListServices returns all registered services.
+  // ListServices returns all registered upstream services.
   rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
 
-  // GetService returns a specific service by ID.
+  // GetService returns details of a specific upstream service by ID.
   rpc GetService(GetServiceRequest) returns (GetServiceResponse);
 
-  // ListTools returns all registered tools.
+  // ListTools returns all registered tools across all services.
   rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
 
-  // GetTool returns a specific tool by name.
+  // GetTool returns details of a specific tool by name.
   rpc GetTool(GetToolRequest) returns (GetToolResponse);
 
   // ===================================================================
   // User Management
   // ===================================================================
 
-  // CreateUser creates a new user.
+  // CreateUser creates a new user in the system.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 
-  // GetUser returns a specific user by ID.
+  // GetUser returns details of a specific user by ID.
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
 
   // ListUsers returns all registered users.
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
 
-  // UpdateUser updates an existing user.
+  // UpdateUser updates an existing user's information.
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
 
   // DeleteUser deletes a user by ID.
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 
   // GetDiscoveryStatus returns the status of auto-discovery providers.
+  // This helps in diagnosing issues with service discovery.
   rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
 
   // ===================================================================
   // Audit Logs
   // ===================================================================
 
-  // ListAuditLogs returns audit logs matching the filter.
+  // ListAuditLogs returns audit logs matching the provided filter.
   rpc ListAuditLogs(ListAuditLogsRequest) returns (ListAuditLogsResponse) {
     option (google.api.http) = {
       get: "/api/v1/audit/logs"
@@ -67,123 +70,192 @@ service AdminService {
   }
 }
 
+// ClearCacheRequest is the request for clearing the server cache.
 message ClearCacheRequest {}
 
+// ClearCacheResponse is the empty response for clearing the cache.
 message ClearCacheResponse {}
 
+// ListServicesRequest is the request for listing services.
 message ListServicesRequest {}
 
+// ListServicesResponse contains the list of services and their states.
 message ListServicesResponse {
+  // Deprecated: Use service_states instead.
   repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
+  // The list of services with their current runtime state.
   repeated ServiceState service_states = 2;
 }
 
+// ServiceState represents the runtime state of a service.
 message ServiceState {
+  // The configuration of the service.
   mcpany.config.v1.UpstreamServiceConfig config = 1;
-  string status = 2; // "OK", "ERROR", "CONNECTING"
+  // The current status (e.g., "OK", "ERROR", "CONNECTING").
+  string status = 2;
+  // Error message if the status is ERROR.
   string error = 3;
 }
 
+// GetServiceRequest identifies the service to retrieve.
 message GetServiceRequest {
+  // The ID of the service.
   string service_id = 1;
 }
 
+// GetServiceResponse contains the service details.
 message GetServiceResponse {
+  // Deprecated: Use service_state instead.
   mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
+  // The service details and state.
   ServiceState service_state = 2;
 }
 
+// ListToolsRequest is the request for listing tools.
 message ListToolsRequest {}
 
+// ListToolsResponse contains the list of tools.
 message ListToolsResponse {
+  // The list of tools.
   repeated mcpany.mcp_router.v1.Tool tools = 1;
 }
 
+// GetToolRequest identifies the tool to retrieve.
 message GetToolRequest {
+  // The name of the tool.
   string tool_name = 1;
 }
 
+// GetToolResponse contains the tool details.
 message GetToolResponse {
+  // The tool definition.
   mcpany.mcp_router.v1.Tool tool = 1;
 }
 
 // User Management Messages
 
+// CreateUserRequest contains the user to create.
 message CreateUserRequest {
+  // The user definition.
   mcpany.config.v1.User user = 1;
 }
 
+// CreateUserResponse contains the created user.
 message CreateUserResponse {
+  // The created user.
   mcpany.config.v1.User user = 1;
 }
 
+// GetUserRequest identifies the user to retrieve.
 message GetUserRequest {
+  // The ID of the user.
   string user_id = 1;
 }
 
+// GetUserResponse contains the user details.
 message GetUserResponse {
+  // The user definition.
   mcpany.config.v1.User user = 1;
 }
 
+// ListUsersRequest is the request for listing users.
 message ListUsersRequest {}
 
+// ListUsersResponse contains the list of users.
 message ListUsersResponse {
+  // The list of users.
   repeated mcpany.config.v1.User users = 1;
 }
 
+// UpdateUserRequest identifies the user to update.
 message UpdateUserRequest {
+  // The updated user definition.
   mcpany.config.v1.User user = 1;
   // Field mask to specify which fields to update (optional for now, full replace).
 }
 
+// UpdateUserResponse contains the updated user.
 message UpdateUserResponse {
+  // The updated user.
   mcpany.config.v1.User user = 1;
 }
 
+// DeleteUserRequest identifies the user to delete.
 message DeleteUserRequest {
+  // The ID of the user to delete.
   string user_id = 1;
 }
 
+// DeleteUserResponse is the empty response for user deletion.
 message DeleteUserResponse {}
 
+// GetDiscoveryStatusRequest is the request for discovery status.
 message GetDiscoveryStatusRequest {}
 
+// GetDiscoveryStatusResponse contains the status of discovery providers.
 message GetDiscoveryStatusResponse {
+  // The list of provider statuses.
   repeated DiscoveryProviderStatus providers = 1;
 }
 
+// DiscoveryProviderStatus represents the status of a single discovery provider.
 message DiscoveryProviderStatus {
+  // The name of the provider.
   string name = 1;
-  string status = 2; // "OK", "ERROR"
+  // The status (e.g., "OK", "ERROR").
+  string status = 2;
+  // The last error message, if any.
   string last_error = 3;
-  string last_run_at = 4; // ISO 8601
+  // The timestamp of the last run (ISO 8601).
+  string last_run_at = 4;
+  // The number of items discovered.
   int32 discovered_count = 5;
 }
 
 // Audit Log Messages
 
+// ListAuditLogsRequest defines the filter for audit logs.
 message ListAuditLogsRequest {
-  string start_time = 1; // ISO 8601
-  string end_time = 2;   // ISO 8601
+  // The start time for the query (ISO 8601).
+  string start_time = 1;
+  // The end time for the query (ISO 8601).
+  string end_time = 2;
+  // Filter by tool name.
   string tool_name = 3;
+  // Filter by user ID.
   string user_id = 4;
+  // Filter by profile ID.
   string profile_id = 5;
+  // Maximum number of logs to return.
   int32 limit = 6;
+  // Offset for pagination.
   int32 offset = 7;
 }
 
+// ListAuditLogsResponse contains the list of audit logs.
 message ListAuditLogsResponse {
+  // The list of audit log entries.
   repeated AuditLogEntry entries = 1;
 }
 
+// AuditLogEntry represents a single audit log event.
 message AuditLogEntry {
-  string timestamp = 1; // ISO 8601
+  // The timestamp of the event (ISO 8601).
+  string timestamp = 1;
+  // The name of the tool executed.
   string tool_name = 2;
+  // The ID of the user who initiated the event.
   string user_id = 3;
+  // The profile ID under which the event occurred.
   string profile_id = 4;
-  string arguments = 5; // JSON string
-  string result = 6;    // JSON string
+  // The arguments passed to the tool (JSON string).
+  string arguments = 5;
+  // The result returned by the tool (JSON string).
+  string result = 6;
+  // Any error that occurred.
   string error = 7;
+  // The duration of the execution as a string (e.g., "100ms").
   string duration = 8;
+  // The duration of the execution in milliseconds.
   int64 duration_ms = 9;
 }

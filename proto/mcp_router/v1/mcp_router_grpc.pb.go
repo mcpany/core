@@ -32,11 +32,18 @@ const (
 // McpRouterClient is the client API for McpRouter service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// McpRouter provides routing for MCP tools, prompts, and resources.
 type McpRouterClient interface {
+	// ListTools returns a list of available tools.
 	ListTools(ctx context.Context, in *ListToolsRequest, opts ...grpc.CallOption) (*ListToolsResponse, error)
+	// CallTool executes a specific tool.
 	CallTool(ctx context.Context, in *CallToolRequest, opts ...grpc.CallOption) (*CallToolResponse, error)
+	// ListPrompts returns a list of available prompts.
 	ListPrompts(ctx context.Context, in *ListPromptsRequest, opts ...grpc.CallOption) (*ListPromptsResponse, error)
+	// GetPrompt retrieves a specific prompt, potentially filling in arguments.
 	GetPrompt(ctx context.Context, in *GetPromptRequest, opts ...grpc.CallOption) (*GetPromptResponse, error)
+	// ListResources returns a list of available resources.
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
 }
 
@@ -101,11 +108,18 @@ func (c *mcpRouterClient) ListResources(ctx context.Context, in *ListResourcesRe
 // McpRouterServer is the server API for McpRouter service.
 // All implementations must embed UnimplementedMcpRouterServer
 // for forward compatibility.
+//
+// McpRouter provides routing for MCP tools, prompts, and resources.
 type McpRouterServer interface {
+	// ListTools returns a list of available tools.
 	ListTools(context.Context, *ListToolsRequest) (*ListToolsResponse, error)
+	// CallTool executes a specific tool.
 	CallTool(context.Context, *CallToolRequest) (*CallToolResponse, error)
+	// ListPrompts returns a list of available prompts.
 	ListPrompts(context.Context, *ListPromptsRequest) (*ListPromptsResponse, error)
+	// GetPrompt retrieves a specific prompt, potentially filling in arguments.
 	GetPrompt(context.Context, *GetPromptRequest) (*GetPromptResponse, error)
+	// ListResources returns a list of available resources.
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
 	mustEmbedUnimplementedMcpRouterServer()
 }

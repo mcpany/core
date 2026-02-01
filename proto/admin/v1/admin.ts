@@ -15,139 +15,207 @@ import { Tool } from "../../mcp_router/v1/mcp_router";
 
 export const protobufPackage = "mcpany.admin.v1";
 
+/** ClearCacheRequest is the request for clearing the server cache. */
 export interface ClearCacheRequest {
 }
 
+/** ClearCacheResponse is the empty response for clearing the cache. */
 export interface ClearCacheResponse {
 }
 
+/** ListServicesRequest is the request for listing services. */
 export interface ListServicesRequest {
 }
 
+/** ListServicesResponse contains the list of services and their states. */
 export interface ListServicesResponse {
-  /** @deprecated */
+  /**
+   * Deprecated: Use service_states instead.
+   *
+   * @deprecated
+   */
   services: UpstreamServiceConfig[];
+  /** The list of services with their current runtime state. */
   serviceStates: ServiceState[];
 }
 
+/** ServiceState represents the runtime state of a service. */
 export interface ServiceState {
+  /** The configuration of the service. */
   config?:
     | UpstreamServiceConfig
     | undefined;
-  /** "OK", "ERROR", "CONNECTING" */
+  /** The current status (e.g., "OK", "ERROR", "CONNECTING"). */
   status: string;
+  /** Error message if the status is ERROR. */
   error: string;
 }
 
+/** GetServiceRequest identifies the service to retrieve. */
 export interface GetServiceRequest {
+  /** The ID of the service. */
   serviceId: string;
 }
 
+/** GetServiceResponse contains the service details. */
 export interface GetServiceResponse {
-  /** @deprecated */
-  service?: UpstreamServiceConfig | undefined;
+  /**
+   * Deprecated: Use service_state instead.
+   *
+   * @deprecated
+   */
+  service?:
+    | UpstreamServiceConfig
+    | undefined;
+  /** The service details and state. */
   serviceState?: ServiceState | undefined;
 }
 
+/** ListToolsRequest is the request for listing tools. */
 export interface ListToolsRequest {
 }
 
+/** ListToolsResponse contains the list of tools. */
 export interface ListToolsResponse {
+  /** The list of tools. */
   tools: Tool[];
 }
 
+/** GetToolRequest identifies the tool to retrieve. */
 export interface GetToolRequest {
+  /** The name of the tool. */
   toolName: string;
 }
 
+/** GetToolResponse contains the tool details. */
 export interface GetToolResponse {
+  /** The tool definition. */
   tool?: Tool | undefined;
 }
 
+/** CreateUserRequest contains the user to create. */
 export interface CreateUserRequest {
+  /** The user definition. */
   user?: User | undefined;
 }
 
+/** CreateUserResponse contains the created user. */
 export interface CreateUserResponse {
+  /** The created user. */
   user?: User | undefined;
 }
 
+/** GetUserRequest identifies the user to retrieve. */
 export interface GetUserRequest {
+  /** The ID of the user. */
   userId: string;
 }
 
+/** GetUserResponse contains the user details. */
 export interface GetUserResponse {
+  /** The user definition. */
   user?: User | undefined;
 }
 
+/** ListUsersRequest is the request for listing users. */
 export interface ListUsersRequest {
 }
 
+/** ListUsersResponse contains the list of users. */
 export interface ListUsersResponse {
+  /** The list of users. */
   users: User[];
 }
 
+/** UpdateUserRequest identifies the user to update. */
 export interface UpdateUserRequest {
-  /** Field mask to specify which fields to update (optional for now, full replace). */
+  /** The updated user definition. */
   user?: User | undefined;
 }
 
+/** UpdateUserResponse contains the updated user. */
 export interface UpdateUserResponse {
+  /** The updated user. */
   user?: User | undefined;
 }
 
+/** DeleteUserRequest identifies the user to delete. */
 export interface DeleteUserRequest {
+  /** The ID of the user to delete. */
   userId: string;
 }
 
+/** DeleteUserResponse is the empty response for user deletion. */
 export interface DeleteUserResponse {
 }
 
+/** GetDiscoveryStatusRequest is the request for discovery status. */
 export interface GetDiscoveryStatusRequest {
 }
 
+/** GetDiscoveryStatusResponse contains the status of discovery providers. */
 export interface GetDiscoveryStatusResponse {
+  /** The list of provider statuses. */
   providers: DiscoveryProviderStatus[];
 }
 
+/** DiscoveryProviderStatus represents the status of a single discovery provider. */
 export interface DiscoveryProviderStatus {
+  /** The name of the provider. */
   name: string;
-  /** "OK", "ERROR" */
+  /** The status (e.g., "OK", "ERROR"). */
   status: string;
+  /** The last error message, if any. */
   lastError: string;
-  /** ISO 8601 */
+  /** The timestamp of the last run (ISO 8601). */
   lastRunAt: string;
+  /** The number of items discovered. */
   discoveredCount: number;
 }
 
+/** ListAuditLogsRequest defines the filter for audit logs. */
 export interface ListAuditLogsRequest {
-  /** ISO 8601 */
+  /** The start time for the query (ISO 8601). */
   startTime: string;
-  /** ISO 8601 */
+  /** The end time for the query (ISO 8601). */
   endTime: string;
+  /** Filter by tool name. */
   toolName: string;
+  /** Filter by user ID. */
   userId: string;
+  /** Filter by profile ID. */
   profileId: string;
+  /** Maximum number of logs to return. */
   limit: number;
+  /** Offset for pagination. */
   offset: number;
 }
 
+/** ListAuditLogsResponse contains the list of audit logs. */
 export interface ListAuditLogsResponse {
+  /** The list of audit log entries. */
   entries: AuditLogEntry[];
 }
 
+/** AuditLogEntry represents a single audit log event. */
 export interface AuditLogEntry {
-  /** ISO 8601 */
+  /** The timestamp of the event (ISO 8601). */
   timestamp: string;
+  /** The name of the tool executed. */
   toolName: string;
+  /** The ID of the user who initiated the event. */
   userId: string;
+  /** The profile ID under which the event occurred. */
   profileId: string;
-  /** JSON string */
+  /** The arguments passed to the tool (JSON string). */
   arguments: string;
-  /** JSON string */
+  /** The result returned by the tool (JSON string). */
   result: string;
+  /** Any error that occurred. */
   error: string;
+  /** The duration of the execution as a string (e.g., "100ms"). */
   duration: string;
+  /** The duration of the execution in milliseconds. */
   durationMs: Long;
 }
 
@@ -2084,34 +2152,43 @@ export const AuditLogEntry: MessageFns<AuditLogEntry> = {
   },
 };
 
-/** AdminService provides administrative operations for the MCP Any server. */
+/**
+ * AdminService provides administrative operations for the MCP Any server.
+ * It allows managing services, tools, users, and viewing audit logs.
+ */
 export interface AdminService {
-  /** ClearCache clears all cached data in the server. */
+  /**
+   * ClearCache clears all cached data in the server.
+   * This is useful when configuration has changed and caches need to be invalidated.
+   */
   ClearCache(request: DeepPartial<ClearCacheRequest>, metadata?: grpc.Metadata): Promise<ClearCacheResponse>;
-  /** ListServices returns all registered services. */
+  /** ListServices returns all registered upstream services. */
   ListServices(request: DeepPartial<ListServicesRequest>, metadata?: grpc.Metadata): Promise<ListServicesResponse>;
-  /** GetService returns a specific service by ID. */
+  /** GetService returns details of a specific upstream service by ID. */
   GetService(request: DeepPartial<GetServiceRequest>, metadata?: grpc.Metadata): Promise<GetServiceResponse>;
-  /** ListTools returns all registered tools. */
+  /** ListTools returns all registered tools across all services. */
   ListTools(request: DeepPartial<ListToolsRequest>, metadata?: grpc.Metadata): Promise<ListToolsResponse>;
-  /** GetTool returns a specific tool by name. */
+  /** GetTool returns details of a specific tool by name. */
   GetTool(request: DeepPartial<GetToolRequest>, metadata?: grpc.Metadata): Promise<GetToolResponse>;
-  /** CreateUser creates a new user. */
+  /** CreateUser creates a new user in the system. */
   CreateUser(request: DeepPartial<CreateUserRequest>, metadata?: grpc.Metadata): Promise<CreateUserResponse>;
-  /** GetUser returns a specific user by ID. */
+  /** GetUser returns details of a specific user by ID. */
   GetUser(request: DeepPartial<GetUserRequest>, metadata?: grpc.Metadata): Promise<GetUserResponse>;
   /** ListUsers returns all registered users. */
   ListUsers(request: DeepPartial<ListUsersRequest>, metadata?: grpc.Metadata): Promise<ListUsersResponse>;
-  /** UpdateUser updates an existing user. */
+  /** UpdateUser updates an existing user's information. */
   UpdateUser(request: DeepPartial<UpdateUserRequest>, metadata?: grpc.Metadata): Promise<UpdateUserResponse>;
   /** DeleteUser deletes a user by ID. */
   DeleteUser(request: DeepPartial<DeleteUserRequest>, metadata?: grpc.Metadata): Promise<DeleteUserResponse>;
-  /** GetDiscoveryStatus returns the status of auto-discovery providers. */
+  /**
+   * GetDiscoveryStatus returns the status of auto-discovery providers.
+   * This helps in diagnosing issues with service discovery.
+   */
   GetDiscoveryStatus(
     request: DeepPartial<GetDiscoveryStatusRequest>,
     metadata?: grpc.Metadata,
   ): Promise<GetDiscoveryStatusResponse>;
-  /** ListAuditLogs returns audit logs matching the filter. */
+  /** ListAuditLogs returns audit logs matching the provided filter. */
   ListAuditLogs(request: DeepPartial<ListAuditLogsRequest>, metadata?: grpc.Metadata): Promise<ListAuditLogsResponse>;
 }
 

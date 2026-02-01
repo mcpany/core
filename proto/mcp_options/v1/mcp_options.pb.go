@@ -126,36 +126,60 @@ var file_proto_mcp_options_v1_mcp_options_proto_extTypes = []protoimpl.Extension
 
 // Extension fields to descriptorpb.MethodOptions.
 var (
+	// The name of the tool exposed via MCP.
+	//
 	// optional string tool_name = 301009001;
 	E_ToolName = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[0]
+	// The description of the tool exposed via MCP.
+	//
 	// optional string tool_description = 301009002;
 	E_ToolDescription = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[1]
+	// The name of the prompt exposed via MCP.
+	//
 	// optional string prompt_name = 301009003;
 	E_PromptName = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[2]
+	// The description of the prompt exposed via MCP.
+	//
 	// optional string prompt_description = 301009004;
 	E_PromptDescription = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[3]
+	// The template for the prompt.
+	//
 	// optional string prompt_template = 301009005;
 	E_PromptTemplate = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[4]
+	// Indicates if the tool is read-only (i.e., does not modify state).
+	//
 	// optional bool mcp_tool_readonly_hint = 301009009;
 	E_McpToolReadonlyHint = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[8]
+	// Indicates if the tool operation is destructive (e.g., deletes data).
+	//
 	// optional bool mcp_tool_destructive_hint = 301009010;
 	E_McpToolDestructiveHint = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[9]
+	// Indicates if the tool operation is idempotent (safe to retry).
+	//
 	// optional bool mcp_tool_idempotent_hint = 301009011;
 	E_McpToolIdempotentHint = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[10]
+	// Indicates if the tool interacts with an open world (e.g., internet search).
+	//
 	// optional bool mcp_tool_openworld_hint = 301009012;
 	E_McpToolOpenworldHint = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[11]
 )
 
 // Extension fields to descriptorpb.MessageOptions.
 var (
+	// The name of the resource exposed via MCP.
+	//
 	// optional string resource_name = 301009006;
 	E_ResourceName = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[5]
+	// The description of the resource exposed via MCP.
+	//
 	// optional string resource_description = 301009007;
 	E_ResourceDescription = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[6]
 )
 
 // Extension fields to descriptorpb.FieldOptions.
 var (
+	// The description of the field, used in MCP schemas.
+	//
 	// optional string field_description = 301009008;
 	E_FieldDescription = &file_proto_mcp_options_v1_mcp_options_proto_extTypes[7]
 )

@@ -13,45 +13,72 @@ option features.(pb.go).api_level = API_OPAQUE;
 
 option go_package = "github.com/mcpany/core/proto/topology/v1";
 
-// Graph represents the full network topology.
+// Graph represents the full network topology of the MCP Any system.
 message Graph {
+  // The list of client nodes connected to the system.
   repeated Node clients = 1;
+  // The core node representing the MCP Any server itself.
   Node core = 2;
 }
 
-// Node represents a node in the topology graph.
+// Node represents a single entity in the topology graph.
 message Node {
+  // The unique identifier of the node.
   string id = 1;
+  // The human-readable label of the node.
   string label = 2;
+  // The type of the node.
   NodeType type = 3;
+  // The operational status of the node.
   NodeStatus status = 4;
+  // Additional metadata associated with the node.
   map<string, string> metadata = 5;
+  // Child nodes connected to this node.
   repeated Node children = 6;
+  // Performance and error metrics for the node.
   NodeMetrics metrics = 7;
 }
 
+// NodeType defines the classification of a node.
 enum NodeType {
   NODE_TYPE_UNSPECIFIED = 0;
+  // Represents a client (e.g., AI Agent).
   NODE_TYPE_CLIENT = 1;
+  // Represents the MCP Any core server.
   NODE_TYPE_CORE = 2;
+  // Represents an upstream service.
   NODE_TYPE_SERVICE = 3;
+  // Represents a specific tool within a service.
   NODE_TYPE_TOOL = 4;
+  // Represents a resource.
   NODE_TYPE_RESOURCE = 5;
+  // Represents a prompt.
   NODE_TYPE_PROMPT = 6;
+  // Represents an API call event.
   NODE_TYPE_API_CALL = 7;
+  // Represents a middleware component.
   NODE_TYPE_MIDDLEWARE = 8;
+  // Represents a webhook endpoint.
   NODE_TYPE_WEBHOOK = 9;
 }
 
+// NodeStatus defines the operational state of a node.
 enum NodeStatus {
   NODE_STATUS_UNSPECIFIED = 0;
+  // The node is active and healthy.
   NODE_STATUS_ACTIVE = 1;
+  // The node is inactive or disabled.
   NODE_STATUS_INACTIVE = 2;
+  // The node is in an error state.
   NODE_STATUS_ERROR = 3;
 }
 
+// NodeMetrics contains performance metrics for a node.
 message NodeMetrics {
+  // Queries per second.
   double qps = 1;
+  // Average latency in milliseconds.
   double latency_ms = 2;
+  // Error rate (percentage or count).
   double error_rate = 3;
 }

@@ -10,29 +10,54 @@ import Long from "long";
 
 export const protobufPackage = "bus";
 
+/** MessageBus defines the configuration for the internal message bus. */
 export interface MessageBus {
-  inMemory?: InMemoryBus | undefined;
-  redis?: RedisBus | undefined;
-  nats?: NatsBus | undefined;
+  /** Configuration for an in-memory message bus. */
+  inMemory?:
+    | InMemoryBus
+    | undefined;
+  /** Configuration for a Redis-backed message bus. */
+  redis?:
+    | RedisBus
+    | undefined;
+  /** Configuration for a NATS-backed message bus. */
+  nats?:
+    | NatsBus
+    | undefined;
+  /** Configuration for a Kafka-backed message bus. */
   kafka?: KafkaBus | undefined;
 }
 
+/**
+ * InMemoryBus configures an in-memory message bus.
+ * Suitable for single-instance deployments.
+ */
 export interface InMemoryBus {
 }
 
+/** NatsBus configures a NATS-backed message bus. */
 export interface NatsBus {
+  /** The URL of the NATS server. */
   serverUrl: string;
 }
 
+/** RedisBus configures a Redis-backed message bus. */
 export interface RedisBus {
+  /** The address of the Redis server. */
   address: string;
+  /** The database index to use. */
   db: number;
+  /** The password for authentication. */
   password: string;
 }
 
+/** KafkaBus configures a Kafka-backed message bus. */
 export interface KafkaBus {
+  /** A list of Kafka broker addresses. */
   brokers: string[];
+  /** The prefix for topics used by the bus. */
   topicPrefix: string;
+  /** The consumer group ID. */
   consumerGroup: string;
 }
 
