@@ -58,6 +58,14 @@ type SemanticCache struct {
 // threshold is the threshold.
 //
 // Returns the result.
+//
+// Parameters:
+//   - provider: EmbeddingProvider. The provider.
+//   - store: VectorStore. The store.
+//   - threshold: float32. The threshold.
+//
+// Returns:
+//   - *SemanticCache: The resulting instance.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -74,6 +82,17 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 
 // Get attempts to find a semantically similar cached result.
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//   - input: string. The input.
+//
+// Returns:
+//   - any: The result.
+//   - []float32: The result.
+//   - bool: True if successful, false otherwise.
+//   - error: An error if the operation fails.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
@@ -96,6 +115,16 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 // ttl is the ttl.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - key: string. The key.
+//   - embedding: []float32. The embedding.
+//   - result: any. The result.
+//   - ttl: time.Duration. The ttl.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

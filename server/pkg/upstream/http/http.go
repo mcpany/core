@@ -63,6 +63,12 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	if u.checker != nil {
 		res := u.checker.Check(ctx)
@@ -79,6 +85,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.poolManager.Deregister(u.serviceID)
 	return nil

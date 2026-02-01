@@ -30,6 +30,13 @@ type StaticResource struct {
 // serviceID is the serviceID.
 //
 // Returns the result.
+//
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The def instance.
+//   - serviceID: string. The ID of the service.
+//
+// Returns:
+//   - *StaticResource: The resulting instance.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -48,6 +55,9 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 // Resource returns the MCP representation of the resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - *mcp.Resource: The resulting instance.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -55,6 +65,9 @@ func (r *StaticResource) Resource() *mcp.Resource {
 // Service returns the ID of the service that provides this resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
@@ -65,6 +78,13 @@ func (r *StaticResource) Service() string {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The resulting instance.
+//   - error: An error if the operation fails.
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
@@ -151,6 +171,12 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

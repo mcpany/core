@@ -39,6 +39,10 @@ var (
 //
 // name is the name of the resource.
 // factory is the factory.
+//
+// Parameters:
+//   - name: string. The name.
+//   - factory: Factory. The factory.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -49,6 +53,10 @@ func Register(name string, factory Factory) {
 //
 // name is the name of the resource.
 // factory is the factory.
+//
+// Parameters:
+//   - name: string. The name.
+//   - factory: MCPFactory. The factory.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -60,6 +68,12 @@ func RegisterMCP(name string, factory MCPFactory) {
 // configs is the configs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - configs: []*configv1.Middleware. The configs.
+//
+// Returns:
+//   - http.Handler: The result.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -88,6 +102,12 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // configs is the configs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - configs: []*configv1.Middleware. The configs.
+//
+// Returns:
+//   - mcp.MethodHandler: The result.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()

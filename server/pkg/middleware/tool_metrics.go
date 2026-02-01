@@ -86,6 +86,12 @@ type ToolMetricsMiddleware struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - t: tokenizer.Tokenizer. The t.
+//
+// Returns:
+//   - *ToolMetricsMiddleware: The resulting instance.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -112,6 +118,15 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - req: The request object.
+//   - next: tool.ExecutionFunc. The next.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

@@ -39,6 +39,12 @@ type PolicyHook struct {
 // policy is the policy.
 //
 // Returns the result.
+//
+// Parameters:
+//   - policy: *configv1.CallPolicy. The policy instance.
+//
+// Returns:
+//   - *PolicyHook: The resulting instance.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -146,6 +152,12 @@ type WebhookClient struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The configuration object.
+//
+// Returns:
+//   - *WebhookClient: The resulting instance.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -185,6 +197,15 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - eventType: string. The eventType.
+//   - data: any. The data.
+//
+// Returns:
+//   - *cloudevents.Event: The resulting instance.
+//   - error: An error if the operation fails.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -232,6 +253,12 @@ type WebhookHook struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The configuration object.
+//
+// Returns:
+//   - *WebhookHook: The resulting instance.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -383,6 +410,13 @@ type SigningRoundTripper struct {
 //
 // Returns the response.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - req: The request object.
+//
+// Returns:
+//   - *http.Response: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

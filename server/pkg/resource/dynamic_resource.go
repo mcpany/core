@@ -28,6 +28,14 @@ type DynamicResource struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The def instance.
+//   - t: tool.Tool. The t.
+//
+// Returns:
+//   - *DynamicResource: The resulting instance.
+//   - error: An error if the operation fails.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")
@@ -51,6 +59,9 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 // Resource returns the MCP representation of the resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - *mcp.Resource: The resulting instance.
 func (r *DynamicResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -58,6 +69,9 @@ func (r *DynamicResource) Resource() *mcp.Resource {
 // Service returns the ID of the service that provides this resource.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (r *DynamicResource) Service() string {
 	return r.tool.Tool().GetServiceId()
 }
@@ -68,6 +82,13 @@ func (r *DynamicResource) Service() string {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - *mcp.ReadResourceResult: The resulting instance.
+//   - error: An error if the operation fails.
 func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	// For now, we'll just execute the tool with no inputs.
 	// In the future, we may need to pass inputs to the tool.
@@ -125,6 +146,12 @@ func (r *DynamicResource) Read(ctx context.Context) (*mcp.ReadResourceResult, er
 // _ is an unused parameter.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (r *DynamicResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to dynamic resources is not yet implemented")
 }

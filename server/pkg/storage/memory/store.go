@@ -36,6 +36,9 @@ type Store struct {
 // NewStore creates a new memory store.
 //
 // Returns the result.
+//
+// Returns:
+//   - *Store: The resulting instance.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),
@@ -54,6 +57,13 @@ func NewStore() *Store {
 // token is the token.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - token: *configv1.UserToken. The token instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -73,6 +83,15 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - userID: string. The userID.
+//   - serviceID: string. The ID of the service.
+//
+// Returns:
+//   - *configv1.UserToken: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -93,6 +112,14 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 // serviceID is the serviceID.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - userID: string. The userID.
+//   - serviceID: string. The ID of the service.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -116,6 +143,13 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -163,6 +197,13 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 // service is the service instance.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - service: *configv1.UpstreamServiceConfig. The service instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamServiceConfig) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -177,6 +218,14 @@ func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamService
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - name: string. The name.
+//
+// Returns:
+//   - *configv1.UpstreamServiceConfig: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -192,6 +241,13 @@ func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamSe
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.UpstreamServiceConfig: The result.
+//   - error: An error if the operation fails.
 func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -208,6 +264,13 @@ func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConf
 // name is the name of the resource.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - name: string. The name.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteService(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -218,12 +281,18 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 // Close closes the underlying storage connection.
 //
 // Returns an error if the operation fails.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) Close() error {
 	return nil
 }
 
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 // Memory store always has data available.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
@@ -234,6 +303,13 @@ func (s *Store) HasConfigSources() bool {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - *configv1.GlobalSettings: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -249,6 +325,13 @@ func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, 
 // settings is the settings.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - settings: *configv1.GlobalSettings. The settings instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalSettings) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -262,6 +345,13 @@ func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalS
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.Secret: The result.
+//   - error: An error if the operation fails.
 func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -279,6 +369,14 @@ func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - id: string. The unique identifier.
+//
+// Returns:
+//   - *configv1.Secret: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -294,6 +392,13 @@ func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error
 // secret is the secret.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - secret: *configv1.Secret. The secret instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -307,6 +412,13 @@ func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 // id is the unique identifier.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - id: string. The unique identifier.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -320,6 +432,13 @@ func (s *Store) DeleteSecret(_ context.Context, id string) error {
 // user is the user.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - user: *configv1.User. The user instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -340,6 +459,14 @@ func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - id: string. The unique identifier.
+//
+// Returns:
+//   - *configv1.User: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -355,6 +482,13 @@ func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.User: The result.
+//   - error: An error if the operation fails.
 func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -371,6 +505,13 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 // user is the user.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - user: *configv1.User. The user instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -387,6 +528,13 @@ func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 // id is the unique identifier.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - id: string. The unique identifier.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteUser(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -402,6 +550,13 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.ProfileDefinition: The result.
+//   - error: An error if the operation fails.
 func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -419,6 +574,14 @@ func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, 
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - name: string. The name.
+//
+// Returns:
+//   - *configv1.ProfileDefinition: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -434,6 +597,13 @@ func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDef
 // profile is the profile.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - profile: *configv1.ProfileDefinition. The profile instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefinition) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -447,6 +617,13 @@ func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefiniti
 // name is the name of the resource.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - name: string. The name.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteProfile(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -462,6 +639,13 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.Collection: The result.
+//   - error: An error if the operation fails.
 func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -479,6 +663,14 @@ func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collectio
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - name: string. The name.
+//
+// Returns:
+//   - *configv1.Collection: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -494,6 +686,13 @@ func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.
 // collection is the collection.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - collection: *configv1.Collection. The collection instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Collection) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -507,6 +706,13 @@ func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Co
 // name is the name of the resource.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - name: string. The name.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -522,6 +728,13 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.Credential: The result.
+//   - error: An error if the operation fails.
 func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -539,6 +752,14 @@ func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, erro
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - id: string. The unique identifier.
+//
+// Returns:
+//   - *configv1.Credential: The resulting instance.
+//   - error: An error if the operation fails.
 func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -554,6 +775,13 @@ func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credentia
 // cred is the cred.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - cred: *configv1.Credential. The cred instance.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -567,6 +795,13 @@ func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) err
 // id is the unique identifier.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: context.Context. The context for the operation.
+//   - id: string. The unique identifier.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

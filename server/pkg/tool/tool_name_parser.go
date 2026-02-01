@@ -18,6 +18,14 @@ import (
 // toolName is the fully qualified tool name to parse.
 // It returns the namespace, the bare tool name, and an error if the tool name
 // is invalid (e.g., empty).
+//
+// Parameters:
+//   - toolName: string. The toolName.
+//
+// Returns:
+//   - string: The result.
+//   - string: The result.
+//   - error: An error if the operation fails.
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {
@@ -39,6 +47,13 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 // serviceID is the unique identifier of the service.
 // methodName is the name of the tool/method within the service.
 // It returns the combined, fully qualified tool name.
+//
+// Parameters:
+//   - serviceID: string. The ID of the service.
+//   - methodName: string. The methodName.
+//
+// Returns:
+//   - string: The result.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {
 	return fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, methodName)
 }

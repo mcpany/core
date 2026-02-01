@@ -35,6 +35,13 @@ type Redactor struct {
 // log is the log.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The configuration object.
+//   - log: *slog.Logger. The log instance.
+//
+// Returns:
+//   - *Redactor: The resulting instance.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil
@@ -61,6 +68,13 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - data: []byte. The data.
+//
+// Returns:
+//   - []byte: The result.
+//   - error: An error if the operation fails.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil
@@ -121,6 +135,12 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 // s is the s.
 //
 // Returns the result.
+//
+// Parameters:
+//   - s: string. The s.
+//
+// Returns:
+//   - string: The result.
 func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
@@ -179,6 +199,9 @@ func (r *Redactor) RedactString(s string) string {
 // RedactStruct redacts sensitive information from a map.
 //
 // v is the v.
+//
+// Parameters:
+//   - v: map[string]interface{}. The v.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return
@@ -193,6 +216,12 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 // val is the val.
 //
 // Returns the result.
+//
+// Parameters:
+//   - val: interface{}. The val.
+//
+// Returns:
+//   - interface: The result.
 func (r *Redactor) RedactValue(val interface{}) interface{} {
 	if r == nil {
 		return val

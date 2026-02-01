@@ -25,6 +25,13 @@ type IPAllowlistMiddleware struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - allowedCIDRs: []string. The allowedCIDRs.
+//
+// Returns:
+//   - *IPAllowlistMiddleware: The resulting instance.
+//   - error: An error if the operation fails.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -38,6 +45,12 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 // allowedCIDRs is the allowedCIDRs.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - allowedCIDRs: []string. The allowedCIDRs.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {
@@ -70,6 +83,12 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 
 // Allow checks if the given remote address is allowed.
 // remoteAddr should be in the form "IP" or "IP:Port".
+//
+// Parameters:
+//   - remoteAddr: string. The remoteAddr.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	m.mu.RLock()
 	nets := m.allowedIPNets
@@ -109,6 +128,12 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 // next is the next.
 //
 // Returns the result.
+//
+// Parameters:
+//   - next: http.Handler. The next.
+//
+// Returns:
+//   - http.Handler: The result.
 func (m *IPAllowlistMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.Allow(r.RemoteAddr) {

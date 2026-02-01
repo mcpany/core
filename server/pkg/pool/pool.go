@@ -201,6 +201,10 @@ func (p *poolImpl[T]) release(n int64) {
 //
 // Returns a client from the pool or an error if the pool is closed, the context
 // is canceled, or the factory fails to create a new client.
+//
+// Returns:
+//   - T: The result.
+//   - error: An error if the operation fails.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -419,6 +423,9 @@ func (p *poolImpl[T]) Put(client T) {
 
 // Close shuts down the pool, closing all idle clients and preventing any new
 // operations. Any subsequent calls to `Get` will return `ErrPoolClosed`.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -452,6 +459,9 @@ func (p *poolImpl[T]) Close() error {
 // Len returns the current number of idle clients in the pool.
 //
 // Returns the result.
+//
+// Returns:
+//   - int: The result.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
@@ -477,6 +487,9 @@ type Manager struct {
 
 // NewManager creates and returns a new pool Manager for managing multiple named
 // connection pools.
+//
+// Returns:
+//   - *Manager: The resulting instance.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -509,6 +522,9 @@ func (m *Manager) Register(name string, pool any) {
 // Deregister closes and removes a pool from the manager.
 //
 // name is the name of the resource.
+//
+// Parameters:
+//   - name: string. The name.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -533,6 +549,10 @@ func (m *Manager) Deregister(name string) {
 //
 // Returns the typed `Pool` and a boolean indicating whether the pool was found
 // and of the correct type.
+//
+// Returns:
+//   - Pool[T]: The result.
+//   - bool: True if successful, false otherwise.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

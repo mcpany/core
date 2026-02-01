@@ -23,6 +23,12 @@ type Manager struct {
 // profiles is the profiles.
 //
 // Returns the result.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition. The profiles.
+//
+// Returns:
+//   - *Manager: The resulting instance.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -34,6 +40,9 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 // Update updates the profile definitions managed by the manager.
 //
 // profiles is the profiles.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition. The profiles.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {
@@ -50,6 +59,13 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 //
 // Returns the result.
 // Returns true if successful.
+//
+// Parameters:
+//   - name: string. The name.
+//
+// Returns:
+//   - *configv1.ProfileDefinition: The resulting instance.
+//   - bool: True if successful, false otherwise.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -60,6 +76,14 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 // ResolveProfile computes the final effective configuration for a given profile,
 // applying inheritance and overrides.
 // It returns a map of ProfileServiceConfigs and a map of resolved Secrets.
+//
+// Parameters:
+//   - profileName: string. The profileName.
+//
+// Returns:
+//   - map[string]*configv1.ProfileServiceConfig: The result.
+//   - map[string]*configv1.SecretValue: The result.
+//   - error: An error if the operation fails.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -17,6 +17,13 @@ import (
 // log is the log.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The configuration object.
+//   - log: *slog.Logger. The log instance.
+//
+// Returns:
+//   - mcp.Middleware: The result.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

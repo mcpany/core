@@ -25,6 +25,9 @@ import (
 //     used.
 //
 // Returns an `mcp.Middleware` function.
+//
+// Returns:
+//   - mcp.Middleware: The result.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

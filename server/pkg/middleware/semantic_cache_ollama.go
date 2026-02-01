@@ -26,6 +26,13 @@ type OllamaEmbeddingProvider struct {
 // model is the model.
 //
 // Returns the result.
+//
+// Parameters:
+//   - baseURL: string. The baseURL.
+//   - model: string. The model.
+//
+// Returns:
+//   - *OllamaEmbeddingProvider: The resulting instance.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -56,6 +63,14 @@ type ollamaEmbeddingResponse struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - text: string. The text.
+//
+// Returns:
+//   - []float32: The result.
+//   - error: An error if the operation fails.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

@@ -29,6 +29,9 @@ const (
 // String returns the string representation of the severity.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -57,6 +60,9 @@ type Result struct {
 // String returns the string representation of the result.
 //
 // Returns the result.
+//
+// Returns:
+//   - string: The result.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -79,6 +85,12 @@ type Linter struct {
 // cfg is the cfg.
 //
 // Returns the result.
+//
+// Parameters:
+//   - cfg: *configv1.McpAnyServerConfig. The cfg instance.
+//
+// Returns:
+//   - *Linter: The resulting instance.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -89,6 +101,13 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - []Result: The result.
+//   - error: An error if the operation fails.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)
