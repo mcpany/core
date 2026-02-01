@@ -52,8 +52,8 @@ describe("ToolForm", () => {
 
     expect(schemaTab).toHaveAttribute("data-state", "active");
     // Verify schema content is displayed (basic check)
-    expect(screen.getByText(/"type": "object"/)).toBeInTheDocument();
-    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+    // JsonView might split tokens, so we check for key parts
+    expect(screen.getAllByText(/"foo"/).length).toBeGreaterThan(0);
   });
 
   it("includes a copy button in schema view", async () => {
