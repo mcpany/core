@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package middleware
 
 import (
@@ -12,13 +15,16 @@ import (
 	"github.com/spf13/afero"
 )
 
+// DiskStoreType is the constant for the disk store type.
 const DiskStoreType = "disk"
 
+// DiskStore implements the store.StoreInterface for filesystem-based caching.
 type DiskStore struct {
 	fs   afero.Fs
 	path string
 }
 
+// NewDiskStore creates a new DiskStore.
 func NewDiskStore(fs afero.Fs, path string) *DiskStore {
 	if fs == nil {
 		fs = afero.NewOsFs()
@@ -36,7 +42,8 @@ type diskCacheEntry struct {
 	ExpiresAt time.Time       `json:"expires_at"`
 }
 
-func (s *DiskStore) Get(ctx context.Context, key any) (any, error) {
+// Get retrieves a value from the cache.
+func (s *DiskStore) Get(_ context.Context, key any) (any, error) {
 	strKey := fmt.Sprintf("%v", key)
 	data, err := afero.ReadFile(s.fs, filepath.Join(s.path, strKey))
 	if err != nil {
@@ -52,7 +59,17 @@ func (s *DiskStore) Get(ctx context.Context, key any) (any, error) {
 	}
 
 	if !entry.ExpiresAt.IsZero() && time.Now().After(entry.ExpiresAt) {
-		_ = s.Delete(ctx, key)
+		// Can't delete easily without context if Delete signature required it?
+		// Delete requires context, but Get signature also has it.
+		// Wait, I replaced ctx with _ in signature to satisfy unused-parameter.
+		// But I need it for Delete?
+		// Actually Delete doesn't use ctx either in my impl.
+		// So I can pass nil or context.Background() internally or just keep ctx named _ and pass it?
+		// If I rename ctx to _, I can't use it.
+		// But Delete(ctx) uses it? Let's check Delete implementation.
+		// Delete implementation below has unused ctx too.
+		// So I can just ignore it.
+		_ = s.Delete(context.Background(), key)
 		return nil, store.NotFound{}
 	}
 
@@ -60,7 +77,8 @@ func (s *DiskStore) Get(ctx context.Context, key any) (any, error) {
 	return []byte(entry.Value), nil
 }
 
-func (s *DiskStore) GetWithTTL(ctx context.Context, key any) (any, time.Duration, error) {
+// GetWithTTL retrieves a value from the cache with its TTL.
+func (s *DiskStore) GetWithTTL(_ context.Context, key any) (any, time.Duration, error) {
 	strKey := fmt.Sprintf("%v", key)
 	data, err := afero.ReadFile(s.fs, filepath.Join(s.path, strKey))
 	if err != nil {
@@ -76,7 +94,7 @@ func (s *DiskStore) GetWithTTL(ctx context.Context, key any) (any, time.Duration
 	}
 
 	if !entry.ExpiresAt.IsZero() && time.Now().After(entry.ExpiresAt) {
-		_ = s.Delete(ctx, key)
+		_ = s.Delete(context.Background(), key)
 		return nil, 0, store.NotFound{}
 	}
 
@@ -84,7 +102,8 @@ func (s *DiskStore) GetWithTTL(ctx context.Context, key any) (any, time.Duration
 	return []byte(entry.Value), ttl, nil
 }
 
-func (s *DiskStore) Set(ctx context.Context, key any, value any, options ...store.Option) error {
+// Set sets a value in the cache.
+func (s *DiskStore) Set(_ context.Context, key any, value any, options ...store.Option) error {
 	strKey := fmt.Sprintf("%v", key)
 	opts := store.ApplyOptions(options...)
 
@@ -109,19 +128,23 @@ func (s *DiskStore) Set(ctx context.Context, key any, value any, options ...stor
 	return afero.WriteFile(s.fs, filepath.Join(s.path, strKey), data, 0644)
 }
 
-func (s *DiskStore) Delete(ctx context.Context, key any) error {
+// Delete removes a value from the cache.
+func (s *DiskStore) Delete(_ context.Context, key any) error {
 	strKey := fmt.Sprintf("%v", key)
 	return s.fs.Remove(filepath.Join(s.path, strKey))
 }
 
-func (s *DiskStore) Invalidate(ctx context.Context, options ...store.InvalidateOption) error {
+// Invalidate invalidates cache entries (not implemented).
+func (s *DiskStore) Invalidate(_ context.Context, _ ...store.InvalidateOption) error {
 	return nil
 }
 
-func (s *DiskStore) Clear(ctx context.Context) error {
+// Clear clears the cache.
+func (s *DiskStore) Clear(_ context.Context) error {
 	return s.fs.RemoveAll(s.path)
 }
 
+// GetType returns the cache type.
 func (s *DiskStore) GetType() string {
 	return DiskStoreType
 }
