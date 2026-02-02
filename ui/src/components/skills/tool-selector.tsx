@@ -33,6 +33,15 @@ interface ToolSelectorProps {
   id?: string;
 }
 
+/**
+ * ToolSelector component.
+ * @param props - The component props.
+ * @param props.value - The value.
+ * @param props.onChange - The onChange.
+ * @param props.disabled - The disabled.
+ * @param props.id - The id.
+ * @returns The rendered component.
+ */
 export function ToolSelector({ value = [], onChange, disabled, id }: ToolSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [tools, setTools] = React.useState<ToolDefinition[]>([]);
