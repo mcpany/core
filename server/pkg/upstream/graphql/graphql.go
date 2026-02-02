@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strings"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/machinebox/graphql"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -22,6 +23,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
+
+var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
 const introspectionQuery = `
   query IntrospectionQuery {
@@ -180,8 +183,15 @@ type Callable struct {
 // Returns the result.
 // Returns an error if the operation fails.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	args := req.Arguments
+	if args == nil && len(req.ToolInputs) > 0 {
+		if err := fastJSON.Unmarshal(req.ToolInputs, &args); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal arguments: %w", err)
+		}
+	}
+
 	graphqlReq := graphql.NewRequest(c.query)
-	for key, value := range req.Arguments {
+	for key, value := range args {
 		graphqlReq.Var(key, value)
 	}
 	if c.authenticator != nil {
