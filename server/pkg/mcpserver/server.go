@@ -72,8 +72,14 @@ type Server struct {
 // It provides access to the core MCP server functionality, which can be used for advanced
 // configurations or direct interaction with the MCP server.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - *mcp.Server: The underlying server instance.
+//
+// Side Effects:
+//   - Triggers `AddReceivingMiddlewareHook` if it is set (used for testing).
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -102,6 +108,11 @@ func (s *Server) Server() *mcp.Server {
 // Returns:
 //   - *Server: A new instance of the Server.
 //   - error: An error if initialization fails.
+//
+// Side Effects:
+//   - Registers handlers for standard MCP methods.
+//   - Configures middleware for request processing.
+//   - Registers built-in tools.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -579,6 +590,11 @@ func (s *Server) ListTools() []tool.Tool {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the tool execution fails or access is denied.
+//
+// Side Effects:
+//   - Logs the tool execution (redacting sensitive data).
+//   - Increments metrics for tool execution (total, latency, errors).
+//   - Executes the tool, which may have its own side effects (e.g., network calls, DB writes).
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.

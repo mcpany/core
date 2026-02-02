@@ -23,7 +23,17 @@ var (
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
-// test cases. This function should not be used in production code.
+// test cases.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Resets the global `once` primitive and clears the stored logger.
+//   - This function should NOT be used in production code.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -41,6 +51,14 @@ func ForTestsOnlyResetLogger() {
 //   - output: The `io.Writer` to which log entries will be written (e.g.,
 //     `os.Stdout`).
 //   - format: Optional format string ("json" or "text"). Defaults to "text".
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Sets the global logger instance which can be retrieved via `GetLogger()`.
+//   - Configures the log format (text or JSON) and output destination.
+//   - If level is DEBUG, source code location is enabled.
 func Init(level slog.Level, output io.Writer, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -82,8 +100,14 @@ func Init(level slog.Level, output io.Writer, format ...string) {
 // been initialized through a call to `Init`, this function will initialize it
 // with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
+// Parameters:
+//   None.
+//
 // Returns:
-//   - The global `*slog.Logger` instance.
+//   - *slog.Logger: The global logger instance.
+//
+// Side Effects:
+//   - If the logger is not initialized, it initializes a default logger to os.Stderr.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.

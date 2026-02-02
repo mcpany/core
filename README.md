@@ -100,8 +100,18 @@ Run all unit, integration, and end-to-end tests to ensure code correctness.
 make test
 ```
 
-### Linting
+### Linting & Documentation
 Ensure code adheres to our style guides (Godoc for Go, TSDoc for TypeScript). We strictly enforce **100% documentation coverage** for all public APIs.
+
+**Documentation Standard:**
+All exported functions, methods, types, and constants must have a docstring following this structure:
+*   **Summary:** A concise one-line action statement.
+*   **Parameters:** Detailed description of input parameters.
+*   **Returns:** Description of return values.
+*   **Errors:** Explicit list of possible error conditions.
+*   **Side Effects:** Note if it modifies global state, performs I/O, etc.
+
+To verify compliance:
 ```bash
 make lint
 ```
