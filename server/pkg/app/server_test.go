@@ -2510,8 +2510,8 @@ func TestRunServerMode_Auth(t *testing.T) {
 
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
+	// Initialize SettingsManager with the API key directly
 	app.SettingsManager = NewGlobalSettingsManager("global-secret", nil, nil)
-	// Removed modification of config.GlobalSettings() to avoid race
 
 	authManager := auth.NewManager()
 	authManager.SetAPIKey("global-secret")
