@@ -31,6 +31,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
+RUN ls -R proto/
 RUN npm run build
 RUN mkdir -p public
 

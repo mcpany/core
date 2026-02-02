@@ -118,6 +118,18 @@ const nextConfig: NextConfig = {
     ];
   },
   webpack: (config) => {
+    // Explicitly add alias for @proto to resolve external directory
+    // Check if local ./proto exists (Docker build), otherwise use ../proto (Local dev)
+    const localProto = path.join(__dirname, 'proto');
+    const rootProto = path.join(__dirname, '../proto');
+    const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@proto': protoPath,
+      '@google': path.join(protoPath, 'google'),
+    };
+
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
     config.resolve.symlinks = false;
     return config;
