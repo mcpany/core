@@ -24,6 +24,9 @@ interface PolicyEditorProps {
     onUpdate: (policies: CallPolicy[]) => void;
 }
 
+/**
+ * Maps policy action enums to human-readable labels.
+ */
 const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.ALLOW]: "Allow",
     [CallPolicy_Action.DENY]: "Deny",
@@ -31,6 +34,9 @@ const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.DELETE_CACHE]: "Delete Cache",
 };
 
+/**
+ * Maps policy action enums to UI badge variant colors.
+ */
 const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "outline"> = {
     [CallPolicy_Action.ALLOW]: "default", // Green-ish usually, but default works
     [CallPolicy_Action.DENY]: "destructive",
@@ -38,6 +44,17 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * A React component for viewing and editing call policies.
+ *
+ * Summary: Provides a UI for managing call policies, allowing users to define default actions
+ * and granular rules based on regex patterns.
+ *
+ * @param props - The component props.
+ * @param props.policies - The list of current call policies to display and edit.
+ * @param props.onUpdate - Callback function triggered when policies are modified.
+ * @returns The rendered PolicyEditor component.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
