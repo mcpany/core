@@ -20,6 +20,11 @@ interface ServicePromptsTableProps {
   serviceId: string;
 }
 
+/**
+ * ServicePromptsTable component.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export function ServicePromptsTable({ prompts, serviceId }: ServicePromptsTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
 

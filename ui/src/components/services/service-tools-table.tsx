@@ -21,6 +21,11 @@ interface ServiceToolsTableProps {
   serviceId: string;
 }
 
+/**
+ * ServiceToolsTable component.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export function ServiceToolsTable({ initialTools, serviceId }: ServiceToolsTableProps) {
   const [tools, setTools] = useState<ToolDefinition[]>(initialTools);
   const [searchQuery, setSearchQuery] = useState("");

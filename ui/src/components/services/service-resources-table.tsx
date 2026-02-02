@@ -20,6 +20,11 @@ interface ServiceResourcesTableProps {
   serviceId: string;
 }
 
+/**
+ * ServiceResourcesTable component.
+ * @param props - The component props.
+ * @returns The rendered component.
+ */
 export function ServiceResourcesTable({ resources, serviceId }: ServiceResourcesTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
