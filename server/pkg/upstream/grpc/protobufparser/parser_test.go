@@ -453,12 +453,7 @@ func TestParseProtoByReflection_Extended(t *testing.T) {
 		go func() {
 			<-server.streamReady
 			// Simulate the server sending an error response or closing early
-			server.stream.SendMsg(&reflectpb.ServerReflectionResponse{})
-			// Sending an empty response (which is invalid for ListServices expectations if we check type)
-			// But MockServerReflectionStream is just a wrapper around the real stream, so we can't easily inject error unless we mock the client.
-			// However, here we are using a real gRPC client against a mock server.
-			// So we can make the server return an error or invalid response.
-
+			// We remove the problematic SendMsg here to avoid "transport is closing" error
 			err := server.stream.Send(&reflectpb.ServerReflectionResponse{
 				// Missing MessageResponse
 			})
