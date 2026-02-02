@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Wrench, Play, Star, Info } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
@@ -24,6 +25,8 @@ interface ToolTableProps {
   toggleTool: (name: string, currentStatus: boolean) => void;
   openInspector: (tool: ToolDefinition) => void;
   usageStats?: Record<string, ToolAnalytics>;
+  selectedTools?: Set<string>;
+  onSelectionChange?: (selected: Set<string>) => void;
 }
 
 // ⚡ Bolt Optimization: Extracted ToolTable from page.tsx to prevent unnecessary re-renders
@@ -42,12 +45,43 @@ export const ToolTable = memo(function ToolTable({
   togglePin,
   toggleTool,
   openInspector,
-  usageStats
+  usageStats,
+  selectedTools,
+  onSelectionChange
 }: ToolTableProps) {
+  const allSelected = tools.length > 0 && tools.every(t => selectedTools?.has(t.name));
+  const someSelected = tools.some(t => selectedTools?.has(t.name)) && !allSelected;
+
+  const handleSelectAll = (checked: boolean) => {
+    if (!onSelectionChange || !selectedTools) return;
+    const next = new Set(selectedTools);
+    tools.forEach(t => {
+        if (checked) next.add(t.name);
+        else next.delete(t.name);
+    });
+    onSelectionChange(next);
+  };
+
+  const handleSelectOne = (name: string, checked: boolean) => {
+      if (!onSelectionChange || !selectedTools) return;
+      const next = new Set(selectedTools);
+      if (checked) next.add(name);
+      else next.delete(name);
+      onSelectionChange(next);
+  };
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
+          {onSelectionChange && (
+              <TableHead className="w-[30px]">
+                  <Checkbox
+                      checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                      onCheckedChange={(checked) => handleSelectAll(checked === true)}
+                  />
+              </TableHead>
+          )}
           <TableHead className="w-[30px]"></TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Description</TableHead>
@@ -61,7 +95,15 @@ export const ToolTable = memo(function ToolTable({
       </TableHeader>
       <TableBody>
         {tools.map((tool) => (
-          <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "")}>
+          <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selectedTools?.has(tool.name) && "bg-muted/50")}>
+            {onSelectionChange && (
+                <TableCell className={isCompact ? "py-0 px-2" : ""}>
+                    <Checkbox
+                        checked={selectedTools?.has(tool.name)}
+                        onCheckedChange={(checked) => handleSelectOne(tool.name, checked === true)}
+                    />
+                </TableCell>
+            )}
             <TableCell className={isCompact ? "py-0 px-2" : ""}>
                 <Button
                   variant="ghost"

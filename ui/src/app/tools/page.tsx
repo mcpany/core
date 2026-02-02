@@ -30,6 +30,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { BulkActionsToolbar } from "@/components/tools/bulk-actions-toolbar";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -47,6 +49,9 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
+  const [selectedToolNames, setSelectedToolNames] = useState<Set<string>>(new Set());
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -101,6 +106,42 @@ export default function ToolsPage() {
         console.error("Failed to toggle tool", e);
         fetchTools(); // Revert
     }
+  };
+
+  const handleBulkAction = async (action: 'enable' | 'disable' | 'pin' | 'unpin' | 'clear') => {
+      if (action === 'clear') {
+          setSelectedToolNames(new Set());
+          return;
+      }
+
+      setIsBulkProcessing(true);
+      const toolsToProcess = Array.from(selectedToolNames);
+
+      try {
+          if (action === 'enable' || action === 'disable') {
+              const disable = action === 'disable';
+              await Promise.all(toolsToProcess.map(name => apiClient.setToolStatus(name, disable)));
+              // Update local state optimistic/fetch
+              fetchTools();
+              toast({ title: "Bulk Action Complete", description: `${action === 'disable' ? 'Disabled' : 'Enabled'} ${toolsToProcess.length} tools.` });
+          } else if (action === 'pin') {
+              toolsToProcess.forEach(name => {
+                  if (!isPinned(name)) togglePin(name);
+              });
+              toast({ title: "Bulk Action Complete", description: `Pinned ${toolsToProcess.length} tools.` });
+          } else if (action === 'unpin') {
+              toolsToProcess.forEach(name => {
+                  if (isPinned(name)) togglePin(name);
+              });
+              toast({ title: "Bulk Action Complete", description: `Unpinned ${toolsToProcess.length} tools.` });
+          }
+          setSelectedToolNames(new Set());
+      } catch (e) {
+          console.error("Bulk action failed", e);
+          toast({ title: "Bulk Action Failed", description: "Some operations failed.", variant: "destructive" });
+      } finally {
+          setIsBulkProcessing(false);
+      }
   };
 
   const toggleCompact = () => {
@@ -232,6 +273,8 @@ export default function ToolsPage() {
               toggleTool={toggleTool}
               openInspector={openInspector}
               usageStats={toolUsage}
+              selectedTools={selectedToolNames}
+              onSelectionChange={setSelectedToolNames}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -254,6 +297,8 @@ export default function ToolsPage() {
                       toggleTool={toggleTool}
                       openInspector={openInspector}
                       usageStats={toolUsage}
+                      selectedTools={selectedToolNames}
+                      onSelectionChange={setSelectedToolNames}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -262,6 +307,12 @@ export default function ToolsPage() {
           )}
         </CardContent>
       </Card>
+
+      <BulkActionsToolbar
+        selectedCount={selectedToolNames.size}
+        onAction={handleBulkAction}
+        isProcessing={isBulkProcessing}
+      />
 
       <ToolInspector
         tool={selectedTool}
