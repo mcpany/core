@@ -4,9 +4,23 @@
  */
 
 import { NextResponse } from 'next/server';
-import { Trace, Span } from '@/types/trace';
+import { Trace, Span, SpanStatus } from '@/types/trace';
 
 export type { SpanStatus, Span, Trace } from '@/types/trace';
+
+interface BackendSpan {
+    id: string;
+    name: string;
+    type: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+    input?: any;
+    output?: any;
+    errorMessage?: string;
+    children?: BackendSpan[];
+    serviceName?: string;
+}
 
 interface DebugEntry {
   id: string;
@@ -19,6 +33,25 @@ interface DebugEntry {
   response_headers: Record<string, string[]>;
   request_body: string;
   response_body: string;
+  spans?: BackendSpan[];
+}
+
+function mapSpan(bSpan: BackendSpan): Span {
+    const start = new Date(bSpan.startTime).getTime();
+    const end = new Date(bSpan.endTime).getTime();
+    return {
+        id: bSpan.id,
+        name: bSpan.name,
+        type: bSpan.type,
+        startTime: start,
+        endTime: end,
+        status: bSpan.status as SpanStatus,
+        input: bSpan.input,
+        output: bSpan.output,
+        errorMessage: bSpan.errorMessage,
+        children: bSpan.children ? bSpan.children.map(mapSpan) : [],
+        serviceName: bSpan.serviceName
+    };
 }
 
 /**
@@ -88,14 +121,14 @@ export async function GET(request: Request) {
         const span: Span = {
             id: entry.id,
             name: `${entry.method} ${entry.path}`,
-            type: 'tool', // Assume tool call for now
+            type: 'http',
             startTime: startTime,
             endTime: startTime + durationMs,
             status: entry.status >= 400 ? 'error' : 'success',
             input: input,
             output: output,
             errorMessage: errorMessage,
-            children: [],
+            children: entry.spans ? entry.spans.map(mapSpan) : [],
             serviceName: 'backend'
         };
 

@@ -18,6 +18,7 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/trace"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
@@ -425,6 +426,9 @@ func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // It returns the result of the execution or an error if the tool is not found
 // or if the execution fails.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := trace.StartSpan(ctx, "Manager.ExecuteTool", "internal")
+	defer trace.EndSpan(span)
+
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
 

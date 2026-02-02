@@ -33,6 +33,7 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/resilience"
+	"github.com/mcpany/core/server/pkg/trace"
 	"github.com/mcpany/core/server/pkg/transformer"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
@@ -328,6 +329,9 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := trace.StartSpan(ctx, "GRPCTool.Execute", "grpc")
+	defer trace.EndSpan(span)
+
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -572,6 +576,9 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := trace.StartSpan(ctx, "HTTPTool.Execute", "http")
+	defer trace.EndSpan(span)
+
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -1237,6 +1244,9 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // configured client and applies any necessary transformations to the request
 // and response.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := trace.StartSpan(ctx, "MCPTool.Execute", "mcp")
+	defer trace.EndSpan(span)
+
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -1460,6 +1470,9 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // sends the request, and processes the response, applying transformations as
 // needed.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := trace.StartSpan(ctx, "OpenAPITool.Execute", "openapi")
+	defer trace.EndSpan(span)
+
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -1773,6 +1786,9 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := trace.StartSpan(ctx, "LocalCommandTool.Execute", "local_command")
+	defer trace.EndSpan(span)
+
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2070,6 +2086,9 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := trace.StartSpan(ctx, "CommandTool.Execute", "command")
+	defer trace.EndSpan(span)
+
 	if t.initError != nil {
 		return nil, t.initError
 	}

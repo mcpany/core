@@ -6,6 +6,7 @@ package middleware
 import (
 	"bytes"
 	"container/ring"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -13,7 +14,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/trace"
 )
 
 // DebugEntry represents a captured HTTP request/response.
@@ -28,6 +30,7 @@ type DebugEntry struct {
 	ResponseHeaders http.Header   `json:"response_headers"`
 	RequestBody     string        `json:"request_body,omitempty"`
 	ResponseBody    string        `json:"response_body,omitempty"`
+	Spans           []*trace.Span `json:"spans,omitempty"`
 }
 
 // Debugger monitors and records traffic for inspection.
@@ -134,8 +137,12 @@ type readCloserWrapper struct {
 // Returns the result.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		reqID := uuid.New().String()
+		ctx, span := trace.StartSpan(r.Context(), r.Method+" "+r.URL.Path, "http")
+		defer trace.EndSpan(span)
+		r = r.WithContext(ctx)
+
+		reqID := span.ID
+		start := span.StartTime
 
 		// Capture Request Body
 		var reqBody string
@@ -196,6 +203,7 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			ResponseHeaders: blw.Header(),
 			RequestBody:     reqBody,
 			ResponseBody:    respBody,
+			Spans:           span.Children,
 		}
 
 		// ⚡ BOLT: Move ring buffer updates to background worker to avoid blocking request
@@ -243,4 +251,33 @@ func (d *Debugger) APIHandler() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(d.Entries())
 	}
+}
+
+// Execute implements tool.ExecutionMiddleware.
+func (d *Debugger) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
+	ctx, span := trace.StartSpan(ctx, "Tool Execution: "+req.ToolName, "tool")
+	if len(req.ToolInputs) > 0 {
+		var inputs map[string]interface{}
+		if err := json.Unmarshal(req.ToolInputs, &inputs); err == nil {
+			span.Input = inputs
+		} else {
+			span.Input = map[string]interface{}{"raw": string(req.ToolInputs)}
+		}
+	}
+	defer trace.EndSpan(span)
+
+	result, err := next(ctx, req)
+
+	if err != nil {
+		span.Status = "error"
+		span.ErrorMessage = err.Error()
+	} else {
+		if resMap, ok := result.(map[string]any); ok {
+			span.Output = resMap
+		} else {
+			span.Output = map[string]interface{}{"result": result}
+		}
+	}
+
+	return result, err
 }

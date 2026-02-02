@@ -280,7 +280,7 @@ type statsCacheEntry struct {
 //   - (*Application): A new instance of the Application, ready to be run.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
-	return &Application{
+	app := &Application{
 		runStdioModeFunc: runStdioMode,
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
@@ -294,6 +294,8 @@ func NewApplication() *Application {
 		MetricsGatherer: prometheus.DefaultGatherer,
 		statsCache:      make(map[string]statsCacheEntry),
 	}
+	health.SetAlertsManager(app.AlertsManager)
+	return app
 }
 
 // Run starts the MCP Any server and all its components. It initializes the core

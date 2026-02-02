@@ -19,6 +19,7 @@ import (
 	"github.com/alexliesenfeld/health"
 	"github.com/coder/websocket"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/alerts"
 	"github.com/mcpany/core/server/pkg/command"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -37,6 +38,8 @@ const (
 var (
 	globalAlertConfig   *configv1.AlertConfig
 	globalAlertConfigMu sync.RWMutex
+	alertsManager       alerts.ManagerInterface
+	alertsManagerMu     sync.RWMutex
 )
 
 // SetGlobalAlertConfig sets the global alert configuration.
@@ -44,6 +47,13 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
+}
+
+// SetAlertsManager sets the alerts manager.
+func SetAlertsManager(am alerts.ManagerInterface) {
+	alertsManagerMu.Lock()
+	defer alertsManagerMu.Unlock()
+	alertsManager = am
 }
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
@@ -149,6 +159,22 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 			if alertConfig != nil && alertConfig.GetEnabled() && alertConfig.GetWebhookUrl() != "" {
 				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
+			}
+
+			alertsManagerMu.Lock()
+			am := alertsManager
+			alertsManagerMu.Unlock()
+
+			if am != nil && state.Status != health.StatusUp {
+				am.CreateAlert(&alerts.Alert{
+					Title:     fmt.Sprintf("Service %s is %s", serviceName, state.Status),
+					Message:   fmt.Sprintf("Service %s health status changed to %s", serviceName, state.Status),
+					Severity:  alerts.SeverityCritical,
+					Status:    alerts.StatusActive,
+					Service:   serviceName,
+					Source:    "HealthCheck",
+					Timestamp: time.Now(),
+				})
 			}
 		}),
 		// Using synchronous checks for now to simplify the implementation and ensure

@@ -315,6 +315,7 @@ func InitStandardMiddlewares(
 		Register("debugger", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
 			return debugger.Handler
 		})
+		toolManager.AddMiddleware(debugger)
 	}
 
 	return &StandardMiddlewares{
