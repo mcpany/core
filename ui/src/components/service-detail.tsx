@@ -19,7 +19,6 @@ import { ServicePropertyCard } from "./service-property-card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "./ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { FileConfigCard } from "./file-config-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegisterServiceDialog } from "./register-service-dialog";
@@ -30,64 +29,9 @@ import { ResourceSafetyTable } from "@/components/safety/resource-safety-table";
 import { PolicyEditor } from "@/components/safety/policy-editor";
 import { CallPolicy } from "@proto/config/v1/upstream_service";
 
-/**
- * DefinitionsTable component.
- * @param props - The component props.
- * @param props.title - The title.
- * @param props.data - The data to display.
- * @param props.icon - The icon property.
- * @param props.serviceId - The unique identifier for service.
- * @param props.linkPath - The linkPath property.
- * @returns The rendered component.
- */
-function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
-  if (!data || data.length === 0) {
-    return (
-       <Card>
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">{icon}{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">No {title.toLowerCase()} configured for this service.</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">{icon}{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              { 'source' in data[0] && <TableHead>Source</TableHead>}
-              { 'type' in data[0] && <TableHead>Type</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.name}>
-                <TableCell className="font-medium">
-                   <Link href={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
-                    {item.name}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-muted-foreground">{item.description}</TableCell>
-                 { 'source' in item && item.source && <TableCell><Badge variant={item.source === 'configured' ? "outline" : "secondary"}>{item.source}</Badge></TableCell>}
-                 { 'type' in item && item.type && <TableCell><Badge variant="outline">{item.type}</Badge></TableCell>}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
-  )
-}
+import { ServiceToolsTable } from "@/components/services/service-tools-table";
+import { ServicePromptsTable } from "@/components/services/service-prompts-table";
+import { ServiceResourcesTable } from "@/components/services/service-resources-table";
 
 /**
  * MetricsCard component.
@@ -357,9 +301,11 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
                     "Version": service.version || "N/A",
                     "Service Type": serviceType,
                 }} />
-                <DefinitionsTable title="Tools" data={tools} icon={<Wrench />} serviceId={serviceId} linkPath="tool" />
-                <DefinitionsTable title="Prompts" data={prompts} icon={<Book />} serviceId={serviceId} linkPath="prompt" />
-                <DefinitionsTable title="Resources" data={resources} icon={<Database />} serviceId={serviceId} linkPath="resource" />
+
+                <ServiceToolsTable initialTools={tools || []} serviceId={serviceId} />
+                <ServicePromptsTable prompts={prompts || []} serviceId={serviceId} />
+                <ServiceResourcesTable resources={resources || []} serviceId={serviceId} />
+
             </TabsContent>
             <TabsContent value="configuration" className="mt-4 grid gap-6">
                  {service.grpcService && (
