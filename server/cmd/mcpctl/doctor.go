@@ -19,6 +19,12 @@ import (
 )
 
 // newDoctorCmd creates the doctor command.
+//
+// This command checks the health of the MCP Any configuration and the running server.
+// It performs configuration validation, server connectivity checks, and invokes the server's doctor endpoint.
+//
+// Returns:
+//   - *cobra.Command: The configured doctor command.
 func newDoctorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "doctor",

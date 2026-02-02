@@ -22,12 +22,24 @@ var (
 )
 
 // main is the entry point for the mcpctl CLI.
+//
+// It executes the root command and exits with a non-zero status code on error.
+//
+// Side Effects:
+//   - Executes the CLI command.
+//   - May terminate the process.
 func main() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
+// newRootCmd creates the root Cobra command for the CLI.
+//
+// It configures the main entry point and registers all subcommands (validate, doctor, tool, version).
+//
+// Returns:
+//   - *cobra.Command: The configured root command.
 func newRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "mcpctl",
