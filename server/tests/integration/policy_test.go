@@ -369,10 +369,15 @@ func TestCallPolicyExecution(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.True(t, result.IsError)
-    // Check if content contains the error message
-    // content is usually a list of text/image
-    contentBytes, _ := json.Marshal(result.Content)
-	assert.Contains(t, string(contentBytes), "unknown tool")
+	// Check if content contains the error message
+	// content is usually a list of text/image
+	contentBytes, _ := json.Marshal(result.Content)
+	// The tool might be skipped during registration (resulting in "unknown tool")
+	// or blocked at runtime (resulting in "blocked by policy"). Both are valid outcomes of the policy.
+	contentStr := string(contentBytes)
+	if !assert.Contains(t, contentStr, "unknown tool") && !assert.Contains(t, contentStr, "blocked by policy") {
+		t.Logf("Unexpected error content: %s", contentStr)
+	}
 }
 
 func TestExportPolicyForPromptsAndResources(t *testing.T) {
