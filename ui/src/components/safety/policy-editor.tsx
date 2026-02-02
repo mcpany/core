@@ -38,6 +38,14 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * PolicyEditor component for managing Call Policies.
+ * Allows creating rules based on regex matching of tool names, arguments, etc.
+ * @param props - The component props.
+ * @param props.policies - The current policies.
+ * @param props.onUpdate - The callback when policies change.
+ * @returns The rendered component.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);

@@ -1,3 +1,6 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
 package app
 
 import (
@@ -10,6 +13,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// SeedStateRequest represents the payload for the debug state seeding endpoint.
 type SeedStateRequest struct {
 	Services    []json.RawMessage       `json:"services"`
 	Secrets     []json.RawMessage       `json:"secrets"`
