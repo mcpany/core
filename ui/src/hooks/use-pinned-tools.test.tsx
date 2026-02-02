@@ -54,4 +54,38 @@ describe('usePinnedTools', () => {
     expect(result.current.isPinned('tool1')).toBe(true);
     expect(result.current.isPinned('tool2')).toBe(false);
   });
+
+  it('should bulk pin tools', () => {
+    const { result } = renderHook(() => usePinnedTools());
+
+    act(() => {
+      result.current.bulkPin(['tool1', 'tool2']);
+    });
+
+    expect(result.current.pinnedTools).toEqual(['tool1', 'tool2']);
+    expect(window.localStorage.getItem(STORAGE_KEY)).toEqual(JSON.stringify(['tool1', 'tool2']));
+
+    // Should not duplicate
+    act(() => {
+      result.current.bulkPin(['tool2', 'tool3']);
+    });
+    // Set order is not guaranteed, but array implementation preserves order usually
+    // We can check length and containment
+    expect(result.current.pinnedTools).toHaveLength(3);
+    expect(result.current.pinnedTools).toContain('tool1');
+    expect(result.current.pinnedTools).toContain('tool2');
+    expect(result.current.pinnedTools).toContain('tool3');
+  });
+
+  it('should bulk unpin tools', () => {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(['tool1', 'tool2', 'tool3']));
+    const { result } = renderHook(() => usePinnedTools());
+
+    act(() => {
+      result.current.bulkUnpin(['tool1', 'tool3']);
+    });
+
+    expect(result.current.pinnedTools).toEqual(['tool2']);
+    expect(window.localStorage.getItem(STORAGE_KEY)).toEqual(JSON.stringify(['tool2']));
+  });
 });
