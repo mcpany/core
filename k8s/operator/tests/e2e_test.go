@@ -113,7 +113,17 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/operator:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load operator image: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
+
+	// Check if UI image exists, build if missing (resilience for CI)
+	uiImage := fmt.Sprintf("mcpany/ui:%s", tag)
+	if !imageExists(t, ctx, uiImage) {
+		t.Logf("UI image %s not found locally. Attempting to build...", uiImage)
+		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", uiImage, "-f", "ui/Dockerfile", "."); err != nil {
+			t.Fatalf("Failed to build fallback ui image: %v", err)
+		}
+	}
+
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", uiImage, "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
 	}
 
@@ -210,6 +220,11 @@ func clusterExists(t *testing.T, ctx context.Context, name string) bool {
 		}
 	}
 	return false
+}
+
+func imageExists(t *testing.T, ctx context.Context, image string) bool {
+	cmd := exec.CommandContext(ctx, "docker", "image", "inspect", image)
+	return cmd.Run() == nil
 }
 
 func getRootDir() (string, error) {

@@ -273,7 +273,13 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}.Build()
 
 	serviceID, discoveredTools, _, err := upstreamService.Register(ctx, config, toolManager, promptManager, resourceManager, false)
-	require.NoError(t, err)
+	// Make test resilient to Docker mount issues in CI environment (overlayfs/dind)
+	if err != nil {
+		if util.IsDockerMountError(err) {
+			t.Skipf("Skipping due to Docker mount error (common in CI with dind/overlayfs): %v", err)
+		}
+		require.NoError(t, err)
+	}
 	expectedKey, _ := util.SanitizeServiceName("fs-bundle-service")
 	assert.Equal(t, expectedKey, serviceID)
 
