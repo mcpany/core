@@ -112,12 +112,14 @@ type CompiledCallPolicy struct {
 	compiledRules []compiledCallPolicyRule
 }
 
-// CompileCallPolicies compiles a list of call policies.
+// CompileCallPolicies compiles a list of call policies into a format optimized for evaluation.
 //
-// policies is the policies.
+// Parameters:
+//   - policies: []*configv1.CallPolicy. The list of call policies to compile.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - []*CompiledCallPolicy: The list of compiled call policies.
+//   - error: An error if compilation fails (e.g., invalid regex).
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -133,12 +135,14 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 	return compiled, nil
 }
 
-// NewCompiledCallPolicy compiles a single call policy.
+// NewCompiledCallPolicy compiles a single call policy by pre-compiling its regular expressions.
 //
-// policy is the policy.
+// Parameters:
+//   - policy: *configv1.CallPolicy. The call policy to compile.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *CompiledCallPolicy: The compiled call policy.
+//   - error: An error if the policy contains invalid regular expressions.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -181,13 +185,15 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 
 // EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
 //
-// policies is the policies.
-// toolName is the toolName.
-// callID is the callID.
-// arguments is the arguments.
+// Parameters:
+//   - policies: []*CompiledCallPolicy. The list of compiled policies to evaluate.
+//   - toolName: string. The name of the tool being called.
+//   - callID: string. The ID of the call (if applicable).
+//   - arguments: []byte. The arguments of the call (as JSON bytes).
 //
-// Returns true if successful.
-// Returns an error if the operation fails.
+// Returns:
+//   - bool: True if the call is allowed, false if blocked.
+//   - error: An error if evaluation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

@@ -2,6 +2,9 @@
 
 **One server, Infinite possibilities.**
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](README.md)
+
 ## 1. Elevator Pitch
 
 **What is this project and why does it exist?**
@@ -147,6 +150,33 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` is set in the server's environment.
+
+## 6. CLI Reference
+
+The `server` binary provides several useful commands for managing and debugging your configuration.
+
+### `server run`
+Runs the MCP Any server.
+- `--strict`: Validate upstream connectivity and configuration integrity before starting.
+- `--config-path`: Specify configuration file(s).
+
+### `server doctor`
+Diagnose configuration issues and check connectivity to upstream services.
+```bash
+./build/bin/server doctor
+```
+
+### `server config generate`
+Generate a sample configuration file to get started quickly.
+```bash
+./build/bin/server config generate > my-config.yaml
+```
+
+### `server config validate`
+Validate your configuration file against the strict schema.
+```bash
+./build/bin/server config validate --config-path my-config.yaml
+```
 
 ## License
 This project is licensed under the terms of the [Apache 2.0 License](LICENSE).
