@@ -7,6 +7,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, forwardRef } from "react";
+import dynamic from "next/dynamic";
 import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Package, Globe, ExternalLink, Users, Search } from "lucide-react";
 import Link from "next/link";
-import { VirtuosoGrid } from "react-virtuoso";
+
+// ⚡ Bolt Optimization: Lazy load VirtuosoGrid to avoid SSR issues and reduce initial bundle size.
+// react-virtuoso uses window/DOM which can cause hydration mismatches or server-side crashes.
+const VirtuosoGrid = dynamic(() => import("react-virtuoso").then((m) => m.VirtuosoGrid), { ssr: false });
 
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
