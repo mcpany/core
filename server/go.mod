@@ -1,6 +1,6 @@
 module github.com/mcpany/core/server
 
-go 1.24.0
+go 1.25
 
 replace github.com/mcpany/core => ../
 
