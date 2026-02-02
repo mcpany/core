@@ -538,6 +538,25 @@ export const apiClient = {
     },
 
     /**
+     * Performs a bulk action on services.
+     * @param action The action to perform.
+     * @param services The list of service names.
+     * @returns A promise that resolves when the action is complete.
+     */
+    bulkServiceAction: async (action: 'delete' | 'enable' | 'disable' | 'restart', services: string[]) => {
+        const response = await fetchWithAuth('/api/v1/services/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, services })
+        });
+        if (!response.ok) {
+             const txt = await response.text();
+             throw new Error(`Failed to perform bulk action ${action}: ${response.status} ${txt}`);
+        }
+        return response.json();
+    },
+
+    /**
      * Validates a service configuration.
      * @param config The service configuration to validate.
      * @returns A promise that resolves to the validation result.

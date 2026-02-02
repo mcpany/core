@@ -127,11 +127,12 @@ export default function ServicesPage() {
     setServices(prev => prev.map(s => names.includes(s.name) ? { ...s, disable: !enabled } : s));
 
     try {
-        await Promise.all(names.map(name => apiClient.setServiceStatus(name, !enabled)));
+        await apiClient.bulkServiceAction(enabled ? 'enable' : 'disable', names);
         toast({
             title: enabled ? "Services Enabled" : "Services Disabled",
             description: `${names.length} services have been ${enabled ? "enabled" : "disabled"}.`
         });
+        fetchServices();
     } catch (e) {
         console.error("Failed to bulk toggle services", e);
         fetchServices(); // Revert
@@ -143,16 +144,35 @@ export default function ServicesPage() {
     }
   }, [fetchServices, toast]);
 
+  const bulkRestartService = useCallback(async (names: string[]) => {
+      try {
+          await apiClient.bulkServiceAction('restart', names);
+          toast({
+              title: "Services Restarted",
+              description: `${names.length} services have been restarted.`
+          });
+          fetchServices();
+      } catch (e) {
+          console.error("Failed to bulk restart services", e);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to restart some services."
+          });
+      }
+  }, [fetchServices, toast]);
+
   const bulkDeleteService = useCallback(async (names: string[]) => {
     if (!confirm(`Are you sure you want to delete ${names.length} services?`)) return;
 
     try {
-        await Promise.all(names.map(name => apiClient.unregisterService(name)));
+        await apiClient.bulkServiceAction('delete', names);
         setServices(prev => prev.filter(s => !names.includes(s.name)));
         toast({
             title: "Services Deleted",
             description: `${names.length} services have been removed.`
         });
+        fetchServices();
     } catch (e) {
          console.error("Failed to delete services", e);
          fetchServices();
@@ -449,6 +469,7 @@ export default function ServicesPage() {
                 onBulkToggle={bulkToggleService}
                 onBulkDelete={bulkDeleteService}
                 onBulkEdit={handleBulkEdit}
+                onBulkRestart={bulkRestartService}
                 onLogin={handleLogin}
                 onRestart={handleRestart}
              />
