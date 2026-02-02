@@ -2806,6 +2806,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Awk: Block pipe and redirection
+	// We use HasPrefix to catch versioned binaries (e.g., awk-5.1)
+	if strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk") {
+		if strings.ContainsAny(val, "|<>") {
+			return fmt.Errorf("awk injection detected: value contains pipe or redirection character")
+		}
+	}
+
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2893,7 +2901,7 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk"}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
