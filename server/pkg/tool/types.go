@@ -2808,6 +2808,16 @@ func checkForShellInjection(val string, template string, placeholder string, com
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
+		// Sentinel Security Update: Block critical builtins that allow RCE/Sandbox Escape
+		// __import__ allows loading arbitrary modules (os, subprocess).
+		// __builtins__ allows accessing built-in functions even if they are shadowed.
+		if strings.Contains(val, "__import__") {
+			return fmt.Errorf("python injection detected: value contains '__import__'")
+		}
+		if strings.Contains(val, "__builtins__") {
+			return fmt.Errorf("python injection detected: value contains '__builtins__'")
+		}
+
 		// Scan template to find the prefix of the quote containing the placeholder
 		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
 		hasFString := false
