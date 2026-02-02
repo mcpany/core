@@ -12,8 +12,11 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
+
+func strPtr(s string) *string {
+	return &s
+}
 
 func TestHTTPUpstream_URLEdgeCases(t *testing.T) {
 	testCases := []struct {
@@ -64,20 +67,20 @@ func TestHTTPUpstream_URLEdgeCases(t *testing.T) {
 
 			method := configv1.HttpCallDefinition_HTTP_METHOD_GET
 			serviceConfig := configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("url-edge-cases-service"),
+				Name: strPtr("url-edge-cases-service"),
 				HttpService: configv1.HttpUpstreamService_builder{
-					Address: proto.String(tc.address),
+					Address: strPtr(tc.address),
 					Tools: []*configv1.ToolDefinition{
 						configv1.ToolDefinition_builder{
-							Name:   proto.String("test-op"),
-							CallId: proto.String("test-op-call"),
+							Name:   strPtr("test-op"),
+							CallId: strPtr("test-op-call"),
 						}.Build(),
 					},
 					Calls: map[string]*configv1.HttpCallDefinition{
 						"test-op-call": configv1.HttpCallDefinition_builder{
-							Id:           proto.String("test-op-call"),
+							Id:           strPtr("test-op-call"),
 							Method:       &method,
-							EndpointPath: proto.String(tc.endpointPath),
+							EndpointPath: strPtr(tc.endpointPath),
 						}.Build(),
 					},
 				}.Build(),
