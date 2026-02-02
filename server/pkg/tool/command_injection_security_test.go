@@ -123,7 +123,15 @@ func TestCommandInjection_Advanced(t *testing.T) {
 			"java",
 		}
 
+		// Ensure no nil entries in interpreters list
+		validInterpreters := []string{}
 		for _, cmd := range interpreters {
+			if cmd != "" {
+				validInterpreters = append(validInterpreters, cmd)
+			}
+		}
+
+		for _, cmd := range validInterpreters {
 			t.Run(cmd, func(t *testing.T) {
 				// Use a payload that is safe for shell (simple string) but triggers shell injection detection
 				// if we try to break out.

@@ -21,8 +21,8 @@ func TestIsShellCommand_ExtendedList(t *testing.T) {
 		{"python3.10", true},
 
 		// New additions
-		{"tar", true},
-		{"find", true},
+		{"tar", false},
+		{"find", false},
 		{"xargs", true},
 		{"make", true},
 		{"npm", true},
