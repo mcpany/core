@@ -21,6 +21,9 @@ type SystemStatusResponse struct {
 	BoundGRPCPort     int      `json:"bound_grpc_port"`
 	Version           string   `json:"version"`
 	SecurityWarnings  []string `json:"security_warnings"`
+	LastReloadStatus  string   `json:"last_reload_status"`
+	LastReloadError   string   `json:"last_reload_error,omitempty"`
+	LastReloadTime    string   `json:"last_reload_time,omitempty"`
 }
 
 func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request) {
@@ -32,8 +35,15 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 		warnings = append(warnings, "No API Key configured")
 	}
 
-	// Check if listening on all interfaces is complex due to config structure.
-	// For now, focus on API key warning.
+	a.configMu.Lock()
+	lastReloadStatus := "ok"
+	var lastReloadError string
+	if a.lastReloadErr != nil {
+		lastReloadStatus = statusError
+		lastReloadError = a.lastReloadErr.Error()
+	}
+	lastReloadTime := a.lastReloadTime
+	a.configMu.Unlock()
 
 	resp := SystemStatusResponse{
 		UptimeSeconds:     uptime,
@@ -42,6 +52,9 @@ func (a *Application) handleSystemStatus(w http.ResponseWriter, _ *http.Request)
 		BoundGRPCPort:     int(a.BoundGRPCPort.Load()),
 		Version:           appconsts.Version,
 		SecurityWarnings:  warnings,
+		LastReloadStatus:  lastReloadStatus,
+		LastReloadError:   lastReloadError,
+		LastReloadTime:    lastReloadTime.Format(time.RFC3339),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

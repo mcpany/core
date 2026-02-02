@@ -117,6 +117,7 @@ type StandardMiddlewares struct {
 	GlobalRateLimit  *GlobalRateLimitMiddleware
 	ContextOptimizer *ContextOptimizer
 	Debugger         *Debugger
+	Redactor         *Redactor
 	Cleanup          func() error
 }
 
@@ -283,11 +284,15 @@ func InitStandardMiddlewares(
 	})
 
 	// DLP
+	redactor := NewRedactor(dlpConfig, nil)
 	RegisterMCP("dlp", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
-		// Logger will be injected by DLPMiddleware constructor or we use default?
-		// DLPMiddleware takes (*configv1.DLPConfig, *slog.Logger)
-		// We use package level logger or similar.
-		// NOTE: DLPMiddleware signature is: func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware
+		if redactor == nil {
+			return noOpMiddleware
+		}
+		// Re-use the redactor logic from DLPMiddleware but avoiding re-creation if we wanted to share state
+		// But DLPMiddleware creates its own redactor.
+		// We should probably expose a version of DLPMiddleware that takes a Redactor.
+		// Or just use DLPMiddleware as is, but also return the redactor we created for global use.
 		return DLPMiddleware(dlpConfig, nil)
 	})
 
@@ -322,6 +327,7 @@ func InitStandardMiddlewares(
 		GlobalRateLimit:  globalRateLimit,
 		ContextOptimizer: contextOptimizer,
 		Debugger:         debugger,
+		Redactor:         redactor,
 		Cleanup:          audit.Close,
 	}, nil
 }

@@ -654,6 +654,12 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to init standard middlewares: %w", err)
 	}
 
+	// 3. Implement "Global Redaction Policy"
+	// Connect DLP Redactor to Global Utility for logging redaction
+	if standardMiddlewares.Redactor != nil {
+		util.SetGlobalRedactor(standardMiddlewares.Redactor.RedactJSON)
+	}
+
 	// Auto-discovery of local services
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		// Register default providers

@@ -683,6 +683,12 @@ func (tm *Manager) AddTool(tool Tool) error {
 	toolID := tool.Tool().GetServiceId() + "." + sanitizedToolName
 	log := logging.GetLogger().With("toolID", toolID)
 	log.Debug("Adding tool to Manager")
+
+	// Detect duplicate tool definition (shadowing)
+	if _, exists := tm.tools.Load(toolID); exists {
+		logging.GetLogger().Warn("Duplicate tool definition detected (shadowing)", "toolID", toolID)
+	}
+
 	tm.tools.Store(toolID, tool)
 
 	// Update indices

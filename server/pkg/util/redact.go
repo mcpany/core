@@ -40,7 +40,18 @@ var (
 	// allSensitiveStartChars is a string containing all characters that can start a sensitive key.
 	// Used for optimized scanning with bytes.IndexAny.
 	allSensitiveStartChars string
+
+	// GlobalRedactor is a global function for redaction.
+	// This allows higher-level packages to inject advanced redaction logic (e.g. DLP with regex).
+	// It is not thread-safe to modify after initialization, but fine for reading.
+	// We use a simple variable for performance, assuming it is set once at startup.
+	GlobalRedactor func([]byte) ([]byte, error)
 )
+
+// SetGlobalRedactor sets the global redactor function.
+func SetGlobalRedactor(fn func([]byte) ([]byte, error)) {
+	GlobalRedactor = fn
+}
 
 func init() {
 	for _, k := range sensitiveKeys {
@@ -117,6 +128,20 @@ func init() {
 // Returns:
 //   - []byte: The redacted JSON output.
 func RedactJSON(input []byte) []byte {
+	// Use GlobalRedactor if set (e.g. DLP middleware)
+	if GlobalRedactor != nil {
+		if res, err := GlobalRedactor(input); err == nil {
+			return res
+		}
+		// If custom redaction fails, fallback to default?
+		// Or just return input?
+		// For safety, fallback to default logic is better if input is valid JSON but custom failed?
+		// But Redactor.RedactJSON returns (nil, false) if no change, or (res, true).
+		// Wait, my SetGlobalRedactor signature matches Redactor.RedactJSON signature?
+		// Redactor.RedactJSON returns ([]byte, error).
+		// So if error is nil, we return res.
+	}
+
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
 	idx := skipWhitespaceAndComments(input, 0)

@@ -38,6 +38,26 @@
   - **Description**: Implements `CheckHealth` for gRPC upstreams using the standard gRPC Health Checking Protocol to detect service availability.
 - **Context Optimizer Middleware**
   - **Description**: Automatically truncates large text outputs in JSON responses to prevent "Context Bloat" and reduce token usage.
+- **Service Health History**
+  - **Description**: Store historical health check results to visualize availability trends (uptime graphs).
+- **Filesystem Health Check**
+  - **Description**: Add a health check probe for filesystem roots to report status to the UI, not just logs.
+- **Safe Symlink Traversal**
+  - **Description**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only).
+- **Upstream Latency Metrics**
+  - **Description**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup.
+- **Health Webhooks**
+  - **Description**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded).
+- **Hard Failure Mode**
+  - **Description**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments.
+- **Config Validation Diff**
+  - **Description**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration.
+- **Config Reload Status API**
+  - **Description**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures.
+- **Duplicate Tool Detection**
+  - **Description**: Detect if two services expose tools with the same name (before sanitization) and warn about potential conflicts or shadowing.
+- **Global Redaction Policy**
+  - **Description**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces.
 
 ## 2. Updated Roadmap
 
@@ -51,15 +71,12 @@ These features represent the next logical steps for the product, focusing on Ent
 | :--- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
 | 1    | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments.      | Medium     |
 | 2    | **Smart Error Recovery**    | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing).      | High       |
-| 3    | **Service Health History**  | **Observability**: Store historical health check results to visualize availability trends (uptime graphs).                             | Medium     |
 | 4    | **Tool Execution Timeline** | **Debugging**: A visual waterfall chart of tool execution stages (hooks, middleware, upstream call) to debug latency bottlenecks.      | High       |
 | 3    | **Canary Tool Deployment**  | **Ops**: gradually roll out new tool versions to a subset of users or sessions to catch regressions before they impact everyone.       | High       |
 | 4    | **Compliance Reporting**    | **Enterprise**: Automated generation of PDF/CSV reports from Audit Logs for SOC2/GDPR compliance reviews.                              | Medium     |
 | 5    | **Advanced Tiered Caching** | **Performance**: Implement a multi-layer cache (Memory -> Redis -> Disk) with configurable eviction policies to reduce upstream costs. | Medium     |
 
 | 14 | **Partial Reloads** | **Resilience**: When reloading config dynamically, if one service is invalid, keep the old version running instead of removing it or failing the whole reload (if possible). | High |
-| 15 | **Filesystem Health Check** | **Observability**: Add a health check probe for filesystem roots to report status to the UI, not just logs. | Low |
-| 16 | **Safe Symlink Traversal** | **Security**: Add configuration options to strictly control symlink traversal policies (allow/deny/internal-only). | Medium |
 | 17 | **Multi-Model Advisor** | **Intelligence**: Orchestrate queries across multiple models (e.g. Ollama models) to synthesize insights. | High |
 | 18 | **MCP Server Aggregator/Proxy** | **Architecture**: A meta-server capability to discover, configure, and manage multiple downstream MCP servers dynamically. | High |
 | 20 | **Configuration Migration Tool** | **DevX**: A CLI command to convert `claude_desktop_config.json` to `mcpany` config format. | Low |
@@ -83,11 +100,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | 40 | **Config Inheritance** | **DevX**: Allow `config.yaml` to extend/import other configuration files (e.g. `extends: base.yaml`) to reduce duplication across environments. | High |
 | 43 | **Doctor Auto-Fix** | **DevX**: Allow `mcpany doctor --fix` to automatically correct simple configuration errors (like typos or missing fields with defaults). | High |
 | 44 | **Doctor Web Report** | **DevX**: Generate an HTML report from `mcpany doctor` for easier sharing and debugging. | Low |
-| 45 | **Upstream Latency Metrics** | **Observability**: Record the latency of the initial connectivity probe to help diagnose slow upstream services during startup. | Low |
 
 | 47 | **Interactive Doctor** | **UX**: A TUI (Text User Interface) for the doctor command that allows users to interactively retry failed checks or inspect details. | Medium |
 | 48 | **Doctor Integration with Telemetry** | **Observability**: Send doctor check results to telemetry (if enabled) to track fleet health during startup or health checks. | Low |
-| 41 | **Hard Failure Mode** | **Resilience**: A configuration option to strictly fail server startup (exit 1) if any service fails its connectivity probe, ensuring "fail-safe" deployments. | Low |
 | 41 | **Tool Name Fuzzy Matching** | **UX**: Improve error messages for tool execution by suggesting similar tool names when a user makes a typo. | Low |
 | 42 | **Config Strict Mode** | **Ops**: Add a CLI flag to treat configuration warnings (e.g. deprecated fields) as errors to ensure clean configs. | Low |
 | 43 | **Context-Aware Suggestions** | **UX**: Refine the fuzzy matching logic to be context-aware, suggesting fields based on the specific message type (e.g., only suggest 'http_service' fields when inside an http_service block). | Medium |
@@ -99,15 +114,11 @@ These features represent the next logical steps for the product, focusing on Ent
 | 44 | **Log Redaction Rules** | **Security**: Configurable regex-based redaction for logs to prevent accidental leakage of sensitive data (API keys, PII) in stderr/files. | Medium |
 | 45 | **Remote Schema Validation** | **Feature**: Allow validating schemas that use `$ref` to remote URLs by configuring a custom schema loader with HTTP support. | Medium |
 | 46 | **Schema Validation Caching** | **Performance**: Cache compiled schemas to avoid recompilation overhead during configuration reloads. | Low |
-| 46 | **Health Webhooks** | **Ops**: Configure webhooks (Slack, Discord, PagerDuty) to be triggered when the system health status changes (e.g., from Healthy to Degraded). | Medium |
 | 47 | **Config Validation Dry Run** | **DevX**: Allow users to upload a config to a "dry run" endpoint to see if it would pass validation without applying it. | Medium |
 | 47 | **Metrics Persistence** | **Observability**: Store historical metrics (latency, error rates) in SQLite/Postgres for long-term trending and analysis. | High |
 
-| 50 | **Duplicate Tool Detection** | **Safety**: Detect if two services expose tools with the same name (before sanitization) and warn about potential conflicts or shadowing. | Low |
 | 51 | **Tool Execution Simulation** | **DevX**: A UI feature to "mock" tool execution with predefined outputs for testing client integrations without calling real upstreams. | Medium |
-| 62 | **Config Validation Diff** | **Experience**: When a configuration reload fails, display a diff highlighting the changes that caused the error compared to the last known good configuration. | High |
 | 64 | **Service Retry Policy** | **Resilience**: Automatically retry connecting to failed services with exponential backoff. | Medium |
-| 65 | **Config Reload Status API** | **DevX**: Expose the status of the last configuration reload attempt via API to help debug silent reload failures. | Low |
 | 66 | **Dynamic Profile Switching** | **UX**: Allow users to switch active profiles dynamically via API without restarting the server. | Medium |
 | 67 | **Config Schema Versioning** | **Maintenance**: Introduce `apiVersion` field in `config.yaml` to support breaking changes in configuration schema gracefully. | High |
 | 68 | **Connection Draining** | **Availability**: Utilize active connection tracking (from System Health Dashboard) to implement graceful shutdown that waits for connections to finish before exiting. | Medium |
@@ -125,7 +136,6 @@ These features represent the next logical steps for the product, focusing on Ent
 | 73 | **Docker Secret Native Support** | **Ops**: Native support for reading Docker secrets (files in `/run/secrets`) and substituting them into configuration without needing environment variable mapping. | Medium |
 | 75 | **Health Check Flap Damping** | **Resilience**: Configurable retries and thresholds for health checks to prevent services from flapping between Healthy and Unhealthy states due to transient network issues. | Medium |
 | 74 | **Environment Variable Wizard** | **DevX**: A UI helper to identify used environment variables in a config and prompt the user to fill them if missing during startup/testing. | Low |
-| 75 | **Global Redaction Policy** | **Security**: Centralized configuration to define patterns (regex) for redaction across all logs, error messages, and traces. | Medium |
 | 74 | **Tool Search & Filter API** | **UX/DevX**: A dedicated API to search tools by name/description/tags with fuzzy matching, to power UI search bars and "did you mean" hints in the frontend. | Low |
 | 75 | **Tool Execution Trace ID** | **Observability**: Propagate a trace ID through the tool execution flow (hooks, middleware, execution) to aid in debugging complex tool chains. | Medium |
 | 76 | **Auto-Discovery Status API** | **Observability**: Expose the status of auto-discovery providers (Last run, Error, Success) via API to the UI, so users know why local tools (like Ollama) are missing. | Low |
