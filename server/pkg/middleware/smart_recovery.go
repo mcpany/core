@@ -57,7 +57,7 @@ func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.Executi
 			// Assuming OpenAI for now as per config.proto comments
 			m.llmClient = llm.NewOpenAIClient(apiKey, m.config.GetBaseUrl())
 		}
-		client = m.llmClient
+		// client = m.llmClient // Removed redundant assignment
 		m.mu.Unlock()
 	}
 

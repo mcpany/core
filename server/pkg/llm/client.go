@@ -1,6 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package llm provides interfaces and implementations for interacting with LLM providers.
 package llm
 
 import (
@@ -72,10 +73,7 @@ type openAIChatResponse struct {
 
 // ChatCompletion performs a chat completion request.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
-	reqBody := openAIChatRequest{
-		Model:    req.Model,
-		Messages: req.Messages,
-	}
+	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
