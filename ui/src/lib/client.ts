@@ -165,6 +165,20 @@ export interface ToolAnalytics {
     successRate: number;
 }
 
+/**
+ * Alert Rule definition.
+ */
+export interface AlertRule {
+    id: string;
+    name: string;
+    metric: string;
+    operator: string;
+    threshold: number;
+    duration: string;
+    severity: string;
+    enabled: boolean;
+    lastUpdated?: string;
+}
 
 /**
  * Metric definition for dashboard.
@@ -868,6 +882,71 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/alerts');
         if (!res.ok) throw new Error('Failed to fetch alerts');
         return res.json();
+    },
+
+    /**
+     * Lists all alert rules.
+     * @returns A promise that resolves to a list of alert rules.
+     */
+    listAlertRules: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules');
+        if (!res.ok) throw new Error('Failed to fetch alert rules');
+        return res.json();
+    },
+
+    /**
+     * Creates a new alert rule.
+     * @param rule The rule to create.
+     * @returns A promise that resolves to the created rule.
+     */
+    createAlertRule: async (rule: any) => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to create alert rule');
+        return res.json();
+    },
+
+    /**
+     * Gets an alert rule by ID.
+     * @param id The ID of the rule.
+     * @returns A promise that resolves to the alert rule.
+     */
+    getAlertRule: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`);
+        if (!res.ok) throw new Error('Failed to get alert rule');
+        return res.json();
+    },
+
+    /**
+     * Updates an alert rule.
+     * @param id The ID of the rule.
+     * @param updates The updates to apply.
+     * @returns A promise that resolves to the updated rule.
+     */
+    updateAlertRule: async (id: string, updates: any) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates)
+        });
+        if (!res.ok) throw new Error('Failed to update alert rule');
+        return res.json();
+    },
+
+    /**
+     * Deletes an alert rule.
+     * @param id The ID of the rule to delete.
+     * @returns A promise that resolves when the rule is deleted.
+     */
+    deleteAlertRule: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete alert rule');
+        return {};
     },
 
     /**

@@ -34,6 +34,8 @@ const settingsSchema = z.object({
   gc_interval: z.string(),
   merge_strategy_upstream: z.enum(["extend", "replace"]).optional(),
   merge_strategy_profile: z.enum(["extend", "replace"]).optional(),
+  alerts_enabled: z.boolean(),
+  alerts_webhook_url: z.string().optional(),
 });
 
 type SettingsValues = z.infer<typeof settingsSchema>;
@@ -57,6 +59,8 @@ export function GlobalSettingsForm() {
       gc_interval: "1h",
       merge_strategy_upstream: "extend",
       merge_strategy_profile: "extend",
+      alerts_enabled: false,
+      alerts_webhook_url: "",
     },
   });
 
@@ -75,6 +79,8 @@ export function GlobalSettingsForm() {
                 gc_interval: settings.gc_settings?.interval || "1h",
                 merge_strategy_upstream: (settings.merge_strategy?.upstream_service_list as "extend" | "replace") || "extend",
                 merge_strategy_profile: (settings.merge_strategy?.profile_list as "extend" | "replace") || "extend",
+                alerts_enabled: settings.alerts?.enabled || false,
+                alerts_webhook_url: settings.alerts?.webhook_url || "",
             });
             if (settings.read_only) {
                 setIsReadOnly(true);
@@ -102,6 +108,10 @@ export function GlobalSettingsForm() {
            merge_strategy: {
                upstream_service_list: data.merge_strategy_upstream,
                profile_list: data.merge_strategy_profile
+           },
+           alerts: {
+               enabled: data.alerts_enabled,
+               webhook_url: data.alerts_webhook_url
            }
        };
        await apiClient.saveGlobalSettings(payload);
@@ -162,6 +172,51 @@ export function GlobalSettingsForm() {
                     </FormItem>
                 )}
                 />
+
+                <Card className="border p-4 shadow-sm">
+                    <CardHeader className="p-0 pb-4">
+                        <CardTitle className="text-sm font-medium">Alerts & Notifications</CardTitle>
+                    </CardHeader>
+                    <div className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="alerts_enabled"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                                    <div className="space-y-0.5">
+                                        <FormLabel className="text-sm">Enable Alerts</FormLabel>
+                                        <FormDescription className="text-xs">
+                                            Monitor system health and trigger notifications.
+                                        </FormDescription>
+                                    </div>
+                                    <FormControl>
+                                        <Switch
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                            disabled={isReadOnly}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="alerts_webhook_url"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Global Webhook URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://..." {...field} disabled={isReadOnly || !form.watch("alerts_enabled")} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Send health status changes to this URL (POST).
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </Card>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
