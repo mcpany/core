@@ -51,63 +51,77 @@ export async function GET(request: Request) {
         return NextResponse.json([]);
     }
 
-    const traces: Trace[] = entries.map(entry => {
-        const startTime = new Date(entry.timestamp).getTime();
-        const durationMs = entry.duration / 1000000; // ns to ms
+    const traces: Trace[] = [];
+    const CHUNK_SIZE = 50;
 
-        let input: Record<string, any> | undefined;
-        try {
-            input = JSON.parse(entry.request_body);
-        } catch {
-            input = { raw: entry.request_body };
+    for (let i = 0; i < entries.length; i += CHUNK_SIZE) {
+        // ⚡ BOLT: Yield to event loop during heavy processing to prevent blocking.
+        // Randomized Selection from Top 5 High-Impact Targets
+        if (i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 0));
         }
 
-        let output: Record<string, any> | undefined;
-        try {
-            output = JSON.parse(entry.response_body);
-        } catch {
-            output = { raw: entry.response_body };
-        }
+        const chunk = entries.slice(i, i + CHUNK_SIZE);
 
-        let errorMessage: string | undefined;
-        if (entry.status >= 400 && output) {
-            if (typeof output.error === 'string') {
-                errorMessage = output.error;
-            } else if (output.error && typeof output.error.message === 'string') {
-                errorMessage = output.error.message;
-            } else if (typeof output.message === 'string') {
-                errorMessage = output.message;
-            } else if (typeof output.detail === 'string') {
-                errorMessage = output.detail;
-            } else if (output.raw && typeof output.raw === 'string') {
-                // Truncate raw body if it's too long
-                errorMessage = output.raw.length > 200 ? output.raw.substring(0, 200) + '...' : output.raw;
+        const chunkTraces = chunk.map(entry => {
+            const startTime = new Date(entry.timestamp).getTime();
+            const durationMs = entry.duration / 1000000; // ns to ms
+
+            let input: Record<string, any> | undefined;
+            try {
+                input = JSON.parse(entry.request_body);
+            } catch {
+                input = { raw: entry.request_body };
             }
-        }
 
-        const span: Span = {
-            id: entry.id,
-            name: `${entry.method} ${entry.path}`,
-            type: 'tool', // Assume tool call for now
-            startTime: startTime,
-            endTime: startTime + durationMs,
-            status: entry.status >= 400 ? 'error' : 'success',
-            input: input,
-            output: output,
-            errorMessage: errorMessage,
-            children: [],
-            serviceName: 'backend'
-        };
+            let output: Record<string, any> | undefined;
+            try {
+                output = JSON.parse(entry.response_body);
+            } catch {
+                output = { raw: entry.response_body };
+            }
 
-        return {
-            id: entry.id,
-            rootSpan: span,
-            timestamp: entry.timestamp,
-            totalDuration: durationMs,
-            status: span.status,
-            trigger: 'user'
-        };
-    });
+            let errorMessage: string | undefined;
+            if (entry.status >= 400 && output) {
+                if (typeof output.error === 'string') {
+                    errorMessage = output.error;
+                } else if (output.error && typeof output.error.message === 'string') {
+                    errorMessage = output.error.message;
+                } else if (typeof output.message === 'string') {
+                    errorMessage = output.message;
+                } else if (typeof output.detail === 'string') {
+                    errorMessage = output.detail;
+                } else if (output.raw && typeof output.raw === 'string') {
+                    // Truncate raw body if it's too long
+                    errorMessage = output.raw.length > 200 ? output.raw.substring(0, 200) + '...' : output.raw;
+                }
+            }
+
+            const span: Span = {
+                id: entry.id,
+                name: `${entry.method} ${entry.path}`,
+                type: 'tool', // Assume tool call for now
+                startTime: startTime,
+                endTime: startTime + durationMs,
+                status: entry.status >= 400 ? 'error' : 'success',
+                input: input,
+                output: output,
+                errorMessage: errorMessage,
+                children: [],
+                serviceName: 'backend'
+            };
+
+            return {
+                id: entry.id,
+                rootSpan: span,
+                timestamp: entry.timestamp,
+                totalDuration: durationMs,
+                status: span.status,
+                trigger: 'user'
+            };
+        });
+        traces.push(...chunkTraces);
+    }
 
     // Sort by timestamp descending
     // Optimization: Compare strings directly instead of creating Date objects.
