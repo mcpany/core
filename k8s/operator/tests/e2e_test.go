@@ -113,8 +113,10 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/operator:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load operator image: %v", err)
 	}
+	// Try to load UI image, but don't fail if it's missing in CI when skipping builds (it might not be downloaded as artifact)
+	// If UI pod fails to start due to missing image, the test will fail later during verification or UI tests, which is clearer.
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
-		t.Fatalf("Failed to load ui image: %v", err)
+		t.Logf("Warning: Failed to load ui image: %v. This might be expected in CI if image-ui artifact is not available. Continuing...", err)
 	}
 
 	// 6. Install Helm Chart
