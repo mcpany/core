@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { Alert } from "./types";
 import { isToday, parseISO } from "date-fns";
