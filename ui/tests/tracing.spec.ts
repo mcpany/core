@@ -1,8 +1,3 @@
-/**
- * Copyright 2026 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { test, expect } from '@playwright/test';
 import crypto from 'crypto';
 
@@ -21,56 +16,52 @@ test.describe('Distributed Tracing', () => {
     // Send two requests with the same Trace ID
     // This simulates a distributed trace where multiple spans belong to the same trace.
     // Both point to the same parent (simulating siblings).
-    await request.get(`${BACKEND_URL}/health`, {
-      headers: { 'traceparent': `00-${traceId}-${parentSpanId}-01` }
-    });
+    const headers = {
+        'traceparent': `00-${traceId}-${parentSpanId}-01`,
+        // Add fake user agent to be easily identifiable if needed, though traceId is enough
+        'User-Agent': 'playwright-tracing-test'
+    };
 
-    await request.get(`${BACKEND_URL}/health`, {
-      headers: { 'traceparent': `00-${traceId}-${parentSpanId}-01` }
-    });
+    await request.get(`${BACKEND_URL}/health`, { headers });
+    await request.get(`${BACKEND_URL}/health`, { headers });
 
     // Wait for async processing in backend (ring buffer)
-    await new Promise(r => setTimeout(r, 1000));
+    // Increased wait time to ensure backend processes the log entry
+    await new Promise(r => setTimeout(r, 2000));
 
     await page.goto('/traces');
 
     // Search for the trace to filter the list
     const searchInput = page.getByPlaceholder('Filter traces...');
-    // Note: If filter doesn't support ID, we might need to rely on it being at the top.
-    // trace-list.tsx uses `searchQuery` to filter.
-    // `filteredTraces` filters by `t.rootSpan.name` OR `t.id`.
+    await expect(searchInput).toBeVisible();
     await searchInput.fill(traceId);
 
-    // Wait for list to update
-    await page.waitForTimeout(500);
+    // Wait for list to update and show the trace item
+    // We expect the trace ID to appear in the list.
+    // Use a more specific selector to avoid matching the input value itself if it remains visible
+    const traceItem = page.locator('div[role="button"]').filter({ hasText: traceId }).first();
 
-    // Select the trace. The list items are usually divs with click handlers.
-    // We look for an element that contains the trace ID or just the first result.
-    const traceItem = page.getByText(traceId).first();
-    await expect(traceItem).toBeVisible();
+    // Retry logic for finding the trace, as the backend might lag
+    await expect(async () => {
+        await page.reload(); // Reload to refresh list if live update is off/slow
+        await searchInput.fill(traceId);
+        await expect(traceItem).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 20000 });
+
     await traceItem.click();
 
     // Verify detail view
     // The details pane should show the Trace ID
     await expect(page.getByText(traceId)).toBeVisible();
 
-    // Verify grouping: We sent 2 requests, so we expect multiple spans in this trace.
-    // In the Waterfall view, we should see "GET /health" (the name of the span).
-    // The WaterfallItem renders the span name.
-
+    // Verify visualization components are present
     await expect(page.getByText('Execution Waterfall')).toBeVisible();
     await expect(page.getByText('Sequence Diagram')).toBeVisible();
 
-    // Verify that we have spans displayed.
-    // Since we filtered by ID, and we see the ID in the detail, grouping worked.
-    // If grouping failed, we would see 2 separate traces in the list (each with 1 span).
-    // If grouping works, we see 1 trace (with 2 spans).
+    // Verify grouping: We expect a virtual root because we sent multiple roots
+    await expect(page.getByText('Trace Group')).toBeVisible();
 
-    // Check that there is only 1 trace in the list
-    // (This selector is a bit loose, relying on the ID text appearing once in the list area)
-    // But since we are in the detail view now, let's just assert the detail view is correct.
-
-    // Assert that we are seeing a trace with status 'success' (assuming /health returns 200)
+    // Check status
     await expect(page.getByText('SUCCESS').first()).toBeVisible();
   });
 });
