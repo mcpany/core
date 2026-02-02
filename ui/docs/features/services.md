@@ -23,18 +23,17 @@ Key columns:
 
 - **Name**: Application identifier.
 - **Type**: Protocol (HTTP, gRPC, MCP, CMD).
-- **Status**: Health indicator (Healthy, Degraded, Unhealthy).
+- **Status**: Health indicator (Checkmark/Toggle or Warning Badge).
 - **Control**: Toggle switch to quickly enable/disable traffic.
-- **Actions**: "View Logs" to jump directly to the live logs for a specific service.
+- **Actions**: Menu for advanced operations like "View Logs", "Diagnose", or "Edit".
 
 ### 2. Add New Service
 
 To register a new upstream service:
 
-1. Click the **"Add Service"** link in the top-right corner.
-2. You will be redirected to the **Marketplace**.
-3. Select the desired service type (e.g., HTTP, gRPC) or a pre-configured service template.
-4. Follow the configuration wizard to register the service.
+1. Click the **"Add Service"** button in the top-right corner.
+2. A configuration sheet will open, allowing you to select a **Service Template** (e.g., Postgres, GitHub) or configure a custom service.
+3. Follow the configuration steps to register the service.
 
 ![Add Service Dialog](screenshots/services_add_dialog.png)
 
@@ -42,9 +41,9 @@ To register a new upstream service:
 
 To edit an existing service:
 
-1. Click on the service name in the list.
-2. You will be taken to the detailed **Configuration Page**.
-3. Here you can update the endpoint, managing **Environment Variables**, and view specialized settings.
+1. Click on the service name in the list (or select "Edit" from the Actions menu).
+2. The detailed **Configuration Sheet** will open.
+3. Here you can update the endpoint, manage **Environment Variables**, and view specialized settings.
 
 ![Service Configuration](screenshots/service_config.png)
 
@@ -67,4 +66,4 @@ You can instantly stop routing traffic to a service by toggling the switch in th
 ### Special Configuration
 
 - **Environment Variables**: Define key-value pairs injected into the process (for CMD) or sent as metadata. Supports `secrets.*` references.
-- **Health Checks**: The system periodically pings the `health_check_endpoint` (default `/health`) to update the status.
+- **Health Checks**: The system periodically pings the configured health endpoint (default 30s interval) to update the status.

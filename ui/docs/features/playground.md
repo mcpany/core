@@ -35,7 +35,7 @@ Browse the sidebar to find the tool you wish to test.
 Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
 
 1. Enter values (e.g., `/var/log` for path).
-2. Click **"Run Tool"**.
+2. Click **"Run Tool"** (or "Build Command" in the dialog).
 
 ![Form Filled](screenshots/playground_form_filled.png)
 
@@ -48,7 +48,10 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
+- **Input Modes**: The configuration dialog offers three modes:
+    - **Form**: Standard field-based input.
+    - **JSON**: Edit the raw JSON arguments directly. Useful for complex nested objects.
+    - **Schema**: View the underlying JSON Schema for the tool.
 - **History**: Previous tool calls in the session remain visible above.
 
 ### 5. Session History (Import/Export)
