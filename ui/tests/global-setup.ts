@@ -1,6 +1,11 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   const seedingUrl = process.env.BACKEND_URL || 'http://localhost:50050';
 
   console.log('Seeding backend state...');

@@ -33,6 +33,7 @@ func (a *Application) handleDebugSeedState() http.HandlerFunc {
 		register := func(cfg *config_v1.UpstreamServiceConfig) {
 			if _, _, _, err := a.ServiceRegistry.RegisterService(ctx, cfg); err != nil {
 				// Log but don't fail
+				_ = err
 			}
 		}
 

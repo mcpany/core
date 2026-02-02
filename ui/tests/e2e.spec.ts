@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, seedTraffic, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
+import { cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 const AUDIT_DIR = path.join(__dirname, `../../.audit/ui/${DATE}`);
