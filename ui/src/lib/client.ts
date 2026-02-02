@@ -19,8 +19,6 @@ import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
-import { BrowserHeaders } from 'browser-headers';
-
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
  */
@@ -197,6 +195,31 @@ export interface SystemStatus {
     security_warnings: string[];
 }
 
+export type Severity = "critical" | "warning" | "info";
+export type AlertStatus = "active" | "acknowledged" | "resolved";
+
+export interface Alert {
+  id: string;
+  title: string;
+  message: string;
+  severity: Severity;
+  status: AlertStatus;
+  service: string;
+  timestamp: string; // ISO string
+  source: string;
+}
+
+export interface AlertRule {
+  id: string;
+  name: string;
+  metric: string;
+  operator: string;
+  threshold: number;
+  duration: string;
+  severity: Severity;
+  enabled: boolean;
+  lastUpdated?: string;
+}
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
@@ -980,7 +1003,7 @@ export const apiClient = {
      * @param rule The rule to create.
      * @returns A promise that resolves to the created rule.
      */
-    createAlertRule: async (rule: any) => {
+    createAlertRule: async (rule: Omit<AlertRule, 'id' | 'lastUpdated'>) => {
         const res = await fetchWithAuth('/api/v1/alerts/rules', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

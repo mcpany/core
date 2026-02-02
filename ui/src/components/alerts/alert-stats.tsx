@@ -26,8 +26,7 @@ export function AlertStats() {
   useEffect(() => {
     const fetchStats = async () => {
         try {
-            const alerts: any[] = await apiClient.listAlerts();
-            // Cast to Alert[] if types match, or just use any
+            const alerts: Alert[] = await apiClient.listAlerts();
 
             let critical = 0;
             let warning = 0;
