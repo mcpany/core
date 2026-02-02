@@ -8,7 +8,7 @@ import { AlertList } from "../alert-list";
 import React from "react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect } from "vitest";
-import { AlertStatus } from "../types";
+import { AlertStatus, Alert } from "../types";
 
 // Mock resize observer which is used by some UI components (like Recharts or ScrollArea)
 class ResizeObserver {
@@ -18,29 +18,9 @@ class ResizeObserver {
 }
 window.ResizeObserver = ResizeObserver;
 
- // Mock API Client
+ // Mock API Client for updateStatus only
  vi.mock("@/lib/client", () => ({
    apiClient: {
-     listAlerts: vi.fn().mockResolvedValue([
-       {
-         id: "1",
-         title: "High CPU Usage",
-         message: "The CPU usage is above 90% for service 'api-server'.",
-         severity: "critical",
-         status: "active",
-         service: "api-server",
-         timestamp: new Date().toISOString(),
-       },
-       {
-         id: "2",
-         title: "API Latency Spike",
-         message: "The API latency is above 500ms for service 'auth-service'.",
-         severity: "warning",
-         status: "active",
-         service: "auth-service",
-         timestamp: new Date().toISOString(),
-       },
-     ]),
      updateAlertStatus: vi.fn().mockImplementation((id: string, status: AlertStatus) => Promise.resolve({
          id,
          status,
@@ -53,9 +33,32 @@ window.ResizeObserver = ResizeObserver;
    },
  }));
 
+ const mockAlerts: Alert[] = [
+    {
+      id: "1",
+      title: "High CPU Usage",
+      message: "The CPU usage is above 90% for service 'api-server'.",
+      severity: "critical",
+      status: "active",
+      service: "api-server",
+      timestamp: new Date().toISOString(),
+      source: "monitor"
+    },
+    {
+      id: "2",
+      title: "API Latency Spike",
+      message: "The API latency is above 500ms for service 'auth-service'.",
+      severity: "warning",
+      status: "active",
+      service: "auth-service",
+      timestamp: new Date().toISOString(),
+      source: "monitor"
+    },
+  ];
+
 describe("AlertList", () => {
   it("renders alerts correctly", async () => {
-    render(<AlertList />);
+    render(<AlertList alerts={mockAlerts} loading={false} onUpdate={vi.fn()} />);
     await waitFor(() => {
         expect(screen.getByText("High CPU Usage")).toBeInTheDocument();
         expect(screen.getByText("API Latency Spike")).toBeInTheDocument();
@@ -63,7 +66,7 @@ describe("AlertList", () => {
   });
 
   it("filters alerts by search query", async () => {
-    render(<AlertList />);
+    render(<AlertList alerts={mockAlerts} loading={false} onUpdate={vi.fn()} />);
 
     const searchInput = screen.getByPlaceholderText("Search alerts by title, message, service...");
     await userEvent.type(searchInput, "CPU");
@@ -73,7 +76,7 @@ describe("AlertList", () => {
   });
 
   it("filters alerts by severity", async () => {
-    render(<AlertList />);
+    render(<AlertList alerts={mockAlerts} loading={false} onUpdate={vi.fn()} />);
 
     // We need to interact with the Select component.
     // Radix UI Select is tricky to test as it uses portals.
