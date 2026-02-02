@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { Virtuoso } from "react-virtuoso";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,6 @@ import {
     SheetHeader,
     SheetTitle
 } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Search, Loader2, X, Plus, ChevronRight, ChevronDown } from "lucide-react";
@@ -375,23 +375,26 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                                 <button onClick={handleDeselectAll} className="text-muted-foreground hover:underline">None</button>
                             </div>
 
-                            <ScrollArea className="h-[300px] pr-3">
-                                {isLoadingServices ? (
-                                    <div className="flex justify-center py-8">
-                                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                    </div>
+                            {isLoadingServices ? (
+                                <div className="flex justify-center py-8">
+                                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                </div>
+                            ) : (
+                                filteredServices.length === 0 ? (
+                                    <div className="text-sm text-muted-foreground text-center py-4">No services found.</div>
                                 ) : (
-                                    <div className="space-y-2">
-                                        {filteredServices.length === 0 && (
-                                            <div className="text-sm text-muted-foreground text-center py-4">No services found.</div>
-                                        )}
-                                        {filteredServices.map(svc => {
+                                    // ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets
+                                    // Optimized list rendering with virtualization for performance
+                                    <Virtuoso
+                                        style={{ height: "300px" }}
+                                        data={filteredServices}
+                                        itemContent={(_, svc) => {
                                             const isImplicit = implicitlySelectedServices.has(svc.name);
                                             const isExplicit = selectedServices.has(svc.name);
                                             const isSelected = isImplicit || isExplicit;
 
                                             return (
-                                                <div key={svc.name} className="flex flex-col p-2 hover:bg-muted/50 rounded transition-colors">
+                                                <div key={svc.name} className="flex flex-col p-2 hover:bg-muted/50 rounded transition-colors pr-3">
                                                     <div className="flex items-start space-x-3">
                                                         <Checkbox
                                                             id={`svc-${svc.name}`}
@@ -468,10 +471,10 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                                                     )}
                                                 </div>
                                             );
-                                        })}
-                                    </div>
-                                )}
-                            </ScrollArea>
+                                        }}
+                                    />
+                                )
+                            )}
                         </div>
                     </div>
                 </div>
