@@ -136,7 +136,11 @@ export interface GlobalSettings {
   /** Whether to auto-discover local services (e.g. Ollama). */
   autoDiscoverLocal: boolean;
   /** Alert configuration. */
-  alerts?: AlertConfig | undefined;
+  alerts?:
+    | AlertConfig
+    | undefined;
+  /** Cache configuration. */
+  cache?: CacheSettings | undefined;
 }
 
 export enum GlobalSettings_LogLevel {
@@ -227,6 +231,33 @@ export function globalSettings_LogFormatToJSON(object: GlobalSettings_LogFormat)
     default:
       return "UNRECOGNIZED";
   }
+}
+
+export interface CacheSettings {
+  /** The type of cache to use ("memory", "redis", "disk", "tiered"). */
+  type: string;
+  /** Redis configuration. */
+  redis?:
+    | RedisConfig
+    | undefined;
+  /** Disk cache configuration. */
+  disk?: DiskConfig | undefined;
+}
+
+export interface RedisConfig {
+  /** Redis address (host:port). */
+  address: string;
+  /** Redis password (optional). */
+  password: string;
+  /** Redis database index. */
+  db: number;
+}
+
+export interface DiskConfig {
+  /** Path to the directory where cache files will be stored. */
+  path: string;
+  /** Max size of the cache in bytes (optional). */
+  maxSize: Long;
 }
 
 export interface AlertConfig {
@@ -901,6 +932,7 @@ function createBaseGlobalSettings(): GlobalSettings {
     readOnly: false,
     autoDiscoverLocal: false,
     alerts: undefined,
+    cache: undefined,
   };
 }
 
@@ -986,6 +1018,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     }
     if (message.alerts !== undefined) {
       AlertConfig.encode(message.alerts, writer.uint32(218).fork()).join();
+    }
+    if (message.cache !== undefined) {
+      CacheSettings.encode(message.cache, writer.uint32(226).fork()).join();
     }
     return writer;
   },
@@ -1213,6 +1248,14 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
           message.alerts = AlertConfig.decode(reader, reader.uint32());
           continue;
         }
+        case 28: {
+          if (tag !== 226) {
+            break;
+          }
+
+          message.cache = CacheSettings.decode(reader, reader.uint32());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1263,6 +1306,7 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
       readOnly: isSet(object.read_only) ? globalThis.Boolean(object.read_only) : false,
       autoDiscoverLocal: isSet(object.auto_discover_local) ? globalThis.Boolean(object.auto_discover_local) : false,
       alerts: isSet(object.alerts) ? AlertConfig.fromJSON(object.alerts) : undefined,
+      cache: isSet(object.cache) ? CacheSettings.fromJSON(object.cache) : undefined,
     };
   },
 
@@ -1349,6 +1393,9 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     if (message.alerts !== undefined) {
       obj.alerts = AlertConfig.toJSON(message.alerts);
     }
+    if (message.cache !== undefined) {
+      obj.cache = CacheSettings.toJSON(message.cache);
+    }
     return obj;
   },
 
@@ -1402,6 +1449,275 @@ export const GlobalSettings: MessageFns<GlobalSettings> = {
     message.alerts = (object.alerts !== undefined && object.alerts !== null)
       ? AlertConfig.fromPartial(object.alerts)
       : undefined;
+    message.cache = (object.cache !== undefined && object.cache !== null)
+      ? CacheSettings.fromPartial(object.cache)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseCacheSettings(): CacheSettings {
+  return { type: "", redis: undefined, disk: undefined };
+}
+
+export const CacheSettings: MessageFns<CacheSettings> = {
+  encode(message: CacheSettings, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.type !== "") {
+      writer.uint32(10).string(message.type);
+    }
+    if (message.redis !== undefined) {
+      RedisConfig.encode(message.redis, writer.uint32(18).fork()).join();
+    }
+    if (message.disk !== undefined) {
+      DiskConfig.encode(message.disk, writer.uint32(26).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CacheSettings {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCacheSettings();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.type = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.redis = RedisConfig.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.disk = DiskConfig.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CacheSettings {
+    return {
+      type: isSet(object.type) ? globalThis.String(object.type) : "",
+      redis: isSet(object.redis) ? RedisConfig.fromJSON(object.redis) : undefined,
+      disk: isSet(object.disk) ? DiskConfig.fromJSON(object.disk) : undefined,
+    };
+  },
+
+  toJSON(message: CacheSettings): unknown {
+    const obj: any = {};
+    if (message.type !== "") {
+      obj.type = message.type;
+    }
+    if (message.redis !== undefined) {
+      obj.redis = RedisConfig.toJSON(message.redis);
+    }
+    if (message.disk !== undefined) {
+      obj.disk = DiskConfig.toJSON(message.disk);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CacheSettings>, I>>(base?: I): CacheSettings {
+    return CacheSettings.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CacheSettings>, I>>(object: I): CacheSettings {
+    const message = createBaseCacheSettings();
+    message.type = object.type ?? "";
+    message.redis = (object.redis !== undefined && object.redis !== null)
+      ? RedisConfig.fromPartial(object.redis)
+      : undefined;
+    message.disk = (object.disk !== undefined && object.disk !== null)
+      ? DiskConfig.fromPartial(object.disk)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseRedisConfig(): RedisConfig {
+  return { address: "", password: "", db: 0 };
+}
+
+export const RedisConfig: MessageFns<RedisConfig> = {
+  encode(message: RedisConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    if (message.password !== "") {
+      writer.uint32(18).string(message.password);
+    }
+    if (message.db !== 0) {
+      writer.uint32(24).int32(message.db);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): RedisConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRedisConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.address = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.password = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.db = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RedisConfig {
+    return {
+      address: isSet(object.address) ? globalThis.String(object.address) : "",
+      password: isSet(object.password) ? globalThis.String(object.password) : "",
+      db: isSet(object.db) ? globalThis.Number(object.db) : 0,
+    };
+  },
+
+  toJSON(message: RedisConfig): unknown {
+    const obj: any = {};
+    if (message.address !== "") {
+      obj.address = message.address;
+    }
+    if (message.password !== "") {
+      obj.password = message.password;
+    }
+    if (message.db !== 0) {
+      obj.db = Math.round(message.db);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RedisConfig>, I>>(base?: I): RedisConfig {
+    return RedisConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RedisConfig>, I>>(object: I): RedisConfig {
+    const message = createBaseRedisConfig();
+    message.address = object.address ?? "";
+    message.password = object.password ?? "";
+    message.db = object.db ?? 0;
+    return message;
+  },
+};
+
+function createBaseDiskConfig(): DiskConfig {
+  return { path: "", maxSize: Long.ZERO };
+}
+
+export const DiskConfig: MessageFns<DiskConfig> = {
+  encode(message: DiskConfig, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.path !== "") {
+      writer.uint32(10).string(message.path);
+    }
+    if (!message.maxSize.equals(Long.ZERO)) {
+      writer.uint32(16).int64(message.maxSize.toString());
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DiskConfig {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDiskConfig();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.path = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.maxSize = Long.fromString(reader.int64().toString());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DiskConfig {
+    return {
+      path: isSet(object.path) ? globalThis.String(object.path) : "",
+      maxSize: isSet(object.max_size) ? Long.fromValue(object.max_size) : Long.ZERO,
+    };
+  },
+
+  toJSON(message: DiskConfig): unknown {
+    const obj: any = {};
+    if (message.path !== "") {
+      obj.path = message.path;
+    }
+    if (!message.maxSize.equals(Long.ZERO)) {
+      obj.max_size = (message.maxSize || Long.ZERO).toString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DiskConfig>, I>>(base?: I): DiskConfig {
+    return DiskConfig.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DiskConfig>, I>>(object: I): DiskConfig {
+    const message = createBaseDiskConfig();
+    message.path = object.path ?? "";
+    message.maxSize = (object.maxSize !== undefined && object.maxSize !== null)
+      ? Long.fromValue(object.maxSize)
+      : Long.ZERO;
     return message;
   },
 };

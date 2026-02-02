@@ -636,7 +636,7 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Initialize standard middlewares in registry
-	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(a.ToolManager, cfg.GetGlobalSettings().GetCache())
 	standardMiddlewares, err := middleware.InitStandardMiddlewares(
 		mcpSrv.AuthManager(),
 		a.ToolManager,

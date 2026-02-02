@@ -969,7 +969,7 @@ func TestRunServerMode_GracefulShutdownOnContextCancel(t *testing.T) {
 	require.NoError(t, err)
 
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
-	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager, nil)
 
 	errChan := make(chan error, 1)
 	go func() {
@@ -1461,7 +1461,7 @@ func TestRunServerMode_ContextCancellation(t *testing.T) {
 	require.NoError(t, err)
 
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
-	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager, nil)
 
 	go func() {
 		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 5*time.Second, nil, cachingMiddleware, nil, nil, serviceRegistry, nil, "", "", "")
@@ -2547,7 +2547,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 	users := []*configv1.User{userWithAuth, userNoAuth, userBlocked}
 	authManager.SetUsers(users)
 
-	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager, nil)
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, localGlobalSettings, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
@@ -2643,7 +2643,7 @@ func TestAuthMiddleware_AuthDisabled(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, middleware.NewCachingMiddleware(app.ToolManager), nil, nil, serviceRegistry, nil, "", "", "")
+		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, middleware.NewCachingMiddleware(app.ToolManager, nil), nil, nil, serviceRegistry, nil, "", "", "")
 	}()
 
 	waitForServerReady(t, bindAddress)
@@ -3073,7 +3073,7 @@ func TestConfigureUIHandler(t *testing.T) {
 		logging.ForTestsOnlyResetLogger()
 		var buf ThreadSafeBuffer
 		logging.Init(slog.LevelInfo, &buf)
-		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager), nil, nil, serviceRegistry, nil, "", "", "")
+		_ = app.runServerMode(ctx, mcpSrv, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, middleware.NewCachingMiddleware(toolManager, nil), nil, nil, serviceRegistry, nil, "", "", "")
 		assert.Contains(t, buf.String(), "No UI directory found")
 	})
 }
@@ -3312,7 +3312,7 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	users := []*configv1.User{userNoAuth}
 	authManager.SetUsers(users)
 
-	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
+	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager, nil)
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, nil, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
