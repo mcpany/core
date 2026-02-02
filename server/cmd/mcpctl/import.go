@@ -7,24 +7,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
 
-// ClaudeDesktopConfig represents the structure of claude_desktop_config.json
+// ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
-// MCPServerConfig represents a single server configuration in Claude Desktop
+// MCPServerConfig represents a single server configuration in Claude Desktop.
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
 	Env     map[string]string `json:"env,omitempty"`
 }
 
-// McpAnyConfig represents the target configuration structure for MCP Any
+// McpAnyConfig represents the target configuration structure for MCP Any.
 type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
@@ -51,8 +52,8 @@ func newImportCmd() *cobra.Command {
 		Use:   "import [path to claude_desktop_config.json]",
 		Short: "Import configuration from Claude Desktop",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			inputPath := args[0]
+		RunE: func(_ *cobra.Command, args []string) error {
+			inputPath := filepath.Clean(args[0])
 
 			// Read input file
 			data, err := os.ReadFile(inputPath)
@@ -93,7 +94,7 @@ func newImportCmd() *cobra.Command {
 
 			// Output
 			if outputPath != "" {
-				if err := os.WriteFile(outputPath, yamlData, 0644); err != nil {
+				if err := os.WriteFile(outputPath, yamlData, 0600); err != nil {
 					return fmt.Errorf("failed to write output file: %w", err)
 				}
 				fmt.Printf("Successfully imported configuration to %s\n", outputPath)
