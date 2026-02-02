@@ -10,6 +10,7 @@ test.describe('MCP Any UI E2E', () => {
   test.beforeEach(async ({ request, page }) => {
     // Seed state to replace mocks
     // We seed traffic to verify metrics and a service to verify health/active count.
+    // Use command_line_service to avoid SSRF blocking.
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
 
@@ -20,7 +21,10 @@ test.describe('MCP Any UI E2E', () => {
         services: [
             {
                 name: "seed-service",
-                http_service: { address: "http://localhost:1234" }
+                command_line_service: {
+                    command: "echo",
+                    args: ["seed-ready"]
+                }
             }
         ]
     };

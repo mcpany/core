@@ -8,13 +8,14 @@ import { test, expect } from '@playwright/test';
 test.describe('Tool Exploration', () => {
     test.beforeEach(async ({ page, request }) => {
         // Seed tools via services
-        // Note: input_schema is google.protobuf.Struct, so we pass object.
+        // Use command_line_service to avoid SSRF blocking on localhost addresses in CI.
         const seedData = {
             services: [
                 {
                     name: "weather-service",
-                    http_service: {
-                        address: "http://localhost:8081",
+                    command_line_service: {
+                        command: "echo",
+                        args: ["weather-service-ready"],
                         tools: [
                             {
                                 name: "weather-tool",
@@ -31,8 +32,9 @@ test.describe('Tool Exploration', () => {
                 },
                 {
                     name: "math-service",
-                    http_service: {
-                        address: "http://localhost:8082",
+                    command_line_service: {
+                        command: "echo",
+                        args: ["math-service-ready"],
                         tools: [
                             {name: "calculator", description: "Perform basic math"}
                         ]
