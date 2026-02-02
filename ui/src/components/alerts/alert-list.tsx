@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -38,38 +38,26 @@ import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
+interface AlertListProps {
+    alerts: Alert[];
+    loading?: boolean;
+    onRefresh: () => void;
+}
+
 /**
  * AlertList component.
+ * @param props - The component props.
+ * @param props.alerts - The list of alerts.
+ * @param props.loading - Loading state.
+ * @param props.onRefresh - callback to refresh.
  * @returns The rendered component.
  */
-export function AlertList() {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState(true);
+export function AlertList({ alerts, loading = false, onRefresh }: AlertListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
-
-  const fetchAlerts = async () => {
-    setLoading(true);
-    try {
-      const data = await apiClient.listAlerts();
-      setAlerts(data);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to load alerts",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAlerts();
-  }, []);
+  const [updating, setUpdating] = useState(false);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter(alert => {
@@ -86,13 +74,14 @@ export function AlertList() {
   }, [alerts, searchQuery, filterSeverity, filterStatus]);
 
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
+    setUpdating(true);
     try {
-        const updated = await apiClient.updateAlertStatus(id, newStatus);
-        setAlerts(prev => prev.map(a => a.id === id ? updated : a));
+        await apiClient.updateAlertStatus(id, newStatus);
         toast({
             title: "Status Updated",
             description: `Alert marked as ${newStatus}`,
         });
+        onRefresh();
     } catch (error) {
         console.error(error);
         toast({
@@ -100,6 +89,8 @@ export function AlertList() {
             description: "Failed to update status",
             variant: "destructive",
         });
+    } finally {
+        setUpdating(false);
     }
   };
 
@@ -162,8 +153,8 @@ export function AlertList() {
               <SelectItem value="resolved">Resolved</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" onClick={fetchAlerts} disabled={loading}>
-             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="icon" onClick={onRefresh} disabled={updating}>
+             <RefreshCw className={`h-4 w-4 ${updating ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </div>

@@ -60,8 +60,8 @@ func (m *Manager) seedData() {
 	m.CreateAlert(&Alert{ID: "AL-1024", Title: "High CPU Usage", Message: "CPU usage > 90% for 5m", Severity: SeverityCritical, Status: StatusActive, Service: "weather-service", Source: "System Monitor", Timestamp: now.Add(-5 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1023", Title: "API Latency Spike", Message: "P99 Latency > 2000ms", Severity: SeverityWarning, Status: StatusActive, Service: "api-gateway", Source: "Latency Watchdog", Timestamp: now.Add(-15 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1022", Title: "Disk Space Low", Message: "Volume /data at 85%", Severity: SeverityWarning, Status: StatusAcknowledged, Service: "database-primary", Source: "Disk Monitor", Timestamp: now.Add(-45 * time.Minute)})
-	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour)})
-	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour)})
+	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour), ResolvedAt: now.Add(-1 * time.Hour)})
+	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour), ResolvedAt: now.Add(-4 * time.Hour)})
 
 	// Seed Rules
 	m.CreateRule(&AlertRule{ID: "rule-1", Name: "High CPU", Metric: "cpu_usage", Operator: ">", Threshold: 90, Duration: "5m", Severity: SeverityCritical, Enabled: true, LastUpdated: now})
@@ -114,6 +114,15 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	}
 	// Update fields
 	if alert.Status != "" {
+		// If transitioning to Resolved, set ResolvedAt
+		if alert.Status == StatusResolved && existing.Status != StatusResolved {
+			existing.ResolvedAt = time.Now()
+		}
+		// If transitioning from Resolved to Active (re-open), clear ResolvedAt?
+		// Usually we don't clear it, or we create a new alert. But if we allow re-open:
+		if alert.Status != StatusResolved && existing.Status == StatusResolved {
+			existing.ResolvedAt = time.Time{}
+		}
 		existing.Status = alert.Status
 	}
 	// Can add more updatable fields here
