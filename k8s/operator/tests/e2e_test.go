@@ -102,7 +102,15 @@ nodes:
 			t.Fatalf("Failed to build ui image: %v", err)
 		}
 	} else {
-		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
+		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Checking if images exist...")
+		// Check if UI image exists, build if missing (CI workaround)
+		uiImage := fmt.Sprintf("mcpany/ui:%s", tag)
+		if err := exec.CommandContext(ctx, "docker", "image", "inspect", uiImage).Run(); err != nil {
+			t.Logf("Image %s missing locally, building it...", uiImage)
+			if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", uiImage, "-f", "ui/Dockerfile", "."); err != nil {
+				t.Fatalf("Failed to build ui image: %v", err)
+			}
+		}
 	}
 
 	// 5. Load Images into Kind
