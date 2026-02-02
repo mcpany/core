@@ -22,10 +22,17 @@ export interface User {
   profileIds: string[];
   /** The list of roles assigned to the user. */
   roles: string[];
+  /** User preferences (e.g. dashboard layout). */
+  preferences: { [key: string]: string };
+}
+
+export interface User_PreferencesEntry {
+  key: string;
+  value: string;
 }
 
 function createBaseUser(): User {
-  return { id: "", authentication: undefined, profileIds: [], roles: [] };
+  return { id: "", authentication: undefined, profileIds: [], roles: [], preferences: {} };
 }
 
 export const User: MessageFns<User> = {
@@ -42,6 +49,9 @@ export const User: MessageFns<User> = {
     for (const v of message.roles) {
       writer.uint32(34).string(v!);
     }
+    globalThis.Object.entries(message.preferences).forEach(([key, value]: [string, string]) => {
+      User_PreferencesEntry.encode({ key: key as any, value }, writer.uint32(42).fork()).join();
+    });
     return writer;
   },
 
@@ -84,6 +94,17 @@ export const User: MessageFns<User> = {
           message.roles.push(reader.string());
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          const entry5 = User_PreferencesEntry.decode(reader, reader.uint32());
+          if (entry5.value !== undefined) {
+            message.preferences[entry5.key] = entry5.value;
+          }
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -101,6 +122,15 @@ export const User: MessageFns<User> = {
         ? object.profile_ids.map((e: any) => globalThis.String(e))
         : [],
       roles: globalThis.Array.isArray(object?.roles) ? object.roles.map((e: any) => globalThis.String(e)) : [],
+      preferences: isObject(object.preferences)
+        ? (globalThis.Object.entries(object.preferences) as [string, any][]).reduce(
+          (acc: { [key: string]: string }, [key, value]: [string, any]) => {
+            acc[key] = globalThis.String(value);
+            return acc;
+          },
+          {},
+        )
+        : {},
     };
   },
 
@@ -118,6 +148,15 @@ export const User: MessageFns<User> = {
     if (message.roles?.length) {
       obj.roles = message.roles;
     }
+    if (message.preferences) {
+      const entries = globalThis.Object.entries(message.preferences) as [string, string][];
+      if (entries.length > 0) {
+        obj.preferences = {};
+        entries.forEach(([k, v]) => {
+          obj.preferences[k] = v;
+        });
+      }
+    }
     return obj;
   },
 
@@ -132,6 +171,91 @@ export const User: MessageFns<User> = {
       : undefined;
     message.profileIds = object.profileIds?.map((e) => e) || [];
     message.roles = object.roles?.map((e) => e) || [];
+    message.preferences = (globalThis.Object.entries(object.preferences ?? {}) as [string, string][]).reduce(
+      (acc: { [key: string]: string }, [key, value]: [string, string]) => {
+        if (value !== undefined) {
+          acc[key] = globalThis.String(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBaseUser_PreferencesEntry(): User_PreferencesEntry {
+  return { key: "", value: "" };
+}
+
+export const User_PreferencesEntry: MessageFns<User_PreferencesEntry> = {
+  encode(message: User_PreferencesEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): User_PreferencesEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUser_PreferencesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): User_PreferencesEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: User_PreferencesEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<User_PreferencesEntry>, I>>(base?: I): User_PreferencesEntry {
+    return User_PreferencesEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<User_PreferencesEntry>, I>>(object: I): User_PreferencesEntry {
+    const message = createBaseUser_PreferencesEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
     return message;
   },
 };
@@ -147,6 +271,10 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null;
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
