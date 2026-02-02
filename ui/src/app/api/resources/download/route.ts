@@ -5,6 +5,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * GET handles the download of a specific resource.
+ *
+ * It proxies the request to the backend server to retrieve resource content,
+ * decoding base64 blobs if necessary, and setting appropriate headers for file download.
+ *
+ * @param request - The incoming Next.js request containing query parameters (uri, name, token).
+ * @returns A NextResponse containing the file content or an error message.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const uri = searchParams.get('uri');

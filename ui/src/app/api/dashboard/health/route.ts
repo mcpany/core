@@ -14,6 +14,15 @@ interface BackendService {
   // Other fields we might use later
 }
 
+/**
+ * GET retrieves the health status of upstream services.
+ *
+ * It fetches the list of services from the backend and maps them to a simplified
+ * health status (healthy, unhealthy, inactive) for the dashboard.
+ *
+ * @param request - The incoming request, used to pass through authorization headers.
+ * @returns A NextResponse containing the list of service health statuses.
+ */
 export async function GET(request: Request) {
   const backendUrl = process.env.BACKEND_URL || 'http://localhost:8080';
   const authHeader = request.headers.get('Authorization');
