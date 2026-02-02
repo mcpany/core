@@ -2770,6 +2770,14 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			return fmt.Errorf("shell injection detected: value contains backtick inside single-quoted argument (potential interpreter abuse)")
 		}
 
+		// If the command is an interpreter, we must be extra paranoid even inside single quotes.
+		// This prevents compound commands (e.g. "sh -c 'ls; id'") and pipe chaining (e.g. "awk 'print | sh'").
+		if isInterpreter(command) {
+			if strings.ContainsAny(val, ";|&") {
+				return fmt.Errorf("shell injection detected: value contains control character ';', '|', or '&' inside single-quoted argument for interpreter")
+			}
+		}
+
 		// Block dangerous function calls (system, exec, popen, eval) followed by open parenthesis
 		// We use a case-insensitive check for robustness, although most interpreters are case-sensitive.
 		// We normalize by removing whitespace to detect "system (" or "system\t(".
@@ -2782,7 +2790,12 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		}
 		cleanVal := strings.ToLower(b.String())
 
-		dangerousCalls := []string{"system(", "exec(", "popen(", "eval("}
+		// Expanded list of dangerous calls for various languages (Ruby, Perl, PHP, Python)
+		dangerousCalls := []string{
+			"system(", "exec(", "popen(", "eval(",
+			"syscall(", "open(", "shell_exec(", "passthru(", "proc_open(",
+			"spawn(", "pty.", "open3.", "process.",
+		}
 		for _, call := range dangerousCalls {
 			if strings.Contains(cleanVal, call) {
 				return fmt.Errorf("shell injection detected: value contains dangerous function call %q inside single-quoted argument (potential interpreter abuse)", call)
@@ -2856,18 +2869,31 @@ func checkBacktickInjection(val, command string) error {
 	// Backticks in Shell are command substitution (Level 0 danger).
 	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
 	// we must enforce strict checks.
-	if !isInterpreter(command) {
+	// Note: Ruby, Perl, PHP, Shells use backticks for execution, so they are NOT safe.
+	if !isSafeBacktickInterpreter(command) {
 		const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\ "
 		if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside backticks", val[idx])
 		}
 	}
-	// For interpreters (like JS), we already handled specific injections above.
+	// For safe interpreters (like JS), we already handled specific injections above.
 	// We should still prevent breaking out of backticks.
 	if strings.Contains(val, "`") {
 		return fmt.Errorf("backtick injection detected")
 	}
 	return nil
+}
+
+func isSafeBacktickInterpreter(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	// Only Node/JS and Go treat backticks as string literals/templates without execution side effects (mostly).
+	safe := []string{"node", "nodejs", "bun", "deno", "go"}
+	for _, s := range safe {
+		if base == s || strings.HasPrefix(base, s) {
+			return true
+		}
+	}
+	return false
 }
 
 func checkUnquotedInjection(val, command string) error {
@@ -2893,7 +2919,12 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{
+		"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go",
+		"awk", "gawk", "nawk", "mawk",
+		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
+		"pwsh", "powershell", "cmd",
+	}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
