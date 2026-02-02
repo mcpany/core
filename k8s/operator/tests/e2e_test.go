@@ -105,6 +105,17 @@ nodes:
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
 
+	// ⚡ BOLT: Robustness Fix
+	// Ensure UI image exists even if skipped, as CI might miss loading the artifact but still run this test.
+	uiImage := fmt.Sprintf("mcpany/ui:%s", tag)
+	if !imageExists(t, ctx, uiImage) {
+		t.Logf("Image %s not found locally (likely missing in CI artifact). Building it now...", uiImage)
+		// Build from rootDir context
+		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", uiImage, "-f", "ui/Dockerfile", "."); err != nil {
+			t.Fatalf("Failed to build ui image fallback: %v", err)
+		}
+	}
+
 	// 5. Load Images into Kind
 	t.Log("Loading images into Kind...")
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/server:%s", tag), "--name", clusterName); err != nil {
@@ -287,4 +298,10 @@ func getFreePort() (int, error) {
 	}
 	defer l.Close()
 	return l.Addr().(*net.TCPAddr).Port, nil
+}
+
+// imageExists checks if a docker image exists locally.
+func imageExists(t *testing.T, ctx context.Context, image string) bool {
+	cmd := exec.CommandContext(ctx, "docker", "image", "inspect", image)
+	return cmd.Run() == nil
 }
