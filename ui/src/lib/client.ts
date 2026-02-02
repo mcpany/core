@@ -965,6 +965,31 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Lists all alert rules.
+     * @returns A promise that resolves to a list of alert rules.
+     */
+    listAlertRules: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules');
+        if (!res.ok) throw new Error('Failed to fetch alert rules');
+        return res.json();
+    },
+
+    /**
+     * Creates a new alert rule.
+     * @param rule The rule to create.
+     * @returns A promise that resolves to the created rule.
+     */
+    createAlertRule: async (rule: any) => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to create alert rule');
+        return res.json();
+    },
+
     // Stack Management (Collections)
 
     /**
