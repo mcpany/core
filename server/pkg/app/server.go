@@ -1572,6 +1572,9 @@ func (a *Application) runServerMode(
 	// We use a prefix match via stripping.
 	// NOTE: We manually handle the path parsing because we support subpaths like /sse or /messages
 	mux.HandleFunc("/mcp/u/", func(w http.ResponseWriter, r *http.Request) {
+		// Shadow ctx to avoid data race with runServerMode's ctx and use Request Context
+		ctx := r.Context()
+
 		// Expected path: /mcp/u/{uid}/profile/{profileId}/...
 		parts := strings.Split(r.URL.Path, "/")
 		// parts[0] = ""
@@ -1711,7 +1714,7 @@ func (a *Application) runServerMode(
 		}
 
 		// Inject context
-		ctx := auth.ContextWithUser(r.Context(), uid)
+		ctx = auth.ContextWithUser(ctx, uid)
 		ctx = auth.ContextWithProfileID(ctx, profileID)
 		ctx = auth.ContextWithRoles(ctx, user.GetRoles())
 
