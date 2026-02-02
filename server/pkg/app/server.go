@@ -258,6 +258,10 @@ type Application struct {
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
+
+	// systemWebhooks stores the configured system webhooks (MVP)
+	systemWebhooks   []*config_v1.SystemWebhookConfig
+	systemWebhooksMu sync.RWMutex
 }
 
 type statsCacheEntry struct {
@@ -1854,6 +1858,18 @@ func (a *Application) runServerMode(
 			a.listCredentialsHandler(w, r)
 		case http.MethodPost:
 			a.createCredentialHandler(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	// Webhooks API
+	mux.Handle("/webhooks", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			a.listWebhooksHandler(w, r)
+		case http.MethodPost:
+			a.createWebhookHandler(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}

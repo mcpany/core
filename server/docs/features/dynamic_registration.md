@@ -16,3 +16,31 @@ Instead of manually defining every tool, you can point MCP Any to a service defi
 
 - **Reduced Maintenance**: Automatic updates when upstream APIs change.
 - **Consistency**: Ensures tools match the actual service capabilities.
+
+## Configuration Examples
+
+### OpenAPI Service
+
+```yaml
+upstream_services:
+  - name: "petstore-api"
+    openapi_service:
+      address: "https://petstore.swagger.io/v2"
+      spec_url: "https://petstore.swagger.io/v2/swagger.json"
+      # Optional: Override/Customize specific tools
+      tools:
+        - name: "getPetById"
+          description: "Retrieves a pet by its ID"
+```
+
+### gRPC Service
+
+```yaml
+upstream_services:
+  - name: "payment-service"
+    grpc_service:
+      address: "localhost:50051"
+      use_reflection: true
+      tls_config:
+        insecure_skip_verify: true
+```

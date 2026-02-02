@@ -54,6 +54,31 @@ upstream_services:
         bucket: "my-gcs-bucket"
 ```
 
+#### 4. ZIP Archive
+
+```yaml
+upstream_services:
+  - name: "archive-fs"
+    filesystem:
+      zip:
+        file_path: "/path/to/archive.zip"
+      read_only: true
+```
+
+#### 5. SFTP
+
+```yaml
+upstream_services:
+  - name: "sftp-fs"
+    filesystem:
+      sftp:
+        address: "sftp.example.com:22"
+        username: "user"
+        password: "password"
+        # Or use key_path
+        # key_path: "/path/to/private/key"
+```
+
 ## Tools Exposed
 
 When a filesystem service is configured, it automatically registers the following tools:
