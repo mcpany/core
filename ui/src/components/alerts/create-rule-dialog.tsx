@@ -25,9 +25,10 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/client";
+import { AlertRule } from "./types";
 
 /**
  * CreateRuleDialog component.
@@ -35,15 +36,56 @@ import { useToast } from "@/hooks/use-toast";
  */
 export function CreateRuleDialog() {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSave = () => {
-    // In a real app, this would make an API call
-    toast({
-        title: "Rule Created",
-        description: "Alert rule has been successfully created."
-    });
-    setOpen(false);
+  const [formData, setFormData] = useState<Partial<AlertRule>>({
+    name: "",
+    severity: "warning",
+    metric: "",
+    operator: ">",
+    threshold: 0,
+    duration: "5m",
+    enabled: true
+  });
+
+  const handleSave = async () => {
+    if (!formData.name || !formData.metric) {
+        toast({
+            title: "Validation Error",
+            description: "Name and Metric are required.",
+            variant: "destructive"
+        });
+        return;
+    }
+
+    setLoading(true);
+    try {
+        await apiClient.createAlertRule(formData);
+        toast({
+            title: "Rule Created",
+            description: "Alert rule has been successfully created."
+        });
+        setOpen(false);
+        setFormData({
+            name: "",
+            severity: "warning",
+            metric: "",
+            operator: ">",
+            threshold: 0,
+            duration: "5m",
+            enabled: true
+        });
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Error",
+            description: "Failed to create alert rule",
+            variant: "destructive"
+        });
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -65,13 +107,22 @@ export function CreateRuleDialog() {
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input id="name" placeholder="e.g. High CPU Warning" className="col-span-3" />
+            <Input
+                id="name"
+                placeholder="e.g. High CPU Warning"
+                className="col-span-3"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="severity" className="text-right">
               Severity
             </Label>
-            <Select defaultValue="warning">
+            <Select
+                value={formData.severity}
+                onValueChange={(v: any) => setFormData({...formData, severity: v})}
+            >
                 <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select severity" />
                 </SelectTrigger>
@@ -83,40 +134,69 @@ export function CreateRuleDialog() {
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="service" className="text-right">
-              Service
+            <Label htmlFor="metric" className="text-right">
+              Metric
             </Label>
-            <Select>
+            <Input
+                id="metric"
+                placeholder="e.g. cpu_usage"
+                className="col-span-3"
+                value={formData.metric}
+                onChange={(e) => setFormData({...formData, metric: e.target.value})}
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="operator" className="text-right">
+              Operator
+            </Label>
+            <Select
+                value={formData.operator}
+                onValueChange={(v) => setFormData({...formData, operator: v})}
+            >
                 <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select service (optional)" />
+                    <SelectValue placeholder="Select operator" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="all">All Services</SelectItem>
-                    <SelectItem value="weather-service">weather-service</SelectItem>
-                    <SelectItem value="api-gateway">api-gateway</SelectItem>
-                    <SelectItem value="database">database</SelectItem>
+                    <SelectItem value=">">{">"}</SelectItem>
+                    <SelectItem value="<">{"<"}</SelectItem>
+                    <SelectItem value="=">{"="}</SelectItem>
+                    <SelectItem value=">=">{">="}</SelectItem>
+                    <SelectItem value="<=">{"<="}</SelectItem>
                 </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="condition" className="text-right mt-2">
-              Condition
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="threshold" className="text-right">
+              Threshold
             </Label>
-            <div className="col-span-3 space-y-2">
-                <Textarea
-                    id="condition"
-                    placeholder="e.g. cpu_usage > 90 AND duration > 5m"
-                    className="font-mono text-xs"
-                />
-                <p className="text-[10px] text-muted-foreground">
-                    Supports PromQL or simple expression syntax.
-                </p>
-            </div>
+            <Input
+                id="threshold"
+                type="number"
+                placeholder="90"
+                className="col-span-3"
+                value={formData.threshold}
+                onChange={(e) => setFormData({...formData, threshold: parseFloat(e.target.value)})}
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="duration" className="text-right">
+              Duration
+            </Label>
+            <Input
+                id="duration"
+                placeholder="e.g. 5m"
+                className="col-span-3"
+                value={formData.duration}
+                onChange={(e) => setFormData({...formData, duration: e.target.value})}
+            />
           </div>
         </div>
         <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Create Rule</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>Cancel</Button>
+            <Button onClick={handleSave} disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Create Rule
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

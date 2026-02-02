@@ -7,19 +7,35 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
+import { Alert } from "./types";
+import { useMemo } from "react";
+
+interface AlertStatsProps {
+  alerts: Alert[];
+}
 
 /**
  * AlertStats component.
+ * @param props - The component props.
  * @returns The rendered component.
  */
-export function AlertStats() {
-  // Mock data - in a real app, this would come from props or a query
-  const stats = {
-    activeCritical: 3,
-    activeWarning: 12,
-    mttr: "14m", // Mean Time To Resolution
-    totalToday: 45
-  };
+export function AlertStats({ alerts }: AlertStatsProps) {
+  const stats = useMemo(() => {
+    const activeCritical = alerts.filter(a => a.severity === "critical" && a.status === "active").length;
+    const activeWarning = alerts.filter(a => a.severity === "warning" && a.status === "active").length;
+
+    // Total today
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const totalToday = alerts.filter(a => new Date(a.timestamp) >= today).length;
+
+    return {
+        activeCritical,
+        activeWarning,
+        mttr: "N/A",
+        totalToday
+    };
+  }, [alerts]);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -31,7 +47,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
           <p className="text-xs text-muted-foreground">
-            +1 since last hour
+            Current active critical alerts
           </p>
         </CardContent>
       </Card>
@@ -43,7 +59,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
           <p className="text-xs text-muted-foreground">
-            -2 since last hour
+            Current active warnings
           </p>
         </CardContent>
       </Card>
@@ -55,7 +71,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.mttr}</div>
           <p className="text-xs text-muted-foreground">
-            -2m from yesterday
+            Avg resolution time
           </p>
         </CardContent>
       </Card>
@@ -67,7 +83,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalToday}</div>
           <p className="text-xs text-muted-foreground">
-            +12% from average
+            Recorded today
           </p>
         </CardContent>
       </Card>
