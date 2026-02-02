@@ -1,6 +1,7 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+// Package trace provides a lightweight tracing system for the application.
 package trace
 
 import (

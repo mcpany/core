@@ -269,7 +269,7 @@ func (d *Debugger) Execute(ctx context.Context, req *tool.ExecutionRequest, next
 	result, err := next(ctx, req)
 
 	if err != nil {
-		span.Status = "error"
+		span.Status = statusError
 		span.ErrorMessage = err.Error()
 	} else {
 		if resMap, ok := result.(map[string]any); ok {
@@ -281,3 +281,5 @@ func (d *Debugger) Execute(ctx context.Context, req *tool.ExecutionRequest, next
 
 	return result, err
 }
+
+const statusError = "error"

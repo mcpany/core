@@ -257,14 +257,14 @@ type PostCallHook interface {
 // endpoint. It handles the marshalling of JSON inputs to protobuf messages and
 // invoking the gRPC method.
 type GRPCTool struct {
-	tool           *v1.Tool
-	mcpTool        *mcp.Tool
-	mcpToolOnce    sync.Once
-	poolManager    *pool.Manager
-	serviceID      string
-	method         protoreflect.MethodDescriptor
-	requestMessage protoreflect.ProtoMessage
-	cache          *configv1.CacheConfig
+	tool              *v1.Tool
+	mcpTool           *mcp.Tool
+	mcpToolOnce       sync.Once
+	poolManager       *pool.Manager
+	serviceID         string
+	method            protoreflect.MethodDescriptor
+	requestMessage    protoreflect.ProtoMessage
+	cache             *configv1.CacheConfig
 	resilienceManager *resilience.Manager
 }
 
@@ -1354,7 +1354,7 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	var resultMap map[string]any
 	if err := fastJSON.Unmarshal(responseBytes, &resultMap); err != nil {
 		// If unmarshalling to a map fails, return the raw string content
-		return string(responseBytes), nil //nolint:nilerr // intentional fallback for non-JSON responses
+		return string(responseBytes), nil
 	}
 
 	return resultMap, nil

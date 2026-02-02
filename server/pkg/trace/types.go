@@ -33,7 +33,7 @@ func (s *Span) AddChild(child *Span) {
 }
 
 // Collector defines the interface for collecting traces.
-// (Keeping it for future use or if needed by Debugger implementation details)
+// (Keeping it for future use or if needed by Debugger implementation details).
 type Collector interface {
 	// AddSpan adds a completed span to the trace.
 	AddSpan(traceID string, span *Span)
