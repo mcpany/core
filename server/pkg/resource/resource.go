@@ -34,7 +34,7 @@ type Resource interface {
 	// Read retrieves the content of the resource.
 	//
 	// Parameters:
-	//   - ctx: The context for the request.
+	//   - ctx: context.Context. The context for the request.
 	//
 	// Returns:
 	//   - *mcp.ReadResourceResult: The content of the resource.
@@ -44,7 +44,7 @@ type Resource interface {
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
 	//
 	// Parameters:
-	//   - ctx: The context for the subscription.
+	//   - ctx: context.Context. The context for the subscription.
 	//
 	// Returns:
 	//   - error: An error if the subscription fails.
@@ -59,7 +59,7 @@ type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
 	// Parameters:
-	//   - uri: The URI of the resource to retrieve.
+	//   - uri: string. The URI of the resource to retrieve.
 	//
 	// Returns:
 	//   - Resource: The resource instance if found.
@@ -69,13 +69,13 @@ type ManagerInterface interface {
 	// AddResource adds a new resource to the manager.
 	//
 	// Parameters:
-	//   - resource: The resource to add.
+	//   - resource: Resource. The resource to add.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
 	//
 	// Parameters:
-	//   - uri: The URI of the resource to remove.
+	//   - uri: string. The URI of the resource to remove.
 	RemoveResource(uri string)
 
 	// ListResources returns a slice of all resources currently in the manager.
@@ -87,13 +87,13 @@ type ManagerInterface interface {
 	// OnListChanged registers a callback function to be called when the list of resources changes.
 	//
 	// Parameters:
-	//   - f: The callback function to invoke.
+	//   - f: func(). The callback function to invoke.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
 	//
 	// Parameters:
-	//   - serviceID: The ID of the service whose resources should be cleared.
+	//   - serviceID: string. The ID of the service whose resources should be cleared.
 	ClearResourcesForService(serviceID string)
 }
 
@@ -120,7 +120,7 @@ func NewManager() *Manager {
 // GetResource retrieves a resource from the manager by its URI.
 //
 // Parameters:
-//   - uri: The URI of the resource to retrieve.
+//   - uri: string. The URI of the resource to retrieve.
 //
 // Returns:
 //   - Resource: The resource instance if found.
@@ -138,7 +138,7 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 // After adding the resource, it triggers the OnListChanged callback if one is registered.
 //
 // Parameters:
-//   - resource: The resource to be added.
+//   - resource: Resource. The resource to be added.
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
@@ -157,7 +157,7 @@ func (rm *Manager) AddResource(resource Resource) {
 // If the resource exists, it is removed, and the OnListChanged callback is triggered if one is registered.
 //
 // Parameters:
-//   - uri: The URI of the resource to be removed.
+//   - uri: string. The URI of the resource to be removed.
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
@@ -218,7 +218,7 @@ func (rm *Manager) ListResources() []Resource {
 // of resources is modified by adding or removing a resource.
 //
 // Parameters:
-//   - f: The callback function to be set.
+//   - f: func(). The callback function to be set.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -228,8 +228,8 @@ func (rm *Manager) OnListChanged(f func()) {
 // Subscribe finds a resource by its URI and calls its Subscribe method.
 //
 // Parameters:
-//   - ctx: The context for the subscription.
-//   - uri: The URI of the resource to subscribe to.
+//   - ctx: context.Context. The context for the subscription.
+//   - uri: string. The URI of the resource to subscribe to.
 //
 // Returns:
 //   - error: An error if the resource is not found or if the subscription fails.
@@ -244,7 +244,7 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 // ClearResourcesForService removes all resources associated with a given service ID.
 //
 // Parameters:
-//   - serviceID: The ID of the service whose resources should be cleared.
+//   - serviceID: string. The ID of the service whose resources should be cleared.
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

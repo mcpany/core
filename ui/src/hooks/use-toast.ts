@@ -181,7 +181,11 @@ function toast({ ...props }: Toast) {
 
 /**
  * Hook to manage toast notifications.
- * @returns An object containing the current toasts and functions to manage them.
+ *
+ * @returns An object containing:
+ * - toasts: The list of active toasts.
+ * - toast: A function to dispatch a new toast.
+ * - dismiss: A function to dismiss a specific toast by ID.
  */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
