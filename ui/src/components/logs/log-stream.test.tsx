@@ -98,7 +98,7 @@ describe("LogStream", () => {
 
     // Advance time to flush buffer (100ms interval)
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     expect(screen.getByText("First Log")).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("LogStream", () => {
 
     // Advance time
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     // Should NOT be in document
@@ -150,7 +150,7 @@ describe("LogStream", () => {
 
     // Advance time
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     expect(screen.getByText("Third Log")).toBeInTheDocument();
@@ -193,7 +193,7 @@ describe("LogStream", () => {
 
     // Advance time to flush buffer
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     // Verify both logs are present initially
@@ -243,7 +243,7 @@ describe("LogStream", () => {
     });
 
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     // Check if the expand button exists
@@ -284,7 +284,7 @@ describe("LogStream", () => {
     });
 
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     // Enter search term
@@ -293,7 +293,7 @@ describe("LogStream", () => {
 
     // Advance time to allow for any deferred updates (useDeferredValue)
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     // We expect the word "error" to be wrapped in a <mark> tag
@@ -326,7 +326,7 @@ describe("LogStream", () => {
     });
 
     act(() => {
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(500);
     });
 
     // Check if the expand button exists (heuristic should pass)

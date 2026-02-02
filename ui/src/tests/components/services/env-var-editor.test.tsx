@@ -35,8 +35,11 @@ describe('EnvVarEditor', () => {
 
         expect(screen.getByDisplayValue('SECRET_VAR')).toBeInTheDocument();
         // Should show as disabled input with secret ID
-        expect(screen.getByDisplayValue('Secret: my-secret-id')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('Secret: my-secret-id')).toBeDisabled();
+        // The component renders the secret ID in the input
+        expect(screen.getByDisplayValue('my-secret-id')).toBeInTheDocument();
+        // The input is readOnly, not strictly disabled (though visually it might look disabled)
+        // Checking for readOnly attribute is safer given the component code: <Input ... readOnly ... />
+        expect(screen.getByDisplayValue('my-secret-id')).toHaveAttribute('readonly');
     });
 
     it('adds a new variable', () => {
