@@ -134,15 +134,19 @@ export const MetricsOverview = memo(function MetricsOverview() {
     };
   }, [serviceId]);
 
-  if (metrics.length === 0) {
-    return <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>;
-  }
+  // Initialize with default metrics if empty to ensure UI stability
+  const displayMetrics = metrics.length > 0 ? metrics : [
+    { label: "Total Requests", value: "0", icon: "Activity", change: "0%", trend: "neutral" },
+    { label: "Avg Latency", value: "0ms", icon: "Clock", change: "0%", trend: "neutral" },
+    { label: "Error Rate", value: "0%", icon: "AlertCircle", change: "0%", trend: "neutral" },
+    { label: "Active Services", value: "0", icon: "Server", change: "0", trend: "neutral" }
+  ];
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => (
-          <MetricItem key={metric.label} metric={metric} />
+        {displayMetrics.map((metric) => (
+          <MetricItem key={metric.label} metric={metric as any} />
         ))}
       </div>
       <SystemHealthCard />
