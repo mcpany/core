@@ -777,6 +777,11 @@ jobs:
         with:
           name: image-operator
 
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
