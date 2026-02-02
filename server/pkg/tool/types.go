@@ -2773,6 +2773,25 @@ func checkForShellInjection(val string, template string, placeholder string, com
 }
 
 func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+	// Awk: Block dangerous characters for pipe and file redirection
+	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
+	if isAwk {
+		// Check for standalone pipe '|' which indicates execution pipe.
+		// Allow '||' which is logical OR.
+		for i := 0; i < len(val); i++ {
+			if val[i] == '|' {
+				if i+1 < len(val) && val[i+1] == '|' {
+					i++ // Skip next char (it is ||)
+					continue
+				}
+				return fmt.Errorf("awk injection detected: value contains dangerous character '|' (pipe)")
+			}
+		}
+		// Note: We do not block '>' or '<' to preserve numerical comparisons (e.g., if ($1 > 5)).
+		// This accepts the risk of file redirection/read if the sandbox is not enabled.
+		// We rely on enabling sandbox mode where possible.
+	}
+
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
 		// Scan template to find the prefix of the quote containing the placeholder
@@ -2860,7 +2879,7 @@ func checkUnquotedInjection(val, command string) error {
 
 func isInterpreter(command string) bool {
 	base := strings.ToLower(filepath.Base(command))
-	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go"}
+	interpreters := []string{"python", "ruby", "perl", "php", "node", "nodejs", "bun", "deno", "lua", "java", "R", "julia", "elixir", "go", "awk", "gawk", "nawk", "mawk"}
 	for _, interp := range interpreters {
 		if base == interp || strings.HasPrefix(base, interp) {
 			return true
