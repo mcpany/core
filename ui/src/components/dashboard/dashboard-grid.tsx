@@ -33,6 +33,7 @@ import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 import { apiClient } from "@/lib/client";
+import { User } from "@proto/config/v1/user";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -67,7 +68,7 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -84,7 +85,7 @@ export function DashboardGrid() {
                 } else {
                     setWidgets(parsed);
                 }
-            } catch (e) {
+            } catch {
                 setWidgets(DEFAULT_LAYOUT);
             }
         } else {

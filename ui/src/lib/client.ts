@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { User } from '@proto/config/v1/user';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -1266,7 +1267,7 @@ export const apiClient = {
      * @param id The ID of the user.
      * @returns A promise that resolves to the user.
      */
-    getUser: async (id: string) => {
+    getUser: async (id: string): Promise<User> => {
         const res = await fetchWithAuth(`/api/v1/users/${id}`);
         if (!res.ok) throw new Error('Failed to fetch user');
         return res.json();
