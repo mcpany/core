@@ -13,6 +13,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Skill, SkillService } from '@/lib/skill-service';
 import { toast } from 'sonner';
 import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
+import { ToolSelector } from '@/components/skills/tool-selector';
 
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
@@ -160,12 +161,11 @@ export default function SkillWizard() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="tools">Allowed Tools (comma separated)</Label>
-                <Input
+                <Label htmlFor="tools">Allowed Tools</Label>
+                <ToolSelector
                     id="tools"
-                    value={skill.allowedTools?.join(', ') || ''}
-                    onChange={(e) => handleChange('allowedTools', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                    placeholder="tool1, tool2"
+                    value={skill.allowedTools || []}
+                    onChange={(val) => handleChange('allowedTools', val)}
                 />
               </div>
             </div>
