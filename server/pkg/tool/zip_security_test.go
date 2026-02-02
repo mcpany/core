@@ -5,7 +5,6 @@ package tool
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,17 +30,10 @@ func TestZipSecurity(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 
-		// BEFORE FIX: This should NOT return an error (it should pass validation)
-		// AFTER FIX: This should return "shell injection detected" error.
-
-		if err == nil {
-			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
-		} else {
-			// If error is "executable file not found", it means validation passed -> Vulnerable
-			// The validation error we want is "shell injection detected"
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
-			}
+		// We use unquoted input with space ("sh -c ..."). Since zip is in shell list, it blocks spaces.
+		assert.Error(t, err)
+		if err != nil {
+			assert.Contains(t, err.Error(), "shell injection detected")
 		}
 	})
 
@@ -56,12 +48,9 @@ func TestZipSecurity(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 
-		if err == nil {
-			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
-		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
-			}
+		assert.Error(t, err)
+		if err != nil {
+			assert.Contains(t, err.Error(), "shell injection detected")
 		}
 	})
 
@@ -76,12 +65,9 @@ func TestZipSecurity(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 
-		if err == nil {
-			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
-		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
-			}
+		assert.Error(t, err)
+		if err != nil {
+			assert.Contains(t, err.Error(), "shell injection detected")
 		}
 	})
 
@@ -96,12 +82,9 @@ func TestZipSecurity(t *testing.T) {
 
 		_, err := tool.Execute(context.Background(), req)
 
-		if err == nil {
-			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
-		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
-				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
-			}
+		assert.Error(t, err)
+		if err != nil {
+			assert.Contains(t, err.Error(), "shell injection detected")
 		}
 	})
 

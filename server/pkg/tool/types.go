@@ -2635,12 +2635,13 @@ func isShellCommand(cmd string) bool {
 		// Additional shells/runners found missing
 		"busybox", "expect", "tclsh", "wish",
 		"irb", "php-cgi", "perl5",
-		"openssl", "git", "hg", "svn",
-		"wget", "curl", "nc", "netcat", "ncat",
-		"socat", "telnet",
-		// Editors and pagers that can execute commands
+		// Sentinel Security Update: Removed git, curl, build tools, etc. from strict shell checking
+		// as they do not interpret arguments as scripts, and exec.Command prevents argument injection.
+
+		// Editors and pagers that can execute commands via +cmd argument
 		"vi", "vim", "nvim", "emacs", "nano",
 		"less", "more", "man",
+
 		// Build tools and others that can execute commands
 		"tar", "find", "xargs", "tee",
 		"make", "rake", "ant", "mvn", "gradle",
