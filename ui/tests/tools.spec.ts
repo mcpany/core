@@ -4,71 +4,79 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedServices, cleanupServices, seedUser, cleanupUser } from './e2e/test-data';
 
-test.describe('Tool Exploration', () => {
-    test.beforeEach(async ({ page }) => {
-        // Mock tools endpoint directly (matching ToolsPage fetch)
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({
-                json: {
-                    tools: [
-                        {
-                            name: 'weather-tool',
-                            description: 'Get weather for a location',
-                            source: 'configured',
-                            serviceId: 'weather-service',
-                            inputSchema: {
-                                type: 'object',
-                                properties: {
-                                    location: { type: 'string', description: 'City name' }
-                                }
-                            }
-                        },
-                        {
-                            name: 'calculator',
-                            description: 'Perform basic math',
-                            source: 'discovered',
-                            serviceId: 'math-service'
-                        }
-                    ]
-                }
-            });
-        });
+test.describe('Tools Management', () => {
+    // Run sequentially to avoid DB collision
+    test.describe.configure({ mode: 'serial' });
+
+    test.beforeEach(async ({ request, page }) => {
+        await seedServices(request);
+        await seedUser(request, "tools-admin");
+
+        // Login
+        await page.goto('/login');
+        await page.fill('input[name="username"]', 'tools-admin');
+        await page.fill('input[name="password"]', 'password');
+        await page.click('button[type="submit"]');
+        await expect(page).toHaveURL('/', { timeout: 15000 });
     });
 
-    test('should list available tools', async ({ page }) => {
-        await page.goto('/tools');
-        // Wait for loading to finish (if applicable, though mock is instant)
-        // Adjust selector if you add a specific loading state for tools
-
-        await expect(page.getByText('weather-tool').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Get weather for a location').first()).toBeVisible({ timeout: 10000 });
-
-        await expect(page.getByText('calculator').first()).toBeVisible({ timeout: 10000 });
-        await expect(page.getByText('Perform basic math').first()).toBeVisible({ timeout: 10000 });
+    test.afterEach(async ({ request }) => {
+        await cleanupServices(request);
+        await cleanupUser(request, "tools-admin");
     });
 
-    test.skip('should show empty state when no tools', async ({ page }) => {
-        // Unroute previous mock from beforeEach
-        await page.unroute((url) => url.pathname.includes('/api/v1/tools'));
-        await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-            await route.fulfill({ json: { tools: [] } });
-        });
-
+    test('should list available tools from backend', async ({ page }) => {
         await page.goto('/tools');
-        // The table shows one row with "No tools found." when empty
-        await expect(page.locator('table tbody tr')).toHaveCount(1);
-        await expect(page.locator('text=No tools found.')).toBeVisible();
+        // Check for real seeded tools
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('get_user').first()).toBeVisible();
+        await expect(page.getByText('calculator').first()).toBeVisible();
     });
 
-    test('should allow inspecting a tool', async ({ page }) => {
+    test('should support bulk actions', async ({ page }) => {
         await page.goto('/tools');
-        // Inspection relies on schema being present in the tool definition
-        // The mock in beforeEach includes a basic definition
-        const toolRow = page.locator('tr').filter({ hasText: 'weather-tool' });
-        await toolRow.getByText('Inspect').click();
+        await expect(page.getByText('process_payment').first()).toBeVisible({ timeout: 10000 });
 
-        await expect(page.getByText('Schema', { exact: true }).first()).toBeVisible();
-        await expect(page.getByText('weather-tool').first()).toBeVisible();
+        // Select 'process_payment'
+        const row1 = page.locator('tr', { hasText: 'process_payment' });
+        // Radix Checkbox is usually a button with role="checkbox"
+        await row1.getByRole('checkbox').click();
+
+        // Select 'calculator'
+        const row2 = page.locator('tr', { hasText: 'calculator' });
+        await row2.getByRole('checkbox').click();
+
+        // Verify Bulk Action Bar appears
+        await expect(page.getByText('2 selected')).toBeVisible();
+
+        // Click Disable (Use specific selector to avoid matching "Disabled" text in table)
+        await page.locator('button', { hasText: 'Disable' }).click();
+
+        // Verify Status in UI updates to "Disabled"
+        // We wait for the "Disabled" text to appear in the row
+        await expect(row1.getByText('Disabled')).toBeVisible();
+        await expect(row2.getByText('Disabled')).toBeVisible();
+
+        // Verify 'get_user' is still Enabled (it wasn't selected)
+        const row3 = page.locator('tr', { hasText: 'get_user' });
+        await expect(row3.getByText('Enabled')).toBeVisible();
+    });
+
+    test('should select all tools', async ({ page }) => {
+        await page.goto('/tools');
+        await expect(page.getByText('process_payment').first()).toBeVisible();
+
+        // Click "Select All" in header
+        // Header checkbox is the first checkbox on the page usually, or inside thead
+        await page.locator('thead').getByRole('checkbox').click();
+
+        // Verify Bulk Action Bar appears with correct count (3 seeded tools)
+        await expect(page.getByText('3 selected')).toBeVisible();
+
+        // Unselect all
+        await page.locator('thead').getByRole('checkbox').click();
+        await expect(page.getByText('3 selected')).not.toBeVisible();
     });
 });

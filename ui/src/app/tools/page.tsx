@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { List, LayoutList, Layers } from "lucide-react";
+import { List, LayoutList, Layers, Power, PowerOff, Star, X } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { ToolInspector } from "@/components/tools/tool-inspector";
 import { SmartToolSearch } from "@/components/tools/smart-tool-search";
@@ -30,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * ToolsPage component.
@@ -47,6 +48,10 @@ export default function ToolsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
   const [groupBy, setGroupBy] = useState<"none" | "service" | "category">("none");
+
+  // Selection State
+  const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedCompact = localStorage.getItem("tools_compact_view") === "true";
@@ -148,6 +153,64 @@ export default function ToolsPage() {
   }, {} as Record<string, ToolDefinition[]>);
 
 
+  // Selection Handlers
+  const handleSelectTool = (name: string, checked: boolean) => {
+    const newSelected = new Set(selectedTools);
+    if (checked) {
+      newSelected.add(name);
+    } else {
+      newSelected.delete(name);
+    }
+    setSelectedTools(newSelected);
+  };
+
+  const handleSelectAll = (checked: boolean, scopeTools?: ToolDefinition[]) => {
+      const targetTools = scopeTools || filteredTools;
+      const targetNames = targetTools.map(t => t.name);
+
+      const newSelected = new Set(selectedTools);
+      if (checked) {
+          targetNames.forEach(name => newSelected.add(name));
+      } else {
+          targetNames.forEach(name => newSelected.delete(name));
+      }
+      setSelectedTools(newSelected);
+  };
+
+  const handleBulkAction = async (action: 'enable' | 'disable' | 'pin') => {
+      if (selectedTools.size === 0) return;
+
+      const toolsToUpdate = Array.from(selectedTools);
+
+      // Optimistic update
+      if (action === 'enable' || action === 'disable') {
+           const disable = action === 'disable';
+           setTools(prev => prev.map(t => selectedTools.has(t.name) ? { ...t, disable: disable } : t));
+      }
+
+      try {
+          await Promise.all(toolsToUpdate.map(async (name) => {
+              if (action === 'enable') await apiClient.setToolStatus(name, false);
+              if (action === 'disable') await apiClient.setToolStatus(name, true);
+              if (action === 'pin' && !isPinned(name)) togglePin(name);
+          }));
+          toast({
+              title: "Bulk Action Complete",
+              description: `Successfully updated ${selectedTools.size} tools.`,
+          });
+          setSelectedTools(new Set()); // Clear selection
+      } catch (e) {
+          console.error("Bulk action failed", e);
+          toast({
+              title: "Error",
+              description: "Failed to perform bulk action.",
+              variant: "destructive"
+          });
+          fetchTools(); // Revert
+      }
+  };
+
+
   if (!isLoaded) {
       return (
           <div className="flex-1 p-8 animate-pulse text-muted-foreground">
@@ -157,9 +220,10 @@ export default function ToolsPage() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4 p-8 pt-6 relative">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+
         <div className="flex items-center space-x-4">
             <SmartToolSearch
                 tools={tools}
@@ -202,7 +266,7 @@ export default function ToolsPage() {
                     onCheckedChange={setShowPinnedOnly}
                 />
                 <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Show Pinned Only
+                    Pinned
                 </label>
             </div>
             <Button
@@ -217,7 +281,7 @@ export default function ToolsPage() {
         </div>
       </div>
 
-      <Card className="backdrop-blur-sm bg-background/50">
+      <Card className="backdrop-blur-sm bg-background/50 mb-16">
         <CardHeader>
           <CardTitle>Available Tools</CardTitle>
           <CardDescription>Manage exposed tools from connected services.</CardDescription>
@@ -232,6 +296,9 @@ export default function ToolsPage() {
               toggleTool={toggleTool}
               openInspector={openInspector}
               usageStats={toolUsage}
+              selectedTools={selectedTools}
+              onSelectTool={handleSelectTool}
+              onSelectAll={(checked) => handleSelectAll(checked, filteredTools)}
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
@@ -254,6 +321,9 @@ export default function ToolsPage() {
                       toggleTool={toggleTool}
                       openInspector={openInspector}
                       usageStats={toolUsage}
+                      selectedTools={selectedTools}
+                      onSelectTool={handleSelectTool}
+                      onSelectAll={(checked) => handleSelectAll(checked, groupTools)}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -268,6 +338,28 @@ export default function ToolsPage() {
         open={inspectorOpen}
         onOpenChange={setInspectorOpen}
       />
+
+        {selectedTools.size > 0 && (
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-background/80 backdrop-blur-md p-2 px-6 rounded-full border shadow-lg animate-in slide-in-from-bottom-4">
+                <div className="flex items-center gap-2 border-r pr-4 mr-2">
+                    <span className="font-semibold text-sm">{selectedTools.size} selected</span>
+                    <Button variant="ghost" size="icon" onClick={() => setSelectedTools(new Set())} className="h-5 w-5 rounded-full hover:bg-muted">
+                        <X className="h-3 w-3" />
+                    </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleBulkAction('enable')} className="h-8 rounded-full border-green-200 hover:bg-green-500/10 hover:text-green-600 dark:border-green-900">
+                        <Power className="mr-2 h-3 w-3" /> Enable
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleBulkAction('disable')} className="h-8 rounded-full border-red-200 hover:bg-red-500/10 hover:text-red-600 dark:border-red-900">
+                        <PowerOff className="mr-2 h-3 w-3" /> Disable
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleBulkAction('pin')} className="h-8 rounded-full border-yellow-200 hover:bg-yellow-500/10 hover:text-yellow-600 dark:border-yellow-900">
+                        <Star className="mr-2 h-3 w-3" /> Pin
+                    </Button>
+                </div>
+            </div>
+        )}
     </div>
   );
 }
