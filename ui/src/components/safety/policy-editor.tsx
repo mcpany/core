@@ -38,6 +38,15 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * PolicyEditor component.
+ * Allows creating, editing, and deleting call policies and their rules.
+ *
+ * @param props - The component props.
+ * @param props.policies - The list of policies to edit.
+ * @param props.onUpdate - Callback fired when policies are updated.
+ * @returns The rendered policy editor.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);

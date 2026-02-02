@@ -14,6 +14,15 @@ interface BulkActionsToolbarProps {
   isProcessing: boolean;
 }
 
+/**
+ * A floating toolbar for performing bulk actions on selected tools.
+ *
+ * @param props - The component props.
+ * @param props.selectedCount - The number of currently selected items.
+ * @param props.onAction - Callback fired when an action button is clicked.
+ * @param props.isProcessing - Whether a bulk action is currently in progress.
+ * @returns The rendered toolbar or null if no items are selected.
+ */
 export function BulkActionsToolbar({ selectedCount, onAction, isProcessing }: BulkActionsToolbarProps) {
   if (selectedCount === 0) return null;
 
