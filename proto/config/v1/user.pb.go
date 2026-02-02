@@ -24,12 +24,92 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type UserPreferences struct {
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_DashboardLayout *string                `protobuf:"bytes,1,opt,name=dashboard_layout"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *UserPreferences) Reset() {
+	*x = UserPreferences{}
+	mi := &file_proto_config_v1_user_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserPreferences) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserPreferences) ProtoMessage() {}
+
+func (x *UserPreferences) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_user_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *UserPreferences) GetDashboardLayout() string {
+	if x != nil {
+		if x.xxx_hidden_DashboardLayout != nil {
+			return *x.xxx_hidden_DashboardLayout
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UserPreferences) SetDashboardLayout(v string) {
+	x.xxx_hidden_DashboardLayout = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *UserPreferences) HasDashboardLayout() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UserPreferences) ClearDashboardLayout() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_DashboardLayout = nil
+}
+
+type UserPreferences_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// JSON string representing the dashboard layout.
+	DashboardLayout *string
+}
+
+func (b0 UserPreferences_builder) Build() *UserPreferences {
+	m0 := &UserPreferences{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.DashboardLayout != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_DashboardLayout = b.DashboardLayout
+	}
+	return m0
+}
+
 type User struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id             *string                `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Authentication *Authentication        `protobuf:"bytes,2,opt,name=authentication"`
 	xxx_hidden_ProfileIds     []string               `protobuf:"bytes,3,rep,name=profile_ids"`
 	xxx_hidden_Roles          []string               `protobuf:"bytes,4,rep,name=roles"`
+	xxx_hidden_Preferences    *UserPreferences       `protobuf:"bytes,5,opt,name=preferences"`
 	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
 	XXX_presence              [1]uint32
 	unknownFields             protoimpl.UnknownFields
@@ -38,7 +118,7 @@ type User struct {
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_proto_config_v1_user_proto_msgTypes[0]
+	mi := &file_proto_config_v1_user_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +130,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_user_proto_msgTypes[0]
+	mi := &file_proto_config_v1_user_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -92,9 +172,16 @@ func (x *User) GetRoles() []string {
 	return nil
 }
 
+func (x *User) GetPreferences() *UserPreferences {
+	if x != nil {
+		return x.xxx_hidden_Preferences
+	}
+	return nil
+}
+
 func (x *User) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *User) SetAuthentication(v *Authentication) {
@@ -107,6 +194,10 @@ func (x *User) SetProfileIds(v []string) {
 
 func (x *User) SetRoles(v []string) {
 	x.xxx_hidden_Roles = v
+}
+
+func (x *User) SetPreferences(v *UserPreferences) {
+	x.xxx_hidden_Preferences = v
 }
 
 func (x *User) HasId() bool {
@@ -123,6 +214,13 @@ func (x *User) HasAuthentication() bool {
 	return x.xxx_hidden_Authentication != nil
 }
 
+func (x *User) HasPreferences() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Preferences != nil
+}
+
 func (x *User) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
@@ -130,6 +228,10 @@ func (x *User) ClearId() {
 
 func (x *User) ClearAuthentication() {
 	x.xxx_hidden_Authentication = nil
+}
+
+func (x *User) ClearPreferences() {
+	x.xxx_hidden_Preferences = nil
 }
 
 type User_builder struct {
@@ -143,6 +245,8 @@ type User_builder struct {
 	ProfileIds []string
 	// The list of roles assigned to the user.
 	Roles []string
+	// User preferences for UI settings.
+	Preferences *UserPreferences
 }
 
 func (b0 User_builder) Build() *User {
@@ -150,12 +254,13 @@ func (b0 User_builder) Build() *User {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Id = b.Id
 	}
 	x.xxx_hidden_Authentication = b.Authentication
 	x.xxx_hidden_ProfileIds = b.ProfileIds
 	x.xxx_hidden_Roles = b.Roles
+	x.xxx_hidden_Preferences = b.Preferences
 	return m0
 }
 
@@ -163,25 +268,30 @@ var File_proto_config_v1_user_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\"\x98\x01\n" +
+	"\x1aproto/config/v1/user.proto\x12\x10mcpany.config.v1\x1a!google/protobuf/go_features.proto\x1a\x1aproto/config/v1/auth.proto\"=\n" +
+	"\x0fUserPreferences\x12*\n" +
+	"\x10dashboard_layout\x18\x01 \x01(\tR\x10dashboard_layout\"\xdd\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12H\n" +
 	"\x0eauthentication\x18\x02 \x01(\v2 .mcpany.config.v1.AuthenticationR\x0eauthentication\x12 \n" +
 	"\vprofile_ids\x18\x03 \x03(\tR\vprofile_ids\x12\x14\n" +
-	"\x05roles\x18\x04 \x03(\tR\x05rolesB;B\tUserProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
+	"\x05roles\x18\x04 \x03(\tR\x05roles\x12C\n" +
+	"\vpreferences\x18\x05 \x01(\v2!.mcpany.config.v1.UserPreferencesR\vpreferencesB;B\tUserProtoZ&github.com/mcpany/core/proto/config/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
-var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_config_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_config_v1_user_proto_goTypes = []any{
-	(*User)(nil),           // 0: mcpany.config.v1.User
-	(*Authentication)(nil), // 1: mcpany.config.v1.Authentication
+	(*UserPreferences)(nil), // 0: mcpany.config.v1.UserPreferences
+	(*User)(nil),            // 1: mcpany.config.v1.User
+	(*Authentication)(nil),  // 2: mcpany.config.v1.Authentication
 }
 var file_proto_config_v1_user_proto_depIdxs = []int32{
-	1, // 0: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.Authentication
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 0: mcpany.config.v1.User.authentication:type_name -> mcpany.config.v1.Authentication
+	0, // 1: mcpany.config.v1.User.preferences:type_name -> mcpany.config.v1.UserPreferences
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_config_v1_user_proto_init() }
@@ -196,7 +306,7 @@ func file_proto_config_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_user_proto_rawDesc), len(file_proto_config_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
