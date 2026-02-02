@@ -201,3 +201,89 @@ func TestLocalCommandTool_Execute_JSONProtocol_StderrCapture(t *testing.T) {
 	// This assertion should fail before fix
 	assert.Contains(t, err.Error(), "something went wrong")
 }
+
+func TestLocalCommandTool_Execute_MultiplePlaceholders(t *testing.T) {
+	t.Parallel()
+	tool := v1.Tool_builder{
+		Name: proto.String("test-tool-multi"),
+	}.Build()
+
+	cmdService := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("echo"),
+		Local:   proto.Bool(true),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"{{A}}", "{{B}}", "{{A}}{{B}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("A")}.Build()}.Build(),
+			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("B")}.Build()}.Build(),
+		},
+	}.Build()
+
+	localTool := NewLocalCommandTool(tool, cmdService, callDef, nil, "test-call-multi")
+
+	req := &ExecutionRequest{
+		ToolName: "test-tool-multi",
+		Arguments: map[string]interface{}{
+			"A": "valA",
+			"B": "valB",
+		},
+		DryRun: true,
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	result, err := localTool.Execute(context.Background(), req)
+	assert.NoError(t, err)
+
+	resultMap, ok := result.(map[string]any)
+	assert.True(t, ok)
+	reqMap := resultMap["request"].(map[string]any)
+	args := reqMap["args"].([]string)
+
+	assert.Equal(t, "valA", args[0])
+	assert.Equal(t, "valB", args[1])
+	assert.Equal(t, "valAvalB", args[2])
+}
+
+func TestLocalCommandTool_Execute_InjectionInSecondPlaceholder(t *testing.T) {
+	t.Parallel()
+	tool := v1.Tool_builder{
+		Name: proto.String("test-tool-injection"),
+	}.Build()
+	// sh -c is a shell command
+	cmdService := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("sh"),
+		Local:   proto.Bool(true),
+	}.Build()
+
+	// Argument is '{{A}}{{B}}'.
+	// A = '
+	// B = ; date
+	// If A breaks out of the quote, then B could execute.
+	// We expect A to be blocked because it contains ' and context is Single Quoted.
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "echo '{{A}}{{B}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("A")}.Build()}.Build(),
+			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("B")}.Build()}.Build(),
+		},
+	}.Build()
+
+	localTool := NewLocalCommandTool(tool, cmdService, callDef, nil, "test-call-injection")
+
+	req := &ExecutionRequest{
+		ToolName: "test-tool-injection",
+		Arguments: map[string]interface{}{
+			"A": "'",
+			"B": "; date",
+		},
+		DryRun: true,
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	_, err := localTool.Execute(context.Background(), req)
+	assert.Error(t, err)
+	// We expect one of the parameters to trigger detection
+	assert.Contains(t, err.Error(), "shell injection detected")
+}

@@ -1780,22 +1780,24 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
+			currentArg := arg
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
+				if strings.Contains(currentArg, placeholder) {
 					val := util.ToString(v)
 					if err := validateSafePathAndInjection(val, isDocker); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+						if err := checkForShellInjection(val, currentArg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
+					currentArg = strings.ReplaceAll(currentArg, placeholder, val)
 				}
 			}
+			args[i] = currentArg
 		}
 	}
 
@@ -2073,9 +2075,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
 		for i, arg := range args {
+			currentArg := arg
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
+				if strings.Contains(currentArg, placeholder) {
 					val := util.ToString(v)
 					if err := checkForPathTraversal(val); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
@@ -2090,13 +2093,14 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					}
 					// If running a shell, validate that inputs are safe for shell execution
 					if isShellCommand(t.service.GetCommand()) {
-						if err := checkForShellInjection(val, arg, placeholder, t.service.GetCommand()); err != nil {
+						if err := checkForShellInjection(val, currentArg, placeholder, t.service.GetCommand()); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
+					currentArg = strings.ReplaceAll(currentArg, placeholder, val)
 				}
 			}
+			args[i] = currentArg
 		}
 	}
 
