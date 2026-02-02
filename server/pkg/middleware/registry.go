@@ -117,6 +117,7 @@ type StandardMiddlewares struct {
 	GlobalRateLimit  *GlobalRateLimitMiddleware
 	ContextOptimizer *ContextOptimizer
 	Debugger         *Debugger
+	SmartRecovery    *SmartRecoveryMiddleware
 	Cleanup          func() error
 }
 
@@ -130,6 +131,7 @@ type StandardMiddlewares struct {
 // dlpConfig is the dlpConfig.
 // contextOptimizerConfig is the contextOptimizerConfig.
 // debuggerConfig is the debuggerConfig.
+// smartRecoveryConfig is the smartRecoveryConfig.
 //
 // Returns the result.
 // Returns an error if the operation fails.
@@ -142,6 +144,7 @@ func InitStandardMiddlewares(
 	dlpConfig *configv1.DLPConfig,
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
+	smartRecoveryConfig *configv1.SmartRecoveryConfig,
 ) (*StandardMiddlewares, error) {
 	// 1. Logging
 	RegisterMCP("logging", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
@@ -317,11 +320,37 @@ func InitStandardMiddlewares(
 		})
 	}
 
+	// Smart Recovery
+	smartRecovery := NewSmartRecoveryMiddleware(smartRecoveryConfig, toolManager)
+	RegisterMCP("smart_recovery", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				if r, ok := req.(*mcp.CallToolRequest); ok {
+					executionReq := &tool.ExecutionRequest{
+						ToolName:   r.Params.Name,
+						ToolInputs: r.Params.Arguments,
+					}
+					result, err := smartRecovery.Execute(ctx, executionReq, func(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
+						return next(ctx, method, req)
+					})
+					if err != nil {
+						return nil, err
+					}
+					if res, ok := result.(*mcp.CallToolResult); ok {
+						return res, nil
+					}
+				}
+				return next(ctx, method, req)
+			}
+		}
+	})
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
 		ContextOptimizer: contextOptimizer,
 		Debugger:         debugger,
+		SmartRecovery:    smartRecovery,
 		Cleanup:          audit.Close,
 	}, nil
 }

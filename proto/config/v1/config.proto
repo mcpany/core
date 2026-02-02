@@ -137,6 +137,22 @@ message GlobalSettings {
   bool auto_discover_local = 26 [json_name = "auto_discover_local"];
   // Alert configuration.
   AlertConfig alerts = 27 [json_name = "alerts"];
+  // Smart Recovery configuration.
+  SmartRecoveryConfig smart_recovery = 28 [json_name = "smart_recovery"];
+}
+
+message SmartRecoveryConfig {
+  bool enabled = 1 [json_name = "enabled"];
+  // The provider to use (e.g., "openai", "ollama").
+  string provider = 2 [json_name = "provider"];
+  // The API key or secret for the provider.
+  SecretValue api_key = 3 [json_name = "api_key"];
+  // The model to use.
+  string model = 4 [json_name = "model"];
+  // Maximum number of retries.
+  int32 max_retries = 5 [json_name = "max_retries"];
+  // Base URL for the provider (optional).
+  string base_url = 6 [json_name = "base_url"];
 }
 
 message AlertConfig {
