@@ -129,7 +129,7 @@ export function DashboardGrid() {
                 setWidgets(DEFAULT_LAYOUT);
             }
         }
-    }, [user.id]);
+    }, [user?.id]);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
