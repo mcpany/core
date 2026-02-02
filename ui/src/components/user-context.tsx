@@ -67,6 +67,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           const userId = "1"; // Fixed ID for single-user mode/dev
 
           // Try to fetch existing user
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let backendUser: any = null;
           try {
               // We use listUsers because getUser might not be exposed or we want to search
@@ -78,6 +79,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
               // Let's assume listUsers is fine for now.
               const usersResponse = await apiClient.listUsers();
               const users = Array.isArray(usersResponse) ? usersResponse : (usersResponse.users || []);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               backendUser = users.find((u: any) => u.id === userId);
           } catch (e) {
               console.error("Failed to list users", e);
