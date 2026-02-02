@@ -51,8 +51,10 @@ interface HealthResponse {
 }
 
 /**
- * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
- * It polls the backend API for health data (which now includes server-side history).
+ * A hook that fetches and maintains the health history of services.
+ *
+ * It polls the backend API for health data every 10 seconds or when the page becomes visible.
+ * It manages the loading state and updates both current status and historical data.
  *
  * @returns An object containing the current services list, their health history, and a loading state.
  */

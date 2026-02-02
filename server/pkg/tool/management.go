@@ -30,94 +30,132 @@ import (
 type MCPServerProvider interface {
 	// Server returns the MCP server instance.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Server: The MCP server instance.
 	Server() *mcp.Server
 }
 
-// ManagerInterface defines the interface for a tool manager.
+// ManagerInterface defines the interface for a tool manager, responsible for
+// registering, retrieving, and executing tools.
 type ManagerInterface interface {
-	// AddTool registers a new tool.
+	// AddTool registers a new tool with the manager.
 	//
-	// tool represents the tool definition.
+	// Parameters:
+	//   - tool: Tool. The tool definition to register.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if registration fails (e.g. duplicate tool).
 	AddTool(tool Tool) error
-	// GetTool retrieves a tool by name.
+
+	// GetTool retrieves a tool by its name.
 	//
-	// toolName is the toolName.
+	// Parameters:
+	//   - toolName: string. The name of the tool to retrieve.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Tool: The tool instance if found.
+	//   - bool: True if the tool exists, false otherwise.
 	GetTool(toolName string) (Tool, bool)
+
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Tool: A slice of all registered tools.
 	ListTools() []Tool
-	// ListMCPTools returns all registered tools in MCP format.
+
+	// ListMCPTools returns all registered tools in the MCP protocol format.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*mcp.Tool: A slice of MCP tool definitions.
 	ListMCPTools() []*mcp.Tool
-	// ClearToolsForService removes all tools for a given service.
+
+	// ClearToolsForService removes all tools associated with a given service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
 	ClearToolsForService(serviceID string)
-	// ExecuteTool executes a tool with the given request.
+
+	// ExecuteTool executes a tool with the given request context and inputs.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - req: *ExecutionRequest. The request object containing tool name and arguments.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if execution fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
-	// SetMCPServer sets the MCP server provider.
+
+	// SetMCPServer sets the MCP server provider for the manager.
 	//
-	// mcpServer is the mcpServer.
+	// Parameters:
+	//   - mcpServer: MCPServerProvider. The provider to set.
 	SetMCPServer(mcpServer MCPServerProvider)
+
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
-	// middleware is the middleware.
+	// Parameters:
+	//   - middleware: ExecutionMiddleware. The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
-	// AddServiceInfo adds metadata for a service.
+
+	// AddServiceInfo adds metadata for a registered service.
 	//
-	// serviceID is the serviceID.
-	// info is the info.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
+	//   - info: *ServiceInfo. The metadata information to store.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
+
 	// GetServiceInfo retrieves metadata for a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *ServiceInfo: The service metadata if found.
+	//   - bool: True if the service info exists, false otherwise.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+
 	// ListServices returns all registered services.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*ServiceInfo: A slice of all registered service info objects.
 	ListServices() []*ServiceInfo
-	// SetProfiles sets the enabled profiles and their definitions.
+
+	// SetProfiles sets the enabled profiles and their definitions for access control.
 	//
-	// enabled is the enabled.
-	// defs is the defs.
+	// Parameters:
+	//   - enabled: []string. A list of enabled profile names.
+	//   - defs: []*configv1.ProfileDefinition. A list of profile definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
+
 	// IsServiceAllowed checks if a service is allowed for a given profile.
 	//
-	// serviceID is the serviceID.
-	// profileID is the profileID.
+	// Parameters:
+	//   - serviceID: string. The unique identifier of the service.
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the service is allowed, false otherwise.
 	IsServiceAllowed(serviceID, profileID string) bool
-	// ToolMatchesProfile checks if a tool matches a given profile.
+
+	// ToolMatchesProfile checks if a tool matches the criteria of a given profile.
 	//
-	// tool represents the tool definition.
-	// profileID is the profileID.
+	// Parameters:
+	//   - tool: Tool. The tool to check.
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the tool matches the profile, false otherwise.
 	ToolMatchesProfile(tool Tool, profileID string) bool
+
 	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
 	//
-	// profileID is the profileID.
+	// Parameters:
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - map[string]bool: A set of allowed service IDs.
+	//   - bool: True if the profile exists, false otherwise.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 }
 
