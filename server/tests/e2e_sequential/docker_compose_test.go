@@ -25,11 +25,6 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
-	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
-	}
-
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 
@@ -568,8 +563,12 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	// This is a simple injection that works for standard file structures.
 	// A more robust way would be to unmarshal/marshal YAML.
 	if !strings.Contains(s, "MCPANY_ENABLE_FILE_CONFIG") {
-		s = strings.Replace(s, "environment:", "environment:\n      MCPANY_ENABLE_FILE_CONFIG: \"true\"", -1)
+		s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ENABLE_FILE_CONFIG=true", -1)
 	}
+
+	// Inject pull_policy: never to avoid registry lookup failures for local images
+	s = strings.Replace(s, "image: mcpany/server:latest", "image: mcpany/server:latest\n    pull_policy: never", -1)
+	s = strings.Replace(s, "image: mcpany/http-echo-server:latest", "image: mcpany/http-echo-server:latest\n    pull_policy: never", -1)
 
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")
