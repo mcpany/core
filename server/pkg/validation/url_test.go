@@ -25,7 +25,7 @@ func TestIsSafeURL(t *testing.T) {
 	}{
 		{
 			name:    "Safe Public URL",
-			url:     "https://google.com",
+			url:     "https://8.8.8.8", // Use IP to avoid DNS lookup timeout in isolated environments
 			wantErr: false,
 		},
 		{
