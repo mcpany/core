@@ -6,6 +6,7 @@ package alerts
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"sort"
@@ -123,7 +124,16 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 				logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
 				return
 			}
-			resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
+			if err != nil {
+				logging.GetLogger().Error("failed to create webhook request", "error", err)
+				return
+			}
+			req.Header.Set("Content-Type", "application/json")
+
+			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
 				return
@@ -160,7 +170,16 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 				logging.GetLogger().Error("failed to marshal alert for webhook", "error", err)
 				return
 			}
-			resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
+			if err != nil {
+				logging.GetLogger().Error("failed to create webhook request", "error", err)
+				return
+			}
+			req.Header.Set("Content-Type", "application/json")
+
+			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				logging.GetLogger().Error("failed to call webhook", "url", url, "error", err)
 				return
