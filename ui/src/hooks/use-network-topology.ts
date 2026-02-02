@@ -81,7 +81,8 @@ export function useNetworkTopology() {
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
-    const lastStructureHash = useRef<string>('');
+    const lastNodeIds = useRef<Set<string>>(new Set());
+    const lastEdgeIds = useRef<Set<string>>(new Set());
 
     // Keep refs in sync with state
     useEffect(() => { nodesRef.current = nodes; }, [nodes]);
@@ -167,15 +168,41 @@ export function useNetworkTopology() {
             }
 
             // ⚡ Bolt Optimization: Skip expensive dagre layout if topology structure hasn't changed.
-            // We compute a simple hash of node IDs and edge IDs to detect structural changes.
-            // If structure is same, we reuse positions from previous state, preserving user drags/layout,
-            // and only update node data (metrics, status, etc).
+            // Randomized Selection from Top 5 High-Impact Targets
+            // We use Set intersection to check if nodes/edges have changed without sorting/string allocations (O(N) vs O(N log N)).
 
-            const nodeIds = newNodes.map(n => n.id).sort().join(',');
-            const edgeIds = newEdges.map(e => e.id).sort().join(',');
-            const currentStructureHash = `${nodeIds}|${edgeIds}`;
+            const newNodeIds = new Set(newNodes.map(n => n.id));
+            const newEdgeIds = new Set(newEdges.map(e => e.id));
 
-            if (currentStructureHash === lastStructureHash.current && nodesRef.current.length > 0) {
+            let hasStructureChanged = false;
+
+            // Check Nodes
+            if (newNodeIds.size !== lastNodeIds.current.size) {
+                hasStructureChanged = true;
+            } else {
+                for (const id of newNodeIds) {
+                    if (!lastNodeIds.current.has(id)) {
+                        hasStructureChanged = true;
+                        break;
+                    }
+                }
+            }
+
+            // Check Edges (only if nodes didn't change)
+            if (!hasStructureChanged) {
+                if (newEdgeIds.size !== lastEdgeIds.current.size) {
+                    hasStructureChanged = true;
+                } else {
+                    for (const id of newEdgeIds) {
+                        if (!lastEdgeIds.current.has(id)) {
+                            hasStructureChanged = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!hasStructureChanged && nodesRef.current.length > 0) {
                 // Structure match! Reuse positions.
                 const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
 
@@ -202,7 +229,9 @@ export function useNetworkTopology() {
                 const layouted = getLayoutedElements(newNodes, newEdges);
                 setNodes(layouted.nodes);
                 setEdges(layouted.edges);
-                lastStructureHash.current = currentStructureHash;
+
+                lastNodeIds.current = newNodeIds;
+                lastEdgeIds.current = newEdgeIds;
             }
 
         } catch (error) {
@@ -227,7 +256,9 @@ export function useNetworkTopology() {
     }, [refreshContextTopology]);
 
     const autoLayout = useCallback(() => {
-         lastStructureHash.current = ''; // Force layout recalculation
+         // Force layout recalculation
+         lastNodeIds.current.clear();
+         lastEdgeIds.current.clear();
          if (latestTopology) {
              processGraph(latestTopology);
          }
