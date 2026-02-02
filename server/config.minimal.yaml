@@ -13,6 +13,8 @@ global_settings:
     - name: "auth"
       priority: 1
       disabled: true
+  debugger:
+    enabled: true
 
 upstream_services:
   - id: "weather-service"

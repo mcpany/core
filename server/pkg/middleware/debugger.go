@@ -19,6 +19,9 @@ import (
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
 	ID              string        `json:"id"`
+	TraceID         string        `json:"trace_id"`
+	SpanID          string        `json:"span_id"`
+	ParentID        string        `json:"parent_id,omitempty"`
 	Timestamp       time.Time     `json:"timestamp"`
 	Method          string        `json:"method"`
 	Path            string        `json:"path"`
@@ -137,6 +140,28 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 		start := time.Now()
 		reqID := uuid.New().String()
 
+		// Trace Context Extraction
+		traceID := r.Header.Get("X-Trace-ID")
+		// We generate a UUID for SpanID for simplicity, though W3C uses 16-char hex.
+		// Using UUID ensures uniqueness across the system.
+		spanID := uuid.New().String()
+		parentID := ""
+
+		// Try W3C Trace Context (traceparent)
+		// Format: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+		traceParent := r.Header.Get("traceparent")
+		if traceParent != "" {
+			parts := strings.Split(traceParent, "-")
+			if len(parts) == 4 {
+				traceID = parts[1]
+				parentID = parts[2]
+			}
+		}
+
+		if traceID == "" {
+			traceID = uuid.New().String()
+		}
+
 		// Capture Request Body
 		var reqBody string
 		if r.Body != nil {
@@ -187,6 +212,9 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 
 		entry := DebugEntry{
 			ID:              reqID,
+			TraceID:         traceID,
+			SpanID:          spanID,
+			ParentID:        parentID,
 			Timestamp:       start,
 			Method:          r.Method,
 			Path:            r.URL.Path,
