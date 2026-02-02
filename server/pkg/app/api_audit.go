@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-pdf/fpdf"
 	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 func (a *Application) handleAuditExport(w http.ResponseWriter, r *http.Request) {
@@ -112,6 +113,6 @@ func (a *Application) exportAuditPDF(w http.ResponseWriter, entries []audit.Entr
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=audit_export_%s.pdf", time.Now().Format("20060102_150405")))
 
 	if err := pdf.Output(w); err != nil {
-		// Log error if possible
+		logging.GetLogger().Error("Failed to generate PDF", "error", err)
 	}
 }
