@@ -29,8 +29,11 @@ export interface Alert {
 export interface AlertRule {
   id: string;
   name: string;
-  condition: string;
+  metric: string;
+  operator: string;
+  threshold: number;
+  duration: string;
   severity: Severity;
-  service: string;
   enabled: boolean;
+  last_updated?: string;
 }
