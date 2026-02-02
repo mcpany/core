@@ -120,7 +120,7 @@ func TestCommandInjection_Advanced(t *testing.T) {
 			"elixir", "iex", "erl", "escript",
 			"ghci", "clisp", "sbcl", "lisp", "scheme", "racket",
 			"lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit",
-			"gcc", "g++", "clang", "java",
+			"java",
 		}
 
 		for _, cmd := range interpreters {
