@@ -1,4 +1,4 @@
-// Copyright 2026 Author(s) of MCP Any
+// Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package app
@@ -14,7 +14,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleServicesBulk(t *testing.T) {
@@ -23,8 +22,8 @@ func TestHandleServicesBulk(t *testing.T) {
 	handler := app.handleServicesBulk(store)
 
 	// Seed some services
-	svc1 := configv1.UpstreamServiceConfig_builder{Name: proto.String("svc1"), Disable: proto.Bool(false)}.Build()
-	svc2 := configv1.UpstreamServiceConfig_builder{Name: proto.String("svc2"), Disable: proto.Bool(true)}.Build()
+	svc1 := configv1.UpstreamServiceConfig_builder{Name: stringPtr("svc1"), Disable: boolPtr(false)}.Build()
+	svc2 := configv1.UpstreamServiceConfig_builder{Name: stringPtr("svc2"), Disable: boolPtr(true)}.Build()
 	require.NoError(t, store.SaveService(context.Background(), svc1))
 	require.NoError(t, store.SaveService(context.Background(), svc2))
 
@@ -117,4 +116,8 @@ func TestHandleServicesBulk(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
+}
+
+func boolPtr(b bool) *bool {
+	return &b
 }

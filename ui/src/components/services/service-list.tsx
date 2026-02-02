@@ -57,9 +57,24 @@ interface ServiceListProps {
 /**
  * ServiceList.
  *
- * @param onExport - The onExport.
+ * @param props - The component props.
  */
-export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit, onBulkRestart }: ServiceListProps) {
+export function ServiceList(props: ServiceListProps) {
+  const {
+    services,
+    isLoading,
+    onToggle,
+    onEdit,
+    onDelete,
+    onDuplicate,
+    onExport,
+    onBulkToggle,
+    onBulkDelete,
+    onLogin,
+    onRestart,
+    onBulkEdit,
+    onBulkRestart
+  } = props;
   const [tagFilter, setTagFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
