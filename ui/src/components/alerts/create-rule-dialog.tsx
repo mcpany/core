@@ -28,6 +28,7 @@ import {
 import { Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
+import { Severity } from "./types";
 
 /**
  * CreateRuleDialog component.
@@ -39,7 +40,7 @@ export function CreateRuleDialog() {
   const { toast } = useToast();
 
   const [name, setName] = useState("");
-  const [severity, setSeverity] = useState("warning");
+  const [severity, setSeverity] = useState<Severity>("warning");
   const [metric, setMetric] = useState("");
   const [operator, setOperator] = useState(">");
   const [threshold, setThreshold] = useState("");
@@ -121,7 +122,7 @@ export function CreateRuleDialog() {
             <Label htmlFor="severity" className="text-right">
               Severity
             </Label>
-            <Select value={severity} onValueChange={setSeverity}>
+            <Select value={severity} onValueChange={(value: Severity) => setSeverity(value)}>
                 <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select severity" />
                 </SelectTrigger>
