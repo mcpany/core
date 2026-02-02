@@ -9,6 +9,8 @@ global_settings:
       selector:
         tags: ["dev"]
   db_path: "/tmp/mcpany.db"
+  debugger:
+    enabled: true
   middlewares:
     - name: "auth"
       priority: 1
