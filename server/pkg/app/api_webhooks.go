@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func (a *Application) listWebhooksHandler(w http.ResponseWriter, r *http.Request) {
+func (a *Application) listWebhooksHandler(w http.ResponseWriter, _ *http.Request) {
 	a.systemWebhooksMu.RLock()
 	defer a.systemWebhooksMu.RUnlock()
 
@@ -20,19 +20,30 @@ func (a *Application) listWebhooksHandler(w http.ResponseWriter, r *http.Request
 
 	// protojson doesn't marshal slices. We construct the array manually or use a wrapper.
 	// Manual construction is safest.
-	w.Write([]byte("["))
+	if _, err := w.Write([]byte("[")); err != nil {
+		logging.GetLogger().Error("Failed to write response", "error", err)
+		return
+	}
 	for i, hook := range a.systemWebhooks {
 		if i > 0 {
-			w.Write([]byte(","))
+			if _, err := w.Write([]byte(",")); err != nil {
+				logging.GetLogger().Error("Failed to write response", "error", err)
+				return
+			}
 		}
 		b, err := protojson.Marshal(hook)
 		if err != nil {
 			logging.GetLogger().Error("Failed to marshal webhook", "error", err)
 			continue
 		}
-		w.Write(b)
+		if _, err := w.Write(b); err != nil {
+			logging.GetLogger().Error("Failed to write response", "error", err)
+			return
+		}
 	}
-	w.Write([]byte("]"))
+	if _, err := w.Write([]byte("]")); err != nil {
+		logging.GetLogger().Error("Failed to write response", "error", err)
+	}
 }
 
 func (a *Application) createWebhookHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +52,7 @@ func (a *Application) createWebhookHandler(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Failed to read body", http.StatusBadRequest)
 		return
 	}
-	logging.GetLogger().Info("Webhook body DEBUG MARKER", "body", string(body))
+	// logging.GetLogger().Info("Webhook body DEBUG MARKER", "body", string(body))
 
 	var req config_v1.SystemWebhookConfig
 	if err := protojson.Unmarshal(body, &req); err != nil {
@@ -66,5 +77,7 @@ func (a *Application) createWebhookHandler(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusCreated)
 
 	resp, _ := protojson.Marshal(&req)
-	w.Write(resp)
+	if _, err := w.Write(resp); err != nil {
+		logging.GetLogger().Error("Failed to write response", "error", err)
+	}
 }

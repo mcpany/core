@@ -33,9 +33,10 @@ func TestWebhooksAPI(t *testing.T) {
 	// So we should send standard json.
 	// But generated proto structs might be tricky.
 	// Let's construct a map to be safe.
+	// ProtoJSON uses camelCase by default.
 	input := map[string]interface{}{
-		"name":     "TestHook",
-		"url_path": "/test", // Try snake_case
+		"name":    "TestHook",
+		"urlPath": "/test",
 	}
 	body, _ := json.Marshal(input)
 	req, _ = http.NewRequest("POST", "/webhooks", bytes.NewBuffer(body))
