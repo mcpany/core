@@ -6,6 +6,7 @@ package integration_test
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -112,7 +113,19 @@ upstream_services:
           method: HTTP_METHOD_GET
           endpoint_path: "/b"
 `
-	err := os.WriteFile(configPath, []byte(updatedConfig), 0644)
+	// Use atomic write to avoid "did not find expected node content" error
+	// caused by the file watcher reading the file while it's being truncated/written.
+	// Create a temp file in the same directory to ensure atomic rename works.
+	tmpFile, err := os.CreateTemp(filepath.Dir(configPath), "mcpany-config-update-*.yaml")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name()) // Cleanup if rename fails (though we rename it)
+
+	_, err = tmpFile.Write([]byte(updatedConfig))
+	require.NoError(t, err)
+	err = tmpFile.Close()
+	require.NoError(t, err)
+
+	err = os.Rename(tmpFile.Name(), configPath)
 	require.NoError(t, err)
 
 	// 4. Wait for Reload (Debounce is likely few seconds)
