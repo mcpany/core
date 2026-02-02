@@ -65,6 +65,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	mux.HandleFunc("/services", a.handleServices(store))
 	mux.HandleFunc("/services/validate", a.handleServiceValidate())
+	mux.HandleFunc("/services/bulk", a.handleServicesBulk(store))
 	mux.HandleFunc("/services/", a.handleServiceDetail(store))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -175,6 +176,130 @@ func (a *Application) handleServices(store storage.Storage) http.HandlerFunc {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
+	}
+}
+
+type BulkServiceActionRequest struct {
+	Action   string   `json:"action"` // delete, enable, disable, restart
+	Services []string `json:"services"`
+}
+
+func (a *Application) handleServicesBulk(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req BulkServiceActionRequest
+		body, err := readBodyWithLimit(w, r, 1048576)
+		if err != nil {
+			return
+		}
+		if err := json.Unmarshal(body, &req); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if len(req.Services) == 0 {
+			http.Error(w, "services list is empty", http.StatusBadRequest)
+			return
+		}
+
+		ctx := r.Context()
+		reloadNeeded := false
+		var errs []string
+
+		for _, name := range req.Services {
+			switch req.Action {
+			case "delete":
+				if err := store.DeleteService(ctx, name); err != nil {
+					logging.GetLogger().Error("failed to delete service", "name", name, "error", err)
+					errs = append(errs, fmt.Sprintf("%s: %v", name, err))
+				} else {
+					reloadNeeded = true
+				}
+
+			case "enable", "disable":
+				svc, err := store.GetService(ctx, name)
+				if err != nil {
+					logging.GetLogger().Error("failed to get service for toggle", "name", name, "error", err)
+					errs = append(errs, fmt.Sprintf("%s: %v", name, err))
+					continue
+				}
+				if svc == nil {
+					errs = append(errs, fmt.Sprintf("%s: not found", name))
+					continue
+				}
+
+				shouldDisable := req.Action == "disable"
+				if svc.GetDisable() != shouldDisable {
+					svc.SetDisable(shouldDisable)
+					// Sentinel check (though purely toggle shouldn't make it unsafe if it was already saved, but good practice)
+					if isUnsafeConfig(svc) && !shouldDisable { // Enabling unsafe service
+						allow := false
+						if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
+							allow = true
+						} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+							allow = true
+						}
+						if !allow {
+							errs = append(errs, fmt.Sprintf("%s: cannot enable unsafe service without admin privileges", name))
+							continue
+						}
+					}
+
+					if err := store.SaveService(ctx, svc); err != nil {
+						logging.GetLogger().Error("failed to save service", "name", name, "error", err)
+						errs = append(errs, fmt.Sprintf("%s: %v", name, err))
+					} else {
+						reloadNeeded = true
+					}
+				}
+
+			case "restart":
+				// For restart, we unregister to force connection close/stop
+				if a.ServiceRegistry != nil {
+					if err := a.ServiceRegistry.UnregisterService(ctx, name); err != nil {
+						logging.GetLogger().Error("failed to unregister service during restart", "name", name, "error", err)
+						// Log but continue to ensure we at least try to reload config
+					}
+				}
+				// Reload is definitely needed to re-register/start
+				reloadNeeded = true
+
+			default:
+				http.Error(w, "invalid action: "+req.Action, http.StatusBadRequest)
+				return
+			}
+		}
+
+		if reloadNeeded {
+			if err := a.ReloadConfig(ctx, a.fs, a.configPaths); err != nil {
+				logging.GetLogger().Error("failed to reload config after bulk action", "error", err)
+				errs = append(errs, fmt.Sprintf("reload failed: %v", err))
+				// If reload fails, we return 500 because the system state might be inconsistent
+				http.Error(w, strings.Join(errs, "; "), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		if len(errs) > 0 {
+			// Partial success / failure
+			// Return 207 Multi-Status or just 400/500?
+			// For simplicity, we return 500 if there were errors, or 200 with error details in body?
+			// Let's return 200 with a JSON body containing errors if any, so client can show them.
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK) // Action completed (maybe partially)
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"status": "partial_success",
+				"errors": errs,
+			})
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("{}"))
 	}
 }
 
