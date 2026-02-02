@@ -11,9 +11,8 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    tags-ignore:
+      - "**"
 
 env:
   # Define registries and image names centrally
@@ -154,16 +153,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   # ==============================================================================
-  # JOB 3: DOCKER BUILD (MATRIX)
+  # JOB 3: DOCKER BUILD ALL (Server & UI)
   # Runs in parallel with binary builds.
   # Uses Native ARM runners for speed.
   # ==============================================================================
-  docker-build:
+  docker-build-all:
     needs: setup
-    name: Docker Build ${{ matrix.platform }}
+    name: Docker Build All (${{ matrix.platform }})
     # Dynamic runner selection: Native ARM runner for arm64, Standard for amd64
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 60
+    timeout-minutes: 90 # Increased timeout since we build both
     permissions:
       contents: read
       packages: write
@@ -177,6 +176,16 @@ jobs:
             runner: ubuntu-24.04-arm
 
     steps:
+      - name: Free Disk Space
+        run: |
+          echo "Freeing up disk space..."
+          # Simple cleanup of common large directories if they exist
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /opt/ghc || true
+          docker system prune -af || true
+          df -h
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -189,10 +198,9 @@ jobs:
       - name: Cache Docker images
         uses: ScribeMD/docker-cache@0.5.0
         with:
-          key: docker-images-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
+          key: docker-images-all-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
 
-      # Only setup QEMU if strictly necessary (e.g. if using ubuntu-latest for ARM)
-      # Since we are using native runners, this is mostly a fallback/safety.
+      # Only setup QEMU if strictly necessary
       - name: Set up QEMU
         if: ${{ matrix.runner == 'ubuntu-latest' && matrix.platform != 'linux/amd64' }}
         uses: docker/setup-qemu-action@v3
@@ -217,12 +225,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prepare build context
+      # --- SERVER BUILD ---
+      - name: Prepare build context (Server)
         run: |
           make -C server prepare-docker-context
 
-      - name: Build and push by digest
-        id: build
+      - name: Build and push by digest (Server)
+        id: build-server
         uses: docker/build-push-action@v5
         with:
           context: server
@@ -233,21 +242,69 @@ jobs:
             ${{ needs.setup.outputs.tags_ghcr }}
           # Export as tarball for artifact upload
           outputs: type=docker,dest=/tmp/server-image.tar
-          cache-from: type=gha,scope=${{ matrix.platform }}
-          # Optimized cache: use mode=max to cache layers
-          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+          cache-from: type=gha,scope=server-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=server-${{ matrix.platform }}
 
-      - name: Rename artifact
+      - name: Rename artifact (Server)
         run: |
           # Sanitize platform name for artifact filename
           PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
           mv /tmp/server-image.tar /tmp/server-image-${PLATFORM_SLUG}.tar
 
-      - name: Upload artifact
+      - name: Upload artifact (Server)
         uses: actions/upload-artifact@v4
         with:
           name: server-image-${{ strategy.job-index }}
           path: /tmp/server-image-*.tar
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Cleanup Server Artifact
+        run: |
+          rm -f /tmp/server-image-*.tar
+          # Optional: prune again if needed, but simple rm is usually enough to free space for UI build
+
+      # --- UI BUILD ---
+      - name: Build and push by digest (UI)
+        id: build-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ui/Dockerfile
+          platforms: ${{ matrix.platform }}
+          tags: |
+            ${{ needs.setup.outputs.tags_ui_dockerhub }}
+            ${{ needs.setup.outputs.tags_ui_ghcr }}
+          # Export as tarball for artifact upload
+          outputs: type=docker,dest=/tmp/ui-image.tar
+          cache-from: type=gha,scope=ui-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=ui-${{ matrix.platform }}
+
+      - name: Rename artifact (UI)
+        run: |
+          # Sanitize platform name for artifact filename
+          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
+          mv /tmp/ui-image.tar /tmp/ui-image-${PLATFORM_SLUG}.tar
+
+      - name: Upload artifact (UI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-image-${{ strategy.job-index }}
+          path: /tmp/ui-image-*.tar
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Export digest (UI)
+        run: |
+          mkdir -p /tmp/digests-ui
+          digest="${{ steps.build-ui.outputs.digest }}"
+          touch "/tmp/digests-ui/${digest#sha256:}"
+
+      - name: Upload digest (UI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-ui-${{ strategy.job-index }}
+          path: /tmp/digests-ui/*
           if-no-files-found: error
           retention-days: 1
 
@@ -258,7 +315,7 @@ jobs:
   docker-merge:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [setup, docker-build]
+    needs: [setup, docker-build-all]
     permissions:
       contents: read
       packages: write
@@ -298,7 +355,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images and create manifest
-        if: github.event_name != 'pull_request'
         run: |
           DOCKERHUB_IMAGE="${{ env.DOCKERHUB_IMAGE }}"
           GHCR_IMAGE="${{ env.GHCR_IMAGE }}"
@@ -365,119 +421,16 @@ jobs:
           done
 
       - name: Inspect image
-        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ env.DOCKERHUB_IMAGE }}:${{ needs.setup.outputs.version }}
 
   # ==============================================================================
-  # JOB 5: UI DOCKER BUILD (MATRIX)
-  # ==============================================================================
-  docker-build-ui:
-    needs: setup
-    name: Docker Build UI ${{ matrix.platform }}
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 60
-    permissions:
-      contents: read
-      packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-ui-${{ runner.os }}-${{ matrix.platform }}-${{ steps.get-date.outputs.week }}
-
-      - name: Set up QEMU
-        if: ${{ matrix.runner == 'ubuntu-latest' && matrix.platform != 'linux/amd64' }}
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."docker.io"]
-              mirrors = ["mirror.gcr.io"]
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push by digest
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ui/Dockerfile
-          platforms: ${{ matrix.platform }}
-          tags: |
-            ${{ needs.setup.outputs.tags_ui_dockerhub }}
-            ${{ needs.setup.outputs.tags_ui_ghcr }}
-          # Export as tarball for artifact upload
-          outputs: type=docker,dest=/tmp/ui-image.tar
-          cache-from: type=gha,scope=ui-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=ui-${{ matrix.platform }}
-
-      - name: Rename artifact
-        run: |
-          # Sanitize platform name for artifact filename
-          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
-          mv /tmp/ui-image.tar /tmp/ui-image-${PLATFORM_SLUG}.tar
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-image-${{ strategy.job-index }}
-          path: /tmp/ui-image-*.tar
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Export digest
-        run: |
-          mkdir -p /tmp/digests-ui
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests-ui/${digest#sha256:}"
-
-      - name: Upload digest
-        uses: actions/upload-artifact@v4
-        with:
-          name: digests-ui-${{ strategy.job-index }}
-          path: /tmp/digests-ui/*
-          if-no-files-found: error
-          retention-days: 1
-
-  # ==============================================================================
-  # JOB 6: UI DOCKER MERGE
+  # JOB 5: UI DOCKER MERGE (Renamed from 6)
   # ==============================================================================
   docker-merge-ui:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [setup, docker-build-ui]
+    needs: [setup, docker-build-all]
     permissions:
       contents: read
       packages: write
@@ -517,7 +470,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push images and create manifest
-        if: github.event_name != 'pull_request'
         working-directory: /tmp/digests-ui
         run: |
           VERSION="${{ needs.setup.outputs.version }}"
@@ -584,6 +536,5 @@ jobs:
           done
 
       - name: Inspect image
-        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect mcpany/ui:${{ needs.setup.outputs.version }}
