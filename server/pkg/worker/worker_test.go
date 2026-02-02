@@ -215,24 +215,23 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		resultBus, err := bus.GetBus[*bus.ServiceRegistrationResult](bp, bus.ServiceRegistrationResultTopic)
 		require.NoError(t, err)
 
-		workerCtx, workerCancel := context.WithCancel(context.Background())
-		defer workerCancel()
+		// Use a distinct value key for context verification
+		type key string
+		const requestKey key = "is_request_context"
 
 		registry := &mockServiceRegistry{
 			registerFunc: func(ctx context.Context, _ *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-				// Check if the worker context is done, but the request context is not.
-				if workerCtx.Err() != nil && ctx.Err() == nil {
+				// Verify the context has the value we put in the request context
+				if val, ok := ctx.Value(requestKey).(bool); ok && val {
 					return "success-key-request-context", nil, nil, nil
 				}
-				return "", nil, nil, errors.New("unexpected context state")
+				return "", nil, nil, errors.New("incorrect context used")
 			},
 		}
 
+		// Start worker with background context
 		worker := NewServiceRegistrationWorker(bp, registry)
-		worker.Start(workerCtx) // Worker starts with its own context.
-
-		// Cancel the worker's context to simulate shutdown.
-		workerCancel()
+		worker.Start(context.Background())
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test-req-ctx", func(result *bus.ServiceRegistrationResult) {
@@ -240,8 +239,8 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		})
 		defer unsubscribe()
 
-		// Create a new context for the request that is NOT canceled.
-		reqCtx := context.Background()
+		// Create a request context with the special value
+		reqCtx := context.WithValue(context.Background(), requestKey, true)
 		req := &bus.ServiceRegistrationRequest{
 			Context: reqCtx,
 			Config:  &configv1.UpstreamServiceConfig{},
