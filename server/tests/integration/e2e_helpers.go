@@ -598,6 +598,10 @@ func IsDockerSocketAccessible() bool {
 // Returns the result.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping test requiring Docker in CI due to potential rate limiting/network issues")
+	}
+
 	dockerExe, dockerBaseArgs := getDockerCommand()
 
 	// buildArgs safely creates a new slice for command arguments.
