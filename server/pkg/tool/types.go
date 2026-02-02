@@ -800,11 +800,12 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	// ⚡ BOLT: Adaptive Parameter Filtering
 	// Randomized Selection from Top 5 High-Impact Targets
-	if len(t.allowedParams) == 0 && len(inputs) > 0 {
+	switch {
+	case len(t.allowedParams) == 0 && len(inputs) > 0:
 		// Optimization: If no parameters are allowed, clear everything immediately.
 		inputs = make(map[string]any)
 		filtered = true
-	} else if len(inputs) > len(t.allowedParams)*2 {
+	case len(inputs) > len(t.allowedParams)*2:
 		// Optimization: If inputs are significantly larger than allowed params,
 		// rebuild the map by iterating over allowed params (O(M)) instead of inputs (O(N)).
 		newInputs := make(map[string]any, len(t.allowedParams))
@@ -818,7 +819,7 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 			inputs = newInputs
 			filtered = true
 		}
-	} else {
+	default:
 		// Standard iteration for small inputs
 		for k := range inputs {
 			if !t.allowedParams[k] {
