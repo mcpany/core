@@ -16,7 +16,24 @@ export function estimateTokens(text: string): number {
     // Approximately 4 characters per token for English text.
     // We add some overhead for whitespace and special characters.
     const charCount = text.length;
-    const wordCount = text.trim().split(/\s+/).length;
+
+    // ⚡ BOLT: Optimization to avoid string allocation from split().
+    // Randomized Selection from Top 5 High-Impact Targets
+    // Previous: const wordCount = text.trim().split(/\s+/).length;
+    let wordCount = 0;
+    let inWord = false;
+    for (let i = 0; i < charCount; i++) {
+        const code = text.charCodeAt(i);
+        // ASCII whitespace: 9-13 (\t, \n, \v, \f, \r) and 32 (space)
+        const isSpace = code === 32 || (code >= 9 && code <= 13);
+
+        if (isSpace) {
+            inWord = false;
+        } else if (!inWord) {
+            inWord = true;
+            wordCount++;
+        }
+    }
 
     // Heuristic 1: 4 chars per token
     // Heuristic 2: 1.3 words per token
