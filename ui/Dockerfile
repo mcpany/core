@@ -33,6 +33,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
+# Skip Playwright browser download during build to save time/space and avoid ARM64 issues
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
 RUN npm run build
 RUN mkdir -p public
 
