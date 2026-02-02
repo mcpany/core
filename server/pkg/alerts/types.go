@@ -29,24 +29,27 @@ const (
 
 // Alert represents a system alert.
 type Alert struct {
-	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Message   string    `json:"message"`
-	Severity  Severity  `json:"severity"`
-	Status    Status    `json:"status"`
-	Service   string    `json:"service"`
-	Source    string    `json:"source"`
-	Timestamp time.Time `json:"timestamp"`
+	ID         string    `json:"id"`
+	Title      string    `json:"title"`
+	Message    string    `json:"message"`
+	Severity   Severity  `json:"severity"`
+	Status     Status    `json:"status"`
+	Service    string    `json:"service"`
+	Source     string    `json:"source"`
+	Timestamp  time.Time `json:"timestamp"`
+	ResolvedAt time.Time `json:"resolved_at,omitempty"`
 }
 
 // AlertRule defines a condition for triggering an alert.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
-	Metric      string    `json:"metric"`
-	Operator    string    `json:"operator"` // e.g. ">", "<", "="
-	Threshold   float64   `json:"threshold"`
-	Duration    string    `json:"duration"` // e.g. "5m"
+	Metric      string    `json:"metric,omitempty"`
+	Operator    string    `json:"operator,omitempty"` // e.g. ">", "<", "="
+	Threshold   float64   `json:"threshold,omitempty"`
+	Duration    string    `json:"duration,omitempty"` // e.g. "5m"
+	Condition   string    `json:"condition,omitempty"`
+	Service     string    `json:"service,omitempty"`
 	Severity    Severity  `json:"severity"`
 	Enabled     bool      `json:"enabled"`
 	LastUpdated time.Time `json:"last_updated"`

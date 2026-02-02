@@ -5,21 +5,69 @@
 
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
+import { apiClient } from "@/lib/client";
+import { Alert } from "./types";
+import { differenceInMinutes, isToday } from "date-fns";
 
 /**
  * AlertStats component.
  * @returns The rendered component.
  */
 export function AlertStats() {
-  // Mock data - in a real app, this would come from props or a query
-  const stats = {
-    activeCritical: 3,
-    activeWarning: 12,
-    mttr: "14m", // Mean Time To Resolution
-    totalToday: 45
-  };
+  const [stats, setStats] = useState({
+    activeCritical: 0,
+    activeWarning: 0,
+    mttr: "-",
+    totalToday: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const alerts = await apiClient.listAlerts();
+
+        const activeCritical = alerts.filter((a: Alert) => a.severity === 'critical' && a.status === 'active').length;
+        const activeWarning = alerts.filter((a: Alert) => a.severity === 'warning' && a.status === 'active').length;
+        const totalToday = alerts.filter((a: Alert) => isToday(new Date(a.timestamp))).length;
+
+        // Calculate MTTR for resolved alerts today
+        const resolvedToday = alerts.filter((a: Alert) =>
+            a.status === 'resolved' &&
+            a.resolvedAt &&
+            isToday(new Date(a.resolvedAt))
+        );
+
+        let mttr = "-";
+        if (resolvedToday.length > 0) {
+            const totalDuration = resolvedToday.reduce((acc: number, a: Alert) => {
+                if (!a.resolvedAt) return acc;
+                const duration = differenceInMinutes(new Date(a.resolvedAt), new Date(a.timestamp));
+                return acc + duration;
+            }, 0);
+            const avg = Math.round(totalDuration / resolvedToday.length);
+            mttr = `${avg}m`;
+        }
+
+        setStats({
+            activeCritical,
+            activeWarning,
+            mttr,
+            totalToday
+        });
+
+      } catch (error) {
+        console.error("Failed to fetch alert stats", error);
+      }
+    };
+
+    fetchStats();
+    // Poll every 30s
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -31,7 +79,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
           <p className="text-xs text-muted-foreground">
-            +1 since last hour
+             Current active critical alerts
           </p>
         </CardContent>
       </Card>
@@ -43,7 +91,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
           <p className="text-xs text-muted-foreground">
-            -2 since last hour
+             Current active warning alerts
           </p>
         </CardContent>
       </Card>
@@ -55,7 +103,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.mttr}</div>
           <p className="text-xs text-muted-foreground">
-            -2m from yesterday
+             Mean Time To Resolution
           </p>
         </CardContent>
       </Card>
@@ -67,7 +115,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalToday}</div>
           <p className="text-xs text-muted-foreground">
-            +12% from average
+             Alerts triggered today
           </p>
         </CardContent>
       </Card>

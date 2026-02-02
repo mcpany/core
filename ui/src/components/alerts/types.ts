@@ -21,6 +21,7 @@ export interface Alert {
   service: string;
   timestamp: string; // ISO string
   source: string;
+  resolvedAt?: string; // ISO string
 }
 /**
  * Alert type definition.
@@ -33,4 +34,9 @@ export interface AlertRule {
   severity: Severity;
   service: string;
   enabled: boolean;
+  metric?: string;
+  operator?: string;
+  threshold?: number;
+  duration?: string;
+  lastUpdated?: string;
 }
