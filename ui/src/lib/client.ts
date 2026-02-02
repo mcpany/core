@@ -1131,6 +1131,19 @@ export const apiClient = {
     },
 
     /**
+     * Gets a user by ID.
+     * @param id The ID of the user to retrieve (or "me").
+     * @returns A promise that resolves to the user object.
+     */
+    getUser: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`);
+        if (!res.ok) throw new Error('Failed to get user');
+        const data = await res.json();
+        // Unwrap user object if needed (AdminRPC returns { user: User })
+        return data.user || data;
+    },
+
+    /**
      * Creates a new user.
      * @param user The user object to create.
      * @returns A promise that resolves to the created user.

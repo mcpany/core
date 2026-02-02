@@ -24,6 +24,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	log := logging.GetLogger()
 	// Check if already initialized
 	s, ok := store.(storage.Storage)
+	initialized := false
 	if !ok {
 		// Just Load using Store interface
 		cfg, err := store.Load(ctx)
@@ -31,7 +32,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			return err
 		}
 		if cfg != nil && (len(cfg.GetUpstreamServices()) > 0 || cfg.GetGlobalSettings() != nil) {
-			return nil // Already initialized
+			initialized = true
 		}
 	} else {
 		// Use Storage interface
@@ -40,13 +41,23 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			return err
 		}
 		if len(services) > 0 {
-			return nil
+			initialized = true
+		} else {
+			// Also check global settings?
+			gs, err := s.GetGlobalSettings(ctx)
+			if err == nil && gs != nil {
+				initialized = true
+			}
 		}
-		// Also check global settings?
-		gs, err := s.GetGlobalSettings(ctx)
-		if err == nil && gs != nil {
-			return nil
-		}
+	}
+
+	// Always ensure system-admin user exists (for No-Auth mode persistence)
+	if err := a.ensureSystemAdminUser(ctx, store); err != nil {
+		log.Warn("Failed to ensure system-admin user exists", "error", err)
+	}
+
+	if initialized {
+		return nil // Already initialized
 	}
 
 	log.Info("Database appears empty, initializing with default configuration...")
@@ -185,5 +196,47 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	}
 
 	logging.GetLogger().Info("Default admin user created successfully.", "username", username)
+	return nil
+}
+
+func (a *Application) ensureSystemAdminUser(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil // Cannot list/save users
+	}
+
+	// Check if system-admin exists
+	user, err := s.GetUser(ctx, "system-admin")
+	if err == nil && user != nil {
+		return nil // Exists
+	}
+
+	logging.GetLogger().Info("Creating system-admin user for internal use...")
+
+	// Generate strong random password to prevent external login
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return fmt.Errorf("failed to generate random password: %w", err)
+	}
+	password := base64.RawURLEncoding.EncodeToString(b)
+	hash, err := passhash.Password(password)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	sysAdmin := configv1.User_builder{
+		Id: proto.String("system-admin"),
+		Authentication: configv1.Authentication_builder{
+			BasicAuth: configv1.BasicAuth_builder{
+				Username:     proto.String("system-admin"),
+				PasswordHash: proto.String(hash),
+			}.Build(),
+		}.Build(),
+		Roles: []string{"admin"},
+	}.Build()
+
+	if err := s.CreateUser(ctx, sysAdmin); err != nil {
+		return fmt.Errorf("failed to create system-admin user: %w", err)
+	}
 	return nil
 }

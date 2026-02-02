@@ -15,6 +15,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcprouterv1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/audit"
+	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
 	"github.com/mcpany/core/server/pkg/middleware"
@@ -256,7 +257,16 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 // Returns the response.
 // Returns an error if the operation fails.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
-	user, err := s.storage.GetUser(ctx, req.GetUserId())
+	userID := req.GetUserId()
+	if userID == "me" {
+		var ok bool
+		userID, ok = auth.UserFromContext(ctx)
+		if !ok || userID == "" {
+			return nil, status.Error(codes.Unauthenticated, "not authenticated")
+		}
+	}
+
+	user, err := s.storage.GetUser(ctx, userID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}

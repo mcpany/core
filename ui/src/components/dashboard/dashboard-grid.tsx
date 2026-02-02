@@ -9,6 +9,8 @@ import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/components/user-context";
+import { apiClient } from "@/lib/client";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -64,11 +66,26 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * @returns The rendered component.
  */
 export function DashboardGrid() {
+    const { user, loading: userLoading } = useUser();
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
+        if (userLoading) return;
+
+        // Try to load from user preferences first
+        if (user?.preferences?.["dashboard_layout"]) {
+            try {
+                const parsed = JSON.parse(user.preferences["dashboard_layout"]);
+                setWidgets(parsed);
+                return;
+            } catch (e) {
+                console.error("Failed to parse remote dashboard layout", e);
+            }
+        }
+
+        // Fallback to localStorage (Migration or Guest)
         const saved = localStorage.getItem("dashboard-layout");
         if (saved) {
             try {
@@ -112,39 +129,44 @@ export function DashboardGrid() {
         } else {
             setWidgets(DEFAULT_LAYOUT);
         }
-    }, []);
+    }, [user, userLoading]);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
     };
 
-    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
-    // Randomized Selection from Top 5 High-Impact Targets
+    // ⚡ BOLT: Debounce saves to backend
     const isFirstRun = useRef(true);
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || userLoading) return;
 
-        // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
-        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
-        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
-        // But for initial load, widgets is [].
-
-        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
         if (isFirstRun.current) {
             isFirstRun.current = false;
-            // If widgets are empty on first run, it's likely the initial state.
-            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
-            // But `isMounted` gate likely delays this enough.
             return;
         }
 
-        const timer = setTimeout(() => {
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+        const timer = setTimeout(async () => {
+            const layoutJson = JSON.stringify(widgets);
+
+            // Save to localStorage as backup/cache
+            localStorage.setItem("dashboard-layout", layoutJson);
+
+            // Save to Backend
+            if (user) {
+                try {
+                    // Fetch fresh user object to avoid overwriting auth/roles with incomplete data
+                    const currentUser = await apiClient.getUser("me");
+                    currentUser.preferences = currentUser.preferences || {};
+                    currentUser.preferences["dashboard_layout"] = layoutJson;
+                    await apiClient.updateUser(currentUser);
+                } catch (e) {
+                    console.error("Failed to save dashboard layout to backend", e);
+                }
+            }
+        }, 1000);
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted]);
+    }, [widgets, isMounted, user, userLoading]);
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;

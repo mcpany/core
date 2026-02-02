@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -26,6 +27,8 @@ export interface User {
   avatar?: string;
   /** The user's role. */
   role: UserRole;
+  /** User preferences (e.g., dashboard layout). */
+  preferences?: Record<string, string>;
 }
 
 /**
@@ -56,20 +59,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    async function fetchUser() {
+      try {
+        const userData = await apiClient.getUser('me');
+        setUser({
+          id: userData.id,
+          name: userData.id, // Fallback
+          email: 'user@mcp-any.io', // Placeholder
+          role: (userData.roles && userData.roles.includes('admin')) ? 'admin' : 'viewer',
+          avatar: '/avatars/admin.png', // Placeholder
+          preferences: userData.preferences
+        });
+      } catch (e) {
+        console.error("Failed to fetch user", e);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUser();
   }, []);
 
   const login = (role: UserRole) => {
+    // Legacy mock login - should be replaced with real auth flow
     const newUser = {
         id: '1',
         name: role === 'admin' ? 'Admin User' : 'Regular User',
