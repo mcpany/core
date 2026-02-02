@@ -12,11 +12,13 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
+import { WebhookServiceClientImpl } from '@proto/api/v1/webhook_service';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
+import { WebhookSubscription } from '@proto/config/v1/webhook';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 
 import { BrowserHeaders } from 'browser-headers';
@@ -36,7 +38,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, WebhookSubscription };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 // Initialize gRPC Web Client
@@ -58,6 +60,7 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
   debug: false,
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
+const webhookClient = new WebhookServiceClientImpl(rpc);
 
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
@@ -1448,5 +1451,37 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
-    }
+    },
+
+    // Webhooks
+
+    /**
+     * Lists all webhooks.
+     * @returns A promise that resolves to a list of webhooks.
+     */
+    listWebhooks: async (): Promise<WebhookSubscription[]> => {
+        // Use gRPC-Web
+        const response = await webhookClient.ListWebhooks({}, getMetadata());
+        return response.webhooks;
+    },
+
+    /**
+     * Creates a new webhook.
+     * @param webhook The webhook to create.
+     * @returns A promise that resolves to the created webhook.
+     */
+    createWebhook: async (webhook: WebhookSubscription): Promise<WebhookSubscription> => {
+        const response = await webhookClient.CreateWebhook({ webhook }, getMetadata());
+        if (!response.webhook) throw new Error("Failed to create webhook");
+        return response.webhook;
+    },
+
+    /**
+     * Deletes a webhook.
+     * @param id The ID of the webhook to delete.
+     * @returns A promise that resolves when the webhook is deleted.
+     */
+    deleteWebhook: async (id: string): Promise<void> => {
+        await webhookClient.DeleteWebhook({ id }, getMetadata());
+    },
 };
