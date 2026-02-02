@@ -3,7 +3,11 @@
 
 FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
-WORKDIR /work/ui
+# Use /app to avoid permission issues with /work in some environments
+WORKDIR /app
+
+# Configure npm cache to a writable location and avoid root ownership issues
+ENV npm_config_cache=/tmp/npm-cache
 
 # Copy package files first for caching
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
@@ -13,20 +17,41 @@ RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
 
 # Copy the rest of the UI code
 COPY ui/ .
-COPY proto/ /work/proto/
+COPY proto/ /app/proto/
+
 # Symlink node_modules so proto files can find dependencies
-RUN ln -s /work/ui/node_modules /work/proto/node_modules
+# Create directory structure first
+RUN mkdir -p /app/proto/node_modules
+# We can't easily symlink /app/node_modules to /app/proto/node_modules if we copy files there?
+# Let's try to just copy node_modules if needed or rely on resolution.
+# Previous: RUN ln -s /work/ui/node_modules /work/proto/node_modules
+RUN ln -s /app/node_modules /app/proto/node_modules
+
 # Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
-RUN cp -r /work/proto /work/ui/proto
+# We already copied proto to /app/proto. Now copy to /app/ui/proto?
+# ui is at /app/ (COPY ui/ .)
+# So proto should be at /app/proto
+# TSConfig expects proto/ to be relative?
+# RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
+# This implies we need a 'proto' folder inside /app
+# We have /app/proto.
+# But COPY ui/ . puts ui content in /app.
+# So /app/proto is already there if we copied it.
+# Wait, COPY proto/ /app/proto/ puts it at root/proto relative to WORKDIR?
+# Yes.
+
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
-# Recursively chmod, but skip node_modules and symlinks to avoid errors
+
+# Recursively chmod to ensure permissions, especially for CI runners
 RUN find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmod 777 {} +
-# Ensure proto directory is also writable/accessible
-RUN chmod -R 777 /work/proto
+RUN chmod -R 777 /app/proto
 
 # Clean up any copied .next directory to avoid permission issues, then create fresh
-RUN rm -rf .next &&     touch next-env.d.ts &&     mkdir -p .next node_modules/.cache test-results playwright-report &&     chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
+RUN rm -rf .next && \
+    touch next-env.d.ts && \
+    mkdir -p .next node_modules/.cache test-results playwright-report && \
+    chmod -R 777 .next node_modules/.cache test-results playwright-report next-env.d.ts
 
 # Default command (can be overridden)
 CMD ["npx", "playwright", "test"]

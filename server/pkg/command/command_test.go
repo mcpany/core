@@ -53,9 +53,39 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx := context.Background()
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
+		return false
+	}
+
+	// Try to create a container to verify we can actually run things (handles dind overlayfs issues).
+	// We use 'alpine:latest' as it is small and likely used in tests.
+	imageName := "alpine:latest"
+	_, err = cli.ContainerCreate(ctx, &container.Config{Image: imageName}, nil, nil, nil, "")
+	if err != nil {
+		if client.IsErrNotFound(err) {
+			// Pull image to be sure we can check creation
+			reader, err := cli.ImagePull(ctx, imageName, image.PullOptions{})
+			if err != nil {
+				t.Logf("Docker image pull failed (skipping tests): %v", err)
+				return false
+			}
+			io.Copy(io.Discard, reader)
+			reader.Close()
+
+			// Retry creation
+			_, err = cli.ContainerCreate(ctx, &container.Config{Image: imageName}, nil, nil, nil, "")
+			if err != nil {
+				t.Logf("Docker container creation failed after pull (skipping tests): %v", err)
+				return false
+			}
+			return true
+		}
+		t.Logf("Docker container creation failed (skipping tests): %v", err)
 		return false
 	}
 	return true
