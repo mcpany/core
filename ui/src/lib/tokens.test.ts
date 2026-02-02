@@ -4,7 +4,9 @@ import { estimateTokens } from './tokens';
 describe('estimateTokens', () => {
     it('should return 0 for empty or null input', () => {
         expect(estimateTokens("")).toBe(0);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(estimateTokens(null as any)).toBe(0);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(estimateTokens(undefined as any)).toBe(0);
     });
 
