@@ -24,6 +24,38 @@ COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /proto/node_modules
 
+# Install protobuf dependencies
+RUN apt-get update && apt-get install -y curl unzip
+
+# Install protoc v29.3 (supports edition 2023)
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then PROTOC_ARCH="aarch_64"; else PROTOC_ARCH="x86_64"; fi && \
+    curl -sSL -o protoc.zip "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-$PROTOC_ARCH.zip" && \
+    unzip -q protoc.zip -d /usr/local && \
+    rm protoc.zip
+
+# Download googleapis for proto imports
+RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q googleapis.zip -d /tmp && \
+    mv /tmp/googleapis-master /tmp/googleapis && \
+    rm googleapis.zip
+
+# Download grpc-gateway for proto imports (v2.27.3 matching Makefile)
+RUN curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/v2.27.3.zip && \
+    unzip -q grpc-gateway.zip -d /tmp && \
+    mv /tmp/grpc-gateway-2.27.3 /tmp/grpc-gateway && \
+    rm grpc-gateway.zip
+
+# Generate TypeScript protobuf files
+RUN find /proto -name "*.proto" -exec protoc \
+    --proto_path=/ \
+    --proto_path=/tmp/googleapis \
+    --proto_path=/tmp/grpc-gateway \
+    --plugin=protoc-gen-ts_proto=/app/node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=/proto \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
