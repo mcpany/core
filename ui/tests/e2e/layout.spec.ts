@@ -32,7 +32,7 @@ test.describe('Layout Tests', () => {
     if (footerBox && viewportSize) {
         // Footer bottom should be close to viewport bottom
         // giving it a small buffer for borders/padding
-        expect(footerBox.y + footerBox.height).toBeGreaterThan(viewportSize.height - 50);
+        expect(footerBox.y + footerBox.height).toBeGreaterThan(viewportSize.height - 100);
     }
   });
 

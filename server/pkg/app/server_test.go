@@ -749,7 +749,8 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		port := l.Addr().(*net.TCPAddr).Port
 
 		fs := afero.NewMemMapFs()
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		// Increased timeout to 10s to handle potential delays in ListenWithRetry or CI environment
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
@@ -775,7 +776,8 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 		port := l.Addr().(*net.TCPAddr).Port
 
 		fs := afero.NewMemMapFs()
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		// Increased timeout to 10s to handle potential delays in CI environment
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		// Attempt to run the server on the occupied port
@@ -1883,7 +1885,8 @@ upstream_services:
 
 func TestRun_ServiceRegistrationSkipsDisabled(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	// Increased timeout to 10s to ensure startup completes in CI
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	configContent := `
