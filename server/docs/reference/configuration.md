@@ -15,7 +15,7 @@ upstream_services:
   - name: "my-api"
     http_service:
       address: "https://api.example.com"
-    upstream_authentication:
+    upstream_auth:
       api_key:
         header_name: "X-API-Key"
         api_key:
@@ -32,7 +32,7 @@ The `McpAnyServerConfig` is the top-level configuration object for the entire MC
 | ------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `global_settings`              | `GlobalSettings`                     | Defines server-wide operational parameters, such as the bind address and log level.                                                  |
 | `upstream_services`            | `repeated UpstreamServiceConfig`     | A list of all configured upstream services that MCP Any will proxy to. Each service has its own specific configuration and policies. |
-| `upstream_service_collections` | `repeated Collection` | A list of upstream service collections to load from remote sources.                                                                  |
+| `collections`                  | `repeated Collection`                | A list of upstream service collections to load from remote sources.                                                                  |
 
 ### Use Case and Example
 
@@ -68,7 +68,7 @@ Defines a collection of upstream services that can be loaded from a remote sourc
 Dynamically load a collection of upstream services from a remote URL. This is useful for managing a large number of services or for updating service configurations without restarting the MCP Any server.
 
 ```yaml
-upstream_service_collections:
+collections:
   - name: "shared-services"
     http_url: "https://config.example.com/services.yaml"
     priority: 1
@@ -159,7 +159,7 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `id`                      | `string`                 | A UUID to uniquely identify this upstream service configuration, used for bindings.           |
 | `name`                    | `string`                 | A unique name for the upstream service. Used for identification, logging, and metrics.        |
 | `connection_pool`         | `ConnectionPoolConfig`   | Configuration for the pool of connections to the upstream service.                            |
-| `upstream_authentication` | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
+| `upstream_auth`           | `UpstreamAuthentication` | Authentication configuration for MCP Any to use when connecting to the upstream service.      |
 | `cache`                   | `CacheConfig`            | Caching configuration to improve performance and reduce load on the upstream.                 |
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
@@ -213,7 +213,7 @@ upstream_services:
       circuit_breaker:
         failure_rate_threshold: 0.5
         open_duration: "5s"
-    upstream_authentication:
+    upstream_auth:
       api_key:
         header_name: "X-API-Key"
         api_key:
@@ -488,7 +488,7 @@ upstream_services:
       calls:
         user:
           selection_set: "{ id name }"
-    upstream_authentication:
+    upstream_auth:
       api_key:
         header_name: "X-API-Key"
         api_key:
@@ -806,7 +806,7 @@ Configures the authentication method for MCP Any to use when connecting to an up
 Authenticate with an upstream service using the OAuth 2.0 client credentials flow.
 
 ```yaml
-upstream_authentication:
+upstream_auth:
   oauth2:
     token_url: "https://auth.example.com/oauth2/token"
     client_id:
@@ -821,7 +821,7 @@ upstream_authentication:
 Authenticate with an upstream service using an API key stored in HashiCorp Vault.
 
 ```yaml
-upstream_authentication:
+upstream_auth:
   api_key:
     header_name: "X-API-Key"
     api_key:
@@ -837,7 +837,7 @@ upstream_authentication:
 Authenticate using an API key stored in AWS Secrets Manager.
 
 ```yaml
-upstream_authentication:
+upstream_auth:
   api_key:
     header_name: "X-API-Key"
     api_key:
