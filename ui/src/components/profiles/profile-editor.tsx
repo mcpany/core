@@ -26,6 +26,113 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToolDefinition } from "@/lib/client";
 
+interface VirtuosoContext {
+    implicitlySelectedServices: Set<string>;
+    selectedServices: Set<string>;
+    toggleService: (svcName: string, checked: boolean) => void;
+    expandedServices: Set<string>;
+    toggleExpandService: (svcName: string) => void;
+    serviceTools: Record<string, ToolDefinition[]>;
+    disabledTools: Record<string, Set<string>>;
+    toggleTool: (svcName: string, toolName: string, checked: boolean) => void;
+}
+
+const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoContext) => {
+    const {
+        implicitlySelectedServices,
+        selectedServices,
+        toggleService,
+        expandedServices,
+        toggleExpandService,
+        serviceTools,
+        disabledTools,
+        toggleTool
+    } = context;
+
+    const isImplicit = implicitlySelectedServices.has(svc.name);
+    const isExplicit = selectedServices.has(svc.name);
+    const isSelected = isImplicit || isExplicit;
+
+    return (
+        <div className="flex flex-col p-2 hover:bg-muted/50 rounded transition-colors pr-3">
+            <div className="flex items-start space-x-3">
+                <Checkbox
+                    id={`svc-${svc.name}`}
+                    checked={isSelected}
+                    disabled={isImplicit}
+                    onCheckedChange={(c) => toggleService(svc.name, !!c)}
+                />
+                <div className="grid gap-1.5 leading-none flex-1">
+                    <div className="flex items-center gap-2">
+                        <label
+                            htmlFor={`svc-${svc.name}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                            {svc.name}
+                        </label>
+                        {isImplicit && <Badge variant="secondary" className="text-[10px] h-4 px-1">Auto</Badge>}
+                        {isSelected && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 ml-auto"
+                                onClick={() => toggleExpandService(svc.name)}
+                            >
+                                {expandedServices.has(svc.name) ? (
+                                    <ChevronDown className="h-3 w-3" />
+                                ) : (
+                                    <ChevronRight className="h-3 w-3" />
+                                )}
+                            </Button>
+                        )}
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                        {svc.tags && svc.tags.map(tag => (
+                            <Badge key={tag} variant="outline" className="text-[9px] h-3 px-1">{tag}</Badge>
+                        ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                        {svc.commandLineService ? "Command" : svc.httpService ? "HTTP" : "Remote"} • v{svc.version || "1.0.0"}
+                    </p>
+                </div>
+            </div>
+
+            {/* Tool List */}
+            {isSelected && expandedServices.has(svc.name) && (
+                <div className="ml-8 mt-2 space-y-2 border-l pl-3">
+                    {!serviceTools[svc.name] ? (
+                        <div className="flex items-center text-xs text-muted-foreground">
+                            <Loader2 className="mr-2 h-3 w-3 animate-spin" /> Loading tools...
+                        </div>
+                    ) : serviceTools[svc.name].length === 0 ? (
+                        <div className="text-xs text-muted-foreground">No tools found.</div>
+                    ) : (
+                        serviceTools[svc.name].map(tool => {
+                            const isDisabled = disabledTools[svc.name]?.has(tool.name);
+                            return (
+                                <div key={tool.name} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={`tool-${svc.name}-${tool.name}`}
+                                        checked={!isDisabled}
+                                        onCheckedChange={(c) => toggleTool(svc.name, tool.name, !!c)}
+                                        className="h-3 w-3"
+                                    />
+                                    <label
+                                        htmlFor={`tool-${svc.name}-${tool.name}`}
+                                        className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                    >
+                                        {tool.name}
+                                    </label>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 /**
  * Represents a user profile configuration in the UI.
  */
@@ -268,6 +375,17 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
         setSelectedServices(newSet);
     };
 
+    const virtContext = useMemo<VirtuosoContext>(() => ({
+        implicitlySelectedServices,
+        selectedServices,
+        toggleService,
+        expandedServices,
+        toggleExpandService,
+        serviceTools,
+        disabledTools,
+        toggleTool
+    }), [implicitlySelectedServices, selectedServices, expandedServices, serviceTools, disabledTools]);
+
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full">
@@ -388,90 +506,8 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                                     <Virtuoso
                                         style={{ height: "300px" }}
                                         data={filteredServices}
-                                        itemContent={(_, svc) => {
-                                            const isImplicit = implicitlySelectedServices.has(svc.name);
-                                            const isExplicit = selectedServices.has(svc.name);
-                                            const isSelected = isImplicit || isExplicit;
-
-                                            return (
-                                                <div key={svc.name} className="flex flex-col p-2 hover:bg-muted/50 rounded transition-colors pr-3">
-                                                    <div className="flex items-start space-x-3">
-                                                        <Checkbox
-                                                            id={`svc-${svc.name}`}
-                                                            checked={isSelected}
-                                                            disabled={isImplicit}
-                                                            onCheckedChange={(c) => toggleService(svc.name, !!c)}
-                                                        />
-                                                        <div className="grid gap-1.5 leading-none flex-1">
-                                                            <div className="flex items-center gap-2">
-                                                                <label
-                                                                    htmlFor={`svc-${svc.name}`}
-                                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                                                >
-                                                                    {svc.name}
-                                                                </label>
-                                                                {isImplicit && <Badge variant="secondary" className="text-[10px] h-4 px-1">Auto</Badge>}
-                                                                {isSelected && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="h-4 w-4 ml-auto"
-                                                                        onClick={() => toggleExpandService(svc.name)}
-                                                                    >
-                                                                        {expandedServices.has(svc.name) ? (
-                                                                            <ChevronDown className="h-3 w-3" />
-                                                                        ) : (
-                                                                            <ChevronRight className="h-3 w-3" />
-                                                                        )}
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex flex-wrap gap-1 mt-1">
-                                                                {svc.tags && svc.tags.map(tag => (
-                                                                    <Badge key={tag} variant="outline" className="text-[9px] h-3 px-1">{tag}</Badge>
-                                                                ))}
-                                                            </div>
-                                                            <p className="text-xs text-muted-foreground mt-0.5">
-                                                                {svc.commandLineService ? "Command" : svc.httpService ? "HTTP" : "Remote"} • v{svc.version || "1.0.0"}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Tool List */}
-                                                    {isSelected && expandedServices.has(svc.name) && (
-                                                        <div className="ml-8 mt-2 space-y-2 border-l pl-3">
-                                                            {!serviceTools[svc.name] ? (
-                                                                <div className="flex items-center text-xs text-muted-foreground">
-                                                                    <Loader2 className="mr-2 h-3 w-3 animate-spin" /> Loading tools...
-                                                                </div>
-                                                            ) : serviceTools[svc.name].length === 0 ? (
-                                                                <div className="text-xs text-muted-foreground">No tools found.</div>
-                                                            ) : (
-                                                                serviceTools[svc.name].map(tool => {
-                                                                    const isDisabled = disabledTools[svc.name]?.has(tool.name);
-                                                                    return (
-                                                                        <div key={tool.name} className="flex items-center space-x-2">
-                                                                            <Checkbox
-                                                                                id={`tool-${svc.name}-${tool.name}`}
-                                                                                checked={!isDisabled}
-                                                                                onCheckedChange={(c) => toggleTool(svc.name, tool.name, !!c)}
-                                                                                className="h-3 w-3"
-                                                                            />
-                                                                            <label
-                                                                                htmlFor={`tool-${svc.name}-${tool.name}`}
-                                                                                className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                                                            >
-                                                                                {tool.name}
-                                                                            </label>
-                                                                        </div>
-                                                                    );
-                                                                })
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        }}
+                                        context={virtContext}
+                                        itemContent={ItemContent}
                                     />
                                 )
                             )}
