@@ -4,6 +4,8 @@
 package integration_test
 
 import (
+	"os"
+	"os/exec"
 	"context"
 	"fmt"
 	"path/filepath"
@@ -33,7 +35,24 @@ func BuildPromptServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "prompt_server", filepath.Join(root, "../build/test/bin/prompt-server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
+	binaryPath := filepath.Join(root, "../build/test/bin/prompt-server")
+	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
+		t.Logf("Binary not found at %s, attempting to build...", binaryPath)
+		// Assuming the source is at cmd/mocks/prompt-server
+		sourcePath := filepath.Join(root, "tests/integration/cmd/mocks/prompt-server/main.go")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+		// Ensure output directory exists
+		err := os.MkdirAll(filepath.Dir(binaryPath), 0755)
+		require.NoError(t, err, "Failed to create bin directory")
+		cmd := exec.CommandContext(ctx, "go", "build", "-o", binaryPath, sourcePath) //nolint:gosec
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Dir = root // Run from module root
+		err = cmd.Run()
+		require.NoError(t, err, "Failed to build prompt-server")
+	}
+	proc := integration.NewManagedProcess(t, "prompt_server", binaryPath, []string{"--port", fmt.Sprintf("%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
