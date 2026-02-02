@@ -347,7 +347,7 @@ func (tm *Manager) GetToolCountForService(serviceID string) int {
 	// ⚡ Bolt Optimization: Check health status first without locking the main mutex.
 	// Randomized Selection from Top 5 High-Impact Targets
 	if info, ok := tm.serviceInfo.Load(serviceID); ok {
-		if info.HealthStatus == "unhealthy" {
+		if info.HealthStatus == HealthStatusUnhealthy {
 			return 0
 		}
 	}
@@ -522,7 +522,7 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	var preHooks []PreCallHook
 	var postHooks []PostCallHook
 	if ok {
-		if serviceInfo.HealthStatus == "unhealthy" {
+		if serviceInfo.HealthStatus == HealthStatusUnhealthy {
 			log.Warn("Service is unhealthy, denying execution", "serviceID", serviceID)
 			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
 		}
@@ -894,7 +894,7 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 		serviceID := value.Tool().GetServiceId()
 		// ⚡ Bolt Optimization: Use direct load to avoid expensive config cloning/stripping in GetServiceInfo
 		if info, ok := tm.serviceInfo.Load(serviceID); ok {
-			if info.HealthStatus == "unhealthy" {
+			if info.HealthStatus == HealthStatusUnhealthy {
 				return true // Skip unhealthy tools
 			}
 		}

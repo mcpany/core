@@ -46,6 +46,9 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+
+	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
+	HealthStatusUnhealthy = "unhealthy"
 )
 
 var (
