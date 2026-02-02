@@ -4,12 +4,15 @@
  */
 
 import { NextResponse } from 'next/server';
-import { Trace, Span } from '@/types/trace';
+import { Trace, Span, SpanStatus } from '@/types/trace';
 
 export type { SpanStatus, Span, Trace } from '@/types/trace';
 
 interface DebugEntry {
   id: string;
+  trace_id: string;
+  span_id: string;
+  parent_span_id?: string;
   timestamp: string;
   method: string;
   path: string;
@@ -51,7 +54,12 @@ export async function GET(request: Request) {
         return NextResponse.json([]);
     }
 
-    const traces: Trace[] = entries.map(entry => {
+    // Group by TraceID
+    const spansByTrace = new Map<string, Span[]>();
+    // Map to keep track of parent IDs for reconstruction
+    const parentMap = new Map<string, string | undefined>();
+
+    for (const entry of entries) {
         const startTime = new Date(entry.timestamp).getTime();
         const durationMs = entry.duration / 1000000; // ns to ms
 
@@ -85,8 +93,10 @@ export async function GET(request: Request) {
             }
         }
 
+        const spanId = entry.span_id || entry.id;
+
         const span: Span = {
-            id: entry.id,
+            id: spanId,
             name: `${entry.method} ${entry.path}`,
             type: 'tool', // Assume tool call for now
             startTime: startTime,
@@ -99,19 +109,90 @@ export async function GET(request: Request) {
             serviceName: 'backend'
         };
 
-        return {
-            id: entry.id,
-            rootSpan: span,
-            timestamp: entry.timestamp,
-            totalDuration: durationMs,
-            status: span.status,
-            trigger: 'user'
-        };
-    });
+        const traceId = entry.trace_id || entry.id;
 
-    // Sort by timestamp descending
-    // Optimization: Compare strings directly instead of creating Date objects.
-    // This is ~20x faster (1ms vs 24ms for 10k items).
+        if (!spansByTrace.has(traceId)) {
+            spansByTrace.set(traceId, []);
+        }
+        spansByTrace.get(traceId)!.push(span);
+        parentMap.set(spanId, entry.parent_span_id);
+    }
+
+    const traces: Trace[] = [];
+
+    // Reconstruct trees
+    for (const [traceId, spans] of spansByTrace) {
+         const spanMap = new Map<string, Span>();
+         spans.forEach(s => spanMap.set(s.id, s));
+
+         const roots: Span[] = [];
+
+         spans.forEach(s => {
+             const parentId = parentMap.get(s.id);
+
+             if (parentId && spanMap.has(parentId)) {
+                 const parent = spanMap.get(parentId)!;
+                 if (!parent.children) parent.children = [];
+                 parent.children.push(s);
+             } else {
+                 roots.push(s);
+             }
+         });
+
+         // Handle multiple roots (e.g. parallel requests without a common captured parent)
+         roots.sort((a, b) => a.startTime - b.startTime);
+         let root = roots[0];
+
+         if (!root) continue;
+
+         // If multiple roots exist, create a virtual root to hold them all
+         if (roots.length > 1) {
+             let minStart = roots[0].startTime;
+             let maxEnd = roots[0].endTime;
+             let hasError = false;
+
+             roots.forEach(r => {
+                 if (r.startTime < minStart) minStart = r.startTime;
+                 if (r.endTime > maxEnd) maxEnd = r.endTime;
+                 if (r.status === 'error') hasError = true;
+             });
+
+             root = {
+                 id: `virtual-root-${traceId}`,
+                 name: "Trace Group",
+                 type: 'core',
+                 startTime: minStart,
+                 endTime: maxEnd,
+                 status: hasError ? 'error' : 'success',
+                 children: roots,
+                 serviceName: 'virtual'
+             };
+         }
+
+         // Calculate total duration
+         let minStart = root.startTime;
+         let maxEnd = root.endTime;
+         let hasError = root.status === 'error';
+
+         const traverse = (s: Span) => {
+             if (s.startTime < minStart) minStart = s.startTime;
+             if (s.endTime > maxEnd) maxEnd = s.endTime;
+             if (s.status === 'error') hasError = true;
+             s.children?.forEach(traverse);
+         }
+         traverse(root);
+
+         traces.push({
+             id: traceId,
+             rootSpan: root,
+             timestamp: new Date(minStart).toISOString(),
+             totalDuration: maxEnd - minStart,
+             status: hasError ? 'error' : 'success',
+             trigger: 'user'
+         });
+    }
+
+    // Sort traces by timestamp descending
     traces.sort((a, b) => (a.timestamp > b.timestamp ? -1 : (a.timestamp < b.timestamp ? 1 : 0)));
 
     return NextResponse.json(traces);

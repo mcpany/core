@@ -13,12 +13,18 @@ import (
 	"sync"
 	"time"
 
+	"crypto/rand"
+	"encoding/hex"
+
 	"github.com/google/uuid"
 )
 
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
 	ID              string        `json:"id"`
+	TraceID         string        `json:"trace_id"`
+	SpanID          string        `json:"span_id"`
+	ParentSpanID    string        `json:"parent_span_id,omitempty"`
 	Timestamp       time.Time     `json:"timestamp"`
 	Method          string        `json:"method"`
 	Path            string        `json:"path"`
@@ -137,6 +143,37 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 		start := time.Now()
 		reqID := uuid.New().String()
 
+		// Trace Context (W3C)
+		var traceID, spanID, parentSpanID string
+
+		// Generate new SpanID for this request
+		spanIDBytes := make([]byte, 8)
+		if _, err := rand.Read(spanIDBytes); err == nil {
+			spanID = hex.EncodeToString(spanIDBytes)
+		} else {
+			spanID = uuid.New().String() // Fallback
+		}
+
+		traceParent := r.Header.Get("traceparent")
+		if traceParent != "" {
+			parts := strings.Split(traceParent, "-")
+			// 00-traceid-parentid-flags
+			if len(parts) == 4 {
+				traceID = parts[1]
+				parentSpanID = parts[2]
+			}
+		}
+
+		if traceID == "" {
+			// Generate new TraceID
+			traceIDBytes := make([]byte, 16)
+			if _, err := rand.Read(traceIDBytes); err == nil {
+				traceID = hex.EncodeToString(traceIDBytes)
+			} else {
+				traceID = uuid.New().String() // Fallback
+			}
+		}
+
 		// Capture Request Body
 		var reqBody string
 		if r.Body != nil {
@@ -187,6 +224,9 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 
 		entry := DebugEntry{
 			ID:              reqID,
+			TraceID:         traceID,
+			SpanID:          spanID,
+			ParentSpanID:    parentSpanID,
 			Timestamp:       start,
 			Method:          r.Method,
 			Path:            r.URL.Path,
