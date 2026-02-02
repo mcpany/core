@@ -6,20 +6,48 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/client";
+
+interface AlertStats {
+  activeCritical: number;
+  activeWarning: number;
+  mttr: string;
+  totalToday: number;
+}
 
 /**
  * AlertStats component.
  * @returns The rendered component.
  */
 export function AlertStats() {
-  // Mock data - in a real app, this would come from props or a query
-  const stats = {
-    activeCritical: 3,
-    activeWarning: 12,
-    mttr: "14m", // Mean Time To Resolution
-    totalToday: 45
-  };
+  const [stats, setStats] = useState<AlertStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await apiClient.getAlertStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to load alert stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) {
+     return <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 h-[120px] items-center justify-center">
+         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+     </div>;
+  }
+
+  if (!stats) {
+     return null;
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -30,9 +58,10 @@ export function AlertStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
-          <p className="text-xs text-muted-foreground">
+          {/* Trends disabled for now */}
+          {/* <p className="text-xs text-muted-foreground">
             +1 since last hour
-          </p>
+          </p> */}
         </CardContent>
       </Card>
       <Card>
@@ -42,9 +71,9 @@ export function AlertStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
-          <p className="text-xs text-muted-foreground">
+          {/* <p className="text-xs text-muted-foreground">
             -2 since last hour
-          </p>
+          </p> */}
         </CardContent>
       </Card>
       <Card>
@@ -54,9 +83,9 @@ export function AlertStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.mttr}</div>
-          <p className="text-xs text-muted-foreground">
+          {/* <p className="text-xs text-muted-foreground">
             -2m from yesterday
-          </p>
+          </p> */}
         </CardContent>
       </Card>
       <Card>
@@ -66,9 +95,9 @@ export function AlertStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalToday}</div>
-          <p className="text-xs text-muted-foreground">
+          {/* <p className="text-xs text-muted-foreground">
             +12% from average
-          </p>
+          </p> */}
         </CardContent>
       </Card>
     </div>

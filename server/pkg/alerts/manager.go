@@ -22,6 +22,8 @@ type ManagerInterface interface {
 	CreateAlert(alert *Alert) *Alert
 	// UpdateAlert updates an existing alert.
 	UpdateAlert(id string, alert *Alert) *Alert
+	// GetStats returns the statistics of alerts.
+	GetStats() *AlertStats
 
 	// Rules
 
@@ -60,8 +62,8 @@ func (m *Manager) seedData() {
 	m.CreateAlert(&Alert{ID: "AL-1024", Title: "High CPU Usage", Message: "CPU usage > 90% for 5m", Severity: SeverityCritical, Status: StatusActive, Service: "weather-service", Source: "System Monitor", Timestamp: now.Add(-5 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1023", Title: "API Latency Spike", Message: "P99 Latency > 2000ms", Severity: SeverityWarning, Status: StatusActive, Service: "api-gateway", Source: "Latency Watchdog", Timestamp: now.Add(-15 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1022", Title: "Disk Space Low", Message: "Volume /data at 85%", Severity: SeverityWarning, Status: StatusAcknowledged, Service: "database-primary", Source: "Disk Monitor", Timestamp: now.Add(-45 * time.Minute)})
-	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour)})
-	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour)})
+	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour), ResolvedAt: now.Add(-1 * time.Hour)})
+	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour), ResolvedAt: now.Add(-4 * time.Hour)})
 
 	// Seed Rules
 	m.CreateRule(&AlertRule{ID: "rule-1", Name: "High CPU", Metric: "cpu_usage", Operator: ">", Threshold: 90, Duration: "5m", Severity: SeverityCritical, Enabled: true, LastUpdated: now})
@@ -114,10 +116,54 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	}
 	// Update fields
 	if alert.Status != "" {
+		if alert.Status == StatusResolved && existing.Status != StatusResolved {
+			existing.ResolvedAt = time.Now()
+		}
 		existing.Status = alert.Status
 	}
 	// Can add more updatable fields here
 	return existing
+}
+
+// GetStats returns the statistics of alerts.
+func (m *Manager) GetStats() *AlertStats {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	stats := &AlertStats{}
+	now := time.Now()
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+
+	var totalResolvedDuration time.Duration
+	var resolvedCount int
+
+	for _, alert := range m.alerts {
+		if alert.Status == StatusActive {
+			if alert.Severity == SeverityCritical {
+				stats.ActiveCritical++
+			} else if alert.Severity == SeverityWarning {
+				stats.ActiveWarning++
+			}
+		}
+
+		if alert.Timestamp.After(startOfDay) {
+			stats.TotalToday++
+		}
+
+		if alert.Status == StatusResolved && !alert.ResolvedAt.IsZero() {
+			totalResolvedDuration += alert.ResolvedAt.Sub(alert.Timestamp)
+			resolvedCount++
+		}
+	}
+
+	if resolvedCount > 0 {
+		avgDuration := totalResolvedDuration / time.Duration(resolvedCount)
+		stats.MTTR = avgDuration.Round(time.Minute).String()
+	} else {
+		stats.MTTR = "0m"
+	}
+
+	return stats
 }
 
 // ListRules returns all rules.
