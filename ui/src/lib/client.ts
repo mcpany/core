@@ -965,6 +965,62 @@ export const apiClient = {
         return res.json();
     },
 
+    // Alert Rules
+
+    /**
+     * Lists all alert rules.
+     * @returns A promise that resolves to a list of alert rules.
+     */
+    listRules: async () => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules');
+        if (!res.ok) throw new Error('Failed to fetch alert rules');
+        return res.json();
+    },
+
+    /**
+     * Creates a new alert rule.
+     * @param rule The rule definition.
+     * @returns A promise that resolves to the created rule.
+     */
+    createRule: async (rule: any) => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to create alert rule');
+        return res.json();
+    },
+
+    /**
+     * Updates an existing alert rule.
+     * @param id The ID of the rule.
+     * @param rule The updated rule definition.
+     * @returns A promise that resolves to the updated rule.
+     */
+    updateRule: async (id: string, rule: any) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to update alert rule');
+        return res.json();
+    },
+
+    /**
+     * Deletes an alert rule.
+     * @param id The ID of the rule.
+     * @returns A promise that resolves when the rule is deleted.
+     */
+    deleteRule: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/alerts/rules/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete alert rule');
+        return {};
+    },
+
     // Stack Management (Collections)
 
     /**
