@@ -25,9 +25,20 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Summary: Creates a new Watcher instance for monitoring file changes.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - A pointer to a new Watcher.
-//   - An error if the watcher creation fails.
+//   - *Watcher: A pointer to a new Watcher.
+//   - error: An error if the watcher creation fails.
+//
+// Errors/Throws:
+//   - Returns error if fsnotify.NewWatcher() fails.
+//
+// Side Effects:
+//   - Allocates resources for file watching.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -42,12 +53,21 @@ func NewWatcher() (*Watcher, error) {
 
 // Watch starts monitoring the specified configuration paths.
 //
+// Summary: Starts watching the specified paths and triggers reloadFunc on changes.
+//
 // Parameters:
-//   - paths: A slice of file or directory paths to watch.
-//   - reloadFunc: The function to call when a change is detected.
+//   - paths: []string. A slice of file or directory paths to watch.
+//   - reloadFunc: func(). The function to call when a change is detected.
 //
 // Returns:
-//   - An error if watching fails.
+//   - error: An error if watching fails.
+//
+// Errors/Throws:
+//   - Returns error if adding paths to watcher fails.
+//
+// Side Effects:
+//   - Spawns a goroutine to handle events.
+//   - Sets up timers for debouncing.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -161,6 +181,20 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 }
 
 // Close stops the file watcher and releases resources.
+//
+// Summary: Closes the watcher and releases associated resources.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Closes channels and the underlying fsnotify watcher.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

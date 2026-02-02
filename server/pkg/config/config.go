@@ -19,15 +19,20 @@ import (
 // It establishes the connection between Cobra command flags and Viper's configuration management,
 // enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
 //
+// Summary: Binds global flags to Viper configuration.
+//
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to which the persistent flags will be attached.
 //
 // Returns:
-//   None.
+//   - None.
 //
-// Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails
-//   (e.g., if a flag with the same name already exists).
+// Errors/Throws:
+//   - Exits the application with status code 1 if a flag binding operation fails.
+//
+// Side Effects:
+//   - Modifies command flags.
+//   - Configures Viper environment settings.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
@@ -81,14 +86,19 @@ func BindRootFlags(cmd *cobra.Command) {
 // It defines flags specific to the server operation, such as port configurations,
 // authentication keys, and runtime modes (e.g., stdio).
 //
+// Summary: Binds server-specific flags to Viper configuration.
+//
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to which the server flags will be attached.
 //
 // Returns:
-//   None.
+//   - None.
 //
-// Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails.
+// Errors/Throws:
+//   - Exits the application with status code 1 if a flag binding operation fails.
+//
+// Side Effects:
+//   - Modifies command flags.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -128,14 +138,19 @@ func BindServerFlags(cmd *cobra.Command) {
 // This is a helper function that orchestrates the binding of all necessary flags by delegating
 // to BindRootFlags and BindServerFlags.
 //
+// Summary: Binds all necessary flags (root and server) to Viper.
+//
 // Parameters:
 //   - cmd: *cobra.Command. The command instance to which the flags will be attached.
 //
 // Returns:
-//   None.
+//   - None.
 //
-// Throws/Errors:
-//   Exits the application with status code 1 if a flag binding operation fails.
+// Errors/Throws:
+//   - Exits the application with status code 1 if a flag binding operation fails.
+//
+// Side Effects:
+//   - Modifies command flags.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

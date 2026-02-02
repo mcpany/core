@@ -12,6 +12,13 @@ Traditional MCP adoption suffers from "binary fatigue"—requiring a separate se
 
 **The Solution:** Don't write code to expose your APIs to AI agents. Just configure them. MCP Any unifies your backend services into a single, secure, and observable MCP endpoint.
 
+### Key Features
+*   **Dynamic Tool Registration & Auto-Discovery**: Automatically discover tools from Proto files, OpenAPI specs, or Reflection.
+*   **Safety Policies**: Block dangerous operations (e.g., `DELETE`) or restrict access to specific URLs to ensure safe execution.
+*   **Upstream Authentication**: Securely handle API keys, Bearer tokens, and mTLS without exposing them to the AI client.
+*   **Multi-User & Multi-Profile**: Support complex multi-tenancy use cases with granular access control.
+*   **Universal Adapter**: Support for gRPC, OpenAPI, HTTP, GraphQL, and CLI commands.
+
 ## 2. Architecture
 
 MCP Any acts as a centralized middleware between AI Agents (Clients) and your Upstream Services. It is built with **Go** for high performance and concurrency, and uses a modular architecture to support various upstream protocols.

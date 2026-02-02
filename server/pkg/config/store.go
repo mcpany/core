@@ -58,11 +58,20 @@ type ConfigurableEngine interface {
 // indicated by the file extension of the given path. It supports `.json`,
 // `.yaml`, `.yml`, and `.textproto` file formats.
 //
-// Parameters:
-//   - path: The file path used to determine the configuration format.
+// Summary: Creates a format-specific Engine for parsing configuration files.
 //
-// Returns an `Engine` implementation for the corresponding file format, or an
-// error if the format is not supported.
+// Parameters:
+//   - path: string. The file path used to determine the configuration format.
+//
+// Returns:
+//   - Engine: An implementation for the corresponding file format.
+//   - error: An error if the format is not supported.
+//
+// Errors/Throws:
+//   - Returns error if the file extension is not supported.
+//
+// Side Effects:
+//   - None.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -83,6 +92,20 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Summary: Configures the engine to skip schema validation during unmarshaling.
+//
+// Parameters:
+//   - skip: bool. Whether to skip validation.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Modifies internal state of the engine.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
@@ -92,6 +115,23 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // to JSON, and finally unmarshaling the JSON into the target protobuf message.
 // This two-step process is a common pattern for converting YAML to a protobuf
 // message.
+//
+// Summary: Unmarshals a YAML byte slice into a protobuf message.
+//
+// Parameters:
+//   - b: []byte. The YAML content.
+//   - v: proto.Message. The target protobuf message to populate.
+//
+// Returns:
+//   - error: An error if parsing or validation fails.
+//
+// Errors/Throws:
+//   - Returns error if YAML unmarshaling fails.
+//   - Returns error if JSON conversion fails.
+//   - Returns error if schema validation fails (unless skipped).
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -111,6 +151,23 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Summary: Populates a protobuf message directly from a map structure.
+//
+// Parameters:
+//   - yamlMap: map[string]interface{}. The raw configuration map.
+//   - v: proto.Message. The target protobuf message.
+//   - originalBytes: []byte. Optional original bytes for line number lookup in errors.
+//
+// Returns:
+//   - error: An error if unmarshaling or validation fails.
+//
+// Errors/Throws:
+//   - Returns error if unmarshaling fails.
+//   - Returns error if schema validation fails (unless skipped).
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -216,10 +273,20 @@ type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
-// b is the b.
-// v is the v.
+// Summary: Unmarshals a textproto byte slice into a protobuf message.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - b: []byte. The textproto content.
+//   - v: proto.Message. The target protobuf message.
+//
+// Returns:
+//   - error: An error if unmarshaling fails.
+//
+// Errors/Throws:
+//   - Returns error if prototext unmarshaling fails.
+//
+// Side Effects:
+//   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -229,10 +296,20 @@ type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
-// b is the b.
-// v is the v.
+// Summary: Unmarshals a JSON byte slice into a protobuf message.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - b: []byte. The JSON content.
+//   - v: proto.Message. The target protobuf message.
+//
+// Returns:
+//   - error: An error if unmarshaling fails.
+//
+// Errors/Throws:
+//   - Returns error if JSON unmarshaling fails.
+//
+// Side Effects:
+//   - None.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -523,11 +600,39 @@ type FileStore struct {
 }
 
 // SetSkipValidation configures whether to skip schema validation during loading.
+//
+// Summary: Configures the FileStore to skip schema validation.
+//
+// Parameters:
+//   - skip: bool. Whether to skip validation.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Modifies internal state.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+//
+// Summary: Configures the FileStore to ignore missing environment variables.
+//
+// Parameters:
+//   - ignore: bool. Whether to ignore missing env vars.
+//
+// Returns:
+//   - None.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Modifies internal state.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
@@ -535,25 +640,60 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 // NewFileStore creates a new FileStore with the given filesystem and a list of
 // paths to load configurations from.
 //
-// Parameters:
-//   - fs: The filesystem interface to use for file operations.
-//   - paths: A slice of file or directory paths to scan for configuration
-//     files.
+// Summary: Creates a new FileStore instance.
 //
-// Returns a new instance of `FileStore`.
+// Parameters:
+//   - fs: afero.Fs. The filesystem interface to use for file operations.
+//   - paths: []string. A slice of file or directory paths to scan for configuration files.
+//
+// Returns:
+//   - *FileStore: A new instance of `FileStore`.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
 
 // NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files
 // instead of returning an error.
+//
+// Summary: Creates a new FileStore that skips errors during loading.
+//
+// Parameters:
+//   - fs: afero.Fs. The filesystem interface.
+//   - paths: []string. The config paths.
+//
+// Returns:
+//   - *FileStore: A new instance of `FileStore`.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
 
 // HasConfigSources returns true if the store has configuration paths configured.
 //
-// Returns true if successful.
+// Summary: Checks if the store has any configuration sources.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if configuration paths are present.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -562,12 +702,22 @@ func (s *FileStore) HasConfigSources() bool {
 // YAML, and textproto), reads them, unmarshals their contents, and merges them
 // into a single `McpAnyServerConfig`.
 //
-// The files are processed in alphabetical order, and configurations from later
-// files are merged into earlier ones. This allows for a cascading configuration
-// setup where base configurations can be overridden by more specific ones.
+// Summary: Loads and merges configurations from all configured paths.
 //
-// Returns the merged `McpAnyServerConfig` or an error if any part of the process
-// fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if any part of the process fails.
+//
+// Errors/Throws:
+//   - Returns error if file paths cannot be collected.
+//   - Returns error if reading or unmarshaling fails (unless skipErrors is true).
+//   - Returns error if environment expansion fails.
+//
+// Side Effects:
+//   - Reads from filesystem or network.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var mergedConfig *configv1.McpAnyServerConfig
 
@@ -1108,19 +1258,39 @@ type MultiStore struct {
 
 // NewMultiStore creates a new MultiStore with the given stores.
 //
-// stores is the stores.
+// Summary: Creates a new MultiStore instance.
 //
-// Returns the result.
+// Parameters:
+//   - stores: ...Store. The stores to aggregate.
+//
+// Returns:
+//   - *MultiStore: A new MultiStore instance.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
 // Load loads configurations from all stores and merges them into a single config.
 //
-// ctx is the context for the request.
+// Summary: Loads and merges configurations from all underlying stores.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if any store fails to load.
+//
+// Errors/Throws:
+//   - Returns error if any underlying store fails.
+//
+// Side Effects:
+//   - Invokes Load on all underlying stores.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1241,7 +1411,19 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
-// Returns true if successful.
+// Summary: Checks if any underlying store has configuration sources.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if any store has configuration sources.
+//
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

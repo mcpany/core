@@ -45,13 +45,19 @@ type UpstreamServiceManager struct {
 // NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
 // It initializes the manager with the specified enabled profiles and default settings.
 //
-// Parameters:
+// Summary: Creates a new UpstreamServiceManager.
 //
-//	enabledProfiles: A list of profile names that are active. Services must match one of these profiles to be loaded.
+// Parameters:
+//   - enabledProfiles: []string. A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
+//   - *UpstreamServiceManager: A pointer to a fully initialized UpstreamServiceManager.
 //
-//	A pointer to a fully initialized UpstreamServiceManager.
+// Errors/Throws:
+//   - None.
+//
+// Side Effects:
+//   - Initializes internal maps and HTTP client.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -76,15 +82,23 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // It processes both locally defined services and remote service collections, merging them
 // based on their priority and name.
 //
-// Parameters:
+// Summary: Loads and merges upstream services from configuration and remote sources.
 //
-//	ctx: The context for the operation.
-//	config: The main server configuration containing service definitions and collection references.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - config: *configv1.McpAnyServerConfig. The main server configuration containing service definitions and collection references.
 //
 // Returns:
+//   - []*configv1.UpstreamServiceConfig: A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
+//   - error: An error if any critical failure occurs during loading or merging.
 //
-//	A slice of pointers to UpstreamServiceConfig objects that represent the final set of loaded services.
-//	An error if any critical failure occurs during loading or merging.
+// Errors/Throws:
+//   - Returns error if profile resolution fails.
+//   - Returns error if adding a service fails.
+//
+// Side Effects:
+//   - Makes network calls to fetch remote collections.
+//   - Modifies internal state of the manager.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {
