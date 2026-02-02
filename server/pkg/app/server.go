@@ -1501,6 +1501,9 @@ func (a *Application) runServerMode(
 		authMiddleware = a.createAuthMiddleware(false, trustProxy)
 	}
 
+	// Capture trustProxy for closure to avoid potential race
+	tp := trustProxy
+
 	mux := http.NewServeMux()
 
 	// UI Handler
@@ -1657,7 +1660,7 @@ func (a *Application) runServerMode(
 			} else {
 				// No auth configured at any level
 				// Sentinel Security: Enforce private network access if no auth is configured.
-				ip := util.GetClientIP(r, trustProxy)
+				ip := util.GetClientIP(r, tp)
 				if !util.IsPrivateIP(net.ParseIP(ip)) {
 					logging.GetLogger().Warn("Blocked public internet request to /mcp/u/ because no API Key is configured", "remote_addr", r.RemoteAddr, "client_ip", ip)
 					http.Error(w, "Forbidden: Public access requires an API Key to be configured", http.StatusForbidden)

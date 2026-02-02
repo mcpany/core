@@ -2550,6 +2550,22 @@ func TestRunServerMode_Auth(t *testing.T) {
 	cachingMiddleware := middleware.NewCachingMiddleware(app.ToolManager)
 	errChan := make(chan error, 1)
 	go func() {
+		// Mock config.GlobalSettings() to return localGlobalSettings to avoid race
+		// However, runServerMode might use config.GlobalSettings() internally or through middlewares.
+		// The race is likely in middleware initialization or usage accessing the global singleton.
+		// In runServerMode, we check if globalSettings is nil. Here we pass localGlobalSettings.
+		// But middlewares like HTTPRateLimit might access global settings? No, they are initialized with config.
+		// Let's trace the race stack again.
+		// Write at 0x00c00156a220 by goroutine 2454:
+		//   github.com/***/core/server/pkg/app.(*Application).runServerMode.func3()
+		//     /home/runner/work/core/core/server/pkg/app/server.go:1648 +0x18a5
+		// Previous read at 0x00c00156a220 by goroutine 2419:
+		//   github.com/***/core/server/pkg/app.TestRunServerMode_Auth.func1()
+		//     /home/runner/work/core/core/server/pkg/app/server_test.go:2553 +0x178
+
+		// Line 2553 in server_test.go is likely inside one of the t.Run subtests in TestRunServerMode_Auth.
+		// The write in server.go:1648 is inside a closure passed to http.Handler?
+		// Wait, func3 in runServerMode... let's look at server.go around 1648.
 		errChan <- app.runServerMode(ctx, mcpSrv, busProvider, bindAddress, "", 5*time.Second, localGlobalSettings, cachingMiddleware, nil, app.Storage, serviceRegistry, nil, "", "", "")
 	}()
 
