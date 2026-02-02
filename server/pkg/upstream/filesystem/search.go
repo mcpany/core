@@ -11,7 +11,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
+	"sync"
+	"sync/atomic"
 
 	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
 	"github.com/spf13/afero"
@@ -68,109 +71,161 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				return nil, err
 			}
 
-			matches := []map[string]interface{}{}
-			maxMatches := 100
-			matchCount := 0
+			return executeSearch(ctx, fs, resolvedPath, path, re, excludePatterns)
+		},
+	}
+}
 
-			err = afero.Walk(fs, resolvedPath, func(filePath string, info os.FileInfo, err error) error {
-				if err != nil {
-					// Skip unreadable files
-					return nil
-				}
+func executeSearch(ctx context.Context, fs afero.Fs, resolvedPath, originalPath string, re *regexp.Regexp, excludePatterns []string) (map[string]interface{}, error) {
+	const maxMatches = int32(100)
+	var matchCount int32
 
-				// Check context cancellation
+	// Thread-safe matches collection
+	var matchesMu sync.Mutex
+	matches := []map[string]interface{}{}
+
+	// Worker pool setup
+	numWorkers := runtime.NumCPU()
+	if numWorkers < 4 {
+		numWorkers = 4
+	}
+
+	type job struct {
+		filePath string
+	}
+
+	jobs := make(chan job, numWorkers*2)
+	var wg sync.WaitGroup
+
+	// ⚡ BOLT: Concurrent file search using worker pool
+	// Randomized Selection from Top 5 High-Impact Targets
+	for w := 0; w < numWorkers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := range jobs {
 				if ctx.Err() != nil {
-					return ctx.Err()
+					return
+				}
+				if atomic.LoadInt32(&matchCount) >= maxMatches {
+					return
 				}
 
-				if matchCount >= maxMatches {
+				processFile(ctx, fs, j.filePath, resolvedPath, originalPath, re, &matchCount, maxMatches, &matches, &matchesMu)
+			}
+		}()
+	}
+
+	// Walker
+	walkErr := afero.Walk(fs, resolvedPath, func(filePath string, info os.FileInfo, err error) error {
+		if err != nil {
+			// Skip unreadable files
+			return nil //nolint:nilerr // Ignore errors accessing individual files
+		}
+
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		if atomic.LoadInt32(&matchCount) >= maxMatches {
+			return filepath.SkipDir
+		}
+
+		// Check exclusions
+		for _, pattern := range excludePatterns {
+			matched, _ := filepath.Match(pattern, info.Name())
+			if matched {
+				if info.IsDir() {
 					return filepath.SkipDir
 				}
-
-				// Check exclusions
-				for _, pattern := range excludePatterns {
-					matched, _ := filepath.Match(pattern, info.Name())
-					if matched {
-						if info.IsDir() {
-							return filepath.SkipDir
-						}
-						return nil
-					}
-				}
-
-				if info.IsDir() {
-					// Skip hidden directories like .git
-					if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
-						return filepath.SkipDir
-					}
-					return nil
-				}
-				// Skip large files (e.g., > 10MB)
-				if info.Size() > 10*1024*1024 {
-					return nil
-				}
-
-				// Read file
-				f, err := fs.Open(filePath)
-				if err != nil {
-					return nil
-				}
-				defer func() { _ = f.Close() }()
-
-				// Check for binary
-				// Read first 512 bytes
-				buffer := make([]byte, 512)
-				n, _ := f.Read(buffer)
-				if n > 0 {
-					contentType := http.DetectContentType(buffer[:n])
-					if contentType == "application/octet-stream" {
-						return nil
-					}
-					// Reset seeker
-					if _, err := f.Seek(0, 0); err != nil {
-						return nil
-					}
-				}
-
-				scanner := bufio.NewScanner(f)
-				lineNum := 0
-				for scanner.Scan() {
-					// Check context inside scanning loop for large files
-					if ctx.Err() != nil {
-						return ctx.Err()
-					}
-					lineNum++
-					line := scanner.Text()
-					if re.MatchString(line) {
-						// Relativize path
-						relPath, _ := filepath.Rel(resolvedPath, filePath)
-						if relPath == "" {
-							relPath = filepath.Base(filePath)
-						}
-
-						// Combine with the user-provided path so the result is relative to the provider root (or absolute if input was absolute)
-						// resolvedPath corresponds to path.
-						fullPath := filepath.Join(path, relPath)
-
-						matches = append(matches, map[string]interface{}{
-							"file":         fullPath,
-							"line_number":  lineNum,
-							"line_content": strings.TrimSpace(line),
-						})
-						matchCount++
-						if matchCount >= maxMatches {
-							return filepath.SkipDir
-						}
-					}
-				}
 				return nil
-			})
-
-			if err != nil && err != filepath.SkipDir {
-				return nil, err
 			}
+		}
 
-			return map[string]interface{}{"matches": matches}, nil
-		},
+		if info.IsDir() {
+			// Skip hidden directories like .git
+			if strings.HasPrefix(info.Name(), ".") && info.Name() != "." && info.Name() != ".." {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		// Skip large files (e.g., > 10MB)
+		if info.Size() > 10*1024*1024 {
+			return nil
+		}
+
+		// Send to worker
+		select {
+		case jobs <- job{filePath: filePath}:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+
+		return nil
+	})
+
+	close(jobs)
+	wg.Wait()
+
+	if walkErr != nil && walkErr != filepath.SkipDir {
+		return nil, walkErr
+	}
+
+	return map[string]interface{}{"matches": matches}, nil
+}
+
+func processFile(ctx context.Context, fs afero.Fs, filePath, resolvedPath, originalPath string, re *regexp.Regexp, matchCount *int32, maxMatches int32, matches *[]map[string]interface{}, matchesMu *sync.Mutex) {
+	f, err := fs.Open(filePath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = f.Close() }()
+
+	// Check for binary
+	buffer := make([]byte, 512)
+	n, _ := f.Read(buffer)
+	if n > 0 {
+		contentType := http.DetectContentType(buffer[:n])
+		if contentType == "application/octet-stream" {
+			return
+		}
+		if _, err := f.Seek(0, 0); err != nil {
+			return
+		}
+	}
+
+	scanner := bufio.NewScanner(f)
+	lineNum := 0
+	for scanner.Scan() {
+		if ctx.Err() != nil {
+			return
+		}
+		if atomic.LoadInt32(matchCount) >= maxMatches {
+			return
+		}
+
+		lineNum++
+		line := scanner.Text()
+		if re.MatchString(line) {
+			relPath, _ := filepath.Rel(resolvedPath, filePath)
+			if relPath == "" {
+				relPath = filepath.Base(filePath)
+			}
+			fullPath := filepath.Join(originalPath, relPath)
+
+			matchesMu.Lock()
+			if len(*matches) < int(maxMatches) {
+				*matches = append(*matches, map[string]interface{}{
+					"file":         fullPath,
+					"line_number":  lineNum,
+					"line_content": strings.TrimSpace(line),
+				})
+				atomic.AddInt32(matchCount, 1)
+			}
+			matchesMu.Unlock()
+
+			if atomic.LoadInt32(matchCount) >= maxMatches {
+				return
+			}
+		}
 	}
 }
