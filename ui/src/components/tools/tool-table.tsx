@@ -148,7 +148,7 @@ export const ToolTable = memo(function ToolTable({
                 </div>
                 </TableCell>
                 <TableCell className={cn("text-right", isCompact ? "py-0 px-2" : "")}>
-                    <Button variant="outline" size={isCompact ? "xs" as any : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
+                    <Button variant="outline" size={isCompact ? "xs" as const : "sm"} onClick={() => openInspector(tool)} className={isCompact ? "h-6 px-2 text-[10px]" : ""}>
                         <Play className={cn("mr-1", isCompact ? "h-2 w-2" : "h-3 w-3")} /> Inspect
                     </Button>
                 </TableCell>
