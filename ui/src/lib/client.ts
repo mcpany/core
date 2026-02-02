@@ -20,7 +20,7 @@ import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
 import { User } from '@proto/config/v1/user';
 
-import { BrowserHeaders } from 'browser-headers';
+
 
 /**
  * Extended UpstreamServiceConfig to include runtime error information.
