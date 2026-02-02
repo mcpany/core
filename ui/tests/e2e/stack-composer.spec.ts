@@ -127,7 +127,7 @@ test.describe('Stack Composer', () => {
     }
   });
 
-  test.skip('should validate invalid YAML', async ({ page }) => {
+  test('should validate invalid YAML', async ({ page }) => {
     // Skipping this test as it relies on Monaco Editor interaction which is flaky in E2E (CSP/Canvas issues)
     // and difficult to mock perfectly without full editor loading.
     await page.goto('/stacks/e2e-test-stack');

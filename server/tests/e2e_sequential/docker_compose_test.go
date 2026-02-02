@@ -25,9 +25,9 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
-	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
+	// Check for docker
+	if _, err := exec.LookPath("docker"); err != nil {
+		t.Skip("docker command not found, skipping TestDockerComposeE2E")
 	}
 
 	rootDir, err := os.Getwd()

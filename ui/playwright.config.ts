@@ -12,6 +12,7 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './tests/global-setup.ts',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
