@@ -7,6 +7,7 @@ import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
+import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
 
 /**
  * The main dashboard page component.
@@ -21,6 +22,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <div className="flex items-center space-x-2">
             <ServiceFilter />
+            <TimeRangeFilter />
             <Button>Download Report</Button>
           </div>
         </div>

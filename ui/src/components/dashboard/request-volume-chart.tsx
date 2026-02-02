@@ -16,15 +16,26 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; total: number }[]>([]);
   const [mounted, setMounted] = useState(false);
-  const { serviceId } = useDashboard();
+  const { serviceId, timeRange } = useDashboard();
 
   useEffect(() => {
     setMounted(true);
     const fetchData = async () => {
         try {
-            const traffic = await apiClient.getDashboardTraffic(serviceId);
-            // Backend returns traffic points directly
-            setData(traffic);
+            const traffic = await apiClient.getDashboardTraffic(serviceId, timeRange);
+
+            // Client-side filtering fallback (if backend returns full history)
+            // Assuming 1 minute intervals for simplicity if needed
+            let filtered = traffic;
+            if (timeRange === "1h" && traffic.length > 60) {
+                filtered = traffic.slice(-60);
+            } else if (timeRange === "6h" && traffic.length > 360) {
+                filtered = traffic.slice(-360);
+            } else if (timeRange === "12h" && traffic.length > 720) {
+                filtered = traffic.slice(-720);
+            }
+
+            setData(filtered);
         } catch (error) {
             console.error("Failed to fetch traffic data", error);
         }
@@ -33,7 +44,7 @@ export function RequestVolumeChart() {
     // Poll every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [serviceId]);
+  }, [serviceId, timeRange]);
 
   if (!mounted) return null;
 
