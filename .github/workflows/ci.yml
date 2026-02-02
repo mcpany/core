@@ -328,6 +328,11 @@ jobs:
         with:
           name: image-everything
 
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui
+
       - name: Load Docker Images
         run: |
           for f in *.tar; do
@@ -776,6 +781,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-operator
+
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui
 
       - name: Load Docker Images into Kind
         run: |
