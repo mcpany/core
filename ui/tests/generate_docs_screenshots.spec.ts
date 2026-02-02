@@ -179,7 +179,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     await page.goto('/');
     // Wait for the widget to appear (use static title as fallback if data fails)
-    await expect(page.getByText('System Health')).toBeVisible();
+    // Use .first() to avoid strict mode violation if multiple elements match (e.g. header and sidebar)
+    await expect(page.getByText('System Health').first()).toBeVisible();
     // Try to wait for data, but don't block if missing (e.g. backend down in test)
     try {
         await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 2000 });

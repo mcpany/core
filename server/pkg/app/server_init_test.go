@@ -247,9 +247,16 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 	mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 	mockStore.On("SaveService", mock.Anything, mock.Anything).Return(nil)
+	// System Admin Init expectations
+	mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), nil)
+	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+		return u.GetId() == "system-admin"
+	})).Return(nil)
 	// Admin User Init expectations
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
-	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+		return u.GetId() == "admin"
+	})).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
@@ -262,6 +269,11 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	app := &Application{}
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	// Expect system-admin check even if initialized
+	mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), nil)
+	mockStore.On("CreateUser", mock.Anything, mock.MatchedBy(func(u *configv1.User) bool {
+		return u.GetId() == "system-admin"
+	})).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
@@ -329,6 +341,10 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 
 		mockStore.On("ListServices", mock.Anything).Return(([]*configv1.UpstreamServiceConfig)(nil), nil)
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
+		// System admin check happens before saving global settings
+		mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), nil)
+		mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
+
 		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(errors.New("save global error"))
 
 		err := app.initializeDatabase(context.Background(), mockStore)
@@ -344,6 +360,9 @@ func TestInitializeDatabase_Errors(t *testing.T) {
 		mockStore.On("GetGlobalSettings", mock.Anything).Return((*configv1.GlobalSettings)(nil), nil)
 		mockStore.On("SaveGlobalSettings", mock.Anything, mock.Anything).Return(nil)
 		mockStore.On("SaveService", mock.Anything, mock.Anything).Return(errors.New("save service error"))
+		// System admin check
+		mockStore.On("GetUser", mock.Anything, "system-admin").Return((*configv1.User)(nil), nil)
+		mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
 
 		err := app.initializeDatabase(context.Background(), mockStore)
 		assert.Error(t, err)
