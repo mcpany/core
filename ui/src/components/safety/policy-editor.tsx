@@ -38,6 +38,10 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * PolicyEditor allows configuring security policies for tool execution.
+ * It provides a UI to define default actions (Allow/Deny) and specific rules based on tool names or arguments.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
