@@ -38,6 +38,10 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * PolicyEditor allows configuring granular access control policies for tool execution.
+ * It provides a UI to define rules based on tool names, arguments, and other criteria.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
