@@ -99,17 +99,20 @@ func TestCommandInjection_Advanced(t *testing.T) {
 	})
 
 	// Case 7: Improved quote detection allows safe chars in quotes
+	// UPDATE: With hardened security for interpreters, we now block ';' in single quotes for Python too,
+	// because we cannot distinguish between data and code injection context in all cases.
 	t.Run("improved_quote_detection", func(t *testing.T) {
 		cmd := "python"
 		tool := createTestCommandToolWithTemplate(cmd, "print('Prefix: {{input}}')")
-		// This input is safe in python string but blocked by strict check currently
 		req := &ExecutionRequest{
 			ToolName: "test",
 			ToolInputs: []byte(`{"input": "foo; bar"}`),
 		}
 
 		_, err := tool.Execute(context.Background(), req)
-		assert.NoError(t, err)
+		// Expect error now as ';' is blocked for interpreters in single quotes
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected")
 	})
 
 	// Case 8: Extended Interpreter Detection

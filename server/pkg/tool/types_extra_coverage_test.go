@@ -63,7 +63,8 @@ func TestCheckForShellInjection(t *testing.T) {
 
     // Single quoted context
     assert.Error(t, checkForShellInjection("break'out", "'{{val}}'", "{{val}}", "sh"))
-    assert.NoError(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "sh"))
+    // UPDATE: We now block ';' in single quotes for 'sh' to prevent compound command injection
+    assert.Error(t, checkForShellInjection("safe; rm", "'{{val}}'", "{{val}}", "sh"))
 
     // Double quoted context
     assert.Error(t, checkForShellInjection("break\"out", "\"{{val}}\"", "{{val}}", "sh"))
