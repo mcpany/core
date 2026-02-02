@@ -38,6 +38,15 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * PolicyEditor allows viewing and editing of advanced call policies.
+ * It provides a UI to manage default actions and specific rules for call interception and handling.
+ *
+ * @param props - The component props.
+ * @param props.policies - The list of current policies.
+ * @param props.onUpdate - Callback when policies are updated.
+ * @returns The rendered PolicyEditor component.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
