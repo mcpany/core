@@ -105,6 +105,21 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
         const response = await apiClient.getService(serviceId);
         setService(response.service || null);
       } catch (e: any) {
+        // Fallback: If direct lookup fails (backend ID mismatch?), try finding in list
+        // This is a resilience pattern for inconsistent ID handling in E2E environments
+        try {
+            console.warn("Direct service lookup failed, attempting fallback list lookup...", e);
+            const services = await apiClient.listServices();
+            const found = services.find(s => s.id === serviceId || s.name === serviceId || s.name === decodeURIComponent(serviceId));
+            if (found) {
+                setService(found);
+                setIsLoading(false);
+                return;
+            }
+        } catch (listErr) {
+            console.error("Fallback lookup failed", listErr);
+        }
+
         setError(e.message || "An unknown error occurred.");
         toast({
           variant: "destructive",
