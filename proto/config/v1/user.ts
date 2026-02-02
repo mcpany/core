@@ -11,11 +11,6 @@ import { Authentication } from "./auth";
 
 export const protobufPackage = "mcpany.config.v1";
 
-export interface UserPreferences {
-  /** JSON string representing the dashboard layout. */
-  dashboardLayout: string;
-}
-
 export interface User {
   /** The unique ID of the user (UUID or Username). */
   id: string;
@@ -27,70 +22,10 @@ export interface User {
   profileIds: string[];
   /** The list of roles assigned to the user. */
   roles: string[];
-  /** User preferences for UI settings. */
-  preferences?: UserPreferences | undefined;
 }
-
-function createBaseUserPreferences(): UserPreferences {
-  return { dashboardLayout: "" };
-}
-
-export const UserPreferences: MessageFns<UserPreferences> = {
-  encode(message: UserPreferences, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.dashboardLayout !== "") {
-      writer.uint32(10).string(message.dashboardLayout);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UserPreferences {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserPreferences();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.dashboardLayout = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UserPreferences {
-    return { dashboardLayout: isSet(object.dashboard_layout) ? globalThis.String(object.dashboard_layout) : "" };
-  },
-
-  toJSON(message: UserPreferences): unknown {
-    const obj: any = {};
-    if (message.dashboardLayout !== "") {
-      obj.dashboard_layout = message.dashboardLayout;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<UserPreferences>, I>>(base?: I): UserPreferences {
-    return UserPreferences.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UserPreferences>, I>>(object: I): UserPreferences {
-    const message = createBaseUserPreferences();
-    message.dashboardLayout = object.dashboardLayout ?? "";
-    return message;
-  },
-};
 
 function createBaseUser(): User {
-  return { id: "", authentication: undefined, profileIds: [], roles: [], preferences: undefined };
+  return { id: "", authentication: undefined, profileIds: [], roles: [] };
 }
 
 export const User: MessageFns<User> = {
@@ -106,9 +41,6 @@ export const User: MessageFns<User> = {
     }
     for (const v of message.roles) {
       writer.uint32(34).string(v!);
-    }
-    if (message.preferences !== undefined) {
-      UserPreferences.encode(message.preferences, writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -152,14 +84,6 @@ export const User: MessageFns<User> = {
           message.roles.push(reader.string());
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.preferences = UserPreferences.decode(reader, reader.uint32());
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -177,7 +101,6 @@ export const User: MessageFns<User> = {
         ? object.profile_ids.map((e: any) => globalThis.String(e))
         : [],
       roles: globalThis.Array.isArray(object?.roles) ? object.roles.map((e: any) => globalThis.String(e)) : [],
-      preferences: isSet(object.preferences) ? UserPreferences.fromJSON(object.preferences) : undefined,
     };
   },
 
@@ -195,9 +118,6 @@ export const User: MessageFns<User> = {
     if (message.roles?.length) {
       obj.roles = message.roles;
     }
-    if (message.preferences !== undefined) {
-      obj.preferences = UserPreferences.toJSON(message.preferences);
-    }
     return obj;
   },
 
@@ -212,9 +132,6 @@ export const User: MessageFns<User> = {
       : undefined;
     message.profileIds = object.profileIds?.map((e) => e) || [];
     message.roles = object.roles?.map((e) => e) || [];
-    message.preferences = (object.preferences !== undefined && object.preferences !== null)
-      ? UserPreferences.fromPartial(object.preferences)
-      : undefined;
     return message;
   },
 };

@@ -18,7 +18,6 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
-import { User } from '@proto/config/v1/user';
 
 
 
@@ -1190,24 +1189,6 @@ export const apiClient = {
     // User Management
 
     /**
-     * Gets the current user ID from the stored token.
-     * @returns The user ID or null if not logged in.
-     */
-    getCurrentUserId: (): string | null => {
-        if (typeof window === 'undefined') return null;
-        const token = localStorage.getItem('mcp_auth_token');
-        if (!token) return null;
-        try {
-            const decoded = atob(token);
-            const parts = decoded.split(':');
-            return parts[0];
-        } catch (e) {
-            console.error("Failed to decode auth token", e);
-            return null;
-        }
-    },
-
-    /**
      * Lists all profiles.
      * @returns A promise that resolves to a list of profiles.
      */
@@ -1261,17 +1242,6 @@ export const apiClient = {
     },
 
     // User Management
-
-    /**
-     * Gets a single user by ID.
-     * @param id The ID of the user.
-     * @returns A promise that resolves to the user.
-     */
-    getUser: async (id: string): Promise<User> => {
-        const res = await fetchWithAuth(`/api/v1/users/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch user');
-        return res.json();
-    },
 
     /**
      * Lists all users.
