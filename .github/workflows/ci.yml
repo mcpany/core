@@ -337,6 +337,9 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
+      - name: Build Server Binary
+        run: make build
+
       - name: run parallel e2e
         run: |
           make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
@@ -771,6 +774,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server
+
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui
 
       - name: Download Operator Image
         uses: actions/download-artifact@v4
