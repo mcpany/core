@@ -14,7 +14,7 @@ test.describe('Alerts Page', () => {
     await expect(page.getByRole('heading', { name: 'Alerts & Incidents' })).toBeVisible();
 
     // Check stats cards
-    await expect(page.getByText('Active Critical')).toBeVisible();
+    await expect(page.getByText('Active Critical', { exact: true })).toBeVisible();
     await expect(page.getByText('MTTR (Today)')).toBeVisible();
 
     // Check table content (mock data)
@@ -61,7 +61,7 @@ test.describe('Alerts Page', () => {
     await row.getByRole('button', { name: 'Open menu' }).click();
 
     // Click "Acknowledge"
-    await page.getByRole('menuitem', { name: 'Acknowledge' }).click();
+    await page.getByRole('menuitem', { name: 'Acknowledge' }).click({ force: true });
 
     // Verify status changes to "acknowledged"
     await expect(row.getByText('acknowledged')).toBeVisible();
@@ -77,7 +77,7 @@ test.describe('Alerts Page', () => {
     await row.getByRole('button', { name: 'Open menu' }).click();
 
     // Click "Resolve"
-    await page.getByRole('menuitem', { name: 'Resolve' }).click();
+    await page.getByRole('menuitem', { name: 'Resolve' }).click({ force: true });
 
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();

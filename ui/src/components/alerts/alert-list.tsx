@@ -235,10 +235,10 @@ export function AlertList() {
                             Copy Alert ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'acknowledged')} disabled={alert.status !== 'active'}>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleStatusChange(alert.id, 'acknowledged'); }} disabled={alert.status !== 'active'}>
                             Acknowledge
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'resolved')} disabled={alert.status === 'resolved'}>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleStatusChange(alert.id, 'resolved'); }} disabled={alert.status === 'resolved'}>
                             Resolve
                         </DropdownMenuItem>
                         </DropdownMenuContent>
