@@ -777,6 +777,11 @@ jobs:
         with:
           name: image-operator
 
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
@@ -788,7 +793,8 @@ jobs:
 
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
-          # Add others if needed? k8s tests probably use server.
+          kind load docker-image mcpany/operator:latest --name mcp-e2e
+          kind load docker-image mcpany/ui:latest --name mcp-e2e
 
       - name: Load Docker Images already loaded above
         run: |
