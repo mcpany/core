@@ -218,7 +218,7 @@ export function AlertList({ alerts, loading, onRefresh }: AlertListProps) {
                             Copy Alert ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'acknowledged')} disabled={alert.status !== 'active'}>
+                        <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'acknowledged')} disabled={alert.status === 'acknowledged' || alert.status === 'resolved'}>
                             Acknowledge
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleStatusChange(alert.id, 'resolved')} disabled={alert.status === 'resolved'}>

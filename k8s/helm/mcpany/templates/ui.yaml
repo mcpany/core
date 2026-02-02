@@ -36,6 +36,11 @@ spec:
                 secretKeyRef:
                   name: {{ if .Values.ui.existingSecret }}{{ .Values.ui.existingSecret }}{{ else }}{{ include "mcpany.fullname" . }}-ui-secret{{ end }}
                   key: {{ .Values.ui.secretKey | default "api-key" }}
+            - name: MCPANY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.ui.existingSecret }}{{ .Values.ui.existingSecret }}{{ else }}{{ include "mcpany.fullname" . }}-ui-secret{{ end }}
+                  key: {{ .Values.ui.secretKey | default "api-key" }}
             {{- end }}
             # Add other env vars as needed
 ---
