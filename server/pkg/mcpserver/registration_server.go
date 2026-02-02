@@ -21,34 +21,41 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// RegistrationServer implements the gRPC server for service registration. It
-// handles gRPC requests for registering and managing upstream services by
-// publishing messages to the event bus and waiting for the results from the
-// corresponding workers. This decouples the gRPC server from the core service
-// registration logic, allowing for a more modular and scalable architecture.
+// RegistrationServer implements the gRPC server for service registration.
+//
+// Summary: Handles gRPC requests for registering and managing upstream services.
+//
+// Side Effects:
+//   - Publishes messages to the event bus.
+//   - Interacts with the authentication manager.
 type RegistrationServer struct {
 	v1.UnimplementedRegistrationServiceServer
 	bus         *bus.Provider
 	authManager *auth.Manager
 }
 
-// NewRegistrationServerHook is a test hook for overriding the creation of a
-// RegistrationServer.
+// NewRegistrationServerHook is a test hook for overriding the creation of a RegistrationServer.
+//
+// Summary: Test hook to override RegistrationServer creation.
+//
+// Side Effects:
+//   - If set, this hook is called instead of the standard constructor logic.
 var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*RegistrationServer, error)
 
-// NewRegistrationServer creates a new RegistrationServer initialized with the
-// event bus and auth manager.
+// NewRegistrationServer creates a new RegistrationServer initialized with the event bus and auth manager.
 //
-// The bus is used for communicating with the service registration workers,
-// allowing for an asynchronous, decoupled registration process.
+// Summary: Initializes a new RegistrationServer instance.
 //
 // Parameters:
-//   - bus: The event bus used for communication.
-//   - authManager: Manager for handling authentication/OAuth flows.
+//   - bus: *bus.Provider. The event bus used for communication with workers.
+//   - authManager: *auth.Manager. Manager for handling authentication and OAuth flows.
 //
 // Returns:
-//   - A new instance of the RegistrationServer.
-//   - An error if the bus is nil.
+//   - *RegistrationServer: A new instance of the RegistrationServer.
+//   - error: An error if the bus is nil.
+//
+// Throws/Errors:
+//   - Returns an error if the bus is nil.
 func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.
@@ -62,11 +69,18 @@ func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*Regis
 
 // ValidateService validates a service configuration by attempting to connect and discover tools.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Validates the provided service configuration by connecting to the upstream service.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *v1.ValidateServiceRequest. The validation request containing the service configuration.
+//
+// Returns:
+//   - *v1.ValidateServiceResponse: The response containing validation results, discovered tools, and resources.
+//   - error: An error if the validation request itself is invalid (e.g. missing config).
+//
+// Side Effects:
+//   - Temporarily creates an upstream connection and then closes it.
 func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.ValidateServiceRequest) (*v1.ValidateServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -121,22 +135,20 @@ func (s *RegistrationServer) ValidateService(ctx context.Context, req *v1.Valida
 }
 
 // RegisterService handles a gRPC request to register a new upstream service.
-// It sends a registration request to the event bus and waits for a response
-// from the registration worker. This process is asynchronous, allowing the
-// server to remain responsive while the registration is in progress.
 //
-// A correlation ID is used to match the request with the corresponding result
-// from the worker. The method waits for the result, with a timeout, and returns
-// the registration details, including any discovered tools.
+// Summary: Asynchronously registers a new upstream service via the event bus.
 //
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request containing the configuration of the service to be
-//     registered.
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.RegisterServiceRequest. The request containing the configuration of the service to be registered.
 //
 // Returns:
-//   - A response with the registration status and discovered tools.
-//   - An error if the registration fails or times out.
+//   - *v1.RegisterServiceResponse: The response containing the registration status, service key, and discovered tools.
+//   - error: An error if the registration fails, times out, or arguments are invalid.
+//
+// Side Effects:
+//   - Publishes a registration request to the event bus.
+//   - Waits for a response on a dedicated result channel.
 func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.RegisterServiceRequest) (*v1.RegisterServiceResponse, error) {
 	if req.GetConfig() == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "config is required")
@@ -204,29 +216,37 @@ func (s *RegistrationServer) RegisterService(ctx context.Context, req *v1.Regist
 	}
 }
 
-// UnregisterService is not yet implemented. It is intended to handle the
-// unregistration of a service.
+// UnregisterService is not yet implemented.
+//
+// Summary: Handles the unregistration of a service (Not Implemented).
 //
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request containing the service ID to unregister.
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.UnregisterServiceRequest. The request containing the service ID to unregister.
 //
 // Returns:
-//   - A response indicating success or failure.
-//   - An error (currently always Unimplemented).
+//   - *v1.UnregisterServiceResponse: The response indicating success or failure.
+//   - error: Always returns an Unimplemented error.
 func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.UnregisterServiceRequest) (*v1.UnregisterServiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnregisterService not implemented")
 }
 
 // InitiateOAuth2Flow initiates an OAuth2 flow for a service or credential.
 //
+// Summary: Initiates the OAuth2 flow by generating an authorization URL.
+//
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request containing OAuth2 flow details.
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.InitiateOAuth2FlowRequest. The request containing OAuth2 flow details.
 //
 // Returns:
-//   - A response with the initiation result.
-//   - An error if validation fails or flow initiation errors.
+//   - *v1.InitiateOAuth2FlowResponse: The response containing the authorization URL and state.
+//   - error: An error if validation fails or flow initiation errors.
+//
+// Throws/Errors:
+//   - codes.InvalidArgument: If required parameters are missing.
+//   - codes.Unauthenticated: If the user is not authenticated.
+//   - codes.Internal: If an internal error occurs.
 func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.InitiateOAuth2FlowRequest) (*v1.InitiateOAuth2FlowResponse, error) {
 	if req.GetServiceId() == "" && req.GetCredentialId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "either service_id or credential_id is required")
@@ -256,43 +276,52 @@ func (s *RegistrationServer) InitiateOAuth2Flow(ctx context.Context, req *v1.Ini
 	}.Build(), nil
 }
 
-// RegisterTools is not yet implemented. It is intended to handle the
-// registration of tools for a service.
+// RegisterTools is not yet implemented.
+//
+// Summary: Registers tools for a service (Not Implemented).
 //
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request containing the tools to register.
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.RegisterToolsRequest. The request containing the tools to register.
 //
 // Returns:
-//   - A response indicating success or failure.
-//   - An error (currently always Unimplemented).
+//   - *v1.RegisterToolsResponse: A response indicating success or failure.
+//   - error: Always returns an Unimplemented error.
 func (s *RegistrationServer) RegisterTools(_ context.Context, _ *v1.RegisterToolsRequest) (*v1.RegisterToolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterTools not implemented")
 }
 
-// GetServiceStatus is not yet implemented. It is intended to handle requests
-// for the status of a service.
+// GetServiceStatus is not yet implemented.
+//
+// Summary: Retrieves the status of a service (Not Implemented).
 //
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request containing the service name or ID.
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.GetServiceStatusRequest. The request containing the service name or ID.
 //
 // Returns:
-//   - A response with the service status.
-//   - An error (currently always Unimplemented).
+//   - *v1.GetServiceStatusResponse: The response with the service status.
+//   - error: Always returns an Unimplemented error.
 func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServiceStatusRequest) (*v1.GetServiceStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceStatus not implemented")
 }
 
 // GetService retrieves a service by its name.
 //
+// Summary: Retrieves the configuration of a registered service.
+//
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request containing the service name.
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.GetServiceRequest. The request containing the service name.
 //
 // Returns:
-//   - A response containing the service configuration.
-//   - An error if the service is not found or other error.
+//   - *v1.GetServiceResponse: The response containing the service configuration.
+//   - error: An error if the service is not found or other error.
+//
+// Throws/Errors:
+//   - codes.InvalidArgument: If the service name is missing.
+//   - codes.NotFound: If the service is not found.
+//   - codes.DeadlineExceeded: If the request times out.
 func (s *RegistrationServer) GetService(ctx context.Context, req *v1.GetServiceRequest) (*v1.GetServiceResponse, error) {
 	if req.GetServiceName() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "service_name is required")
@@ -336,13 +365,19 @@ func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {
 
 // ListServices lists all registered services by querying the service registry via the event bus.
 //
+// Summary: Lists all currently registered services.
+//
 // Parameters:
-//   - ctx: The context for the gRPC call.
-//   - req: The request object (empty for now).
+//   - ctx: context.Context. The context for the gRPC call.
+//   - req: *v1.ListServicesRequest. The request object (empty for now).
 //
 // Returns:
-//   - A response containing a list of registered services.
-//   - An error if the operation fails or times out.
+//   - *v1.ListServicesResponse: The response containing a list of registered services.
+//   - error: An error if the operation fails or times out.
+//
+// Throws/Errors:
+//   - codes.DeadlineExceeded: If the request times out.
+//   - codes.Internal: If an internal error occurs.
 func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {
 	correlationID := uuid.New().String()
 	resultChan := make(chan *bus.ServiceListResult, 1)

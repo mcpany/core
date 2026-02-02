@@ -126,18 +126,7 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 
 // RunOptions configuration for starting the MCP Any application.
 //
-// Fields:
-//   - Ctx: The parent context for the application lifecycle.
-//   - Fs: The filesystem interface (afero.Fs) to use.
-//   - Stdio: If true, runs in Standard I/O mode (for single-client/CLI usage).
-//   - JSONRPCPort: The port to listen on for HTTP JSON-RPC requests.
-//   - GRPCPort: The port to listen on for gRPC registration requests.
-//   - ConfigPaths: List of paths to configuration files or directories.
-//   - APIKey: A static API key to enforce for global authentication.
-//   - ShutdownTimeout: Duration to wait for graceful shutdown.
-//   - TLSCert: Path to the TLS certificate file.
-//   - TLSKey: Path to the TLS private key file.
-//   - TLSClientCA: Path to the TLS Client CA file (for mTLS).
+// Summary: Options for configuring the application runtime.
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -153,34 +142,37 @@ type RunOptions struct {
 }
 
 // Runner defines the interface for running the application.
+//
+// Summary: Interface for application execution and management.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
+	// Summary: Starts the application.
+	//
 	// Parameters:
-	//   - opts (RunOptions): The options for running the application.
+	//   - opts: RunOptions. The configuration for running.
 	//
 	// Returns:
-	//   - (error): An error if the application fails to run.
+	//   - error: An error if startup or execution fails.
 	Run(opts RunOptions) error
 
-	// ReloadConfig reloads the application configuration from the provided file system
-	// and paths. It updates the internal state of the application, such as
-	// service registries and managers, to reflect changes in the configuration files.
+	// ReloadConfig reloads the application configuration.
+	//
+	// Summary: Triggers a configuration reload.
 	//
 	// Parameters:
-	//   - ctx (context.Context): The context for the reload operation.
-	//   - fs (afero.Fs): The filesystem interface for reading configuration files.
-	//   - configPaths ([]string): A slice of paths to configuration files to reload.
+	//   - ctx: context.Context. The context for the operation.
+	//   - fs: afero.Fs. The filesystem.
+	//   - configPaths: []string. Paths to configuration files.
 	//
 	// Returns:
-	//   - (error): An error if the configuration reload fails.
+	//   - error: An error if reload fails.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
-// Application is the main application struct, holding the dependencies and
-// logic for the MCP Any server. It encapsulates the components required to run
-// the server, such as the stdio mode handler, and provides the main `Run`
-// method that starts the application.
+// Application is the main application struct, holding the dependencies and logic for the MCP Any server.
+//
+// Summary: The main application container.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -273,11 +265,11 @@ type statsCacheEntry struct {
 }
 
 // NewApplication creates a new Application with default dependencies.
-// It initializes the application with the standard implementation of the stdio
-// mode runner, making it ready to be configured and started.
+//
+// Summary: Initializes a new Application instance.
 //
 // Returns:
-//   - (*Application): A new instance of the Application, ready to be run.
+//   - *Application: The initialized application.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -296,20 +288,20 @@ func NewApplication() *Application {
 	}
 }
 
-// Run starts the MCP Any server and all its components. It initializes the core
-// services, loads configurations from the provided paths, starts background
-// workers for handling service registration and upstream service communication,
-// and launches the gRPC and JSON-RPC servers.
+// Run starts the MCP Any server and all its components.
 //
-// The server's lifecycle is managed by the provided context. A graceful
-// shutdown is initiated when the context is canceled.
+// Summary: Executes the application.
 //
 // Parameters:
-//   - opts (RunOptions): The options for running the application.
+//   - opts: RunOptions. The runtime options.
 //
 // Returns:
-//   - (error): An error if any part of the startup or execution fails.
+//   - error: An error if execution fails.
 //
+// Side Effects:
+//   - Starts HTTP and gRPC servers.
+//   - Initializes background workers.
+//   - Loads configuration.
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
@@ -844,13 +836,15 @@ func (a *Application) Run(opts RunOptions) error {
 // ReloadConfig reloads the configuration from the given paths and updates the
 // services.
 //
+// Summary: Reloads application configuration from disk/storage.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the reload operation.
-//   - fs (afero.Fs): The filesystem interface for reading configuration files.
-//   - configPaths ([]string): A slice of paths to configuration files to reload.
+//   - ctx: context.Context. The context for the reload operation.
+//   - fs: afero.Fs. The filesystem interface for reading configuration files.
+//   - configPaths: []string. A slice of paths to configuration files to reload.
 //
 // Returns:
-//   - (error): An error if the configuration reload fails.
+//   - error: An error if the configuration reload fails.
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -2299,6 +2293,14 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 
 
 // HTTPRequestContextMiddleware injects the HTTP request into the context.
+//
+// Summary: Middleware to add HTTP request to context.
+//
+// Parameters:
+//   - next: http.Handler. The next handler.
+//
+// Returns:
+//   - http.Handler: The wrapped handler.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

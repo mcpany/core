@@ -13,6 +13,8 @@ import (
 )
 
 // Manager handles the lifecycle and resolution of profiles.
+//
+// Summary: Manages profile definitions and resolution.
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
@@ -20,9 +22,13 @@ type Manager struct {
 
 // NewManager creates a new Profile Manager.
 //
-// profiles is the profiles.
+// Summary: Initializes a new Profile Manager.
 //
-// Returns the result.
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition. Initial profile definitions.
+//
+// Returns:
+//   - *Manager: The initialized manager.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -33,7 +39,10 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 
 // Update updates the profile definitions managed by the manager.
 //
-// profiles is the profiles.
+// Summary: Updates the stored profile definitions.
+//
+// Parameters:
+//   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {
@@ -46,10 +55,14 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 
 // GetProfileDefinition returns the profile definition by name.
 //
-// name is the name of the resource.
+// Summary: Retrieves a profile definition.
 //
-// Returns the result.
-// Returns true if successful.
+// Parameters:
+//   - name: string. The name of the profile.
+//
+// Returns:
+//   - *configv1.ProfileDefinition: The profile definition.
+//   - bool: True if found.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -59,7 +72,16 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 
 // ResolveProfile computes the final effective configuration for a given profile,
 // applying inheritance and overrides.
-// It returns a map of ProfileServiceConfigs and a map of resolved Secrets.
+//
+// Summary: Resolves a profile hierarchy into a final configuration.
+//
+// Parameters:
+//   - profileName: string. The name of the profile to resolve.
+//
+// Returns:
+//   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
+//   - map[string]*configv1.SecretValue: Merged secrets.
+//   - error: Error if profile not found or cycle detected.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
