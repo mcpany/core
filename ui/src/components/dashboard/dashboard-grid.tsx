@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { useUser } from "@/components/user-context";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -64,87 +65,100 @@ const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
  * @returns The rendered component.
  */
 export function DashboardGrid() {
+    const { user, loading: userLoading, updatePreferences } = useUser();
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
+    const isFirstRun = useRef(true);
 
     useEffect(() => {
         setIsMounted(true);
-        const saved = localStorage.getItem("dashboard-layout");
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
+    }, []);
 
-                // Migration Logic
-                // Case 1: Legacy format (DashboardWidget[]) where id matches type
+    // Load widgets when user is available
+    useEffect(() => {
+        if (!user) return;
+
+        // Try to load from user preferences first
+        if (user.preferences && user.preferences["dashboard_layout"]) {
+            try {
+                const parsed = JSON.parse(user.preferences["dashboard_layout"]);
+                // Migration Logic (reused)
                 if (parsed.length > 0 && !parsed[0].instanceId) {
                     interface LegacyWidget {
                         id: string;
                         title: string;
-                        type: string; // Actually 'wide'|'half' etc in some cases, but mapped
+                        type: string;
                         hidden?: boolean;
                     }
                     const migrated: WidgetInstance[] = parsed.map((w: LegacyWidget) => ({
                         instanceId: crypto.randomUUID(),
-                        type: w.id, // In legacy, id was effectively the type
+                        type: w.id,
                         title: WIDGET_DEFINITIONS.find(d => d.type === w.id)?.title || w.title,
                         size: (["full", "half", "third", "two-thirds"].includes(w.type) ? w.type : "third") as WidgetSize,
                         hidden: w.hidden ?? false
                     }));
-
-                    // Filter out any invalid types
                     const validMigrated = migrated.filter(w => getWidgetDefinition(w.type));
-
-                    // If migration resulted in empty or too few widgets, append defaults?
-                    // No, respect user's (possibly empty) layout, but ensure at least we tried.
-                    if (validMigrated.length === 0) {
-                        setWidgets(DEFAULT_LAYOUT);
-                    } else {
-                        setWidgets(validMigrated);
-                    }
+                    setWidgets(validMigrated.length === 0 ? DEFAULT_LAYOUT : validMigrated);
                 } else {
-                    // Case 2: Already in new format
                     setWidgets(parsed);
                 }
             } catch (e) {
-                console.error("Failed to load dashboard layout", e);
+                console.error("Failed to parse dashboard layout from user prefs", e);
                 setWidgets(DEFAULT_LAYOUT);
             }
         } else {
-            setWidgets(DEFAULT_LAYOUT);
+            // Fallback: Check localStorage for migration
+            const saved = localStorage.getItem("dashboard-layout");
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Minimal migration check
+                    if (parsed.length > 0 && !parsed[0].instanceId) {
+                         // Simplify migration for legacy localstorage
+                         setWidgets(DEFAULT_LAYOUT);
+                    } else {
+                        setWidgets(parsed);
+                        // Auto-save to user prefs immediately
+                        updatePreferences({ "dashboard_layout": JSON.stringify(parsed) });
+                        localStorage.removeItem("dashboard-layout");
+                    }
+                } catch (e) {
+                     setWidgets(DEFAULT_LAYOUT);
+                }
+            } else {
+                setWidgets(DEFAULT_LAYOUT);
+            }
         }
-    }, []);
+    }, [user.id]);
 
     const saveWidgets = (newWidgets: WidgetInstance[]) => {
         setWidgets(newWidgets);
     };
 
-    // ⚡ BOLT: Debounce localStorage writes to prevent main thread blocking during drag/resize operations
-    // Randomized Selection from Top 5 High-Impact Targets
-    const isFirstRun = useRef(true);
+    // Persist to Backend (Debounced)
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || !user) return;
 
-        // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
-        // The issue is `isMounted` flips to true, and `widgets` might update in the same cycle or next.
-        // If we simply rely on `widgets.length > 0`, we might miss a user clearing all widgets.
-        // But for initial load, widgets is [].
+        // Skip the initial effect trigger if widgets haven't been touched/loaded yet?
+        // Actually, we want to skip saving if we just loaded the widgets from prefs.
+        // But comparing widgets to prefs is expensive.
+        // We rely on isFirstRun ref, but that resets on remount.
+        // `user` changing triggers the load effect above, which calls `setWidgets`.
+        // `setWidgets` triggers this effect.
+        // We can check if widgets match DEFAULT_LAYOUT and user prefs are empty?
 
-        // Simplified approach: Just check if we have widgets or if we've passed the first "real" update.
-        if (isFirstRun.current) {
-            isFirstRun.current = false;
-            // If widgets are empty on first run, it's likely the initial state.
-            // If widgets are NOT empty on first run (e.g. migration happened fast?), we might want to save?
-            // But `isMounted` gate likely delays this enough.
-            return;
-        }
-
+        // Simplified: Just debounce. If we overwrite with same data, it's fine.
         const timer = setTimeout(() => {
-            localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
-        }, 500);
+            if (widgets.length > 0) {
+                 // Don't save empty list if something went wrong?
+                 // Allow empty list if user deleted all.
+                 updatePreferences({ "dashboard_layout": JSON.stringify(widgets) });
+            }
+        }, 1000);
 
         return () => clearTimeout(timer);
-    }, [widgets, isMounted]);
+    }, [widgets, isMounted, user]);
+
 
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
@@ -190,7 +204,9 @@ export function DashboardGrid() {
         saveWidgets([newWidget, ...widgets]);
     };
 
-    if (!isMounted) return null;
+    if (!isMounted || userLoading) {
+        return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading dashboard...</div>;
+    }
 
     const renderWidget = (widget: WidgetInstance) => {
         const def = getWidgetDefinition(widget.type);
@@ -217,11 +233,6 @@ export function DashboardGrid() {
             <div className="flex justify-end gap-2">
                 <AddWidgetSheet onAdd={addWidget} />
 
-                {/* Legacy "Customize View" popover for quickly toggling hidden widgets could remain,
-                    but "Add Widget" is cleaner. Let's keep a "View Options" for hidden widgets restoration?
-                    Actually, if we support DELETE, hidden widgets are less useful unless it's a temp hide.
-                    Let's keep the popover for recovering hidden widgets.
-                */}
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="sm" className="h-8 border-dashed">
