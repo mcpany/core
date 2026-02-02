@@ -45,9 +45,12 @@ export function AlertStats() {
      </div>;
   }
 
-  if (!stats) {
-     return null;
-  }
+  const displayStats = stats || {
+    activeCritical: 0,
+    activeWarning: 0,
+    mttr: "0m",
+    totalToday: 0
+  };
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -57,7 +60,7 @@ export function AlertStats() {
           <AlertCircle className="h-4 w-4 text-red-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
+          <div className="text-2xl font-bold text-red-500">{displayStats.activeCritical}</div>
           {/* Trends disabled for now */}
           {/* <p className="text-xs text-muted-foreground">
             +1 since last hour
@@ -70,7 +73,7 @@ export function AlertStats() {
           <AlertTriangle className="h-4 w-4 text-yellow-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
+          <div className="text-2xl font-bold text-yellow-500">{displayStats.activeWarning}</div>
           {/* <p className="text-xs text-muted-foreground">
             -2 since last hour
           </p> */}
@@ -82,7 +85,7 @@ export function AlertStats() {
           <CheckCircle2 className="h-4 w-4 text-green-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.mttr}</div>
+          <div className="text-2xl font-bold">{displayStats.mttr}</div>
           {/* <p className="text-xs text-muted-foreground">
             -2m from yesterday
           </p> */}
@@ -94,7 +97,7 @@ export function AlertStats() {
           <Activity className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.totalToday}</div>
+          <div className="text-2xl font-bold">{displayStats.totalToday}</div>
           {/* <p className="text-xs text-muted-foreground">
             +12% from average
           </p> */}
