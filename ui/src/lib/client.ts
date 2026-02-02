@@ -965,6 +965,31 @@ export const apiClient = {
         return res.json();
     },
 
+    /**
+     * Gets the configured global webhook URL for alerts.
+     * @returns A promise that resolves to the webhook configuration.
+     */
+    getWebhookURL: async (): Promise<{ url: string }> => {
+        const res = await fetchWithAuth('/api/v1/alerts/webhook');
+        if (!res.ok) throw new Error('Failed to fetch webhook URL');
+        return res.json();
+    },
+
+    /**
+     * Saves the configured global webhook URL for alerts.
+     * @param url The webhook URL.
+     * @returns A promise that resolves to the updated webhook configuration.
+     */
+    saveWebhookURL: async (url: string) => {
+        const res = await fetchWithAuth('/api/v1/alerts/webhook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        if (!res.ok) throw new Error('Failed to save webhook URL');
+        return res.json();
+    },
+
     // Stack Management (Collections)
 
     /**

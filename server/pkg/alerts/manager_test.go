@@ -52,3 +52,13 @@ func TestManager_Update(t *testing.T) {
 		t.Errorf("expected persisted status Resolved, got %s", got.Status)
 	}
 }
+
+func TestManager_Webhook(t *testing.T) {
+	m := NewManager()
+	url := "http://example.com/webhook"
+	m.SetWebhookURL(url)
+
+	if got := m.GetWebhookURL(); got != url {
+		t.Errorf("expected webhook URL %s, got %s", url, got)
+	}
+}
