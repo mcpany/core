@@ -8,6 +8,19 @@ import { Trace, Span } from '@/types/trace';
 
 export type { SpanStatus, Span, Trace } from '@/types/trace';
 
+interface BackendSpan {
+  id: string;
+  parent_id?: string;
+  name: string;
+  type: string;
+  start_time: string;
+  duration: number; // nanoseconds
+  status: string; // "success" | "error" | "pending"
+  input?: any;
+  output?: any;
+  error?: string;
+}
+
 interface DebugEntry {
   id: string;
   timestamp: string;
@@ -19,6 +32,7 @@ interface DebugEntry {
   response_headers: Record<string, string[]>;
   request_body: string;
   response_body: string;
+  spans?: BackendSpan[];
 }
 
 /**
@@ -85,10 +99,10 @@ export async function GET(request: Request) {
             }
         }
 
-        const span: Span = {
+        const rootSpan: Span = {
             id: entry.id,
             name: `${entry.method} ${entry.path}`,
-            type: 'tool', // Assume tool call for now
+            type: 'core', // The root is the HTTP request
             startTime: startTime,
             endTime: startTime + durationMs,
             status: entry.status >= 400 ? 'error' : 'success',
@@ -99,12 +113,65 @@ export async function GET(request: Request) {
             serviceName: 'backend'
         };
 
+        // Process child spans if available
+        if (entry.spans && entry.spans.length > 0) {
+            const spanMap = new Map<string, Span>();
+            const spans: Span[] = [];
+
+            // 1. Create all Span objects
+            entry.spans.forEach(bs => {
+                const sStart = new Date(bs.start_time).getTime();
+                const sDuration = bs.duration / 1000000; // ns to ms
+
+                // Map backend type to frontend type
+                let type: Span['type'] = 'core';
+                if (bs.type === 'tool') type = 'tool';
+                else if (bs.type === 'hook') type = 'resource'; // Reuse 'resource' color for hooks? Or 'core'?
+                else if (bs.type === 'middleware') type = 'service'; // Reuse 'service' color for middleware?
+
+                // Ensure valid types
+                if (!['tool', 'service', 'resource', 'core'].includes(type)) {
+                    type = 'core';
+                }
+
+                const s: Span = {
+                    id: bs.id,
+                    name: bs.name,
+                    type: type,
+                    startTime: sStart,
+                    endTime: sStart + sDuration,
+                    status: bs.status === 'error' ? 'error' : 'success',
+                    input: bs.input,
+                    output: bs.output,
+                    errorMessage: bs.error,
+                    children: [],
+                    serviceName: 'backend'
+                };
+                spanMap.set(bs.id, s);
+                spans.push(s);
+            });
+
+            // 2. Build Hierarchy
+            entry.spans.forEach(bs => {
+                const s = spanMap.get(bs.id);
+                if (!s) return;
+
+                if (bs.parent_id && spanMap.has(bs.parent_id)) {
+                    const parent = spanMap.get(bs.parent_id);
+                    parent?.children?.push(s);
+                } else {
+                    // No parent found in the list, so it's a child of the root request
+                    rootSpan.children?.push(s);
+                }
+            });
+        }
+
         return {
             id: entry.id,
-            rootSpan: span,
+            rootSpan: rootSpan,
             timestamp: entry.timestamp,
             totalDuration: durationMs,
-            status: span.status,
+            status: rootSpan.status,
             trigger: 'user'
         };
     });

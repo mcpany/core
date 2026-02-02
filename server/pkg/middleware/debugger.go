@@ -14,20 +14,22 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mcpany/core/server/pkg/tracing"
 )
 
 // DebugEntry represents a captured HTTP request/response.
 type DebugEntry struct {
-	ID              string        `json:"id"`
-	Timestamp       time.Time     `json:"timestamp"`
-	Method          string        `json:"method"`
-	Path            string        `json:"path"`
-	Status          int           `json:"status"`
-	Duration        time.Duration `json:"duration"`
-	RequestHeaders  http.Header   `json:"request_headers"`
-	ResponseHeaders http.Header   `json:"response_headers"`
-	RequestBody     string        `json:"request_body,omitempty"`
-	ResponseBody    string        `json:"response_body,omitempty"`
+	ID              string          `json:"id"`
+	Timestamp       time.Time       `json:"timestamp"`
+	Method          string          `json:"method"`
+	Path            string          `json:"path"`
+	Status          int             `json:"status"`
+	Duration        time.Duration   `json:"duration"`
+	RequestHeaders  http.Header     `json:"request_headers"`
+	ResponseHeaders http.Header     `json:"response_headers"`
+	RequestBody     string          `json:"request_body,omitempty"`
+	ResponseBody    string          `json:"response_body,omitempty"`
+	Spans           []*tracing.Span `json:"spans,omitempty"`
 }
 
 // Debugger monitors and records traffic for inspection.
@@ -171,6 +173,11 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			status:         http.StatusOK, // Default
 		}
 
+		// Inject trace recorder
+		recorder := tracing.NewRecorder()
+		traceCtx := tracing.NewContext(r.Context(), recorder)
+		r = r.WithContext(traceCtx)
+
 		// Process request
 		next.ServeHTTP(blw, r)
 
@@ -196,6 +203,7 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			ResponseHeaders: blw.Header(),
 			RequestBody:     reqBody,
 			ResponseBody:    respBody,
+			Spans:           recorder.GetSpans(),
 		}
 
 		// ⚡ BOLT: Move ring buffer updates to background worker to avoid blocking request
