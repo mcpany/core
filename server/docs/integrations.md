@@ -4,7 +4,6 @@ This guide explains how to connect `mcpany` to various AI assistant clients, ena
 
 1. **As a Local Binary**: Run the `mcpany` server directly on your machine.
 2. **With Docker Compose**: Run `mcpany` as a containerized service.
-3. **With Helm**: Deploy `mcpany` to a Kubernetes cluster.
 
 > [!TIP] > **Best Practice: One Server, Many Tools**
 > You don't need to run a separate `mcpany` instance for every tool you want to use. Instead, point your initialized `mcpany` server to multiple configuration files or a directory of configs using `--config-paths`. This way, you only need to register **one** MCP server with your AI assistant to access **all** your tools.
@@ -121,46 +120,7 @@ The repository includes a `docker-compose.yml` file that starts `mcpany` and a s
 
 ---
 
-## 3. Helm Integration
-
-For production or staging environments, you can deploy `mcpany` to a Kubernetes cluster using the provided Helm chart.
-
-### Prerequisites
-
-- A running Kubernetes cluster.
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) configured to connect to your cluster.
-- [Helm](https://helm.sh/docs/intro/install/) installed.
-
-### Deployment
-
-1. **Install the Helm Chart:**
-   Navigate to the `helm` directory in this repository and install the chart.
-
-   ```bash
-   cd helm/
-   helm install mcpany . -f values.yaml
-   ```
-
-   This will deploy `mcpany` into your Kubernetes cluster.
-
-2. **Expose the Service:**
-   To access `mcpany` from your local machine, you can use `kubectl port-forward`.
-
-   ```bash
-   # Forward a local port (e.g., 50050) to the mcpany service in the cluster
-   kubectl port-forward svc/mcpany 50050:50050
-   ```
-
-3. **Configure your AI Assistant:**
-   With the port forward running, `mcpany` is now accessible at `localhost:50050`. You can configure your AI assistant the same way as in the Docker Compose example.
-
-   ```bash
-   gemini http add mcpany http://localhost:50050
-   ```
-
----
-
-## 4. Claude Desktop
+## 3. Claude Desktop
 
 To use `mcpany` with [Claude Desktop](https://modelcontextprotocol.io/quickstart/user), configure it to run the `mcpany` Docker container.
 
@@ -194,7 +154,7 @@ This setup ensures Claude launches a fresh `mcpany` container whenever it needs 
 
 ---
 
-## 5. Claude Code CLI
+## 4. Claude Code CLI
 
 To integrate `mcpany` with the [Claude Code CLI](https://www.npmjs.com/package/@anthropic-ai/claude-code):
 
@@ -205,7 +165,7 @@ claude mcp add mcpany --transport http http://localhost:50050
 
 ---
 
-## 6. GitHub Copilot CLI
+## 5. GitHub Copilot CLI
 
 The GitHub Copilot CLI does not currently support a non-interactive `mcp add` command for remote servers. Instead, you should configure it using an `mcp-config.json` file.
 
@@ -230,7 +190,7 @@ gh copilot explain "how does this code work?"
 
 ---
 
-## 7. VS Code (GitHub Copilot)
+## 6. VS Code (GitHub Copilot)
 
 You can add `mcpany` to GitHub Copilot in VS Code using the command line:
 
@@ -242,7 +202,7 @@ Alternatively, you can manually edit your VS Code `settings.json` or use the **"
 
 ---
 
-## 8. Cursor
+## 7. Cursor
 
 To integrate with [Cursor](https://cursor.sh/):
 
@@ -256,7 +216,7 @@ To integrate with [Cursor](https://cursor.sh/):
 
 ---
 
-## 9. JetBrains AI Assistant
+## 8. JetBrains AI Assistant
 
 To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
 
@@ -271,7 +231,7 @@ To integrate with JetBrains IDEs (IntelliJ IDEA, PyCharm, GoLand, etc.):
 
 ---
 
-## 10. Cline
+## 9. Cline
 
 To use `mcpany` with [Cline](https://github.com/cline/cline):
 
