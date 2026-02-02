@@ -30,45 +30,86 @@ def check_file(filepath):
     # export interface Name
     # export type Name
     # export const Name
+    pattern_direct = re.compile(r'^\s*export\s+(default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
 
-    # We want to catch:
-    # export default function ...
-    # export default class ...
-
-    pattern = re.compile(r'^\s*export\s+(default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
+    # Regex for named exports block: export { Name, Name2 as Alias }
+    pattern_named_block = re.compile(r'^\s*export\s+\{([^}]+)\}')
 
     missing_docs = []
 
+    # Map of symbol name to definition line index
+    symbol_defs = {}
+
+    # 1. First pass: find all symbol definitions (const X =, function X, etc) to map them to lines
+    # We only care about top-level definitions for this simple check
+    def_pattern = re.compile(r'^\s*(?:export\s+)?(?:default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
     for i, line in enumerate(lines):
-        match = pattern.match(line)
+        match = def_pattern.match(line)
+        if match:
+            name = match.group(2)
+            symbol_defs[name] = i
+
+    # 2. Second pass: check direct exports
+    for i, line in enumerate(lines):
+        match = pattern_direct.match(line)
         if match:
             name = match.group(3)
-            # Check for docstring above
-            has_doc = False
-            j = i - 1
-            while j >= 0:
-                prev = lines[j].strip()
-                if not prev:
-                    j -= 1
-                    continue
-                if prev.startswith('@'): # decorators
-                    j -= 1
-                    continue
-                if prev.endswith('*/'):
-                    has_doc = True
-                break
-
-            if not has_doc:
+            if not has_docstring(lines, i):
                 missing_docs.append((i + 1, name))
 
+        # Check named exports block
+        match_block = pattern_named_block.match(line)
+        if match_block:
+            content_block = match_block.group(1)
+            # Split by comma
+            exports = [e.strip() for e in content_block.split(',')]
+            for exp in exports:
+                # Handle "Name as Alias"
+                parts = re.split(r'\s+as\s+', exp)
+                original_name = parts[0]
+
+                # Check if we found the definition
+                if original_name in symbol_defs:
+                    def_line = symbol_defs[original_name]
+                    if not has_docstring(lines, def_line):
+                        missing_docs.append((def_line + 1, original_name))
+                else:
+                    # Maybe it's imported? If so, we skip documenting re-exports for now unless they are defined in this file.
+                    pass
+
     return missing_docs
+
+def has_docstring(lines, line_idx):
+    """
+    Checks if there is a JSDoc comment above the given line index.
+    """
+    j = line_idx - 1
+    while j >= 0:
+        prev = lines[j].strip()
+        if not prev:
+            j -= 1
+            continue
+        if prev.startswith('@'): # decorators
+            j -= 1
+            continue
+        if prev.startswith('//'): # single line comment - NOT JSDoc
+            j -= 1
+            continue
+        if prev.endswith('*/'):
+            return True
+        return False
+    return False
 
 def main():
     """
     Main function to walk the directory and check all applicable files.
     Exits with status code 1 if any missing documentation is found.
     """
-    root_dir = 'ui/src'
+    if len(sys.argv) > 1:
+        root_dir = sys.argv[1]
+    else:
+        root_dir = 'ui/src'
+
     has_errors = False
 
     for dirpath, dirnames, filenames in os.walk(root_dir):
