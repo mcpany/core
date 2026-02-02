@@ -38,6 +38,9 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
     [CallPolicy_Action.DELETE_CACHE]: "secondary",
 };
 
+/**
+ * Editor component for managing security call policies.
+ */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
