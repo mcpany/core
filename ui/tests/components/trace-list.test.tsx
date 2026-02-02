@@ -7,6 +7,18 @@ import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TraceList } from '@/components/traces/trace-list';
 import { Trace } from '@/app/api/traces/route';
+import { vi } from 'vitest';
+
+// Mock react-virtuoso to render items directly
+vi.mock('react-virtuoso', () => ({
+  Virtuoso: ({ data, itemContent }: any) => {
+    return (
+      <div>
+        {data.map((item: any, index: number) => itemContent(index, item))}
+      </div>
+    );
+  },
+}));
 
 // Mock traces
 const MOCK_TRACES: Trace[] = [
