@@ -178,6 +178,19 @@ export interface Metric {
     subLabel?: string;
 }
 
+/**
+ * Alert Rule definition.
+ */
+export interface AlertRule {
+    id?: string;
+    name: string;
+    metric: string;
+    operator: string;
+    threshold: number;
+    duration: string;
+    severity: 'info' | 'warning' | 'critical';
+    enabled: boolean;
+}
 
 /**
  * Represents the current status and health of the system.
@@ -962,6 +975,21 @@ export const apiClient = {
             body: JSON.stringify({ status })
         });
         if (!res.ok) throw new Error('Failed to update alert status');
+        return res.json();
+    },
+
+    /**
+     * Creates a new alert rule.
+     * @param rule The rule to create.
+     * @returns A promise that resolves to the created rule.
+     */
+    createAlertRule: async (rule: Partial<AlertRule>) => {
+        const res = await fetchWithAuth('/api/v1/alerts/rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        });
+        if (!res.ok) throw new Error('Failed to create alert rule');
         return res.json();
     },
 
