@@ -34,90 +34,126 @@ type MCPServerProvider interface {
 	Server() *mcp.Server
 }
 
-// ManagerInterface defines the interface for a tool manager.
+// ManagerInterface defines the contract for managing the lifecycle and execution of tools.
 type ManagerInterface interface {
-	// AddTool registers a new tool.
+	// AddTool registers a new tool with the manager.
 	//
-	// tool represents the tool definition.
+	// Parameters:
+	//   - tool: Tool. The tool instance to register.
 	//
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - error: An error if registration fails.
 	AddTool(tool Tool) error
-	// GetTool retrieves a tool by name.
+
+	// GetTool retrieves a tool by its name.
 	//
-	// toolName is the toolName.
+	// Parameters:
+	//   - toolName: string. The name of the tool to retrieve.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Tool: The tool instance.
+	//   - bool: True if found, false otherwise.
 	GetTool(toolName string) (Tool, bool)
+
 	// ListTools returns all registered tools.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Tool: A list of all registered tools.
 	ListTools() []Tool
+
 	// ListMCPTools returns all registered tools in MCP format.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*mcp.Tool: A list of tools in the MCP protocol format.
 	ListMCPTools() []*mcp.Tool
-	// ClearToolsForService removes all tools for a given service.
+
+	// ClearToolsForService removes all tools associated with a specific service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The identifier of the service.
 	ClearToolsForService(serviceID string)
-	// ExecuteTool executes a tool with the given request.
+
+	// ExecuteTool executes a tool with the provided request.
 	//
-	// ctx is the context for the request.
-	// req is the request object.
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The execution request details.
 	//
-	// Returns the result.
-	// Returns an error if the operation fails.
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if execution fails.
 	ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// SetMCPServer sets the MCP server provider.
 	//
-	// mcpServer is the mcpServer.
+	// Parameters:
+	//   - mcpServer: MCPServerProvider. The provider for the MCP server instance.
 	SetMCPServer(mcpServer MCPServerProvider)
+
 	// AddMiddleware adds a middleware to the tool execution chain.
 	//
-	// middleware is the middleware.
+	// Parameters:
+	//   - middleware: ExecutionMiddleware. The middleware to add.
 	AddMiddleware(middleware ExecutionMiddleware)
-	// AddServiceInfo adds metadata for a service.
+
+	// AddServiceInfo registers metadata for a service.
 	//
-	// serviceID is the serviceID.
-	// info is the info.
+	// Parameters:
+	//   - serviceID: string. The unique service identifier.
+	//   - info: *ServiceInfo. The service metadata.
 	AddServiceInfo(serviceID string, info *ServiceInfo)
+
 	// GetServiceInfo retrieves metadata for a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The unique service identifier.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - *ServiceInfo: The service metadata.
+	//   - bool: True if found, false otherwise.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
+
 	// ListServices returns all registered services.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []*ServiceInfo: A list of all registered services.
 	ListServices() []*ServiceInfo
-	// SetProfiles sets the enabled profiles and their definitions.
+
+	// SetProfiles configures the active profiles and their definitions.
 	//
-	// enabled is the enabled.
-	// defs is the defs.
+	// Parameters:
+	//   - enabled: []string. A list of enabled profile names.
+	//   - defs: []*configv1.ProfileDefinition. The profile definitions.
 	SetProfiles(enabled []string, defs []*configv1.ProfileDefinition)
-	// IsServiceAllowed checks if a service is allowed for a given profile.
+
+	// IsServiceAllowed checks if a service is permitted for a specific profile.
 	//
-	// serviceID is the serviceID.
-	// profileID is the profileID.
+	// Parameters:
+	//   - serviceID: string. The service identifier.
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the service is allowed, false otherwise.
 	IsServiceAllowed(serviceID, profileID string) bool
-	// ToolMatchesProfile checks if a tool matches a given profile.
+
+	// ToolMatchesProfile checks if a specific tool matches a profile's criteria.
 	//
-	// tool represents the tool definition.
-	// profileID is the profileID.
+	// Parameters:
+	//   - tool: Tool. The tool instance to check.
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns true if successful.
+	// Returns:
+	//   - bool: True if the tool matches the profile, false otherwise.
 	ToolMatchesProfile(tool Tool, profileID string) bool
-	// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+
+	// GetAllowedServiceIDs returns a set of service IDs allowed for a profile.
 	//
-	// profileID is the profileID.
+	// Parameters:
+	//   - profileID: string. The profile identifier.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - map[string]bool: A map of allowed service IDs.
+	//   - bool: True if the profile exists, false otherwise.
 	GetAllowedServiceIDs(profileID string) (map[string]bool, bool)
 }
 
@@ -134,7 +170,7 @@ type ExecutionMiddleware interface {
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-// Manager is a thread-safe manager for registering tooling.
+// Manager manages tool registration and execution in a thread-safe manner.
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
@@ -158,11 +194,13 @@ type Manager struct {
 	allowedServicesCache map[string]map[string]bool
 }
 
-// NewManager creates and returns a new, empty Manager.
+// NewManager creates a new, empty tool Manager.
 //
-// bus is the bus.
+// Parameters:
+//   - bus: *bus.Provider. The event bus provider.
 //
-// Returns the result.
+// Returns:
+//   - *Manager: The initialized manager instance.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,

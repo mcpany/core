@@ -12,38 +12,50 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
-// ManagerInterface defines the interface for a prompt manager.
+// ManagerInterface defines the contract for managing prompt lifecycle.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
-	// prompt is the prompt.
+	// Parameters:
+	//   - prompt: Prompt. The prompt instance to register.
 	AddPrompt(prompt Prompt)
-	// UpdatePrompt updates an existing prompt.
+
+	// UpdatePrompt updates an existing prompt or adds it if missing.
 	//
-	// prompt is the prompt.
+	// Parameters:
+	//   - prompt: Prompt. The prompt instance to update.
 	UpdatePrompt(prompt Prompt)
+
 	// GetPrompt retrieves a prompt by name.
 	//
-	// name is the name of the resource.
+	// Parameters:
+	//   - name: string. The name of the prompt.
 	//
-	// Returns the result.
-	// Returns true if successful.
+	// Returns:
+	//   - Prompt: The prompt instance.
+	//   - bool: True if found, false otherwise.
 	GetPrompt(name string) (Prompt, bool)
-	// ListPrompts returns all registered prompts.
+
+	// ListPrompts lists all registered prompts.
 	//
-	// Returns the result.
+	// Returns:
+	//   - []Prompt: A list of all registered prompts.
 	ListPrompts() []Prompt
-	// ClearPromptsForService removes all prompts associated with a service.
+
+	// ClearPromptsForService removes all prompts for a service.
 	//
-	// serviceID is the serviceID.
+	// Parameters:
+	//   - serviceID: string. The identifier of the service.
 	ClearPromptsForService(serviceID string)
+
 	// SetMCPServer sets the MCP server provider.
 	//
-	// mcpServer is the mcpServer.
+	// Parameters:
+	//   - mcpServer: MCPServerProvider. The provider for the MCP server.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
-// Manager is a thread-safe manager for registering and retrieving prompts.
+// Manager manages prompts in a thread-safe manner.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -51,9 +63,13 @@ type Manager struct {
 	cachedPrompts []Prompt
 }
 
-// NewManager creates and returns a new, empty Manager.
+// NewManager initializes a new Prompt Manager.
 //
-// Returns the result.
+// Parameters:
+//   None.
+//
+// Returns:
+//   - *Manager: The initialized manager instance.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),

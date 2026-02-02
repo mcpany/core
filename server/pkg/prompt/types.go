@@ -44,11 +44,11 @@ type Prompt interface {
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
-// MCPServerProvider defines an interface for components that can provide an instance of an *mcp.Server.
+// MCPServerProvider abstracts the MCP server instance provision.
 //
-// This is used to decouple the Manager from the concrete server implementation.
+// This interface decouples the Manager from the concrete server implementation.
 type MCPServerProvider interface {
-	// Server returns the underlying MCP server instance.
+	// Server retrieves the underlying MCP server instance.
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.

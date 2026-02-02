@@ -21,13 +21,15 @@ type DynamicResource struct {
 	tool     tool.Tool
 }
 
-// NewDynamicResource creates a new instance of DynamicResource.
+// NewDynamicResource initializes a new DynamicResource.
 //
-// def is the def.
-// t is the t.
+// Parameters:
+//   - def: *configv1.ResourceDefinition. The resource configuration.
+//   - t: tool.Tool. The tool used to fetch the resource.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *DynamicResource: The initialized resource.
+//   - error: An error if inputs are invalid.
 func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*DynamicResource, error) {
 	if def == nil {
 		return nil, fmt.Errorf("resource definition is nil")

@@ -24,40 +24,20 @@ import (
 	"github.com/mcpany/core/server/pkg/consts"
 )
 
-// SanitizeID sanitizes a slice of strings to form a valid ID.
-// It performs the following operations:
+// SanitizeID constructs a valid identifier from a list of components.
 //
-//  1. Joining the strings with a "." separator.
-//
-//  2. Removing any characters that are not allowed (alphanumerics, "_", "-").
-//     Allowed characters are: `[a-zA-Z0-9_-]`.
-//     Wait, checking the implementation:
-//     It allows a-z, A-Z, 0-9, _, -
-//     It seems to replace invalid chars with nothing.
-//     Actually it calculates `dirtyCount`.
-//     If `dirtyCount > 0`, it means we need to "sanitize" by removing them?
-//     Yes, `rawSanitizedLen := len(id) - dirtyCount`.
-//     And later it only writes if valid char.
-//
-//  3. Truncating the result to the specified maximum length.
-//
-//  4. Optionally, appending a hash of the original string to ensure uniqueness,
-//     especially when truncation occurs or when illegal characters are present.
-//
-// After sanitizing each string individually, it joins them with a "." separator to form
-// the final identifier.
+// It joins the provided strings with ".", removes disallowed characters (keeping only
+// alphanumerics, "_", "-"), truncates the result to a maximum length, and optionally
+// appends a hash for uniqueness.
 //
 // Parameters:
-//   - ids: A slice of strings to be sanitized and joined. Each element of the slice
-//     represents a part of the final identifier.
-//   - alwaysAppendHash: A boolean that, if true, forces a hash to be appended to each
-//     sanitized string, regardless of whether it was modified.
-//   - maxSanitizedPrefixLength: The maximum allowed length for the sanitized prefix of each
-//     string before a hash is appended.
-//   - reqHashLength: The desired length of the hexadecimal hash to be appended.
+//   - ids: []string. A slice of strings to be sanitized and joined.
+//   - alwaysAppendHash: bool. If true, a hash is always appended.
+//   - maxSanitizedPrefixLength: int. The maximum allowed length for the sanitized prefix.
+//   - reqHashLength: int. The desired length of the hash suffix.
 //
 // Returns:
-//   - string: A single string representing the sanitized and joined identifier.
+//   - string: The sanitized and joined identifier.
 //   - error: An error if the sanitization fails (e.g., if ids is empty).
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
@@ -278,11 +258,13 @@ func init() {
 // TrueStr is a string constant for "true".
 const TrueStr = "true"
 
-// GenerateUUID creates a new random (version 4) UUID.
+// GenerateUUID creates a new random version 4 UUID.
+//
+// Parameters:
+//   None.
 //
 // Returns:
-//
-//	string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
+//   - string: A string representation of the UUID.
 func GenerateUUID() string {
 	return uuid.New().String()
 }

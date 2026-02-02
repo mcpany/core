@@ -188,8 +188,10 @@ const configItems = [
 ]
 
 /**
- * The main application sidebar.
- * Displays navigation links and user profile menu.
+ * AppSidebar renders the main application sidebar navigation.
+ *
+ * It conditionally displays navigation groups (Platform, Development, Configuration)
+ * based on the user's role (admin vs regular user). It also handles the user profile menu.
  *
  * @returns {JSX.Element} The rendered sidebar component.
  */

@@ -51,55 +51,52 @@ type Resource interface {
 	Subscribe(ctx context.Context) error
 }
 
-// ManagerInterface defines the interface for managing a collection of resources.
-//
-// It provides methods for adding, removing, retrieving, and listing resources,
-// as well as for subscribing to changes.
+// ManagerInterface defines the contract for managing resource lifecycle.
 type ManagerInterface interface {
-	// GetResource retrieves a resource by its URI.
+	// GetResource retrieves a resource by URI.
 	//
 	// Parameters:
-	//   - uri: The URI of the resource to retrieve.
+	//   - uri: string. The URI of the resource.
 	//
 	// Returns:
-	//   - Resource: The resource instance if found.
-	//   - bool: True if the resource exists, false otherwise.
+	//   - Resource: The resource instance.
+	//   - bool: True if found, false otherwise.
 	GetResource(uri string) (Resource, bool)
 
-	// AddResource adds a new resource to the manager.
+	// AddResource registers a new resource.
 	//
 	// Parameters:
-	//   - resource: The resource to add.
+	//   - resource: Resource. The resource instance to register.
 	AddResource(resource Resource)
 
-	// RemoveResource removes a resource from the manager by its URI.
+	// RemoveResource unregisters a resource by URI.
 	//
 	// Parameters:
-	//   - uri: The URI of the resource to remove.
+	//   - uri: string. The URI of the resource.
 	RemoveResource(uri string)
 
-	// ListResources returns a slice of all resources currently in the manager.
+	// ListResources lists all registered resources.
 	//
 	// Returns:
-	//   - []Resource: A slice of all registered resources.
+	//   - []Resource: A list of all registered resources.
 	ListResources() []Resource
 
-	// OnListChanged registers a callback function to be called when the list of resources changes.
+	// OnListChanged registers a callback for resource list modifications.
 	//
 	// Parameters:
-	//   - f: The callback function to invoke.
+	//   - f: func(). The callback function.
 	OnListChanged(f func())
 
-	// ClearResourcesForService removes all resources associated with a given service ID.
+	// ClearResourcesForService removes all resources for a service.
 	//
 	// Parameters:
-	//   - serviceID: The ID of the service whose resources should be cleared.
+	//   - serviceID: string. The identifier of the service.
 	ClearResourcesForService(serviceID string)
 }
 
-// Manager is a thread-safe implementation of the
-// ManagerInterface. It uses a map to store resources and a mutex to
-// protect concurrent access.
+// Manager manages resources in a thread-safe manner.
+//
+// It uses a map to store resources and protects concurrent access with a mutex.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -107,10 +104,13 @@ type Manager struct {
 	cachedResources   []Resource
 }
 
-// NewManager creates and returns a new, empty Manager.
+// NewManager initializes a new Resource Manager.
+//
+// Parameters:
+//   None.
 //
 // Returns:
-//   - *Manager: A new Manager instance.
+//   - *Manager: The initialized manager instance.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),

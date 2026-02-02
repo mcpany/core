@@ -44,8 +44,12 @@ import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
 /**
- * Global search component that provides quick access to navigation, tools, services, and actions.
+ * GlobalSearch renders the global command palette.
+ *
+ * It provides quick access to navigation, tools, services, and system actions.
  * It is triggered by a keyboard shortcut (Cmd/Ctrl+K) or by clicking the search button.
+ *
+ * @returns {JSX.Element} The rendered command dialog and trigger button.
  */
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)

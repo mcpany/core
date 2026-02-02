@@ -59,29 +59,43 @@ var (
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
-// Tool is the fundamental interface for any executable tool in the system.
-// Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+// Tool defines the interface for executable tools.
+//
+// Each implementation represents a specific backend protocol (e.g., gRPC, HTTP, CLI).
 type Tool interface {
-	// Tool returns the protobuf definition of the tool.
+	// Tool retrieves the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
-	// MCPTool returns the MCP tool definition.
+
+	// MCPTool retrieves the MCP-compliant tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
-	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
-	// GetCacheConfig returns the cache configuration for the tool.
+
+	// Execute runs the tool with the provided context and request.
 	//
-	// Returns the result.
+	// Parameters:
+	//   - ctx: context.Context. The execution context.
+	//   - req: *ExecutionRequest. The request details including inputs.
+	//
+	// Returns:
+	//   - any: The execution result.
+	//   - error: An error if execution fails.
+	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
+	// GetCacheConfig retrieves the cache configuration for the tool.
+	//
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
-// ServiceInfo holds metadata about a registered upstream service, including its
-// configuration and any associated protobuf file descriptors.
+// ServiceInfo stores metadata for a registered upstream service.
+//
+// It includes configuration, file descriptors, and cached hooks.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -102,8 +116,9 @@ type ServiceInfo struct {
 	HealthStatus string
 }
 
-// ExecutionRequest represents a request to execute a specific tool, including
-// its name and input arguments as a raw JSON message.
+// ExecutionRequest represents a tool execution request.
+//
+// It contains the tool name, arguments, and dry-run flag.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -121,28 +136,28 @@ type ExecutionRequest struct {
 	Tool Tool `json:"-"`
 }
 
-// ServiceRegistry defines an interface for a component that can look up tools
-// and service information. It is used for dependency injection to decouple
-// components from the main service registry.
+// ServiceRegistry defines the interface for tool and service lookup.
+//
+// It abstracts the registry to allow dependency injection.
 type ServiceRegistry interface {
-	// GetTool retrieves a tool by name.
+	// GetTool retrieves a tool by its name.
 	//
 	// Parameters:
-	//   - toolName: The name of the tool to retrieve.
+	//   - toolName: string. The name of the tool to retrieve.
 	//
 	// Returns:
-	//   - Tool: The tool instance if found.
-	//   - bool: True if the tool exists, false otherwise.
+	//   - Tool: The tool instance.
+	//   - bool: True if found, false otherwise.
 	GetTool(toolName string) (Tool, bool)
 
-	// GetServiceInfo retrieves metadata for a service.
+	// GetServiceInfo retrieves metadata for a service by ID.
 	//
 	// Parameters:
-	//   - serviceID: The unique identifier of the service.
+	//   - serviceID: string. The unique identifier of the service.
 	//
 	// Returns:
-	//   - *ServiceInfo: The service metadata info if found.
-	//   - bool: True if the service exists, false otherwise.
+	//   - *ServiceInfo: The service metadata.
+	//   - bool: True if found, false otherwise.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -252,9 +267,9 @@ type PostCallHook interface {
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 
-// GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
-// endpoint. It handles the marshalling of JSON inputs to protobuf messages and
-// invoking the gRPC method.
+// GRPCTool implements the Tool interface for gRPC endpoints.
+//
+// It handles JSON-to-Protobuf marshalling and invokes the underlying gRPC method.
 type GRPCTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -267,18 +282,18 @@ type GRPCTool struct {
 	resilienceManager *resilience.Manager
 }
 
-// NewGRPCTool creates a new GRPCTool instance.
+// NewGRPCTool initializes a new GRPCTool.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - poolManager: The connection pool manager for gRPC connections.
-//   - serviceID: The identifier for the service.
-//   - method: The gRPC method descriptor.
-//   - callDefinition: The configuration for the gRPC call.
-//   - resilienceConfig: The resilience configuration (retries, timeouts, etc.).
+//   - tool: *v1.Tool. The protobuf definition.
+//   - poolManager: *pool.Manager. The gRPC connection pool manager.
+//   - serviceID: string. The service identifier.
+//   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
+//   - callDefinition: *configv1.GrpcCallDefinition. The call configuration.
+//   - resilienceConfig: *configv1.ResilienceConfig. The resilience settings.
 //
 // Returns:
-//   - *GRPCTool: The initialized GRPCTool.
+//   - *GRPCTool: The initialized tool instance.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -396,9 +411,9 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return result, nil
 }
 
-// HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
-// It constructs and sends an HTTP request based on the tool definition and
-// input, handling parameter mapping, authentication, and transformations.
+// HTTPTool implements the Tool interface for HTTP endpoints.
+//
+// It handles request construction, parameter mapping, authentication, and transformations.
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -428,20 +443,20 @@ type HTTPTool struct {
 	cachedOutputTemplate *transformer.TextTemplate
 }
 
-// NewHTTPTool creates a new HTTPTool instance.
+// NewHTTPTool initializes a new HTTPTool.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - poolManager: The connection pool manager for HTTP connections.
-//   - serviceID: The identifier for the service.
-//   - authenticator: The authenticator for upstream requests.
-//   - callDefinition: The configuration for the HTTP call.
-//   - cfg: The resilience configuration.
-//   - policies: The security policies for the call.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition.
+//   - poolManager: *pool.Manager. The HTTP connection pool manager.
+//   - serviceID: string. The service identifier.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
+//   - callDefinition: *configv1.HttpCallDefinition. The call configuration.
+//   - cfg: *configv1.ResilienceConfig. The resilience settings.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique call identifier.
 //
 // Returns:
-//   - *HTTPTool: The initialized HTTPTool.
+//   - *HTTPTool: The initialized tool instance.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1106,9 +1121,9 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-// MCPTool implements the Tool interface for a tool that is exposed via another
-// MCP-compliant service. It acts as a proxy, forwarding the tool call to the
-// downstream MCP service.
+// MCPTool implements the Tool interface for downstream MCP services.
+//
+// It acts as a proxy, forwarding tool calls to the downstream MCP server.
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1123,15 +1138,15 @@ type MCPTool struct {
 	initError            error
 }
 
-// NewMCPTool creates a new MCPTool instance.
+// NewMCPTool initializes a new MCPTool.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - client: The MCP client for downstream communication.
-//   - callDefinition: The configuration for the MCP call.
+//   - tool: *v1.Tool. The protobuf definition.
+//   - client: client.MCPClient. The MCP client.
+//   - callDefinition: *configv1.MCPCallDefinition. The call configuration.
 //
 // Returns:
-//   - *MCPTool: The initialized MCPTool.
+//   - *MCPTool: The initialized tool instance.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1317,9 +1332,9 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	return resultMap, nil
 }
 
-// OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
-// specification. It constructs and sends an HTTP request based on the OpenAPI
-// operation definition.
+// OpenAPITool implements the Tool interface for OpenAPI operations.
+//
+// It constructs HTTP requests based on the OpenAPI specification.
 type OpenAPITool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1338,19 +1353,19 @@ type OpenAPITool struct {
 	initError            error
 }
 
-// NewOpenAPITool creates a new OpenAPITool instance.
+// NewOpenAPITool initializes a new OpenAPITool.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - client: The HTTP client for requests.
-//   - parameterDefs: Mapping of parameter names to their locations (path, query, etc.).
-//   - method: The HTTP method (GET, POST, etc.).
-//   - url: The URL template.
-//   - authenticator: The authenticator for upstream requests.
-//   - callDefinition: The configuration for the OpenAPI call.
+//   - tool: *v1.Tool. The protobuf definition.
+//   - client: client.HTTPClient. The HTTP client.
+//   - parameterDefs: map[string]string. Parameter locations.
+//   - method: string. The HTTP method.
+//   - url: string. The URL template.
+//   - authenticator: auth.UpstreamAuthenticator. The authenticator.
+//   - callDefinition: *configv1.OpenAPICallDefinition. The call configuration.
 //
 // Returns:
-//   - *OpenAPITool: The initialized OpenAPITool.
+//   - *OpenAPITool: The initialized tool instance.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1585,9 +1600,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	return result, nil
 }
 
-// CommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process. It maps tool inputs to command-line arguments and
-// environment variables.
+// CommandTool implements the Tool interface for command-line executions.
+//
+// It maps inputs to command arguments and environment variables.
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -1600,17 +1615,17 @@ type CommandTool struct {
 	initError       error
 }
 
-// NewCommandTool creates a new CommandTool instance.
+// NewCommandTool initializes a new CommandTool.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - service: The configuration of the command-line service.
-//   - callDefinition: The configuration for the command-line call.
-//   - policies: The security policies.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition.
+//   - service: *configv1.CommandLineUpstreamService. The service configuration.
+//   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique call identifier.
 //
 // Returns:
-//   - Tool: The created CommandTool.
+//   - Tool: The initialized tool instance.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1632,9 +1647,9 @@ func NewCommandTool(
 	return t
 }
 
-// LocalCommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process. It maps tool inputs to command-line arguments and
-// environment variables.
+// LocalCommandTool implements the Tool interface for local command-line executions.
+//
+// It maps inputs to command arguments and environment variables, running locally.
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -1647,17 +1662,17 @@ type LocalCommandTool struct {
 	initError      error
 }
 
-// NewLocalCommandTool creates a new LocalCommandTool instance.
+// NewLocalCommandTool initializes a new LocalCommandTool.
 //
 // Parameters:
-//   - tool: The protobuf definition of the tool.
-//   - service: The configuration of the command-line service.
-//   - callDefinition: The configuration for the command-line call.
-//   - policies: The security policies.
-//   - callID: The unique identifier for the call.
+//   - tool: *v1.Tool. The protobuf definition.
+//   - service: *configv1.CommandLineUpstreamService. The service configuration.
+//   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
+//   - policies: []*configv1.CallPolicy. The security policies.
+//   - callID: string. The unique call identifier.
 //
 // Returns:
-//   - Tool: The created LocalCommandTool.
+//   - Tool: The initialized tool instance.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,

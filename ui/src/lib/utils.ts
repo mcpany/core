@@ -7,10 +7,12 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 /**
- * Combines multiple class names into a single string, handling conflicts and conditionals.
+ * Combines class names into a single string.
  *
- * @param inputs - A list of class values (strings, arrays, objects) to combine.
- * @returns A merged class name string.
+ * It handles conditional classes and Tailwind CSS conflicts using `clsx` and `tailwind-merge`.
+ *
+ * @param inputs - ClassValue[]. A list of class values (strings, arrays, objects) to combine.
+ * @returns string. The merged class name string.
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

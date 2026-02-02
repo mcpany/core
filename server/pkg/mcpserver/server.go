@@ -49,11 +49,9 @@ var fastJSON = jsoniter.Config{
 //   - When set, this function is called synchronously during Server() access.
 var AddReceivingMiddlewareHook func(name string)
 
-// Server is the core of the MCP Any application.
+// Server orchestrates the MCP Any application.
 //
-// It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
-// tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
-// handlers and communicates with backend workers via an event bus.
+// It serves as the core runtime, handling MCP requests and coordinating tools, prompts, and resources.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -327,10 +325,10 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 	}
 }
 
-// ListPrompts handles the "prompts/list" MCP request.
+// ListPrompts retrieves the list of available prompts.
 //
-// It retrieves the list of available prompts from the PromptManager, converts them to the MCP format,
-// and returns them to the client.
+// It fetches prompts from the PromptManager, filters them based on the user's profile
+// (if applicable), and returns them in the MCP format.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
@@ -374,14 +372,13 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 	return nil, fmt.Errorf("no active session found in context")
 }
 
-// GetPrompt handles the "prompts/get" MCP request.
+// GetPrompt retrieves and executes a specific prompt.
 //
-// It retrieves a specific prompt by name from the PromptManager and executes it with the provided
-// arguments, returning the result.
+// It looks up the prompt by name, verifies access permissions, and returns the prompt result.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
-//   - req: *mcp.GetPromptRequest. The "prompts/get" request from the client, containing the prompt name and arguments.
+//   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
 //
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
@@ -389,6 +386,7 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 //
 // Throws/Errors:
 //   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
+//   - error: If access is denied by profile policy.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -416,10 +414,10 @@ func (s *Server) GetPrompt(
 	return p.Get(ctx, argsBytes)
 }
 
-// ListResources handles the "resources/list" MCP request.
+// ListResources retrieves the list of available resources.
 //
-// It fetches the list of available resources from the ResourceManager, converts them to the MCP
-// format, and returns them to the client.
+// It fetches resources from the ResourceManager, filters them based on the user's profile
+// (if applicable), and returns them in the MCP format.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
@@ -444,20 +442,21 @@ func (s *Server) ListResources(
 	}, nil
 }
 
-// ReadResource handles the "resources/read" MCP request.
+// ReadResource retrieves the content of a specific resource.
 //
-// It retrieves a specific resource by its URI from the ResourceManager and returns its content.
+// It looks up the resource by URI, verifies access permissions, and returns the resource content.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the request.
-//   - req: *mcp.ReadResourceRequest. The "resources/read" request from the client, containing the URI of the resource.
+//   - req: *mcp.ReadResourceRequest. The request containing the resource URI.
 //
 // Returns:
 //   - *mcp.ReadResourceResult: The content of the resource.
-//   - error: An error if the resource is not found or reading fails.
+//   - error: An error if the resource is not found or access is denied.
 //
 // Throws/Errors:
 //   - resource.ErrResourceNotFound: If the requested resource does not exist.
+//   - error: If access is denied by profile policy.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
