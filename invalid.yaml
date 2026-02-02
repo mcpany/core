@@ -1,0 +1,3 @@
+upstreamServices:
+  - name: "invalid"
+    # Missing type (http, command, etc.)
