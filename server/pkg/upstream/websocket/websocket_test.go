@@ -731,3 +731,7 @@ func TestUpstream_createAndRegisterWebsocketTools_DynamicResourceMissingTool(t *
 func (m *MockToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, true
 }
+
+func (m *MockToolManager) CountToolsForService(_ string) int {
+	return 0
+}
