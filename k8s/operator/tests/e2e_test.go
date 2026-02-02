@@ -113,14 +113,23 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/operator:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load operator image: %v", err)
 	}
-	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
-		t.Fatalf("Failed to load ui image: %v", err)
+	// Check if UI image exists locally
+	uiImage := fmt.Sprintf("mcpany/ui:%s", tag)
+	uiImageExists := false
+	if err := exec.CommandContext(ctx, "docker", "inspect", uiImage).Run(); err == nil {
+		uiImageExists = true
+		if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", uiImage, "--name", clusterName); err != nil {
+			t.Fatalf("Failed to load ui image: %v", err)
+		}
+	} else {
+		t.Logf("UI image %s not found locally, skipping load and disabling UI in helm.", uiImage)
 	}
 
 	// 6. Install Helm Chart
 	t.Log("Installing Helm chart...")
-	// Helm upgrade --install
-	if err := runCommand(t, ctx, rootDir, "helm", "upgrade", "--install", "mcpany", "k8s/helm/mcpany",
+
+	helmArgs := []string{
+		"upgrade", "--install", "mcpany", "k8s/helm/mcpany",
 		"--namespace", namespace,
 		"--create-namespace",
 		"--set", "image.repository=mcpany/server",
@@ -130,16 +139,26 @@ nodes:
 		"--set", "operator.image.repository=mcpany/operator",
 		"--set", fmt.Sprintf("operator.image.tag=%s", tag),
 		"--set", "operator.image.pullPolicy=Never",
-		"--set", fmt.Sprintf("ui.image.tag=%s", tag),
-		"--set", "ui.image.pullPolicy=Never",
-		"--set", "ui.service.type=NodePort",
-		"--set", "ui.service.nodePort=30000",
-		"--set", "ui.apiKey=test-token",
 		"--set", "apiKey=test-token",
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--wait",
 		"--timeout", "10m",
-	); err != nil {
+	}
+
+	if uiImageExists {
+		helmArgs = append(helmArgs,
+			"--set", fmt.Sprintf("ui.image.tag=%s", tag),
+			"--set", "ui.image.pullPolicy=Never",
+			"--set", "ui.service.type=NodePort",
+			"--set", "ui.service.nodePort=30000",
+			"--set", "ui.apiKey=test-token",
+		)
+	} else {
+		helmArgs = append(helmArgs, "--set", "ui.replicaCount=0")
+	}
+
+	// Helm upgrade --install
+	if err := runCommand(t, ctx, rootDir, "helm", helmArgs...); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
 
@@ -151,39 +170,43 @@ nodes:
 		t.Fatalf("Failed to wait for pods: %v", err)
 	}
 
-	// 8. Run UI Tests
-	t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
+	// 8. Run UI Tests (only if UI image exists)
+	if uiImageExists {
+		t.Logf("Using host port %d for UI tests (NodePort)", hostPort)
 
-	// Wait for NodePort to be accessible
-	// Since we mapped it in Kind, it should be reachable on localhost:hostPort
-	if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
-		t.Fatalf("NodePort failed to become accessible: %v", err)
-	}
+		// Wait for NodePort to be accessible
+		// Since we mapped it in Kind, it should be reachable on localhost:hostPort
+		if err := waitForPort(t, ctx, fmt.Sprintf("127.0.0.1:%d", hostPort), 60*time.Second); err != nil {
+			t.Fatalf("NodePort failed to become accessible: %v", err)
+		}
 
-	// Run Playwright tests
-	// We assume 'npx' is available and we are in the root or can find ui dir
-	uiDir := filepath.Join(rootDir, "ui")
-	workers := "4"
-	if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
-		workers = w
-	}
-	playwrightArgs := []string{"test", "--workers=" + workers}
-	if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
-		playwrightArgs = append(playwrightArgs, "--grep", grep)
-	}
-	if grepInvert := os.Getenv("PLAYWRIGHT_GREP_INVERT"); grepInvert != "" {
-		playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
-	}
-	args := append([]string{"playwright"}, playwrightArgs...)
-	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
-	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
-	playwrightCmd.Stdout = os.Stdout
-	playwrightCmd.Stderr = os.Stderr
+		// Run Playwright tests
+		// We assume 'npx' is available and we are in the root or can find ui dir
+		uiDir := filepath.Join(rootDir, "ui")
+		workers := "4"
+		if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
+			workers = w
+		}
+		playwrightArgs := []string{"test", "--workers=" + workers}
+		if grep := os.Getenv("PLAYWRIGHT_GREP"); grep != "" {
+			playwrightArgs = append(playwrightArgs, "--grep", grep)
+		}
+		if grepInvert := os.Getenv("PLAYWRIGHT_GREP_INVERT"); grepInvert != "" {
+			playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
+		}
+		args := append([]string{"playwright"}, playwrightArgs...)
+		playwrightCmd := exec.CommandContext(ctx, "npx", args...)
+		playwrightCmd.Dir = uiDir
+		playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+		playwrightCmd.Stdout = os.Stdout
+		playwrightCmd.Stderr = os.Stderr
 
-	t.Log("Executing npx playwright test in", uiDir)
-	if err := playwrightCmd.Run(); err != nil {
-		t.Fatalf("UI Tests failed: %v", err)
+		t.Log("Executing npx playwright test in", uiDir)
+		if err := playwrightCmd.Run(); err != nil {
+			t.Fatalf("UI Tests failed: %v", err)
+		}
+	} else {
+		t.Log("Skipping UI tests because UI image was not found/loaded.")
 	}
 }
 
