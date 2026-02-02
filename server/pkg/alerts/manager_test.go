@@ -30,10 +30,13 @@ func TestManager_CreateAndGet(t *testing.T) {
 
 func TestManager_List(t *testing.T) {
 	m := NewManager()
-	// Should have seeded data (5 items)
+	// Create some alerts
+	for i := 0; i < 5; i++ {
+		m.CreateAlert(&Alert{Title: "Test"})
+	}
 	list := m.ListAlerts()
-	if len(list) < 5 {
-		t.Errorf("expected at least 5 seeded alerts, got %d", len(list))
+	if len(list) != 5 {
+		t.Errorf("expected 5 alerts, got %d", len(list))
 	}
 }
 

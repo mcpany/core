@@ -36,10 +36,10 @@ func TestManager_Rules(t *testing.T) {
 	}
 
 	// 3. List Rules
-	// Note: NewManager seeds 2 rules. So total should be 3.
+	// NewManager no longer seeds rules. So total should be 1.
 	list := m.ListRules()
-	if len(list) != 3 {
-		t.Errorf("Expected 3 rules, got %d", len(list))
+	if len(list) != 1 {
+		t.Errorf("Expected 1 rule, got %d", len(list))
 	}
 
 	// 4. Update Rule
@@ -80,7 +80,7 @@ func TestManager_Rules(t *testing.T) {
 	}
 
 	listAfterDelete := m.ListRules()
-	if len(listAfterDelete) != 2 {
-		t.Errorf("Expected 2 rules after deletion, got %d", len(listAfterDelete))
+	if len(listAfterDelete) != 0 {
+		t.Errorf("Expected 0 rules after deletion, got %d", len(listAfterDelete))
 	}
 }
