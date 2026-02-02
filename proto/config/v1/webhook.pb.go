@@ -672,147 +672,6 @@ func (b0 WebhookStatus_builder) Build() *WebhookStatus {
 	return m0
 }
 
-type WebhookSubscription struct {
-	state                    protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id            string                 `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Url           string                 `protobuf:"bytes,2,opt,name=url"`
-	xxx_hidden_Events        []string               `protobuf:"bytes,3,rep,name=events"`
-	xxx_hidden_Active        bool                   `protobuf:"varint,4,opt,name=active"`
-	xxx_hidden_Secret        string                 `protobuf:"bytes,5,opt,name=secret"`
-	xxx_hidden_Status        string                 `protobuf:"bytes,6,opt,name=status"`
-	xxx_hidden_LastTriggered string                 `protobuf:"bytes,7,opt,name=last_triggered,json=lastTriggered"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
-}
-
-func (x *WebhookSubscription) Reset() {
-	*x = WebhookSubscription{}
-	mi := &file_proto_config_v1_webhook_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WebhookSubscription) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WebhookSubscription) ProtoMessage() {}
-
-func (x *WebhookSubscription) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_config_v1_webhook_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *WebhookSubscription) GetId() string {
-	if x != nil {
-		return x.xxx_hidden_Id
-	}
-	return ""
-}
-
-func (x *WebhookSubscription) GetUrl() string {
-	if x != nil {
-		return x.xxx_hidden_Url
-	}
-	return ""
-}
-
-func (x *WebhookSubscription) GetEvents() []string {
-	if x != nil {
-		return x.xxx_hidden_Events
-	}
-	return nil
-}
-
-func (x *WebhookSubscription) GetActive() bool {
-	if x != nil {
-		return x.xxx_hidden_Active
-	}
-	return false
-}
-
-func (x *WebhookSubscription) GetSecret() string {
-	if x != nil {
-		return x.xxx_hidden_Secret
-	}
-	return ""
-}
-
-func (x *WebhookSubscription) GetStatus() string {
-	if x != nil {
-		return x.xxx_hidden_Status
-	}
-	return ""
-}
-
-func (x *WebhookSubscription) GetLastTriggered() string {
-	if x != nil {
-		return x.xxx_hidden_LastTriggered
-	}
-	return ""
-}
-
-func (x *WebhookSubscription) SetId(v string) {
-	x.xxx_hidden_Id = v
-}
-
-func (x *WebhookSubscription) SetUrl(v string) {
-	x.xxx_hidden_Url = v
-}
-
-func (x *WebhookSubscription) SetEvents(v []string) {
-	x.xxx_hidden_Events = v
-}
-
-func (x *WebhookSubscription) SetActive(v bool) {
-	x.xxx_hidden_Active = v
-}
-
-func (x *WebhookSubscription) SetSecret(v string) {
-	x.xxx_hidden_Secret = v
-}
-
-func (x *WebhookSubscription) SetStatus(v string) {
-	x.xxx_hidden_Status = v
-}
-
-func (x *WebhookSubscription) SetLastTriggered(v string) {
-	x.xxx_hidden_LastTriggered = v
-}
-
-type WebhookSubscription_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id            string
-	Url           string
-	Events        []string
-	Active        bool
-	Secret        string
-	Status        string
-	LastTriggered string
-}
-
-func (b0 WebhookSubscription_builder) Build() *WebhookSubscription {
-	m0 := &WebhookSubscription{}
-	b, x := &b0, m0
-	_, _ = b, x
-	x.xxx_hidden_Id = b.Id
-	x.xxx_hidden_Url = b.Url
-	x.xxx_hidden_Events = b.Events
-	x.xxx_hidden_Active = b.Active
-	x.xxx_hidden_Secret = b.Secret
-	x.xxx_hidden_Status = b.Status
-	x.xxx_hidden_LastTriggered = b.LastTriggered
-	return m0
-}
-
 var File_proto_config_v1_webhook_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_webhook_proto_rawDesc = "" +
@@ -842,15 +701,7 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x12replacement_object\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x11replacementObject\"=\n" +
 	"\rWebhookStatus\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xbe\x01\n" +
-	"\x13WebhookSubscription\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
-	"\x03url\x18\x02 \x01(\tR\x03url\x12\x16\n" +
-	"\x06events\x18\x03 \x03(\tR\x06events\x12\x16\n" +
-	"\x06active\x18\x04 \x01(\bR\x06active\x12\x16\n" +
-	"\x06secret\x18\x05 \x01(\tR\x06secret\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\tR\x06status\x12%\n" +
-	"\x0elast_triggered\x18\a \x01(\tR\rlastTriggered*\x84\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*\x84\x01\n" +
 	"\vWebhookKind\x12\x1c\n" +
 	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
@@ -858,7 +709,7 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B2Z&github.com/mcpany/core/proto/config/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_config_v1_webhook_proto_goTypes = []any{
 	(WebhookKind)(0),            // 0: mcpany.config.v1.WebhookKind
 	(*WebhookReview)(nil),       // 1: mcpany.config.v1.WebhookReview
@@ -867,18 +718,17 @@ var file_proto_config_v1_webhook_proto_goTypes = []any{
 	(*SystemWebhookConfig)(nil), // 4: mcpany.config.v1.SystemWebhookConfig
 	(*WebhookResponse)(nil),     // 5: mcpany.config.v1.WebhookResponse
 	(*WebhookStatus)(nil),       // 6: mcpany.config.v1.WebhookStatus
-	(*WebhookSubscription)(nil), // 7: mcpany.config.v1.WebhookSubscription
-	(*structpb.Struct)(nil),     // 8: google.protobuf.Struct
-	(*durationpb.Duration)(nil), // 9: google.protobuf.Duration
+	(*structpb.Struct)(nil),     // 7: google.protobuf.Struct
+	(*durationpb.Duration)(nil), // 8: google.protobuf.Duration
 }
 var file_proto_config_v1_webhook_proto_depIdxs = []int32{
 	2, // 0: mcpany.config.v1.WebhookReview.request:type_name -> mcpany.config.v1.WebhookRequest
 	5, // 1: mcpany.config.v1.WebhookReview.response:type_name -> mcpany.config.v1.WebhookResponse
 	0, // 2: mcpany.config.v1.WebhookRequest.kind:type_name -> mcpany.config.v1.WebhookKind
-	8, // 3: mcpany.config.v1.WebhookRequest.object:type_name -> google.protobuf.Struct
-	9, // 4: mcpany.config.v1.WebhookConfig.timeout:type_name -> google.protobuf.Duration
+	7, // 3: mcpany.config.v1.WebhookRequest.object:type_name -> google.protobuf.Struct
+	8, // 4: mcpany.config.v1.WebhookConfig.timeout:type_name -> google.protobuf.Duration
 	6, // 5: mcpany.config.v1.WebhookResponse.status:type_name -> mcpany.config.v1.WebhookStatus
-	8, // 6: mcpany.config.v1.WebhookResponse.replacement_object:type_name -> google.protobuf.Struct
+	7, // 6: mcpany.config.v1.WebhookResponse.replacement_object:type_name -> google.protobuf.Struct
 	7, // [7:7] is the sub-list for method output_type
 	7, // [7:7] is the sub-list for method input_type
 	7, // [7:7] is the sub-list for extension type_name
@@ -897,7 +747,7 @@ func file_proto_config_v1_webhook_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_webhook_proto_rawDesc), len(file_proto_config_v1_webhook_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

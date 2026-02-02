@@ -67,13 +67,3 @@ message WebhookStatus {
   int32 code = 1;
   string message = 2;
 }
-
-message WebhookSubscription {
-  string id = 1;
-  string url = 2;
-  repeated string events = 3;
-  bool active = 4;
-  string secret = 5;
-  string status = 6;
-  string last_triggered = 7;
-}

@@ -55,7 +55,6 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
-	"github.com/mcpany/core/server/pkg/webhook"
 	"github.com/mcpany/core/server/pkg/worker"
 	"github.com/pmezard/go-difflib/difflib"
 	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -201,9 +200,6 @@ type Application struct {
 	// SkillManager manages agent skills
 	SkillManager *skill.Manager
 
-	// WebhookManager manages webhooks
-	WebhookManager *webhook.Manager
-
 	// AlertsManager manages system alerts
 	AlertsManager *alerts.Manager
 
@@ -289,7 +285,6 @@ func NewApplication() *Application {
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 		AlertsManager:    alerts.NewManager(),
-		WebhookManager:   webhook.NewManagerWithDefaults(),
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
@@ -2022,9 +2017,6 @@ func (a *Application) runServerMode(
 	// Register Skill Service
 	v1.RegisterSkillServiceServer(grpcServer, NewSkillServiceServer(a.SkillManager))
 
-	// Register Webhook Service
-	v1.RegisterWebhookServiceServer(grpcServer, NewWebhookServiceServer(a.WebhookManager))
-
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
 	wrappedGrpc = grpcweb.WrapServer(grpcServer,
 		grpcweb.WithOriginFunc(func(_ string) bool { return true }),
@@ -2051,8 +2043,6 @@ func (a *Application) runServerMode(
 					errChan <- fmt.Errorf("failed to register gateway: %w", err)
 				} else if err := v1.RegisterSkillServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
-				} else if err := v1.RegisterWebhookServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
-					errChan <- fmt.Errorf("failed to register webhook gateway: %w", err)
 				} else if err := pb_admin.RegisterAdminServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register admin gateway: %w", err)
 				} else {
