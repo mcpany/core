@@ -21,6 +21,15 @@ interface CreateStackDialogProps {
     onStackCreated: () => void;
 }
 
+/**
+ * CreateStackDialog provides a form to create a new service collection (stack).
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the dialog is open.
+ * @param props.onOpenChange - Callback when open state changes.
+ * @param props.onStackCreated - Callback when a stack is successfully created.
+ * @returns The rendered dialog component.
+ */
 export function CreateStackDialog({ open, onOpenChange, onStackCreated }: CreateStackDialogProps) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");

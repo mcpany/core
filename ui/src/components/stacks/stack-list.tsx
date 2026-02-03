@@ -23,6 +23,12 @@ interface Collection {
     services: any[];
 }
 
+/**
+ * StackList component displays a grid of available stacks (service collections).
+ * It fetches data from the backend and provides a dialog to create new stacks.
+ *
+ * @returns The rendered component.
+ */
 export function StackList() {
     const [stacks, setStacks] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(true);
