@@ -2993,6 +2993,9 @@ func analyzeQuoteContext(template, placeholder string) int {
 }
 
 func validateSafePathAndInjection(val string, isDocker bool) error {
+	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
+	val = strings.TrimSpace(val)
+
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
