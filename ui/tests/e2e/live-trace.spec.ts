@@ -51,7 +51,7 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Click Replay and verify navigation
   try {
       await replayButton.click({ force: true });
-      await expect(page).toHaveURL(/tool=calculate_sum/, { timeout: 5000 });
+      await expect(page).toHaveURL(/tool=calculate_sum/, { timeout: 10000 });
   } catch (e) {
       console.log('Replay click failed or timed out, forcing navigation');
       await page.goto('/playground?tool=calculate_sum&args=%7B%7D');

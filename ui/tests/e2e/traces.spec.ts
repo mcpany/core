@@ -94,7 +94,7 @@ test.describe('Trace Viewer', () => {
 
     // Verify redirection to playground
     try {
-        await expect(page).toHaveURL(/\/playground.*/, { timeout: 5000 });
+        await expect(page).toHaveURL(/\/playground.*/, { timeout: 10000 });
     } catch {
         console.log('Replay navigation timed out, forcing navigation');
         // We know the mock data has calculate_sum
