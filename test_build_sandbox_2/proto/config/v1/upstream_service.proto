@@ -1,0 +1,602 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/go_features.proto";
+import "proto/bus/bus.proto";
+import "proto/config/v1/auth.proto";
+import "proto/config/v1/call.proto";
+import "proto/config/v1/health_check.proto";
+import "proto/config/v1/profile.proto";
+import "proto/config/v1/prompt.proto";
+import "proto/config/v1/resource.proto";
+import "proto/config/v1/tool.proto";
+import "proto/config/v1/webhook.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "UpstreamServiceProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// UpstreamServiceConfig is the top-level configuration for a single upstream service
+// that mcpany will proxy. It defines the service's identity, how to connect to it,
+// and policies like authentication, caching, rate limiting, and load balancing.
+message UpstreamServiceConfig {
+  // The original user-provided name for the upstream service.
+  // This name is used for identification, logging, and metrics.
+  string name = 1;
+  // The full SHA256 hash of the service name, used as a unique identifier.
+  // This ensures that for the same service name, the ID is always the same.
+  string id = 2;
+  // A sanitized version of the service name, conforming to identifier rules.
+  // @inject_tag: yaml:"-"
+  //
+  // This field is managed internally and should not be set by the user.
+  string sanitized_name = 3 [json_name = "sanitized_name"];
+  // The version of the upstream service, if known (e.g., "v1.2.3").
+  string version = 4;
+  // The priority of the service. Lower numbers have higher priority.
+  int32 priority = 5;
+  // If true, this upstream service is disabled.
+  bool disable = 6;
+  // If true, automatically convert all API calls to tools.
+  bool auto_discover_tool = 7 [json_name = "auto_discover_tool"];
+  // The configuration error if the service failed validation.
+  // @inject_tag: yaml:"-"
+  string config_error = 8 [json_name = "config_error"];
+  // If true, this service configuration is read-only (e.g., loaded from a file).
+  // @inject_tag: yaml:"-"
+  bool read_only = 35 [json_name = "read_only"];
+  // The last error message encountered by the service (e.g. health check failure).
+  // @inject_tag: yaml:"-"
+  string last_error = 36 [json_name = "last_error"];
+  // The number of tools registered for this service.
+  // @inject_tag: yaml:"-"
+  int32 tool_count = 37 [json_name = "tool_count"];
+
+  // Configuration for the pool of connections to the upstream service.
+  ConnectionPoolConfig connection_pool = 9 [json_name = "connection_pool"];
+  // Authentication configuration for mcpany to use when connecting to the upstream service (outgoing).
+  Authentication upstream_auth = 10 [json_name = "upstream_auth"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 11;
+  // Rate limiting to protect the upstream service from being overwhelmed.
+  RateLimitConfig rate_limit = 12 [json_name = "rate_limit"];
+  // Strategy for distributing requests among multiple instances of the service.
+  LoadBalancingStrategy load_balancing_strategy = 13 [json_name = "load_balancing_strategy"];
+  // Advanced resiliency features to handle failures gracefully.
+  ResilienceConfig resilience = 14;
+  // Authentication configuration for securing access to this service (incoming).
+  Authentication authentication = 15;
+
+  // Policies to control what is exported to the client.
+  ExportPolicy tool_export_policy = 16 [json_name = "tool_export_policy"];
+  ExportPolicy prompt_export_policy = 17 [json_name = "prompt_export_policy"];
+  ExportPolicy resource_export_policy = 18 [json_name = "resource_export_policy"];
+
+  // The specific configuration for the type of upstream service.
+  oneof service_config {
+    McpUpstreamService mcp_service = 19 [json_name = "mcp_service"];
+    HttpUpstreamService http_service = 20 [json_name = "http_service"];
+    GrpcUpstreamService grpc_service = 21 [json_name = "grpc_service"];
+    OpenapiUpstreamService openapi_service = 22 [json_name = "openapi_service"];
+    CommandLineUpstreamService command_line_service = 23 [json_name = "command_line_service"];
+    WebsocketUpstreamService websocket_service = 24 [json_name = "websocket_service"];
+    WebrtcUpstreamService webrtc_service = 25 [json_name = "webrtc_service"];
+    GraphQLUpstreamService graphql_service = 26 [json_name = "graphql_service"];
+    SqlUpstreamService sql_service = 27 [json_name = "sql_service"];
+    FilesystemUpstreamService filesystem_service = 28 [json_name = "filesystem_service"];
+    VectorUpstreamService vector_service = 29 [json_name = "vector_service"];
+  }
+
+  // Policy to control which calls can be made.
+  repeated CallPolicy call_policies = 30 [json_name = "call_policies"];
+  // List of hooks to execute before the call.
+  repeated CallHook pre_call_hooks = 31 [json_name = "pre_call_hooks"];
+  // List of hooks to execute after the call.
+  repeated CallHook post_call_hooks = 32 [json_name = "post_call_hooks"];
+  // The prompts provided by this upstream service.
+  repeated PromptDefinition prompts = 33;
+  // Tags for organizing and filtering services.
+  repeated string tags = 34 [json_name = "tags"];
+  // JSON Schema string defining the configuration parameters (env vars, args) required by this service.
+  // This is used by the UI to generate a configuration form.
+  string configuration_schema = 38 [json_name = "configuration_schema"];
+}
+
+message CallPolicy {
+  enum Action {
+    ALLOW = 0;
+    DENY = 1;
+    SAVE_CACHE = 2;
+    DELETE_CACHE = 3;
+  }
+  // Default action if no rules match.
+  Action default_action = 1;
+  // List of rules to apply. First match wins.
+  repeated CallPolicyRule rules = 2;
+}
+
+message CallPolicyRule {
+  CallPolicy.Action action = 1;
+  // Regex to match the call name. Empty means match all.
+  string name_regex = 2 [json_name = "name_regex"];
+  // Regex to match request arguments (JSON stringified). Empty means match all.
+  // This is a simple regex match on the JSON representation of arguments.
+  string argument_regex = 3;
+  // Regex to match endpoint path or URL.
+  string url_regex = 4 [json_name = "url_regex"];
+  // Regex to match call ID. Empty means match all.
+  string call_id_regex = 5 [json_name = "call_id_regex"];
+}
+
+message ExportPolicy {
+  enum Action {
+    EXPORT_ACTION_UNSPECIFIED = 0;
+    EXPORT = 1;
+    UNEXPORT = 2;
+  }
+  Action default_action = 1;
+
+  repeated ExportRule rules = 2;
+}
+
+message ExportRule {
+  // Regex to match the name (tool, prompt, or resource).
+  string name_regex = 1 [json_name = "name_regex"];
+  ExportPolicy.Action action = 2;
+}
+
+message CallHook {
+  string name = 1;
+  oneof hook_config {
+    WebhookConfig webhook = 2;
+    CallPolicy call_policy = 4;
+  }
+}
+
+// --- Upstream Service Types ---
+
+// GrpcUpstreamService defines an upstream service that speaks gRPC.
+message GrpcUpstreamService {
+  // The address of the gRPC server (e.g., "localhost:50051").
+  string address = 1;
+  // If true, mcpany will use gRPC reflection to discover services and methods.
+  bool use_reflection = 2 [json_name = "use_reflection"];
+  // TLS configuration for the gRPC connection.
+  TLSConfig tls_config = 3 [json_name = "tls_config"];
+  // Manually defined mappings from MCP tools to gRPC calls.
+  repeated ToolDefinition tools = 4;
+  // Health check configuration.
+  GrpcHealthCheck health_check = 5 [json_name = "health_check"];
+  // A list of protobuf definitions for the gRPC service.
+  repeated ProtoDefinition proto_definitions = 6 [json_name = "proto_definitions"];
+  // A collection of protobuf files to be discovered.
+  repeated ProtoCollection proto_collection = 7 [json_name = "proto_collection"];
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 8;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, GrpcCallDefinition> calls = 9;
+  // The prompts provided by this upstream service.
+  repeated PromptDefinition prompts = 19;
+}
+
+message ProtoDefinition {
+  oneof proto_ref {
+    ProtoFile proto_file = 1 [json_name = "proto_file"];
+    ProtoDescriptor proto_descriptor = 2 [json_name = "proto_descriptor"];
+  }
+}
+
+message ProtoFile {
+  string file_name = 1 [json_name = "file_name"];
+  oneof file_ref {
+    string file_content = 2 [json_name = "file_content"];
+    string file_path = 3 [json_name = "file_path"];
+  }
+}
+
+message ProtoDescriptor {
+  string file_name = 1 [json_name = "file_name"];
+  oneof file_ref {
+    string file_path = 2 [json_name = "file_path"];
+  }
+}
+
+message ProtoCollection {
+  string root_path = 1 [json_name = "root_path"];
+  string path_match_regex = 2 [json_name = "path_match_regex"];
+  bool is_recursive = 3 [json_name = "is_recursive"];
+}
+
+// HttpUpstreamService defines an upstream service that speaks HTTP.
+message HttpUpstreamService {
+  // The base URL of the HTTP service (e.g., "https://api.example.com").
+  string address = 1;
+  // Manually defined mappings from MCP tools to HTTP calls.
+  repeated ToolDefinition tools = 2;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, HttpCallDefinition> calls = 6;
+  // Configuration for checking the health of the HTTP service.
+  HttpHealthCheck health_check = 3 [json_name = "health_check"];
+  // TLS configuration for the HTTP connection.
+  TLSConfig tls_config = 4 [json_name = "tls_config"];
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 7;
+}
+
+// WebsocketUpstreamService defines an upstream service that communicates over Websocket.
+message WebsocketUpstreamService {
+  // The URL of the Websocket service (e.g., "ws://api.example.com/ws").
+  string address = 1;
+  // Manually defined mappings from MCP tools to websocket calls.
+  repeated ToolDefinition tools = 2;
+  // TLS configuration for the Websocket connection.
+  TLSConfig tls_config = 3 [json_name = "tls_config"];
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, WebsocketCallDefinition> calls = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 6;
+  // Health check configuration.
+  WebsocketHealthCheck health_check = 7 [json_name = "health_check"];
+}
+
+// WebrtcUpstreamService defines an upstream service that communicates over WebRTC data channels.
+message WebrtcUpstreamService {
+  // The URL of the WebRTC signaling service (e.g., "http://api.example.com/signal").
+  string address = 1;
+  // Manually defined mappings from MCP tools to webrtc calls.
+  repeated ToolDefinition tools = 2;
+  // TLS configuration for the signaling connection.
+  TLSConfig tls_config = 3 [json_name = "tls_config"];
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 4;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, WebrtcCallDefinition> calls = 5;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 6;
+  // Health check configuration.
+  WebRTCHealthCheck health_check = 7 [json_name = "health_check"];
+}
+
+// OpenapiUpstreamService defines a service based on an OpenAPI/Swagger specification.
+message OpenapiUpstreamService {
+  // The base URL of the API.
+  string address = 1;
+  oneof spec_source {
+    // The OpenAPI specification content (JSON or YAML).
+    string spec_content = 2 [json_name = "spec_content"];
+    // The URL to fetch the OpenAPI specification from.
+    string spec_url = 9 [json_name = "spec_url"];
+  }
+  // Health check configuration.
+  HttpHealthCheck health_check = 3 [json_name = "health_check"];
+  // TLS configuration for the connection.
+  TLSConfig tls_config = 4 [json_name = "tls_config"];
+  // Optional: Overrides or specific configurations for calls discovered from the spec.
+  repeated ToolDefinition tools = 5;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 6;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, OpenAPICallDefinition> calls = 7;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 8;
+}
+
+// CommandLineUpstreamService defines a service that communicates over standard I/O.
+message CommandLineUpstreamService {
+  // The command to execute the service.
+  string command = 1;
+  // The working directory for the command.
+  string working_directory = 3 [json_name = "working_directory"];
+  // Manually defined mappings from MCP tools to command line commands.
+  repeated ToolDefinition tools = 4;
+  // Health check configuration.
+  CommandLineHealthCheck health_check = 5 [json_name = "health_check"];
+  // Caching configuration to improve performance and reduce load on the upstream.
+  CacheConfig cache = 6;
+  // Container environment to run the command in.
+  ContainerEnvironment container_environment = 7 [json_name = "container_environment"];
+  // Timeout for the command execution.
+  google.protobuf.Duration timeout = 8;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 9;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, CommandLineCallDefinition> calls = 10;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 11;
+
+  enum CommunicationProtocol {
+    COMMUNICATION_PROTOCOL_UNSPECIFIED = 0;
+    COMMUNICATION_PROTOCOL_JSON = 1;
+  }
+  CommunicationProtocol communication_protocol = 12 [json_name = "communication_protocol"];
+
+  // If true, the command will be executed on the local filesystem.
+  bool local = 13;
+  // Environment variables to set for the command (supports secrets).
+  map<string, SecretValue> env = 14;
+}
+
+// GraphQLUpstreamService defines an upstream service that speaks GraphQL.
+message GraphQLUpstreamService {
+  // The URL of the GraphQL endpoint (e.g., "http://api.example.com/graphql").
+  string address = 1;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, GraphQLCallDefinition> calls = 2;
+}
+
+// SqlUpstreamService defines an upstream service that speaks SQL.
+message SqlUpstreamService {
+  // The driver name (e.g., "postgres", "mysql", "sqlite").
+  string driver = 1;
+  // The data source name (DSN) for connecting to the database.
+  string dsn = 2;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, SqlCallDefinition> calls = 3;
+}
+
+// FilesystemUpstreamService defines a service that exposes a local filesystem safely.
+message FilesystemUpstreamService {
+  // The root directories that are allowed to be accessed.
+  // The key is the virtual path (how it appears to the LLM) and the value is the actual local path.
+  // Example: {"/workspace": "/home/user/projects/myproject"}
+  map<string, string> root_paths = 1 [json_name = "root_paths"];
+
+  // If true, file operations are read-only.
+  bool read_only = 2 [json_name = "read_only"];
+
+  // Manually defined mappings (usually not needed as we auto-register FS tools).
+  repeated ToolDefinition tools = 3;
+
+  // Resources (files) that are statically or dynamically exposed.
+  repeated ResourceDefinition resources = 4;
+
+  // Prompts that are exposed.
+  repeated PromptDefinition prompts = 5;
+
+  // List of glob patterns for allowed paths. If empty, all paths under roots are allowed.
+  repeated string allowed_paths = 6 [json_name = "allowed_paths"];
+
+  // List of glob patterns for denied paths. Checked after allowed_paths.
+  repeated string denied_paths = 7 [json_name = "denied_paths"];
+
+  enum SymlinkMode {
+    SYMLINK_MODE_UNSPECIFIED = 0;
+    // Allow all symlinks (still checked against root_paths target).
+    ALLOW = 1;
+    // Deny all symlinks.
+    DENY = 2;
+    // Allow symlinks only if target is within the same root.
+    INTERNAL_ONLY = 3;
+  }
+  // The policy for following symlinks.
+  SymlinkMode symlink_mode = 8 [json_name = "symlink_mode"];
+
+  // The specific configuration for the filesystem type.
+  oneof filesystem_type {
+    OsFs os = 10;
+    MemMapFs tmpfs = 11;
+    HttpFs http = 12;
+    ZipFs zip = 13;
+    GcsFs gcs = 14;
+    SftpFs sftp = 15;
+    S3Fs s3 = 16;
+  }
+}
+
+message OsFs {}
+message MemMapFs {}
+message HttpFs {
+  string endpoint = 1;
+}
+message ZipFs {
+  string file_path = 1;
+}
+message GcsFs {
+  string bucket = 1;
+}
+message S3Fs {
+  string bucket = 1;
+  string region = 2;
+  string access_key_id = 3;
+  string secret_access_key = 4;
+  string session_token = 5;
+  string endpoint = 6;
+}
+message SftpFs {
+  string address = 1;
+  string username = 2;
+  string password = 3;
+  string key_path = 4;
+}
+
+// VectorUpstreamService defines a service that connects to a vector database.
+message VectorUpstreamService {
+  // The specific configuration for the vector database type.
+  oneof vector_db_type {
+    PineconeVectorDB pinecone = 1;
+    MilvusVectorDB milvus = 5;
+  }
+
+  // Manually defined mappings (usually not needed as we auto-register Vector tools).
+  repeated ToolDefinition tools = 2;
+
+  // Resources that are exposed.
+  repeated ResourceDefinition resources = 3;
+
+  // Prompts that are exposed.
+  repeated PromptDefinition prompts = 4;
+}
+
+message PineconeVectorDB {
+  string api_key = 1 [json_name = "api_key"];
+  string environment = 2; // e.g., "us-west1-gcp-free" (Legacy) or empty for serverless
+  string index_name = 3 [json_name = "index_name"];
+  string project_id = 4 [json_name = "project_id"]; // Optional, might be needed for URL construction
+  string host = 5; // Optional: The full host URL (https://index-project.svc.pinecone.io)
+}
+
+message MilvusVectorDB {
+  string address = 1; // e.g., "localhost:19530"
+  string username = 2; // Optional
+  string password = 3; // Optional
+  string collection_name = 4 [json_name = "collection_name"];
+  string database_name = 5 [json_name = "database_name"]; // Defaults to "default"
+  bool use_tls = 6 [json_name = "use_tls"];
+  string api_key = 7 [json_name = "api_key"]; // For Zilliz Cloud
+}
+
+// McpUpstreamService defines an upstream that is already an MCP-compliant service.
+message McpUpstreamService {
+  // The connection details for the upstream MCP service.
+  oneof connection_type {
+    McpStreamableHttpConnection http_connection = 1 [json_name = "http_connection"];
+    // Connect via a stdio process.
+    McpStdioConnection stdio_connection = 2 [json_name = "stdio_connection"];
+    // Connect via a bundle.
+    McpBundleConnection bundle_connection = 4 [json_name = "bundle_connection"];
+  }
+  // If true, mcpany will automatically discover and proxy all tools from the upstream.
+  bool tool_auto_discovery = 3 [json_name = "tool_auto_discovery"];
+  // Optional: Overrides or specific configurations for calls discovered from the service.
+  repeated ToolDefinition tools = 6;
+  // A list of resources served by this service.
+  repeated ResourceDefinition resources = 7;
+  // A map of call definitions, keyed by their unique ID.
+  map<string, MCPCallDefinition> calls = 8;
+  // A list of prompts served by this service.
+  repeated PromptDefinition prompts = 9;
+}
+
+// McpStdioConnection defines the parameters for a stdio-based connection.
+message McpStdioConnection {
+  // The command and arguments to execute the service.
+  string command = 1;
+  // The working directory for the command.
+  string working_directory = 2 [json_name = "working_directory"];
+  // Optional: The container image to use. If not provided, an image will be
+  // selected based on the command.
+  string container_image = 3 [json_name = "container_image"];
+
+  // Arguments to the command.
+  repeated string args = 4;
+  // Optional: A list of commands to run as setup before the main command.
+  repeated string setup_commands = 5 [json_name = "setup_commands"];
+  // Optional: Environment variables to set in the container.
+  map<string, SecretValue> env = 7 [json_name = "env"];
+  // Optional: Validation rules for the environment.
+  EnvValidation validation = 8 [json_name = "validation"];
+}
+
+message EnvValidation {
+  // A list of environment variables that MUST be set (either inherited or explicit).
+  repeated string required_env = 1 [json_name = "required_env"];
+}
+
+message McpStreamableHttpConnection {
+  // Connect via HTTP.
+  string http_address = 1 [json_name = "http_address"];
+  // TLS configuration, applicable if using an http_address.
+  TLSConfig tls_config = 5 [json_name = "tls_config"];
+  // If true, the client will follow HTTP redirects. Default is false (security hardening).
+  bool allow_http_redirect = 6 [json_name = "allow_http_redirect"];
+}
+
+// McpBundleConnection defines the parameters for a bundle-based connection.
+message McpBundleConnection {
+  // The path to the bundle file.
+  string bundle_path = 1 [json_name = "bundle_path"];
+  // Optional: The container image to use. If not provided, a default image will be used.
+  string container_image = 2 [json_name = "container_image"];
+  // Optional: Environment variables to pass to the container.
+  map<string, SecretValue> env = 3 [json_name = "env"];
+}
+
+// ConnectionPoolConfig defines settings for managing a pool of connections to an upstream service.
+message ConnectionPoolConfig {
+  // The maximum number of simultaneous connections to allow to the upstream service.
+  int32 max_connections = 1 [json_name = "max_connections"];
+  // The maximum number of idle connections to keep in the pool.
+  int32 max_idle_connections = 2 [json_name = "max_idle_connections"];
+  // The duration a connection can remain idle in the pool before being closed.
+  google.protobuf.Duration idle_timeout = 3 [json_name = "idle_timeout"];
+}
+// Defines the container environment for running a command.
+message ContainerEnvironment {
+  // The name of the container.
+  string name = 1;
+  // The image to use for the container.
+  string image = 2;
+  // The volumes to mount into the container, with destination as key and source as value.
+  map<string, string> volumes = 3;
+  // Environment variables to set in the container (supports secrets).
+  map<string, SecretValue> env = 4;
+}
+
+// Defines strategies for load balancing across multiple service endpoints.
+enum LoadBalancingStrategy {
+  // Distributes requests sequentially among the available servers.
+  ROUND_ROBIN = 0;
+  // Sends the next request to the server that has the fewest active connections.
+  LEAST_CONNECTIONS = 1;
+  // Selects a server at random.
+  RANDOM = 2;
+}
+
+
+// Configuration for service resilience features like circuit breakers and retries.
+message ResilienceConfig {
+  // Circuit breaker configuration to prevent repeated calls to a failing service.
+  CircuitBreakerConfig circuit_breaker = 1 [json_name = "circuit_breaker"];
+  // Retry policy for failed requests.
+  RetryConfig retry_policy = 2 [json_name = "retry_policy"];
+  // The maximum duration for a request before it is cancelled.
+  google.protobuf.Duration timeout = 3 [json_name = "timeout"];
+}
+
+// CircuitBreakerConfig defines the parameters for the circuit breaker pattern.
+message CircuitBreakerConfig {
+  // If the failure rate exceeds this threshold, the circuit opens. (e.g., 0.5 for 50%)
+  double failure_rate_threshold = 1 [json_name = "failure_rate_threshold"];
+  // The number of consecutive failures required to open the circuit.
+  int32 consecutive_failures = 2 [json_name = "consecutive_failures"];
+  // The duration the circuit remains open before transitioning to half-open.
+  google.protobuf.Duration open_duration = 3 [json_name = "open_duration"];
+  // The number of requests to allow in the half-open state to test for recovery.
+  int32 half_open_requests = 4 [json_name = "half_open_requests"];
+}
+
+// RetryConfig defines the parameters for retrying failed requests.
+message RetryConfig {
+  // The number of times to retry a failed request.
+  int32 number_of_retries = 1 [json_name = "number_of_retries"];
+  // The base duration for the backoff between retries.
+  google.protobuf.Duration base_backoff = 2 [json_name = "base_backoff"];
+  // The maximum duration for the backoff.
+  google.protobuf.Duration max_backoff = 3 [json_name = "max_backoff"];
+  // The maximum total time to spend retrying.
+  google.protobuf.Duration max_elapsed_time = 4 [json_name = "max_elapsed_time"];
+}
+
+
+// TLSConfig defines the TLS settings for connecting to an upstream service.
+message TLSConfig {
+  // The server name to use for SNI.
+  string server_name = 1 [json_name = "server_name"];
+  // Path to the CA certificate file for verifying the server's certificate.
+  string ca_cert_path = 2 [json_name = "ca_cert_path"];
+  // Path to the client certificate file for mTLS.
+  string client_cert_path = 3 [json_name = "client_cert_path"];
+  // Path to the client private key file for mTLS.
+  string client_key_path = 4 [json_name = "client_key_path"];
+  // If true, the client will not verify the server's certificate chain. Use with caution.
+  bool insecure_skip_verify = 5 [json_name = "insecure_skip_verify"];
+}

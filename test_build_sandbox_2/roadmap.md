@@ -1,0 +1,86 @@
+# UI Roadmap
+
+## Status: Active Development
+
+### Planned Features
+
+- [ ] **Advanced Service Configuration & Sharing**:
+  - [x] Visual editor for detailed service configuration (Connection, Auth, Advanced).
+  - [x] Service Duplication: One-click cloning of existing services.
+  - [x] Service Export: Download service configuration as JSON.
+  - Import external services via gRPC auto-discovery or OpenAPI specs.
+  - Export and share service configurations.
+- [x] **Service Connection Diagnostic Tool**: Interactive tool to diagnose connection issues with upstream services (DNS, Handshake, Capabilities) - Added based on Ecosystem Audit.
+  - _Update_: Enhanced with WebSocket support and browser-side connectivity probing.
+- [x] **Integrated Connection Diagnostics**: Added direct access to the Connection Diagnostic tool from the Service List status indicator, allowing users to quickly troubleshoot failed services.
+- [x] **Context-Aware Error Suggestions**: When a service error occurs, use heuristics to suggest a fix in the Connection Diagnostic dialog.
+- [x] **Fix E2E Testing Infrastructure**: Resolve persistent CI failures in `e2e-parallel` by implementing robust backend mocking for the Settings & Secrets page tests.
+- [x] **One-Click Retry/Reconnect**: Button in the Service List (or diagnostic dialog) to immediately trigger a reconnection attempt for a failed service.
+- [ ] **Copy Diagnostic Logs**: Add a button to copy all diagnostic logs to the clipboard for easy sharing/reporting.
+- [x] **Service-based Log Filtering**: Added a dropdown to filter live logs by service source in the Log Stream view.
+- [x] **Browser-Side HTTP Connectivity Check**: Add a diagnostic step to attempt fetching the service URL directly from the browser (for HTTP services) to help distinguish between server-side and client-side network issues (subject to CORS).
+- [ ] **Plugin UI Extensions**: Allow server plugins to inject custom UI components.
+- [x] **Service Templates Library**: A built-in library of common service configurations (Postgres, Redis, Slack) to quickly spin up services without manual config.
+- [ ] **Configuration Versioning & Rollback**: UI to view history of service configuration changes and rollback to previous versions.
+- [x] Server Health History: Visual timeline of server up/down status over the last 24h.
+- [x] **Breadcrumb Navigation Enhancements**: Improved breadcrumbs with dropdowns for sibling navigation.
+- [x] **Intelligent Stack Composer**: Visual editor for assembling complex microservice architectures.
+- [ ] **Drag-and-Drop Resource Export**: Ability to drag a resource from the list to the desktop or another app.
+- [ ] **Resource Content Search**: Ability to search within the text content of resources for keywords.
+- [x] **Binary Resource Preview**: Support for previewing images, PDFs, and other binary formats in the resource viewer.
+- [ ] **Prompt/Resource Sibling Navigation**: Enable sibling navigation for Prompts and Resources (requires backend API update to include service_id).
+- [ ] **Breadcrumb History**: Show recently visited breadcrumbs in a dropdown or history menu.
+- [x] **JSON Schema Visualizer**: Display tool input schemas as interactive diagrams instead of raw JSON for better understanding of complex types.
+- [x] **Interactive Tool Usage History**: A timeline of tool executions with ability to replay them directly from the UI.
+- [ ] **Bulk Service Import**: Allow importing multiple services from a single config file or URL.
+- [x] **Service Configuration Validation**: Pre-save validation for service configs (e.g. check if URL is reachable).
+- [x] **Service Tagging & Grouping**: Organize services by tags (e.g., prod, staging, external) and filter the list.
+- [x] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
+- [ ] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
+- [ ] **Service Config Diff Viewer**: Visual diff when updating or duplicating services to see exactly what changed.
+- [x] **Bulk Service Actions**: Enable/Disable or Delete multiple services at once, potentially using tags for selection.
+- [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
+- [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
+- [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
+- [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
+- [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
+- [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
+- [x] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.
+- [ ] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
+- [x] **Saved Tool Arguments**: Ability to save a set of arguments as a "Preset" for a tool in the Playground, to quickly test different scenarios.
+- [x] **Tool Execution History Persisted**: Persist the local history of tool executions in `localStorage` or backend, so it survives page reloads.
+- [x] **Tool Execution Duration Tracking**: Display the execution time (latency) for each tool call in the Playground history.
+- [x] **Export Playground History**: Ability to export the current session's tool execution history to a JSON file for sharing or debugging.
+- [x] **Playground Session Replay**: Ability to reload a previous session from a JSON file into the playground.
+- [x] **Tool Output Diffing**: When re-running a tool with same args, show a diff of the output if it changed.
+- [x] **Context Usage Estimator**: Calculate and display estimated token usage for each tool/service to prevent context bloat (Address "MCP servers eat context" pain point).
+- [x] **Sensitive Data Detection**: Warning when configuring services that might expose sensitive environment variables (e.g. AWS_SECRET_KEY) in tools.
+- [x] **Preset Sharable URL**: Generate a link to the playground with pre-filled arguments (using presets or query params) to easily share configurations with team members.
+- [ ] **Preset Cloud Sync**: Sync saved tool presets to the backend (user profile) so they persist across devices and browser sessions.
+- [ ] **Robust Mocking Strategy**: Extend the mocking strategy used in Settings E2E tests to other critical E2E flows (Services, Tools) to reduce CI flakiness.
+- [ ] **Error Boundary Reporting**: Implement a global error boundary that catches component crashes (like the SecretsManager issue) and reports them to the diagnostic log or backend.
+- [x] **Tool Usage Analytics**: Display usage statistics (calls, failures) directly in the tool list or details view.
+- [x] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
+- [ ] **Visual Connection Graph**: View how services interact with agents.
+- [x] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
+- [ ] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
+- [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.
+- [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
+- [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.
+- [ ] **Trace Detail Visualization**: Enhance the trace detail page to show a sequence diagram or timeline view of the tool execution flow.
+- [ ] **Dashboard Filtering**: Allow filtering the dashboard metrics and activity by Service or Time Range.
+- [ ] **Tool Usage Quota Warnings**: Allow setting a soft limit on daily tool usage tokens and warn the user.
+- [x] **Global Context Dashboard**: A dedicated dashboard page to visualize total context usage across all services and tools over time.
+- [x] **Native File Upload Support in Playground**: Automatically detect base64 encoded fields in tool schemas and provide a native file picker.
+- [ ] **Playground File Drag-and-Drop**: Drag and drop files onto the Playground to automatically fill matching inputs.
+- [ ] **Image Preview in Playground Forms**: Display a preview of the selected image in the form before submission.
+- [ ] **Dashboard Widget Persistence**: Allow users to configure which widgets are shown and their order/size, persisting this preference to the backend (currently local storage).
+- [ ] **Refactor Metrics Testing**: Inject Prometheus Registry/Gatherer into Application struct to allow isolated testing without global state side effects.
+- [ ] **Log Persistence**: Backend support to persist logs so they can be viewed after page reload (currently transient).
+- [x] **Structured Log Viewer**: Parse JSON logs in the message field and display them as an expandable tree object for better readability.
+- [x] **Log Search Highlighting**: Highlight the search term within the log message for better visibility.
+- [ ] **Filter Logs by Time Range**: Add a date/time picker to filter logs (e.g. "Last 1 hour", "Custom Range").
+- [ ] **Regex Support in Log Search**: Allow advanced searching using regex patterns.
+- [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
+- [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
+- [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.

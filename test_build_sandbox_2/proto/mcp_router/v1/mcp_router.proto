@@ -1,0 +1,173 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.mcp_router.v1;
+
+option go_package = "github.com/mcpany/core/proto/mcp_router/v1";
+
+import "google/protobuf/struct.proto"; // For generic JSON-like data
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+// Represents an MCP Tool exposed by the aggregator
+message Tool {
+     string name = 1;                   // Unique name, e.g., "serviceName/methodName" or a hash
+     string display_name = 2;         // User-friendly name
+     string description = 3;          // Description from annotation
+     string service_id = 4;           // The ID of the registered user service that provides this tool
+     string underlying_method_fqn = 5; // Fully qualified name of the gRPC method, e.g., /pkg.UserService/Method
+     string request_type_fqn = 6;     // Fully qualified name of the underlying method's request message
+     string response_type_fqn = 7;    // Fully qualified name of the underlying method's response message
+     google.protobuf.Struct input_schema = 8;
+     google.protobuf.Struct output_schema = 9;
+     ToolAnnotations annotations = 11;
+     bool is_stream = 12;
+     repeated string tags = 13;
+     repeated string profiles = 14;
+     ToolIntegrity integrity = 15;
+}
+
+message ToolIntegrity {
+    string hash = 1;
+    string algorithm = 2; // e.g. "sha256"
+}
+
+message ToolAnnotations {
+     string title = 1;
+     // If true, the tool does not modify its environment.
+     // Default: false
+     bool read_only_hint = 2;
+     // If true, the tool may perform destructive updates to its environment. If
+     // false, the tool performs only additive updates.
+     // (This property is meaningful only when ReadOnlyHint == false.)
+     // Default: true
+     bool destructive_hint = 3;
+     // If true, calling the tool repeatedly with the same arguments will have no
+     // additional effect on the its environment.
+     // (This property is meaningful only when ReadOnlyHint == false.)
+     // Default: false
+     bool idempotent_hint = 4;
+     // If true, this tool may interact with an "open world" of external entities. If
+     // false, the tool's domain of interaction is closed. For example, the world of
+     // a web search tool is open, whereas that of a memory tool is not.
+     // Default: true
+     bool open_world_hint = 5;
+     google.protobuf.Struct input_schema = 6;
+     google.protobuf.Struct output_schema = 7;
+}
+
+message ListToolsRequest {
+    // Future: filtering options
+}
+
+message ListToolsResponse {
+    repeated Tool tools = 1;
+}
+
+message CallToolRequest {
+     string tool_id = 1;                     // ID of the tool to execute
+     google.protobuf.Struct inputs = 2;     // Actual inputs for the tool, as a JSON-like object
+                                          // The fields should match the fields of the underlying gRPC method's request message
+}
+
+message CallToolResponse {
+     google.protobuf.Struct outputs = 1;    // Actual outputs from the tool, as a JSON-like object
+                                          // The fields will match the fields of the underlying gRPC method's response message
+}
+
+// A Prompt is a pre-defined template for interacting with a language model.
+message Prompt {
+    string name = 1;
+    string title = 2;
+    string description = 3;
+    repeated PromptArgument arguments = 4;
+}
+
+message PromptArgument {
+    string name = 1;
+    string description = 2;
+    bool required = 3;
+}
+
+message ListPromptsRequest {
+    string cursor = 1;
+}
+
+message ListPromptsResponse {
+    repeated Prompt prompts = 1;
+    string next_cursor = 2;
+}
+
+message GetPromptRequest {
+    string name = 1;
+    google.protobuf.Struct arguments = 2;
+}
+
+message GetPromptResponse {
+    string description = 1;
+    repeated PromptMessage messages = 2;
+}
+
+message PromptMessage {
+    enum Role {
+        USER = 0;
+        ASSISTANT = 1;
+    }
+    Role role = 1;
+    oneof content {
+        TextContent text = 2;
+        ImageContent image = 3;
+        AudioContent audio = 4;
+        ResourceContent resource = 5;
+    }
+}
+
+message TextContent {
+    string text = 1;
+}
+
+message ImageContent {
+    string data = 1;
+    string mime_type = 2;
+}
+
+message AudioContent {
+    string data = 1;
+    string mime_type = 2;
+}
+
+message ResourceContent {
+    string uri = 1;
+    string mime_type = 2;
+    oneof content {
+        string text = 3;
+        bytes blob = 4;
+    }
+}
+
+// A Resource is a piece of data that can be used by tools or prompts.
+message Resource {
+     string id = 1;
+     string name = 2;
+     string description = 3;
+     string type = 4; // e.g., "text", "image", "url"
+     bytes content = 5;
+}
+
+message ListResourcesRequest {}
+
+message ListResourcesResponse {
+    repeated Resource resources = 1;
+}
+
+service McpRouter {
+    rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+    rpc CallTool(CallToolRequest) returns (CallToolResponse);
+
+    rpc ListPrompts(ListPromptsRequest) returns (ListPromptsResponse);
+    rpc GetPrompt(GetPromptRequest) returns (GetPromptResponse);
+    rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse);
+}

@@ -1,0 +1,83 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { ToolInspector } from '@/components/tools/tool-inspector';
+import { ToolDefinition } from '@/lib/client';
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+// Mock dependencies
+vi.mock('@/components/ui/sheet', () => ({
+  Sheet: ({ children, open }: { children: React.ReactNode; open: boolean }) => open ? <div>{children}</div> : null,
+  SheetContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SheetHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SheetTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SheetDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+vi.mock('@/components/ui/tabs', () => ({
+  Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsList: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TabsTrigger: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+  TabsContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+// Mock fetch
+global.fetch = vi.fn();
+
+describe('ToolInspector', () => {
+  const mockTool: ToolDefinition = {
+    name: 'test_tool',
+    description: 'A test tool',
+    title: 'Test Tool',
+    isStream: false,
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: false,
+    callId: '',
+    profiles: [],
+    tags: [],
+    mergeStrategy: 0,
+    serviceId: 'test_service',
+    disable: false,
+    inputSchema: {
+        type: 'object',
+        properties: {
+            arg1: { type: 'string', description: 'Argument 1' }
+        },
+        required: ['arg1']
+    }
+  };
+
+  it('renders nothing when closed', () => {
+    const { container } = render(<ToolInspector tool={mockTool} open={false} onOpenChange={() => {}} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders tool details when open', () => {
+    render(
+      <TooltipProvider>
+        <ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />
+      </TooltipProvider>
+    );
+    expect(screen.getByText('test_tool')).toBeDefined();
+    expect(screen.getByText('A test tool')).toBeDefined();
+    expect(screen.getByText('test_service')).toBeDefined();
+  });
+
+  it('renders input fields based on schema', () => {
+    render(
+      <TooltipProvider>
+        <ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />
+      </TooltipProvider>
+    );
+    expect(screen.getAllByText(/arg1/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/"string"/)).toBeDefined();
+    // In a real DOM (not mocked Sheet), we would look for the input
+  });
+});

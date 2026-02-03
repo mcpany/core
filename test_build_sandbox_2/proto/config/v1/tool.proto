@@ -1,0 +1,69 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "google/protobuf/struct.proto";
+import "proto/config/v1/profile.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "ToolProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// ToolDefinition describes a single capability or "tool" offered by a service.
+message ToolDefinition {
+  // The name of the tool, which will be used to invoke it.
+  string name = 1;
+  // The input schema for the tool.
+  google.protobuf.Struct input_schema = 3 [json_name = "input_schema"];
+  // The ID of the service that provides the tool.
+  string service_id = 13 [json_name = "service_id"];
+  // A human-readable description of what the tool does.
+  string description = 2;
+  // Indicates if the tool produces a continuous stream of responses.
+  bool is_stream = 5 [json_name = "is_stream"];
+  // A human-readable title for the tool.
+  string title = 6;
+  // If true, the tool does not modify its environment.
+  // Default: false
+  bool read_only_hint = 7 [json_name = "read_only_hint"];
+  // If true, the tool may perform destructive updates to its environment. If
+  // false, the tool performs only additive updates.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: true
+  bool destructive_hint = 8 [json_name = "destructive_hint"];
+  // If true, calling the tool repeatedly with the same arguments will have no
+  // additional effect on its environment.
+  // (This property is meaningful only when ReadOnlyHint == false.)
+  // Default: false
+  bool idempotent_hint = 9 [json_name = "idempotent_hint"];
+  // If true, this tool may interact with an "open world" of external entities. If
+  // false, the tool's domain of interaction is closed. For example, the world of
+  // a web search tool is open, whereas that of a memory tool is not.
+  // Default: true
+  bool open_world_hint = 10 [json_name = "open_world_hint"];
+  // The ID of the call definition to use for this tool.
+  string call_id = 11 [json_name = "call_id"];
+  // If true, this tool is disabled.
+  bool disable = 12;
+  // A list of profiles this tool belongs to.
+  repeated Profile profiles = 14;
+
+  enum MergeStrategy {
+    MERGE_STRATEGY_UNSPECIFIED = 0;
+    MERGE_STRATEGY_MERGE = 1;
+    MERGE_STRATEGY_OVERRIDE = 2;
+  }
+  MergeStrategy merge_strategy = 15 [json_name = "merge_strategy"];
+  repeated string tags = 16;
+  // Integrity check for the tool definition.
+  Integrity integrity = 17;
+}
+
+message Integrity {
+  string hash = 1;
+  string algorithm = 2; // e.g. "sha256"
+}

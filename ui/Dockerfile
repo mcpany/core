@@ -9,6 +9,22 @@ FROM node:20-bookworm-slim AS base
 FROM base AS deps
 WORKDIR /app
 
+# Install build tools for native dependencies (fixes arm64 builds)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    protobuf-compiler \
+    curl \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 # Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
@@ -20,9 +36,28 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
 COPY --from=deps /app/package-lock.json ./package-lock.json
-COPY proto/ /proto/
-# Symlink node_modules so proto files can find dependencies
-RUN ln -s /app/node_modules /proto/node_modules
+COPY proto/ ./proto/
+
+# Download googleapis and grpc-gateway for protobuf generation
+RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
+    unzip -q googleapis.zip -d /tmp && \
+    mv /tmp/googleapis-master /tmp/googleapis && \
+    rm googleapis.zip
+
+RUN curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/v2.27.3.zip && \
+    unzip -q grpc-gateway.zip -d /tmp && \
+    mv /tmp/grpc-gateway-2.27.3 /tmp/grpc-gateway && \
+    rm grpc-gateway.zip
+
+# Generate TypeScript protobuf files
+RUN find proto -name "*.proto" -exec protoc \
+    --proto_path=. \
+    --proto_path=/tmp/googleapis \
+    --proto_path=/tmp/grpc-gateway \
+    --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+    --ts_proto_out=. \
+    --ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+    {} +
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -33,6 +68,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
+RUN ls -R proto/
 RUN npm run build
 RUN mkdir -p public
 
@@ -44,7 +80,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # User authentication service URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
+ENV NEXT_PUBLIC_API_URL=http://localhost:50050
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

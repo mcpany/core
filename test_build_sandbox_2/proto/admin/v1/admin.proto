@@ -1,0 +1,189 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.admin.v1;
+
+import "google/api/annotations.proto";
+import "proto/config/v1/upstream_service.proto";
+import "proto/config/v1/user.proto";
+import "proto/mcp_router/v1/mcp_router.proto";
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+option go_package = "github.com/mcpany/core/proto/admin/v1";
+option java_outer_classname = "AdminProto";
+
+// AdminService provides administrative operations for the MCP Any server.
+service AdminService {
+  // ClearCache clears all cached data in the server.
+  rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
+
+  // ListServices returns all registered services.
+  rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
+
+  // GetService returns a specific service by ID.
+  rpc GetService(GetServiceRequest) returns (GetServiceResponse);
+
+  // ListTools returns all registered tools.
+  rpc ListTools(ListToolsRequest) returns (ListToolsResponse);
+
+  // GetTool returns a specific tool by name.
+  rpc GetTool(GetToolRequest) returns (GetToolResponse);
+
+  // ===================================================================
+  // User Management
+  // ===================================================================
+
+  // CreateUser creates a new user.
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+  // GetUser returns a specific user by ID.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+
+  // ListUsers returns all registered users.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+
+  // UpdateUser updates an existing user.
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+
+  // DeleteUser deletes a user by ID.
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+
+  // GetDiscoveryStatus returns the status of auto-discovery providers.
+  rpc GetDiscoveryStatus(GetDiscoveryStatusRequest) returns (GetDiscoveryStatusResponse);
+
+  // ===================================================================
+  // Audit Logs
+  // ===================================================================
+
+  // ListAuditLogs returns audit logs matching the filter.
+  rpc ListAuditLogs(ListAuditLogsRequest) returns (ListAuditLogsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/audit/logs"
+    };
+  }
+}
+
+message ClearCacheRequest {}
+
+message ClearCacheResponse {}
+
+message ListServicesRequest {}
+
+message ListServicesResponse {
+  repeated mcpany.config.v1.UpstreamServiceConfig services = 1 [deprecated = true];
+  repeated ServiceState service_states = 2;
+}
+
+message ServiceState {
+  mcpany.config.v1.UpstreamServiceConfig config = 1;
+  string status = 2; // "OK", "ERROR", "CONNECTING"
+  string error = 3;
+}
+
+message GetServiceRequest {
+  string service_id = 1;
+}
+
+message GetServiceResponse {
+  mcpany.config.v1.UpstreamServiceConfig service = 1 [deprecated = true];
+  ServiceState service_state = 2;
+}
+
+message ListToolsRequest {}
+
+message ListToolsResponse {
+  repeated mcpany.mcp_router.v1.Tool tools = 1;
+}
+
+message GetToolRequest {
+  string tool_name = 1;
+}
+
+message GetToolResponse {
+  mcpany.mcp_router.v1.Tool tool = 1;
+}
+
+// User Management Messages
+
+message CreateUserRequest {
+  mcpany.config.v1.User user = 1;
+}
+
+message CreateUserResponse {
+  mcpany.config.v1.User user = 1;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  mcpany.config.v1.User user = 1;
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+  repeated mcpany.config.v1.User users = 1;
+}
+
+message UpdateUserRequest {
+  mcpany.config.v1.User user = 1;
+  // Field mask to specify which fields to update (optional for now, full replace).
+}
+
+message UpdateUserResponse {
+  mcpany.config.v1.User user = 1;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+
+message DeleteUserResponse {}
+
+message GetDiscoveryStatusRequest {}
+
+message GetDiscoveryStatusResponse {
+  repeated DiscoveryProviderStatus providers = 1;
+}
+
+message DiscoveryProviderStatus {
+  string name = 1;
+  string status = 2; // "OK", "ERROR"
+  string last_error = 3;
+  string last_run_at = 4; // ISO 8601
+  int32 discovered_count = 5;
+}
+
+// Audit Log Messages
+
+message ListAuditLogsRequest {
+  string start_time = 1; // ISO 8601
+  string end_time = 2;   // ISO 8601
+  string tool_name = 3;
+  string user_id = 4;
+  string profile_id = 5;
+  int32 limit = 6;
+  int32 offset = 7;
+}
+
+message ListAuditLogsResponse {
+  repeated AuditLogEntry entries = 1;
+}
+
+message AuditLogEntry {
+  string timestamp = 1; // ISO 8601
+  string tool_name = 2;
+  string user_id = 3;
+  string profile_id = 4;
+  string arguments = 5; // JSON string
+  string result = 6;    // JSON string
+  string error = 7;
+  string duration = 8;
+  int64 duration_ms = 9;
+}
