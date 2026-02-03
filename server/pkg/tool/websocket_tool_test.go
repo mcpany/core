@@ -407,4 +407,74 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "this is not json", result)
 	})
+
+	t.Run("with secret resolution", func(t *testing.T) {
+		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
+			conn, err := upgrader.Upgrade(w, r, nil)
+			require.NoError(t, err)
+			defer func() { _ = conn.Close() }()
+			_, msg, err := conn.ReadMessage()
+			require.NoError(t, err)
+
+			// Verify that the secret was resolved and sent
+			var input map[string]interface{}
+			err = json.Unmarshal(msg, &input)
+			require.NoError(t, err)
+			assert.Equal(t, "super-secret-123", input["api_key"])
+
+			err = conn.WriteMessage(websocket.TextMessage, []byte(`{"status": "ok"}`))
+			require.NoError(t, err)
+		})
+		defer server.Close()
+
+		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+		conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
+		wrapper := &client.WebsocketClientWrapper{Conn: conn}
+
+		pm := pool.NewManager()
+		mockPool := &mockWebsocketPool{
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
+				return wrapper, nil
+			},
+			putFunc: func(c *client.WebsocketClientWrapper) { _ = c.Close() },
+		}
+		serviceID := "ws-secret-test"
+		pm.Register(serviceID, mockPool)
+
+		toolProto := v1.Tool_builder{}.Build()
+		toolProto.SetName("secret-tool")
+		toolProto.SetServiceId(serviceID)
+
+		callDef := &configv1.WebsocketCallDefinition{}
+
+		// Use builders to construct the parameter mapping with secret
+		// We use standard struct initialization if builders are not easily accessible for nested oneofs,
+		// but based on other tests, we can use Setters.
+		secret := &configv1.SecretValue{}
+		secret.SetPlainText("super-secret-123")
+
+		schema := &configv1.ParameterSchema{}
+		schema.SetName("api_key")
+
+		paramMapping := &configv1.WebsocketParameterMapping{}
+		paramMapping.SetSchema(schema)
+		paramMapping.SetSecret(secret)
+
+		callDef.SetParameters([]*configv1.WebsocketParameterMapping{paramMapping})
+
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
+
+		// Input doesn't need the secret, it should be injected
+		inputs := json.RawMessage(`{}`)
+		req := &ExecutionRequest{
+			ToolName:   serviceID + "/-/secret-tool",
+			ToolInputs: inputs,
+		}
+
+		result, err := wsTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+		assert.Equal(t, map[string]interface{}{"status": "ok"}, result)
+	})
 }
