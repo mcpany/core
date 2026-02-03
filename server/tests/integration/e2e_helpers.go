@@ -2034,3 +2034,11 @@ type MCPJSONRPCError struct {
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
 }
+
+// SkipIfCI skips the test if running in a CI environment.
+func SkipIfCI(t *testing.T) {
+	t.Helper()
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping integration test in CI due to environment limitations")
+	}
+}

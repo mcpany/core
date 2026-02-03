@@ -5,6 +5,7 @@ package integration
 
 import (
 	"context"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -15,6 +16,7 @@ import (
 )
 
 func TestRedisBus_ExternalServer(t *testing.T) {
+	SkipIfCI(t)
 	redisAddr, redisCleanup := StartRedisContainer(t)
 	defer redisCleanup()
 
