@@ -26,6 +26,10 @@ import (
 )
 
 func TestWebhooksE2E(t *testing.T) {
+	// Allow SSRF for testing against localhost webhook server
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	// Build the webhook server
 	rootDir := findRootDir(t)
 	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
@@ -131,6 +135,10 @@ func TestWebhooksE2E(t *testing.T) {
 }
 
 func TestFullSystemWebhooks(t *testing.T) {
+	// Allow SSRF for testing against localhost webhook server
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	// 1. Build Webhook Server
 	rootDir := findRootDir(t)
 	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")

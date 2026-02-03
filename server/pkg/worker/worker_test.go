@@ -230,8 +230,12 @@ func TestServiceRegistrationWorker(t *testing.T) {
 		}
 
 		// Start worker with background context
+		// We use a separate context for the worker to simulate long-running process
+		workerCtx, workerCancel := context.WithCancel(context.Background())
+		defer workerCancel()
+
 		worker := NewServiceRegistrationWorker(bp, registry)
-		worker.Start(context.Background())
+		worker.Start(workerCtx)
 
 		resultChan := make(chan *bus.ServiceRegistrationResult, 1)
 		unsubscribe := resultBus.SubscribeOnce(ctx, "test-req-ctx", func(result *bus.ServiceRegistrationResult) {
