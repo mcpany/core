@@ -83,6 +83,7 @@ Once the server is running, you can verify it using `curl` or an MCP client.
 ```bash
 # Check health
 curl http://localhost:50050/health
+# Expected Output: {"status":"ok","version":"dev"}
 ```
 
 To connect an AI client (like Claude Desktop or Gemini CLI):

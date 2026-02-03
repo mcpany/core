@@ -5,12 +5,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Mock implementation of GrpcWebImpl for testing purposes.
+ * Simulates a gRPC-Web client connection.
+ */
 export class GrpcWebImpl {
     constructor(_host: string, _options: any) {}
 }
 
 /**
- * The RegistrationServiceClientImpl class.
+ * Mock implementation of the Registration Service Client.
+ * Used for testing interactions with the registration service without a backend.
  */
 export class RegistrationServiceClientImpl {
     constructor(_rpc: any) {}
@@ -18,7 +23,7 @@ export class RegistrationServiceClientImpl {
 }
 
 /**
- * UpstreamServiceConfig type definition.
+ * Mock configuration for an upstream service.
  */
 export interface UpstreamServiceConfig {
     id?: string;
@@ -37,7 +42,7 @@ export interface UpstreamServiceConfig {
 }
 
 /**
- * ToolDefinition type definition.
+ * Mock definition of a tool.
  */
 export interface ToolDefinition {
     name: string;
@@ -45,7 +50,7 @@ export interface ToolDefinition {
 }
 
 /**
- * ResourceDefinition type definition.
+ * Mock definition of a resource.
  */
 export interface ResourceDefinition {
     uri: string;
@@ -55,7 +60,7 @@ export interface ResourceDefinition {
 }
 
 /**
- * PromptDefinition type definition.
+ * Mock definition of a prompt.
  */
 export interface PromptDefinition {
     name: string;
@@ -63,7 +68,7 @@ export interface PromptDefinition {
 }
 
 /**
- * Credential type definition.
+ * Mock definition of a credential.
  */
 export interface Credential {
     id?: string;
@@ -71,21 +76,21 @@ export interface Credential {
 }
 
 /**
- * Authentication type definition.
+ * Mock definition for authentication.
  */
 export interface Authentication {
     [key: string]: any;
 }
 
 /**
- * ListServicesResponse type definition.
+ * Mock response for listing services.
  */
 export type ListServicesResponse = any;
 /**
- * GetServiceResponse type definition.
+ * Mock response for getting a service.
  */
 export type GetServiceResponse = any;
 /**
- * GetServiceStatusResponse type definition.
+ * Mock response for getting service status.
  */
 export type GetServiceStatusResponse = any;

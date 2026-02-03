@@ -3,15 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Represents a server-side tool available for execution.
+ * These tools are built-in and do not require external configuration.
+ */
 export interface Tool {
+  /** The unique name of the tool. */
   name: string;
+  /** A description of what the tool does. */
   description: string;
+  /** The JSON Schema defining the tool's input arguments. */
   schema: Record<string, any>;
+  /** The function to execute the tool logic. */
   execute: (args: any) => Promise<any>;
 }
 
 /**
- * The BuiltInTools const.
+ * A registry of built-in tools available on the server.
+ * These tools are registered by default and can be used immediately.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
@@ -98,10 +107,12 @@ export const BuiltInTools: Record<string, Tool> = {
 };
 
 /**
- * executeTool.
+ * Executes a built-in tool by name.
  *
- * @param toolName - The toolName.
- * @param args - The args.
+ * @param toolName - The name of the tool to execute.
+ * @param args - The arguments to pass to the tool.
+ * @returns The result of the tool execution.
+ * @throws Error if the tool is not found or execution fails.
  */
 export async function executeTool(toolName: string, args: any) {
   const tool = BuiltInTools[toolName];
