@@ -18,7 +18,8 @@ permissions:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
 
@@ -99,7 +100,8 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     needs: [build-images]
     env:
@@ -215,6 +217,7 @@ jobs:
 
   e2e-parallel:
     runs-on: ubuntu-latest
+    # runs-on: self-hosted
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -352,6 +355,7 @@ jobs:
   build-images:
     name: Build Docker Images
     runs-on: ubuntu-latest
+    # runs-on: self-hosted
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -459,7 +463,8 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -557,7 +562,8 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     needs: [build-images]
     env:
@@ -647,7 +653,8 @@ jobs:
           verbose: true
 
   docker-smoke-test:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 15
     needs: [build-images]
     steps:
@@ -686,7 +693,8 @@ jobs:
           ./server/tests/smoke_test.sh mcpany/server:latest
 
   ui-test:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 20
     needs: [build-images]
     strategy:
@@ -733,7 +741,8 @@ jobs:
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
   k8s-e2e:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 20
     needs: [build-images]
     steps:
@@ -805,7 +814,8 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs:
       [
         build-images,
