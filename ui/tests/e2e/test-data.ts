@@ -16,10 +16,19 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
-                address: "https://stripe.com",
+            // Use command_line_service with dummy command to avoid network issues/SSRF
+            command_line_service: {
+                command: "echo",
+                args: ["{}"], // Echo empty json
                 tools: [
-                    { name: "process_payment", description: "Process a payment" }
+                    {
+                        name: "process_payment",
+                        description: "Process a payment",
+                        input_schema: {
+                            type: "object",
+                            properties: { amount: { type: "number" } }
+                        }
+                    }
                 ]
             }
         },
@@ -27,22 +36,37 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address, visibility checks don't need health
+            command_line_service: {
+                command: "echo",
+                args: ["{}"],
                 tools: [
-                     { name: "get_user", description: "Get user details" }
+                     {
+                         name: "get_user",
+                         description: "Get user details",
+                         input_schema: {
+                             type: "object",
+                             properties: { id: { type: "string" } }
+                         }
+                     }
                 ]
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            command_line_service: {
+                command: "echo",
+                args: ["{}"],
                 tools: [
-                    { name: "calculator", description: "calc" }
+                    {
+                        name: "calculator",
+                        description: "calc",
+                        input_schema: {
+                            type: "object",
+                            properties: { expr: { type: "string" } }
+                        }
+                    }
                 ]
             }
         }
@@ -54,7 +78,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             if (!res.ok()) throw new Error(`Failed to seed service ${svc.name}: ${res.status()} ${await res.text()}`);
         } catch (e) {
             console.error(`Failed to seed service ${svc.name}: ${e}`);
-            throw e; // Fail the test
+            throw e;
         }
     }
 };
@@ -111,7 +135,6 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
         await context.delete('/api/v1/services/Math', { headers: HEADERS });
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
-        // Cleanup failure is not fatal for current test but bad for next
     }
 };
 

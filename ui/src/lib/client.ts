@@ -368,17 +368,24 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools,
+            };
         }
         if (config.grpcService) {
-            payload.grpc_service = { address: config.grpcService.address };
+            payload.grpc_service = {
+                address: config.grpcService.address,
+                tools: config.grpcService.tools
+            };
         }
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
                 environment: config.commandLineService.env,
-                env: config.commandLineService.env
+                env: config.commandLineService.env,
+                tools: config.commandLineService.tools
             };
         }
         if (config.mcpService) {
@@ -443,15 +450,22 @@ export const apiClient = {
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools
+            };
         }
         if (config.grpcService) {
-            payload.grpc_service = { address: config.grpcService.address };
+            payload.grpc_service = {
+                address: config.grpcService.address,
+                tools: config.grpcService.tools
+            };
         }
         if (config.commandLineService) {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
+                tools: config.commandLineService.tools
             };
         }
         if (config.mcpService) {
@@ -529,10 +543,16 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = { address: config.httpService.address };
+            payload.http_service = {
+                address: config.httpService.address,
+                tools: config.httpService.tools
+            };
         }
         if (config.grpcService) {
-            payload.grpc_service = { address: config.grpcService.address };
+            payload.grpc_service = {
+                address: config.grpcService.address,
+                tools: config.grpcService.tools
+            };
         }
         if (config.commandLineService) {
             payload.command_line_service = {
@@ -540,6 +560,7 @@ export const apiClient = {
                 working_directory: config.commandLineService.workingDirectory,
                 env: config.commandLineService.env,
                 container_environment: config.commandLineService.containerEnvironment, // Include this if needed
+                tools: config.commandLineService.tools
             };
         }
         if (config.mcpService) {
@@ -1355,16 +1376,23 @@ export const apiClient = {
         };
 
         if (template.httpService) {
-            payload.http_service = { address: template.httpService.address };
+            payload.http_service = {
+                address: template.httpService.address,
+                tools: template.httpService.tools
+            };
         }
         if (template.grpcService) {
-            payload.grpc_service = { address: template.grpcService.address };
+            payload.grpc_service = {
+                address: template.grpcService.address,
+                tools: template.grpcService.tools
+            };
         }
         if (template.commandLineService) {
             payload.command_line_service = {
                 command: template.commandLineService.command,
                 working_directory: template.commandLineService.workingDirectory,
-                env: template.commandLineService.env
+                env: template.commandLineService.env,
+                tools: template.commandLineService.tools
             };
         }
         if (template.mcpService) {
