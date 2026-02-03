@@ -533,12 +533,6 @@ func TestPostgresStore(t *testing.T) {
 
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
-
-	t.Run("Close", func(t *testing.T) {
-		mock.ExpectClose()
-		err := store.Close()
-		require.NoError(t, err)
-	})
 }
 
 // initSchema test
@@ -605,5 +599,24 @@ func TestPostgresStore_Load_Success(t *testing.T) {
 	assert.Len(t, cfg.GetCollections(), 1)
 	assert.Equal(t, "col1", cfg.GetCollections()[0].GetName())
 
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostgresStore_Close(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	// No defer db.Close() here, because we expect store.Close() to do it.
+	// But if test fails, we should close it.
+	// However, sqlmock doesn't allow Close() to be called if ExpectClose() is consumed?
+	// Actually, TestPostgresStore failed because defer called Close() after ExpectClose() was consumed by store.Close().
+	// So here we should ensure we don't double close OR we expect it twice?
+	// Better: Don't defer. If store.Close fails, db might leak in test, but fine for unit test.
+
+	pgDB := &DB{db}
+	store := NewStore(pgDB)
+
+	mock.ExpectClose()
+	err = store.Close()
+	require.NoError(t, err)
 	require.NoError(t, mock.ExpectationsWereMet())
 }
