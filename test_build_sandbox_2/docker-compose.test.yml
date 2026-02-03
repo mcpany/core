@@ -1,0 +1,73 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  server:
+    image: ${SERVER_IMAGE}
+
+    command:
+      [
+        "run",
+        "--config-path=config.minimal.yaml",
+        "--mcp-listen-address=:50050",
+        "--grpc-port=:50051"
+      ]
+    environment:
+      - MCPANY_API_KEY=test-token
+      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS='true'
+      - MCPANY_ALLOW_LOOPBACK_RESOURCES='true'
+      - MCPANY_ADMIN_PASSWORD=password
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ../server/config.minimal.yaml:/app/config.minimal.yaml
+    networks:
+      default:
+        aliases:
+          - mcpany-server
+
+  ui-tests:
+    image: mcpany-ui-e2e:latest
+    ipc: host
+    user: "${TEST_UID}:${TEST_GID}"
+    environment:
+      - MCPANY_LOG_LEVEL=info
+      - BACKEND_URL=http://server:50050
+      - BASE_URL=http://localhost:9002
+      - NEXT_PUBLIC_API_URL=http://server:50050
+      - MCPANY_API_KEY=test-token
+      - NEXT_PUBLIC_MCPANY_API_KEY=test-token
+      - CI=true
+      - CAPTURE_SCREENSHOTS=${CAPTURE_SCREENSHOTS}
+      - PLAYWRIGHT_ARGS=${PLAYWRIGHT_ARGS}
+    command: >
+      sh -c "
+        mkdir -p test-results .audit playwright-report docs &&
+        npx playwright test $${PLAYWRIGHT_ARGS}
+      "
+    volumes:
+      - ../ui/test-results:/work/ui/test-results
+      - ../build/playwright-report:/work/ui/playwright-report
+      - ../ui/.audit:/work/ui/.audit
+      - ../ui/docs:/work/ui/docs
+      - ../docs:/work/docs
+      - ../ui/playwright.config.ts:/work/ui/playwright.config.ts
+      - ../ui/playwright.screenshots.config.ts:/work/ui/playwright.screenshots.config.ts
+      - ../ui/tests:/work/ui/tests
+    depends_on:
+      server:
+        condition: service_healthy
+      ui-http-echo-server:
+        condition: service_started
+    networks:
+      default:
+
+  ui-http-echo-server:
+    image: mcpany/http-echo-server:latest
+    ports:
+      - "5678:5678"
+    command:
+      - "--port=5678"

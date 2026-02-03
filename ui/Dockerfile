@@ -9,6 +9,19 @@ FROM node:20-bookworm-slim AS base
 FROM base AS deps
 WORKDIR /app
 
+# Install build tools for native dependencies (fixes arm64 builds)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 # Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS

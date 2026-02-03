@@ -1,0 +1,89 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.api.v1;
+
+import "google/api/annotations.proto";
+import "proto/config/v1/skill.proto";
+import "google/protobuf/go_features.proto";
+
+// option features.(pb.go).api_level = API_OPAQUE;
+
+option go_package = "github.com/mcpany/core/proto/api/v1";
+option java_outer_classname = "SkillServiceProto";
+option features.field_presence = IMPLICIT;
+
+service SkillService {
+  rpc ListSkills(ListSkillsRequest) returns (ListSkillsResponse) {
+    option (google.api.http) = {
+      get: "/v1/skills"
+    };
+  }
+
+  rpc GetSkill(GetSkillRequest) returns (GetSkillResponse) {
+    option (google.api.http) = {
+      get: "/v1/skills/{name}"
+    };
+  }
+
+  rpc CreateSkill(CreateSkillRequest) returns (CreateSkillResponse) {
+    option (google.api.http) = {
+      post: "/v1/skills"
+      body: "skill"
+    };
+  }
+
+  rpc UpdateSkill(UpdateSkillRequest) returns (UpdateSkillResponse) {
+    option (google.api.http) = {
+      put: "/v1/skills/{name}"
+      body: "skill"
+    };
+  }
+
+  rpc DeleteSkill(DeleteSkillRequest) returns (DeleteSkillResponse) {
+    option (google.api.http) = {
+      delete: "/v1/skills/{name}"
+    };
+  }
+}
+
+message ListSkillsRequest {}
+
+message ListSkillsResponse {
+  repeated mcpany.config.v1.Skill skills = 1;
+}
+
+message GetSkillRequest {
+  string name = 1;
+}
+
+message GetSkillResponse {
+  mcpany.config.v1.Skill skill = 1;
+}
+
+message CreateSkillRequest {
+  mcpany.config.v1.Skill skill = 1;
+}
+
+message CreateSkillResponse {
+  mcpany.config.v1.Skill skill = 1;
+}
+
+message UpdateSkillRequest {
+  string name = 1;
+  mcpany.config.v1.Skill skill = 2;
+}
+
+message UpdateSkillResponse {
+  mcpany.config.v1.Skill skill = 1;
+}
+
+message DeleteSkillRequest {
+  string name = 1;
+}
+
+message DeleteSkillResponse {
+  // Empty
+}

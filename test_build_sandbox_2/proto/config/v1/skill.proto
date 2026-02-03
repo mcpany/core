@@ -1,0 +1,37 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "SkillProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// Skill describes an Agent Skill, which provides instructions and assets to an agent.
+message Skill {
+  // Unique identifier for the skill (e.g. "data-processing").
+  string name = 1;
+
+  // Human-readable description of the skill.
+  string description = 2;
+
+  // License information for the skill.
+  string license = 3;
+
+  // Instructions for the agent on how to use this skill (Markdown).
+  string instructions = 4;
+
+  // List of tool names that this skill is allowed to use.
+  repeated string allowed_tools = 5 [json_name = "allowed_tools"];
+
+  // List of asset file paths associated with this skill (relative to skill root).
+  repeated string assets = 6;
+
+  // Arbitrary metadata for the skill.
+  map<string, string> metadata = 7;
+}

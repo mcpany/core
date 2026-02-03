@@ -1,0 +1,84 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/duration.proto";
+
+import "google/protobuf/go_features.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "HealthCheckProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// Defines a health check for an HTTP-based service.
+message HttpHealthCheck {
+  // The full URL to send the health check request to.
+  string url = 1;
+  // The expected HTTP status code for a successful health check. Defaults to 200.
+  int32 expected_code = 2;
+  // Optional: A substring that must be present in the response body for the check to pass.
+  string expected_response_body_contains = 3;
+  // How often to perform the health check.
+  google.protobuf.Duration interval = 4;
+  // The timeout for each health check attempt.
+  google.protobuf.Duration timeout = 5;
+  // The HTTP method to use for the health check. Defaults to "GET".
+  string method = 6;
+}
+
+// Defines a health check for a websocket-based service.
+message WebsocketHealthCheck {
+  // The message to send to the websocket service for the health check.
+  string message = 1;
+  // A substring expected in the service's response for the check to pass.
+  string expected_response_contains = 2;
+  // How often to perform the health check.
+  google.protobuf.Duration interval = 3;
+  // The timeout for each health check attempt.
+  google.protobuf.Duration timeout = 4;
+  // The URL to send the health check request to.
+  string url = 5;
+}
+
+// Defines a health check for a gRPC-based service.
+message GrpcHealthCheck {
+  // The gRPC service name to check (e.g., "grpc.health.v1.Health").
+  string service = 1;
+  // The gRPC method to call.
+  string method = 2;
+  // A JSON string representing the request message.
+  string request = 3;
+  // A JSON string representing the expected response message.
+  string expected_response = 4;
+  // Set to true if connecting to the gRPC service without TLS.
+  bool insecure = 5;
+  // How often to perform the health check.
+  google.protobuf.Duration interval = 6;
+  // The timeout for each health check attempt.
+  google.protobuf.Duration timeout = 7;
+}
+
+// Defines a health check for a command line-based service.
+message CommandLineHealthCheck {
+  // The method or command to send to the command line service for the health check.
+  string method = 1;
+  // The input/prompt to send to the service.
+  string prompt = 2;
+  // A substring expected in the service's output for the check to pass.
+  string expected_response_contains = 3;
+  // How often to perform the health check.
+  google.protobuf.Duration interval = 4;
+  // The timeout for each health check attempt.
+  google.protobuf.Duration timeout = 5;
+}
+
+// Defines a health check for a WebRTC-based service.
+message WebRTCHealthCheck {
+  oneof health_check_type {
+    HttpHealthCheck http = 1;
+    WebsocketHealthCheck websocket = 2;
+  }
+}
