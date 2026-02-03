@@ -5,21 +5,64 @@
 
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
+import { apiClient } from "@/lib/client";
+import { Alert } from "./types";
 
 /**
  * AlertStats component.
  * @returns The rendered component.
  */
 export function AlertStats() {
-  // Mock data - in a real app, this would come from props or a query
-  const stats = {
-    activeCritical: 3,
-    activeWarning: 12,
-    mttr: "14m", // Mean Time To Resolution
-    totalToday: 45
-  };
+  const [stats, setStats] = useState({
+    activeCritical: 0,
+    activeWarning: 0,
+    mttr: "N/A",
+    totalToday: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+        try {
+            const alerts: Alert[] = await apiClient.listAlerts();
+
+            let critical = 0;
+            let warning = 0;
+            let todayCount = 0;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            alerts.forEach((alert: Alert) => {
+                if (alert.status === 'active') {
+                    if (alert.severity === 'critical') critical++;
+                    if (alert.severity === 'warning') warning++;
+                }
+
+                const alertDate = new Date(alert.timestamp);
+                if (alertDate >= today) {
+                    todayCount++;
+                }
+            });
+
+            setStats({
+                activeCritical: critical,
+                activeWarning: warning,
+                mttr: "N/A",
+                totalToday: todayCount
+            });
+        } catch (error) {
+            console.error("Failed to fetch alert stats:", error);
+        }
+    };
+
+    fetchStats();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -31,7 +74,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-red-500">{stats.activeCritical}</div>
           <p className="text-xs text-muted-foreground">
-            +1 since last hour
+             Current active critical alerts
           </p>
         </CardContent>
       </Card>
@@ -43,7 +86,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold text-yellow-500">{stats.activeWarning}</div>
           <p className="text-xs text-muted-foreground">
-            -2 since last hour
+             Current active warnings
           </p>
         </CardContent>
       </Card>
@@ -55,7 +98,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.mttr}</div>
           <p className="text-xs text-muted-foreground">
-            -2m from yesterday
+            Mean time to resolution
           </p>
         </CardContent>
       </Card>
@@ -67,7 +110,7 @@ export function AlertStats() {
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalToday}</div>
           <p className="text-xs text-muted-foreground">
-            +12% from average
+            Recorded today
           </p>
         </CardContent>
       </Card>

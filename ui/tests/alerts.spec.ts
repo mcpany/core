@@ -6,6 +6,40 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
+  test.beforeEach(async ({ page }) => {
+    // Mock the API response for all tests to ensure consistent data and avoid backend dependency
+    await page.route('**/api/v1/alerts', async route => {
+      const json = [
+        { id: '1', title: 'High CPU Usage', message: 'CPU > 90%', severity: 'critical', status: 'active', service: 'weather-service', timestamp: new Date().toISOString() },
+        { id: '2', title: 'API Latency Spike', message: 'Latency > 2s', severity: 'warning', status: 'active', service: 'api-gateway', timestamp: new Date().toISOString() },
+        { id: '3', title: 'Disk Space Low', message: 'Volume /data at 90%', severity: 'warning', status: 'acknowledged', service: 'database', timestamp: new Date().toISOString() }
+      ];
+      await route.fulfill({ json });
+    });
+
+    // Mock the PATCH request for status updates
+    await page.route('**/api/v1/alerts/*', async route => {
+      if (route.request().method() === 'PATCH') {
+        const body = route.request().postDataJSON();
+        const id = route.request().url().split('/').pop();
+        await route.fulfill({
+          json: {
+            id,
+            status: body.status,
+            // Return minimal fields required by frontend
+            title: 'Mock Alert',
+            message: 'Mock Message',
+            severity: 'info',
+            service: 'mock-service',
+            timestamp: new Date().toISOString()
+          }
+        });
+      } else {
+        await route.continue();
+      }
+    });
+  });
+
   test('should load alerts page and display key elements', async ({ page }) => {
     // Navigate to alerts page
     await page.goto('/alerts');
@@ -13,11 +47,11 @@ test.describe('Alerts Page', () => {
     // Check header
     await expect(page.getByRole('heading', { name: 'Alerts & Incidents' })).toBeVisible();
 
-    // Check stats cards
-    await expect(page.getByText('Active Critical')).toBeVisible();
-    await expect(page.getByText('MTTR (Today)')).toBeVisible();
+    // Check stats cards - Use exact match because description might contain partial text
+    await expect(page.getByText('Active Critical', { exact: true })).toBeVisible();
+    await expect(page.getByText('MTTR (Today)', { exact: true })).toBeVisible();
 
-    // Check table content (mock data)
+    // Check table content (mocked data)
     await expect(page.getByText('High CPU Usage')).toBeVisible();
     await expect(page.getByText('API Latency Spike')).toBeVisible();
   });
