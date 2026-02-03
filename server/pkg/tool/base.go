@@ -36,14 +36,21 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns the result.
+// Returns:
+//   - *v1.Tool: The underlying protobuf definition of the tool.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// It lazily converts the internal protobuf definition to the MCP format on first access.
+//
+// Returns:
+//   - *mcp.Tool: The MCP-compliant tool definition.
+//
+// Side Effects:
+//   - Logs an error if the conversion fails.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -55,9 +62,10 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
+// GetCacheConfig returns the cache configuration for the tool.
 //
-// Returns the result.
+// Returns:
+//   - *configv1.CacheConfig: Always returns nil as base tools do not support caching by default.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

@@ -98,6 +98,17 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	for i := 0; i < maxRetries; i++ {
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(meal)})
 		if err == nil {
+			if res.IsError {
+				var content string
+				if len(res.Content) > 0 {
+					if tc, ok := res.Content[0].(*mcp.TextContent); ok {
+						content = tc.Text
+					}
+				}
+				t.Logf("Attempt %d/%d: Tool execution returned error: %s. Retrying...", i+1, maxRetries, content)
+				time.Sleep(2 * time.Second)
+				continue
+			}
 			break // Success
 		}
 

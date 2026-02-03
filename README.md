@@ -2,6 +2,13 @@
 
 **One server, Infinite possibilities.**
 
+## Table of Contents
+1. [Elevator Pitch](#1-elevator-pitch)
+2. [Architecture](#2-architecture)
+3. [Getting Started](#3-getting-started)
+4. [Development](#4-development)
+5. [Configuration](#5-configuration)
+
 ## 1. Elevator Pitch
 
 **What is this project and why does it exist?**
@@ -21,6 +28,7 @@ MCP Any acts as a centralized middleware between AI Agents (Clients) and your Up
 2.  **Service Registry**: Dynamically loads tool definitions from configuration files (local or remote).
 3.  **Adapters**: Specialized modules that translate MCP requests into upstream calls (gRPC, HTTP, OpenAPI, CLI).
 4.  **Policy Engine**: Enforces authentication, rate limiting, and security policies to keep your infrastructure safe.
+5.  **Management Dashboard**: A modern React/Next.js UI for inspecting services, tools, and system health.
 
 ```mermaid
 graph TD

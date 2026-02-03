@@ -65,18 +65,31 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *v1.Tool: The underlying protobuf definition of the tool.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *mcp.Tool: The MCP-compliant tool definition.
 	MCPTool() *mcp.Tool
-	// Execute runs the tool with the provided context and request, returning
-	// the result or an error.
+
+	// Execute runs the tool with the provided context and request.
+	//
+	// Parameters:
+	//   - ctx: The context for the execution.
+	//   - req: The execution request containing tool name and inputs.
+	//
+	// Returns:
+	//   - any: The result of the execution.
+	//   - error: An error if the execution fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
 	//
-	// Returns the result.
+	// Returns:
+	//   - *configv1.CacheConfig: The cache configuration, or nil if not configured.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -327,6 +340,14 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the gRPC tool. It retrieves a client from the
 // pool, unmarshals the JSON input into a protobuf request message, invokes the
 // gRPC method, and marshals the protobuf response back to JSON.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request.
+//
+// Returns:
+//   - any: The result of the gRPC call as a map.
+//   - error: An error if the call fails.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -571,6 +592,14 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the HTTP tool. It builds an HTTP request by
 // mapping input parameters to the path, query, and body, applies any
 // configured transformations, sends the request, and processes the response.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request.
+//
+// Returns:
+//   - any: The result of the HTTP call.
+//   - error: An error if the call fails or is blocked by policy.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1236,6 +1265,14 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // including its name and arguments, to the downstream MCP service using the
 // configured client and applies any necessary transformations to the request
 // and response.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request.
+//
+// Returns:
+//   - any: The result of the MCP tool call.
+//   - error: An error if the call fails.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1459,6 +1496,14 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // request based on the operation's method, URL, and parameter definitions,
 // sends the request, and processes the response, applying transformations as
 // needed.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request.
+//
+// Returns:
+//   - any: The result of the OpenAPI call.
+//   - error: An error if the call fails.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1772,6 +1817,14 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request.
+//
+// Returns:
+//   - any: The result of the command execution (stdout/stderr).
+//   - error: An error if the command fails or is blocked by policy.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2069,6 +2122,14 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Execute handles the execution of the command-line tool. It constructs a command
 // with arguments and environment variables derived from the tool inputs, runs
 // the command, and returns its output.
+//
+// Parameters:
+//   - ctx: The context for the execution.
+//   - req: The execution request.
+//
+// Returns:
+//   - any: The result of the command execution.
+//   - error: An error if the command execution fails.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
