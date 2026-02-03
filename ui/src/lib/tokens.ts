@@ -52,8 +52,7 @@ export function estimateTokens(text: string): number {
  * @param messages - Array of message objects with content.
  * @returns Total estimated tokens.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function estimateMessageTokens(messages: any[]): number {
+export function estimateMessageTokens(messages: any[]): number { // eslint-disable-line @typescript-eslint/no-explicit-any
     return messages.reduce((acc, msg) => {
         let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content || "");
         if (msg.toolName) content += ` ${msg.toolName}`;
