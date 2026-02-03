@@ -281,8 +281,7 @@ const TrueStr = "true"
 // GenerateUUID creates a new random (version 4) UUID.
 //
 // Returns:
-//
-//	string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
+//   - string: A string representation of the UUID (e.g., "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx").
 func GenerateUUID() string {
 	return uuid.New().String()
 }
@@ -398,9 +397,8 @@ func BytesToString(b []byte) string {
 // "sudo" should be prepended to the command.
 //
 // Returns:
-//
-//	string: The command to run (e.g., "docker" or "sudo").
-//	[]string: The arguments for the command (e.g., [] or ["docker"]).
+//   - string: The command to run (e.g., "docker" or "sudo").
+//   - []string: The arguments for the command (e.g., [] or ["docker"]).
 func GetDockerCommand() (string, []string) {
 	const dockerCmd = "docker"
 	if os.Getenv("USE_SUDO_FOR_DOCKER") == TrueStr {
@@ -413,14 +411,12 @@ func GetDockerCommand() (string, []string) {
 // It handles URL escaping of values unless specified otherwise.
 //
 // Parameters:
-//
-//	urlPath: The URL path containing placeholders in the format "{{key}}".
-//	params: A map of keys to values to replace placeholders with.
-//	noEscapeParams: A map of keys that should NOT be URL escaped.
+//   - urlPath: The URL path containing placeholders in the format "{{key}}".
+//   - params: A map of keys to values to replace placeholders with.
+//   - noEscapeParams: A map of keys that should NOT be URL escaped.
 //
 // Returns:
-//
-//	The URL path with placeholders replaced.
+//   - string: The URL path with placeholders replaced.
 func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlPath, params, noEscapeParams, url.PathEscape)
 }
@@ -429,14 +425,12 @@ func ReplaceURLPath(urlPath string, params map[string]interface{}, noEscapeParam
 // It handles URL query escaping of values unless specified otherwise.
 //
 // Parameters:
-//
-//	urlQuery: The URL query string containing placeholders in the format "{{key}}".
-//	params: A map of keys to values to replace placeholders with.
-//	noEscapeParams: A map of keys that should NOT be URL escaped.
+//   - urlQuery: The URL query string containing placeholders in the format "{{key}}".
+//   - params: A map of keys to values to replace placeholders with.
+//   - noEscapeParams: A map of keys that should NOT be URL escaped.
 //
 // Returns:
-//
-//	The URL query string with placeholders replaced.
+//   - string: The URL query string with placeholders replaced.
 func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapeParams map[string]bool) string {
 	return replacePlaceholders(urlQuery, params, noEscapeParams, url.QueryEscape)
 }

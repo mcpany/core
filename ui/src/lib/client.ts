@@ -149,9 +149,13 @@ export interface DoctorReport {
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
+    /** The name of the tool. */
     name: string;
+    /** The ID of the service owning the tool. */
     serviceId: string;
+    /** The failure rate as a percentage (0-100). */
     failureRate: number;
+    /** The total number of calls made to this tool. */
     totalCalls: number;
 }
 
@@ -159,9 +163,13 @@ export interface ToolFailureStats {
  * Tool usage analytics.
  */
 export interface ToolAnalytics {
+    /** The name of the tool. */
     name: string;
+    /** The ID of the service owning the tool. */
     serviceId: string;
+    /** The total number of calls made to this tool. */
     totalCalls: number;
+    /** The success rate as a percentage (0-100). */
     successRate: number;
 }
 
@@ -170,11 +178,17 @@ export interface ToolAnalytics {
  * Metric definition for dashboard.
  */
 export interface Metric {
+    /** The label of the metric. */
     label: string;
+    /** The value of the metric to display. */
     value: string;
+    /** The change description (e.g. "+5%"). */
     change?: string;
+    /** The trend direction. */
     trend?: "up" | "down" | "neutral";
+    /** The icon name to display. */
     icon: string;
+    /** A secondary label or description. */
     subLabel?: string;
 }
 
