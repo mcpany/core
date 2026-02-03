@@ -2827,10 +2827,11 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 		}
 	}
 
-	// Ruby: #{...} works in double quotes
-	if strings.HasPrefix(base, "ruby") && quoteLevel == 1 { // Double Quoted
+	// Ruby & Elixir: #{...} works in double quotes
+	// Also check for 'iex' (Interactive Elixir)
+	if (strings.HasPrefix(base, "ruby") || strings.HasPrefix(base, "elixir") || base == "iex") && quoteLevel == 1 { // Double Quoted
 		if strings.Contains(val, "#{") {
-			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
+			return fmt.Errorf("elixir/ruby interpolation injection detected: value contains '#{'")
 		}
 	}
 
