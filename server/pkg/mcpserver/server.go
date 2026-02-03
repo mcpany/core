@@ -614,7 +614,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
-	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
+	defer metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
