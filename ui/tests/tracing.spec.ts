@@ -1,7 +1,12 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
 import crypto from 'crypto';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:50050';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:50050';
 
 test.describe('Distributed Tracing', () => {
   test('should visualize nested traces from W3C headers', async ({ page, request }) => {
