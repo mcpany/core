@@ -241,6 +241,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
 	}
 
+	// ⚡ Bolt Fix: Check if we can actually run containers.
+	// This catches environments where docker socket exists but running containers fails
+	// (e.g. overlayfs mount issues in nested Docker environments).
+	// We use 'alpine' because 'node:18-alpine' is used later, so this base image should be available or downloadable.
+	if err := exec.Command("docker", "run", "--rm", "alpine", "true").Run(); err != nil {
+		t.Skipf("Skipping Docker tests: docker run failed (environment likely not suitable): %v", err)
+	}
+
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 

@@ -572,7 +572,7 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible.
+// IsDockerSocketAccessible checks if the Docker daemon is accessible and functional.
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
@@ -582,6 +582,17 @@ func IsDockerSocketAccessible() bool {
 	if err := cmd.Run(); err != nil {
 		return false
 	}
+
+	// ⚡ Bolt Fix: Also verify we can run a container.
+	// This catches environments where docker socket exists but running containers fails
+	// (e.g. overlayfs mount issues in nested Docker environments).
+	// We use 'alpine' because it is small and standard.
+	// If 'alpine' pull fails, we assume docker is not fully functional for tests.
+	checkCmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "run", "--rm", "alpine", "true")...)
+	if err := checkCmd.Run(); err != nil {
+		return false
+	}
+
 	return true
 }
 
@@ -1560,7 +1571,7 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 // httpMethod is the httpMethod.
 // params is the params.
 // authConfig is the authConfig.
-func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.Authentication) {
+func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID string, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
 
